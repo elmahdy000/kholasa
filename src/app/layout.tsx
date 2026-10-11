@@ -1,11 +1,17 @@
 import type { Metadata, Viewport } from "next";
-import { IBM_Plex_Sans_Arabic } from "next/font/google";
+import { Cairo, IBM_Plex_Sans_Arabic } from "next/font/google";
 import "./globals.css";
 
-// Single font system — IBM Plex Sans Arabic for all UI and content
+const cairo = Cairo({
+  subsets: ["arabic", "latin"],
+  weight: ["400", "500", "600", "700", "800", "900"],
+  variable: "--font-cairo",
+  display: "swap",
+});
+
 const ibmPlexArabic = IBM_Plex_Sans_Arabic({
   subsets: ["arabic", "latin"],
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["400", "500", "600", "700"],
   variable: "--font-ibm-plex-arabic",
   display: "swap",
 });
@@ -40,8 +46,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ar" dir="rtl" className={ibmPlexArabic.variable}>
-      <body className="min-h-screen font-ui bg-white dark:bg-[#0F172A] text-[#0F172A] dark:text-[#F8FAFC] antialiased selection:bg-[#4F46E5]/20 selection:text-[#4F46E5]">
+    <html lang="ar" dir="rtl" className={`${cairo.variable} ${ibmPlexArabic.variable}`}>
+      <body className="min-h-screen font-sans bg-[#F7F9FC] dark:bg-[#0A0F1D] text-[#14243D] dark:text-[#F8FAFC] antialiased selection:bg-[#6858EA]/20 selection:text-[#6858EA]">
         <PwaRegister />
         {children}
       </body>

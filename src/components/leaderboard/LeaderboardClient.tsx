@@ -65,17 +65,14 @@ export function LeaderboardClient({
   return (
     <div className="space-y-8 font-sans text-right">
       {/* Hero Header */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-l from-[#14243D] via-[#1E3352] to-[#14243D] p-6 sm:p-8 text-white shadow-xl">
-        <div className="absolute top-0 right-1/4 w-72 h-72 bg-[#6858EA]/25 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-10 w-60 h-60 bg-[#FFBA55]/20 rounded-full blur-3xl pointer-events-none" />
-
+      <div className="relative overflow-hidden rounded-2xl bg-[#0F172A] p-6 sm:p-8 text-white shadow-md border border-slate-800">
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/20 text-xs font-bold text-amber-300 border border-amber-500/30">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/15 text-xs font-bold text-amber-400 border border-amber-500/30">
               <Trophy className="w-3.5 h-3.5" />
               <span>لوحة الشرف وتصنيف الدفعة 2026</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-black tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
               متصدرو دفعة الخلاصة 🏆
             </h1>
             <p className="text-xs sm:text-sm text-slate-300 font-medium max-w-xl leading-relaxed">
@@ -86,26 +83,26 @@ export function LeaderboardClient({
           {/* Quick CTA */}
           <Link
             href="/exams/builder"
-            className="h-11 px-5 rounded-2xl bg-gradient-to-r from-amber-500 to-[#FFBA55] text-[#14243D] font-black text-xs flex items-center gap-2 shadow-lg hover:shadow-xl transition-all shrink-0"
+            className="h-11 px-5 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white font-bold text-xs flex items-center gap-2 shadow-sm transition-colors shrink-0"
           >
-            <Zap className="w-4 h-4 fill-current" />
-            <span>حل امتحان الآن لزيادة ترتيبك</span>
+            <Zap className="w-4 h-4 fill-current text-amber-300" />
+            <span>حل امتحان لزيادة ترتيبك</span>
           </Link>
         </div>
       </div>
 
       {/* Current User Standing Card */}
       {currentUser && (
-        <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-indigo-50/80 to-purple-50/80 dark:from-indigo-950/30 dark:to-purple-950/30 border border-indigo-200 dark:border-indigo-800/60 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-2xl bg-[#6858EA] text-white flex items-center justify-center font-black text-lg shadow-md shadow-[#6858EA]/20">
+            <div className="w-12 h-12 rounded-xl bg-[#4F46E5] text-white flex items-center justify-center font-bold text-lg shadow-2xs">
               #{currentUserRank || "-"}
             </div>
             <div>
-              <span className="text-[11px] font-bold text-[#6858EA] block">
+              <span className="text-[11px] font-bold text-[#4F46E5] dark:text-indigo-400 block">
                 موقعك الحالي في التصنيف
               </span>
-              <h3 className="text-base font-black text-[#14243D] dark:text-white">
+              <h3 className="text-base font-black text-[#0F172A] dark:text-white">
                 {currentUser.name} (أنت)
               </h3>
               <p className="text-xs text-[#64748B] dark:text-[#94A3B8]">
@@ -209,25 +206,25 @@ export function LeaderboardClient({
 
           {/* Rank 1 (Gold - Elevated) */}
           {top3[0] && (
-            <div className="order-1 md:order-2 p-6 rounded-3xl bg-gradient-to-b from-amber-50/60 to-white dark:from-amber-950/20 dark:to-[#111A2B] border-2 border-amber-400 dark:border-amber-600/60 shadow-lg flex flex-col items-center text-center space-y-3 relative md:-mt-4">
-              <div className="absolute -top-3 px-3 py-1 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-[#14243D] text-[10px] font-black shadow-md flex items-center gap-1">
-                <Crown className="w-3.5 h-3.5 fill-[#14243D]" />
+            <div className="order-1 md:order-2 p-6 rounded-2xl bg-amber-50/40 dark:bg-[#131B2E] border-2 border-amber-300 dark:border-amber-600 shadow-md flex flex-col items-center text-center space-y-3 relative md:-mt-4">
+              <div className="absolute -top-3 px-3 py-1 rounded-full bg-amber-500 text-white text-[10px] font-bold shadow-2xs flex items-center gap-1">
+                <Crown className="w-3.5 h-3.5 fill-current" />
                 <span>متصدر الدفعة الأول</span>
               </div>
-              <div className="w-16 h-16 rounded-3xl bg-amber-500 text-white flex items-center justify-center font-black text-2xl shadow-lg shadow-amber-500/30">
+              <div className="w-16 h-16 rounded-2xl bg-amber-500 text-white flex items-center justify-center font-bold text-2xl shadow-2xs">
                 👑
               </div>
-              <span className="text-xs font-black text-amber-700 dark:text-amber-400 bg-amber-100 dark:bg-amber-950/60 px-3 py-0.5 rounded-full">
+              <span className="text-xs font-bold text-[#D97706] dark:text-amber-400 bg-amber-100 dark:bg-amber-950/60 px-3 py-0.5 rounded-full">
                 🥇 المركز الأول
               </span>
-              <h3 className="text-lg font-black text-[#14243D] dark:text-white">
+              <h3 className="text-lg font-black text-[#0F172A] dark:text-white">
                 {top3[0].name}
               </h3>
               <p className="text-xs text-[#64748B] dark:text-[#94A3B8]">
                 {top3[0].systemName} • {top3[0].gradeName}
               </p>
-              <div className="pt-2 w-full flex items-center justify-around border-t border-amber-200/50 dark:border-amber-900/40 text-xs font-black">
-                <span className="text-[#6858EA] text-sm">⚡ {top3[0].xp} XP</span>
+              <div className="pt-2 w-full flex items-center justify-around border-t border-amber-200/50 dark:border-amber-900/40 text-xs font-bold">
+                <span className="text-[#4F46E5] text-sm font-black">⚡ {top3[0].xp} XP</span>
                 <span className="text-amber-600">🔥 {top3[0].streak} أيام</span>
                 <span className="text-emerald-600">
                   {top3[0].completedExams} امتحان
@@ -238,21 +235,21 @@ export function LeaderboardClient({
 
           {/* Rank 3 (Bronze) */}
           {top3[2] && (
-            <div className="order-3 md:order-3 p-5 rounded-3xl bg-white dark:bg-[#111A2B] border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col items-center text-center space-y-3 relative">
-              <div className="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border-2 border-amber-600/40 flex items-center justify-center font-black text-amber-800 dark:text-amber-400 text-lg shadow-sm">
+            <div className="order-3 md:order-3 p-5 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-2xs flex flex-col items-center text-center space-y-3 relative">
+              <div className="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-700/60 flex items-center justify-center font-bold text-amber-800 dark:text-amber-400 text-lg">
                 🥉
               </div>
-              <span className="text-[11px] font-black text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 px-2.5 py-0.5 rounded-full">
+              <span className="text-[11px] font-bold text-[#D97706] dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 px-2.5 py-0.5 rounded-full">
                 المركز الثالث
               </span>
-              <h3 className="text-base font-black text-[#14243D] dark:text-white">
+              <h3 className="text-base font-black text-[#0F172A] dark:text-white">
                 {top3[2].name}
               </h3>
               <p className="text-xs text-[#64748B] dark:text-[#94A3B8]">
                 {top3[2].systemName}
               </p>
               <div className="pt-2 w-full flex items-center justify-around border-t border-slate-100 dark:border-slate-800 text-xs font-bold">
-                <span className="text-[#6858EA]">⚡ {top3[2].xp} XP</span>
+                <span className="text-[#4F46E5]">⚡ {top3[2].xp} XP</span>
                 <span className="text-amber-500">🔥 {top3[2].streak} أيام</span>
               </div>
             </div>
@@ -277,21 +274,21 @@ export function LeaderboardClient({
           return (
             <div
               key={user.id}
-              className={`p-4 rounded-2xl border transition-all flex items-center justify-between gap-4 ${
+              className={`p-4 rounded-xl border transition-colors flex items-center justify-between gap-4 ${
                 user.isCurrentUser
-                  ? "bg-indigo-50/50 dark:bg-indigo-950/20 border-[#6858EA]"
-                  : "bg-white dark:bg-[#111A2B] border-slate-200 dark:border-slate-800"
+                  ? "bg-indigo-50/50 dark:bg-indigo-950/20 border-[#4F46E5]"
+                  : "bg-white dark:bg-[#131B2E] border-slate-200 dark:border-slate-800"
               }`}
             >
               <div className="flex items-center gap-3.5">
-                <span className="w-8 text-center font-black text-sm text-[#64748B] dark:text-[#94A3B8]">
+                <span className="w-8 text-center font-bold text-sm text-[#64748B] dark:text-[#94A3B8]">
                   #{rank}
                 </span>
-                <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 text-[#14243D] dark:text-white flex items-center justify-center font-bold text-xs">
+                <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 text-[#0F172A] dark:text-white flex items-center justify-center font-bold text-xs">
                   {user.name[0]}
                 </div>
                 <div>
-                  <h4 className="text-sm font-black text-[#14243D] dark:text-white">
+                  <h4 className="text-sm font-bold text-[#0F172A] dark:text-white">
                     {user.name} {user.isCurrentUser ? "(أنت)" : ""}
                   </h4>
                   <p className="text-[11px] text-[#64748B] dark:text-[#94A3B8]">
@@ -300,8 +297,8 @@ export function LeaderboardClient({
                 </div>
               </div>
 
-              <div className="flex items-center gap-4 text-xs font-black">
-                <span className="text-[#6858EA]">⚡ {user.xp} XP</span>
+              <div className="flex items-center gap-4 text-xs font-bold">
+                <span className="text-[#4F46E5]">⚡ {user.xp} XP</span>
                 <span className="hidden sm:inline text-amber-500">
                   🔥 {user.streak}د
                 </span>

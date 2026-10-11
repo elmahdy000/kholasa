@@ -122,7 +122,6 @@ export function StudentShell({ children, user }: StudentShellProps) {
     { label: "المواد", href: "/subjects", icon: Books },
     { label: "اختبر نفسك", href: "/exams/builder", icon: Lightning },
     { label: "غلطاتي", href: "/mistakes", icon: ArrowCounterClockwise },
-    { label: "المتصدرون", href: "/leaderboard", icon: Trophy },
     { label: "حسابي", href: "/profile", icon: UserIcon },
   ];
 
@@ -159,10 +158,10 @@ export function StudentShell({ children, user }: StudentShellProps) {
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors",
+                    "flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium transition-colors",
                     isActive
                       ? "bg-[#4F46E5] text-white"
-                      : "text-[#64748B] dark:text-slate-400 hover:text-[#0F172A] dark:hover:text-white hover:bg-[#F8FAFC] dark:hover:bg-slate-800"
+                      : "text-[#475569] dark:text-slate-400 hover:text-[#0F172A] dark:hover:text-white hover:bg-[#F8FAFC] dark:hover:bg-slate-800"
                   )}
                 >
                   <Icon className="w-4 h-4" weight={isActive ? "fill" : "regular"} />
@@ -187,7 +186,7 @@ export function StudentShell({ children, user }: StudentShellProps) {
             </button>
 
             {/* Daily Streak Pill */}
-            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#D97706]/10 border border-[#D97706]/20 text-[#D97706] text-xs font-bold">
+            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/50 text-[#D97706] dark:text-amber-400 text-xs font-bold">
               <Fire className="w-4 h-4" weight="fill" />
               <span>5 أيام</span>
             </div>
@@ -224,13 +223,13 @@ export function StudentShell({ children, user }: StudentShellProps) {
       </header>
 
       {/* Main Content Area */}
-      <main className="flex-1 max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 pb-28 md:pb-12 w-full">
+      <main className="flex-1 max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 pb-32 md:pb-12 w-full">
         {children}
       </main>
 
-      {/* Mobile Bottom Navigation */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-[#0F172A] border-t border-[#E2E8F0] dark:border-slate-800 px-2 py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] flex items-center justify-around">
-        {navItems.slice(0, 5).map((item) => {
+      {/* Mobile Bottom Navigation - 5 destinations */}
+      <nav aria-label="شريط التنقل السفلي" className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-[#0F172A]/95 backdrop-blur-md border-t border-[#E2E8F0] dark:border-slate-800 px-1 py-1.5 pb-[max(0.75rem,env(safe-area-inset-bottom))] flex items-center justify-around shadow-xs">
+        {navItems.map((item) => {
           const Icon = item.icon;
           const isActive =
             pathname === item.href ||
@@ -241,25 +240,27 @@ export function StudentShell({ children, user }: StudentShellProps) {
               key={item.href}
               href={item.href}
               className={cn(
-                "flex flex-col items-center gap-1 py-1 px-3 rounded-lg transition-colors",
+                "flex-1 flex flex-col items-center justify-center gap-1 py-1 px-1 rounded-xl transition-colors",
                 isActive
-                  ? "text-[#4F46E5] font-bold"
+                  ? "text-[#4F46E5] dark:text-indigo-400 font-bold"
                   : "text-[#64748B] dark:text-slate-400 font-medium hover:text-[#0F172A]"
               )}
             >
               <div
                 className={cn(
-                  "w-10 h-10 rounded-lg flex items-center justify-center transition-colors",
-                  isActive ? "bg-[#4F46E5]/10" : ""
+                  "w-9 h-8 rounded-lg flex items-center justify-center transition-colors",
+                  isActive ? "bg-indigo-50 dark:bg-indigo-950/50" : ""
                 )}
               >
                 <Icon className="w-5 h-5" weight={isActive ? "fill" : "regular"} />
               </div>
-              <span className="text-[10px] leading-none">{item.label}</span>
+              <span className="text-[11px] font-bold leading-tight tracking-tight text-center truncate max-w-[64px]">
+                {item.label}
+              </span>
             </Link>
           );
         })}
-      </div>
+      </nav>
 
       {/* Global Search Modal */}
       {isSearchOpen && (

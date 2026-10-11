@@ -41,25 +41,25 @@ export default async function ExamsHubPage() {
     <StudentShell user={user}>
       <div className="space-y-8 text-right font-sans">
         {/* Hero Section */}
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#14243D] via-[#1E3A8A] to-[#6858EA] p-6 sm:p-10 text-white shadow-xl shadow-indigo-950/20">
+        <div className="relative overflow-hidden rounded-2xl bg-[#0F172A] border border-slate-800 p-6 sm:p-10 text-white shadow-sm">
           <div className="relative z-10 max-w-2xl space-y-4">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md text-white text-xs font-bold border border-white/15">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-indigo-500/15 text-indigo-300 text-xs font-bold border border-indigo-500/25">
               <Sparkles className="w-4 h-4 text-amber-300" />
               <span>محرك الامتحانات الذكي والتكيفي</span>
             </div>
 
-            <h1 className="text-2xl sm:text-3xl font-black leading-tight">
+            <h1 className="text-2xl sm:text-3xl font-black leading-tight text-white">
               اختبر مستواك، اكتشف نقاط ضعفك، وحقق الدرجة النهائية
             </h1>
 
-            <p className="text-xs sm:text-sm text-slate-200 leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
               اختر بين التدريب المفتوح مع التفسير الفوري لكل خطوة، أو خوض امتحانات حقيقية بمؤقت لتدريب نفسك على أجواء الامتحان النهائي.
             </p>
 
             <div className="pt-2 flex flex-wrap items-center gap-3">
               <Link
                 href="/exams/builder"
-                className="h-11 px-6 rounded-xl bg-gradient-to-r from-[#FFBA55] to-amber-500 hover:from-amber-500 hover:to-amber-600 text-[#14243D] font-black text-xs sm:text-sm flex items-center gap-2 shadow-lg shadow-amber-500/25 transition-transform active:scale-95"
+                className="h-11 px-6 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white font-bold text-xs sm:text-sm flex items-center gap-2 shadow-sm transition-colors active:scale-95"
               >
                 <SlidersHorizontal className="w-4 h-4" />
                 <span>صمم اختبارك المخصص الآن</span>

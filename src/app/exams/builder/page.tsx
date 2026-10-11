@@ -38,13 +38,19 @@ export default async function ExamBuilderPage({
 
   return (
     <StudentShell user={user}>
-      <div className="max-w-4xl mx-auto space-y-6 text-right font-sans">
-        <div className="border-b border-slate-200 dark:border-slate-800 pb-4">
-          <h1 className="text-xl sm:text-2xl font-black text-[#14243D] dark:text-white">
-            صانع الامتحانات التكيفي الذكي
+      <div className="max-w-[1050px] mx-auto space-y-6 text-right font-sans">
+        <div className="border-b border-slate-200 dark:border-slate-800 pb-5">
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className="text-xs font-bold text-[#4F46E5] dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/50 px-2.5 py-0.5 rounded-md border border-indigo-200/60 dark:border-indigo-800">
+              بنك الأسئلة المتكيف
+            </span>
+            <span className="text-xs text-slate-400 font-medium">• إعداد مخصص</span>
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-black text-[#0F172A] dark:text-white tracking-tight">
+            تخصيص الاختبار
           </h1>
-          <p className="text-xs sm:text-sm text-[#64748B] dark:text-[#94A3B8] mt-1">
-            حدد نطاق الأسئلة، الصعوبة، والنوع لتوليد اختبار مخصص يناسب خطتك الدراسية تماماً
+          <p className="text-xs sm:text-sm text-[#475569] dark:text-[#94A3B8] mt-1 font-medium leading-relaxed">
+            حدد المادة ونطاق الدروس، ونوع الأسئلة ومستوى الصعوبة لبدء التدريب أو محاكاة الامتحان الفعلي.
           </p>
         </div>
 

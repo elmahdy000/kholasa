@@ -81,14 +81,14 @@ export default function LoginPage() {
             href="/"
             className="flex items-center gap-2.5 group transition-transform active:scale-95 mb-3"
           >
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#6858EA] to-[#11B7B4] flex items-center justify-center text-white shadow-lg shadow-[#6858EA]/25 group-hover:scale-105 transition-all">
-              <Sparkles className="w-6 h-6" />
+            <div className="w-11 h-11 rounded-xl bg-[#4F46E5] flex items-center justify-center text-white shadow-2xs group-hover:bg-[#4338CA] transition-colors">
+              <Sparkles className="w-5 h-5" />
             </div>
             <div className="text-right">
-              <span className="text-2xl font-black tracking-tight text-[#14243D] dark:text-white block">
+              <span className="text-2xl font-black tracking-tight text-[#0F172A] dark:text-white block">
                 الخُلاصة
               </span>
-              <span className="text-[11px] font-bold text-[#6858EA] block">
+              <span className="text-[11px] font-bold text-[#4F46E5] dark:text-indigo-400 block">
                 EL KHOLASA
               </span>
             </div>
@@ -184,7 +184,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full h-12 rounded-xl bg-gradient-to-r from-[#6858EA] to-[#5444D8] hover:from-[#5444D8] hover:to-[#4333C4] text-white font-black text-sm shadow-lg shadow-[#6858EA]/25 flex items-center justify-center gap-2 transition-all disabled:opacity-50"
+              className="w-full h-11 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white font-bold text-xs sm:text-sm shadow-2xs flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
             >
               {isLoading ? (
                 <>

@@ -1,105 +1,126 @@
 "use client";
-import { motion } from "framer-motion";
+
+import Link from "next/link";
 import {
   BookOpen,
-  Sparkle,
-  Lightning,
-  Graph,
-  Lightbulb,
-  ArrowCounterClockwise,
-} from "@phosphor-icons/react";
-
-const features = [
-  {
-    icon: BookOpen,
-    color: "#4F46E5",
-    title: "الشرح التفاعلي",
-    description: "شرح مبسط خطوة بخطوة مع أمثلة محلولة وتوضيحات بصرية تجعل الفهم أسهل.",
-    span: "col-span-1 sm:col-span-2 lg:col-span-2",
-  },
-  {
-    icon: Sparkle,
-    color: "#D97706",
-    title: "الزتونة الذهبية",
-    description: "ملخص مركز لكل درس يحتوي المفاهيم والتعريفات والقوانين وتنبيهات الامتحان.",
-    span: "col-span-1",
-  },
-  {
-    icon: Lightning,
-    color: "#059669",
-    title: "بنك الأسئلة الذكي",
-    description: "أسئلة مختارة حسب الدرس والصعوبة مع تفسير تفصيلي لكل إجابة.",
-    span: "col-span-1",
-  },
-  {
-    icon: Graph,
-    color: "#4F46E5",
-    title: "الخرائط الذهنية",
-    description: "خرائط مفاهيم تفاعلية تربط الأفكار ببعضها وتساعد على الحفظ والفهم.",
-    span: "col-span-1",
-  },
-  {
-    icon: Lightbulb,
-    color: "#059669",
-    title: "تفسير الصح والغلط",
-    description: "اكتشف سبب كل إجابة صحيحة وخاطئة وافهم المفهوم الأساسي وراء كل سؤال.",
-    span: "col-span-1 sm:col-span-2 lg:col-span-1",
-  },
-  {
-    icon: ArrowCounterClockwise,
-    color: "#DC2626",
-    title: "دفتر غلطاتي",
-    description: "سجل تلقائي لأخطائك مع إمكانية إعادة المحاولة وتتبع التحسن.",
-    span: "col-span-1",
-  },
-];
+  Sparkles,
+  Zap,
+  Brain,
+  RotateCcw,
+  ArrowLeft,
+} from "lucide-react";
 
 export function FeaturesBento() {
   return (
-    <section id="features" className="py-16 sm:py-24 bg-white dark:bg-[#0F172A]">
-      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="features" className="py-20 sm:py-28 bg-white dark:bg-[#0B0F19]">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-12 text-right">
         {/* Section Header */}
-        <div className="text-center max-w-2xl mx-auto mb-12 space-y-4">
-          <h2 className="text-[24px] sm:text-[32px] font-bold text-[#0F172A] dark:text-white leading-tight">
-            كل اللي محتاجه في مكان واحد
+        <div className="text-center max-w-2xl mx-auto space-y-3">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200/60 dark:border-indigo-800 text-[#4F46E5] dark:text-indigo-400 text-xs font-bold">
+            <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+            <span>منهجية الخلاصة المعتمدة</span>
+          </div>
+          <h2 className="text-2xl sm:text-4xl font-black text-[#0F172A] dark:text-white leading-tight">
+            منظومة تعلم متكاملة.. صُممت لتضمن تفوقك
           </h2>
-          <p className="text-base text-[#64748B] dark:text-slate-400 font-content leading-relaxed">
-            أدوات تعليمية متكاملة مصممة خصيصاً لطلاب الثانوية العامة والبكالوريا المصرية.
+          <p className="text-xs sm:text-sm text-[#475569] dark:text-[#94A3B8] font-medium leading-relaxed">
+            وداعاً للحفظ التلقيني وتراكم المذكرات غير المفهومة. كل درس يتم تفكيكه علمياً إلى ركائز متكاملة.
           </p>
         </div>
 
         {/* Bento Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {features.map((feature, index) => {
-            const Icon = feature.icon;
-            return (
-              <motion.div
-                key={feature.title}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-40px" }}
-                transition={{ duration: 0.3, delay: index * 0.05 }}
-                className={`${feature.span} p-6 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-slate-700 hover:border-[${feature.color}]/40 transition-colors group`}
-              >
-                <div className="flex items-start gap-4">
-                  <div
-                    className="w-12 h-12 rounded-lg flex items-center justify-center shrink-0"
-                    style={{ backgroundColor: `${feature.color}12`, color: feature.color }}
-                  >
-                    <Icon className="w-6 h-6" weight="bold" />
-                  </div>
-                  <div className="space-y-2">
-                    <h3 className="text-base font-bold text-[#0F172A] dark:text-white">
-                      {feature.title}
-                    </h3>
-                    <p className="text-sm text-[#64748B] dark:text-slate-400 font-content leading-relaxed">
-                      {feature.description}
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
-            );
-          })}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          {/* Bento Card 1: الشرح التفاعلي (Span 2 cols on md) */}
+          <div className="md:col-span-2 p-7 sm:p-8 rounded-2xl bg-[#F8FAFC] dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-2xs hover:border-[#4F46E5]/40 transition-colors flex flex-col justify-between space-y-6">
+            <div className="space-y-4">
+              <div className="w-11 h-11 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 text-[#4F46E5] dark:text-indigo-400 flex items-center justify-center font-bold">
+                <BookOpen className="w-5 h-5" />
+              </div>
+              <h3 className="text-xl sm:text-2xl font-black text-[#0F172A] dark:text-white">
+                1. الشرح التفاعلي المفكك خطوة بخطوة
+              </h3>
+              <p className="text-xs sm:text-sm text-[#475569] dark:text-[#94A3B8] leading-relaxed max-w-xl font-medium">
+                تفكيك المفاهيم المعقدة إلى خطوات بسيطة مع إبراز التعريفات الهامة، الجداول المقارنة، والمسائل المحلولة بالتفصيل لتفهم الأساس الرياضي والعلمي بدلاً من مجرد الحفظ.
+              </p>
+            </div>
+
+            <div className="pt-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs font-bold text-[#4F46E5] dark:text-indigo-400">
+              <span>مصحوب ببودكاست صوتي لكل درس (بودكاست الخلاصة)</span>
+              <Link href="/subjects" className="flex items-center gap-1 hover:underline">
+                <span>تصفح المواد</span>
+                <ArrowLeft className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+          </div>
+
+          {/* Bento Card 2: الزتونة الذهبية (Signature Feature) */}
+          <div className="p-7 sm:p-8 rounded-2xl bg-amber-50/40 dark:bg-[#131B2E] border-2 border-amber-300 dark:border-amber-700/60 shadow-2xs hover:border-amber-400 transition-colors flex flex-col justify-between space-y-6">
+            <div className="space-y-4">
+              <div className="w-11 h-11 rounded-xl bg-amber-500 text-white flex items-center justify-center font-bold shadow-2xs">
+                <Sparkles className="w-5 h-5 fill-current" />
+              </div>
+              <div className="inline-block px-2.5 py-0.5 rounded-md bg-amber-100 dark:bg-amber-950/60 text-[#D97706] dark:text-amber-400 text-[10px] font-bold">
+                ⭐ كبسولة المراجعة السريعة
+              </div>
+              <h3 className="text-xl font-black text-[#0F172A] dark:text-white">
+                2. الزتونة الذهبية
+              </h3>
+              <p className="text-xs sm:text-sm text-[#475569] dark:text-[#94A3B8] leading-relaxed font-medium">
+                كبسولة مركزة في صفحة واحدة لا تزيد عن 3 دقائق قراءة، تجمع أهم القوانين، تكات واضعي الامتحانات، وقائمة تحقق قبل النوم.
+              </p>
+            </div>
+
+            <div className="pt-2">
+              <span className="text-[11px] font-bold text-[#D97706] dark:text-amber-400">
+                جاهزة للطباعة وحفظ الـ PDF بضغطة واحدة
+              </span>
+            </div>
+          </div>
+
+          {/* Bento Card 3: بنك الأسئلة المتكيف */}
+          <div className="p-7 rounded-2xl bg-[#F8FAFC] dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-2xs hover:border-[#4F46E5]/40 transition-colors flex flex-col justify-between space-y-4">
+            <div className="space-y-3">
+              <div className="w-11 h-11 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 text-[#4F46E5] dark:text-indigo-400 flex items-center justify-center font-bold">
+                <Zap className="w-5 h-5" />
+              </div>
+              <h3 className="text-lg font-black text-[#0F172A] dark:text-white">
+                3. بنك الأسئلة المتكيف
+              </h3>
+              <p className="text-xs text-[#475569] dark:text-[#94A3B8] leading-relaxed font-medium">
+                أنشئ اختبارات مخصصة بضغطة زر حسب الدرس أو الوحدة، مع تحليل فوري يوضح لماذا كل اختيار صح ولماذا الباقي خطأ.
+              </p>
+            </div>
+          </div>
+
+          {/* Bento Card 4: ركن غلطاتي */}
+          <div className="p-7 rounded-2xl bg-[#F8FAFC] dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-2xs hover:border-[#4F46E5]/40 transition-colors flex flex-col justify-between space-y-4">
+            <div className="space-y-3">
+              <div className="w-11 h-11 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 text-[#4F46E5] dark:text-indigo-400 flex items-center justify-center font-bold">
+                <RotateCcw className="w-5 h-5" />
+              </div>
+              <h3 className="text-lg font-black text-[#0F172A] dark:text-white">
+                4. ركن «غلطاتي» التراكمي
+              </h3>
+              <p className="text-xs text-[#475569] dark:text-[#94A3B8] leading-relaxed font-medium">
+                أي سؤال تخطئ فيه يحفظ فوراً في دفترك الخاص، ويعيد النظام اختبارك فيه لاحقاً حتى تتقنه وتصل نسبة استيعابك إلى 100%.
+              </p>
+            </div>
+          </div>
+
+          {/* Bento Card 5: الخرائط الذهنية & PWA */}
+          <div className="p-7 rounded-2xl bg-[#F8FAFC] dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-2xs hover:border-[#4F46E5]/40 transition-colors flex flex-col justify-between space-y-4">
+            <div className="space-y-3">
+              <div className="w-11 h-11 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 text-[#4F46E5] dark:text-indigo-400 flex items-center justify-center font-bold">
+                <Brain className="w-5 h-5" />
+              </div>
+              <h3 className="text-lg font-black text-[#0F172A] dark:text-white">
+                5. خرائط ذهنية + وضع أوفلاين
+              </h3>
+              <p className="text-xs text-[#475569] dark:text-[#94A3B8] leading-relaxed font-medium">
+                خرائط مرئية للعلاقات بين المفاهيم، مع دعم كامل للعمل بدون إنترنت كـ PWA على الهاتف لتذاكر في أي وقت بدون مشتتات.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </section>
