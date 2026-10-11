@@ -1,0 +1,27 @@
+{
+  "name": "الخلاصة | EL KHOLASA",
+  "short_name": "الخلاصة",
+  "description": "افهمها صح.. هتفضل معاك — المنصة التعليمية الذكية للثانوية العامة والبكالوريا المصرية",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#F7F9FC",
+  "theme_color": "#14243D",
+  "orientation": "portrait-primary",
+  "dir": "rtl",
+  "lang": "ar",
+  "categories": ["education", "productivity"],
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

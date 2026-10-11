@@ -1,0 +1,422 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "windows", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  STUDENT
+  TEACHER
+  EDITOR
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum QuestionType {
+  MCQ
+  TRUE_FALSE
+  ESSAY
+}
+
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
+enum PublishStatus {
+  DRAFT
+  IN_REVIEW
+  PUBLISHED
+  ARCHIVED
+}
+
+enum ExamMode {
+  PRACTICE
+  EXAM
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  phone         String?   @unique
+  password      String?
+  role          Role      @default(STUDENT)
+  avatar        String?
+  gradeId       String?
+  systemId      String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  grade         Grade?              @relation(fields: [gradeId], references: [id])
+  system        EducationalSystem?  @relation(fields: [systemId], references: [id])
+  accounts      Account[]
+  sessions      Session[]
+  progress      StudentProgress[]
+  attempts      ExamAttempt[]
+  mistakes      MistakeReview[]
+  bookmarks     Bookmark[]
+  auditLogs     AuditLog[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model EducationalSystem {
+  id          String   @id @default(cuid())
+  name        String
+  code        String   @unique
+  description String?
+  isActive    Boolean  @default(true)
+  order       Int      @default(0)
+
+  grades      Grade[]
+  subjects    Subject[]
+  users       User[]
+}
+
+model AcademicYear {
+  id        String   @id @default(cuid())
+  name      String
+  code      String   @unique
+  isActive  Boolean  @default(true)
+}
+
+model Grade {
+  id        String   @id @default(cuid())
+  name      String
+  code      String
+  systemId  String
+  order     Int      @default(0)
+
+  system    EducationalSystem @relation(fields: [systemId], references: [id], onDelete: Cascade)
+  tracks    AcademicTrack[]
+  subjects  Subject[]
+  users     User[]
+
+  @@unique([systemId, code])
+}
+
+model AcademicTrack {
+  id       String    @id @default(cuid())
+  name     String
+  code     String
+  gradeId  String
+
+  grade    Grade     @relation(fields: [gradeId], references: [id], onDelete: Cascade)
+  subjects Subject[]
+
+  @@unique([gradeId, code])
+}
+
+model Subject {
+  id          String         @id @default(cuid())
+  name        String
+  code        String
+  icon        String?
+  color       String?
+  description String?
+  systemId    String
+  gradeId     String
+  trackId     String?
+  order       Int            @default(0)
+  isPublished Boolean        @default(true)
+
+  system      EducationalSystem @relation(fields: [systemId], references: [id], onDelete: Cascade)
+  grade       Grade             @relation(fields: [gradeId], references: [id], onDelete: Cascade)
+  track       AcademicTrack?    @relation(fields: [trackId], references: [id], onDelete: SetNull)
+  units       Unit[]
+  questions   Question[]
+  exams       Exam[]
+
+  @@unique([gradeId, code])
+}
+
+model Unit {
+  id          String    @id @default(cuid())
+  title       String
+  order       Int       @default(0)
+  description String?
+  subjectId   String
+  isPublished Boolean   @default(true)
+
+  subject     Subject   @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  lessons     Lesson[]
+  questions   Question[]
+}
+
+model Lesson {
+  id              String            @id @default(cuid())
+  title           String
+  order           Int               @default(0)
+  unitId          String
+  durationMinutes Int               @default(15)
+  isPublished     Boolean           @default(true)
+  viewsCount      Int               @default(0)
+
+  unit            Unit              @relation(fields: [unitId], references: [id], onDelete: Cascade)
+  content         LessonContent?
+  summary         LessonSummary?
+  mindMap         MindMap?
+  sections        LessonSection[]
+  questions       QuestionLesson[]
+  progress        StudentProgress[]
+}
+
+model LessonSection {
+  id             String    @id @default(cuid())
+  lessonId       String
+  title          String
+  anchorId       String
+  order          Int       @default(0)
+
+  lesson         Lesson    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  explanations   QuestionExplanation[]
+
+  @@unique([lessonId, anchorId])
+}
+
+model LessonContent {
+  id         String   @id @default(cuid())
+  lessonId   String   @unique
+  body       String   @db.Text
+  videoUrl   String?
+  objectives String[] @default([])
+
+  lesson     Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+}
+
+model LessonSummary {
+  id             String @id @default(cuid())
+  lessonId       String @unique
+  keyConcepts    Json   @default("[]")
+  definitions    Json   @default("[]")
+  formulas       Json   @default("[]")
+  comparisons    Json   @default("[]")
+  examTips       Json   @default("[]")
+  commonMistakes Json   @default("[]")
+  checklist      Json   @default("[]")
+
+  lesson         Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+}
+
+model MindMap {
+  id       String @id @default(cuid())
+  lessonId String @unique
+  title    String
+  nodes    Json   @default("[]")
+  edges    Json   @default("[]")
+
+  lesson   Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+}
+
+model Question {
+  id          String        @id @default(cuid())
+  statement   String        @db.Text
+  type        QuestionType  @default(MCQ)
+  difficulty  Difficulty    @default(MEDIUM)
+  status      PublishStatus @default(PUBLISHED)
+  subjectId   String
+  unitId      String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  subject        Subject              @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  unit           Unit?                @relation(fields: [unitId], references: [id], onDelete: SetNull)
+  options        QuestionOption[]
+  lessons        QuestionLesson[]
+  explanation    QuestionExplanation?
+  rubric         EssayRubric?
+  examQuestions  ExamQuestion[]
+  studentAnswers StudentAnswer[]
+  mistakes       MistakeReview[]
+}
+
+model QuestionOption {
+  id          String    @id @default(cuid())
+  questionId  String
+  text        String
+  isCorrect   Boolean   @default(false)
+  order       Int       @default(0)
+  explanation String?   @db.Text
+
+  question    Question  @relation(fields: [questionId], references: [id], onDelete: Cascade)
+}
+
+model QuestionLesson {
+  id         String   @id @default(cuid())
+  questionId String
+  lessonId   String
+
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  lesson     Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@unique([questionId, lessonId])
+}
+
+model QuestionExplanation {
+  id              String         @id @default(cuid())
+  questionId      String         @unique
+  concept         String
+  correctReason   String         @db.Text
+  sectionId       String?
+
+  question        Question       @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  section         LessonSection? @relation(fields: [sectionId], references: [id], onDelete: SetNull)
+}
+
+model EssayRubric {
+  id          String   @id @default(cuid())
+  questionId  String   @unique
+  modelAnswer String   @db.Text
+  criteria    Json     @default("[]")
+  maxScore    Int      @default(10)
+
+  question    Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+}
+
+model Exam {
+  id              String         @id @default(cuid())
+  title           String
+  description     String?
+  subjectId       String
+  durationMinutes Int            @default(30)
+  isPractice      Boolean        @default(false)
+  createdAt       DateTime       @default(now())
+
+  subject         Subject        @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  questions       ExamQuestion[]
+  attempts        ExamAttempt[]
+}
+
+model ExamQuestion {
+  id         String   @id @default(cuid())
+  examId     String
+  questionId String
+  order      Int      @default(0)
+
+  exam       Exam     @relation(fields: [examId], references: [id], onDelete: Cascade)
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@unique([examId, questionId])
+}
+
+model ExamAttempt {
+  id               String          @id @default(cuid())
+  userId           String
+  examId           String?
+  title            String
+  mode             ExamMode        @default(PRACTICE)
+  totalQuestions   Int             @default(0)
+  score            Float           @default(0)
+  percentage       Float           @default(0)
+  timeSpentSeconds Int             @default(0)
+  isCompleted      Boolean         @default(false)
+  startedAt        DateTime        @default(now())
+  completedAt      DateTime?
+
+  user             User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exam             Exam?           @relation(fields: [examId], references: [id], onDelete: SetNull)
+  answers          StudentAnswer[]
+}
+
+model StudentAnswer {
+  id               String      @id @default(cuid())
+  attemptId        String
+  questionId       String
+  selectedOptionId String?
+  essayText        String?     @db.Text
+  isCorrect        Boolean?
+  score            Float?
+  timeSpentSeconds Int         @default(0)
+
+  attempt          ExamAttempt @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  question         Question    @relation(fields: [questionId], references: [id], onDelete: Cascade)
+}
+
+model StudentProgress {
+  id              String    @id @default(cuid())
+  userId          String
+  lessonId        String
+  isCompleted     Boolean   @default(false)
+  progressPercent Int       @default(0)
+  lastAccessedAt  DateTime  @default(now())
+
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson          Lesson    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, lessonId])
+}
+
+model MistakeReview {
+  id            String    @id @default(cuid())
+  userId        String
+  questionId    String
+  wrongCount    Int       @default(1)
+  isResolved    Boolean   @default(false)
+  lastAttemptAt DateTime  @default(now())
+
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  question      Question  @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, questionId])
+}
+
+model Bookmark {
+  id         String    @id @default(cuid())
+  userId     String
+  lessonId   String?
+  questionId String?
+  createdAt  DateTime  @default(now())
+
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  userId     String?
+  action     String
+  resource   String
+  resourceId String?
+  details    Json?
+  createdAt  DateTime @default(now())
+
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+}
