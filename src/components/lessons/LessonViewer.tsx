@@ -359,11 +359,11 @@ export function LessonViewer({
       </div>
 
       {/* Smart Audio Companion Bar (الخلاصة الصوتية) */}
-      <div className="p-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-slate-700 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div className="p-4 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-3">
         <div className="flex items-center gap-3 w-full sm:w-auto">
           <button
             onClick={() => setIsPlayingAudio(!isPlayingAudio)}
-            className="w-10 h-10 rounded-lg bg-[#4F46E5] hover:bg-[#4338CA] text-white flex items-center justify-center transition-colors shrink-0"
+            className="w-9 h-9 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white flex items-center justify-center transition-transform active:scale-95 shrink-0 shadow-2xs"
           >
             {isPlayingAudio ? (
               <Pause className="w-4 h-4 fill-current" weight="fill" />
@@ -374,11 +374,11 @@ export function LessonViewer({
           <div>
             <h4 className="text-xs sm:text-sm font-bold text-[#0F172A] dark:text-white flex items-center gap-1.5">
               <span>الخلاصة الصوتية الذكية (بودكاست الدرس)</span>
-              <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-[#059669] text-white">
-                جديد
+              <span className="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-emerald-500 text-white">
+                LIVE
               </span>
             </h4>
-            <p className="text-[11px] text-[#64748B] dark:text-slate-400">
+            <p className="text-[11px] text-[#475569] dark:text-slate-400">
               استمع إلى ملخص مركز للدرس أثناء المشي أو الاسترخاء
             </p>
           </div>
@@ -386,7 +386,7 @@ export function LessonViewer({
 
         {/* Progress Bar & Speed */}
         <div className="flex items-center gap-3 w-full sm:w-64">
-          <div className="flex-1 h-2 rounded-full bg-[#E2E8F0] dark:bg-slate-700 overflow-hidden">
+          <div className="flex-1 h-1.5 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
             <div
               className="h-full bg-[#4F46E5] transition-all duration-300"
               style={{ width: `${audioProgress}%` }}
@@ -399,63 +399,43 @@ export function LessonViewer({
                 speeds[(speeds.indexOf(playbackSpeed) + 1) % speeds.length];
               setPlaybackSpeed(next);
             }}
-            className="px-2 py-1 rounded-md border border-[#E2E8F0] dark:border-slate-700 text-[10px] font-bold text-[#0F172A] dark:text-white hover:bg-white dark:hover:bg-slate-800 transition-colors"
+            className="px-2 py-0.5 rounded-md border border-slate-200 dark:border-slate-700 font-mono text-[11px] font-bold text-[#0F172A] dark:text-white bg-slate-50 dark:bg-slate-800 hover:border-slate-300 transition-colors"
           >
             {playbackSpeed}x
           </button>
         </div>
       </div>
 
-      {/* 4 Interactive Tabs */}
-      <div className="flex items-center gap-2 border-b border-[#E2E8F0] dark:border-slate-700 overflow-x-auto pb-1 scrollbar-none -mx-4 sm:mx-0 px-4 sm:px-0">
-        <button
-          onClick={() => setActiveTab("content")}
-          className={`h-10 sm:h-11 px-3.5 sm:px-5 rounded-lg font-bold text-[11px] sm:text-sm flex items-center gap-1.5 sm:gap-2 transition-colors shrink-0 ${
-            activeTab === "content"
-              ? "bg-[#4F46E5] text-white"
-              : "text-[#64748B] dark:text-slate-400 hover:bg-[#F8FAFC] dark:hover:bg-slate-800"
-          }`}
-        >
-          <BookOpen className="w-3.5 h-3.5 sm:w-4 sm:h-4" weight={activeTab === "content" ? "fill" : "bold"} />
-          <span>الشرح</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab("summary")}
-          className={`h-10 sm:h-11 px-3.5 sm:px-5 rounded-lg font-bold text-[11px] sm:text-sm flex items-center gap-1.5 sm:gap-2 transition-colors shrink-0 ${
-            activeTab === "summary"
-              ? "bg-[#D97706] text-white"
-              : "text-[#64748B] dark:text-slate-400 hover:bg-[#F8FAFC] dark:hover:bg-slate-800"
-          }`}
-        >
-          <Sparkle className="w-3.5 h-3.5 sm:w-4 sm:h-4" weight={activeTab === "summary" ? "fill" : "bold"} />
-          <span>الزتونة</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab("mindmap")}
-          className={`h-10 sm:h-11 px-3.5 sm:px-5 rounded-lg font-bold text-[11px] sm:text-sm flex items-center gap-1.5 sm:gap-2 transition-colors shrink-0 ${
-            activeTab === "mindmap"
-              ? "bg-[#059669] text-white"
-              : "text-[#64748B] dark:text-slate-400 hover:bg-[#F8FAFC] dark:hover:bg-slate-800"
-          }`}
-        >
-          <Graph className="w-3.5 h-3.5 sm:w-4 sm:h-4" weight={activeTab === "mindmap" ? "fill" : "bold"} />
-          <span className="hidden sm:inline">خريطة المفاهيم</span>
-          <span className="sm:hidden">المفاهيم</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab("questions")}
-          className={`h-10 sm:h-11 px-3.5 sm:px-5 rounded-lg font-bold text-[11px] sm:text-sm flex items-center gap-1.5 sm:gap-2 transition-colors shrink-0 ${
-            activeTab === "questions"
-              ? "bg-[#0F172A] dark:bg-white text-white dark:text-[#0F172A]"
-              : "text-[#64748B] dark:text-slate-400 hover:bg-[#F8FAFC] dark:hover:bg-slate-800"
-          }`}
-        >
-          <Question className="w-3.5 h-3.5 sm:w-4 sm:h-4" weight={activeTab === "questions" ? "fill" : "bold"} />
-          <span>الأسئلة ({lesson.questions.length})</span>
-        </button>
+      {/* 4 Interactive Tabs (Vercel / Replit Segmented Tabs) */}
+      <div className="p-1 rounded-xl bg-slate-100/80 dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800/80 flex items-center gap-1 overflow-x-auto scrollbar-none">
+        {[
+          { id: "content", label: "الشرح والتفكيك", icon: BookOpen },
+          { id: "summary", label: "الزتونة الذهبية", icon: Sparkle, badge: "مركز" },
+          { id: "mindmap", label: "خريطة المفاهيم", icon: Graph },
+          { id: "questions", label: `الأسئلة (${lesson.questions.length})`, icon: Question },
+        ].map((tab) => {
+          const isSelected = activeTab === tab.id;
+          const Icon = tab.icon;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id as any)}
+              className={`flex-1 min-w-[110px] h-9.5 px-3 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-all shrink-0 ${
+                isSelected
+                  ? "bg-white dark:bg-slate-800 text-[#0F172A] dark:text-white shadow-2xs border border-slate-200/80 dark:border-slate-700/80 font-bold"
+                  : "text-slate-600 dark:text-slate-400 hover:text-[#0F172A] dark:hover:text-white font-medium"
+              }`}
+            >
+              <Icon className={`w-3.5 h-3.5 ${isSelected ? "text-[#4F46E5]" : ""}`} weight={isSelected ? "fill" : "bold"} />
+              <span>{tab.label}</span>
+              {tab.badge && (
+                <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-[#D97706] text-white">
+                  {tab.badge}
+                </span>
+              )}
+            </button>
+          );
+        })}
       </div>
 
       {/* TAB 1: CONTENT (الشرح) */}

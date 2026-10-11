@@ -78,7 +78,7 @@ export function SetupForm({ systems, userId }: SetupFormProps) {
   return (
     <div className="space-y-6 text-right">
       {/* Step Indicators */}
-      <div className="flex items-center justify-center gap-3 mb-6">
+      <div className="flex items-center justify-center gap-2 mb-6">
         {[1, 2, 3].map((step) => {
           const isActive =
             step === 1
@@ -90,16 +90,16 @@ export function SetupForm({ systems, userId }: SetupFormProps) {
           return (
             <div
               key={step}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-black transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
                 isActive
-                  ? "bg-[#6858EA] text-white shadow-md shadow-[#6858EA]/20"
-                  : "bg-slate-100 dark:bg-slate-800 text-slate-400"
+                  ? "bg-indigo-50 dark:bg-indigo-950/40 text-[#4F46E5] dark:text-indigo-400 border border-[#4F46E5]/30"
+                  : "bg-slate-100 dark:bg-slate-900 text-slate-400 border border-transparent"
               }`}
             >
               {isActive ? (
                 <CheckCircle2 className="w-3.5 h-3.5" />
               ) : (
-                <span className="w-3.5 h-3.5 rounded-full border-2 border-current flex items-center justify-center text-[8px]">
+                <span className="w-3.5 h-3.5 rounded-full border border-current flex items-center justify-center text-[9px] font-mono">
                   {step}
                 </span>
               )}
@@ -117,7 +117,7 @@ export function SetupForm({ systems, userId }: SetupFormProps) {
 
       {/* System Selection */}
       <div className="space-y-3">
-        <label className="block text-sm font-black text-[#14243D] dark:text-white">
+        <label className="block text-xs sm:text-sm font-bold text-[#0F172A] dark:text-white">
           اختر نظامك الدراسي
         </label>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -129,19 +129,13 @@ export function SetupForm({ systems, userId }: SetupFormProps) {
                 setGradeId("");
                 setTrackId("");
               }}
-              className={`p-4 rounded-2xl border text-right transition-all ${
+              className={`p-4 rounded-xl border text-right transition-all interactive-tap ${
                 systemId === sys.id
-                  ? "border-[#6858EA] bg-[#6858EA]/10 shadow-md shadow-[#6858EA]/10"
-                  : "border-slate-200 dark:border-slate-700 hover:border-[#6858EA]/50 bg-white dark:bg-slate-900"
+                  ? "border-[#4F46E5] bg-indigo-50/50 dark:bg-indigo-950/30 text-[#4F46E5] dark:text-indigo-400 shadow-2xs"
+                  : "border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-white dark:bg-[#131B2E] text-[#0F172A] dark:text-white"
               }`}
             >
-              <span
-                className={`text-sm font-black block ${
-                  systemId === sys.id
-                    ? "text-[#6858EA]"
-                    : "text-[#14243D] dark:text-white"
-                }`}
-              >
+              <span className="text-xs sm:text-sm font-bold block">
                 {sys.name}
               </span>
             </button>
@@ -152,7 +146,7 @@ export function SetupForm({ systems, userId }: SetupFormProps) {
       {/* Grade Selection */}
       {availableGrades.length > 0 && (
         <div className="space-y-3 animate-in fade-in slide-in-from-bottom-2 duration-300">
-          <label className="block text-sm font-black text-[#14243D] dark:text-white">
+          <label className="block text-xs sm:text-sm font-bold text-[#0F172A] dark:text-white">
             اختر صفك الدراسي
           </label>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -163,19 +157,13 @@ export function SetupForm({ systems, userId }: SetupFormProps) {
                   setGradeId(grade.id);
                   setTrackId("");
                 }}
-                className={`p-4 rounded-2xl border text-right transition-all ${
+                className={`p-4 rounded-xl border text-right transition-all interactive-tap ${
                   gradeId === grade.id
-                    ? "border-[#11B7B4] bg-[#11B7B4]/10 shadow-md shadow-[#11B7B4]/10"
-                    : "border-slate-200 dark:border-slate-700 hover:border-[#11B7B4]/50 bg-white dark:bg-slate-900"
+                    ? "border-[#4F46E5] bg-indigo-50/50 dark:bg-indigo-950/30 text-[#4F46E5] dark:text-indigo-400 shadow-2xs"
+                    : "border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-white dark:bg-[#131B2E] text-[#0F172A] dark:text-white"
                 }`}
               >
-                <span
-                  className={`text-sm font-black block ${
-                    gradeId === grade.id
-                      ? "text-[#11B7B4]"
-                      : "text-[#14243D] dark:text-white"
-                  }`}
-                >
+                <span className="text-xs sm:text-sm font-bold block">
                   {grade.name}
                 </span>
               </button>
@@ -187,7 +175,7 @@ export function SetupForm({ systems, userId }: SetupFormProps) {
       {/* Track Selection (if applicable) */}
       {requiresTrack && gradeId && (
         <div className="space-y-3 animate-in fade-in slide-in-from-bottom-2 duration-300">
-          <label className="block text-sm font-black text-[#14243D] dark:text-white">
+          <label className="block text-xs sm:text-sm font-bold text-[#0F172A] dark:text-white">
             اختر شعبتك أو مسارك الدراسي
           </label>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -195,19 +183,13 @@ export function SetupForm({ systems, userId }: SetupFormProps) {
               <button
                 key={track.id}
                 onClick={() => setTrackId(track.id)}
-                className={`p-4 rounded-2xl border text-right transition-all ${
+                className={`p-4 rounded-xl border text-right transition-all interactive-tap ${
                   trackId === track.id
-                    ? "border-[#FFBA55] bg-[#FFBA55]/10 shadow-md shadow-[#FFBA55]/10"
-                    : "border-slate-200 dark:border-slate-700 hover:border-[#FFBA55]/50 bg-white dark:bg-slate-900"
+                    ? "border-[#4F46E5] bg-indigo-50/50 dark:bg-indigo-950/30 text-[#4F46E5] dark:text-indigo-400 shadow-2xs"
+                    : "border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-white dark:bg-[#131B2E] text-[#0F172A] dark:text-white"
                 }`}
               >
-                <span
-                  className={`text-sm font-black block ${
-                    trackId === track.id
-                      ? "text-[#FFBA55]"
-                      : "text-[#14243D] dark:text-white"
-                  }`}
-                >
+                <span className="text-xs sm:text-sm font-bold block">
                   {track.name}
                 </span>
               </button>
@@ -218,7 +200,7 @@ export function SetupForm({ systems, userId }: SetupFormProps) {
 
       {/* Error Message */}
       {error && (
-        <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-xs font-bold text-red-600 text-center">
+        <div className="p-3.5 rounded-xl bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/40 text-xs font-bold text-red-600 dark:text-red-400 text-center">
           {error}
         </div>
       )}
@@ -227,7 +209,7 @@ export function SetupForm({ systems, userId }: SetupFormProps) {
       <button
         onClick={handleSubmit}
         disabled={!canSubmit || isSubmitting}
-        className="w-full h-12 rounded-2xl bg-gradient-to-r from-[#6858EA] to-[#5444D8] text-white font-black text-sm shadow-lg shadow-[#6858EA]/30 hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+        className="w-full h-11 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white font-bold text-xs sm:text-sm shadow-2xs transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 interactive-tap"
       >
         {isSubmitting ? (
           <>

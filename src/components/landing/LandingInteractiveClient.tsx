@@ -58,11 +58,11 @@ export function LandingInteractiveClient() {
       {/* 1. Interactive Platform Feature Showcase */}
       <section className="space-y-8">
         <div className="text-center max-w-2xl mx-auto space-y-3">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#6858EA]/10 border border-[#6858EA]/20 text-[#6858EA] text-xs font-black">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/40 border border-[#4F46E5]/20 text-[#4F46E5] dark:text-indigo-400 text-xs font-bold">
             <Sparkles className="w-3.5 h-3.5" />
             <span>معاينة حية للمنصة</span>
           </div>
-          <h2 className="text-2xl sm:text-4xl font-black text-[#14243D] dark:text-white">
+          <h2 className="text-2xl sm:text-4xl font-bold tracking-tight text-[#0F172A] dark:text-white">
             جرّب تجربة التعلم الذكي بنفسك
           </h2>
           <p className="text-xs sm:text-sm text-[#64748B] dark:text-[#94A3B8] font-medium leading-relaxed">
@@ -71,24 +71,24 @@ export function LandingInteractiveClient() {
         </div>
 
         {/* Feature Tabs Selector */}
-        <div className="flex flex-wrap items-center justify-center gap-2 max-w-3xl mx-auto p-1.5 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+        <div className="flex flex-wrap items-center justify-center gap-1.5 max-w-3xl mx-auto p-1.5 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
           <button
             onClick={() => setActiveTab("zatona")}
-            className={`h-10 px-4 rounded-xl text-xs font-black transition-all flex items-center gap-2 ${
+            className={`h-9 px-3.5 rounded-lg text-xs font-bold transition-all flex items-center gap-2 interactive-tap ${
               activeTab === "zatona"
-                ? "bg-white dark:bg-[#111A2B] text-[#6858EA] shadow-sm"
+                ? "bg-white dark:bg-[#131B2E] text-[#4F46E5] dark:text-indigo-400 shadow-2xs"
                 : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
             }`}
           >
-            <BookOpen className="w-4 h-4" />
+            <BookOpen className="w-4 h-4 text-[#4F46E5]" />
             <span>الزتونة الذهبية</span>
           </button>
 
           <button
             onClick={() => setActiveTab("questions")}
-            className={`h-10 px-4 rounded-xl text-xs font-black transition-all flex items-center gap-2 ${
+            className={`h-9 px-3.5 rounded-lg text-xs font-bold transition-all flex items-center gap-2 interactive-tap ${
               activeTab === "questions"
-                ? "bg-white dark:bg-[#111A2B] text-[#6858EA] shadow-sm"
+                ? "bg-white dark:bg-[#131B2E] text-[#4F46E5] dark:text-indigo-400 shadow-2xs"
                 : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
             }`}
           >
@@ -98,9 +98,9 @@ export function LandingInteractiveClient() {
 
           <button
             onClick={() => setActiveTab("mistakes")}
-            className={`h-10 px-4 rounded-xl text-xs font-black transition-all flex items-center gap-2 ${
+            className={`h-9 px-3.5 rounded-lg text-xs font-bold transition-all flex items-center gap-2 interactive-tap ${
               activeTab === "mistakes"
-                ? "bg-white dark:bg-[#111A2B] text-rose-500 shadow-sm"
+                ? "bg-white dark:bg-[#131B2E] text-rose-500 shadow-2xs"
                 : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
             }`}
           >
@@ -110,30 +110,30 @@ export function LandingInteractiveClient() {
 
           <button
             onClick={() => setActiveTab("mindmap")}
-            className={`h-10 px-4 rounded-xl text-xs font-black transition-all flex items-center gap-2 ${
+            className={`h-9 px-3.5 rounded-lg text-xs font-bold transition-all flex items-center gap-2 interactive-tap ${
               activeTab === "mindmap"
-                ? "bg-white dark:bg-[#111A2B] text-[#11B7B4] shadow-sm"
+                ? "bg-white dark:bg-[#131B2E] text-[#4F46E5] dark:text-indigo-400 shadow-2xs"
                 : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
             }`}
           >
-            <Brain className="w-4 h-4 text-[#11B7B4]" />
+            <Brain className="w-4 h-4 text-[#4F46E5]" />
             <span>الخرائط الذهنية</span>
           </button>
         </div>
 
         {/* Tab 1: الزتونة الذهبية */}
         {activeTab === "zatona" && (
-          <div className="max-w-4xl mx-auto p-6 sm:p-8 rounded-3xl bg-white dark:bg-[#111A2B] border border-slate-200 dark:border-slate-800 shadow-xl space-y-6 animate-in fade-in duration-300">
+          <div className="max-w-4xl mx-auto p-6 sm:p-8 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-xs space-y-6 animate-in fade-in duration-300">
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
               <div>
-                <span className="text-[11px] font-black text-[#6858EA] block">
+                <span className="text-[11px] font-bold text-[#4F46E5] dark:text-indigo-400 block font-mono">
                   عينة حقيقية من ملخص الزتونة • الأحياء
                 </span>
-                <h3 className="text-lg font-black text-[#14243D] dark:text-white">
+                <h3 className="text-lg font-bold text-[#0F172A] dark:text-white">
                   الدعامة والحركة في الكائنات الحية
                 </h3>
               </div>
-              <span className="text-xs font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 px-3 py-1 rounded-full border border-amber-500/20">
+              <span className="text-xs font-bold bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 px-3 py-1 rounded-full border border-amber-200 dark:border-amber-800">
                 ⭐ الزتونة لا تزيد عن 3 دقائق قراءة
               </span>
             </div>
@@ -178,12 +178,12 @@ export function LandingInteractiveClient() {
 
         {/* Tab 2: تفسير كل اختيار */}
         {activeTab === "questions" && (
-          <div className="max-w-4xl mx-auto p-6 sm:p-8 rounded-3xl bg-white dark:bg-[#111A2B] border border-slate-200 dark:border-slate-800 shadow-xl space-y-6 animate-in fade-in duration-300">
+          <div className="max-w-4xl mx-auto p-6 sm:p-8 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-xs space-y-6 animate-in fade-in duration-300">
             <div className="space-y-1">
-              <span className="text-[11px] font-black text-[#6858EA] block">
+              <span className="text-[11px] font-bold text-[#4F46E5] dark:text-indigo-400 block font-mono">
                 سؤال تفاعلي من بنك الأسئلة الذكي
               </span>
-              <h3 className="text-base sm:text-lg font-black text-[#14243D] dark:text-white leading-relaxed">
+              <h3 className="text-base sm:text-lg font-bold text-[#0F172A] dark:text-white leading-relaxed">
                 أي التراكيب التالية تكتسب دعامة تركيبية فقط ولا تحتوي على بروتوبلازم عند النضج؟
               </h3>
             </div>
@@ -217,7 +217,7 @@ export function LandingInteractiveClient() {
               ].map((opt) => {
                 const isSelected = selectedDemoOption === opt.id;
                 let cardStyle =
-                  "bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-800";
+                  "bg-slate-50 dark:bg-slate-900/60 border-slate-200 dark:border-slate-800";
 
                 if (demoSubmitted) {
                   if (opt.isCorrect) {
@@ -228,7 +228,7 @@ export function LandingInteractiveClient() {
                       "bg-rose-50 dark:bg-rose-950/40 border-rose-500 font-bold";
                   }
                 } else if (isSelected) {
-                  cardStyle = "bg-[#6858EA]/10 border-[#6858EA] text-[#6858EA]";
+                  cardStyle = "bg-indigo-50/50 dark:bg-indigo-950/30 border-[#4F46E5] text-[#4F46E5] dark:text-indigo-400 font-bold";
                 }
 
                 return (
@@ -238,10 +238,10 @@ export function LandingInteractiveClient() {
                       setSelectedDemoOption(opt.id);
                       setDemoSubmitted(true);
                     }}
-                    className={`p-3.5 rounded-2xl border text-xs sm:text-sm text-right transition-all flex flex-col justify-between space-y-2 ${cardStyle}`}
+                    className={`p-3.5 rounded-xl border text-xs sm:text-sm text-right transition-all flex flex-col justify-between space-y-2 interactive-tap ${cardStyle}`}
                   >
                     <div className="flex items-center justify-between w-full">
-                      <span className="font-bold text-[#14243D] dark:text-white">
+                      <span className="font-bold text-[#0F172A] dark:text-white">
                         {opt.text}
                       </span>
                       {demoSubmitted && opt.isCorrect && (
@@ -277,40 +277,40 @@ export function LandingInteractiveClient() {
 
         {/* Tab 3: دفتر غلطاتي */}
         {activeTab === "mistakes" && (
-          <div className="max-w-4xl mx-auto p-6 sm:p-8 rounded-3xl bg-white dark:bg-[#111A2B] border border-slate-200 dark:border-slate-800 shadow-xl space-y-6 animate-in fade-in duration-300">
+          <div className="max-w-4xl mx-auto p-6 sm:p-8 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-xs space-y-6 animate-in fade-in duration-300">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
               <div>
-                <span className="text-[11px] font-black text-rose-500 block">
+                <span className="text-[11px] font-bold text-rose-500 block font-mono">
                   ركن المذاكرة الأكثر فاعلية في الثانوية
                 </span>
-                <h3 className="text-lg font-black text-[#14243D] dark:text-white">
+                <h3 className="text-lg font-bold text-[#0F172A] dark:text-white">
                   دفتر أخطائي التفاعلي («غلطاتي»)
                 </h3>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-xs font-black text-rose-600 bg-rose-50 dark:bg-rose-950/40 px-3 py-1 rounded-full border border-rose-200 dark:border-rose-800">
+                <span className="text-xs font-bold text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/40 px-3 py-1 rounded-full border border-rose-200 dark:border-rose-900/40">
                   3 أخطاء بانتظار الإتقان
                 </span>
-                <span className="text-xs font-black text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 px-3 py-1 rounded-full border border-emerald-200 dark:border-emerald-800">
+                <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-3 py-1 rounded-full border border-emerald-200 dark:border-emerald-900/40">
                   92% معدل التحسن
                 </span>
               </div>
             </div>
 
-            <div className="p-4 rounded-2xl bg-rose-50/50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/60 space-y-3">
+            <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-[11px] font-bold text-slate-500">
+                <span className="text-[11px] font-medium text-slate-500">
                   سؤال أخطأت فيه في امتحان الوحدة الأولى (الكيمياء)
                 </span>
-                <span className="text-[10px] font-black bg-rose-100 dark:bg-rose-900/50 text-rose-700 dark:text-rose-300 px-2.5 py-0.5 rounded-full">
+                <span className="text-[10px] font-bold bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 px-2.5 py-0.5 rounded-full border border-rose-200 dark:border-rose-900/40">
                   لم يتم الإتقان بعد
                 </span>
               </div>
-              <p className="text-xs sm:text-sm font-bold text-[#14243D] dark:text-white">
+              <p className="text-xs sm:text-sm font-bold text-[#0F172A] dark:text-white">
                 ما التوزيع الإلكتروني لأيون الحديد الثلاثي Fe³⁺ في مركب FeCl₃؟
               </p>
               <div className="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
-                <span className="font-black text-[#6858EA]">
+                <span className="font-bold text-[#4F46E5] dark:text-indigo-400">
                   التحليل العلاجي:{" "}
                 </span>
                 يفقد الحديد إلكتروني المستوى الفرعي 4s أولاً ثم إلكتروناً واحداً من المستوى 3d ليصبح [Ar] 3d⁵ (نصف ممتلئ وأكثر استقراراً).
@@ -318,7 +318,7 @@ export function LandingInteractiveClient() {
               <div className="flex items-center justify-end">
                 <button
                   type="button"
-                  className="h-8 px-4 rounded-lg bg-[#6858EA] text-white text-xs font-bold hover:bg-[#5444D8] transition-colors"
+                  className="h-8 px-4 rounded-lg bg-[#4F46E5] hover:bg-[#4338CA] text-white text-xs font-bold transition-colors interactive-tap"
                 >
                   إعادة المحاولة وحذف الغلطة ✓
                 </button>
@@ -329,41 +329,41 @@ export function LandingInteractiveClient() {
 
         {/* Tab 4: الخرائط الذهنية */}
         {activeTab === "mindmap" && (
-          <div className="max-w-4xl mx-auto p-6 sm:p-8 rounded-3xl bg-white dark:bg-[#111A2B] border border-slate-200 dark:border-slate-800 shadow-xl space-y-6 animate-in fade-in duration-300 text-center">
+          <div className="max-w-4xl mx-auto p-6 sm:p-8 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-xs space-y-6 animate-in fade-in duration-300 text-center">
             <div className="space-y-1">
-              <span className="text-[11px] font-black text-[#11B7B4] block">
+              <span className="text-[11px] font-bold text-[#4F46E5] dark:text-indigo-400 block font-mono">
                 العلاقات المفاهيمية البصرية
               </span>
-              <h3 className="text-lg font-black text-[#14243D] dark:text-white">
+              <h3 className="text-lg font-bold text-[#0F172A] dark:text-white">
                 خريطة ذهنية متكاملة لكل درس
               </h3>
             </div>
 
-            <div className="p-6 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 flex flex-col md:flex-row items-center justify-around gap-4">
-              <div className="p-4 rounded-2xl bg-[#6858EA] text-white font-black text-xs shadow-md shadow-[#6858EA]/20">
+            <div className="p-6 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 flex flex-col md:flex-row items-center justify-around gap-4">
+              <div className="p-4 rounded-xl bg-[#4F46E5] text-white font-bold text-xs shadow-2xs">
                 المفهوم الأساسي
                 <br />
                 <span className="text-[10px] text-indigo-200 font-normal">
                   (مثال: القوانين الأساسية)
                 </span>
               </div>
-              <div className="text-[#6858EA] font-black text-lg rotate-90 md:rotate-0">
+              <div className="text-[#4F46E5] font-bold text-lg rotate-90 md:rotate-0">
                 ↔
               </div>
-              <div className="p-4 rounded-2xl bg-[#11B7B4] text-white font-black text-xs shadow-md shadow-[#11B7B4]/20">
+              <div className="p-4 rounded-xl bg-slate-900 dark:bg-slate-800 text-white font-bold text-xs border border-slate-700 shadow-2xs">
                 العوامل المؤثرة
                 <br />
-                <span className="text-[10px] text-teal-100 font-normal">
+                <span className="text-[10px] text-slate-300 font-normal">
                   (علاقات طردية وعكسية)
                 </span>
               </div>
-              <div className="text-[#11B7B4] font-black text-lg rotate-90 md:rotate-0">
+              <div className="text-amber-500 font-bold text-lg rotate-90 md:rotate-0">
                 ↔
               </div>
-              <div className="p-4 rounded-2xl bg-[#FFBA55] text-[#14243D] font-black text-xs shadow-md shadow-[#FFBA55]/20">
+              <div className="p-4 rounded-xl bg-amber-500 text-white font-bold text-xs shadow-2xs">
                 تطبيقات الامتحان
                 <br />
-                <span className="text-[10px] text-amber-900 font-normal">
+                <span className="text-[10px] text-amber-100 font-normal">
                   (مسائل الربط المتقدمة)
                 </span>
               </div>
@@ -378,7 +378,7 @@ export function LandingInteractiveClient() {
       {/* 2. Comparison Table: Traditional vs El Kholasa */}
       <section className="space-y-8">
         <div className="text-center max-w-2xl mx-auto space-y-2">
-          <h2 className="text-2xl sm:text-3xl font-black text-[#14243D] dark:text-white">
+          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#0F172A] dark:text-white">
             لماذا يختار أوائل الثانوية منصة الخلاصة؟
           </h2>
           <p className="text-xs sm:text-sm text-[#64748B] dark:text-[#94A3B8]">
@@ -386,53 +386,53 @@ export function LandingInteractiveClient() {
           </p>
         </div>
 
-        <div className="max-w-4xl mx-auto rounded-3xl border border-slate-200 dark:border-slate-800 overflow-hidden bg-white dark:bg-[#111A2B] shadow-lg">
-          <div className="grid grid-cols-3 p-4 bg-slate-100 dark:bg-slate-900 font-black text-xs sm:text-sm text-[#14243D] dark:text-white border-b border-slate-200 dark:border-slate-800 text-center">
+        <div className="max-w-4xl mx-auto rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden bg-white dark:bg-[#131B2E] shadow-xs">
+          <div className="grid grid-cols-3 p-4 bg-slate-100 dark:bg-slate-900 font-bold text-xs sm:text-sm text-[#0F172A] dark:text-white border-b border-slate-200 dark:border-slate-800 text-center">
             <div>المعيار</div>
-            <div className="text-rose-500">الطرق التقليدية</div>
-            <div className="text-[#6858EA]">منصة الخلاصة ⚡</div>
+            <div className="text-rose-500 font-bold">الطرق التقليدية</div>
+            <div className="text-[#4F46E5] dark:text-indigo-400 font-bold">منصة الخلاصة ⚡</div>
           </div>
 
           <div className="divide-y divide-slate-100 dark:divide-slate-800 text-xs sm:text-sm">
             <div className="grid grid-cols-3 p-4 items-center text-center">
-              <div className="font-bold text-[#14243D] dark:text-white">
+              <div className="font-bold text-[#0F172A] dark:text-white">
                 زمن مراجعة الدرس
               </div>
               <div className="text-slate-500">2 إلى 3 ساعات حفظ عشوائي</div>
-              <div className="text-emerald-600 dark:text-emerald-400 font-black flex items-center justify-center gap-1">
+              <div className="text-emerald-600 dark:text-emerald-400 font-bold flex items-center justify-center gap-1">
                 <Check className="w-4 h-4 text-emerald-500" />
                 <span>10 دقائق في الزتونة المركزة</span>
               </div>
             </div>
 
             <div className="grid grid-cols-3 p-4 items-center text-center">
-              <div className="font-bold text-[#14243D] dark:text-white">
+              <div className="font-bold text-[#0F172A] dark:text-white">
                 تفسير الإجابات
               </div>
               <div className="text-slate-500">معرفة الإجابة الصحيحة فقط دون سبب</div>
-              <div className="text-emerald-600 dark:text-emerald-400 font-black flex items-center justify-center gap-1">
+              <div className="text-emerald-600 dark:text-emerald-400 font-bold flex items-center justify-center gap-1">
                 <Check className="w-4 h-4 text-emerald-500" />
                 <span>تفسير لكل خيار ولماذا الباقي خطأ</span>
               </div>
             </div>
 
             <div className="grid grid-cols-3 p-4 items-center text-center">
-              <div className="font-bold text-[#14243D] dark:text-white">
+              <div className="font-bold text-[#0F172A] dark:text-white">
                 معالجة الأخطاء
               </div>
               <div className="text-slate-500">تضيع الأسئلة وتتكرر نفس الغلطة</div>
-              <div className="text-emerald-600 dark:text-emerald-400 font-black flex items-center justify-center gap-1">
+              <div className="text-emerald-600 dark:text-emerald-400 font-bold flex items-center justify-center gap-1">
                 <Check className="w-4 h-4 text-emerald-500" />
                 <span>حفظ تلقائي بركن «غلطاتي» وإعادة التدريب</span>
               </div>
             </div>
 
             <div className="grid grid-cols-3 p-4 items-center text-center">
-              <div className="font-bold text-[#14243D] dark:text-white">
+              <div className="font-bold text-[#0F172A] dark:text-white">
                 المذاكرة أوفلاين
               </div>
               <div className="text-slate-500">تتوقف تماماً عند انقطاع النت</div>
-              <div className="text-emerald-600 dark:text-emerald-400 font-black flex items-center justify-center gap-1">
+              <div className="text-emerald-600 dark:text-emerald-400 font-bold flex items-center justify-center gap-1">
                 <Check className="w-4 h-4 text-emerald-500" />
                 <span>تطبيق PWA يحفظ الملخصات تلقائياً</span>
               </div>
@@ -444,23 +444,23 @@ export function LandingInteractiveClient() {
       {/* 3. Egyptian Student Testimonials */}
       <section className="space-y-8">
         <div className="text-center max-w-2xl mx-auto space-y-2">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-black">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 text-xs font-bold border border-amber-200 dark:border-amber-800">
             <Award className="w-3.5 h-3.5" />
             <span>قصص نجاح حقيقية</span>
           </div>
-          <h2 className="text-2xl sm:text-3xl font-black text-[#14243D] dark:text-white">
+          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#0F172A] dark:text-white">
             ماذا يقول طلاب دفعة 2026 عن الخلاصة؟
           </h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-5xl mx-auto">
-          <div className="p-6 rounded-3xl bg-white dark:bg-[#111A2B] border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+          <div className="p-6 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-[#6858EA]/15 text-[#6858EA] font-black flex items-center justify-center">
+              <div className="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 text-[#4F46E5] dark:text-indigo-400 font-bold flex items-center justify-center">
                 ي
               </div>
               <div>
-                <h4 className="text-sm font-black text-[#14243D] dark:text-white">
+                <h4 className="text-sm font-bold text-[#0F172A] dark:text-white">
                   يوسف مصطفى علام
                 </h4>
                 <span className="text-[11px] text-[#64748B] dark:text-[#94A3B8]">
@@ -473,13 +473,13 @@ export function LandingInteractiveClient() {
             </p>
           </div>
 
-          <div className="p-6 rounded-3xl bg-white dark:bg-[#111A2B] border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+          <div className="p-6 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-[#11B7B4]/15 text-[#11B7B4] font-black flex items-center justify-center">
+              <div className="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 text-[#4F46E5] dark:text-indigo-400 font-bold flex items-center justify-center">
                 م
               </div>
               <div>
-                <h4 className="text-sm font-black text-[#14243D] dark:text-white">
+                <h4 className="text-sm font-bold text-[#0F172A] dark:text-white">
                   مريم محمود القاضي
                 </h4>
                 <span className="text-[11px] text-[#64748B] dark:text-[#94A3B8]">
@@ -492,13 +492,13 @@ export function LandingInteractiveClient() {
             </p>
           </div>
 
-          <div className="p-6 rounded-3xl bg-white dark:bg-[#111A2B] border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+          <div className="p-6 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-[#FFBA55]/20 text-amber-700 font-black flex items-center justify-center">
+              <div className="w-9 h-9 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 font-bold flex items-center justify-center">
                 ع
               </div>
               <div>
-                <h4 className="text-sm font-black text-[#14243D] dark:text-white">
+                <h4 className="text-sm font-bold text-[#0F172A] dark:text-white">
                   عمر حسام الشريف
                 </h4>
                 <span className="text-[11px] text-[#64748B] dark:text-[#94A3B8]">
@@ -520,7 +520,7 @@ export function LandingInteractiveClient() {
             <HelpCircle className="w-3.5 h-3.5" />
             <span>إجابات واضحة</span>
           </div>
-          <h2 className="text-2xl sm:text-3xl font-black text-[#14243D] dark:text-white">
+          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#0F172A] dark:text-white">
             الأسئلة الأكثر شيوعاً حول المنصة
           </h2>
         </div>
@@ -531,17 +531,17 @@ export function LandingInteractiveClient() {
             return (
               <div
                 key={idx}
-                className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#111A2B] overflow-hidden transition-all shadow-xs"
+                className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#131B2E] overflow-hidden transition-all shadow-2xs"
               >
                 <button
                   type="button"
                   onClick={() => setOpenFaqIndex(isOpen ? null : idx)}
-                  className="w-full p-4 sm:p-5 flex items-center justify-between gap-3 text-right text-xs sm:text-sm font-black text-[#14243D] dark:text-white hover:text-[#6858EA] transition-colors"
+                  className="w-full p-4 sm:p-5 flex items-center justify-between gap-3 text-right text-xs sm:text-sm font-bold text-[#0F172A] dark:text-white hover:text-[#4F46E5] dark:hover:text-indigo-400 transition-colors"
                 >
                   <span>{faq.q}</span>
                   <ChevronDown
                     className={`w-4 h-4 text-slate-400 transition-transform ${
-                      isOpen ? "rotate-180 text-[#6858EA]" : ""
+                      isOpen ? "rotate-180 text-[#4F46E5] dark:text-indigo-400" : ""
                     }`}
                   />
                 </button>

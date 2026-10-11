@@ -47,7 +47,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ar" dir="rtl" className={`${cairo.variable} ${ibmPlexArabic.variable}`}>
-      <body className="min-h-screen font-sans bg-[#F7F9FC] dark:bg-[#0A0F1D] text-[#14243D] dark:text-[#F8FAFC] antialiased selection:bg-[#6858EA]/20 selection:text-[#6858EA]">
+      <body className="min-h-screen font-sans bg-[#F8FAFC] dark:bg-[#0B0F19] text-[#0F172A] dark:text-[#F8FAFC] antialiased selection:bg-[#4F46E5]/20 selection:text-[#4F46E5]">
         <PwaRegister />
         {children}
       </body>

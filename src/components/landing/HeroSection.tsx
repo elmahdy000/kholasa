@@ -36,7 +36,7 @@ export function HeroSection() {
   ];
 
   return (
-    <section className="relative overflow-hidden pt-12 pb-20 sm:pt-20 sm:pb-28 bg-[#F8FAFC] dark:bg-[#0B0F19]">
+    <section className="relative overflow-hidden pt-12 pb-20 sm:pt-20 sm:pb-28 bg-[#F8FAFC] dark:bg-[#0B0F19] bg-grid-pattern">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="grid lg:grid-cols-12 gap-12 lg:gap-8 items-center">
           {/* Left / Main Text Column (7 cols) */}

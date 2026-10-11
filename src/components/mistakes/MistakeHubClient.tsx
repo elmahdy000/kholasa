@@ -134,79 +134,79 @@ export function MistakeHubClient({
     <div className="space-y-6">
       {/* Overview Analytics Bar */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="p-5 rounded-3xl bg-white dark:bg-[#14243D]/50 border border-slate-200 dark:border-slate-800 flex items-center justify-between">
+        <div className="p-5 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-2xs flex items-center justify-between">
           <div>
-            <span className="text-2xl font-black text-red-500 block">
+            <span className="text-2xl sm:text-3xl font-black text-rose-600 block tracking-tight">
               {unresolvedCount}
             </span>
-            <span className="text-xs font-bold text-slate-500">
+            <span className="text-xs font-bold text-[#475569] dark:text-slate-400">
               أخطاء تحتاج لتصحيح
             </span>
           </div>
-          <div className="w-10 h-10 rounded-2xl bg-red-500/10 text-red-500 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-xl bg-rose-50 dark:bg-rose-950/40 text-rose-600 flex items-center justify-center">
             <AlertTriangle className="w-5 h-5" />
           </div>
         </div>
 
-        <div className="p-5 rounded-3xl bg-white dark:bg-[#14243D]/50 border border-slate-200 dark:border-slate-800 flex items-center justify-between">
+        <div className="p-5 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-2xs flex items-center justify-between">
           <div>
-            <span className="text-2xl font-black text-emerald-500 block">
+            <span className="text-2xl sm:text-3xl font-black text-emerald-600 block tracking-tight">
               {resolvedCount}
             </span>
-            <span className="text-xs font-bold text-slate-500">
+            <span className="text-xs font-bold text-[#475569] dark:text-slate-400">
               أخطاء تم التغلب عليها
             </span>
           </div>
-          <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 flex items-center justify-center">
             <CheckCircle2 className="w-5 h-5" />
           </div>
         </div>
 
-        <div className="p-5 rounded-3xl bg-white dark:bg-[#14243D]/50 border border-slate-200 dark:border-slate-800 flex items-center justify-between">
+        <div className="p-5 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-2xs flex items-center justify-between">
           <div>
-            <span className="text-2xl font-black text-[#6858EA] block">
+            <span className="text-2xl sm:text-3xl font-black text-[#4F46E5] dark:text-indigo-400 block tracking-tight">
               {masteryPercentage}%
             </span>
-            <span className="text-xs font-bold text-slate-500">
+            <span className="text-xs font-bold text-[#475569] dark:text-slate-400">
               نسبة التعافي والإتقان
             </span>
           </div>
-          <div className="w-10 h-10 rounded-2xl bg-[#6858EA]/10 text-[#6858EA] flex items-center justify-center">
+          <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 text-[#4F46E5] dark:text-indigo-400 flex items-center justify-center">
             <Trophy className="w-5 h-5" />
           </div>
         </div>
       </div>
 
       {/* Filters Bar */}
-      <div className="p-4 rounded-2xl bg-white dark:bg-[#14243D]/50 border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="p-3.5 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         {/* Status Filter */}
-        <div className="flex items-center gap-1.5 p-1 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+        <div className="flex items-center gap-1 p-1 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800">
           <button
             onClick={() => setFilterStatus("unresolved")}
-            className={`px-3 py-1.5 rounded-lg text-xs font-black transition-all ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
               filterStatus === "unresolved"
-                ? "bg-red-500 text-white shadow-xs"
-                : "text-slate-500 hover:text-slate-800 dark:hover:text-white"
+                ? "bg-rose-600 text-white shadow-2xs"
+                : "text-slate-600 dark:text-slate-400 hover:text-[#0F172A] dark:hover:text-white"
             }`}
           >
             بحاجة لمراجعة ({unresolvedCount})
           </button>
           <button
             onClick={() => setFilterStatus("resolved")}
-            className={`px-3 py-1.5 rounded-lg text-xs font-black transition-all ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
               filterStatus === "resolved"
-                ? "bg-emerald-500 text-white shadow-xs"
-                : "text-slate-500 hover:text-slate-800 dark:hover:text-white"
+                ? "bg-emerald-600 text-white shadow-2xs"
+                : "text-slate-600 dark:text-slate-400 hover:text-[#0F172A] dark:hover:text-white"
             }`}
           >
             تم إتقانها ({resolvedCount})
           </button>
           <button
             onClick={() => setFilterStatus("all")}
-            className={`px-3 py-1.5 rounded-lg text-xs font-black transition-all ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
               filterStatus === "all"
-                ? "bg-white dark:bg-slate-800 text-[#14243D] dark:text-white shadow-xs"
-                : "text-slate-500 hover:text-slate-800 dark:hover:text-white"
+                ? "bg-white dark:bg-slate-800 text-[#0F172A] dark:text-white shadow-2xs border border-slate-200/80 dark:border-slate-700/80"
+                : "text-slate-600 dark:text-slate-400 hover:text-[#0F172A] dark:hover:text-white"
             }`}
           >
             الكل ({totalCount})
@@ -219,7 +219,7 @@ export function MistakeHubClient({
           <select
             value={selectedSubjectId}
             onChange={(e) => setSelectedSubjectId(e.target.value)}
-            className="h-9 px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs font-bold text-[#14243D] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#6858EA]"
+            className="h-9 px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs font-bold text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#4F46E5]"
           >
             <option value="all">جميع المواد</option>
             {subjects.map((s) => (
@@ -242,25 +242,25 @@ export function MistakeHubClient({
             return (
               <div
                 key={mistake.id}
-                className={`p-6 sm:p-7 rounded-3xl border shadow-sm space-y-4 transition-all ${
+                className={`p-6 sm:p-7 rounded-2xl border shadow-2xs space-y-4 transition-all ${
                   mistake.isResolved
                     ? "bg-emerald-50/20 dark:bg-emerald-950/10 border-emerald-200 dark:border-emerald-900/40"
-                    : "bg-white dark:bg-[#14243D]/50 border-red-200/80 dark:border-red-900/40"
+                    : "bg-white dark:bg-[#131B2E] border-slate-200 dark:border-slate-800"
                 }`}
               >
                 {/* Header */}
                 <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
                   <div className="flex items-center gap-2">
-                    <span className="px-2.5 py-0.5 rounded-lg bg-[#6858EA]/10 text-[#6858EA] text-[11px] font-black">
+                    <span className="px-2.5 py-0.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 text-[#4F46E5] dark:text-indigo-300 text-[11px] font-bold border border-indigo-200/50 dark:border-indigo-800/50">
                       {q.subject.name}
                     </span>
                     {mistake.wrongCount > 1 && (
-                      <span className="px-2 py-0.5 rounded-lg bg-red-500/10 text-red-500 text-[10px] font-bold">
+                      <span className="px-2 py-0.5 rounded-lg bg-rose-50 dark:bg-rose-950/40 text-rose-600 text-[10px] font-bold border border-rose-200/50 dark:border-rose-900/50">
                         تكرر الخطأ {mistake.wrongCount} مرات
                       </span>
                     )}
                     {mistake.isResolved && (
-                      <span className="px-2.5 py-0.5 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[11px] font-black flex items-center gap-1">
+                      <span className="px-2.5 py-0.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 text-[11px] font-bold flex items-center gap-1 border border-emerald-200/50 dark:border-emerald-800/50">
                         <Check className="w-3 h-3" />
                         <span>تم الإتقان والتصحيح</span>
                       </span>
@@ -270,7 +270,7 @@ export function MistakeHubClient({
                   {relatedLesson && (
                     <Link
                       href={`/lessons/${relatedLesson.id}`}
-                      className="text-xs font-bold text-[#6858EA] hover:underline flex items-center gap-1"
+                      className="text-xs font-bold text-[#4F46E5] hover:underline flex items-center gap-1"
                     >
                       <BookOpen className="w-3.5 h-3.5" />
                       <span>شرح الدرس: {relatedLesson.title}</span>
@@ -280,7 +280,7 @@ export function MistakeHubClient({
                 </div>
 
                 {/* Statement */}
-                <h3 className="text-sm sm:text-base font-black text-[#14243D] dark:text-white leading-relaxed">
+                <h3 className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-white leading-relaxed">
                   {q.statement}
                 </h3>
 
@@ -295,15 +295,15 @@ export function MistakeHubClient({
                     const isChecked = !!answerState?.result;
 
                     let rowStyle =
-                      "bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-[#14243D] dark:text-slate-200 hover:border-[#6858EA]/50";
+                      "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-[#0F172A] dark:text-slate-200 hover:border-slate-300";
 
                     if (isChecked) {
                       if (opt.isCorrect) {
                         rowStyle =
-                          "bg-emerald-50 dark:bg-emerald-950/40 border-emerald-500 text-emerald-800 dark:text-emerald-300 font-black";
+                          "bg-emerald-50 dark:bg-emerald-950/40 border-2 border-emerald-600 text-emerald-900 dark:text-emerald-200 font-bold";
                       } else if (isSelected && !opt.isCorrect) {
                         rowStyle =
-                          "bg-red-50 dark:bg-red-950/40 border-red-500 text-red-800 dark:text-red-300 font-black";
+                          "bg-rose-50 dark:bg-rose-950/40 border-2 border-rose-600 text-rose-900 dark:text-rose-200 font-bold";
                       }
                     }
 
@@ -312,10 +312,10 @@ export function MistakeHubClient({
                         key={opt.id}
                         type="button"
                         onClick={() => handleRetakeAnswer(q.id, opt.id)}
-                        className={`w-full p-3.5 rounded-2xl border text-right text-xs sm:text-sm font-bold flex items-center justify-between gap-3 transition-all ${rowStyle}`}
+                        className={`w-full p-3.5 rounded-xl border text-right text-xs sm:text-sm font-medium flex items-center justify-between gap-3 transition-colors ${rowStyle}`}
                       >
                         <div className="flex items-center gap-2.5">
-                          <span className="w-5 h-5 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center justify-center text-[10px] font-black shrink-0">
+                          <span className="w-5 h-5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center justify-center text-[10px] font-mono font-bold shrink-0 border border-slate-200/60 dark:border-slate-700/60">
                             {opt.order}
                           </span>
                           <span>{opt.text}</span>
@@ -324,12 +324,12 @@ export function MistakeHubClient({
                         {isChecked && (
                           <div>
                             {opt.isCorrect ? (
-                              <span className="text-emerald-600 dark:text-emerald-400 text-xs font-black flex items-center gap-1">
+                              <span className="text-emerald-600 dark:text-emerald-400 text-xs font-bold flex items-center gap-1">
                                 <Check className="w-3.5 h-3.5" />
                                 <span>صحيح! أحسنت</span>
                               </span>
                             ) : isSelected ? (
-                              <span className="text-red-600 dark:text-red-400 text-xs font-black">
+                              <span className="text-rose-600 dark:text-rose-400 text-xs font-bold">
                                 غير صحيح
                               </span>
                             ) : null}
@@ -342,12 +342,12 @@ export function MistakeHubClient({
 
                 {/* Explanation */}
                 {q.explanation && (
-                  <div className="p-4 rounded-2xl bg-[#6858EA]/5 border border-[#6858EA]/15 space-y-1.5 mt-2">
-                    <div className="flex items-center gap-1.5 text-xs font-black text-[#6858EA]">
-                      <Lightbulb className="w-3.5 h-3.5" />
+                  <div className="p-4 rounded-xl bg-amber-50/60 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/40 space-y-1.5 mt-2">
+                    <div className="flex items-center gap-1.5 text-xs font-bold text-[#D97706] dark:text-amber-400">
+                      <Lightbulb className="w-3.5 h-3.5 text-amber-500" />
                       <span>المفهوم: {q.explanation.concept}</span>
                     </div>
-                    <p className="text-xs text-[#14243D] dark:text-slate-200 leading-relaxed font-bold">
+                    <p className="text-xs text-[#0F172A] dark:text-slate-200 leading-relaxed font-medium">
                       {q.explanation.correctReason}
                     </p>
                   </div>
@@ -357,19 +357,19 @@ export function MistakeHubClient({
           })}
         </div>
       ) : (
-        <div className="p-12 rounded-3xl bg-white dark:bg-[#14243D]/50 border border-slate-200 dark:border-slate-800 text-center space-y-3">
-          <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center mx-auto">
+        <div className="p-12 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 text-center space-y-3 shadow-2xs">
+          <div className="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 flex items-center justify-center mx-auto">
             <CheckCircle2 className="w-6 h-6" />
           </div>
-          <h3 className="text-base font-black text-[#14243D] dark:text-white">
+          <h3 className="text-base font-bold text-[#0F172A] dark:text-white">
             رائع! لا توجد أخطاء في هذا التحديد
           </h3>
-          <p className="text-xs text-[#64748B] dark:text-[#94A3B8]">
+          <p className="text-xs text-[#475569] dark:text-slate-400">
             استمر في خوض الامتحانات وحل التدريبات لاكتشاف المزيد وتثبيت حفظك وفهمك.
           </p>
           <Link
             href="/exams"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#6858EA] text-white text-xs font-black"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-xs font-bold transition-all active:scale-95 shadow-2xs"
           >
             <span>انتقل إلى الامتحانات</span>
             <ArrowLeft className="w-3.5 h-3.5" />

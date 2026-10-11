@@ -45,14 +45,14 @@ export default async function MistakesPage() {
     <StudentShell user={user}>
       <div className="max-w-4xl mx-auto space-y-6 text-right font-sans pb-16">
         <div className="border-b border-slate-200 dark:border-slate-800 pb-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 text-red-500 text-xs font-black mb-2">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-50 dark:bg-rose-950/40 text-rose-600 border border-rose-200/60 dark:border-rose-900/40 text-xs font-bold mb-2">
             <AlertTriangle className="w-3.5 h-3.5" />
-            <span>مركز المراجعة الذكية والتصحيح</span>
+            <span>مركز المراجعة والتصحيح</span>
           </div>
-          <h1 className="text-xl sm:text-2xl font-black text-[#14243D] dark:text-white">
+          <h1 className="text-xl sm:text-2xl font-black text-[#0F172A] dark:text-white">
             غلطاتي — اتعلم من كل خطأ
           </h1>
-          <p className="text-xs sm:text-sm text-[#64748B] dark:text-[#94A3B8] mt-1">
+          <p className="text-xs sm:text-sm text-[#475569] dark:text-slate-400 mt-1">
             هنا تتجمع كل الأسئلة التي تعثرت بها في التدريبات والامتحانات السابقة لتتمكن من إعادة حلها وفهم سبب الخطأ حتى تتقنها تماماً
           </p>
         </div>

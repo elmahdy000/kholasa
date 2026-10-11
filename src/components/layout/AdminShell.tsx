@@ -34,27 +34,27 @@ export function AdminShell({ children, user }: AdminShellProps) {
   ];
 
   return (
-    <div className="min-h-screen bg-[#F7F9FC] dark:bg-[#0E1726] text-right font-sans flex flex-col md:flex-row" dir="rtl">
+    <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0B0F19] text-[#0F172A] dark:text-[#F8FAFC] text-right font-sans flex flex-col md:flex-row" dir="rtl">
       {/* Sidebar for Desktop */}
-      <aside className="w-full md:w-64 bg-[#14243D] text-white flex flex-col justify-between shrink-0 p-5 md:min-h-screen">
+      <aside className="w-full md:w-64 bg-[#0B0F19] text-white flex flex-col justify-between shrink-0 p-5 md:min-h-screen border-l border-slate-800">
         <div className="space-y-6">
           {/* Logo & Brand */}
           <div className="flex items-center gap-3 px-2">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#6858EA] to-[#11B7B4] flex items-center justify-center text-white shadow-md shadow-[#6858EA]/25">
-              <Shield className="w-5 h-5" />
+            <div className="w-9 h-9 rounded-xl bg-[#4F46E5] flex items-center justify-center text-white shadow-2xs">
+              <Shield className="w-4 h-4" />
             </div>
             <div>
-              <span className="text-base font-black tracking-tight block">
+              <span className="text-sm font-bold tracking-tight block">
                 لوحة الإدارة
               </span>
-              <span className="text-[11px] font-bold text-[#11B7B4] block">
-                الخُلاصة | ADMIN
+              <span className="text-[10px] font-mono text-[#4F46E5] dark:text-indigo-400 block tracking-wider">
+                EL KHOLASA ADMIN
               </span>
             </div>
           </div>
 
           {/* Navigation Links */}
-          <nav className="space-y-1.5 pt-4">
+          <nav className="space-y-1 pt-2">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive =
@@ -66,10 +66,10 @@ export function AdminShell({ children, user }: AdminShellProps) {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`w-full h-11 px-3.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-3 transition-colors ${
+                  className={`w-full h-10 px-3 rounded-lg text-xs font-bold flex items-center gap-2.5 transition-colors interactive-tap ${
                     isActive
-                      ? "bg-[#6858EA] text-white shadow-md shadow-[#6858EA]/30 font-black"
-                      : "text-slate-300 hover:bg-slate-800/80 hover:text-white"
+                      ? "bg-[#4F46E5] text-white shadow-2xs"
+                      : "text-slate-400 hover:bg-slate-900 hover:text-white"
                   }`}
                 >
                   <Icon className="w-4 h-4" />
@@ -81,19 +81,19 @@ export function AdminShell({ children, user }: AdminShellProps) {
         </div>
 
         {/* Footer in Sidebar */}
-        <div className="pt-6 border-t border-slate-800 space-y-3">
+        <div className="pt-6 border-t border-slate-800/80 space-y-3">
           <div className="px-2">
             <span className="text-xs font-bold text-white block">
               {user.name || "مسؤول النظام"}
             </span>
-            <span className="text-[11px] text-slate-400 block truncate">
-              {user.email || "مسؤول النظام"}
+            <span className="text-[11px] text-slate-400 block truncate font-mono">
+              {user.email || "admin@kholasa.app"}
             </span>
           </div>
 
           <Link
             href="/dashboard"
-            className="w-full h-9 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-200 flex items-center justify-between transition-colors"
+            className="w-full h-9 px-3 rounded-lg bg-slate-900 hover:bg-slate-800 text-xs font-bold text-slate-300 hover:text-white flex items-center justify-between transition-colors border border-slate-800 interactive-tap"
           >
             <span>العودة لتطبيق الطالب</span>
             <ExternalLink className="w-3.5 h-3.5" />

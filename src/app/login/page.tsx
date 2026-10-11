@@ -73,27 +73,29 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F7F9FC] dark:bg-[#0E1726] flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 text-right font-sans">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
+    <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0B0F19] text-[#0F172A] dark:text-[#F8FAFC] flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 text-right font-sans relative">
+      <div className="absolute inset-0 bg-grid-pattern opacity-60 pointer-events-none" />
+
+      <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10">
         {/* Brand Header */}
         <div className="flex flex-col items-center text-center mb-6">
           <Link
             href="/"
             className="flex items-center gap-2.5 group transition-transform active:scale-95 mb-3"
           >
-            <div className="w-11 h-11 rounded-xl bg-[#4F46E5] flex items-center justify-center text-white shadow-2xs group-hover:bg-[#4338CA] transition-colors">
+            <div className="w-10 h-10 rounded-xl bg-[#4F46E5] flex items-center justify-center text-white shadow-2xs group-hover:bg-[#4338CA] transition-colors">
               <Sparkles className="w-5 h-5" />
             </div>
             <div className="text-right">
-              <span className="text-2xl font-black tracking-tight text-[#0F172A] dark:text-white block">
+              <span className="text-xl font-bold tracking-tight text-[#0F172A] dark:text-white block">
                 الخُلاصة
               </span>
-              <span className="text-[11px] font-bold text-[#4F46E5] dark:text-indigo-400 block">
+              <span className="text-[10px] font-mono font-medium text-[#4F46E5] dark:text-indigo-400 block tracking-wider">
                 EL KHOLASA
               </span>
             </div>
           </Link>
-          <h2 className="text-xl sm:text-2xl font-black text-[#14243D] dark:text-white">
+          <h2 className="text-xl sm:text-2xl font-bold text-[#0F172A] dark:text-white tracking-tight">
             تسجيل الدخول إلى حسابك
           </h2>
           <p className="mt-1 text-xs sm:text-sm text-[#64748B] dark:text-[#94A3B8]">
@@ -102,9 +104,9 @@ export default function LoginPage() {
         </div>
 
         {/* Card */}
-        <div className="bg-white dark:bg-[#14243D]/60 backdrop-blur-xl py-8 px-6 sm:px-8 shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-slate-800 rounded-3xl">
+        <div className="bg-white dark:bg-[#131B2E] py-8 px-6 sm:px-8 shadow-xs border border-slate-200 dark:border-slate-800 rounded-2xl">
           {error && (
-            <div className="mb-6 p-4 rounded-2xl bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/40 flex items-start gap-3 text-right">
+            <div className="mb-6 p-4 rounded-xl bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/40 flex items-start gap-3 text-right">
               <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
               <p className="text-xs sm:text-sm font-bold text-red-700 dark:text-red-400">
                 {error}
@@ -116,7 +118,7 @@ export default function LoginPage() {
             <div>
               <label
                 htmlFor="identifier"
-                className="block text-xs sm:text-sm font-bold text-[#14243D] dark:text-slate-200 mb-1.5"
+                className="block text-xs sm:text-sm font-bold text-[#0F172A] dark:text-slate-200 mb-1.5"
               >
                 البريد الإلكتروني أو رقم الهاتف
               </label>
@@ -128,11 +130,11 @@ export default function LoginPage() {
                   value={identifier}
                   onChange={(e) => setIdentifier(e.target.value)}
                   placeholder="student@kholasa.app أو 01012345678"
-                  className="w-full h-12 pr-11 pl-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50 text-[#14243D] dark:text-white placeholder:text-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-[#6858EA] focus:border-transparent transition-all"
+                  className="w-full h-11 pr-11 pl-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50 text-[#0F172A] dark:text-white placeholder:text-slate-400 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#4F46E5] focus:border-transparent transition-all"
                   dir="ltr"
                 />
                 <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
-                  <Mail className="w-5 h-5" />
+                  <Mail className="w-4 h-4" />
                 </div>
               </div>
             </div>
@@ -141,14 +143,14 @@ export default function LoginPage() {
               <div className="flex items-center justify-between mb-1.5">
                 <label
                   htmlFor="password"
-                  className="block text-xs sm:text-sm font-bold text-[#14243D] dark:text-slate-200"
+                  className="block text-xs sm:text-sm font-bold text-[#0F172A] dark:text-slate-200"
                 >
                   كلمة المرور
                 </label>
                 <button
                   type="button"
                   onClick={() => alert("كلمة المرور الافتراضية للحسابات التجريبية هي 12345678")}
-                  className="text-xs font-bold text-[#6858EA] hover:underline"
+                  className="text-xs font-bold text-[#4F46E5] dark:text-indigo-400 hover:underline"
                 >
                   نسيت كلمة المرور؟
                 </button>
@@ -161,11 +163,11 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full h-12 pr-11 pl-11 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50 text-[#14243D] dark:text-white placeholder:text-slate-400 text-sm focus:outline-none focus:ring-2 focus:ring-[#6858EA] focus:border-transparent transition-all"
+                  className="w-full h-11 pr-11 pl-11 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50 text-[#0F172A] dark:text-white placeholder:text-slate-400 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#4F46E5] focus:border-transparent transition-all"
                   dir="ltr"
                 />
                 <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
-                  <Lock className="w-5 h-5" />
+                  <Lock className="w-4 h-4" />
                 </div>
                 <button
                   type="button"
@@ -173,9 +175,9 @@ export default function LoginPage() {
                   className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
                 >
                   {showPassword ? (
-                    <EyeOff className="w-5 h-5" />
+                    <EyeOff className="w-4 h-4" />
                   ) : (
-                    <Eye className="w-5 h-5" />
+                    <Eye className="w-4 h-4" />
                   )}
                 </button>
               </div>
@@ -184,7 +186,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full h-11 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white font-bold text-xs sm:text-sm shadow-2xs flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
+              className="w-full h-11 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white font-bold text-xs sm:text-sm shadow-2xs flex items-center justify-center gap-2 transition-colors disabled:opacity-50 interactive-tap"
             >
               {isLoading ? (
                 <>
@@ -206,13 +208,13 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => handleFillDemo("student")}
-                className="p-2.5 rounded-xl border border-[#6858EA]/20 bg-[#6858EA]/5 hover:bg-[#6858EA]/10 text-right flex items-center gap-2 transition-colors"
+                className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 hover:border-[#4F46E5] text-right flex items-center gap-2 transition-colors interactive-tap"
               >
-                <div className="w-7 h-7 rounded-lg bg-[#6858EA]/15 text-[#6858EA] flex items-center justify-center shrink-0">
+                <div className="w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 text-[#4F46E5] dark:text-indigo-400 flex items-center justify-center shrink-0">
                   <GraduationCap className="w-4 h-4" />
                 </div>
                 <div className="truncate">
-                  <span className="block text-xs font-black text-[#14243D] dark:text-white truncate">
+                  <span className="block text-xs font-bold text-[#0F172A] dark:text-white truncate">
                     حساب طالب
                   </span>
                   <span className="block text-[10px] text-[#64748B] dark:text-[#94A3B8] truncate">
@@ -224,13 +226,13 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => handleFillDemo("admin")}
-                className="p-2.5 rounded-xl border border-[#11B7B4]/20 bg-[#11B7B4]/5 hover:bg-[#11B7B4]/10 text-right flex items-center gap-2 transition-colors"
+                className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 hover:border-[#4F46E5] text-right flex items-center gap-2 transition-colors interactive-tap"
               >
-                <div className="w-7 h-7 rounded-lg bg-[#11B7B4]/15 text-[#11B7B4] flex items-center justify-center shrink-0">
+                <div className="w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-800 text-[#0F172A] dark:text-slate-200 flex items-center justify-center shrink-0">
                   <Shield className="w-4 h-4" />
                 </div>
                 <div className="truncate">
-                  <span className="block text-xs font-black text-[#14243D] dark:text-white truncate">
+                  <span className="block text-xs font-bold text-[#0F172A] dark:text-white truncate">
                     حساب مسؤول
                   </span>
                   <span className="block text-[10px] text-[#64748B] dark:text-[#94A3B8] truncate">
@@ -246,7 +248,7 @@ export default function LoginPage() {
             <span>ليس لديك حساب بعد؟ </span>
             <Link
               href="/register"
-              className="font-black text-[#6858EA] hover:underline"
+              className="font-bold text-[#4F46E5] dark:text-indigo-400 hover:underline"
             >
               سجّل حسابك الآن مجاناً
             </Link>
@@ -256,7 +258,7 @@ export default function LoginPage() {
         <div className="mt-6 text-center">
           <Link
             href="/"
-            className="inline-flex items-center gap-1 text-xs font-bold text-[#64748B] dark:text-[#94A3B8] hover:text-[#14243D] dark:hover:text-white transition-colors"
+            className="inline-flex items-center gap-1 text-xs font-bold text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white transition-colors"
           >
             <ArrowRight className="w-3.5 h-3.5" />
             <span>العودة للصفحة الرئيسية</span>

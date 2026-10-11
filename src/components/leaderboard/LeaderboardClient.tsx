@@ -111,15 +111,15 @@ export function LeaderboardClient({
             </div>
           </div>
 
-          <div className="flex items-center gap-4 text-xs font-black">
-            <div className="px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[#6858EA]">
+          <div className="flex items-center gap-3 text-xs font-bold">
+            <div className="px-3 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 border border-[#4F46E5]/20 text-[#4F46E5] dark:text-indigo-400 font-mono">
               ⚡ {currentUser.xp} XP
             </div>
-            <div className="px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-amber-600 dark:text-amber-400 flex items-center gap-1">
+            <div className="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-amber-600 dark:text-amber-400 flex items-center gap-1 font-mono">
               <Flame className="w-3.5 h-3.5 fill-amber-500" />
               <span>{currentUser.streak} أيام</span>
             </div>
-            <div className="px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-emerald-600 dark:text-emerald-400">
+            <div className="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-emerald-600 dark:text-emerald-400 font-mono">
               {currentUser.completedExams} امتحان
             </div>
           </div>
@@ -127,14 +127,14 @@ export function LeaderboardClient({
       )}
 
       {/* Filters Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-2xl bg-white dark:bg-[#111A2B] border border-slate-200 dark:border-slate-800 shadow-sm">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-3 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-2xs">
         {/* System tabs */}
-        <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-900 p-1 rounded-xl">
+        <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-900/80 p-1 rounded-xl">
           <button
             onClick={() => setSystemFilter("ALL")}
             className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
               systemFilter === "ALL"
-                ? "bg-white dark:bg-slate-800 text-[#6858EA] shadow-xs"
+                ? "bg-white dark:bg-[#131B2E] text-[#4F46E5] dark:text-indigo-400 shadow-2xs"
                 : "text-slate-500 hover:text-slate-900 dark:hover:text-white"
             }`}
           >
@@ -144,7 +144,7 @@ export function LeaderboardClient({
             onClick={() => setSystemFilter("الثانوية")}
             className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
               systemFilter === "الثانوية"
-                ? "bg-white dark:bg-slate-800 text-[#6858EA] shadow-xs"
+                ? "bg-white dark:bg-[#131B2E] text-[#4F46E5] dark:text-indigo-400 shadow-2xs"
                 : "text-slate-500 hover:text-slate-900 dark:hover:text-white"
             }`}
           >
@@ -154,7 +154,7 @@ export function LeaderboardClient({
             onClick={() => setSystemFilter("البكالوريا")}
             className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
               systemFilter === "البكالوريا"
-                ? "bg-white dark:bg-slate-800 text-[#6858EA] shadow-xs"
+                ? "bg-white dark:bg-[#131B2E] text-[#4F46E5] dark:text-indigo-400 shadow-2xs"
                 : "text-slate-500 hover:text-slate-900 dark:hover:text-white"
             }`}
           >
@@ -170,7 +170,7 @@ export function LeaderboardClient({
           <select
             value={metricFilter}
             onChange={(e) => setMetricFilter(e.target.value as any)}
-            className="h-9 px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs font-bold text-[#14243D] dark:text-white"
+            className="h-9 px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-bold text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#4F46E5]"
           >
             <option value="xp">نقاط الخبرة (XP)</option>
             <option value="exams">الامتحانات المكتملة</option>
@@ -184,21 +184,21 @@ export function LeaderboardClient({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">
           {/* Rank 2 (Silver) */}
           {top3[1] && (
-            <div className="order-2 md:order-1 p-5 rounded-3xl bg-white dark:bg-[#111A2B] border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col items-center text-center space-y-3 relative">
-              <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 flex items-center justify-center font-black text-slate-600 dark:text-slate-300 text-lg shadow-sm">
+            <div className="order-2 md:order-1 p-5 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-2xs flex flex-col items-center text-center space-y-3 relative">
+              <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 flex items-center justify-center font-bold text-slate-600 dark:text-slate-300 text-lg shadow-2xs">
                 🥈
               </div>
-              <span className="text-[11px] font-black text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2.5 py-0.5 rounded-full">
+              <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2.5 py-0.5 rounded-full">
                 المركز الثاني
               </span>
-              <h3 className="text-base font-black text-[#14243D] dark:text-white">
+              <h3 className="text-base font-bold text-[#0F172A] dark:text-white">
                 {top3[1].name}
               </h3>
               <p className="text-xs text-[#64748B] dark:text-[#94A3B8]">
                 {top3[1].systemName}
               </p>
-              <div className="pt-2 w-full flex items-center justify-around border-t border-slate-100 dark:border-slate-800 text-xs font-bold">
-                <span className="text-[#6858EA]">⚡ {top3[1].xp} XP</span>
+              <div className="pt-2 w-full flex items-center justify-around border-t border-slate-100 dark:border-slate-800 text-xs font-bold font-mono">
+                <span className="text-[#4F46E5]">⚡ {top3[1].xp} XP</span>
                 <span className="text-amber-500">🔥 {top3[1].streak} أيام</span>
               </div>
             </div>

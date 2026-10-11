@@ -207,7 +207,7 @@ export function ExamSolver({
   return (
     <div className="max-w-4xl mx-auto space-y-6 text-right font-ui pb-12">
       {/* Top Header Bar */}
-      <div className="p-4 sm:p-5 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <span className="text-[11px] font-bold text-[#4F46E5] block">
             {exam.subject.name} •{" "}
@@ -221,13 +221,13 @@ export function ExamSolver({
         <div className="flex items-center gap-3 self-start sm:self-center">
           {/* Timer Display */}
           <div
-            className={`px-3.5 py-1.5 rounded-lg border flex items-center gap-2 text-xs font-bold ${
+            className={`px-3.5 py-1.5 rounded-xl border flex items-center gap-2 text-xs font-mono font-bold ${
               isUrgent
-                ? "bg-[#DC2626]/10 border-[#DC2626]/30 text-[#DC2626] animate-pulse"
-                : "bg-[#F8FAFC] dark:bg-slate-900 border-[#E2E8F0] dark:border-slate-700 text-[#0F172A] dark:text-white"
+                ? "bg-rose-50 dark:bg-rose-950/40 border-rose-300 dark:border-rose-800 text-rose-600 animate-pulse"
+                : "bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-[#0F172A] dark:text-white"
             }`}
           >
-            <Clock className="w-4 h-4" weight="bold" />
+            <Clock className="w-4 h-4 text-[#4F46E5]" weight="bold" />
             <span dir="ltr">
               {String(minutes).padStart(2, "0")}:{String(seconds).padStart(2, "0")}
             </span>
@@ -236,7 +236,7 @@ export function ExamSolver({
           {/* Submit Button */}
           <button
             onClick={() => setShowConfirmModal(true)}
-            className="h-10 px-4 rounded-lg bg-[#059669] hover:bg-[#047857] text-white font-bold text-xs flex items-center gap-1.5 transition-colors"
+            className="h-9.5 px-4 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-xs flex items-center gap-1.5 transition-all active:scale-95 shadow-2xs"
           >
             <PaperPlaneTilt className="w-3.5 h-3.5" weight="bold" />
             <span>تسليم الامتحان</span>
@@ -245,7 +245,7 @@ export function ExamSolver({
       </div>
 
       {/* Question Navigator Carousel / Dots */}
-      <div className="p-4 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-slate-700 overflow-x-auto scrollbar-none">
+      <div className="p-3.5 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-2xs overflow-x-auto scrollbar-none">
         <div className="flex items-center gap-2 min-w-max">
           {questions.map((q, idx) => {
             const hasAnswer =
@@ -254,23 +254,23 @@ export function ExamSolver({
             const isActive = idx === currentIndex;
 
             let dotStyle =
-              "bg-[#F8FAFC] dark:bg-slate-900 border-[#E2E8F0] dark:border-slate-700 text-[#64748B]";
+              "bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-500 hover:border-slate-300";
             if (isActive) {
               dotStyle =
-                "bg-[#4F46E5] text-white border-[#4F46E5] font-bold";
+                "bg-indigo-50/70 dark:bg-indigo-950/40 border-2 border-[#4F46E5] text-[#4F46E5] dark:text-indigo-300 font-bold shadow-2xs";
             } else if (flagged) {
               dotStyle =
-                "bg-[#D97706]/10 border-[#D97706] text-[#D97706] font-bold";
+                "bg-amber-50 dark:bg-amber-950/40 border-amber-300 dark:border-amber-800 text-amber-600 font-bold";
             } else if (hasAnswer) {
               dotStyle =
-                "bg-[#059669]/10 border-[#059669]/40 text-[#059669] font-bold";
+                "bg-emerald-50 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-800 text-emerald-600 font-bold";
             }
 
             return (
               <button
                 key={q.id}
                 onClick={() => setCurrentIndex(idx)}
-                className={`w-9 h-9 rounded-lg border text-xs flex items-center justify-center transition-colors ${dotStyle}`}
+                className={`w-9 h-9 rounded-xl border text-xs font-mono flex items-center justify-center transition-all ${dotStyle}`}
               >
                 {idx + 1}
               </button>
@@ -281,14 +281,14 @@ export function ExamSolver({
 
       {/* Main Question Card */}
       {currentQ && (
-        <div className="p-6 sm:p-8 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-slate-700 space-y-6">
+        <div className="p-6 sm:p-8 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-2xs space-y-6">
           {/* Question Header & Badges */}
-          <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-slate-700 pb-4">
+          <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
             <div className="flex items-center gap-2">
-              <span className="px-3 py-1 rounded-md bg-[#4F46E5]/10 text-[#4F46E5] text-xs font-bold">
+              <span className="px-3 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 text-[#4F46E5] dark:text-indigo-300 text-xs font-bold border border-indigo-200/50 dark:border-indigo-800/50">
                 السؤال {currentIndex + 1} من {totalQuestions}
               </span>
-              <span className="px-2.5 py-1 rounded-md bg-[#F8FAFC] dark:bg-slate-900 text-[#64748B] dark:text-slate-300 text-[11px] font-bold">
+              <span className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[11px] font-bold border border-slate-200/50 dark:border-slate-700/50">
                 {currentQ.difficulty === "EASY"
                   ? "سهل"
                   : currentQ.difficulty === "MEDIUM"
@@ -299,10 +299,10 @@ export function ExamSolver({
 
             <button
               onClick={toggleFlag}
-              className={`px-3 py-1.5 rounded-md border text-xs font-bold flex items-center gap-1.5 transition-colors ${
+              className={`px-3 py-1.5 rounded-lg border text-xs font-bold flex items-center gap-1.5 transition-colors ${
                 isFlagged
-                  ? "bg-[#D97706]/10 border-[#D97706] text-[#D97706]"
-                  : "border-[#E2E8F0] dark:border-slate-700 text-[#64748B] hover:text-[#0F172A] dark:hover:text-slate-300"
+                  ? "bg-amber-50 dark:bg-amber-950/40 border-amber-300 text-amber-600"
+                  : "border-slate-200 dark:border-slate-700 text-slate-500 hover:text-[#0F172A] dark:hover:text-white"
               }`}
             >
               <Flag className={`w-3.5 h-3.5 ${isFlagged ? "fill-current" : ""}`} weight={isFlagged ? "fill" : "bold"} />
@@ -324,20 +324,20 @@ export function ExamSolver({
                   initialMode === "PRACTICE" && currentAnswer.practiceRevealed;
 
                 let cardStyle =
-                  "bg-[#F8FAFC] dark:bg-slate-900 border-[#E2E8F0] dark:border-slate-700 text-[#0F172A] dark:text-slate-200 hover:border-[#4F46E5]/50";
+                  "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-[#0F172A] dark:text-slate-200 hover:border-slate-300";
 
                 if (isSelected) {
                   cardStyle =
-                    "bg-[#4F46E5]/5 border-[#4F46E5] text-[#4F46E5] font-bold";
+                    "bg-indigo-50/70 dark:bg-indigo-950/40 border-2 border-[#4F46E5] text-[#0F172A] dark:text-white shadow-2xs font-bold";
                 }
 
                 if (isRevealed) {
                   if (opt.isCorrect) {
                     cardStyle =
-                      "bg-[#059669]/10 border-[#059669]/30 text-[#059669] font-bold";
+                      "bg-emerald-50 dark:bg-emerald-950/40 border-2 border-emerald-600 text-emerald-900 dark:text-emerald-200 font-bold";
                   } else if (isSelected && !opt.isCorrect) {
                     cardStyle =
-                      "bg-[#DC2626]/10 border-[#DC2626]/30 text-[#DC2626] font-bold";
+                      "bg-rose-50 dark:bg-rose-950/40 border-2 border-rose-600 text-rose-900 dark:text-rose-200 font-bold";
                   }
                 }
 
@@ -348,14 +348,14 @@ export function ExamSolver({
                     key={opt.id}
                     type="button"
                     onClick={() => handleSelectOption(opt.id)}
-                    className={`w-full p-4 rounded-lg border text-right text-xs sm:text-sm font-medium flex items-center justify-between gap-3 transition-colors font-content ${cardStyle}`}
+                    className={`w-full p-4 rounded-xl border text-right text-xs sm:text-sm font-medium flex items-center justify-between gap-3 transition-colors ${cardStyle}`}
                   >
                     <div className="flex items-center gap-3">
                       <div
-                        className={`w-7 h-7 rounded flex items-center justify-center text-xs font-bold shrink-0 ${
+                        className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-mono font-bold shrink-0 ${
                           isSelected
                             ? "bg-[#4F46E5] text-white"
-                            : "bg-[#E2E8F0] dark:bg-slate-800 text-[#64748B] dark:text-slate-300"
+                            : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200/60 dark:border-slate-700/60"
                         }`}
                       >
                         {arabicLetters[optIdx] || opt.order}
@@ -366,12 +366,12 @@ export function ExamSolver({
                     {isRevealed && (
                       <div>
                         {opt.isCorrect ? (
-                          <span className="text-[#059669] text-xs font-bold flex items-center gap-1">
+                          <span className="text-emerald-600 text-xs font-bold flex items-center gap-1">
                             <Check className="w-4 h-4" weight="bold" />
                             <span>الإجابة الصحيحة</span>
                           </span>
                         ) : isSelected ? (
-                          <span className="text-[#DC2626] text-xs font-bold">
+                          <span className="text-rose-600 text-xs font-bold">
                             إجابتك (غير صحيحة)
                           </span>
                         ) : null}
