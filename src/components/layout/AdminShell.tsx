@@ -34,7 +34,7 @@ export function AdminShell({ children, user }: AdminShellProps) {
   ];
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0B0F19] text-[#0F172A] dark:text-[#F8FAFC] text-right font-sans flex flex-col md:flex-row" dir="rtl">
+    <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0B0F19] text-[#0F172A] dark:text-[#E2E8F0] text-right font-sans flex flex-col md:flex-row" dir="rtl">
       {/* Sidebar for Desktop */}
       <aside className="w-full md:w-64 bg-[#0B0F19] text-white flex flex-col justify-between shrink-0 p-5 md:min-h-screen border-l border-slate-800">
         <div className="space-y-6">

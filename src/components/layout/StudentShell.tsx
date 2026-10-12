@@ -126,7 +126,7 @@ export function StudentShell({ children, user }: StudentShellProps) {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#F8FAFC] dark:bg-[#0B0F19] text-[#0F172A] dark:text-[#F8FAFC]">
+    <div className="min-h-screen flex flex-col bg-[#F8FAFC] dark:bg-[#0B0F19] text-[#0F172A] dark:text-[#E2E8F0]">
       {/* Desktop & Tablet Top Navbar (Vercel / Replit Style) */}
       <header className="sticky top-0 z-40 w-full bg-white/80 dark:bg-[#0B0F19]/80 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/80 transition-colors">
         <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 h-15 flex items-center justify-between gap-4">
@@ -222,41 +222,84 @@ export function StudentShell({ children, user }: StudentShellProps) {
         </div>
       </header>
 
-      {/* Main Content Area */}
-      <main className="flex-1 max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 pb-32 md:pb-12 w-full">
+      {/* Main Content Area - Generous bottom padding to ensure zero overlap with bottom dock */}
+      <main className="flex-1 max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 pb-44 md:pb-12 w-full">
         {children}
       </main>
 
-      {/* Mobile Bottom Navigation - 5 destinations */}
-      <nav aria-label="شريط التنقل السفلي" className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/90 dark:bg-[#0B0F19]/90 backdrop-blur-md border-t border-slate-200/80 dark:border-slate-800/80 px-1 py-1.5 pb-[max(0.75rem,env(safe-area-inset-bottom))] flex items-center justify-around shadow-xs">
+      {/* Mobile & Tablet Floating Dock Navigation - Distinctive, Modern & Ergonomic */}
+      <nav
+        aria-label="شريط التنقل السفلي"
+        className="md:hidden fixed bottom-3 inset-x-3 sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2 sm:w-[440px] z-40 bg-white/92 dark:bg-[#131B2E]/95 backdrop-blur-xl border border-slate-200/90 dark:border-slate-800/90 rounded-2xl sm:rounded-3xl shadow-[0_12px_36px_-6px_rgba(15,23,42,0.18)] dark:shadow-[0_16px_40px_-6px_rgba(0,0,0,0.6)] px-2 py-1.5 pb-[max(0.45rem,env(safe-area-inset-bottom))] flex items-center justify-around ring-1 ring-black/[0.04] dark:ring-white/[0.08]"
+      >
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive =
             pathname === item.href ||
             (item.href !== "/dashboard" && pathname.startsWith(item.href));
+          const isCenter = item.href === "/exams/builder";
+
+          if (isCenter) {
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="flex-1 flex flex-col items-center justify-center relative -mt-5 group active:scale-95 transition-transform"
+              >
+                <div
+                  className={cn(
+                    "w-11 h-11 rounded-2xl flex items-center justify-center shadow-lg transition-all border-2",
+                    isActive
+                      ? "bg-[#4F46E5] text-white border-white dark:border-[#131B2E] shadow-indigo-500/35 scale-105"
+                      : "bg-[#4F46E5] text-white border-white dark:border-[#131B2E] shadow-indigo-500/20 group-hover:scale-105"
+                  )}
+                >
+                  <Icon className="w-5 h-5" weight="fill" />
+                </div>
+                <span
+                  className={cn(
+                    "text-[10px] font-black leading-tight tracking-tight text-center mt-1 truncate max-w-[64px]",
+                    isActive
+                      ? "text-[#4F46E5] dark:text-indigo-400"
+                      : "text-slate-600 dark:text-slate-300"
+                  )}
+                >
+                  {item.label}
+                </span>
+              </Link>
+            );
+          }
 
           return (
             <Link
               key={item.href}
               href={item.href}
               className={cn(
-                "flex-1 flex flex-col items-center justify-center gap-1 py-1 px-1 rounded-xl transition-colors",
+                "flex-1 flex flex-col items-center justify-center gap-0.5 py-1 px-1 rounded-xl transition-all active:scale-95",
                 isActive
                   ? "text-[#4F46E5] dark:text-indigo-400 font-bold"
-                  : "text-[#64748B] dark:text-slate-400 font-medium hover:text-[#0F172A]"
+                  : "text-slate-500 dark:text-slate-400 font-medium hover:text-[#0F172A] dark:hover:text-slate-200"
               )}
             >
               <div
                 className={cn(
-                  "w-9 h-8 rounded-lg flex items-center justify-center transition-colors",
-                  isActive ? "bg-indigo-50 dark:bg-indigo-950/50" : ""
+                  "w-8.5 h-7.5 rounded-lg flex items-center justify-center transition-colors relative",
+                  isActive
+                    ? "bg-indigo-50 dark:bg-indigo-950/60"
+                    : "hover:bg-slate-100/70 dark:hover:bg-slate-800/60"
                 )}
               >
-                <Icon className="w-5 h-5" weight={isActive ? "fill" : "regular"} />
+                <Icon
+                  className="w-4.5 h-4.5"
+                  weight={isActive ? "fill" : "bold"}
+                />
               </div>
-              <span className="text-[11px] font-bold leading-tight tracking-tight text-center truncate max-w-[64px]">
+              <span className="text-[10px] font-bold leading-tight tracking-tight text-center truncate max-w-[60px]">
                 {item.label}
               </span>
+              {isActive && (
+                <span className="w-1 h-1 rounded-full bg-[#4F46E5] dark:bg-indigo-400 -mt-0.5" />
+              )}
             </Link>
           );
         })}

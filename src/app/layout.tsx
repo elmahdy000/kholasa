@@ -46,8 +46,24 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ar" dir="rtl" className={`${cairo.variable} ${ibmPlexArabic.variable}`}>
-      <body className="min-h-screen font-sans bg-[#F8FAFC] dark:bg-[#0B0F19] text-[#0F172A] dark:text-[#F8FAFC] antialiased selection:bg-[#4F46E5]/20 selection:text-[#4F46E5]">
+    <html lang="ar" dir="rtl" className={`${cairo.variable} ${ibmPlexArabic.variable}`} suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                const theme = localStorage.getItem('kholasa_theme');
+                if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                  document.documentElement.classList.add('dark');
+                } else {
+                  document.documentElement.classList.remove('dark');
+                }
+              } catch (_) {}
+            `,
+          }}
+        />
+      </head>
+      <body className="min-h-screen font-sans bg-[#F8FAFC] dark:bg-[#0B0F19] text-[#0F172A] dark:text-[#E2E8F0] antialiased selection:bg-[#4F46E5]/20 dark:selection:bg-indigo-500/30 selection:text-[#4F46E5] dark:selection:text-indigo-200">
         <PwaRegister />
         {children}
       </body>

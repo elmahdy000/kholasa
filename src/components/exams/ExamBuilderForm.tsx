@@ -248,7 +248,7 @@ export function ExamBuilderForm({
       : questionCount;
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-6 pb-12">
       {error && (
         <div className="p-4 rounded-xl bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/40 flex items-start gap-3">
           <AlertCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
@@ -401,7 +401,7 @@ export function ExamBuilderForm({
                       className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ${
                         isSelected
                           ? "bg-[#4F46E5] border-[#4F46E5] text-white"
-                          : "border-slate-300 dark:border-slate-600 bg-white"
+                          : "border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800"
                       }`}
                     >
                       {isSelected && <Check className="w-2.5 h-2.5 stroke-[3]" />}
@@ -527,7 +527,7 @@ export function ExamBuilderForm({
                     className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ${
                       isSelected
                         ? "bg-[#4F46E5] border-[#4F46E5] text-white"
-                        : "border-slate-300 dark:border-slate-600 bg-white"
+                        : "border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800"
                     }`}
                   >
                     {isSelected && <Check className="w-2.5 h-2.5 stroke-[3]" />}
@@ -578,7 +578,7 @@ export function ExamBuilderForm({
                     className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ${
                       isSelected
                         ? "bg-[#4F46E5] border-[#4F46E5] text-white"
-                        : "border-slate-300 dark:border-slate-600 bg-white"
+                        : "border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800"
                     }`}
                   >
                     {isSelected && <Check className="w-2.5 h-2.5 stroke-[3]" />}
@@ -690,7 +690,7 @@ export function ExamBuilderForm({
                   className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ${
                     mode === "PRACTICE"
                       ? "bg-[#4F46E5] border-[#4F46E5] text-white"
-                      : "border-slate-300 dark:border-slate-600 bg-white"
+                      : "border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800"
                   }`}
                 >
                   {mode === "PRACTICE" && <Check className="w-2.5 h-2.5 stroke-[3]" />}
@@ -717,7 +717,7 @@ export function ExamBuilderForm({
                   className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ${
                     mode === "EXAM"
                       ? "bg-[#4F46E5] border-[#4F46E5] text-white"
-                      : "border-slate-300 dark:border-slate-600 bg-white"
+                      : "border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800"
                   }`}
                 >
                   {mode === "EXAM" && <Check className="w-2.5 h-2.5 stroke-[3]" />}
@@ -831,7 +831,7 @@ export function ExamBuilderForm({
           <button
             type="submit"
             disabled={isSubmitting || (availableCount !== null && availableCount === 0)}
-            className="h-12 px-8 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white font-bold text-sm shadow-sm flex items-center justify-center gap-2 transition-colors active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
+            className="w-full sm:w-auto h-12 px-8 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white font-bold text-sm shadow-sm flex items-center justify-center gap-2 transition-colors active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
           >
             {isSubmitting ? (
               <>
