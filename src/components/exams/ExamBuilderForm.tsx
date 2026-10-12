@@ -295,8 +295,8 @@ export function ExamBuilderForm({
                 }}
                 className={`p-3.5 rounded-xl border text-right transition-colors flex items-center justify-between gap-3 ${
                   isSelected
-                    ? "bg-indigo-50/70 dark:bg-indigo-950/40 border-2 border-[#4F46E5] text-[#0F172A] dark:text-white shadow-2xs"
-                    : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-[#0F172A] dark:text-slate-200 hover:border-slate-300"
+                    ? "bg-indigo-50/70 dark:bg-indigo-950/50 border-2 border-[#4F46E5] dark:border-indigo-400 text-[#0F172A] dark:text-white shadow-2xs"
+                    : "bg-white dark:bg-slate-800/80 border-slate-200 dark:border-slate-700/80 text-[#0F172A] dark:text-slate-100 hover:border-slate-400 dark:hover:border-slate-500"
                 }`}
               >
                 <div className="flex items-center gap-2.5 truncate">
@@ -317,7 +317,7 @@ export function ExamBuilderForm({
                 <div
                   className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 transition-colors ${
                     isSelected
-                      ? "bg-[#4F46E5] border-[#4F46E5] text-white"
+                      ? "bg-[#4F46E5] dark:bg-indigo-500 border-[#4F46E5] dark:border-indigo-500 text-white"
                       : "border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800"
                   }`}
                 >
@@ -385,8 +385,8 @@ export function ExamBuilderForm({
                     onClick={() => setSelectedUnitId(u.id)}
                     className={`p-3 rounded-xl border text-right transition-colors flex items-center justify-between gap-3 ${
                       isSelected
-                        ? "bg-indigo-50/70 dark:bg-indigo-950/40 border-2 border-[#4F46E5] text-[#0F172A] dark:text-white shadow-2xs"
-                        : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-[#0F172A] dark:text-slate-200 hover:border-slate-300"
+                        ? "bg-indigo-50/70 dark:bg-indigo-950/50 border-2 border-[#4F46E5] dark:border-indigo-400 text-[#0F172A] dark:text-white shadow-2xs"
+                        : "bg-white dark:bg-slate-800/80 border-slate-200 dark:border-slate-700/80 text-[#0F172A] dark:text-slate-100 hover:border-slate-400 dark:hover:border-slate-500"
                     }`}
                   >
                     <div className="truncate">
@@ -400,7 +400,7 @@ export function ExamBuilderForm({
                     <div
                       className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ${
                         isSelected
-                          ? "bg-[#4F46E5] border-[#4F46E5] text-white"
+                          ? "bg-[#4F46E5] dark:bg-indigo-500 border-[#4F46E5] dark:border-indigo-500 text-white"
                           : "border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800"
                       }`}
                     >
@@ -518,15 +518,15 @@ export function ExamBuilderForm({
                   onClick={() => setQuestionType(t.id as any)}
                   className={`h-12 px-3.5 rounded-xl border text-right transition-colors flex items-center justify-between gap-2 ${
                     isSelected
-                      ? "bg-indigo-50/70 dark:bg-indigo-950/40 border-2 border-[#4F46E5] text-[#0F172A] dark:text-white shadow-2xs font-bold"
-                      : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-[#0F172A] dark:text-slate-200 hover:border-slate-300 font-medium"
+                      ? "bg-indigo-50/70 dark:bg-indigo-950/50 border-2 border-[#4F46E5] dark:border-indigo-400 text-[#0F172A] dark:text-white shadow-2xs font-bold"
+                      : "bg-white dark:bg-slate-800/80 border-slate-200 dark:border-slate-700/80 text-[#0F172A] dark:text-slate-100 hover:border-slate-400 dark:hover:border-slate-500 font-medium"
                   }`}
                 >
                   <span className="text-xs truncate">{t.label}</span>
                   <div
                     className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ${
                       isSelected
-                        ? "bg-[#4F46E5] border-[#4F46E5] text-white"
+                        ? "bg-[#4F46E5] dark:bg-indigo-500 border-[#4F46E5] dark:border-indigo-500 text-white"
                         : "border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800"
                     }`}
                   >
@@ -569,15 +569,15 @@ export function ExamBuilderForm({
                   onClick={() => setDifficulty(d.id as any)}
                   className={`h-12 px-3.5 rounded-xl border text-right transition-colors flex items-center justify-between gap-2 ${
                     isSelected
-                      ? "bg-indigo-50/70 dark:bg-indigo-950/40 border-2 border-[#4F46E5] text-[#0F172A] dark:text-white shadow-2xs font-bold"
-                      : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-[#0F172A] dark:text-slate-200 hover:border-slate-300 font-medium"
+                      ? "bg-indigo-50/70 dark:bg-indigo-950/50 border-2 border-[#4F46E5] dark:border-indigo-400 text-[#0F172A] dark:text-white shadow-2xs font-bold"
+                      : "bg-white dark:bg-slate-800/80 border-slate-200 dark:border-slate-700/80 text-[#0F172A] dark:text-slate-100 hover:border-slate-400 dark:hover:border-slate-500 font-medium"
                   }`}
                 >
                   <span className="text-xs truncate">{d.label}</span>
                   <div
                     className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ${
                       isSelected
-                        ? "bg-[#4F46E5] border-[#4F46E5] text-white"
+                        ? "bg-[#4F46E5] dark:bg-indigo-500 border-[#4F46E5] dark:border-indigo-500 text-white"
                         : "border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800"
                     }`}
                   >
@@ -634,12 +634,12 @@ export function ExamBuilderForm({
                     onClick={() => setQuestionCount(num)}
                     className={`h-12 rounded-xl border text-center transition-colors flex flex-col items-center justify-center ${
                       isSelected
-                        ? "bg-indigo-50/70 dark:bg-indigo-950/40 border-2 border-[#4F46E5] text-[#4F46E5] dark:text-indigo-300 font-bold shadow-2xs"
-                        : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-[#0F172A] dark:text-slate-200 hover:border-slate-300 font-medium"
+                        ? "bg-indigo-50/70 dark:bg-indigo-950/50 border-2 border-[#4F46E5] dark:border-indigo-400 text-[#4F46E5] dark:text-indigo-300 font-bold shadow-2xs"
+                        : "bg-white dark:bg-slate-800/80 border-slate-200 dark:border-slate-700/80 text-[#0F172A] dark:text-slate-100 hover:border-slate-400 dark:hover:border-slate-500 font-medium"
                     }`}
                   >
                     <span className="text-sm font-bold">{num}</span>
-                    <span className="text-[10px] text-slate-500 -mt-0.5">أسئلة</span>
+                    <span className="text-[10px] text-slate-500 dark:text-slate-400 -mt-0.5">أسئلة</span>
                   </button>
                 );
               })}
@@ -680,8 +680,8 @@ export function ExamBuilderForm({
               onClick={() => setMode("PRACTICE")}
               className={`p-3.5 rounded-xl border text-right transition-colors flex flex-col justify-between min-h-[82px] ${
                 mode === "PRACTICE"
-                  ? "bg-indigo-50/70 dark:bg-indigo-950/40 border-2 border-[#4F46E5] text-[#0F172A] dark:text-white shadow-2xs"
-                  : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-[#0F172A] dark:text-slate-200 hover:border-slate-300"
+                  ? "bg-indigo-50/70 dark:bg-indigo-950/50 border-2 border-[#4F46E5] dark:border-indigo-400 text-[#0F172A] dark:text-white shadow-2xs"
+                  : "bg-white dark:bg-slate-800/80 border-slate-200 dark:border-slate-700/80 text-[#0F172A] dark:text-slate-100 hover:border-slate-400 dark:hover:border-slate-500"
               }`}
             >
               <div className="flex items-center justify-between w-full">
@@ -689,7 +689,7 @@ export function ExamBuilderForm({
                 <div
                   className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ${
                     mode === "PRACTICE"
-                      ? "bg-[#4F46E5] border-[#4F46E5] text-white"
+                      ? "bg-[#4F46E5] dark:bg-indigo-500 border-[#4F46E5] dark:border-indigo-500 text-white"
                       : "border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800"
                   }`}
                 >
@@ -707,8 +707,8 @@ export function ExamBuilderForm({
               onClick={() => setMode("EXAM")}
               className={`p-3.5 rounded-xl border text-right transition-colors flex flex-col justify-between min-h-[82px] ${
                 mode === "EXAM"
-                  ? "bg-indigo-50/70 dark:bg-indigo-950/40 border-2 border-[#4F46E5] text-[#0F172A] dark:text-white shadow-2xs"
-                  : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-[#0F172A] dark:text-slate-200 hover:border-slate-300"
+                  ? "bg-indigo-50/70 dark:bg-indigo-950/50 border-2 border-[#4F46E5] dark:border-indigo-400 text-[#0F172A] dark:text-white shadow-2xs"
+                  : "bg-white dark:bg-slate-800/80 border-slate-200 dark:border-slate-700/80 text-[#0F172A] dark:text-slate-100 hover:border-slate-400 dark:hover:border-slate-500"
               }`}
             >
               <div className="flex items-center justify-between w-full">
@@ -716,7 +716,7 @@ export function ExamBuilderForm({
                 <div
                   className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ${
                     mode === "EXAM"
-                      ? "bg-[#4F46E5] border-[#4F46E5] text-white"
+                      ? "bg-[#4F46E5] dark:bg-indigo-500 border-[#4F46E5] dark:border-indigo-500 text-white"
                       : "border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800"
                   }`}
                 >
@@ -831,7 +831,7 @@ export function ExamBuilderForm({
           <button
             type="submit"
             disabled={isSubmitting || (availableCount !== null && availableCount === 0)}
-            className="w-full sm:w-auto h-12 px-8 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white font-bold text-sm shadow-sm flex items-center justify-center gap-2 transition-colors active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
+            className="w-full sm:w-auto h-12 px-8 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] dark:bg-indigo-600 dark:hover:bg-indigo-500 text-white font-bold text-sm shadow-sm flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
           >
             {isSubmitting ? (
               <>

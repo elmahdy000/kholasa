@@ -223,14 +223,14 @@ export function StudentShell({ children, user }: StudentShellProps) {
       </header>
 
       {/* Main Content Area - Generous bottom padding to ensure zero overlap with bottom dock */}
-      <main className="flex-1 max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 pb-44 md:pb-12 w-full">
+      <main className="flex-1 max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 pb-56 sm:pb-60 md:pb-16 w-full">
         {children}
       </main>
 
       {/* Mobile & Tablet Floating Dock Navigation - Distinctive, Modern & Ergonomic */}
       <nav
         aria-label="شريط التنقل السفلي"
-        className="md:hidden fixed bottom-3 inset-x-3 sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2 sm:w-[440px] z-40 bg-white/92 dark:bg-[#131B2E]/95 backdrop-blur-xl border border-slate-200/90 dark:border-slate-800/90 rounded-2xl sm:rounded-3xl shadow-[0_12px_36px_-6px_rgba(15,23,42,0.18)] dark:shadow-[0_16px_40px_-6px_rgba(0,0,0,0.6)] px-2 py-1.5 pb-[max(0.45rem,env(safe-area-inset-bottom))] flex items-center justify-around ring-1 ring-black/[0.04] dark:ring-white/[0.08]"
+        className="md:hidden fixed bottom-2.5 inset-x-2.5 sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2 sm:w-[420px] z-40 bg-white/95 dark:bg-[#111827]/95 backdrop-blur-2xl border border-slate-200/90 dark:border-slate-800/90 rounded-2xl sm:rounded-3xl shadow-[0_12px_36px_-6px_rgba(15,23,42,0.18)] dark:shadow-[0_16px_40px_-6px_rgba(0,0,0,0.7)] px-1.5 py-1 pb-[max(0.35rem,env(safe-area-inset-bottom))] flex items-center justify-around ring-1 ring-black/[0.04] dark:ring-white/[0.08]"
       >
         {navItems.map((item) => {
           const Icon = item.icon;
@@ -244,14 +244,14 @@ export function StudentShell({ children, user }: StudentShellProps) {
               <Link
                 key={item.href}
                 href={item.href}
-                className="flex-1 flex flex-col items-center justify-center relative -mt-5 group active:scale-95 transition-transform"
+                className="flex-1 flex flex-col items-center justify-center relative -mt-4 group active:scale-95 transition-transform"
               >
                 <div
                   className={cn(
-                    "w-11 h-11 rounded-2xl flex items-center justify-center shadow-lg transition-all border-2",
+                    "w-10 h-10 rounded-2xl flex items-center justify-center shadow-lg transition-all border-2",
                     isActive
-                      ? "bg-[#4F46E5] text-white border-white dark:border-[#131B2E] shadow-indigo-500/35 scale-105"
-                      : "bg-[#4F46E5] text-white border-white dark:border-[#131B2E] shadow-indigo-500/20 group-hover:scale-105"
+                      ? "bg-[#4F46E5] dark:bg-amber-500 text-white dark:text-slate-950 border-white dark:border-slate-900 shadow-indigo-500/35 dark:shadow-amber-500/30 scale-105"
+                      : "bg-[#4F46E5] dark:bg-amber-500 text-white dark:text-slate-950 border-white dark:border-slate-900 shadow-indigo-500/20 dark:shadow-amber-500/25 group-hover:scale-105"
                   )}
                 >
                   <Icon className="w-5 h-5" weight="fill" />
@@ -260,7 +260,7 @@ export function StudentShell({ children, user }: StudentShellProps) {
                   className={cn(
                     "text-[10px] font-black leading-tight tracking-tight text-center mt-1 truncate max-w-[64px]",
                     isActive
-                      ? "text-[#4F46E5] dark:text-indigo-400"
+                      ? "text-[#4F46E5] dark:text-amber-400"
                       : "text-slate-600 dark:text-slate-300"
                   )}
                 >
@@ -277,15 +277,15 @@ export function StudentShell({ children, user }: StudentShellProps) {
               className={cn(
                 "flex-1 flex flex-col items-center justify-center gap-0.5 py-1 px-1 rounded-xl transition-all active:scale-95",
                 isActive
-                  ? "text-[#4F46E5] dark:text-indigo-400 font-bold"
-                  : "text-slate-500 dark:text-slate-400 font-medium hover:text-[#0F172A] dark:hover:text-slate-200"
+                  ? "text-[#4F46E5] dark:text-white font-bold"
+                  : "text-slate-500 dark:text-slate-400 font-medium hover:text-[#0F172A] dark:hover:text-white"
               )}
             >
               <div
                 className={cn(
-                  "w-8.5 h-7.5 rounded-lg flex items-center justify-center transition-colors relative",
+                  "w-8.5 h-7 rounded-lg flex items-center justify-center transition-colors relative",
                   isActive
-                    ? "bg-indigo-50 dark:bg-indigo-950/60"
+                    ? "bg-indigo-50 dark:bg-slate-800 text-[#4F46E5] dark:text-amber-400"
                     : "hover:bg-slate-100/70 dark:hover:bg-slate-800/60"
                 )}
               >
@@ -298,7 +298,7 @@ export function StudentShell({ children, user }: StudentShellProps) {
                 {item.label}
               </span>
               {isActive && (
-                <span className="w-1 h-1 rounded-full bg-[#4F46E5] dark:bg-indigo-400 -mt-0.5" />
+                <span className="w-1.5 h-1.5 rounded-full bg-[#4F46E5] dark:bg-amber-400 -mt-0.5" />
               )}
             </Link>
           );

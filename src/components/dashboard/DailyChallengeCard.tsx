@@ -89,12 +89,12 @@ export function DailyChallengeCard({ question }: DailyChallengeCardProps) {
   const correctOption = question.options.find((o) => o.isCorrect);
 
   return (
-    <div className="rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-slate-700 p-5 sm:p-6">
+    <div className="rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 p-5 sm:p-6 shadow-sm mb-6">
       <div className="space-y-4">
         {/* Top Header */}
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#E2E8F0] dark:border-slate-700 pb-3">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-[#D97706]/10 text-[#D97706] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-[#D97706]/10 dark:bg-amber-950/40 text-[#D97706] dark:text-amber-400 flex items-center justify-center">
               <Lightning className="w-4 h-4" weight="fill" />
             </div>
             <div>
@@ -108,7 +108,7 @@ export function DailyChallengeCard({ question }: DailyChallengeCardProps) {
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-[11px] font-bold text-[#D97706] bg-[#D97706]/10 px-2.5 py-1 rounded-md border border-[#D97706]/20 flex items-center gap-1">
+            <span className="text-[11px] font-bold text-[#D97706] dark:text-amber-400 bg-[#D97706]/10 dark:bg-amber-950/40 px-2.5 py-1 rounded-md border border-[#D97706]/20 dark:border-amber-900/40 flex items-center gap-1">
               <Fire className="w-3.5 h-3.5" weight="fill" />
               <span>+20 XP مكافأة</span>
             </span>
@@ -123,27 +123,29 @@ export function DailyChallengeCard({ question }: DailyChallengeCardProps) {
         </div>
 
         {/* Options */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-          {question.options.map((opt) => {
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+          {question.options.map((opt, optIdx) => {
             const isSelected = selectedOptionId === opt.id;
             let btnStyle =
-              "bg-[#F8FAFC] dark:bg-slate-900 border-[#E2E8F0] dark:border-slate-700 text-[#0F172A] dark:text-white hover:border-[#4F46E5]";
+              "bg-[#F8FAFC] dark:bg-slate-800/80 border-slate-200 dark:border-slate-700/80 text-[#0F172A] dark:text-slate-100 hover:border-indigo-400 dark:hover:border-slate-500 hover:bg-white dark:hover:bg-slate-800";
 
             if (isAnswered) {
               if (opt.isCorrect) {
                 btnStyle =
-                  "bg-[#059669]/10 border-[#059669]/30 text-[#059669] font-bold";
+                  "bg-emerald-50 dark:bg-emerald-950/40 border-2 border-emerald-500 dark:border-emerald-400 text-emerald-900 dark:text-emerald-200 font-bold";
               } else if (isSelected && !opt.isCorrect) {
                 btnStyle =
-                  "bg-[#DC2626]/10 border-[#DC2626]/30 text-[#DC2626] font-bold";
+                  "bg-rose-50 dark:bg-rose-950/40 border-2 border-rose-500 dark:border-rose-400 text-rose-900 dark:text-rose-200 font-bold";
               } else {
                 btnStyle =
-                  "opacity-50 bg-[#F8FAFC] dark:bg-slate-900 border-[#E2E8F0] dark:border-slate-700 text-[#64748B]";
+                  "opacity-40 bg-[#F8FAFC] dark:bg-slate-800/40 border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400";
               }
             } else if (isSelected) {
               btnStyle =
-                "bg-[#4F46E5]/5 border-[#4F46E5] text-[#4F46E5] font-bold";
+                "bg-indigo-50/80 dark:bg-indigo-950/50 border-2 border-[#4F46E5] dark:border-indigo-400 text-[#0F172A] dark:text-white shadow-2xs font-bold";
             }
+
+            const arabicLetters = ["أ", "ب", "ج", "د", "هـ"];
 
             return (
               <button
@@ -151,26 +153,26 @@ export function DailyChallengeCard({ question }: DailyChallengeCardProps) {
                 type="button"
                 disabled={isAnswered}
                 onClick={() => setSelectedOptionId(opt.id)}
-                className={`p-3 rounded-lg border text-xs sm:text-sm text-right flex items-center justify-between gap-3 transition-colors ${btnStyle}`}
+                className={`p-3.5 rounded-xl border text-xs sm:text-sm text-right flex items-center justify-between gap-3 transition-all ${btnStyle}`}
               >
                 <div className="flex items-center gap-2.5">
                   <span
-                    className={`w-5 h-5 rounded flex items-center justify-center text-[10px] font-bold shrink-0 ${
+                    className={`w-6 h-6 rounded-lg flex items-center justify-center text-xs font-mono font-bold shrink-0 transition-colors ${
                       isSelected
-                        ? "bg-[#4F46E5] text-white"
-                        : "bg-[#E2E8F0] dark:bg-slate-700 text-[#64748B]"
+                        ? "bg-[#4F46E5] dark:bg-indigo-500 text-white shadow-xs"
+                        : "bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300"
                     }`}
                   >
-                    {isAnswered && opt.isCorrect ? "✓" : isAnswered && isSelected ? "✗" : "•"}
+                    {isAnswered && opt.isCorrect ? "✓" : isAnswered && isSelected ? "✗" : arabicLetters[optIdx] || "•"}
                   </span>
                   <span>{opt.text}</span>
                 </div>
 
                 {isAnswered && opt.isCorrect && (
-                  <CheckCircle className="w-4 h-4 text-[#059669] shrink-0" weight="fill" />
+                  <CheckCircle className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" weight="fill" />
                 )}
                 {isAnswered && isSelected && !opt.isCorrect && (
-                  <XCircle className="w-4 h-4 text-[#DC2626] shrink-0" weight="fill" />
+                  <XCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0" weight="fill" />
                 )}
               </button>
             );
@@ -183,7 +185,7 @@ export function DailyChallengeCard({ question }: DailyChallengeCardProps) {
             <button
               onClick={handleSubmit}
               disabled={!selectedOptionId}
-              className="h-10 px-6 rounded-lg bg-[#4F46E5] hover:bg-[#4338CA] disabled:opacity-40 text-white text-xs font-bold flex items-center gap-2 transition-colors"
+              className="w-full sm:w-auto h-11 px-8 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] dark:bg-indigo-600 dark:hover:bg-indigo-500 disabled:opacity-40 text-white text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-sm active:scale-95"
             >
               <Sparkle className="w-4 h-4" weight="bold" />
               <span>تأكيد الإجابة وربح XP</span>

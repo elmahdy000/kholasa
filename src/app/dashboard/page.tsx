@@ -133,7 +133,7 @@ export default async function DashboardPage() {
 
       {/* Daily Challenge Card */}
       {dailyQuestion && (
-        <div className="mt-8">
+        <div className="mt-8 mb-24 sm:mb-20">
           <DailyChallengeCard question={dailyQuestion as any} />
         </div>
       )}

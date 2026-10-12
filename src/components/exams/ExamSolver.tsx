@@ -324,11 +324,11 @@ export function ExamSolver({
                   initialMode === "PRACTICE" && currentAnswer.practiceRevealed;
 
                 let cardStyle =
-                  "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-[#0F172A] dark:text-slate-200 hover:border-slate-300";
+                  "bg-white dark:bg-slate-800/80 border-slate-200 dark:border-slate-700/80 text-[#0F172A] dark:text-slate-100 hover:border-indigo-400 dark:hover:border-slate-500";
 
                 if (isSelected) {
                   cardStyle =
-                    "bg-indigo-50/70 dark:bg-indigo-950/40 border-2 border-[#4F46E5] text-[#0F172A] dark:text-white shadow-2xs font-bold";
+                    "bg-indigo-50/70 dark:bg-indigo-950/50 border-2 border-[#4F46E5] dark:border-indigo-400 text-[#0F172A] dark:text-white shadow-2xs font-bold";
                 }
 
                 if (isRevealed) {
@@ -354,8 +354,8 @@ export function ExamSolver({
                       <div
                         className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-mono font-bold shrink-0 ${
                           isSelected
-                            ? "bg-[#4F46E5] text-white"
-                            : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200/60 dark:border-slate-700/60"
+                            ? "bg-[#4F46E5] dark:bg-indigo-500 text-white"
+                            : "bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200/60 dark:border-slate-600/60"
                         }`}
                       >
                         {arabicLetters[optIdx] || opt.order}
