@@ -39,68 +39,63 @@ export default async function ExamsHubPage() {
   return (
     <StudentShell user={user}>
       <div className="space-y-8 text-right font-sans">
-        {/* Hero Section */}
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#0B1120] via-[#0F172A] to-[#1E1B4B]/60 border border-slate-800/80 p-6 sm:p-8 lg:p-10 text-white shadow-xl shadow-indigo-950/20">
-          {/* Ambient decorative glows */}
-          <div className="absolute -top-24 -left-24 w-96 h-96 bg-indigo-600/15 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-24 -right-24 w-80 h-80 bg-violet-600/10 rounded-full blur-3xl pointer-events-none" />
-
-          <div className="relative z-10 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-8">
+        {/* Compact & Refined Hero Section */}
+        <div className="relative overflow-hidden rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 p-5 sm:p-6 lg:p-7 shadow-2xs">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             {/* Text & Actions */}
-            <div className="flex-1 space-y-4 sm:space-y-5 max-w-2xl">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-500/15 text-indigo-300 text-xs font-bold border border-indigo-500/25 backdrop-blur-md">
-                <Sparkles className="w-4 h-4 text-indigo-400" />
+            <div className="space-y-3 max-w-xl">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/50 text-[#4F46E5] dark:text-indigo-400 text-xs font-bold border border-indigo-200/60 dark:border-indigo-800/60">
+                <Sparkles className="w-3.5 h-3.5" />
                 <span>منصة الاختبارات والتقييم الذكي</span>
               </div>
 
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black leading-tight text-white tracking-tight">
-                اختبر مستواك، اكتشف نقاط قوتك، واضمن تفوقك الدراسي
+              <h1 className="text-xl sm:text-2xl font-black text-[#0F172A] dark:text-white leading-snug">
+                اختبر تحصيلك، وحدد نقاط قوتك وضعفك بدقة
               </h1>
 
-              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-xl">
-                اختر بين التدريب المفتوح مع التفسير الفوري لكل خطوة، أو خوض امتحانات واقعية بمؤقت زمني لتدريب نفسك على بيئة الامتحان الحقيقي.
+              <p className="text-xs sm:text-sm text-[#475569] dark:text-slate-300 leading-relaxed font-medium">
+                اختر بين التدريب المفتوح مع التفسير الفوري لكل خطوة، أو خوض امتحانات واقعية بمؤقت زمني لتدريب نفسك على أجواء الامتحان النهائي.
               </p>
 
-              {/* Value features */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 pt-1 text-slate-300 text-[11px] sm:text-xs font-medium">
-                <div className="flex items-center gap-1.5 bg-slate-800/60 dark:bg-slate-900/60 border border-slate-700/60 px-2.5 py-1.5 rounded-lg backdrop-blur-xs">
-                  <Clock className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+              {/* Compact Value Points */}
+              <div className="flex flex-wrap items-center gap-4 pt-1 text-[11px] sm:text-xs font-semibold text-slate-500 dark:text-slate-400">
+                <span className="flex items-center gap-1.5">
+                  <Clock className="w-3.5 h-3.5 text-indigo-500" />
                   <span>مؤقت زمني دقيق</span>
-                </div>
-                <div className="flex items-center gap-1.5 bg-slate-800/60 dark:bg-slate-900/60 border border-slate-700/60 px-2.5 py-1.5 rounded-lg backdrop-blur-xs">
-                  <Zap className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <Zap className="w-3.5 h-3.5 text-amber-500" />
                   <span>تفسير فوري للإجابات</span>
-                </div>
-                <div className="flex items-center gap-1.5 bg-slate-800/60 dark:bg-slate-900/60 border border-slate-700/60 px-2.5 py-1.5 rounded-lg backdrop-blur-xs col-span-2 sm:col-span-1">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
                   <span>تحليل نقاط الضعف</span>
-                </div>
+                </span>
               </div>
 
-              {/* Primary CTA */}
-              <div className="pt-2 flex flex-wrap items-center gap-3">
+              {/* CTA Button */}
+              <div className="pt-2">
                 <Link
                   href="/exams/builder"
-                  className="h-11 sm:h-12 px-6 sm:px-7 rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white font-bold text-xs sm:text-sm flex items-center gap-2.5 shadow-lg shadow-indigo-600/25 transition-all active:scale-95 group"
+                  className="h-10 px-5 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-xs sm:text-sm font-bold inline-flex items-center gap-2 shadow-2xs transition-all active:scale-95 group"
                 >
-                  <SlidersHorizontal className="w-4 h-4 text-indigo-200" />
+                  <SlidersHorizontal className="w-3.5 h-3.5" />
                   <span>صمم اختبارك المخصص الآن</span>
-                  <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+                  <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-1" />
                 </Link>
               </div>
             </div>
 
-            {/* 3D Hero Illustration */}
-            <div className="relative w-full lg:w-[380px] xl:w-[440px] aspect-[4/3] rounded-2xl overflow-hidden border border-slate-700/60 shadow-2xl shadow-indigo-950/60 group shrink-0 self-center">
+            {/* Compact 3D Illustration */}
+            <div className="relative w-36 h-36 sm:w-44 sm:h-44 md:w-48 md:h-48 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-md shrink-0 self-center">
               <Image
                 src="/images/exams-hero.jpg"
                 alt="منصة الاختبارات والتقييم الذكي"
                 fill
                 priority
-                className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                sizes="(max-width: 1024px) 100vw, 440px"
+                className="object-cover transition-transform duration-500 hover:scale-105"
+                sizes="(max-width: 768px) 176px, 192px"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0F172A]/70 via-transparent to-transparent pointer-events-none" />
             </div>
           </div>
         </div>
