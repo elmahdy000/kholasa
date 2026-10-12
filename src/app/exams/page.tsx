@@ -1,17 +1,16 @@
 import Link from "next/link";
+import Image from "next/image";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { StudentShell } from "@/components/layout/StudentShell";
+import { BidiStatement } from "@/components/ui/BidiStatement";
 import {
   Zap,
   SlidersHorizontal,
   Clock,
   CheckCircle2,
-  AlertCircle,
-  HelpCircle,
   ArrowLeft,
   Sparkles,
-  Trophy,
   History,
 } from "lucide-react";
 
@@ -41,30 +40,67 @@ export default async function ExamsHubPage() {
     <StudentShell user={user}>
       <div className="space-y-8 text-right font-sans">
         {/* Hero Section */}
-        <div className="relative overflow-hidden rounded-2xl bg-[#0F172A] border border-slate-800 p-6 sm:p-10 text-white shadow-sm">
-          <div className="relative z-10 max-w-2xl space-y-4">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-indigo-500/15 text-indigo-300 text-xs font-bold border border-indigo-500/25">
-              <Sparkles className="w-4 h-4 text-amber-300" />
-              <span>محرك الامتحانات الذكي والتكيفي</span>
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#0B1120] via-[#0F172A] to-[#1E1B4B]/60 border border-slate-800/80 p-6 sm:p-8 lg:p-10 text-white shadow-xl shadow-indigo-950/20">
+          {/* Ambient decorative glows */}
+          <div className="absolute -top-24 -left-24 w-96 h-96 bg-indigo-600/15 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-24 -right-24 w-80 h-80 bg-violet-600/10 rounded-full blur-3xl pointer-events-none" />
+
+          <div className="relative z-10 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-8">
+            {/* Text & Actions */}
+            <div className="flex-1 space-y-4 sm:space-y-5 max-w-2xl">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-500/15 text-indigo-300 text-xs font-bold border border-indigo-500/25 backdrop-blur-md">
+                <Sparkles className="w-4 h-4 text-indigo-400" />
+                <span>منصة الاختبارات والتقييم الذكي</span>
+              </div>
+
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black leading-tight text-white tracking-tight">
+                اختبر مستواك، اكتشف نقاط قوتك، واضمن تفوقك الدراسي
+              </h1>
+
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-xl">
+                اختر بين التدريب المفتوح مع التفسير الفوري لكل خطوة، أو خوض امتحانات واقعية بمؤقت زمني لتدريب نفسك على بيئة الامتحان الحقيقي.
+              </p>
+
+              {/* Value features */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 pt-1 text-slate-300 text-[11px] sm:text-xs font-medium">
+                <div className="flex items-center gap-1.5 bg-slate-800/60 dark:bg-slate-900/60 border border-slate-700/60 px-2.5 py-1.5 rounded-lg backdrop-blur-xs">
+                  <Clock className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+                  <span>مؤقت زمني دقيق</span>
+                </div>
+                <div className="flex items-center gap-1.5 bg-slate-800/60 dark:bg-slate-900/60 border border-slate-700/60 px-2.5 py-1.5 rounded-lg backdrop-blur-xs">
+                  <Zap className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                  <span>تفسير فوري للإجابات</span>
+                </div>
+                <div className="flex items-center gap-1.5 bg-slate-800/60 dark:bg-slate-900/60 border border-slate-700/60 px-2.5 py-1.5 rounded-lg backdrop-blur-xs col-span-2 sm:col-span-1">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <span>تحليل نقاط الضعف</span>
+                </div>
+              </div>
+
+              {/* Primary CTA */}
+              <div className="pt-2 flex flex-wrap items-center gap-3">
+                <Link
+                  href="/exams/builder"
+                  className="h-11 sm:h-12 px-6 sm:px-7 rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white font-bold text-xs sm:text-sm flex items-center gap-2.5 shadow-lg shadow-indigo-600/25 transition-all active:scale-95 group"
+                >
+                  <SlidersHorizontal className="w-4 h-4 text-indigo-200" />
+                  <span>صمم اختبارك المخصص الآن</span>
+                  <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+                </Link>
+              </div>
             </div>
 
-            <h1 className="text-2xl sm:text-3xl font-black leading-tight text-white">
-              اختبر مستواك، اكتشف نقاط ضعفك، وحقق الدرجة النهائية
-            </h1>
-
-            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-              اختر بين التدريب المفتوح مع التفسير الفوري لكل خطوة، أو خوض امتحانات حقيقية بمؤقت لتدريب نفسك على أجواء الامتحان النهائي.
-            </p>
-
-            <div className="pt-2 flex flex-wrap items-center gap-3">
-              <Link
-                href="/exams/builder"
-                className="h-11 px-6 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white font-bold text-xs sm:text-sm flex items-center gap-2 shadow-sm transition-colors active:scale-95"
-              >
-                <SlidersHorizontal className="w-4 h-4" />
-                <span>صمم اختبارك المخصص الآن</span>
-                <ArrowLeft className="w-4 h-4" />
-              </Link>
+            {/* 3D Hero Illustration */}
+            <div className="relative w-full lg:w-[380px] xl:w-[440px] aspect-[4/3] rounded-2xl overflow-hidden border border-slate-700/60 shadow-2xl shadow-indigo-950/60 group shrink-0 self-center">
+              <Image
+                src="/images/exams-hero.jpg"
+                alt="منصة الاختبارات والتقييم الذكي"
+                fill
+                priority
+                className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                sizes="(max-width: 1024px) 100vw, 440px"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0F172A]/70 via-transparent to-transparent pointer-events-none" />
             </div>
           </div>
         </div>
@@ -93,7 +129,7 @@ export default async function ExamsHubPage() {
                 <div>
                   <div className="flex items-center justify-between gap-2 mb-2">
                     <span className="px-2.5 py-1 rounded-lg bg-[#6858EA]/10 text-[#6858EA] text-[11px] font-black">
-                      {exam.subject.name}
+                      <BidiStatement as="span" text={exam.subject.name} />
                     </span>
                     <span className="flex items-center gap-1 text-[11px] font-bold text-[#64748B] dark:text-[#94A3B8]">
                       <Clock className="w-3.5 h-3.5" />
@@ -102,12 +138,12 @@ export default async function ExamsHubPage() {
                   </div>
 
                   <h3 className="text-sm sm:text-base font-black text-[#14243D] dark:text-white leading-snug">
-                    {exam.title}
+                    <BidiStatement as="span" text={exam.title} />
                   </h3>
 
                   {exam.description && (
                     <p className="text-xs text-[#64748B] dark:text-[#94A3B8] mt-1 line-clamp-2">
-                      {exam.description}
+                      <BidiStatement as="span" text={exam.description} />
                     </p>
                   )}
                 </div>
@@ -157,7 +193,7 @@ export default async function ExamsHubPage() {
                     </div>
                     <div>
                       <h4 className="text-sm font-black text-[#14243D] dark:text-white">
-                        {attempt.title}
+                        <BidiStatement as="span" text={attempt.title} />
                       </h4>
                       <div className="flex items-center gap-3 text-xs text-[#64748B] dark:text-[#94A3B8] font-bold mt-1">
                         <span>
