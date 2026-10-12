@@ -15,6 +15,7 @@ import {
   BookOpen,
   Upload,
 } from "lucide-react";
+import { BidiStatement } from "@/components/ui/BidiStatement";
 
 interface QuestionOption {
   id: string;
@@ -280,9 +281,11 @@ export function QuestionBankManagerClient({
             </div>
 
             {/* Statement */}
-            <h3 className="text-sm sm:text-base font-black text-[#14243D] dark:text-white leading-relaxed">
-              {q.statement}
-            </h3>
+            <BidiStatement
+              as="h3"
+              text={q.statement}
+              className="text-sm sm:text-base font-black text-[#14243D] dark:text-white leading-relaxed"
+            />
 
             {/* Options */}
             {q.options && q.options.length > 0 && (
@@ -296,7 +299,7 @@ export function QuestionBankManagerClient({
                         : "bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300"
                     }`}
                   >
-                    <span>{opt.text}</span>
+                    <BidiStatement as="span" text={opt.text} />
                     {opt.isCorrect && (
                       <span className="text-[10px] font-black text-emerald-600">
                         (صحيح)

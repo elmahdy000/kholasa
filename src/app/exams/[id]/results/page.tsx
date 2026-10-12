@@ -19,6 +19,7 @@ import {
   Bookmark,
   Share2,
 } from "lucide-react";
+import { BidiStatement } from "@/components/ui/BidiStatement";
 
 interface ExamResultsPageProps {
   params: Promise<{ id: string }>;
@@ -312,16 +313,18 @@ export default async function ExamResultsPage({
                         href={`/lessons/${relatedLesson.id}`}
                         className="text-xs font-bold text-[#4F46E5] dark:text-indigo-400 hover:underline flex items-center gap-1"
                       >
-                        <span>مراجعة الدرس: {relatedLesson.title}</span>
+                        <span>مراجعة الدرس: <BidiStatement as="span" text={relatedLesson.title} /></span>
                         <ArrowLeft className="w-3 h-3" />
                       </Link>
                     )}
                   </div>
 
                   {/* Statement */}
-                  <h3 className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-white leading-relaxed">
-                    {q.statement}
-                  </h3>
+                  <BidiStatement
+                    as="h3"
+                    text={q.statement}
+                    className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-white leading-relaxed"
+                  />
 
                   {/* MCQ Options comparison */}
                   <div className="space-y-2">
@@ -347,7 +350,7 @@ export default async function ExamResultsPage({
                             <span className="w-5 h-5 rounded-md bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center justify-center text-[10px] font-mono font-bold shrink-0">
                               {opt.order}
                             </span>
-                            <span>{opt.text}</span>
+                            <BidiStatement as="span" text={opt.text} />
                           </div>
 
                           <div>

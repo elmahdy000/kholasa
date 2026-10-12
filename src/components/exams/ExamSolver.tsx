@@ -19,6 +19,7 @@ import {
   SpinnerGap,
   Warning,
 } from "@phosphor-icons/react";
+import { BidiStatement } from "@/components/ui/BidiStatement";
 
 interface QuestionOption {
   id: string;
@@ -213,9 +214,11 @@ export function ExamSolver({
             {exam.subject.name} •{" "}
             {initialMode === "PRACTICE" ? "وضع التدريب الفوري" : "وضع الامتحان الرسمي"}
           </span>
-          <h1 className="text-base sm:text-lg font-bold text-[#0F172A] dark:text-white">
-            {exam.title}
-          </h1>
+          <BidiStatement
+            as="h1"
+            text={exam.title}
+            className="text-base sm:text-lg font-bold text-[#0F172A] dark:text-white"
+          />
         </div>
 
         <div className="flex items-center gap-3 self-start sm:self-center">
@@ -311,9 +314,11 @@ export function ExamSolver({
           </div>
 
           {/* Statement */}
-          <h2 className="text-base sm:text-lg font-bold text-[#0F172A] dark:text-white leading-relaxed font-content">
-            {currentQ.statement}
-          </h2>
+          <BidiStatement
+            as="h2"
+            text={currentQ.statement}
+            className="text-base sm:text-lg font-bold text-[#0F172A] dark:text-white leading-relaxed font-content"
+          />
 
           {/* MCQ / TRUE_FALSE Options */}
           {(currentQ.type === "MCQ" || currentQ.type === "TRUE_FALSE") && (
@@ -360,7 +365,7 @@ export function ExamSolver({
                       >
                         {arabicLetters[optIdx] || opt.order}
                       </div>
-                      <span>{opt.text}</span>
+                      <BidiStatement as="span" text={opt.text} />
                     </div>
 
                     {isRevealed && (
@@ -444,7 +449,9 @@ export function ExamSolver({
                           key={opt.id}
                           className="text-[11px] text-[#64748B] dark:text-slate-400 flex items-start gap-1.5 font-content"
                         >
-                          <span className="font-bold shrink-0">• {opt.text}:</span>
+                          <span className="font-bold shrink-0">
+                            • <BidiStatement as="span" text={opt.text} />:
+                          </span>
                           <span>
                             {opt.explanation ||
                               (opt.isCorrect

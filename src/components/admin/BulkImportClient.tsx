@@ -16,6 +16,7 @@ import {
   Sparkles,
   HelpCircle,
 } from "lucide-react";
+import { BidiStatement } from "@/components/ui/BidiStatement";
 
 interface Subject {
   id: string;
@@ -548,9 +549,11 @@ export function BulkImportClient({ subjects }: BulkImportClientProps) {
                           </span>
                         </div>
 
-                        <h4 className="text-sm font-black text-[#14243D] dark:text-white leading-relaxed">
-                          {q.statement}
-                        </h4>
+                        <BidiStatement
+                          as="h4"
+                          text={q.statement}
+                          className="text-sm font-black text-[#14243D] dark:text-white leading-relaxed"
+                        />
 
                         {/* Options preview */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
@@ -563,7 +566,7 @@ export function BulkImportClient({ subjects }: BulkImportClientProps) {
                                   : "bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300"
                               }`}
                             >
-                              <span>{opt.text}</span>
+                              <BidiStatement as="span" text={opt.text} />
                               {opt.isCorrect && (
                                 <span className="text-[10px] bg-emerald-500 text-white px-2 py-0.5 rounded-full font-bold flex items-center gap-1">
                                   <CheckCircle2 className="w-3 h-3" />

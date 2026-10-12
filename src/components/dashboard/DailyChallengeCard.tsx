@@ -10,6 +10,7 @@ import {
   Sparkle,
   ArrowLeft,
 } from "@phosphor-icons/react";
+import { BidiStatement } from "@/components/ui/BidiStatement";
 
 interface Option {
   id: string;
@@ -102,7 +103,7 @@ export function DailyChallengeCard({ question }: DailyChallengeCardProps) {
                 تحدي اليوم السريع
               </span>
               <span className="text-[10px] text-[#64748B] dark:text-slate-400 font-medium block">
-                {question.subject.name} {question.unit ? `• ${question.unit.title}` : ""}
+                <BidiStatement as="span" text={question.subject.name} /> {question.unit ? `• ${question.unit.title}` : ""}
               </span>
             </div>
           </div>
@@ -117,9 +118,11 @@ export function DailyChallengeCard({ question }: DailyChallengeCardProps) {
 
         {/* Question Statement */}
         <div className="text-right">
-          <p className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-white leading-relaxed font-content">
-            {question.statement}
-          </p>
+          <BidiStatement
+            as="p"
+            text={question.statement}
+            className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-white leading-relaxed font-content"
+          />
         </div>
 
         {/* Options */}
@@ -165,7 +168,7 @@ export function DailyChallengeCard({ question }: DailyChallengeCardProps) {
                   >
                     {arabicLetters[optIdx] || "•"}
                   </span>
-                  <span>{opt.text}</span>
+                  <BidiStatement as="span" text={opt.text} />
                 </div>
 
                 {isAnswered && opt.isCorrect && (

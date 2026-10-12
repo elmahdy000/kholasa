@@ -21,6 +21,7 @@ import {
   WarningCircle,
   XCircle,
 } from "@phosphor-icons/react";
+import { BidiStatement } from "@/components/ui/BidiStatement";
 
 interface LessonContent {
   id: string;
@@ -977,9 +978,11 @@ export function LessonViewer({
                     </span>
                   </div>
 
-                  <h4 className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-white leading-relaxed font-content">
-                    {question.statement}
-                  </h4>
+                  <BidiStatement
+                    as="h4"
+                    text={question.statement}
+                    className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-white leading-relaxed font-content"
+                  />
 
                   {/* Options */}
                   <div className="space-y-2.5">
@@ -1014,7 +1017,7 @@ export function LessonViewer({
                             <span className="w-6 h-6 rounded bg-[#E2E8F0] dark:bg-slate-800 text-[#64748B] dark:text-slate-300 flex items-center justify-center text-xs font-bold shrink-0">
                               {opt.order}
                             </span>
-                            <span>{opt.text}</span>
+                            <BidiStatement as="span" text={opt.text} />
                           </div>
 
                           {isRevealed && (
@@ -1060,7 +1063,7 @@ export function LessonViewer({
                             className="text-[11px] text-[#64748B] dark:text-slate-400 flex items-start gap-1.5 font-content"
                           >
                             <span className="font-bold shrink-0">
-                              • {opt.text}:
+                              • <BidiStatement as="span" text={opt.text} />:
                             </span>
                             <span>
                               {opt.explanation ||

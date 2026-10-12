@@ -15,6 +15,7 @@ import {
   Sparkles,
   Trophy,
 } from "lucide-react";
+import { BidiStatement } from "@/components/ui/BidiStatement";
 
 interface QuestionOption {
   id: string;
@@ -249,10 +250,10 @@ export function MistakeHubClient({
                 }`}
               >
                 {/* Header */}
-                <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-                  <div className="flex items-center gap-2">
-                    <span className="px-2.5 py-0.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 text-[#4F46E5] dark:text-indigo-300 text-[11px] font-bold border border-indigo-200/50 dark:border-indigo-800/50">
-                      {q.subject.name}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-3.5">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 text-[#4F46E5] dark:text-indigo-300 text-[11px] font-bold border border-indigo-200/50 dark:border-indigo-800/50">
+                      <BidiStatement as="span" text={q.subject.name} />
                     </span>
                     {mistake.wrongCount > 1 && (
                       <span className="px-2 py-0.5 rounded-lg bg-rose-50 dark:bg-rose-950/40 text-rose-600 text-[10px] font-bold border border-rose-200/50 dark:border-rose-900/50">
@@ -270,19 +271,23 @@ export function MistakeHubClient({
                   {relatedLesson && (
                     <Link
                       href={`/lessons/${relatedLesson.id}`}
-                      className="text-xs font-bold text-[#4F46E5] hover:underline flex items-center gap-1"
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors shrink min-w-0 max-w-full sm:max-w-md group"
                     >
-                      <BookOpen className="w-3.5 h-3.5" />
-                      <span>شرح الدرس: {relatedLesson.title}</span>
-                      <ArrowLeft className="w-3 h-3" />
+                      <BookOpen className="w-3.5 h-3.5 shrink-0 text-indigo-500" />
+                      <span className="truncate">
+                        شرح الدرس: <BidiStatement as="span" text={relatedLesson.title} />
+                      </span>
+                      <ArrowLeft className="w-3 h-3 shrink-0 transition-transform group-hover:-translate-x-0.5" />
                     </Link>
                   )}
                 </div>
 
                 {/* Statement */}
-                <h3 className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-white leading-relaxed">
-                  {q.statement}
-                </h3>
+                <BidiStatement
+                  as="h3"
+                  text={q.statement}
+                  className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-white leading-relaxed"
+                />
 
                 {/* Inline Options to Retake */}
                 <div className="space-y-2">
@@ -318,7 +323,7 @@ export function MistakeHubClient({
                           <span className="w-5 h-5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center justify-center text-[10px] font-mono font-bold shrink-0 border border-slate-200/60 dark:border-slate-700/60">
                             {opt.order}
                           </span>
-                          <span>{opt.text}</span>
+                          <BidiStatement as="span" text={opt.text} />
                         </div>
 
                         {isChecked && (
