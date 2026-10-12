@@ -565,8 +565,9 @@ export function BulkImportClient({ subjects }: BulkImportClientProps) {
                             >
                               <span>{opt.text}</span>
                               {opt.isCorrect && (
-                                <span className="text-[10px] bg-emerald-500 text-white px-2 py-0.5 rounded-full">
-                                  صحيح ✓
+                                <span className="text-[10px] bg-emerald-500 text-white px-2 py-0.5 rounded-full font-bold flex items-center gap-1">
+                                  <CheckCircle2 className="w-3 h-3" />
+                                  <span>صحيح</span>
                                 </span>
                               )}
                             </div>

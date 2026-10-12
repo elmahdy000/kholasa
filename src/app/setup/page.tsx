@@ -39,10 +39,10 @@ export default async function SetupPage() {
             خ
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#0F172A] dark:text-white">
-            أهلاً بك في الخلاصة! 👋
+            مرحباً بك في منصة الخلاصة
           </h1>
           <p className="text-xs sm:text-sm text-[#64748B] dark:text-[#94A3B8] max-w-md mx-auto leading-relaxed">
-            عشان نجهز لك تجربة تعليمية مخصصة تماماً، محتاجين نعرف نظامك الدراسي والصف الحالي.
+            لتخصيص خطتك الدراسية ومحتوى المنهج بدقة، يرجى تحديد النظام التعليمي والصف الدراسي الحالي.
           </p>
         </div>
 

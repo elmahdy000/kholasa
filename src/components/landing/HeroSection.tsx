@@ -132,8 +132,9 @@ export function HeroSection() {
                 <span className="text-xs font-bold text-[#0F172A] dark:text-white block">
                   5 أيام متواصلة
                 </span>
-                <span className="text-[10px] text-amber-600 dark:text-amber-400 font-bold block">
-                  ⚡ 450 XP مكتسبة
+                <span className="text-[10px] text-amber-600 dark:text-amber-400 font-bold flex items-center gap-1">
+                  <Zap className="w-3 h-3 fill-amber-500 text-amber-500" />
+                  <span>450 XP مكتسبة</span>
                 </span>
               </div>
             </div>
@@ -148,7 +149,7 @@ export function HeroSection() {
                   ركن غلطاتي: 100%
                 </span>
                 <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold block">
-                  تم علاج كافة الأخطاء ✓
+                  تم علاج كافة الأخطاء
                 </span>
               </div>
             </div>
@@ -211,8 +212,9 @@ export function HeroSection() {
                       <div className="flex items-center justify-between w-full">
                         <span className="font-bold">{opt.text}</span>
                         {demoSelected !== null && opt.isCorrect && (
-                          <span className="text-[10px] bg-emerald-600 text-white px-2 py-0.5 rounded-full font-bold">
-                            صحيح ✓
+                          <span className="text-[10px] bg-emerald-600 text-white px-2 py-0.5 rounded-full font-bold flex items-center gap-1">
+                            <Check className="w-3 h-3" />
+                            <span>صحيح</span>
                           </span>
                         )}
                       </div>
@@ -229,7 +231,7 @@ export function HeroSection() {
               {/* Micro Tip */}
               {demoSelected === null ? (
                 <p className="text-[11px] text-center text-slate-400 font-medium pt-1">
-                  👆 اضغط على أحد الاختيارين لترى التفسير اللحظي
+                  اختر أحد البديلين لمعاينة التفسير العلمي الفوري.
                 </p>
               ) : (
                 <div className="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/40 flex items-start gap-2 text-xs">

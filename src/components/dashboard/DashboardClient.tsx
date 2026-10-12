@@ -84,10 +84,10 @@ export function DashboardClient({
               <span>دفعة 2026 • خطتك الدراسية مستمرة بنشاط</span>
             </div>
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#0F172A] dark:text-white leading-tight">
-              أهلاً بك، {userName || "يا بطل"}! 👋
+              مرحباً بك، {userName || "طالبنا العزيز"}
             </h1>
             <p className="text-xs sm:text-sm text-[#475569] dark:text-slate-400 font-medium max-w-lg leading-relaxed">
-              جاهز لرحلة مذاكرة اليوم؟ افهم المفاهيم خطوة بخطوة بالزتونة، واختبر نفسك فوراً.
+              جاهز لجلسة الاستذكار اليوم؟ استوعب المفاهيم خطوة بخطوة بالخلاصة المركزة، واختبر تحصيلك فوراً.
             </p>
           </div>
 

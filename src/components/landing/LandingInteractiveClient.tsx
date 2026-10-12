@@ -18,6 +18,7 @@ import {
   ShieldCheck,
   Check,
   X,
+  AlertTriangle,
 } from "lucide-react";
 
 export function LandingInteractiveClient() {
@@ -133,8 +134,9 @@ export function LandingInteractiveClient() {
                   الدعامة والحركة في الكائنات الحية
                 </h3>
               </div>
-              <span className="text-xs font-bold bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 px-3 py-1 rounded-full border border-amber-200 dark:border-amber-800">
-                ⭐ الزتونة لا تزيد عن 3 دقائق قراءة
+              <span className="text-xs font-bold bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 px-3 py-1 rounded-full border border-amber-200 dark:border-amber-800 flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>ملخص مركز في 3 دقائق</span>
               </span>
             </div>
 
@@ -149,8 +151,9 @@ export function LandingInteractiveClient() {
               </div>
 
               <div className="p-4 rounded-2xl bg-amber-50/60 dark:bg-amber-950/30 border border-amber-200/60 dark:border-amber-900/40 space-y-2">
-                <span className="text-xs font-black text-amber-600 dark:text-amber-400 block">
-                  ⚠️ تكة امتحان ثانوية عامة مكررة:
+                <span className="text-xs font-black text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
+                  <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />
+                  <span>تكة امتحان ثانوية عامة مكررة:</span>
                 </span>
                 <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
                   فقدان الماء بعملية النتح السريع في وقت الظهيرة يؤدي لفقدان الدعامة الفسيولوجية مؤقتاً، وتستعاد عند الري ليلاً بامتصاص الماء.
@@ -269,7 +272,7 @@ export function LandingInteractiveClient() {
 
             {!demoSubmitted && (
               <p className="text-center text-xs text-slate-400">
-                👆 اضغط على أي اختيار لتجربة رؤية التحليل التفسيري الفوري
+                اضغط على أي اختيار لمعاينة التحليل التفسيري الفوري.
               </p>
             )}
           </div>
@@ -318,9 +321,10 @@ export function LandingInteractiveClient() {
               <div className="flex items-center justify-end">
                 <button
                   type="button"
-                  className="h-8 px-4 rounded-lg bg-[#4F46E5] hover:bg-[#4338CA] text-white text-xs font-bold transition-colors interactive-tap"
+                  className="h-8 px-4 rounded-lg bg-[#4F46E5] hover:bg-[#4338CA] text-white text-xs font-bold transition-colors interactive-tap flex items-center gap-1.5"
                 >
-                  إعادة المحاولة وحذف الغلطة ✓
+                  <Check className="w-3.5 h-3.5" />
+                  <span>إعادة المحاولة وحذف الخطأ</span>
                 </button>
               </div>
             </div>
@@ -390,7 +394,7 @@ export function LandingInteractiveClient() {
           <div className="grid grid-cols-3 p-4 bg-slate-100 dark:bg-slate-900 font-bold text-xs sm:text-sm text-[#0F172A] dark:text-white border-b border-slate-200 dark:border-slate-800 text-center">
             <div>المعيار</div>
             <div className="text-rose-500 font-bold">الطرق التقليدية</div>
-            <div className="text-[#4F46E5] dark:text-indigo-400 font-bold">منصة الخلاصة ⚡</div>
+            <div className="text-[#4F46E5] dark:text-indigo-400 font-bold">منصة الخلاصة</div>
           </div>
 
           <div className="divide-y divide-slate-100 dark:divide-slate-800 text-xs sm:text-sm">

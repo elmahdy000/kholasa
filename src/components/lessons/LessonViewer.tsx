@@ -18,6 +18,8 @@ import {
   Check,
   Lightbulb,
   ShareNetwork,
+  WarningCircle,
+  XCircle,
 } from "@phosphor-icons/react";
 
 interface LessonContent {
@@ -353,7 +355,7 @@ export function LessonViewer({
               className={`w-4 h-4 ${isCompleted ? "fill-white/20" : ""}`}
               weight={isCompleted ? "fill" : "bold"}
             />
-            <span>{isCompleted ? "تم الإنجاز ✓" : "تحديد كمكتمل"}</span>
+            <span>{isCompleted ? "تم إكمال الدرس" : "تحديد كمكتمل"}</span>
           </button>
         </div>
       </div>
@@ -690,7 +692,7 @@ export function LessonViewer({
                 lesson.summary.examTips.length > 0 && (
                   <div className="p-6 rounded-xl bg-[#D97706]/5 border border-[#D97706]/20 space-y-4">
                     <h3 className="text-sm font-bold text-[#D97706] flex items-center gap-2">
-                      <span className="text-base">⚠️</span>
+                      <WarningCircle className="w-4 h-4 text-[#D97706]" weight="fill" />
                       <span>تنبيهات وتكات امتحانية هامة</span>
                     </h3>
                     <ul className="space-y-2">
@@ -709,7 +711,7 @@ export function LessonViewer({
                 (lesson.summary.commonMistakes as Mistake[]).length > 0 && (
                   <div className="p-6 rounded-xl bg-[#DC2626]/5 border border-[#DC2626]/20 space-y-4">
                     <h3 className="text-sm font-bold text-[#DC2626] flex items-center gap-2">
-                      <span className="text-base">✗</span>
+                      <XCircle className="w-4 h-4 text-[#DC2626]" weight="fill" />
                       <span>أخطاء شائعة يجب تجنبها</span>
                     </h3>
                     <div className="space-y-2.5">

@@ -352,13 +352,15 @@ export default async function ExamResultsPage({
 
                           <div>
                             {opt.isCorrect && (
-                              <span className="text-emerald-600 dark:text-emerald-400 text-xs font-bold">
-                                ✅ الإجابة الصحيحة
+                              <span className="text-emerald-600 dark:text-emerald-400 text-xs font-bold inline-flex items-center gap-1.5">
+                                <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                                <span>الإجابة الصحيحة</span>
                               </span>
                             )}
                             {isUserChoice && !opt.isCorrect && (
-                              <span className="text-red-600 dark:text-red-400 text-xs font-bold">
-                                ❌ اختيارك
+                              <span className="text-rose-600 dark:text-rose-400 text-xs font-bold inline-flex items-center gap-1.5">
+                                <XCircle className="w-3.5 h-3.5 shrink-0" />
+                                <span>اختيارك</span>
                               </span>
                             )}
                           </div>

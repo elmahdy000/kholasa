@@ -11,7 +11,7 @@ export function SiteHeader() {
     { label: "المميزات", href: "#features" },
     { label: "الزتونة الذهبية", href: "#demo" },
     { label: "المقارنة", href: "#comparison" },
-    { label: "لوحة المتصدرين 🏆", href: "/leaderboard" },
+    { label: "لوحة المتصدرين", href: "/leaderboard" },
     { label: "الأسئلة الشائعة", href: "#faq" },
   ];
 

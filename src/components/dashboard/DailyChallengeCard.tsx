@@ -99,7 +99,7 @@ export function DailyChallengeCard({ question }: DailyChallengeCardProps) {
             </div>
             <div>
               <span className="text-xs font-bold text-[#0F172A] dark:text-white block">
-                تحدي اليوم السريع ⚡
+                تحدي اليوم السريع
               </span>
               <span className="text-[10px] text-[#64748B] dark:text-slate-400 font-medium block">
                 {question.subject.name} {question.unit ? `• ${question.unit.title}` : ""}
@@ -163,7 +163,7 @@ export function DailyChallengeCard({ question }: DailyChallengeCardProps) {
                         : "bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300"
                     }`}
                   >
-                    {isAnswered && opt.isCorrect ? "✓" : isAnswered && isSelected ? "✗" : arabicLetters[optIdx] || "•"}
+                    {arabicLetters[optIdx] || "•"}
                   </span>
                   <span>{opt.text}</span>
                 </div>
@@ -198,7 +198,7 @@ export function DailyChallengeCard({ question }: DailyChallengeCardProps) {
                 <CheckCircle className="w-5 h-5 text-[#059669] shrink-0 mt-0.5" weight="fill" />
                 <div className="space-y-1">
                   <span className="text-xs font-bold text-[#059669] block">
-                    إجابة عبقرية! 🎉 +20 XP لحسابك
+                    إجابة صحيحة ومتقنة! +20 XP لحسابك
                   </span>
                   {question.explanation?.correctReason && (
                     <p className="text-xs text-[#0F172A] dark:text-slate-300 font-content">
@@ -226,7 +226,7 @@ export function DailyChallengeCard({ question }: DailyChallengeCardProps) {
             {/* Lesson link or Mistake link */}
             <div className="flex flex-wrap items-center justify-between gap-2 pt-1 text-xs">
               <span className="text-[11px] text-[#64748B] dark:text-slate-400">
-                {hasSavedToday ? "تم تسجيل مشاركتك اليومية بنجاح 🌟" : ""}
+                {hasSavedToday ? "تم تسجيل مشاركتك اليومية بنجاح." : ""}
               </span>
               <Link
                 href="/exams/builder"

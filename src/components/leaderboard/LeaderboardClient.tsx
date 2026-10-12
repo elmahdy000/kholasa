@@ -73,7 +73,7 @@ export function LeaderboardClient({
               <span>لوحة الشرف وتصنيف الدفعة 2026</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
-              متصدرو دفعة الخلاصة 🏆
+              متصدرو دفعة الخلاصة
             </h1>
             <p className="text-xs sm:text-sm text-slate-300 font-medium max-w-xl leading-relaxed">
               نافس زملاءك، حل الامتحانات، واجمع نقاط الخبرة لتصعد إلى قمة الترتيب وتحصل على أوسمة التميز التعليمية.
@@ -112,8 +112,9 @@ export function LeaderboardClient({
           </div>
 
           <div className="flex items-center gap-3 text-xs font-bold">
-            <div className="px-3 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 border border-[#4F46E5]/20 text-[#4F46E5] dark:text-indigo-400 font-mono">
-              ⚡ {currentUser.xp} XP
+            <div className="px-3 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 border border-[#4F46E5]/20 text-[#4F46E5] dark:text-indigo-400 font-mono flex items-center gap-1">
+              <Zap className="w-3.5 h-3.5 fill-current" />
+              <span>{currentUser.xp} XP</span>
             </div>
             <div className="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-amber-600 dark:text-amber-400 flex items-center gap-1 font-mono">
               <Flame className="w-3.5 h-3.5 fill-amber-500" />
@@ -185,8 +186,8 @@ export function LeaderboardClient({
           {/* Rank 2 (Silver) */}
           {top3[1] && (
             <div className="order-2 md:order-1 p-5 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-2xs flex flex-col items-center text-center space-y-3 relative">
-              <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 flex items-center justify-center font-bold text-slate-600 dark:text-slate-300 text-lg shadow-2xs">
-                🥈
+              <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 flex items-center justify-center font-bold text-slate-600 dark:text-slate-300 shadow-2xs">
+                <Medal className="w-6 h-6 text-slate-400 dark:text-slate-300" />
               </div>
               <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2.5 py-0.5 rounded-full">
                 المركز الثاني
@@ -198,8 +199,14 @@ export function LeaderboardClient({
                 {top3[1].systemName}
               </p>
               <div className="pt-2 w-full flex items-center justify-around border-t border-slate-100 dark:border-slate-800 text-xs font-bold font-mono">
-                <span className="text-[#4F46E5]">⚡ {top3[1].xp} XP</span>
-                <span className="text-amber-500">🔥 {top3[1].streak} أيام</span>
+                <span className="text-[#4F46E5] flex items-center gap-1">
+                  <Zap className="w-3.5 h-3.5 fill-current" />
+                  <span>{top3[1].xp} XP</span>
+                </span>
+                <span className="text-amber-500 flex items-center gap-1">
+                  <Flame className="w-3.5 h-3.5 fill-current" />
+                  <span>{top3[1].streak} أيام</span>
+                </span>
               </div>
             </div>
           )}
@@ -211,11 +218,11 @@ export function LeaderboardClient({
                 <Crown className="w-3.5 h-3.5 fill-current" />
                 <span>متصدر الدفعة الأول</span>
               </div>
-              <div className="w-16 h-16 rounded-2xl bg-amber-500 text-white flex items-center justify-center font-bold text-2xl shadow-2xs">
-                👑
+              <div className="w-16 h-16 rounded-2xl bg-amber-500 text-white flex items-center justify-center shadow-2xs">
+                <Crown className="w-8 h-8 fill-current" />
               </div>
               <span className="text-xs font-bold text-[#D97706] dark:text-amber-400 bg-amber-100 dark:bg-amber-950/60 px-3 py-0.5 rounded-full">
-                🥇 المركز الأول
+                المركز الأول
               </span>
               <h3 className="text-lg font-black text-[#0F172A] dark:text-white">
                 {top3[0].name}
@@ -224,8 +231,14 @@ export function LeaderboardClient({
                 {top3[0].systemName} • {top3[0].gradeName}
               </p>
               <div className="pt-2 w-full flex items-center justify-around border-t border-amber-200/50 dark:border-amber-900/40 text-xs font-bold">
-                <span className="text-[#4F46E5] text-sm font-black">⚡ {top3[0].xp} XP</span>
-                <span className="text-amber-600">🔥 {top3[0].streak} أيام</span>
+                <span className="text-[#4F46E5] text-sm font-black flex items-center gap-1">
+                  <Zap className="w-3.5 h-3.5 fill-current" />
+                  <span>{top3[0].xp} XP</span>
+                </span>
+                <span className="text-amber-600 flex items-center gap-1">
+                  <Flame className="w-3.5 h-3.5 fill-current" />
+                  <span>{top3[0].streak} أيام</span>
+                </span>
                 <span className="text-emerald-600">
                   {top3[0].completedExams} امتحان
                 </span>
@@ -236,8 +249,8 @@ export function LeaderboardClient({
           {/* Rank 3 (Bronze) */}
           {top3[2] && (
             <div className="order-3 md:order-3 p-5 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-2xs flex flex-col items-center text-center space-y-3 relative">
-              <div className="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-700/60 flex items-center justify-center font-bold text-amber-800 dark:text-amber-400 text-lg">
-                🥉
+              <div className="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-700/60 flex items-center justify-center shadow-2xs">
+                <Medal className="w-6 h-6 text-amber-700 dark:text-amber-400" />
               </div>
               <span className="text-[11px] font-bold text-[#D97706] dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 px-2.5 py-0.5 rounded-full">
                 المركز الثالث
@@ -249,8 +262,14 @@ export function LeaderboardClient({
                 {top3[2].systemName}
               </p>
               <div className="pt-2 w-full flex items-center justify-around border-t border-slate-100 dark:border-slate-800 text-xs font-bold">
-                <span className="text-[#4F46E5]">⚡ {top3[2].xp} XP</span>
-                <span className="text-amber-500">🔥 {top3[2].streak} أيام</span>
+                <span className="text-[#4F46E5] flex items-center gap-1">
+                  <Zap className="w-3.5 h-3.5 fill-current" />
+                  <span>{top3[2].xp} XP</span>
+                </span>
+                <span className="text-amber-500 flex items-center gap-1">
+                  <Flame className="w-3.5 h-3.5 fill-current" />
+                  <span>{top3[2].streak} أيام</span>
+                </span>
               </div>
             </div>
           )}
@@ -298,9 +317,13 @@ export function LeaderboardClient({
               </div>
 
               <div className="flex items-center gap-4 text-xs font-bold">
-                <span className="text-[#4F46E5]">⚡ {user.xp} XP</span>
-                <span className="hidden sm:inline text-amber-500">
-                  🔥 {user.streak}د
+                <span className="text-[#4F46E5] flex items-center gap-1">
+                  <Zap className="w-3.5 h-3.5 fill-current" />
+                  <span>{user.xp} XP</span>
+                </span>
+                <span className="hidden sm:inline text-amber-500 flex items-center gap-1">
+                  <Flame className="w-3.5 h-3.5 fill-current" />
+                  <span>{user.streak} أيام</span>
                 </span>
                 <span className="text-emerald-600 dark:text-emerald-400">
                   {user.completedExams} امتحانات

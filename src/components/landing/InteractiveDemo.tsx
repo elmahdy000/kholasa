@@ -10,6 +10,8 @@ import {
   Brain,
   Zap,
   ArrowLeft,
+  Clock,
+  AlertTriangle,
 } from "lucide-react";
 
 export function InteractiveDemo() {
@@ -102,8 +104,9 @@ export function InteractiveDemo() {
                   الدعامة والحركة في الكائنات الحية
                 </h3>
               </div>
-              <span className="text-xs font-bold bg-amber-50 dark:bg-amber-950/40 text-[#D97706] dark:text-amber-400 px-3 py-1.5 rounded-full border border-amber-200 dark:border-amber-900/50 shrink-0">
-                ⏱️ مدة القراءة: 3 دقائق فقط
+              <span className="text-xs font-bold bg-amber-50 dark:bg-amber-950/40 text-[#D97706] dark:text-amber-400 px-3 py-1.5 rounded-full border border-amber-200 dark:border-amber-900/50 shrink-0 flex items-center gap-1.5">
+                <Clock className="w-3.5 h-3.5" />
+                <span>مدة القراءة: 3 دقائق</span>
               </span>
             </div>
 
@@ -118,8 +121,9 @@ export function InteractiveDemo() {
               </div>
 
               <div className="p-4 rounded-xl bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-900/40 space-y-2">
-                <span className="text-xs font-bold text-[#D97706] dark:text-amber-400 block">
-                  ⚠️ تكة امتحان ثانوية عامة مكررة:
+                <span className="text-xs font-bold text-[#D97706] dark:text-amber-400 flex items-center gap-1.5">
+                  <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />
+                  <span>نقطة امتحانية هامة ومكررة:</span>
                 </span>
                 <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed font-medium">
                   عملية النتح في منتصف النهار تفقد النبات الدعامة الفسيولوجية جزئياً فيذبل مؤقتاً، وتستعاد بمجرد الري وامتصاص الماء ليلاً.
@@ -233,7 +237,7 @@ export function InteractiveDemo() {
 
             {selectedDemoOption === null && (
               <p className="text-center text-xs text-slate-400 font-medium">
-                👆 اضغط على أي اختيار لتجربة رؤية التحليل التفسيري الفوري
+                اضغط على أي اختيار لمعاينة التحليل التفسيري الفوري.
               </p>
             )}
           </div>

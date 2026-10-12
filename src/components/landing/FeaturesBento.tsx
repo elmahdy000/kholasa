@@ -60,7 +60,7 @@ export function FeaturesBento() {
                 <Sparkles className="w-5 h-5 fill-current" />
               </div>
               <div className="inline-block px-2.5 py-0.5 rounded-md bg-amber-100 dark:bg-amber-950/60 text-[#D97706] dark:text-amber-400 text-[10px] font-bold">
-                ⭐ كبسولة المراجعة السريعة
+                كبسولة المراجعة السريعة
               </div>
               <h3 className="text-xl font-black text-[#0F172A] dark:text-white">
                 2. الزتونة الذهبية
