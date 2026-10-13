@@ -156,11 +156,11 @@ export function DailyChallengeCard({ question }: DailyChallengeCardProps) {
                 type="button"
                 disabled={isAnswered}
                 onClick={() => setSelectedOptionId(opt.id)}
-                className={`p-3.5 rounded-xl border text-xs sm:text-sm text-right flex items-center justify-between gap-3 transition-all ${btnStyle}`}
+                className={`p-3.5 sm:p-4 rounded-xl border text-xs sm:text-sm text-right flex items-start sm:items-center justify-between gap-3 transition-all ${btnStyle}`}
               >
-                <div className="flex items-center gap-2.5">
+                <div className="flex items-start sm:items-center gap-2.5 min-w-0 flex-1">
                   <span
-                    className={`w-6 h-6 rounded-lg flex items-center justify-center text-xs font-mono font-bold shrink-0 transition-colors ${
+                    className={`w-6 h-6 rounded-lg flex items-center justify-center text-xs font-mono font-bold shrink-0 mt-0.5 sm:mt-0 transition-colors ${
                       isSelected
                         ? "bg-[#4F46E5] dark:bg-indigo-500 text-white shadow-xs"
                         : "bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300"
@@ -168,14 +168,16 @@ export function DailyChallengeCard({ question }: DailyChallengeCardProps) {
                   >
                     {arabicLetters[optIdx] || "•"}
                   </span>
-                  <BidiStatement as="span" text={opt.text} />
+                  <div className="min-w-0 flex-1 leading-relaxed">
+                    <BidiStatement as="span" text={opt.text} />
+                  </div>
                 </div>
 
                 {isAnswered && opt.isCorrect && (
-                  <CheckCircle className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" weight="fill" />
+                  <CheckCircle className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5 sm:mt-0" weight="fill" />
                 )}
                 {isAnswered && isSelected && !opt.isCorrect && (
-                  <XCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0" weight="fill" />
+                  <XCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5 sm:mt-0" weight="fill" />
                 )}
               </button>
             );
@@ -188,37 +190,37 @@ export function DailyChallengeCard({ question }: DailyChallengeCardProps) {
             <button
               onClick={handleSubmit}
               disabled={!selectedOptionId}
-              className="w-full sm:w-auto h-11 px-8 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] dark:bg-indigo-600 dark:hover:bg-indigo-500 disabled:opacity-40 text-white text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-sm active:scale-95"
+              className="w-full sm:w-auto h-11 px-8 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] dark:bg-indigo-600 dark:hover:bg-indigo-500 disabled:opacity-40 text-white text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-2xs active:scale-95"
             >
               <Sparkle className="w-4 h-4" weight="bold" />
-              <span>تأكيد الإجابة وربح XP</span>
+              <span>أكّد إجابتك واكسب XP</span>
             </button>
           </div>
         ) : (
           <div className="pt-3 space-y-3">
             {isCorrect ? (
-              <div className="p-3.5 rounded-lg bg-[#059669]/10 border border-[#059669]/20 text-right flex items-start gap-3">
-                <CheckCircle className="w-5 h-5 text-[#059669] shrink-0 mt-0.5" weight="fill" />
+              <div className="p-3.5 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/40 border border-emerald-200/60 dark:border-emerald-800/60 text-right flex items-start gap-3">
+                <CheckCircle className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" weight="fill" />
                 <div className="space-y-1">
-                  <span className="text-xs font-bold text-[#059669] block">
-                    إجابة صحيحة ومتقنة! +20 XP لحسابك
+                  <span className="text-xs font-bold text-emerald-700 dark:text-emerald-300 block">
+                    صح يا بطل! برافو عليك (+20 XP لحسابك)
                   </span>
                   {question.explanation?.correctReason && (
-                    <p className="text-xs text-[#0F172A] dark:text-slate-300 font-content">
+                    <p className="text-xs text-[#0F172A] dark:text-slate-300 font-content leading-relaxed">
                       {question.explanation.correctReason}
                     </p>
                   )}
                 </div>
               </div>
             ) : (
-              <div className="p-3.5 rounded-lg bg-[#DC2626]/10 border border-[#DC2626]/20 text-right flex items-start gap-3">
-                <XCircle className="w-5 h-5 text-[#DC2626] shrink-0 mt-0.5" weight="fill" />
+              <div className="p-3.5 rounded-xl bg-rose-50/70 dark:bg-rose-950/40 border border-rose-200/60 dark:border-rose-800/60 text-right flex items-start gap-3">
+                <XCircle className="w-5 h-5 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" weight="fill" />
                 <div className="space-y-1">
-                  <span className="text-xs font-bold text-[#DC2626] block">
-                    فرصة للتعلم! الإجابة الصحيحة هي: {correctOption?.text}
+                  <span className="text-xs font-bold text-rose-700 dark:text-rose-300 block">
+                    ولا يهمك، المهم نتعلم! الإجابة الصح هي: {correctOption?.text}
                   </span>
                   {question.explanation?.correctReason && (
-                    <p className="text-xs text-[#0F172A] dark:text-slate-300 font-content">
+                    <p className="text-xs text-[#0F172A] dark:text-slate-300 font-content leading-relaxed">
                       {question.explanation.correctReason}
                     </p>
                   )}

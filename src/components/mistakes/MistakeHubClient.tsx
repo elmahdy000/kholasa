@@ -141,7 +141,7 @@ export function MistakeHubClient({
               {unresolvedCount}
             </span>
             <span className="text-xs font-bold text-[#475569] dark:text-slate-400">
-              أخطاء تحتاج لتصحيح
+              أسئلة محتاجة تتظبّط
             </span>
           </div>
           <div className="w-10 h-10 rounded-xl bg-rose-50 dark:bg-rose-950/40 text-rose-600 flex items-center justify-center">
@@ -155,7 +155,7 @@ export function MistakeHubClient({
               {resolvedCount}
             </span>
             <span className="text-xs font-bold text-[#475569] dark:text-slate-400">
-              أخطاء تم التغلب عليها
+              أسئلة قفلتها وظبّطتها
             </span>
           </div>
           <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 flex items-center justify-center">
@@ -169,7 +169,7 @@ export function MistakeHubClient({
               {masteryPercentage}%
             </span>
             <span className="text-xs font-bold text-[#475569] dark:text-slate-400">
-              نسبة التعافي والإتقان
+              نسبة التمكّن والتثبيت
             </span>
           </div>
           <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 text-[#4F46E5] dark:text-indigo-400 flex items-center justify-center">
@@ -257,13 +257,13 @@ export function MistakeHubClient({
                     </span>
                     {mistake.wrongCount > 1 && (
                       <span className="px-2 py-0.5 rounded-lg bg-rose-50 dark:bg-rose-950/40 text-rose-600 text-[10px] font-bold border border-rose-200/50 dark:border-rose-900/50">
-                        تكرر الخطأ {mistake.wrongCount} مرات
+                        اتكرر الغلط {mistake.wrongCount} مرات
                       </span>
                     )}
                     {mistake.isResolved && (
                       <span className="px-2.5 py-0.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 text-[11px] font-bold flex items-center gap-1 border border-emerald-200/50 dark:border-emerald-800/50">
                         <Check className="w-3 h-3" />
-                        <span>تم الإتقان والتصحيح</span>
+                        <span>اتقنتها خلاص</span>
                       </span>
                     )}
                   </div>
@@ -286,15 +286,15 @@ export function MistakeHubClient({
                 <BidiStatement
                   as="h3"
                   text={q.statement}
-                  className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-white leading-relaxed"
+                  className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-white leading-relaxed font-content"
                 />
 
                 {/* Inline Options to Retake */}
-                <div className="space-y-2">
-                  <span className="text-[11px] font-bold text-slate-500 block mb-1">
-                    أعد المحاولة لاختيار الإجابة الصحيحة وتثبيت المفهوم:
+                <div className="space-y-2.5">
+                  <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 block mb-1">
+                    جرب تحلها تاني دلوقتي وافهم الصح عشان متغلطش فيها:
                   </span>
-                  {q.options.map((opt) => {
+                  {q.options.map((opt, optIdx) => {
                     const isSelected =
                       answerState?.selectedOptionId === opt.id;
                     const isChecked = !!answerState?.result;
@@ -312,30 +312,34 @@ export function MistakeHubClient({
                       }
                     }
 
+                    const arabicLetters = ["أ", "ب", "ج", "د", "هـ"];
+
                     return (
                       <button
                         key={opt.id}
                         type="button"
                         onClick={() => handleRetakeAnswer(q.id, opt.id)}
-                        className={`w-full p-3.5 rounded-xl border text-right text-xs sm:text-sm font-medium flex items-center justify-between gap-3 transition-colors ${rowStyle}`}
+                        className={`w-full p-3.5 sm:p-4 rounded-xl border text-right text-xs sm:text-sm font-medium flex items-start sm:items-center justify-between gap-3 transition-colors ${rowStyle}`}
                       >
-                        <div className="flex items-center gap-2.5">
-                          <span className="w-5 h-5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center justify-center text-[10px] font-mono font-bold shrink-0 border border-slate-200/60 dark:border-slate-700/60">
-                            {opt.order}
+                        <div className="flex items-start sm:items-center gap-2.5 min-w-0 flex-1">
+                          <span className="w-6 h-6 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center justify-center text-xs font-mono font-bold shrink-0 mt-0.5 sm:mt-0 border border-slate-200/60 dark:border-slate-700/60">
+                            {arabicLetters[optIdx] || opt.order}
                           </span>
-                          <BidiStatement as="span" text={opt.text} />
+                          <div className="min-w-0 flex-1 leading-relaxed">
+                            <BidiStatement as="span" text={opt.text} />
+                          </div>
                         </div>
 
                         {isChecked && (
-                          <div>
+                          <div className="shrink-0">
                             {opt.isCorrect ? (
                               <span className="text-emerald-600 dark:text-emerald-400 text-xs font-bold flex items-center gap-1">
                                 <Check className="w-3.5 h-3.5" />
-                                <span>صحيح! أحسنت</span>
+                                <span>صح! برافو عليك</span>
                               </span>
                             ) : isSelected ? (
                               <span className="text-rose-600 dark:text-rose-400 text-xs font-bold">
-                                غير صحيح
+                                مش صحيحة
                               </span>
                             ) : null}
                           </div>

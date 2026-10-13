@@ -122,7 +122,7 @@ export function ExamSolver({
   }, []);
 
   const handleAutoSubmit = () => {
-    alert("انتهى وقت الامتحان! سيتم تسليم إجاباتك الآن تلقائياً.");
+    alert("الوقت خلص! هنسلّم إجاباتك دلوقتي تلقائياً.");
     executeSubmit();
   };
 
@@ -184,11 +184,11 @@ export function ExamSolver({
       if (res.ok) {
         router.push(`/exams/${exam.id}/results?attemptId=${attemptId}`);
       } else {
-        alert(data.error || "تعذر تسليم الامتحان");
+        alert(data.error || "حصلت مشكلة أثناء تسليم الامتحان، جرب تاني.");
       }
     } catch (err) {
       console.error(err);
-      alert("حدث خطأ في الاتصال بالخادم أثناء التسليم");
+      alert("مشكلة في الاتصال بالإنترنت أثناء التسليم، اتأكد من النت وجرب تاني.");
     } finally {
       setIsSubmitting(false);
     }
@@ -212,7 +212,7 @@ export function ExamSolver({
         <div>
           <span className="text-[11px] font-bold text-[#4F46E5] block">
             {exam.subject.name} •{" "}
-            {initialMode === "PRACTICE" ? "وضع التدريب الفوري" : "وضع الامتحان الرسمي"}
+            {initialMode === "PRACTICE" ? "وضع التدريب (شرح فوري)" : "وضع الامتحان (وقت حقيقي)"}
           </span>
           <BidiStatement
             as="h1"
@@ -309,7 +309,7 @@ export function ExamSolver({
               }`}
             >
               <Flag className={`w-3.5 h-3.5 ${isFlagged ? "fill-current" : ""}`} weight={isFlagged ? "fill" : "bold"} />
-              <span>{isFlagged ? "مميز للمراجعة" : "تمييز السؤال"}</span>
+              <span>{isFlagged ? "متعلّم للمراجعة" : "علّم عليه للمراجعة"}</span>
             </button>
           </div>
 
@@ -353,11 +353,11 @@ export function ExamSolver({
                     key={opt.id}
                     type="button"
                     onClick={() => handleSelectOption(opt.id)}
-                    className={`w-full p-4 rounded-xl border text-right text-xs sm:text-sm font-medium flex items-center justify-between gap-3 transition-colors ${cardStyle}`}
+                    className={`w-full p-3.5 sm:p-4 rounded-xl border text-right text-xs sm:text-sm font-medium flex items-start sm:items-center justify-between gap-3 transition-colors ${cardStyle}`}
                   >
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-start sm:items-center gap-3 min-w-0 flex-1">
                       <div
-                        className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-mono font-bold shrink-0 ${
+                        className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-mono font-bold shrink-0 mt-0.5 sm:mt-0 ${
                           isSelected
                             ? "bg-[#4F46E5] dark:bg-indigo-500 text-white"
                             : "bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200/60 dark:border-slate-600/60"
@@ -365,19 +365,21 @@ export function ExamSolver({
                       >
                         {arabicLetters[optIdx] || opt.order}
                       </div>
-                      <BidiStatement as="span" text={opt.text} />
+                      <div className="min-w-0 flex-1 leading-relaxed">
+                        <BidiStatement as="span" text={opt.text} />
+                      </div>
                     </div>
 
                     {isRevealed && (
-                      <div>
+                      <div className="shrink-0">
                         {opt.isCorrect ? (
-                          <span className="text-emerald-600 text-xs font-bold flex items-center gap-1">
+                          <span className="text-emerald-600 dark:text-emerald-400 text-xs font-bold flex items-center gap-1">
                             <Check className="w-4 h-4" weight="bold" />
-                            <span>الإجابة الصحيحة</span>
+                            <span>صح! برافو</span>
                           </span>
                         ) : isSelected ? (
-                          <span className="text-rose-600 text-xs font-bold">
-                            إجابتك (غير صحيحة)
+                          <span className="text-rose-600 dark:text-rose-400 text-xs font-bold">
+                            مش صحيحة
                           </span>
                         ) : null}
                       </div>
@@ -391,22 +393,22 @@ export function ExamSolver({
           {/* Essay Question Area */}
           {currentQ.type === "ESSAY" && (
             <div className="space-y-4">
-              <label className="block text-xs font-bold text-[#64748B]">
-                اكتب إجابتك المقالية بالتفصيل:
+              <label className="block text-xs font-bold text-[#64748B] dark:text-slate-400">
+                اكتب إجابتك هنا بالتفصيل:
               </label>
               <textarea
                 value={currentAnswer.essayText || ""}
                 onChange={(e) => handleEssayChange(e.target.value)}
-                placeholder="ابدأ بكتابة خطوات الشرح والتعليل هنا..."
+                placeholder="اكتب خطوات الحل وشرحك هنا بالتفصيل..."
                 rows={5}
-                className="w-full p-4 rounded-lg border border-[#E2E8F0] dark:border-slate-700 bg-[#F8FAFC] dark:bg-slate-900 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#4F46E5] text-[#0F172A] dark:text-white font-content"
+                className="w-full p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#4F46E5] text-[#0F172A] dark:text-white font-content shadow-2xs"
               />
 
               {initialMode === "PRACTICE" && currentAnswer.practiceRevealed && currentQ.rubric && (
-                <div className="p-5 rounded-lg bg-[#4F46E5]/5 border border-[#4F46E5]/20 space-y-3">
-                  <h4 className="text-xs font-bold text-[#4F46E5] flex items-center gap-1.5">
+                <div className="p-5 rounded-xl bg-indigo-50/50 dark:bg-indigo-950/40 border border-indigo-200/60 dark:border-indigo-800/60 space-y-3">
+                  <h4 className="text-xs font-bold text-[#4F46E5] dark:text-indigo-300 flex items-center gap-1.5">
                     <Sparkle className="w-4 h-4" weight="fill" />
-                    <span>الإجابة النموذجية ومعايير التصحيح</span>
+                    <span>نموذج الإجابة ومعايير التقييم</span>
                   </h4>
                   <p className="text-xs text-[#0F172A] dark:text-slate-200 leading-relaxed font-bold font-content">
                     {currentQ.rubric.modelAnswer}
@@ -423,26 +425,26 @@ export function ExamSolver({
                 <button
                   onClick={handleRevealPractice}
                   disabled={!currentAnswer.selectedOptionId && !currentAnswer.essayText}
-                  className="h-10 px-5 rounded-lg bg-[#4F46E5] hover:bg-[#4338CA] text-white font-bold text-xs flex items-center gap-2 transition-colors disabled:opacity-40"
+                  className="h-10 px-5 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white font-bold text-xs flex items-center gap-2 transition-all shadow-2xs active:scale-95 disabled:opacity-40"
                 >
                   <Lightbulb className="w-4 h-4" weight="fill" />
-                  <span>تحقق من الإجابة وشاهد التفسير</span>
+                  <span>شوف إجابتك صح ولا غلط واعرف التفسير</span>
                 </button>
               ) : (
                 currentQ.explanation && (
-                  <div className="p-5 rounded-lg bg-[#4F46E5]/5 border border-[#4F46E5]/20 space-y-3">
-                    <div className="flex items-center gap-2 text-xs font-bold text-[#4F46E5]">
+                  <div className="p-5 rounded-xl bg-indigo-50/50 dark:bg-indigo-950/40 border border-indigo-200/60 dark:border-indigo-800/60 space-y-3">
+                    <div className="flex items-center gap-2 text-xs font-bold text-[#4F46E5] dark:text-indigo-300">
                       <Lightbulb className="w-4 h-4" weight="fill" />
-                      <span>المفهوم الأساسي: {currentQ.explanation.concept}</span>
+                      <span>الفكرة الأساسية: {currentQ.explanation.concept}</span>
                     </div>
                     <p className="text-xs text-[#0F172A] dark:text-slate-200 leading-relaxed font-bold font-content">
                       {currentQ.explanation.correctReason}
                     </p>
 
                     {/* Per-option breakdown */}
-                    <div className="pt-2 border-t border-[#4F46E5]/15 space-y-1.5">
-                      <span className="text-[11px] font-bold text-[#64748B] block">
-                        تفسير خيارات السؤال:
+                    <div className="pt-2 border-t border-indigo-200/40 dark:border-indigo-800/40 space-y-1.5">
+                      <span className="text-[11px] font-bold text-[#64748B] dark:text-slate-400 block">
+                        ليه ده صح وده غلط؟
                       </span>
                       {currentQ.options.map((opt) => (
                         <div
@@ -455,8 +457,8 @@ export function ExamSolver({
                           <span>
                             {opt.explanation ||
                               (opt.isCorrect
-                                ? "هو الخيار الدقيق علمياً"
-                                : "لا ينطبق على الحالة المطلوبة")}
+                                ? "ده الخيار الدقيق والمظبوط"
+                                : "مش مظبوط في الحالة دي")}
                           </span>
                         </div>
                       ))}
@@ -468,30 +470,30 @@ export function ExamSolver({
           )}
 
           {/* Question Navigation Controls */}
-          <div className="flex items-center justify-between pt-4 border-t border-[#E2E8F0] dark:border-slate-700">
+          <div className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
             <button
               onClick={() => setCurrentIndex((idx) => Math.max(0, idx - 1))}
               disabled={currentIndex === 0}
-              className="h-10 px-4 rounded-lg border border-[#E2E8F0] dark:border-slate-700 text-xs font-bold text-[#0F172A] dark:text-white flex items-center gap-1.5 hover:bg-[#F8FAFC] dark:hover:bg-slate-800 disabled:opacity-40 transition-colors"
+              className="h-10 px-4 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold text-[#0F172A] dark:text-white flex items-center gap-1.5 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-40 transition-colors shadow-2xs"
             >
               <CaretRight className="w-4 h-4" weight="bold" />
-              <span>السابق</span>
+              <span>السؤال اللي قبله</span>
             </button>
 
             {currentIndex < totalQuestions - 1 ? (
               <button
                 onClick={() => setCurrentIndex((idx) => idx + 1)}
-                className="h-10 px-6 rounded-lg bg-[#4F46E5] hover:bg-[#4338CA] text-white text-xs font-bold flex items-center gap-1.5 transition-colors"
+                className="h-10 px-5 sm:px-6 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-xs font-bold flex items-center gap-1.5 transition-colors shadow-2xs active:scale-95"
               >
-                <span>التالي</span>
+                <span>السؤال اللي بعده</span>
                 <CaretLeft className="w-4 h-4" weight="bold" />
               </button>
             ) : (
               <button
                 onClick={() => setShowConfirmModal(true)}
-                className="h-10 px-6 rounded-lg bg-[#059669] hover:bg-[#047857] text-white text-xs font-bold flex items-center gap-1.5 transition-colors"
+                className="h-10 px-5 sm:px-6 rounded-xl bg-[#059669] hover:bg-[#047857] text-white text-xs font-bold flex items-center gap-1.5 transition-colors shadow-2xs active:scale-95"
               >
-                <span>مراجعة وتسليم</span>
+                <span>خلصت؟ سلّم الامتحان</span>
                 <PaperPlaneTilt className="w-3.5 h-3.5" weight="bold" />
               </button>
             )}
@@ -509,10 +511,10 @@ export function ExamSolver({
 
             <div className="text-center space-y-2">
               <h3 className="text-lg font-bold text-[#0F172A] dark:text-white">
-                هل أنت مستعد لتسليم الامتحان؟
+                متأكد إنك خلصت وعاوز تسلّم؟
               </h3>
               <p className="text-xs text-[#64748B] dark:text-slate-400 font-content">
-                بمجرد التسليم، سيتم رصد الدرجة وتقديم تقرير تحليلي كامل بإجاباتك.
+                أول ما تسلّم هنحسب درجتك ونوريك تقرير مفصل بكل إجاباتك ونقط ضعفك.
               </p>
             </div>
 
@@ -522,7 +524,7 @@ export function ExamSolver({
                   {answeredCount}
                 </span>
                 <span className="text-[11px] font-bold text-[#64748B]">
-                  تمت الإجابة
+                  حليتهم خلاص
                 </span>
               </div>
               <div className="w-px h-8 bg-[#E2E8F0] dark:bg-slate-700" />
@@ -535,7 +537,7 @@ export function ExamSolver({
                   {unansweredCount}
                 </span>
                 <span className="text-[11px] font-bold text-[#64748B]">
-                  متبقٍ بدون حل
+                  لسه ما حلتهمش
                 </span>
               </div>
             </div>
@@ -543,7 +545,7 @@ export function ExamSolver({
             {unansweredCount > 0 && (
               <div className="p-3 rounded-lg bg-[#D97706]/10 border border-[#D97706]/20 text-xs font-bold text-[#D97706] flex items-center gap-2">
                 <Warning className="w-4 h-4 shrink-0" weight="fill" />
-                <span>لديك أسئلة لم تقم بالإجابة عليها بعد!</span>
+                <span>خلّي بالك! لسه في أسئلة ما جاوبتهاش.</span>
               </div>
             )}
 
@@ -557,10 +559,10 @@ export function ExamSolver({
                 {isSubmitting ? (
                   <>
                     <SpinnerGap className="w-4 h-4 animate-spin" weight="bold" />
-                    <span>جارٍ رصد الدرجات...</span>
+                    <span>بنحسب درجاتك ثواني...</span>
                   </>
                 ) : (
-                  <span>نعم، سلّم الآن</span>
+                  <span>أيوه، سلّم دلوقتي</span>
                 )}
               </button>
               <button
@@ -569,7 +571,7 @@ export function ExamSolver({
                 onClick={() => setShowConfirmModal(false)}
                 className="flex-1 h-11 rounded-lg border border-[#E2E8F0] dark:border-slate-700 text-[#0F172A] dark:text-white font-bold text-xs hover:bg-[#F8FAFC] dark:hover:bg-slate-800 transition-colors"
               >
-                العودة للأسئلة
+                لا، هرجع أكمل حل
               </button>
             </div>
           </div>

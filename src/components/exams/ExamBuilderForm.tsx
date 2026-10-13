@@ -270,7 +270,7 @@ export function ExamBuilderForm({
                 1. المادة الدراسية
               </h2>
               <p className="text-[11px] text-[#475569] dark:text-slate-400">
-                اختر المادة التي ترغب في أداء الاختبار بها
+                اختار المادة اللي عاوز تتمرن عليها وتراجعها
               </p>
             </div>
           </div>
@@ -341,7 +341,7 @@ export function ExamBuilderForm({
                 2. الوحدة والدروس
               </h2>
               <p className="text-[11px] text-[#475569] dark:text-slate-400">
-                حدد ما إذا كنت تريد اختباراً شاملاً أو على وحدة أو دروس معينة
+                حدد لو عاوز امتحان شامل على المادة كلها أو وحدة أو دروس معينة
               </p>
             </div>
           </div>
@@ -453,14 +453,14 @@ export function ExamBuilderForm({
                       key={lesson.id}
                       type="button"
                       onClick={() => toggleLesson(lesson.id)}
-                      className={`p-2.5 rounded-xl border text-right transition-colors flex items-center gap-3 ${
+                      className={`p-2.5 rounded-xl border text-right transition-colors flex items-start sm:items-center gap-3 ${
                         isChecked
                           ? "bg-indigo-50/70 dark:bg-indigo-950/40 border-2 border-[#4F46E5] text-[#0F172A] dark:text-white"
                           : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-[#0F172A] dark:text-slate-200 hover:border-slate-300"
                       }`}
                     >
                       <div
-                        className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-colors ${
+                        className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 mt-0.5 sm:mt-0 transition-colors ${
                           isChecked
                             ? "bg-[#4F46E5] border-[#4F46E5] text-white"
                             : "border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800"
@@ -499,7 +499,7 @@ export function ExamBuilderForm({
               </h2>
             </div>
             <p className="text-[11px] text-[#475569] dark:text-slate-400 pr-9">
-              حدد شكل الأسئلة المراد اختبارها
+              اختار شكل ونمط الأسئلة اللي تحب تتدرب عليها
             </p>
           </div>
 
@@ -550,7 +550,7 @@ export function ExamBuilderForm({
               </h2>
             </div>
             <p className="text-[11px] text-[#475569] dark:text-slate-400 pr-9">
-              حدد المستوى الفكري والتحليلي للأسئلة
+              اختار مستوى الصعوبة اللي يناسب مستواك ومرحلتك
             </p>
           </div>
 
@@ -619,7 +619,7 @@ export function ExamBuilderForm({
               </div>
             </div>
             <p className="text-[11px] text-[#475569] dark:text-slate-400 pr-9">
-              حدد عدد الأسئلة التي ترغب في حلها
+              حدد عدد الأسئلة اللي ناوي تحلها دلوقتي
             </p>
           </div>
 
@@ -650,7 +650,7 @@ export function ExamBuilderForm({
               <div className="p-2.5 rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/40 flex items-start gap-2 text-[11px] text-amber-800 dark:text-amber-300 font-medium leading-relaxed">
                 <Info className="w-3.5 h-3.5 text-amber-600 shrink-0 mt-0.5" />
                 <span>
-                  يتوفر في بنك الأسئلة {availableCount} أسئلة فقط مطابقة لمعاييرك، سيتم إنشاء الاختبار بـ {availableCount} أسئلة.
+                  موجود في بنك الأسئلة {availableCount} أسئلة بس تطابق اختياراتك، هنعملك الامتحان بـ {availableCount} أسئلة.
                 </span>
               </div>
             )}
@@ -669,7 +669,7 @@ export function ExamBuilderForm({
               </h2>
             </div>
             <p className="text-[11px] text-[#475569] dark:text-slate-400 pr-9">
-              اختر وضع التدريب الفوري أو محاكاة الامتحان الفعلي
+              اختار تدريب بشرح فوري ولا محاكاة امتحان حقيقي بوقت
             </p>
           </div>
 
@@ -697,7 +697,7 @@ export function ExamBuilderForm({
                 </div>
               </div>
               <span className="text-[11px] text-[#475569] dark:text-slate-400 leading-snug">
-                تصحيح وتفسير بعد كل سؤال
+                تصحيح وتفسير فوري بعد كل سؤال
               </span>
             </button>
 
@@ -724,7 +724,7 @@ export function ExamBuilderForm({
                 </div>
               </div>
               <span className="text-[11px] text-[#475569] dark:text-slate-400 leading-snug">
-                النتيجة والتفسير بعد التسليم
+                الدرجة والتفسير الكامل بعد ما تسلّم
               </span>
             </button>
           </div>
@@ -764,7 +764,7 @@ export function ExamBuilderForm({
             ملخص إعدادات الاختبار
           </h3>
           <p className="text-[11px] text-[#475569] dark:text-slate-400">
-            مراجعة سريعة لمعايير الاختبار قبل بدء جلسة الحل
+            نظرة سريعة على اختياراتك قبل ما تبدأ الحل
           </p>
         </div>
 
@@ -819,11 +819,11 @@ export function ExamBuilderForm({
             {availableCount === 0 ? (
               <span className="text-rose-600 dark:text-rose-400 font-bold flex items-center gap-1.5">
                 <AlertCircle className="w-4 h-4 shrink-0" />
-                <span>لا توجد أسئلة مطابقة لاختياراتك الحالية، يرجى توسيع نطاق التحديد لتفعيل زر البدء.</span>
+                <span>مفيش أسئلة مطابقة لاختياراتك الحالية، وسّع نطاق التحديد عشان يفتح زرار البدء.</span>
               </span>
             ) : (
               <span>
-                سيتم اختيار {effectiveCount} أسئلة فريدة عشوائياً وتوليد جلسة حل فورية.
+                هنجهّزلك {effectiveCount} أسئلة مختارة بعناية عشان تبدأ تحل على طول.
               </span>
             )}
           </div>
@@ -831,16 +831,16 @@ export function ExamBuilderForm({
           <button
             type="submit"
             disabled={isSubmitting || (availableCount !== null && availableCount === 0)}
-            className="w-full sm:w-auto h-12 px-8 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] dark:bg-indigo-600 dark:hover:bg-indigo-500 text-white font-bold text-sm shadow-sm flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
+            className="w-full sm:w-auto h-12 px-8 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] dark:bg-indigo-600 dark:hover:bg-indigo-500 text-white font-bold text-sm shadow-2xs flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
           >
             {isSubmitting ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                <span>جارٍ إعداد الاختبار...</span>
+                <span>بنجهّزلك الامتحان ثواني...</span>
               </>
             ) : (
               <>
-                <span>ابدأ الاختبار</span>
+                <span>يلا نبدأ الامتحان</span>
                 <ArrowLeft className="w-4 h-4" />
               </>
             )}

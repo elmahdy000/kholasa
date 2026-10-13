@@ -21,6 +21,8 @@ import {
 } from "lucide-react";
 import { BidiStatement } from "@/components/ui/BidiStatement";
 
+const ARABIC_LETTERS = ["أ", "ب", "ج", "د", "هـ", "و"];
+
 interface ExamResultsPageProps {
   params: Promise<{ id: string }>;
   searchParams: Promise<{ attemptId?: string }>;
@@ -106,27 +108,27 @@ export default async function ExamResultsPage({
   const minutesSpent = Math.floor(attempt.timeSpentSeconds / 60);
   const secondsSpent = attempt.timeSpentSeconds % 60;
 
-  // Grade badge & label
+  // Grade badge & label (Egyptian Friendly Tone)
   let gradeBadge = {
-    label: "ممتاز! مستوى استثنائي",
+    label: "عاش يا بطل! مستوى فوق الممتاز 🚀",
     bgClass: "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800",
     textColor: "text-emerald-600 dark:text-emerald-400",
   };
   if (percentage < 50) {
     gradeBadge = {
-      label: "بحاجة إلى مراجعة وتدريب",
-      bgClass: "bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800",
-      textColor: "text-red-600 dark:text-red-400",
+      label: "ولا يهمك، المهم نتعلم من الغلطات ونشد حيلنا ✨",
+      bgClass: "bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400 border-rose-200 dark:border-rose-800",
+      textColor: "text-rose-600 dark:text-rose-400",
     };
   } else if (percentage < 75) {
     gradeBadge = {
-      label: "جيد، يمكنك تحقيق الأفضل",
+      label: "شغل كويس، بس محتاجين نراجع كام نقطة 👍",
       bgClass: "bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800",
       textColor: "text-amber-600 dark:text-amber-400",
     };
   } else if (percentage < 90) {
     gradeBadge = {
-      label: "جيد جداً، أداء رائع",
+      label: "أداء عالي جداً وفاضل تكة وتقفّل 💪",
       bgClass: "bg-indigo-50 dark:bg-indigo-950/40 text-[#4F46E5] dark:text-indigo-400 border-indigo-200 dark:border-indigo-800",
       textColor: "text-[#4F46E5] dark:text-indigo-400",
     };
@@ -134,7 +136,7 @@ export default async function ExamResultsPage({
 
   return (
     <StudentShell user={user}>
-      <div className="max-w-4xl mx-auto space-y-6 text-right font-sans pb-16">
+      <div className="max-w-4xl mx-auto space-y-6 text-right font-sans pb-28">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-xs font-medium text-[#64748B] dark:text-[#94A3B8]">
           <Link href="/exams" className="hover:text-[#4F46E5] transition-colors">
@@ -158,11 +160,11 @@ export default async function ExamResultsPage({
             </span>
 
             <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#0F172A] dark:text-white">
-              تقرير نتيجة: {attempt.title}
+              تقرير نتيجة: <BidiStatement as="span" text={attempt.title} />
             </h1>
 
             <p className="text-xs sm:text-sm text-[#64748B] dark:text-[#94A3B8] max-w-lg leading-relaxed">
-              تم رصد إجاباتك بنجاح وتسجيل الأخطاء في مركز "غلطاتي" لتتمكن من مراجعتها وتصحيحها في أي وقت.
+              سجلنا إجاباتك كلها، والأسئلة اللي وقعت فيها اتحفظت في ركن "غلطاتي" عشان تراجعها وتثبتها وقت ما تحب.
             </p>
 
             <div className="flex flex-wrap items-center gap-2.5 pt-2">
@@ -179,7 +181,7 @@ export default async function ExamResultsPage({
                 className="h-9 px-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-bold text-[#0F172A] dark:text-white flex items-center gap-1.5 transition-colors interactive-tap"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
-                <span>إعادة الاختبار</span>
+                <span>حل الامتحان ده تاني</span>
               </Link>
             </div>
           </div>
@@ -214,7 +216,7 @@ export default async function ExamResultsPage({
               {correctAnswers.length}
             </span>
             <span className="text-xs font-medium text-slate-500">
-              إجابات صحيحة
+              إجابات صح
             </span>
           </div>
 
@@ -226,7 +228,7 @@ export default async function ExamResultsPage({
               {wrongAnswers.length}
             </span>
             <span className="text-xs font-medium text-slate-500">
-              إجابات خاطئة
+              إجابات غلط
             </span>
           </div>
 
@@ -238,7 +240,7 @@ export default async function ExamResultsPage({
               {unansweredCount}
             </span>
             <span className="text-xs font-medium text-slate-500">
-              أسئلة متروكة
+              سبتهم بدون حل
             </span>
           </div>
 
@@ -250,7 +252,7 @@ export default async function ExamResultsPage({
               {minutesSpent}m {secondsSpent}s
             </span>
             <span className="text-xs font-medium text-slate-500">
-              الوقت المستغرق
+              الوقت اللي أخدته
             </span>
           </div>
         </div>
@@ -285,7 +287,7 @@ export default async function ExamResultsPage({
                   <div className="flex items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
                     <div className="flex items-center gap-2">
                       <span className="text-xs font-mono font-bold text-[#4F46E5] dark:text-indigo-400">
-                        السؤال {idx + 1}
+                        سؤال {idx + 1}
                       </span>
                       <span
                         className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
@@ -297,12 +299,12 @@ export default async function ExamResultsPage({
                         {isCorrect ? (
                           <>
                             <CheckCircle2 className="w-3 h-3" />
-                            <span>إجابة صحيحة</span>
+                            <span>صح عليك! برافو</span>
                           </>
                         ) : (
                           <>
                             <XCircle className="w-3 h-3" />
-                            <span>إجابة غير صحيحة</span>
+                            <span>مش صحيحة</span>
                           </>
                         )}
                       </span>
@@ -313,7 +315,7 @@ export default async function ExamResultsPage({
                         href={`/lessons/${relatedLesson.id}`}
                         className="text-xs font-bold text-[#4F46E5] dark:text-indigo-400 hover:underline flex items-center gap-1"
                       >
-                        <span>مراجعة الدرس: <BidiStatement as="span" text={relatedLesson.title} /></span>
+                        <span>شرح الدرس: <BidiStatement as="span" text={relatedLesson.title} /></span>
                         <ArrowLeft className="w-3 h-3" />
                       </Link>
                     )}
@@ -326,51 +328,80 @@ export default async function ExamResultsPage({
                     className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-white leading-relaxed"
                   />
 
-                  {/* MCQ Options comparison */}
-                  <div className="space-y-2">
-                    {q.options.map((opt) => {
-                      const isUserChoice = opt.id === ans.selectedOptionId;
-                      let rowStyle =
-                        "bg-slate-50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 text-[#0F172A] dark:text-slate-200";
-
-                      if (opt.isCorrect) {
-                        rowStyle =
-                          "bg-emerald-50 dark:bg-emerald-950/40 border-emerald-500/50 text-emerald-800 dark:text-emerald-300 font-bold";
-                      } else if (isUserChoice && !opt.isCorrect) {
-                        rowStyle =
-                          "bg-red-50 dark:bg-red-950/40 border-red-500/50 text-red-800 dark:text-red-300 font-bold";
-                      }
-
-                      return (
-                        <div
-                          key={opt.id}
-                          className={`p-3 rounded-xl border text-xs sm:text-sm font-medium flex items-center justify-between gap-3 ${rowStyle}`}
-                        >
-                          <div className="flex items-center gap-2.5">
-                            <span className="w-5 h-5 rounded-md bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center justify-center text-[10px] font-mono font-bold shrink-0">
-                              {opt.order}
-                            </span>
-                            <BidiStatement as="span" text={opt.text} />
-                          </div>
-
-                          <div>
-                            {opt.isCorrect && (
-                              <span className="text-emerald-600 dark:text-emerald-400 text-xs font-bold inline-flex items-center gap-1.5">
-                                <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
-                                <span>الإجابة الصحيحة</span>
-                              </span>
-                            )}
-                            {isUserChoice && !opt.isCorrect && (
-                              <span className="text-rose-600 dark:text-rose-400 text-xs font-bold inline-flex items-center gap-1.5">
-                                <XCircle className="w-3.5 h-3.5 shrink-0" />
-                                <span>اختيارك</span>
-                              </span>
-                            )}
-                          </div>
+                  {/* Essay or MCQ Options comparison */}
+                  {q.type === "ESSAY" ? (
+                    <div className="space-y-3 pt-1">
+                      {ans.essayText && (
+                        <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 space-y-1.5">
+                          <span className="text-xs font-bold text-slate-500 dark:text-slate-400 block">
+                            إجابتك المسجلة:
+                          </span>
+                          <p className="text-xs sm:text-sm text-[#0F172A] dark:text-slate-100 leading-relaxed font-medium">
+                            {ans.essayText}
+                          </p>
                         </div>
-                      );
-                    })}
-                  </div>
+                      )}
+
+                      {q.rubric && (
+                        <div className="p-4 rounded-xl border border-emerald-200 dark:border-emerald-900/40 bg-emerald-50/50 dark:bg-emerald-950/20 space-y-2">
+                          <span className="text-xs font-bold text-emerald-700 dark:text-emerald-400 block flex items-center gap-1.5">
+                            <CheckCircle2 className="w-4 h-4 shrink-0" />
+                            <span>نموذج الإجابة ومعايير التقييم:</span>
+                          </span>
+                          <p className="text-xs sm:text-sm text-emerald-900 dark:text-emerald-200 leading-relaxed font-medium">
+                            {q.rubric.modelAnswer}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="space-y-2.5">
+                      {q.options.map((opt, oIdx) => {
+                        const isUserChoice = opt.id === ans.selectedOptionId;
+                        let rowStyle =
+                          "bg-slate-50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 text-[#0F172A] dark:text-slate-200";
+
+                        if (opt.isCorrect) {
+                          rowStyle =
+                            "bg-emerald-50 dark:bg-emerald-950/40 border-emerald-500/50 text-emerald-800 dark:text-emerald-300 font-bold";
+                        } else if (isUserChoice && !opt.isCorrect) {
+                          rowStyle =
+                            "bg-red-50 dark:bg-red-950/40 border-red-500/50 text-red-800 dark:text-red-300 font-bold";
+                        }
+
+                        const letterLabel = ARABIC_LETTERS[oIdx] || opt.order;
+
+                        return (
+                          <div
+                            key={opt.id}
+                            className={`p-3.5 sm:p-4 rounded-xl border text-xs sm:text-sm font-medium flex items-start sm:items-center justify-between gap-3 ${rowStyle}`}
+                          >
+                            <div className="flex items-start sm:items-center gap-3 min-w-0 flex-1">
+                              <span className="w-6 h-6 rounded-lg bg-slate-200/80 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center justify-center text-xs font-bold shrink-0 mt-0.5 sm:mt-0 shadow-2xs">
+                                {letterLabel}
+                              </span>
+                              <BidiStatement as="span" text={opt.text} className="min-w-0 flex-1 leading-relaxed" />
+                            </div>
+
+                            <div className="shrink-0">
+                              {opt.isCorrect && (
+                                <span className="text-emerald-600 dark:text-emerald-400 text-xs font-bold inline-flex items-center gap-1.5 bg-emerald-100/60 dark:bg-emerald-950/60 px-2 py-0.5 rounded-md">
+                                  <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                                  <span>الإجابة الصح</span>
+                                </span>
+                              )}
+                              {isUserChoice && !opt.isCorrect && (
+                                <span className="text-rose-600 dark:text-rose-400 text-xs font-bold inline-flex items-center gap-1.5 bg-rose-100/60 dark:bg-rose-950/60 px-2 py-0.5 rounded-md">
+                                  <XCircle className="w-3.5 h-3.5 shrink-0" />
+                                  <span>إنت اخترت ده</span>
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
 
                   {/* Explanation card */}
                   {q.explanation && (
@@ -378,7 +409,7 @@ export default async function ExamResultsPage({
                       <div className="flex items-center gap-1.5 text-xs font-bold text-[#4F46E5] dark:text-indigo-400">
                         <Lightbulb className="w-4 h-4" />
                         <span>
-                          المفهوم المرتبط: {q.explanation.concept}
+                          الفكرة الأساسية: {q.explanation.concept}
                         </span>
                       </div>
                       <p className="text-xs text-[#0F172A] dark:text-slate-200 leading-relaxed font-medium">

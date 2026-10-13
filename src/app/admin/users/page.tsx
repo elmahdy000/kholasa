@@ -50,7 +50,7 @@ export default async function AdminUsersPage() {
                 {users.map((u) => (
                   <tr key={u.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/20">
                     <td className="p-4 flex items-center gap-2.5">
-                      <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#6858EA] to-[#11B7B4] text-white flex items-center justify-center font-black text-xs shrink-0">
+                      <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#4F46E5] to-[#11B7B4] text-white flex items-center justify-center font-black text-xs shrink-0">
                         {(u.name || "ط").charAt(0)}
                       </div>
                       <span className="font-black">{u.name || "طالب"}</span>
@@ -72,7 +72,7 @@ export default async function AdminUsersPage() {
                         className={`px-2.5 py-0.5 rounded-full text-[10px] font-black ${
                           u.role === "ADMIN"
                             ? "bg-amber-500/10 text-amber-600 border border-amber-500/20"
-                            : "bg-[#6858EA]/10 text-[#6858EA]"
+                            : "bg-[#4F46E5]/10 text-[#4F46E5]"
                         }`}
                       >
                         {u.role === "ADMIN" ? "مسؤول" : "طالب"}

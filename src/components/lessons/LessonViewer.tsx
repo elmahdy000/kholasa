@@ -986,7 +986,7 @@ export function LessonViewer({
 
                   {/* Options */}
                   <div className="space-y-2.5">
-                    {question.options.map((opt) => {
+                    {question.options.map((opt, optIdx) => {
                       const isSelected =
                         state?.selectedOptionId === opt.id;
                       const isRevealed = state?.revealed;
@@ -1003,6 +1003,8 @@ export function LessonViewer({
                         }
                       }
 
+                      const arabicLetters = ["أ", "ب", "ج", "د", "هـ"];
+
                       return (
                         <button
                           key={opt.id}
@@ -1011,25 +1013,27 @@ export function LessonViewer({
                           onClick={() =>
                             handleSelectOption(question.id, opt.id)
                           }
-                          className={`w-full p-4 rounded-lg border text-right text-xs sm:text-sm font-medium flex items-center justify-between gap-3 transition-colors font-content ${btnStyle}`}
+                          className={`w-full p-3.5 sm:p-4 rounded-xl border text-right text-xs sm:text-sm font-medium flex items-start sm:items-center justify-between gap-3 transition-colors font-content ${btnStyle}`}
                         >
-                          <div className="flex items-center gap-3">
-                            <span className="w-6 h-6 rounded bg-[#E2E8F0] dark:bg-slate-800 text-[#64748B] dark:text-slate-300 flex items-center justify-center text-xs font-bold shrink-0">
-                              {opt.order}
+                          <div className="flex items-start sm:items-center gap-3 min-w-0 flex-1">
+                            <span className="w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center justify-center text-xs font-mono font-bold shrink-0 mt-0.5 sm:mt-0 border border-slate-200/60 dark:border-slate-700/60">
+                              {arabicLetters[optIdx] || opt.order}
                             </span>
-                            <BidiStatement as="span" text={opt.text} />
+                            <div className="min-w-0 flex-1 leading-relaxed">
+                              <BidiStatement as="span" text={opt.text} />
+                            </div>
                           </div>
 
                           {isRevealed && (
-                            <div>
+                            <div className="shrink-0">
                               {opt.isCorrect ? (
                                 <span className="text-[#059669] text-xs font-bold flex items-center gap-1">
                                   <Check className="w-4 h-4" weight="bold" />
-                                  <span>الإجابة الصحيحة</span>
+                                  <span>صح! برافو</span>
                                 </span>
                               ) : isSelected ? (
                                 <span className="text-[#DC2626] text-xs font-bold">
-                                  إجابتك (غير صحيحة)
+                                  مش صحيحة
                                 </span>
                               ) : null}
                             </div>
@@ -1041,11 +1045,11 @@ export function LessonViewer({
 
                   {/* Detailed Explanation Reveal */}
                   {state?.revealed && question.explanation && (
-                    <div className="p-4 rounded-lg bg-[#4F46E5]/5 border border-[#4F46E5]/15 space-y-2 mt-3">
-                      <div className="flex items-center gap-2 text-xs font-bold text-[#4F46E5]">
+                    <div className="p-4 rounded-xl bg-indigo-50/50 dark:bg-indigo-950/40 border border-indigo-200/60 dark:border-indigo-800/60 space-y-2 mt-3">
+                      <div className="flex items-center gap-2 text-xs font-bold text-[#4F46E5] dark:text-indigo-300">
                         <Lightbulb className="w-4 h-4" weight="fill" />
                         <span>
-                          المفهوم: {question.explanation.concept}
+                          الفكرة الأساسية: {question.explanation.concept}
                         </span>
                       </div>
                       <p className="text-xs text-[#0F172A] dark:text-slate-200 leading-relaxed font-content">
@@ -1053,9 +1057,9 @@ export function LessonViewer({
                       </p>
 
                       {/* Per-option explanations if available */}
-                      <div className="pt-2 border-t border-[#4F46E5]/15 space-y-1.5">
+                      <div className="pt-2 border-t border-indigo-200/40 dark:border-indigo-800/40 space-y-1.5">
                         <span className="text-[11px] font-bold text-[#64748B] dark:text-slate-400 block">
-                          تفسير الخيارات:
+                          ليه ده صح وده غلط؟
                         </span>
                         {question.options.map((opt) => (
                           <div
@@ -1068,8 +1072,8 @@ export function LessonViewer({
                             <span>
                               {opt.explanation ||
                                 (opt.isCorrect
-                                  ? "صحيح"
-                                  : "غير مطابق لمعايير السؤال")}
+                                  ? "ده الخيار الدقيق والمظبوط"
+                                  : "مش مظبوط في الحالة دي")}
                             </span>
                           </div>
                         ))}

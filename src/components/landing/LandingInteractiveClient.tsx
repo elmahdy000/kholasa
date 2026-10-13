@@ -142,7 +142,7 @@ export function LandingInteractiveClient() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="p-4 rounded-2xl bg-indigo-50/60 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/40 space-y-2">
-                <span className="text-xs font-black text-[#6858EA] block">
+                <span className="text-xs font-black text-[#4F46E5] dark:text-indigo-400 block">
                   المفهوم الجوهري (Concept):
                 </span>
                 <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">

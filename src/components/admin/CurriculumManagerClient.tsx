@@ -117,7 +117,7 @@ export function CurriculumManagerClient({
       {systems.map((system) => (
         <div key={system.id} className="space-y-4">
           <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#6858EA]" />
+            <span className="w-2.5 h-2.5 rounded-full bg-[#4F46E5]" />
             <h2 className="text-base sm:text-lg font-black text-[#14243D] dark:text-white">
               {system.name}
             </h2>
@@ -134,7 +134,7 @@ export function CurriculumManagerClient({
                   <div className="flex items-center gap-3">
                     <div
                       className="w-3.5 h-3.5 rounded-full"
-                      style={{ backgroundColor: subject.color || "#6858EA" }}
+                      style={{ backgroundColor: subject.color || "#4F46E5" }}
                     />
                     <div>
                       <h3 className="text-sm sm:text-base font-black text-[#14243D] dark:text-white">
@@ -192,7 +192,7 @@ export function CurriculumManagerClient({
                         <div className="flex items-center justify-between gap-4">
                           <button
                             onClick={() => toggleExpand(unit.id)}
-                            className="flex items-center gap-2.5 text-right font-black text-xs sm:text-sm text-[#14243D] dark:text-white hover:text-[#6858EA] transition-colors"
+                            className="flex items-center gap-2.5 text-right font-black text-xs sm:text-sm text-[#14243D] dark:text-white hover:text-[#4F46E5] transition-colors"
                           >
                             <ChevronDown
                               className={`w-4 h-4 text-slate-400 transition-transform ${
@@ -233,7 +233,7 @@ export function CurriculumManagerClient({
                                 className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 flex items-center justify-between gap-4"
                               >
                                 <div className="flex items-center gap-2.5">
-                                  <div className="w-7 h-7 rounded-lg bg-[#6858EA]/10 text-[#6858EA] flex items-center justify-center shrink-0">
+                                  <div className="w-7 h-7 rounded-lg bg-[#4F46E5]/10 text-[#4F46E5] flex items-center justify-center shrink-0">
                                     <Play className="w-3.5 h-3.5 fill-current ml-0.5" />
                                   </div>
                                   <div>
@@ -251,7 +251,7 @@ export function CurriculumManagerClient({
                                 <div className="flex items-center gap-2">
                                   <Link
                                     href={`/lessons/${lesson.id}`}
-                                    className="text-[11px] font-bold text-[#6858EA] hover:underline"
+                                    className="text-[11px] font-bold text-[#4F46E5] hover:underline"
                                     target="_blank"
                                   >
                                     معاينة

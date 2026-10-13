@@ -74,7 +74,7 @@ export default async function AdminDashboardPage() {
           <div className="flex items-center gap-2">
             <Link
               href="/admin/questions"
-              className="h-10 px-4 rounded-xl bg-[#6858EA] hover:bg-[#5444D8] text-white text-xs font-black flex items-center gap-2 shadow-md shadow-[#6858EA]/20 transition-transform active:scale-95"
+              className="h-10 px-4 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-xs font-black flex items-center gap-2 shadow-md shadow-[#4F46E5]/20 transition-transform active:scale-95"
             >
               <HelpCircle className="w-4 h-4" />
               <span>إضافة سؤال جديد</span>
@@ -89,7 +89,7 @@ export default async function AdminDashboardPage() {
               <span className="text-xs font-bold text-slate-500">
                 إجمالي الطلاب المسجلين
               </span>
-              <div className="w-8 h-8 rounded-xl bg-[#6858EA]/10 text-[#6858EA] flex items-center justify-center">
+              <div className="w-8 h-8 rounded-xl bg-[#4F46E5]/10 text-[#4F46E5] flex items-center justify-center">
                 <Users className="w-4 h-4" />
               </div>
             </div>
@@ -141,14 +141,14 @@ export default async function AdminDashboardPage() {
               <span className="text-xs font-bold text-slate-500">
                 بنك الأسئلة المنشورة
               </span>
-              <div className="w-8 h-8 rounded-xl bg-[#6858EA]/10 text-[#6858EA] flex items-center justify-center">
+              <div className="w-8 h-8 rounded-xl bg-[#4F46E5]/10 text-[#4F46E5] flex items-center justify-center">
                 <HelpCircle className="w-4 h-4" />
               </div>
             </div>
             <span className="text-3xl font-black text-[#14243D] dark:text-white block">
               {questionsCount} سؤالاً
             </span>
-            <span className="text-[11px] font-bold text-[#6858EA] mt-2 block">
+            <span className="text-[11px] font-bold text-[#4F46E5] mt-2 block">
               مدعومة بتفسيرات تفصيلية لكل خيار
             </span>
           </div>
@@ -192,17 +192,17 @@ export default async function AdminDashboardPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Link
             href="/admin/curriculum"
-            className="p-6 rounded-3xl bg-white dark:bg-[#14243D]/60 border border-slate-200 dark:border-slate-800 hover:border-[#6858EA] transition-all flex items-center justify-between group"
+            className="p-6 rounded-3xl bg-white dark:bg-[#14243D]/60 border border-slate-200 dark:border-slate-800 hover:border-[#4F46E5] transition-all flex items-center justify-between group"
           >
             <div>
-              <h3 className="text-base font-black text-[#14243D] dark:text-white group-hover:text-[#6858EA] transition-colors">
+              <h3 className="text-base font-black text-[#14243D] dark:text-white group-hover:text-[#4F46E5] transition-colors">
                 إدارة المناهج والوحدات والدروس
               </h3>
               <p className="text-xs text-[#64748B] dark:text-[#94A3B8] mt-1">
                 تعديل هيكل المناهج والتحكم في ظهور ونشر الدروس
               </p>
             </div>
-            <ArrowLeft className="w-5 h-5 text-slate-400 group-hover:text-[#6858EA] transition-transform group-hover:-translate-x-1" />
+            <ArrowLeft className="w-5 h-5 text-slate-400 group-hover:text-[#4F46E5] transition-transform group-hover:-translate-x-1" />
           </Link>
 
           <Link
@@ -224,7 +224,7 @@ export default async function AdminDashboardPage() {
         {/* Recent Registered Users */}
         <div className="p-6 rounded-3xl bg-white dark:bg-[#14243D]/60 border border-slate-200 dark:border-slate-800 space-y-4">
           <h2 className="text-base font-black text-[#14243D] dark:text-white flex items-center gap-2">
-            <Users className="w-4 h-4 text-[#6858EA]" />
+            <Users className="w-4 h-4 text-[#4F46E5]" />
             <span>أحدث الطلاب المنضمين</span>
           </h2>
 
@@ -243,7 +243,7 @@ export default async function AdminDashboardPage() {
                   </span>
                 </div>
                 <div className="text-left">
-                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#6858EA]/10 text-[#6858EA]">
+                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#4F46E5]/10 text-[#4F46E5]">
                     {u.grade?.name || "طالب"}
                   </span>
                 </div>

@@ -230,13 +230,13 @@ export function QuestionBankManagerClient({
             href="/admin/questions/import"
             className="h-10 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-[#14243D] dark:text-white text-xs font-bold flex items-center justify-center gap-2 transition-colors"
           >
-            <Upload className="w-4 h-4 text-[#6858EA]" />
+            <Upload className="w-4 h-4 text-[#4F46E5]" />
             <span>استيراد ملف CSV</span>
           </Link>
 
           <button
             onClick={() => setIsModalOpen(true)}
-            className="h-10 px-5 rounded-xl bg-[#6858EA] hover:bg-[#5444D8] text-white text-xs font-black flex items-center justify-center gap-2 shadow-sm shadow-[#6858EA]/20 transition-transform active:scale-95"
+            className="h-10 px-5 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-xs font-black flex items-center justify-center gap-2 shadow-sm shadow-indigo-500/20 transition-transform active:scale-95"
           >
             <Plus className="w-4 h-4" />
             <span>إضافة سؤال جديد</span>
@@ -253,10 +253,10 @@ export function QuestionBankManagerClient({
           >
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
               <div className="flex items-center gap-2">
-                <span className="text-xs font-black text-[#6858EA]">
+                <span className="text-xs font-black text-[#4F46E5]">
                   #{idx + 1}
                 </span>
-                <span className="px-2.5 py-0.5 rounded-lg bg-[#6858EA]/10 text-[#6858EA] text-[11px] font-bold">
+                <span className="px-2.5 py-0.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 text-[#4F46E5] dark:text-indigo-300 text-[11px] font-bold">
                   {q.subject.name}
                 </span>
                 {q.unit && (
@@ -312,8 +312,8 @@ export function QuestionBankManagerClient({
 
             {/* Explanation Preview */}
             {q.explanation && (
-              <div className="p-3.5 rounded-2xl bg-[#6858EA]/5 border border-[#6858EA]/15 text-xs text-[#14243D] dark:text-slate-200 space-y-1">
-                <span className="font-black text-[#6858EA] block">
+              <div className="p-3.5 rounded-2xl bg-[#4F46E5]/5 border border-[#4F46E5]/15 text-xs text-[#14243D] dark:text-slate-200 space-y-1">
+                <span className="font-black text-[#4F46E5] block">
                   المفهوم: {q.explanation.concept}
                 </span>
                 <p className="font-medium text-[11px] leading-relaxed">
@@ -331,7 +331,7 @@ export function QuestionBankManagerClient({
           <div className="w-full max-w-2xl bg-white dark:bg-[#14243D] rounded-3xl p-6 sm:p-8 space-y-5 text-right shadow-2xl border border-slate-100 dark:border-slate-800 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
               <h3 className="text-lg font-black text-[#14243D] dark:text-white flex items-center gap-2">
-                <HelpCircle className="w-5 h-5 text-[#6858EA]" />
+                <HelpCircle className="w-5 h-5 text-[#4F46E5]" />
                 <span>إضافة سؤال جديد لبنك الأسئلة</span>
               </h3>
               <button
@@ -458,7 +458,7 @@ export function QuestionBankManagerClient({
                             prev.map((o, i) => ({ ...o, isCorrect: i === idx }))
                           );
                         }}
-                        className="w-4 h-4 text-[#6858EA]"
+                        className="w-4 h-4 text-[#4F46E5] accent-[#4F46E5]"
                       />
                       <input
                         type="text"
@@ -514,7 +514,7 @@ export function QuestionBankManagerClient({
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="flex-1 h-11 rounded-xl bg-[#6858EA] hover:bg-[#5444D8] text-white text-xs font-black flex items-center justify-center gap-2 shadow-sm"
+                  className="flex-1 h-11 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-xs font-black flex items-center justify-center gap-2 shadow-sm"
                 >
                   {isSubmitting ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
