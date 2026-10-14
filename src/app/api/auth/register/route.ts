@@ -31,10 +31,20 @@ export async function POST(req: Request) {
 
     const { name, email, phone, password, systemId, gradeId } = result.data;
 
+    const cleanPhone = phone && phone.trim() ? phone.trim() : null;
+    const cleanEmail = email && email.trim() ? email.trim().toLowerCase() : null;
+
+    if (!cleanPhone && !cleanEmail) {
+      return NextResponse.json(
+        { error: "يرجى إدخال البريد الإلكتروني أو رقم الهاتف" },
+        { status: 400 }
+      );
+    }
+
     // Check if phone or email already registered
     const orConditions = [];
-    if (phone && phone.trim()) orConditions.push({ phone: phone.trim() });
-    if (email && email.trim()) orConditions.push({ email: email.trim().toLowerCase() });
+    if (cleanPhone) orConditions.push({ phone: cleanPhone });
+    if (cleanEmail) orConditions.push({ email: cleanEmail });
 
     const existing = await prisma.user.findFirst({
       where: {
@@ -54,8 +64,8 @@ export async function POST(req: Request) {
     const user = await prisma.user.create({
       data: {
         name,
-        phone,
-        email: email || null,
+        phone: cleanPhone,
+        email: cleanEmail,
         password: hashedPassword,
         systemId: systemId || null,
         gradeId: gradeId || null,

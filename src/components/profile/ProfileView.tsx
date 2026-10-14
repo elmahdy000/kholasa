@@ -130,7 +130,7 @@ export function ProfileView({
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6 text-right font-sans pb-16">
+    <div className="max-w-4xl mx-auto space-y-6 text-right font-sans pb-28">
       {/* Profile Header Card */}
       <div className="p-6 sm:p-7 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-6">
         <div className="flex items-center gap-4">

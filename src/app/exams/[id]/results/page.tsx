@@ -15,11 +15,9 @@ import {
   Sparkles,
   Lightbulb,
   AlertTriangle,
-  ArrowRight,
-  Bookmark,
-  Share2,
 } from "lucide-react";
 import { BidiStatement } from "@/components/ui/BidiStatement";
+import { ExamResultActions } from "@/components/exams/ExamResultActions";
 
 const ARABIC_LETTERS = ["أ", "ب", "ج", "د", "هـ", "و"];
 
@@ -183,6 +181,13 @@ export default async function ExamResultsPage({
                 <RotateCcw className="w-3.5 h-3.5" />
                 <span>حل الامتحان ده تاني</span>
               </Link>
+
+              <ExamResultActions
+                examTitle={attempt.title}
+                percentage={percentage}
+                score={attempt.score}
+                totalQuestions={attempt.totalQuestions}
+              />
             </div>
           </div>
 

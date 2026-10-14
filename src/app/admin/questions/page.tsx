@@ -7,7 +7,7 @@ import { QuestionBankManagerClient } from "@/components/admin/QuestionBankManage
 export default async function AdminQuestionsPage() {
   const user = await getCurrentUser();
 
-  if (!user || user.role !== "ADMIN") {
+  if (!user || (user.role !== "ADMIN" && user.role !== "SUPER_ADMIN")) {
     redirect("/login?callbackUrl=/admin/questions");
   }
 

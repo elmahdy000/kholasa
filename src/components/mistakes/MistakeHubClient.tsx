@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   AlertTriangle,
@@ -14,6 +15,8 @@ import {
   ArrowLeft,
   Sparkles,
   Trophy,
+  SlidersHorizontal,
+  Loader2,
 } from "lucide-react";
 import { BidiStatement } from "@/components/ui/BidiStatement";
 
@@ -60,9 +63,11 @@ export function MistakeHubClient({
   initialMistakes,
   subjects,
 }: MistakeHubClientProps) {
+  const router = useRouter();
   const [mistakes, setMistakes] = useState<MistakeItem[]>(initialMistakes);
   const [selectedSubjectId, setSelectedSubjectId] = useState<string>("all");
   const [filterStatus, setFilterStatus] = useState<"all" | "unresolved" | "resolved">("unresolved");
+  const [isGeneratingExam, setIsGeneratingExam] = useState(false);
 
   // Inline answering state for questions in mistake hub
   const [activeAnswers, setActiveAnswers] = useState<
@@ -131,6 +136,40 @@ export function MistakeHubClient({
     }
   };
 
+  const handleGenerateExamFromMistakes = async () => {
+    const targetMistakes = filteredMistakes.filter((m) => !m.isResolved);
+    if (targetMistakes.length === 0) return;
+
+    setIsGeneratingExam(true);
+    try {
+      const res = await fetch("/api/exams/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: "امتحان معالجة الأخطاء: مراجعة وتثبيت نقاط الضعف",
+          mode: "PRACTICE",
+          durationMinutes: Math.max(10, Math.min(60, targetMistakes.length * 2)),
+          questionIds: targetMistakes.map((m) => m.questionId),
+          subjectId: selectedSubjectId !== "all" ? selectedSubjectId : undefined,
+        }),
+      });
+
+      const data = await res.json();
+      if (res.ok && data.examId && data.attemptId) {
+        router.push(`/exams/${data.examId}?attemptId=${data.attemptId}`);
+      } else {
+        alert(data.error || "تعذر تجهيز الامتحان، حاول مرة أخرى.");
+        setIsGeneratingExam(false);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("حدث خطأ في الاتصال، يرجى المحاولة لاحقاً.");
+      setIsGeneratingExam(false);
+    }
+  };
+
+  const actionableUnresolvedCount = filteredMistakes.filter((m) => !m.isResolved).length;
+
   return (
     <div className="space-y-6">
       {/* Overview Analytics Bar */}
@@ -177,6 +216,42 @@ export function MistakeHubClient({
           </div>
         </div>
       </div>
+
+      {/* Quick Exam Banner when there are unresolved mistakes */}
+      {actionableUnresolvedCount > 0 && (
+        <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-l from-indigo-50 to-white dark:from-[#131B2E] dark:to-slate-900 border border-indigo-200/80 dark:border-indigo-900/50 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-[#4F46E5] animate-ping" />
+              <h3 className="text-sm font-bold text-[#0F172A] dark:text-white">
+                عاوز تتدرب عليهم في امتحان عملي مجمع؟
+              </h3>
+            </div>
+            <p className="text-xs text-[#475569] dark:text-slate-400">
+              هنعملك امتحان فوري بـ {actionableUnresolvedCount} أسئلة اللي لسه ما قفلتهمش عشان تثبتهم فوراً.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={handleGenerateExamFromMistakes}
+            disabled={isGeneratingExam}
+            className="h-10 px-5 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-xs font-bold flex items-center justify-center gap-2 shadow-2xs transition-all active:scale-95 disabled:opacity-50 interactive-tap shrink-0"
+          >
+            {isGeneratingExam ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>بنجهّز الامتحان...</span>
+              </>
+            ) : (
+              <>
+                <SlidersHorizontal className="w-4 h-4" />
+                <span>ابدأ امتحان من غلطاتي ({actionableUnresolvedCount})</span>
+              </>
+            )}
+          </button>
+        </div>
+      )}
 
       {/* Filters Bar */}
       <div className="p-3.5 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">

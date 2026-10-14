@@ -5,7 +5,7 @@ import { getCurrentUser } from "@/lib/auth";
 export async function POST(req: Request) {
   try {
     const user = await getCurrentUser();
-    if (!user || user.role !== "ADMIN") {
+    if (!user || (user.role !== "ADMIN" && user.role !== "SUPER_ADMIN")) {
       return NextResponse.json({ error: "غير مصرح" }, { status: 403 });
     }
 
@@ -19,41 +19,43 @@ export async function POST(req: Request) {
       );
     }
 
-    let importedCount = 0;
+    const importedCount = await prisma.$transaction(async (tx) => {
+      let count = 0;
+      for (const q of questions) {
+        if (!q.statement || !q.subjectId) continue;
 
-    for (const q of questions) {
-      if (!q.statement || !q.subjectId) continue;
-
-      await prisma.question.create({
-        data: {
-          statement: q.statement,
-          type: q.type || "MCQ",
-          difficulty: q.difficulty || "MEDIUM",
-          status: "PUBLISHED",
-          subjectId: q.subjectId,
-          unitId: q.unitId || null,
-          options: {
-            create: (q.options || []).map((opt: any, idx: number) => ({
-              text: opt.text,
-              isCorrect: !!opt.isCorrect,
-              order: idx + 1,
-              explanation: opt.explanation || null,
-            })),
-          },
-          ...(q.concept && q.correctReason
-            ? {
-                explanation: {
-                  create: {
-                    concept: q.concept,
-                    correctReason: q.correctReason,
+        await tx.question.create({
+          data: {
+            statement: q.statement,
+            type: q.type || "MCQ",
+            difficulty: q.difficulty || "MEDIUM",
+            status: "PUBLISHED",
+            subjectId: q.subjectId,
+            unitId: q.unitId || null,
+            options: {
+              create: (q.options || []).map((opt: any, idx: number) => ({
+                text: opt.text,
+                isCorrect: !!opt.isCorrect,
+                order: idx + 1,
+                explanation: opt.explanation || null,
+              })),
+            },
+            ...(q.concept && q.correctReason
+              ? {
+                  explanation: {
+                    create: {
+                      concept: q.concept,
+                      correctReason: q.correctReason,
+                    },
                   },
-                },
-              }
-            : {}),
-        },
-      });
-      importedCount++;
-    }
+                }
+              : {}),
+          },
+        });
+        count++;
+      }
+      return count;
+    });
 
     return NextResponse.json({
       success: true,

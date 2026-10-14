@@ -25,7 +25,7 @@ export default async function SubjectsPage() {
 
   return (
     <StudentShell user={user}>
-      <div className="space-y-6 text-right">
+      <div className="space-y-6 text-right pb-28">
         {/* Header */}
         <div className="space-y-2">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300">

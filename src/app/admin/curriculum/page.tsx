@@ -7,7 +7,7 @@ import { CurriculumManagerClient } from "@/components/admin/CurriculumManagerCli
 export default async function AdminCurriculumPage() {
   const user = await getCurrentUser();
 
-  if (!user || user.role !== "ADMIN") {
+  if (!user || (user.role !== "ADMIN" && user.role !== "SUPER_ADMIN")) {
     redirect("/login?callbackUrl=/admin/curriculum");
   }
 

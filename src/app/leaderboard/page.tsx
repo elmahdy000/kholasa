@@ -127,7 +127,7 @@ export default async function LeaderboardPage() {
 
   return (
     <StudentShell user={currentUser}>
-      <div className="max-w-5xl mx-auto">
+      <div className="max-w-5xl mx-auto pb-28">
         <LeaderboardClient
           initialUsers={combinedUsers}
           currentUserId={currentUser?.id}

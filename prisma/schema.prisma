@@ -218,6 +218,7 @@ model LessonContent {
   lessonId   String   @unique
   body       String   @db.Text
   videoUrl   String?
+  audioUrl   String?
   objectives String[] @default([])
 
   lesson     Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
@@ -238,13 +239,15 @@ model LessonSummary {
 }
 
 model MindMap {
-  id       String @id @default(cuid())
-  lessonId String @unique
-  title    String
-  nodes    Json   @default("[]")
-  edges    Json   @default("[]")
+  id          String   @id @default(cuid())
+  lessonId    String   @unique
+  title       String
+  images      String[] @default([])
+  description String?
+  nodes       Json     @default("[]")
+  edges       Json     @default("[]")
 
-  lesson   Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  lesson      Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
 }
 
 model Question {

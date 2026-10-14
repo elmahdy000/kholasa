@@ -20,66 +20,87 @@ export async function POST(req: Request) {
       mode = "PRACTICE",
       durationMinutes = 20,
       title,
+      questionIds = [],
     } = body;
 
-    if (!subjectId) {
-      return NextResponse.json({ error: "يجب اختيار المادة الدراسية" }, { status: 400 });
+    let selected: { id: string }[] = [];
+    let targetSubjectId = subjectId;
+
+    if (Array.isArray(questionIds) && questionIds.length > 0) {
+      const explicitQuestions = await prisma.question.findMany({
+        where: { id: { in: questionIds } },
+        select: { id: true, subjectId: true },
+      });
+
+      if (explicitQuestions.length === 0) {
+        return NextResponse.json(
+          { error: "الأسئلة المحددة غير موجودة في بنك الأسئلة" },
+          { status: 400 }
+        );
+      }
+
+      selected = explicitQuestions.map((q) => ({ id: q.id }));
+      if (!targetSubjectId) {
+        targetSubjectId = explicitQuestions[0].subjectId;
+      }
+    } else {
+      if (!targetSubjectId) {
+        return NextResponse.json({ error: "يجب اختيار المادة الدراسية" }, { status: 400 });
+      }
+
+      // Build query filter
+      const where: any = {
+        status: "PUBLISHED",
+        subjectId: targetSubjectId,
+      };
+
+      if (unitId && unitId !== "all") {
+        where.unitId = unitId;
+      }
+
+      if (Array.isArray(lessonIds) && lessonIds.length > 0) {
+        where.lessons = {
+          some: {
+            lessonId: { in: lessonIds },
+          },
+        };
+      }
+
+      if (type && type !== "ALL" && type !== "MIXED") {
+        where.type = type;
+      }
+
+      if (difficulty && difficulty !== "ALL") {
+        where.difficulty = difficulty;
+      }
+
+      // Fetch candidate questions
+      const allQuestions = await prisma.question.findMany({
+        where,
+        select: { id: true },
+      });
+
+      if (allQuestions.length === 0) {
+        return NextResponse.json(
+          { error: "لا توجد أسئلة كافية مطابقة لمعايير التحديد الحالية" },
+          { status: 400 }
+        );
+      }
+
+      // Shuffle and pick questionCount
+      const shuffled = [...allQuestions].sort(() => 0.5 - Math.random());
+      selected = shuffled.slice(0, Math.min(Number(questionCount), allQuestions.length));
     }
 
     const subject = await prisma.subject.findUnique({
-      where: { id: subjectId },
+      where: { id: targetSubjectId },
     });
 
-    if (!subject) {
-      return NextResponse.json({ error: "المادة غير موجودة" }, { status: 404 });
-    }
-
-    // Build query filter
-    const where: any = {
-      status: "PUBLISHED",
-      subjectId,
-    };
-
-    if (unitId && unitId !== "all") {
-      where.unitId = unitId;
-    }
-
-    if (Array.isArray(lessonIds) && lessonIds.length > 0) {
-      where.lessons = {
-        some: {
-          lessonId: { in: lessonIds },
-        },
-      };
-    }
-
-    if (type && type !== "ALL" && type !== "MIXED") {
-      where.type = type;
-    }
-
-    if (difficulty && difficulty !== "ALL") {
-      where.difficulty = difficulty;
-    }
-
-    // Fetch candidate questions
-    const allQuestions = await prisma.question.findMany({
-      where,
-      select: { id: true },
-    });
-
-    if (allQuestions.length === 0) {
-      return NextResponse.json(
-        { error: "لا توجد أسئلة كافية مطابقة لمعايير التحديد الحالية" },
-        { status: 400 }
-      );
-    }
-
-    // Shuffle and pick questionCount
-    const shuffled = [...allQuestions].sort(() => 0.5 - Math.random());
-    const selected = shuffled.slice(0, Math.min(Number(questionCount), allQuestions.length));
+    const subjectName = subject?.name || "المادة";
 
     const examTitle =
       title ||
-      `امتحان مخصص: ${subject.name} (${mode === "PRACTICE" ? "وضع التدريب" : "وضع الامتحان"})`;
+      `امتحان مخصص: ${subjectName} (${mode === "PRACTICE" ? "وضع التدريب" : "وضع الامتحان"})`;
 
     // Create custom Exam
     const exam = await prisma.exam.create({

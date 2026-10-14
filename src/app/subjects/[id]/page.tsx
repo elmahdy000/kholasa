@@ -53,7 +53,7 @@ export default async function SubjectDetailPage({ params }: SubjectDetailPagePro
 
   return (
     <StudentShell user={user}>
-      <div className="space-y-8 text-right">
+      <div className="space-y-8 text-right pb-28">
         {/* Back navigation */}
         <div>
           <Link

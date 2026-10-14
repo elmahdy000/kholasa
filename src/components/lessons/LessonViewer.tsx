@@ -20,6 +20,13 @@ import {
   ShareNetwork,
   WarningCircle,
   XCircle,
+  ArrowsOut,
+  DownloadSimple,
+  MagnifyingGlassPlus,
+  MagnifyingGlassMinus,
+  ArrowsCounterClockwise,
+  Image as ImageIcon,
+  X,
 } from "@phosphor-icons/react";
 import { BidiStatement } from "@/components/ui/BidiStatement";
 
@@ -27,6 +34,7 @@ interface LessonContent {
   id: string;
   body: string;
   videoUrl?: string | null;
+  audioUrl?: string | null;
   objectives: string[];
 }
 
@@ -83,6 +91,8 @@ interface MindEdge {
 interface MindMap {
   id: string;
   title: string;
+  images?: string[];
+  description?: string | null;
   nodes: MindNode[];
   edges: MindEdge[];
 }
@@ -136,6 +146,17 @@ interface LessonViewerProps {
   userId?: string | null;
 }
 
+function getEmbedUrl(url?: string | null): string | null {
+  if (!url) return null;
+  const match = url.match(
+    /(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/
+  );
+  if (match && match[1]) {
+    return `https://www.youtube-nocookie.com/embed/${match[1]}`;
+  }
+  return null;
+}
+
 export function LessonViewer({
   lesson,
   initialIsBookmarked,
@@ -155,6 +176,7 @@ export function LessonViewer({
   const [audioProgress, setAudioProgress] = useState(0);
   const [playbackSpeed, setPlaybackSpeed] = useState<1 | 1.5 | 2>(1);
   const audioIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const audioElemRef = useRef<HTMLAudioElement | null>(null);
 
   // Interactive Checklist State
   const [checklist, setChecklist] = useState<ChecklistItem[]>(
@@ -165,6 +187,9 @@ export function LessonViewer({
   const [zoomLevel, setZoomLevel] = useState(1);
   const [isOutlineMode, setIsOutlineMode] = useState(false);
   const [selectedMindNode, setSelectedMindNode] = useState<string | null>(null);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [isFullscreenImage, setIsFullscreenImage] = useState(false);
+  const [imageZoom, setImageZoom] = useState(1);
 
   // Practice questions state
   const [questionAnswers, setQuestionAnswers] = useState<
@@ -187,8 +212,25 @@ export function LessonViewer({
       ? siblingLessons[currentIndex + 1]
       : null;
 
-  // Audio simulation / Web Speech API
+  // Set audio playback speed
   useEffect(() => {
+    if (audioElemRef.current) {
+      audioElemRef.current.playbackRate = playbackSpeed;
+    }
+  }, [playbackSpeed]);
+
+  // Audio simulation / Real HTML5 audio playback
+  useEffect(() => {
+    const audio = audioElemRef.current;
+    if (lesson.content?.audioUrl && audio) {
+      if (isPlayingAudio) {
+        audio.play().catch(() => {});
+      } else {
+        audio.pause();
+      }
+      return;
+    }
+
     if (isPlayingAudio) {
       audioIntervalRef.current = setInterval(() => {
         setAudioProgress((prev) => {
@@ -205,7 +247,7 @@ export function LessonViewer({
     return () => {
       if (audioIntervalRef.current) clearInterval(audioIntervalRef.current);
     };
-  }, [isPlayingAudio, playbackSpeed]);
+  }, [isPlayingAudio, playbackSpeed, lesson.content?.audioUrl]);
 
   const toggleBookmark = async () => {
     if (!userId) {
@@ -285,7 +327,7 @@ export function LessonViewer({
   };
 
   return (
-    <div className="space-y-6 text-right font-ui">
+    <div className="space-y-6 text-right font-ui pb-28">
       {/* Top Header & Breadcrumbs */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E2E8F0] dark:border-slate-700 pb-5">
         <div>
@@ -407,6 +449,25 @@ export function LessonViewer({
             {playbackSpeed}x
           </button>
         </div>
+
+        {/* Real Audio Player Tag */}
+        {lesson.content?.audioUrl && (
+          <audio
+            ref={audioElemRef}
+            src={lesson.content.audioUrl}
+            onTimeUpdate={(e) => {
+              const el = e.currentTarget;
+              if (el.duration) {
+                setAudioProgress((el.currentTime / el.duration) * 100);
+              }
+            }}
+            onEnded={() => {
+              setIsPlayingAudio(false);
+              setAudioProgress(0);
+            }}
+            className="hidden"
+          />
+        )}
       </div>
 
       {/* 4 Interactive Tabs (Vercel / Replit Segmented Tabs) */}
@@ -444,6 +505,31 @@ export function LessonViewer({
       {/* TAB 1: CONTENT (الشرح) */}
       {activeTab === "content" && (
         <div className="space-y-6">
+          {/* Video Player if videoUrl exists */}
+          {lesson.content?.videoUrl && (
+            <div className="rounded-2xl overflow-hidden bg-black border border-slate-200 dark:border-slate-800 shadow-sm">
+              {getEmbedUrl(lesson.content.videoUrl) ? (
+                <div className="aspect-video w-full">
+                  <iframe
+                    src={getEmbedUrl(lesson.content.videoUrl)!}
+                    title={lesson.title}
+                    className="w-full h-full"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                </div>
+              ) : (
+                <div className="p-4 text-center">
+                  <video
+                    src={lesson.content.videoUrl}
+                    controls
+                    className="w-full max-h-[460px] rounded-xl mx-auto"
+                  />
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Objectives Card */}
           {lesson.content?.objectives &&
             lesson.content.objectives.length > 0 && (
@@ -778,66 +864,202 @@ export function LessonViewer({
         </div>
       )}
 
-      {/* TAB 3: MIND MAP (خريطة المفاهيم) */}
+      {/* TAB 3: MIND MAP (الخرائط الذهنية المصورة) */}
       {activeTab === "mindmap" && (
         <div className="space-y-6">
           {lesson.mindMap ? (
-            <div className="rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-slate-700 overflow-hidden">
-              {/* Toolbar */}
-              <div className="p-3 border-b border-[#E2E8F0] dark:border-slate-700 flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
+            lesson.mindMap.images && lesson.mindMap.images.length > 0 ? (
+              <div className="rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden space-y-4 p-4 sm:p-6">
+                {/* Header & Image Selector Tabs */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+                  <div>
+                    <h3 className="text-base sm:text-lg font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
+                      <ImageIcon className="w-5 h-5 text-[#4F46E5] dark:text-indigo-400" weight="bold" />
+                      <span>{lesson.mindMap.title || "الخرائط الذهنية للدرس"}</span>
+                    </h3>
+                    <p className="text-xs text-[#475569] dark:text-slate-400 mt-1">
+                      خرائط مرئية عالية الدقة لتثبيت الروابط والمفاهيم بين أجزاء الدرس
+                    </p>
+                  </div>
+
+                  {/* Image Selector Pills (if multiple images) */}
+                  {lesson.mindMap.images.length > 1 && (
+                    <div className="flex items-center gap-1.5 p-1 bg-slate-100 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-x-auto">
+                      {lesson.mindMap.images.map((_, idx) => (
+                        <button
+                          key={idx}
+                          type="button"
+                          onClick={() => {
+                            setSelectedImageIndex(idx);
+                            setImageZoom(1);
+                          }}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all shrink-0 ${
+                            selectedImageIndex === idx
+                              ? "bg-[#4F46E5] text-white shadow-2xs"
+                              : "text-slate-600 dark:text-slate-400 hover:text-[#0F172A] dark:hover:text-white"
+                          }`}
+                        >
+                          خريطة {idx + 1}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Toolbar */}
+                <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-2 text-xs">
+                  {/* Zoom Controls */}
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => setImageZoom((z) => Math.max(0.5, Math.round((z - 0.25) * 100) / 100))}
+                      className="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 flex items-center justify-center text-slate-700 dark:text-slate-300 hover:border-slate-300 shadow-2xs"
+                      title="تصغير"
+                    >
+                      <MagnifyingGlassMinus className="w-4 h-4" weight="bold" />
+                    </button>
+                    <span className="font-mono font-bold text-xs px-2 min-w-[3.5rem] text-center text-[#0F172A] dark:text-white" dir="ltr">
+                      {Math.round(imageZoom * 100)}%
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setImageZoom((z) => Math.min(3, Math.round((z + 0.25) * 100) / 100))}
+                      className="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 flex items-center justify-center text-slate-700 dark:text-slate-300 hover:border-slate-300 shadow-2xs"
+                      title="تكبير"
+                    >
+                      <MagnifyingGlassPlus className="w-4 h-4" weight="bold" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setImageZoom(1)}
+                      className="h-8 px-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-[11px] font-bold text-slate-700 dark:text-slate-300 hover:border-slate-300 flex items-center gap-1 shadow-2xs"
+                      title="إعادة ضبط الحجم"
+                    >
+                      <ArrowsCounterClockwise className="w-3.5 h-3.5" weight="bold" />
+                      <span className="hidden sm:inline">100%</span>
+                    </button>
+                  </div>
+
+                  {/* Actions: Fullscreen & Download */}
+                  <div className="flex items-center gap-2">
+                    <a
+                      href={lesson.mindMap.images[selectedImageIndex]}
+                      download={`mindmap-${lesson.title}-${selectedImageIndex + 1}.png`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="h-8 px-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-[11px] font-bold text-slate-700 dark:text-slate-300 hover:border-slate-300 flex items-center gap-1.5 shadow-2xs"
+                    >
+                      <DownloadSimple className="w-3.5 h-3.5" weight="bold" />
+                      <span>تحميل الصورة</span>
+                    </a>
+
+                    <button
+                      type="button"
+                      onClick={() => setIsFullscreenImage(true)}
+                      className="h-8 px-3 rounded-lg bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[11px] font-bold flex items-center gap-1.5 shadow-2xs transition-colors interactive-tap"
+                    >
+                      <ArrowsOut className="w-3.5 h-3.5" weight="bold" />
+                      <span>عرض ملء الشاشة</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Main Image Container */}
+                <div className="relative rounded-xl border border-slate-200 dark:border-slate-800 bg-[#0F172A]/5 dark:bg-black/40 min-h-[420px] max-h-[700px] overflow-auto flex items-center justify-center p-4">
+                  <img
+                    src={lesson.mindMap.images[selectedImageIndex]}
+                    alt={`${lesson.mindMap.title} - خريطة ${selectedImageIndex + 1}`}
+                    style={{
+                      transform: `scale(${imageZoom})`,
+                      transformOrigin: "center center",
+                    }}
+                    className="max-w-full max-h-full object-contain rounded-lg transition-transform duration-150 select-none shadow-sm cursor-zoom-in"
+                    onClick={() => setIsFullscreenImage(true)}
+                  />
+                </div>
+
+                {/* Thumbnails Row if multiple */}
+                {lesson.mindMap.images.length > 1 && (
+                  <div className="flex items-center gap-3 pt-2 overflow-x-auto pb-1">
+                    {lesson.mindMap.images.map((img, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => {
+                          setSelectedImageIndex(idx);
+                          setImageZoom(1);
+                        }}
+                        className={`relative w-24 h-16 rounded-lg overflow-hidden border-2 transition-all shrink-0 ${
+                          selectedImageIndex === idx
+                            ? "border-[#4F46E5] shadow-sm scale-105"
+                            : "border-slate-200 dark:border-slate-700 opacity-60 hover:opacity-100"
+                        }`}
+                      >
+                        <img
+                          src={img}
+                          alt={`خريطة ${idx + 1}`}
+                          className="w-full h-full object-cover"
+                        />
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ) : (
+              /* Fallback: Interactive Outline or Tree for lessons with textual nodes */
+              <div className="rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-slate-700 overflow-hidden">
+                {/* Toolbar */}
+                <div className="p-3 border-b border-[#E2E8F0] dark:border-slate-700 flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setZoomLevel(Math.max(0.5, zoomLevel - 0.1))}
+                      className="w-8 h-8 rounded-lg border border-[#E2E8F0] dark:border-slate-700 flex items-center justify-center text-[#64748B] hover:bg-[#F8FAFC] dark:hover:bg-slate-800 transition-colors"
+                    >
+                      <span className="text-sm font-bold">−</span>
+                    </button>
+                    <span className="text-xs font-bold text-[#64748B] min-w-[3rem] text-center">
+                      {Math.round(zoomLevel * 100)}%
+                    </span>
+                    <button
+                      onClick={() => setZoomLevel(Math.min(2, zoomLevel + 0.1))}
+                      className="w-8 h-8 rounded-lg border border-[#E2E8F0] dark:border-slate-700 flex items-center justify-center text-[#64748B] hover:bg-[#F8FAFC] dark:hover:bg-slate-800 transition-colors"
+                    >
+                      <span className="text-sm font-bold">+</span>
+                    </button>
+                    <button
+                      onClick={() => setZoomLevel(1)}
+                      className="h-8 px-3 rounded-lg border border-[#E2E8F0] dark:border-slate-700 text-xs font-bold text-[#64748B] hover:bg-[#F8FAFC] dark:hover:bg-slate-800 transition-colors"
+                    >
+                      إعادة ضبط
+                    </button>
+                  </div>
+
                   <button
-                    onClick={() => setZoomLevel(Math.max(0.5, zoomLevel - 0.1))}
-                    className="w-8 h-8 rounded-lg border border-[#E2E8F0] dark:border-slate-700 flex items-center justify-center text-[#64748B] hover:bg-[#F8FAFC] dark:hover:bg-slate-800 transition-colors"
+                    onClick={() => setIsOutlineMode(!isOutlineMode)}
+                    className={`h-8 px-3 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-colors ${
+                      isOutlineMode
+                        ? "bg-[#4F46E5] text-white"
+                        : "border border-[#E2E8F0] dark:border-slate-700 text-[#64748B] hover:bg-[#F8FAFC] dark:hover:bg-slate-800"
+                    }`}
                   >
-                    <span className="text-sm font-bold">−</span>
-                  </button>
-                  <span className="text-xs font-bold text-[#64748B] min-w-[3rem] text-center">
-                    {Math.round(zoomLevel * 100)}%
-                  </span>
-                  <button
-                    onClick={() => setZoomLevel(Math.min(2, zoomLevel + 0.1))}
-                    className="w-8 h-8 rounded-lg border border-[#E2E8F0] dark:border-slate-700 flex items-center justify-center text-[#64748B] hover:bg-[#F8FAFC] dark:hover:bg-slate-800 transition-colors"
-                  >
-                    <span className="text-sm font-bold">+</span>
-                  </button>
-                  <button
-                    onClick={() => setZoomLevel(1)}
-                    className="h-8 px-3 rounded-lg border border-[#E2E8F0] dark:border-slate-700 text-xs font-bold text-[#64748B] hover:bg-[#F8FAFC] dark:hover:bg-slate-800 transition-colors"
-                  >
-                    إعادة ضبط
+                    <span>{isOutlineMode ? "عرض الخريطة" : "عرض نصي"}</span>
                   </button>
                 </div>
 
-                <button
-                  onClick={() => setIsOutlineMode(!isOutlineMode)}
-                  className={`h-8 px-3 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-colors ${
-                    isOutlineMode
-                      ? "bg-[#4F46E5] text-white"
-                      : "border border-[#E2E8F0] dark:border-slate-700 text-[#64748B] hover:bg-[#F8FAFC] dark:hover:bg-slate-800"
-                  }`}
-                >
-                  <span>{isOutlineMode ? "عرض الخريطة" : "عرض نصي"}</span>
-                </button>
-              </div>
-
-              {/* Map Canvas or Outline */}
-              <div className="p-6 min-h-[400px] overflow-auto">
-                {!isOutlineMode ? (
-                  <div
-                    className="transition-transform duration-200 origin-top-right"
-                    style={{ transform: `scale(${zoomLevel})` }}
-                  >
-                    {/* Hierarchical Tree Layout */}
-                    <div className="flex flex-col items-center gap-6 min-w-[600px]">
-                      {/* Root Node */}
-                      {(() => {
-                        const mindNodes = (lesson.mindMap?.nodes as MindNode[]) || [];
-                        const rootNodes = mindNodes.filter((n) => n.level === 0);
-                        const l1Children = mindNodes.filter((n) => n.level === 1);
-                        const l2Children = mindNodes.filter((n) => n.level === 2);
-                        return rootNodes.map((root) => {
-                          return (
+                {/* Map Canvas or Outline */}
+                <div className="p-6 min-h-[400px] overflow-auto">
+                  {!isOutlineMode ? (
+                    <div
+                      className="transition-transform duration-200 origin-top-right"
+                      style={{ transform: `scale(${zoomLevel})` }}
+                    >
+                      <div className="flex flex-col items-center gap-6 min-w-[600px]">
+                        {(() => {
+                          const mindNodes = (lesson.mindMap?.nodes as MindNode[]) || [];
+                          const rootNodes = mindNodes.filter((n) => n.level === 0);
+                          const l1Children = mindNodes.filter((n) => n.level === 1);
+                          const l2Children = mindNodes.filter((n) => n.level === 2);
+                          return rootNodes.map((root) => (
                             <div key={root.id} className="flex flex-col items-center gap-4 w-full">
                               <div
                                 onClick={() => setSelectedMindNode(selectedMindNode === root.id ? null : root.id)}
@@ -850,90 +1072,130 @@ export function LessonViewer({
                                 <>
                                   <div className="w-0.5 h-6 bg-[#E2E8F0] dark:bg-slate-700" />
                                   <div className="flex flex-wrap justify-center gap-4">
-                                    {l1Children.map((l1) => {
-                                      return (
-                                        <div key={l1.id} className="flex flex-col items-center gap-3">
-                                          <div
-                                            onClick={() => setSelectedMindNode(selectedMindNode === l1.id ? null : l1.id)}
-                                            className="px-4 py-2.5 rounded-lg bg-[#059669] text-white text-xs font-bold cursor-pointer hover:bg-[#047857] transition-colors text-center min-w-[120px]"
-                                          >
-                                            {l1.label}
-                                          </div>
+                                    {l1Children.map((l1) => (
+                                      <div key={l1.id} className="flex flex-col items-center gap-3">
+                                        <div
+                                          onClick={() => setSelectedMindNode(selectedMindNode === l1.id ? null : l1.id)}
+                                          className="px-4 py-2.5 rounded-lg bg-[#059669] text-white text-xs font-bold cursor-pointer hover:bg-[#047857] transition-colors text-center min-w-[120px]"
+                                        >
+                                          {l1.label}
+                                        </div>
 
-                                  {l2Children.length > 0 && (
-                                    <>
-                                      <div className="w-0.5 h-4 bg-[#E2E8F0] dark:bg-slate-700" />
-                                      <div className="w-full space-y-2">
-                                        {l2Children.map((l2) => (
-                                          <div
-                                            key={l2.id}
-                                            className="p-2.5 rounded-lg bg-white dark:bg-slate-900 border border-[#E2E8F0] dark:border-slate-700 text-center text-xs font-medium text-[#0F172A] dark:text-slate-200"
-                                          >
-                                            {l2.label}
-                                          </div>
-                                        ))}
+                                        {l2Children.length > 0 && (
+                                          <>
+                                            <div className="w-0.5 h-4 bg-[#E2E8F0] dark:bg-slate-700" />
+                                            <div className="w-full space-y-2">
+                                              {l2Children.map((l2) => (
+                                                <div
+                                                  key={l2.id}
+                                                  className="p-2.5 rounded-lg bg-white dark:bg-slate-900 border border-[#E2E8F0] dark:border-slate-700 text-center text-xs font-medium text-[#0F172A] dark:text-slate-200"
+                                                >
+                                                  {l2.label}
+                                                </div>
+                                              ))}
+                                            </div>
+                                          </>
+                                        )}
                                       </div>
-                                    </>
-                                  )}
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </>
-                      )}
+                                    ))}
+                                  </div>
+                                </>
+                              )}
+                            </div>
+                          ));
+                        })()}
+                      </div>
                     </div>
-                  );
-                });
-              })()}
+                  ) : (
+                    <div className="p-6 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-slate-700 space-y-3">
+                      {((lesson.mindMap?.nodes as MindNode[]) || []).map((n) => (
+                        <div
+                          key={n.id}
+                          style={{ paddingRight: `${n.level * 24}px` }}
+                          className="flex items-start gap-2.5"
+                        >
+                          <div
+                            className={`w-2.5 h-2.5 rounded-full mt-1.5 shrink-0 ${
+                              n.level === 0
+                                ? "bg-[#4F46E5]"
+                                : n.level === 1
+                                ? "bg-[#059669]"
+                                : "bg-[#D97706]"
+                            }`}
+                          />
+                          <div>
+                            <h4
+                              className={`text-xs sm:text-sm font-bold ${
+                                n.level === 0
+                                  ? "text-[#4F46E5] text-base"
+                                  : "text-[#0F172A] dark:text-white"
+                              }`}
+                            >
+                              {n.label}
+                            </h4>
+                            {n.description && (
+                              <p className="text-xs text-[#64748B] dark:text-slate-400 mt-0.5 font-content">
+                                {n.description}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
-            ) : (
-              /* Outline View */
-              <div className="p-6 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-slate-700 space-y-3">
-                {(lesson.mindMap.nodes as MindNode[]).map((n) => (
-                  <div
-                    key={n.id}
-                    style={{ paddingRight: `${n.level * 24}px` }}
-                    className="flex items-start gap-2.5"
-                  >
-                    <div
-                      className={`w-2.5 h-2.5 rounded-full mt-1.5 shrink-0 ${
-                        n.level === 0
-                          ? "bg-[#4F46E5]"
-                          : n.level === 1
-                          ? "bg-[#059669]"
-                          : "bg-[#D97706]"
-                      }`}
-                    />
-                    <div>
-                      <h4
-                        className={`text-xs sm:text-sm font-bold ${
-                          n.level === 0
-                            ? "text-[#4F46E5] text-base"
-                            : "text-[#0F172A] dark:text-white"
-                        }`}
-                      >
-                        {n.label}
-                      </h4>
-                      {n.description && (
-                        <p className="text-xs text-[#64748B] dark:text-slate-400 mt-0.5 font-content">
-                          {n.description}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                ))}
-                </div>
-              )}
+            )
+          ) : (
+            <div className="p-8 text-center text-[#64748B] rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-slate-700">
+              خريطة المفاهيم قيد الإعداد...
             </div>
-          </div>
-        ) : (
-          <div className="p-8 text-center text-[#64748B] rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-slate-700">
-            خريطة المفاهيم قيد الإعداد...
-          </div>
-        )}
-      </div>
-    )}
+          )}
+
+          {/* Fullscreen Lightbox Modal */}
+          {isFullscreenImage && lesson.mindMap?.images && lesson.mindMap.images.length > 0 && (
+            <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex flex-col p-4 sm:p-6 text-white animate-in fade-in duration-200">
+              <div className="flex items-center justify-between pb-3 border-b border-white/10">
+                <div className="flex items-center gap-3">
+                  <span className="text-sm font-bold">{lesson.mindMap.title || "الخريطة الذهنية"}</span>
+                  {lesson.mindMap.images.length > 1 && (
+                    <span className="text-xs text-white/60">
+                      (خريطة {selectedImageIndex + 1} من {lesson.mindMap.images.length})
+                    </span>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <a
+                    href={lesson.mindMap.images[selectedImageIndex]}
+                    download={`mindmap-${lesson.title}-${selectedImageIndex + 1}.png`}
+                    className="h-8 px-3 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-bold flex items-center gap-1.5 transition-colors"
+                  >
+                    <DownloadSimple className="w-4 h-4" weight="bold" />
+                    <span>تحميل</span>
+                  </a>
+
+                  <button
+                    type="button"
+                    onClick={() => setIsFullscreenImage(false)}
+                    className="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+                  >
+                    <X className="w-5 h-5" weight="bold" />
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex-1 overflow-auto flex items-center justify-center p-4">
+                <img
+                  src={lesson.mindMap.images[selectedImageIndex]}
+                  alt={lesson.mindMap.title}
+                  className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
+                />
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* TAB 4: CHECKPOINT QUESTIONS (الأسئلة والتدريب) */}
       {activeTab === "questions" && (
