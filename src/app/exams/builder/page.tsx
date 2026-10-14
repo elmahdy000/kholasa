@@ -39,7 +39,7 @@ export default async function ExamBuilderPage({
   return (
     <StudentShell user={user}>
       <div className="max-w-[1050px] mx-auto space-y-6 text-right font-sans">
-        <div className="border-b border-slate-200 dark:border-slate-800 pb-5">
+        <div className="border-b border-slate-200 dark:border-zinc-800 pb-5">
           <div className="flex items-center gap-2 mb-1.5">
             <span className="text-xs font-bold text-[#4F46E5] dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/50 px-2.5 py-0.5 rounded-md border border-indigo-200/60 dark:border-indigo-800">
               فصّل امتحانك على مزاجك

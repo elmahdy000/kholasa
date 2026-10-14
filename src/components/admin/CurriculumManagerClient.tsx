@@ -346,7 +346,7 @@ export function CurriculumManagerClient({
                       className={`h-8 px-3 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors ${
                         subject.isPublished
                           ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
-                          : "bg-slate-200 text-slate-600 dark:bg-slate-800 dark:text-slate-400"
+                          : "bg-slate-200 text-slate-600 dark:bg-zinc-900 dark:text-zinc-400"
                       }`}
                     >
                       {subject.isPublished ? (
@@ -365,7 +365,7 @@ export function CurriculumManagerClient({
                 </div>
 
                 {/* Units List */}
-                <div className="divide-y divide-slate-100 dark:divide-slate-800">
+                <div className="divide-y divide-slate-100 dark:divide-zinc-800">
                   {subject.units.length === 0 ? (
                     <div className="p-8 text-center text-xs font-bold text-slate-400">
                       لا توجد وحدات في هذه المادة بعد. اضغط "إضافة وحدة" للبدء.
@@ -404,7 +404,7 @@ export function CurriculumManagerClient({
                                     initialUnit: unit,
                                   })
                                 }
-                                className="p-1 rounded-md text-slate-400 hover:text-[#4F46E5] hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                                className="p-1 rounded-md text-slate-400 hover:text-[#4F46E5] hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
                                 title="تعديل بيانات الوحدة"
                               >
                                 <Edit className="w-3.5 h-3.5" />
@@ -450,7 +450,7 @@ export function CurriculumManagerClient({
                           {isExpanded && (
                             <div className="pr-4 sm:pr-6 space-y-2 pt-1">
                               {unit.lessons.length === 0 ? (
-                                <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-dashed border-slate-200 dark:border-slate-800 text-center">
+                                <div className="p-4 rounded-xl bg-slate-50 dark:bg-zinc-900 border border-dashed border-slate-200 dark:border-zinc-800 text-center">
                                   <span className="text-xs font-bold text-slate-400 block mb-2">
                                     لا توجد دروس في هذه الوحدة بعد
                                   </span>
@@ -483,7 +483,7 @@ export function CurriculumManagerClient({
                                           <span className="text-xs font-black text-[#14243D] dark:text-white">
                                             {lesson.title}
                                           </span>
-                                          <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
+                                          <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-200 dark:bg-zinc-900 text-slate-600 dark:text-zinc-400">
                                             #{lesson.order}
                                           </span>
                                         </div>
@@ -509,7 +509,7 @@ export function CurriculumManagerClient({
 
                                       <Link
                                         href={`/lessons/${lesson.id}`}
-                                        className="h-7 px-2.5 rounded-lg bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-[11px] font-bold flex items-center gap-1 transition-colors"
+                                        className="h-7 px-2.5 rounded-lg bg-slate-200 hover:bg-slate-300 dark:bg-zinc-900 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-200 text-[11px] font-bold flex items-center gap-1 transition-colors"
                                         target="_blank"
                                       >
                                         <ExternalLink className="w-3 h-3" />
@@ -528,7 +528,7 @@ export function CurriculumManagerClient({
                                         className={`h-7 px-2.5 rounded-lg text-[10px] font-bold transition-colors ${
                                           lesson.isPublished
                                             ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
-                                            : "bg-slate-200 text-slate-500 dark:bg-slate-800 dark:text-slate-400"
+                                            : "bg-slate-200 text-slate-500 dark:bg-zinc-900 dark:text-zinc-400"
                                         }`}
                                       >
                                         {lesson.isPublished ? "منشور" : "مخفي"}

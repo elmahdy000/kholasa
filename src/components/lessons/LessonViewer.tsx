@@ -329,9 +329,9 @@ export function LessonViewer({
   return (
     <div className="space-y-6 text-right font-ui pb-28">
       {/* Top Header & Breadcrumbs */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E2E8F0] dark:border-slate-700 pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E2E8F0] dark:border-zinc-800 pb-5">
         <div>
-          <div className="flex items-center gap-2 text-xs font-medium text-[#64748B] dark:text-slate-400 mb-2 flex-wrap">
+          <div className="flex items-center gap-2 text-xs font-medium text-[#64748B] dark:text-zinc-400 mb-2 flex-wrap">
             <Link
               href="/subjects"
               className="hover:text-[#4F46E5] transition-colors"
@@ -355,7 +355,7 @@ export function LessonViewer({
             <span>{lesson.title}</span>
           </h1>
 
-          <div className="flex items-center gap-3 text-xs text-[#64748B] dark:text-slate-400 font-medium mt-2">
+          <div className="flex items-center gap-3 text-xs text-[#64748B] dark:text-zinc-400 font-medium mt-2">
             <span className="flex items-center gap-1.5">
               <Clock className="w-3.5 h-3.5 text-[#4F46E5]" weight="bold" />
               <span>مدة الدرس: {lesson.durationMinutes} دقيقة</span>
@@ -375,7 +375,7 @@ export function LessonViewer({
             className={`h-10 px-3.5 rounded-lg border text-xs font-bold flex items-center gap-1.5 transition-colors ${
               isBookmarked
                 ? "bg-[#D97706]/10 border-[#D97706]/30 text-[#D97706]"
-                : "border-[#E2E8F0] dark:border-slate-700 hover:bg-[#F8FAFC] dark:hover:bg-slate-800 text-[#64748B] dark:text-slate-400"
+                : "border-[#E2E8F0] dark:border-zinc-800 hover:bg-[#F8FAFC] dark:hover:bg-zinc-800 text-[#64748B] dark:text-zinc-400"
             }`}
           >
             <BookmarkSimple
@@ -391,7 +391,7 @@ export function LessonViewer({
             className={`h-10 px-4 rounded-lg text-xs font-bold flex items-center gap-2 transition-colors ${
               isCompleted
                 ? "bg-[#059669] text-white"
-                : "bg-[#F8FAFC] dark:bg-slate-800 hover:bg-[#059669]/10 hover:text-[#059669] text-[#0F172A] dark:text-white border border-[#E2E8F0] dark:border-slate-700"
+                : "bg-[#F8FAFC] dark:bg-zinc-900 hover:bg-[#059669]/10 hover:text-[#059669] text-[#0F172A] dark:text-white border border-[#E2E8F0] dark:border-zinc-800"
             }`}
           >
             <CheckCircle
@@ -404,7 +404,7 @@ export function LessonViewer({
       </div>
 
       {/* Smart Audio Companion Bar (الخلاصة الصوتية) */}
-      <div className="p-4 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div className="p-4 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-3">
         <div className="flex items-center gap-3 w-full sm:w-auto">
           <button
             onClick={() => setIsPlayingAudio(!isPlayingAudio)}
@@ -423,7 +423,7 @@ export function LessonViewer({
                 LIVE
               </span>
             </h4>
-            <p className="text-[11px] text-[#475569] dark:text-slate-400">
+            <p className="text-[11px] text-[#475569] dark:text-zinc-400">
               استمع إلى ملخص مركز للدرس أثناء المشي أو الاسترخاء
             </p>
           </div>
@@ -431,7 +431,7 @@ export function LessonViewer({
 
         {/* Progress Bar & Speed */}
         <div className="flex items-center gap-3 w-full sm:w-64">
-          <div className="flex-1 h-1.5 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
+          <div className="flex-1 h-1.5 rounded-full bg-slate-100 dark:bg-zinc-900 overflow-hidden">
             <div
               className="h-full bg-[#4F46E5] transition-all duration-300"
               style={{ width: `${audioProgress}%` }}
@@ -444,7 +444,7 @@ export function LessonViewer({
                 speeds[(speeds.indexOf(playbackSpeed) + 1) % speeds.length];
               setPlaybackSpeed(next);
             }}
-            className="px-2 py-0.5 rounded-md border border-slate-200 dark:border-slate-700 font-mono text-[11px] font-bold text-[#0F172A] dark:text-white bg-slate-50 dark:bg-slate-800 hover:border-slate-300 transition-colors"
+            className="px-2 py-0.5 rounded-md border border-slate-200 dark:border-zinc-800 font-mono text-[11px] font-bold text-[#0F172A] dark:text-white bg-slate-50 dark:bg-zinc-900 hover:border-slate-300 transition-colors"
           >
             {playbackSpeed}x
           </button>
@@ -471,7 +471,7 @@ export function LessonViewer({
       </div>
 
       {/* 4 Interactive Tabs (Vercel / Replit Segmented Tabs) */}
-      <div className="p-1 rounded-xl bg-slate-100/80 dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800/80 flex items-center gap-1 overflow-x-auto scrollbar-none">
+      <div className="p-1 rounded-xl bg-slate-100/80 dark:bg-zinc-900/80 border border-slate-200/80 dark:border-zinc-800/80 flex items-center gap-1 overflow-x-auto scrollbar-none">
         {[
           { id: "content", label: "الشرح والتفكيك", icon: BookOpen },
           { id: "summary", label: "الزتونة الذهبية", icon: Sparkle, badge: "مركز" },
@@ -486,8 +486,8 @@ export function LessonViewer({
               onClick={() => setActiveTab(tab.id as any)}
               className={`flex-1 min-w-[110px] h-9.5 px-3 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-all shrink-0 ${
                 isSelected
-                  ? "bg-white dark:bg-slate-800 text-[#0F172A] dark:text-white shadow-2xs border border-slate-200/80 dark:border-slate-700/80 font-bold"
-                  : "text-slate-600 dark:text-slate-400 hover:text-[#0F172A] dark:hover:text-white font-medium"
+                  ? "bg-white dark:bg-zinc-900 text-[#0F172A] dark:text-white shadow-2xs border border-slate-200/80 dark:border-zinc-800/80 font-bold"
+                  : "text-slate-600 dark:text-zinc-400 hover:text-[#0F172A] dark:hover:text-white font-medium"
               }`}
             >
               <Icon className={`w-3.5 h-3.5 ${isSelected ? "text-[#4F46E5]" : ""}`} weight={isSelected ? "fill" : "bold"} />
@@ -507,7 +507,7 @@ export function LessonViewer({
         <div className="space-y-6">
           {/* Video Player if videoUrl exists */}
           {lesson.content?.videoUrl && (
-            <div className="rounded-2xl overflow-hidden bg-black border border-slate-200 dark:border-slate-800 shadow-sm">
+            <div className="rounded-2xl overflow-hidden bg-black border border-slate-200 dark:border-zinc-800 shadow-sm">
               {getEmbedUrl(lesson.content.videoUrl) ? (
                 <div className="aspect-video w-full">
                   <iframe
@@ -533,7 +533,7 @@ export function LessonViewer({
           {/* Objectives Card */}
           {lesson.content?.objectives &&
             lesson.content.objectives.length > 0 && (
-              <div className="p-5 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-slate-700">
+              <div className="p-5 rounded-xl bg-white dark:bg-zinc-950 border border-[#E2E8F0] dark:border-zinc-800">
                 <h3 className="text-xs font-bold uppercase text-[#4F46E5] mb-3 flex items-center gap-1.5">
                   <Lightbulb className="w-4 h-4" weight="fill" />
                   <span>الأهداف التعليمية ومخرجات التعلم</span>
@@ -542,7 +542,7 @@ export function LessonViewer({
                   {lesson.content.objectives.map((obj, i) => (
                     <li
                       key={i}
-                      className="flex items-start gap-2.5 text-xs sm:text-sm font-medium text-[#0F172A] dark:text-slate-200 font-content"
+                      className="flex items-start gap-2.5 text-xs sm:text-sm font-medium text-[#0F172A] dark:text-zinc-200 font-content"
                     >
                       <div className="w-4 h-4 rounded bg-[#4F46E5]/10 text-[#4F46E5] flex items-center justify-center shrink-0 mt-0.5 text-[10px] font-bold">
                         {i + 1}
@@ -555,15 +555,15 @@ export function LessonViewer({
             )}
 
           {/* Structured Rich Body */}
-          <div className="p-6 sm:p-8 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-slate-700">
-            <div className="prose dark:prose-invert max-w-none text-[#0F172A] dark:text-slate-200 leading-relaxed font-content space-y-4">
+          <div className="p-6 sm:p-8 rounded-xl bg-white dark:bg-zinc-950 border border-[#E2E8F0] dark:border-zinc-800">
+            <div className="prose dark:prose-invert max-w-none text-[#0F172A] dark:text-zinc-200 leading-relaxed font-content space-y-4">
               {lesson.content?.body ? (
                 lesson.content.body.split("\n").map((paragraph, index) => {
                   if (paragraph.startsWith("## ")) {
                     return (
                       <h2
                         key={index}
-                        className="text-lg sm:text-xl font-bold text-[#0F172A] dark:text-white pt-4 pb-2 border-b border-[#E2E8F0] dark:border-slate-700"
+                        className="text-lg sm:text-xl font-bold text-[#0F172A] dark:text-white pt-4 pb-2 border-b border-[#E2E8F0] dark:border-zinc-800"
                       >
                         {paragraph.replace("## ", "")}
                       </h2>
@@ -618,7 +618,7 @@ export function LessonViewer({
                   );
                 })
               ) : (
-                <p className="text-[#64748B]">محتوى الدرس قيد التحديث...</p>
+                <p className="text-zinc-500 dark:text-zinc-400">محتوى الدرس قيد التحديث...</p>
               )}
             </div>
           </div>
@@ -640,7 +640,7 @@ export function LessonViewer({
                     <h3 className="text-lg font-bold text-[#0F172A] dark:text-white">
                       الزتونة الذهبية — كبسولة الدرس المركزة
                     </h3>
-                    <p className="text-xs text-[#64748B] dark:text-slate-400">
+                    <p className="text-xs text-[#64748B] dark:text-zinc-400">
                       كل ما تحتاجه للمراجعة السريعة قبل الامتحان في دقائق معدودة
                     </p>
                   </div>
@@ -659,7 +659,7 @@ export function LessonViewer({
               {/* Key Concepts Grid */}
               {lesson.summary.keyConcepts &&
                 lesson.summary.keyConcepts.length > 0 && (
-                  <div className="p-6 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-slate-700 space-y-4">
+                  <div className="p-6 rounded-xl bg-white dark:bg-zinc-950 border border-[#E2E8F0] dark:border-zinc-800 space-y-4">
                     <h3 className="text-sm font-bold text-[#4F46E5] flex items-center gap-2">
                       <Lightbulb className="w-4 h-4" weight="fill" />
                       <span>أهم المفاهيم الأساسية</span>
@@ -669,7 +669,7 @@ export function LessonViewer({
                         (concept, idx) => (
                           <div
                             key={idx}
-                            className="p-3.5 rounded-lg bg-[#4F46E5]/5 border border-[#4F46E5]/15 text-xs sm:text-sm font-medium text-[#0F172A] dark:text-slate-200 flex items-start gap-2.5 font-content"
+                            className="p-3.5 rounded-lg bg-[#4F46E5]/5 border border-[#4F46E5]/15 text-xs sm:text-sm font-medium text-[#0F172A] dark:text-zinc-200 flex items-start gap-2.5 font-content"
                           >
                             <span className="w-5 h-5 rounded bg-[#4F46E5] text-white flex items-center justify-center text-[10px] shrink-0 font-bold">
                               {idx + 1}
@@ -685,7 +685,7 @@ export function LessonViewer({
               {/* Definitions */}
               {lesson.summary.definitions &&
                 (lesson.summary.definitions as Definition[]).length > 0 && (
-                  <div className="p-6 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-slate-700 space-y-4">
+                  <div className="p-6 rounded-xl bg-white dark:bg-zinc-950 border border-[#E2E8F0] dark:border-zinc-800 space-y-4">
                     <h3 className="text-sm font-bold text-[#059669] flex items-center gap-2">
                       <BookOpen className="w-4 h-4" weight="bold" />
                       <span>المصطلحات والتعريفات الهامة</span>
@@ -695,15 +695,15 @@ export function LessonViewer({
                         (item, idx) => (
                           <div
                             key={idx}
-                            className="p-4 rounded-lg bg-[#F8FAFC] dark:bg-slate-900 border border-[#E2E8F0] dark:border-slate-700 flex flex-col sm:flex-row sm:items-baseline gap-2 font-content"
+                            className="p-4 rounded-lg bg-[#F8FAFC] dark:bg-zinc-900 border border-[#E2E8F0] dark:border-zinc-800 flex flex-col sm:flex-row sm:items-baseline gap-2 font-content"
                           >
                             <span className="font-bold text-xs sm:text-sm text-[#059669] shrink-0 font-mono">
                               {item.term}
                             </span>
-                            <span className="text-[#E2E8F0] dark:text-slate-700 hidden sm:inline">
+                            <span className="text-[#E2E8F0] dark:text-zinc-700 hidden sm:inline">
                               :
                             </span>
-                            <span className="text-xs sm:text-sm text-[#0F172A] dark:text-slate-200 font-medium">
+                            <span className="text-xs sm:text-sm text-[#0F172A] dark:text-zinc-200 font-medium">
                               {item.meaning}
                             </span>
                           </div>
@@ -716,7 +716,7 @@ export function LessonViewer({
               {/* Formulas & Code Snippets */}
               {lesson.summary.formulas &&
                 (lesson.summary.formulas as Formula[]).length > 0 && (
-                  <div className="p-6 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-slate-700 space-y-4">
+                  <div className="p-6 rounded-xl bg-white dark:bg-zinc-950 border border-[#E2E8F0] dark:border-zinc-800 space-y-4">
                     <h3 className="text-sm font-bold text-[#4F46E5] flex items-center gap-2">
                       <span className="font-mono text-base">#</span>
                       <span>القوانين والمعادلات الأساسية</span>
@@ -744,7 +744,7 @@ export function LessonViewer({
               {/* Comparisons Table */}
               {lesson.summary.comparisons &&
                 (lesson.summary.comparisons as Comparison[]).length > 0 && (
-                  <div className="p-6 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-slate-700 space-y-4">
+                  <div className="p-6 rounded-xl bg-white dark:bg-zinc-950 border border-[#E2E8F0] dark:border-zinc-800 space-y-4">
                     <h3 className="text-sm font-bold text-[#D97706] flex items-center gap-2">
                       <span className="text-base">⇄</span>
                       <span>المقارنات الهامة</span>
@@ -752,7 +752,7 @@ export function LessonViewer({
                     <div className="overflow-x-auto">
                       <table className="w-full text-xs sm:text-sm text-right font-content">
                         <thead>
-                          <tr className="border-b border-[#E2E8F0] dark:border-slate-700">
+                          <tr className="border-b border-[#E2E8F0] dark:border-zinc-800">
                             <th className="py-2 px-3 font-bold text-[#64748B]">وجه المقارنة</th>
                             <th className="py-2 px-3 font-bold text-[#4F46E5]">العنصر الأول</th>
                             <th className="py-2 px-3 font-bold text-[#059669]">العنصر الثاني</th>
@@ -761,10 +761,10 @@ export function LessonViewer({
                         <tbody>
                           {(lesson.summary.comparisons as Comparison[]).map(
                             (comp, idx) => (
-                              <tr key={idx} className="border-b border-[#E2E8F0]/50 dark:border-slate-700/50 last:border-0">
+                              <tr key={idx} className="border-b border-[#E2E8F0]/50 dark:border-zinc-800/50 last:border-0">
                                 <td className="py-2.5 px-3 font-bold text-[#0F172A] dark:text-white">{comp.aspect}</td>
-                                <td className="py-2.5 px-3 text-[#64748B] dark:text-slate-300">{comp.first}</td>
-                                <td className="py-2.5 px-3 text-[#64748B] dark:text-slate-300">{comp.second}</td>
+                                <td className="py-2.5 px-3 text-[#64748B] dark:text-zinc-300">{comp.first}</td>
+                                <td className="py-2.5 px-3 text-[#64748B] dark:text-zinc-300">{comp.second}</td>
                               </tr>
                             )
                           )}
@@ -784,7 +784,7 @@ export function LessonViewer({
                     </h3>
                     <ul className="space-y-2">
                       {lesson.summary.examTips.map((tip, idx) => (
-                        <li key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm font-medium text-[#0F172A] dark:text-slate-200 font-content">
+                        <li key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm font-medium text-[#0F172A] dark:text-zinc-200 font-content">
                           <span className="text-[#D97706] shrink-0 mt-0.5">•</span>
                           <span>{tip}</span>
                         </li>
@@ -804,7 +804,7 @@ export function LessonViewer({
                     <div className="space-y-2.5">
                       {(lesson.summary.commonMistakes as Mistake[]).map(
                         (mistake, idx) => (
-                          <div key={idx} className="p-3.5 rounded-lg bg-white dark:bg-[#1E293B] border border-[#DC2626]/15 font-content">
+                          <div key={idx} className="p-3.5 rounded-lg bg-white dark:bg-zinc-950 border border-[#DC2626]/15 font-content">
                             <div className="flex items-start gap-2">
                               <span className="text-[#DC2626] font-bold text-xs shrink-0 mt-0.5">خطأ:</span>
                               <span className="text-xs text-[#DC2626] line-through">{mistake.mistake}</span>
@@ -822,7 +822,7 @@ export function LessonViewer({
 
               {/* Interactive Checklist */}
               {checklist.length > 0 && (
-                <div className="p-6 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-slate-700 space-y-4">
+                <div className="p-6 rounded-xl bg-white dark:bg-zinc-950 border border-[#E2E8F0] dark:border-zinc-800 space-y-4">
                   <h3 className="text-sm font-bold text-[#059669] flex items-center gap-2">
                     <CheckCircle className="w-4 h-4" weight="bold" />
                     <span>قائمة مراجعة إتقان الدرس</span>
@@ -835,14 +835,14 @@ export function LessonViewer({
                         className={`w-full p-3 rounded-lg border text-right flex items-center gap-3 transition-colors text-xs sm:text-sm font-medium font-content ${
                           item.completed
                             ? "bg-[#059669]/5 border-[#059669]/30 text-[#059669]"
-                            : "bg-[#F8FAFC] dark:bg-slate-900 border-[#E2E8F0] dark:border-slate-700 text-[#0F172A] dark:text-slate-300 hover:border-[#059669]/50"
+                            : "bg-[#F8FAFC] dark:bg-zinc-900 border-[#E2E8F0] dark:border-zinc-800 text-[#0F172A] dark:text-zinc-300 hover:border-[#059669]/50"
                         }`}
                       >
                         <div
                           className={`w-5 h-5 rounded border flex items-center justify-center shrink-0 transition-colors ${
                             item.completed
                               ? "bg-[#059669] border-[#059669] text-white"
-                              : "border-[#E2E8F0] dark:border-slate-600"
+                              : "border-[#E2E8F0] dark:border-zinc-700"
                           }`}
                         >
                           {item.completed && <Check className="w-3 h-3" weight="bold" />}
@@ -857,7 +857,7 @@ export function LessonViewer({
               )}
             </>
           ) : (
-            <div className="p-8 text-center text-[#64748B] rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-slate-700">
+            <div className="p-8 text-center text-[#64748B] rounded-xl bg-[#F8FAFC] dark:bg-zinc-950 border border-[#E2E8F0] dark:border-zinc-800">
               الزتونة الذهبية قيد الإعداد...
             </div>
           )}
@@ -869,22 +869,22 @@ export function LessonViewer({
         <div className="space-y-6">
           {lesson.mindMap ? (
             lesson.mindMap.images && lesson.mindMap.images.length > 0 ? (
-              <div className="rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden space-y-4 p-4 sm:p-6">
+              <div className="rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 shadow-2xs overflow-hidden space-y-4 p-4 sm:p-6">
                 {/* Header & Image Selector Tabs */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 dark:border-zinc-800 pb-4">
                   <div>
                     <h3 className="text-base sm:text-lg font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
                       <ImageIcon className="w-5 h-5 text-[#4F46E5] dark:text-indigo-400" weight="bold" />
                       <span>{lesson.mindMap.title || "الخرائط الذهنية للدرس"}</span>
                     </h3>
-                    <p className="text-xs text-[#475569] dark:text-slate-400 mt-1">
+                    <p className="text-xs text-[#475569] dark:text-zinc-400 mt-1">
                       خرائط مرئية عالية الدقة لتثبيت الروابط والمفاهيم بين أجزاء الدرس
                     </p>
                   </div>
 
                   {/* Image Selector Pills (if multiple images) */}
                   {lesson.mindMap.images.length > 1 && (
-                    <div className="flex items-center gap-1.5 p-1 bg-slate-100 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-x-auto">
+                    <div className="flex items-center gap-1.5 p-1 bg-slate-100 dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 overflow-x-auto">
                       {lesson.mindMap.images.map((_, idx) => (
                         <button
                           key={idx}
@@ -896,7 +896,7 @@ export function LessonViewer({
                           className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all shrink-0 ${
                             selectedImageIndex === idx
                               ? "bg-[#4F46E5] text-white shadow-2xs"
-                              : "text-slate-600 dark:text-slate-400 hover:text-[#0F172A] dark:hover:text-white"
+                              : "text-slate-600 dark:text-zinc-400 hover:text-[#0F172A] dark:hover:text-white"
                           }`}
                         >
                           خريطة {idx + 1}
@@ -907,13 +907,13 @@ export function LessonViewer({
                 </div>
 
                 {/* Toolbar */}
-                <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-2 text-xs">
+                <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-zinc-900/60 border border-slate-200 dark:border-zinc-800 flex flex-wrap items-center justify-between gap-2 text-xs">
                   {/* Zoom Controls */}
                   <div className="flex items-center gap-1.5">
                     <button
                       type="button"
                       onClick={() => setImageZoom((z) => Math.max(0.5, Math.round((z - 0.25) * 100) / 100))}
-                      className="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 flex items-center justify-center text-slate-700 dark:text-slate-300 hover:border-slate-300 shadow-2xs"
+                      className="w-8 h-8 rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex items-center justify-center text-slate-700 dark:text-zinc-300 hover:border-slate-300 shadow-2xs"
                       title="تصغير"
                     >
                       <MagnifyingGlassMinus className="w-4 h-4" weight="bold" />
@@ -924,7 +924,7 @@ export function LessonViewer({
                     <button
                       type="button"
                       onClick={() => setImageZoom((z) => Math.min(3, Math.round((z + 0.25) * 100) / 100))}
-                      className="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 flex items-center justify-center text-slate-700 dark:text-slate-300 hover:border-slate-300 shadow-2xs"
+                      className="w-8 h-8 rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex items-center justify-center text-slate-700 dark:text-zinc-300 hover:border-slate-300 shadow-2xs"
                       title="تكبير"
                     >
                       <MagnifyingGlassPlus className="w-4 h-4" weight="bold" />
@@ -932,7 +932,7 @@ export function LessonViewer({
                     <button
                       type="button"
                       onClick={() => setImageZoom(1)}
-                      className="h-8 px-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-[11px] font-bold text-slate-700 dark:text-slate-300 hover:border-slate-300 flex items-center gap-1 shadow-2xs"
+                      className="h-8 px-2.5 rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-[11px] font-bold text-slate-700 dark:text-zinc-300 hover:border-slate-300 flex items-center gap-1 shadow-2xs"
                       title="إعادة ضبط الحجم"
                     >
                       <ArrowsCounterClockwise className="w-3.5 h-3.5" weight="bold" />
@@ -947,7 +947,7 @@ export function LessonViewer({
                       download={`mindmap-${lesson.title}-${selectedImageIndex + 1}.png`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="h-8 px-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-[11px] font-bold text-slate-700 dark:text-slate-300 hover:border-slate-300 flex items-center gap-1.5 shadow-2xs"
+                      className="h-8 px-3 rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-[11px] font-bold text-slate-700 dark:text-zinc-300 hover:border-slate-300 flex items-center gap-1.5 shadow-2xs"
                     >
                       <DownloadSimple className="w-3.5 h-3.5" weight="bold" />
                       <span>تحميل الصورة</span>
@@ -965,7 +965,7 @@ export function LessonViewer({
                 </div>
 
                 {/* Main Image Container */}
-                <div className="relative rounded-xl border border-slate-200 dark:border-slate-800 bg-[#0F172A]/5 dark:bg-black/40 min-h-[420px] max-h-[700px] overflow-auto flex items-center justify-center p-4">
+                <div className="relative rounded-xl border border-slate-200 dark:border-zinc-800 bg-[#0F172A]/5 dark:bg-black/40 min-h-[420px] max-h-[700px] overflow-auto flex items-center justify-center p-4">
                   <img
                     src={lesson.mindMap.images[selectedImageIndex]}
                     alt={`${lesson.mindMap.title} - خريطة ${selectedImageIndex + 1}`}
@@ -992,7 +992,7 @@ export function LessonViewer({
                         className={`relative w-24 h-16 rounded-lg overflow-hidden border-2 transition-all shrink-0 ${
                           selectedImageIndex === idx
                             ? "border-[#4F46E5] shadow-sm scale-105"
-                            : "border-slate-200 dark:border-slate-700 opacity-60 hover:opacity-100"
+                            : "border-slate-200 dark:border-zinc-800 opacity-60 hover:opacity-100"
                         }`}
                       >
                         <img
@@ -1007,13 +1007,13 @@ export function LessonViewer({
               </div>
             ) : (
               /* Fallback: Interactive Outline or Tree for lessons with textual nodes */
-              <div className="rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-slate-700 overflow-hidden">
+              <div className="rounded-xl bg-white dark:bg-zinc-950 border border-[#E2E8F0] dark:border-zinc-800 overflow-hidden">
                 {/* Toolbar */}
-                <div className="p-3 border-b border-[#E2E8F0] dark:border-slate-700 flex items-center justify-between gap-2">
+                <div className="p-3 border-b border-[#E2E8F0] dark:border-zinc-800 flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => setZoomLevel(Math.max(0.5, zoomLevel - 0.1))}
-                      className="w-8 h-8 rounded-lg border border-[#E2E8F0] dark:border-slate-700 flex items-center justify-center text-[#64748B] hover:bg-[#F8FAFC] dark:hover:bg-slate-800 transition-colors"
+                      className="w-8 h-8 rounded-lg border border-[#E2E8F0] dark:border-zinc-800 flex items-center justify-center text-[#64748B] hover:bg-[#F8FAFC] dark:hover:bg-zinc-800 transition-colors"
                     >
                       <span className="text-sm font-bold">−</span>
                     </button>
@@ -1022,13 +1022,13 @@ export function LessonViewer({
                     </span>
                     <button
                       onClick={() => setZoomLevel(Math.min(2, zoomLevel + 0.1))}
-                      className="w-8 h-8 rounded-lg border border-[#E2E8F0] dark:border-slate-700 flex items-center justify-center text-[#64748B] hover:bg-[#F8FAFC] dark:hover:bg-slate-800 transition-colors"
+                      className="w-8 h-8 rounded-lg border border-[#E2E8F0] dark:border-zinc-800 flex items-center justify-center text-[#64748B] hover:bg-[#F8FAFC] dark:hover:bg-zinc-800 transition-colors"
                     >
                       <span className="text-sm font-bold">+</span>
                     </button>
                     <button
                       onClick={() => setZoomLevel(1)}
-                      className="h-8 px-3 rounded-lg border border-[#E2E8F0] dark:border-slate-700 text-xs font-bold text-[#64748B] hover:bg-[#F8FAFC] dark:hover:bg-slate-800 transition-colors"
+                      className="h-8 px-3 rounded-lg border border-[#E2E8F0] dark:border-zinc-800 text-xs font-bold text-[#64748B] hover:bg-[#F8FAFC] dark:hover:bg-zinc-800 transition-colors"
                     >
                       إعادة ضبط
                     </button>
@@ -1039,7 +1039,7 @@ export function LessonViewer({
                     className={`h-8 px-3 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-colors ${
                       isOutlineMode
                         ? "bg-[#4F46E5] text-white"
-                        : "border border-[#E2E8F0] dark:border-slate-700 text-[#64748B] hover:bg-[#F8FAFC] dark:hover:bg-slate-800"
+                        : "border border-[#E2E8F0] dark:border-zinc-800 text-[#64748B] hover:bg-[#F8FAFC] dark:hover:bg-zinc-800"
                     }`}
                   >
                     <span>{isOutlineMode ? "عرض الخريطة" : "عرض نصي"}</span>
@@ -1070,7 +1070,7 @@ export function LessonViewer({
 
                               {l1Children.length > 0 && (
                                 <>
-                                  <div className="w-0.5 h-6 bg-[#E2E8F0] dark:bg-slate-700" />
+                                  <div className="w-0.5 h-6 bg-[#E2E8F0] dark:bg-zinc-800" />
                                   <div className="flex flex-wrap justify-center gap-4">
                                     {l1Children.map((l1) => (
                                       <div key={l1.id} className="flex flex-col items-center gap-3">
@@ -1083,12 +1083,12 @@ export function LessonViewer({
 
                                         {l2Children.length > 0 && (
                                           <>
-                                            <div className="w-0.5 h-4 bg-[#E2E8F0] dark:bg-slate-700" />
+                                            <div className="w-0.5 h-4 bg-[#E2E8F0] dark:bg-zinc-800" />
                                             <div className="w-full space-y-2">
                                               {l2Children.map((l2) => (
                                                 <div
                                                   key={l2.id}
-                                                  className="p-2.5 rounded-lg bg-white dark:bg-slate-900 border border-[#E2E8F0] dark:border-slate-700 text-center text-xs font-medium text-[#0F172A] dark:text-slate-200"
+                                                  className="p-2.5 rounded-lg bg-white dark:bg-zinc-900 border border-[#E2E8F0] dark:border-zinc-800 text-center text-xs font-medium text-[#0F172A] dark:text-zinc-200"
                                                 >
                                                   {l2.label}
                                                 </div>
@@ -1107,7 +1107,7 @@ export function LessonViewer({
                       </div>
                     </div>
                   ) : (
-                    <div className="p-6 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-slate-700 space-y-3">
+                    <div className="p-6 rounded-xl bg-white dark:bg-zinc-950 border border-[#E2E8F0] dark:border-zinc-800 space-y-3">
                       {((lesson.mindMap?.nodes as MindNode[]) || []).map((n) => (
                         <div
                           key={n.id}
@@ -1134,7 +1134,7 @@ export function LessonViewer({
                               {n.label}
                             </h4>
                             {n.description && (
-                              <p className="text-xs text-[#64748B] dark:text-slate-400 mt-0.5 font-content">
+                              <p className="text-xs text-[#64748B] dark:text-zinc-400 mt-0.5 font-content">
                                 {n.description}
                               </p>
                             )}
@@ -1147,7 +1147,7 @@ export function LessonViewer({
               </div>
             )
           ) : (
-            <div className="p-8 text-center text-[#64748B] rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-slate-700">
+            <div className="p-8 text-center text-[#64748B] rounded-xl bg-[#F8FAFC] dark:bg-zinc-950 border border-[#E2E8F0] dark:border-zinc-800">
               خريطة المفاهيم قيد الإعداد...
             </div>
           )}
@@ -1200,12 +1200,12 @@ export function LessonViewer({
       {/* TAB 4: CHECKPOINT QUESTIONS (الأسئلة والتدريب) */}
       {activeTab === "questions" && (
         <div className="space-y-6">
-          <div className="p-5 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-slate-700 flex items-center justify-between">
+          <div className="p-5 rounded-xl bg-white dark:bg-zinc-950 border border-[#E2E8F0] dark:border-zinc-800 flex items-center justify-between">
             <div>
               <h3 className="text-base font-bold text-[#0F172A] dark:text-white">
                 أسئلة التدريب والتحقق من الفهم
               </h3>
-              <p className="text-xs text-[#64748B] dark:text-slate-400 font-content">
+              <p className="text-xs text-[#64748B] dark:text-zinc-400 font-content">
                 اختر الإجابة لتظهر لك النتيجة والشرح التفصيلي فوراً
               </p>
             </div>
@@ -1225,13 +1225,13 @@ export function LessonViewer({
               return (
                 <div
                   key={question.id}
-                  className="p-6 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-slate-700 space-y-4"
+                  className="p-6 rounded-xl bg-white dark:bg-zinc-950 border border-[#E2E8F0] dark:border-zinc-800 space-y-4"
                 >
-                  <div className="flex items-center justify-between gap-2 border-b border-[#E2E8F0] dark:border-slate-700 pb-3">
+                  <div className="flex items-center justify-between gap-2 border-b border-[#E2E8F0] dark:border-zinc-800 pb-3">
                     <span className="text-xs font-bold text-[#4F46E5]">
                       السؤال رقم {qIndex + 1}
                     </span>
-                    <span className="px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-[#F8FAFC] dark:bg-slate-800 text-[#64748B] dark:text-slate-300">
+                    <span className="px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-[#F8FAFC] dark:bg-zinc-900 text-[#64748B] dark:text-zinc-300">
                       {question.difficulty === "EASY"
                         ? "سهل"
                         : question.difficulty === "MEDIUM"
@@ -1253,7 +1253,7 @@ export function LessonViewer({
                         state?.selectedOptionId === opt.id;
                       const isRevealed = state?.revealed;
                       let btnStyle =
-                        "bg-[#F8FAFC] dark:bg-slate-900 border-[#E2E8F0] dark:border-slate-700 text-[#0F172A] dark:text-slate-200 hover:border-[#4F46E5]/50";
+                        "bg-[#F8FAFC] dark:bg-zinc-900 border-[#E2E8F0] dark:border-zinc-800 text-[#0F172A] dark:text-zinc-200 hover:border-[#4F46E5]/50";
 
                       if (isRevealed) {
                         if (opt.isCorrect) {
@@ -1278,7 +1278,7 @@ export function LessonViewer({
                           className={`w-full p-3.5 sm:p-4 rounded-xl border text-right text-xs sm:text-sm font-medium flex items-start sm:items-center justify-between gap-3 transition-colors font-content ${btnStyle}`}
                         >
                           <div className="flex items-start sm:items-center gap-3 min-w-0 flex-1">
-                            <span className="w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center justify-center text-xs font-mono font-bold shrink-0 mt-0.5 sm:mt-0 border border-slate-200/60 dark:border-slate-700/60">
+                            <span className="w-7 h-7 rounded-lg bg-slate-100 dark:bg-zinc-900 text-slate-600 dark:text-zinc-300 flex items-center justify-center text-xs font-mono font-bold shrink-0 mt-0.5 sm:mt-0 border border-slate-200/60 dark:border-zinc-800/60">
                               {arabicLetters[optIdx] || opt.order}
                             </span>
                             <div className="min-w-0 flex-1 leading-relaxed">
@@ -1314,19 +1314,19 @@ export function LessonViewer({
                           الفكرة الأساسية: {question.explanation.concept}
                         </span>
                       </div>
-                      <p className="text-xs text-[#0F172A] dark:text-slate-200 leading-relaxed font-content">
+                      <p className="text-xs text-[#0F172A] dark:text-zinc-200 leading-relaxed font-content">
                         {question.explanation.correctReason}
                       </p>
 
                       {/* Per-option explanations if available */}
                       <div className="pt-2 border-t border-indigo-200/40 dark:border-indigo-800/40 space-y-1.5">
-                        <span className="text-[11px] font-bold text-[#64748B] dark:text-slate-400 block">
+                        <span className="text-[11px] font-bold text-[#64748B] dark:text-zinc-400 block">
                           ليه ده صح وده غلط؟
                         </span>
                         {question.options.map((opt) => (
                           <div
                             key={opt.id}
-                            className="text-[11px] text-[#64748B] dark:text-slate-400 flex items-start gap-1.5 font-content"
+                            className="text-[11px] text-[#64748B] dark:text-zinc-400 flex items-start gap-1.5 font-content"
                           >
                             <span className="font-bold shrink-0">
                               • <BidiStatement as="span" text={opt.text} />:
@@ -1350,15 +1350,15 @@ export function LessonViewer({
       )}
 
       {/* Sibling Lessons Navigation Footer */}
-      <div className="p-5 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-slate-700 flex items-center justify-between gap-4 mt-8">
+      <div className="p-5 rounded-xl bg-white dark:bg-zinc-950 border border-[#E2E8F0] dark:border-zinc-800 flex items-center justify-between gap-4 mt-8">
         {prevLesson ? (
           <Link
             href={`/lessons/${prevLesson.id}`}
-            className="flex items-center gap-2 text-xs sm:text-sm font-bold text-[#64748B] dark:text-slate-400 hover:text-[#4F46E5] transition-colors"
+            className="flex items-center gap-2 text-xs sm:text-sm font-bold text-[#64748B] dark:text-zinc-400 hover:text-[#4F46E5] transition-colors"
           >
             <CaretRight className="w-4 h-4" weight="bold" />
             <div className="text-right">
-              <span className="block text-[10px] text-[#64748B] dark:text-slate-500">
+              <span className="block text-[10px] text-[#64748B] dark:text-zinc-500">
                 الدرس السابق
               </span>
               <span className="truncate max-w-[150px] sm:max-w-xs block">

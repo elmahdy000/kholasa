@@ -2,7 +2,6 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { StudentShell } from "@/components/layout/StudentShell";
-import { DailyChallengeCard } from "@/components/dashboard/DailyChallengeCard";
 import { DashboardClient } from "@/components/dashboard/DashboardClient";
 
 export default async function DashboardPage() {
@@ -13,7 +12,9 @@ export default async function DashboardPage() {
     redirect("/setup");
   }
 
-  // Fetch all published subjects with units and lessons count
+  const userId = user?.id;
+
+  // 1. Fetch all published subjects with units and lessons
   const subjects = await prisma.subject.findMany({
     where: { isPublished: true },
     orderBy: { order: "asc" },
@@ -30,10 +31,8 @@ export default async function DashboardPage() {
     },
   });
 
-  // Calculate real progress & counts
-  const userId = user?.id;
-
-  const [completedLessonsCount, unresolvedMistakesCount, recentAttempts] =
+  // 2. Calculate real progress & counts
+  const [completedLessonsCount, unresolvedMistakesCount, recentAttempts, userProgress] =
     await Promise.all([
       userId
         ? prisma.studentProgress.count({
@@ -50,23 +49,59 @@ export default async function DashboardPage() {
             where: { userId, isCompleted: true },
             take: 3,
             orderBy: { completedAt: "desc" },
+            select: {
+              id: true,
+              title: true,
+              percentage: true,
+              totalQuestions: true,
+              completedAt: true,
+            },
+          })
+        : [],
+      userId
+        ? prisma.studentProgress.findMany({
+            where: { userId, isCompleted: true },
+            select: { lessonId: true },
           })
         : [],
     ]);
 
-  // First available lesson to offer as "Continue learning"
-  const [firstLesson, dailyQuestion] = await Promise.all([
-    prisma.lesson.findFirst({
-      where: { isPublished: true },
-      include: {
-        unit: {
-          include: {
-            subject: true,
+  const completedLessonIds = new Set(userProgress.map((p) => p.lessonId));
+
+  // 3. Find the most relevant lesson for "Continue Learning"
+  // Priority: Most recently accessed lesson by student, or first available lesson
+  const lastActiveProgress = userId
+    ? await prisma.studentProgress.findFirst({
+        where: { userId },
+        orderBy: { lastAccessedAt: "desc" },
+        include: {
+          lesson: {
+            include: {
+              unit: {
+                include: {
+                  subject: true,
+                },
+              },
+            },
           },
         },
-      },
-      orderBy: { order: "asc" },
-    }),
+      })
+    : null;
+
+  const [firstLesson, dailyQuestion] = await Promise.all([
+    !lastActiveProgress
+      ? prisma.lesson.findFirst({
+          where: { isPublished: true },
+          include: {
+            unit: {
+              include: {
+                subject: true,
+              },
+            },
+          },
+          orderBy: { order: "asc" },
+        })
+      : null,
     prisma.question.findFirst({
       where: { status: "PUBLISHED", type: "MCQ" },
       include: {
@@ -79,15 +114,45 @@ export default async function DashboardPage() {
     }),
   ]);
 
-  // Map subjects for client component
-  const subjectsForClient = subjects.map((subj) => ({
-    id: subj.id,
-    name: subj.name,
-    description: subj.description,
-    color: subj.color,
-    unitsCount: subj.units.length,
-    totalLessons: subj.units.reduce((sum, u) => sum + u.lessons.length, 0),
-  }));
+  const activeLesson = lastActiveProgress?.lesson || firstLesson;
+
+  const continueLessonData = activeLesson
+    ? {
+        id: activeLesson.id,
+        title: activeLesson.title,
+        durationMinutes: activeLesson.durationMinutes,
+        unit: {
+          id: activeLesson.unit.id,
+          title: activeLesson.unit.title,
+          subject: {
+            id: activeLesson.unit.subject.id,
+            name: activeLesson.unit.subject.name,
+            color: activeLesson.unit.subject.color,
+          },
+        },
+        progressPercent: lastActiveProgress?.progressPercent ?? 0,
+      }
+    : null;
+
+  // 4. Map subjects with accurate completion metrics
+  const subjectsForClient = subjects.map((subj) => {
+    const allLessonIds = subj.units.flatMap((u) => u.lessons.map((l) => l.id));
+    const completedCount = allLessonIds.filter((id) => completedLessonIds.has(id)).length;
+    const totalLessons = allLessonIds.length;
+    const progressPercent =
+      totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
+
+    return {
+      id: subj.id,
+      name: subj.name,
+      description: subj.description,
+      color: subj.color,
+      unitsCount: subj.units.length,
+      totalLessons,
+      completedLessons: completedCount,
+      progressPercent,
+    };
+  });
 
   return (
     <StudentShell user={user}>
@@ -97,46 +162,16 @@ export default async function DashboardPage() {
         recentAttemptsCount={recentAttempts.length}
         unresolvedMistakesCount={unresolvedMistakesCount}
         subjects={subjectsForClient}
+        continueLesson={continueLessonData}
+        dailyQuestion={dailyQuestion as any}
+        recentExams={recentAttempts.map((a) => ({
+          id: a.id,
+          title: a.title,
+          percentage: Math.round(a.percentage),
+          totalQuestions: a.totalQuestions,
+          completedAt: a.completedAt ? a.completedAt.toISOString() : null,
+        }))}
       />
-
-      {/* Continue Learning Featured Card */}
-      {firstLesson && (
-        <section className="mt-8 p-5 sm:p-6 rounded-2xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 shadow-2xs">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="flex items-start gap-3.5">
-              <div className="w-11 h-11 rounded-xl bg-[#4F46E5] text-white flex items-center justify-center shrink-0 shadow-2xs mt-0.5">
-                <span className="text-sm font-bold">▶</span>
-              </div>
-              <div className="space-y-1">
-                <span className="text-[11px] font-bold text-[#4F46E5] dark:text-indigo-400 block">
-                  متابعة الدرس الحالي • {firstLesson.unit.subject.name}
-                </span>
-                <h3 className="text-base sm:text-lg font-black text-[#0F172A] dark:text-white">
-                  {firstLesson.title}
-                </h3>
-                <p className="text-xs text-[#64748B] dark:text-[#94A3B8]">
-                  الوحدة: {firstLesson.unit.title} • المدة: {firstLesson.durationMinutes} دقيقة
-                </p>
-              </div>
-            </div>
-
-            <a
-              href={`/lessons/${firstLesson.id}`}
-              className="h-11 px-6 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-xs font-bold flex items-center justify-center gap-2 shadow-2xs transition-colors shrink-0"
-            >
-              <span>افتح الدرس والزتونة</span>
-              <span className="text-sm">←</span>
-            </a>
-          </div>
-        </section>
-      )}
-
-      {/* Daily Challenge Card */}
-      {dailyQuestion && (
-        <div className="mt-8 mb-24 sm:mb-20">
-          <DailyChallengeCard question={dailyQuestion as any} />
-        </div>
-      )}
     </StudentShell>
   );
 }

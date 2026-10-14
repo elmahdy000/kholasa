@@ -147,7 +147,7 @@ export default async function ExamResultsPage({
         </div>
 
         {/* Hero Performance Card */}
-        <div className="relative overflow-hidden rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-8">
+        <div className="relative overflow-hidden rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 p-6 sm:p-8 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-8">
           <div className="absolute inset-0 bg-grid-pattern opacity-40 pointer-events-none" />
 
           <div className="space-y-3 relative z-10">
@@ -176,7 +176,7 @@ export default async function ExamResultsPage({
 
               <Link
                 href={`/exams/${examId}`}
-                className="h-9 px-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-bold text-[#0F172A] dark:text-white flex items-center gap-1.5 transition-colors interactive-tap"
+                className="h-9 px-4 rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:bg-slate-50 dark:hover:bg-zinc-800 text-xs font-bold text-[#0F172A] dark:text-white flex items-center gap-1.5 transition-colors interactive-tap"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
                 <span>حل الامتحان ده تاني</span>
@@ -192,7 +192,7 @@ export default async function ExamResultsPage({
           </div>
 
           {/* Score Badge */}
-          <div className="flex flex-col items-center justify-center p-6 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 shrink-0 self-center md:self-auto relative z-10 min-w-[140px]">
+          <div className="flex flex-col items-center justify-center p-6 rounded-xl bg-slate-50 dark:bg-zinc-900/60 border border-slate-200 dark:border-zinc-800 shrink-0 self-center md:self-auto relative z-10 min-w-[140px]">
             <div className="relative flex items-center justify-center">
               <div
                 className={`text-4xl font-bold font-mono tracking-tight ${gradeBadge.textColor}`}
@@ -213,7 +213,7 @@ export default async function ExamResultsPage({
 
         {/* 4 Stats Cards */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <div className="p-4 rounded-xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs text-right">
+          <div className="p-4 rounded-xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 shadow-2xs text-right">
             <div className="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-2">
               <CheckCircle2 className="w-4 h-4" />
             </div>
@@ -225,7 +225,7 @@ export default async function ExamResultsPage({
             </span>
           </div>
 
-          <div className="p-4 rounded-xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs text-right">
+          <div className="p-4 rounded-xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 shadow-2xs text-right">
             <div className="w-8 h-8 rounded-lg bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 flex items-center justify-center mb-2">
               <XCircle className="w-4 h-4" />
             </div>
@@ -237,7 +237,7 @@ export default async function ExamResultsPage({
             </span>
           </div>
 
-          <div className="p-4 rounded-xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs text-right">
+          <div className="p-4 rounded-xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 shadow-2xs text-right">
             <div className="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 flex items-center justify-center mb-2">
               <HelpCircle className="w-4 h-4" />
             </div>
@@ -249,7 +249,7 @@ export default async function ExamResultsPage({
             </span>
           </div>
 
-          <div className="p-4 rounded-xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs text-right">
+          <div className="p-4 rounded-xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 shadow-2xs text-right">
             <div className="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 text-[#4F46E5] dark:text-indigo-400 flex items-center justify-center mb-2">
               <Clock className="w-4 h-4" />
             </div>
@@ -284,12 +284,12 @@ export default async function ExamResultsPage({
                   key={ans.id}
                   className={`p-5 sm:p-6 rounded-2xl border shadow-2xs space-y-4 ${
                     isCorrect
-                      ? "bg-white dark:bg-zinc-950 border-slate-200 dark:border-slate-800"
+                      ? "bg-white dark:bg-zinc-950 border-slate-200 dark:border-zinc-800"
                       : "bg-white dark:bg-zinc-950 border-red-200 dark:border-red-900/40"
                   }`}
                 >
                   {/* Status header */}
-                  <div className="flex items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
+                  <div className="flex items-center justify-between gap-2 border-b border-slate-100 dark:border-zinc-800 pb-3">
                     <div className="flex items-center gap-2">
                       <span className="text-xs font-mono font-bold text-[#4F46E5] dark:text-indigo-400">
                         سؤال {idx + 1}
@@ -337,11 +337,11 @@ export default async function ExamResultsPage({
                   {q.type === "ESSAY" ? (
                     <div className="space-y-3 pt-1">
                       {ans.essayText && (
-                        <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 space-y-1.5">
-                          <span className="text-xs font-bold text-slate-500 dark:text-slate-400 block">
+                        <div className="p-4 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900/60 space-y-1.5">
+                          <span className="text-xs font-bold text-slate-500 dark:text-zinc-400 block">
                             إجابتك المسجلة:
                           </span>
-                          <p className="text-xs sm:text-sm text-[#0F172A] dark:text-slate-100 leading-relaxed font-medium">
+                          <p className="text-xs sm:text-sm text-[#0F172A] dark:text-zinc-100 leading-relaxed font-medium">
                             {ans.essayText}
                           </p>
                         </div>
@@ -364,7 +364,7 @@ export default async function ExamResultsPage({
                       {q.options.map((opt, oIdx) => {
                         const isUserChoice = opt.id === ans.selectedOptionId;
                         let rowStyle =
-                          "bg-slate-50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 text-[#0F172A] dark:text-slate-200";
+                          "bg-slate-50 dark:bg-zinc-900/50 border-slate-200 dark:border-zinc-800 text-[#0F172A] dark:text-zinc-200";
 
                         if (opt.isCorrect) {
                           rowStyle =
@@ -382,7 +382,7 @@ export default async function ExamResultsPage({
                             className={`p-3.5 sm:p-4 rounded-xl border text-xs sm:text-sm font-medium flex items-start sm:items-center justify-between gap-3 ${rowStyle}`}
                           >
                             <div className="flex items-start sm:items-center gap-3 min-w-0 flex-1">
-                              <span className="w-6 h-6 rounded-lg bg-slate-200/80 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center justify-center text-xs font-bold shrink-0 mt-0.5 sm:mt-0 shadow-2xs">
+                              <span className="w-6 h-6 rounded-lg bg-slate-200/80 dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 flex items-center justify-center text-xs font-bold shrink-0 mt-0.5 sm:mt-0 shadow-2xs">
                                 {letterLabel}
                               </span>
                               <BidiStatement as="span" text={opt.text} className="min-w-0 flex-1 leading-relaxed" />
@@ -417,7 +417,7 @@ export default async function ExamResultsPage({
                           الفكرة الأساسية: {q.explanation.concept}
                         </span>
                       </div>
-                      <p className="text-xs text-[#0F172A] dark:text-slate-200 leading-relaxed font-medium">
+                      <p className="text-xs text-[#0F172A] dark:text-zinc-200 leading-relaxed font-medium">
                         {q.explanation.correctReason}
                       </p>
                     </div>

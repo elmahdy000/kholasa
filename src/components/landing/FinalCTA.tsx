@@ -30,7 +30,7 @@ export function FinalCTA() {
                 <ArrowLeft className="w-4 h-4" weight="bold" />
               </Link>
             </div>
-            <p className="text-xs text-[#64748B] font-medium pt-2">
+            <p className="text-xs text-[#64748B] dark:text-zinc-500 font-medium pt-2">
               لا يتطلب بطاقة ائتمان • إلغاء في أي وقت
             </p>
           </div>

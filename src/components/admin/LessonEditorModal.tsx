@@ -400,7 +400,7 @@ export function LessonEditorModal({
               href={`/lessons/${lessonId}`}
               target="_blank"
               rel="noreferrer"
-              className="hidden sm:flex h-9 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold items-center gap-1.5 transition-colors"
+              className="hidden sm:flex h-9 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-zinc-900 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-200 text-xs font-bold items-center gap-1.5 transition-colors"
             >
               <span>معاينة الطالب</span>
               <ExternalLink className="w-3.5 h-3.5" />
@@ -426,7 +426,7 @@ export function LessonEditorModal({
 
             <button
               onClick={onClose}
-              className="w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-colors"
+              className="w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-zinc-900 dark:hover:bg-zinc-700 text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
@@ -499,7 +499,7 @@ export function LessonEditorModal({
                   {/* Basic Fields Grid */}
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div className="sm:col-span-2 space-y-1.5">
-                      <label className="text-xs font-black text-slate-700 dark:text-slate-300">
+                      <label className="text-xs font-black text-slate-700 dark:text-zinc-300">
                         عنوان الدرس *
                       </label>
                       <input
@@ -507,12 +507,12 @@ export function LessonEditorModal({
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
                         placeholder="مثال: الخلية الحية ووظائف العضيات"
-                        className="w-full h-10 px-3.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-[#4F46E5]"
+                        className="w-full h-10 px-3.5 rounded-xl bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-[#4F46E5]"
                       />
                     </div>
 
                     <div className="space-y-1.5">
-                      <label className="text-xs font-black text-slate-700 dark:text-slate-300">
+                      <label className="text-xs font-black text-slate-700 dark:text-zinc-300">
                         المدة التقديرية (بالدقائق)
                       </label>
                       <input
@@ -522,26 +522,26 @@ export function LessonEditorModal({
                         onChange={(e) =>
                           setDurationMinutes(Number(e.target.value))
                         }
-                        className="w-full h-10 px-3.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-[#4F46E5]"
+                        className="w-full h-10 px-3.5 rounded-xl bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-[#4F46E5]"
                       />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
-                      <label className="text-xs font-black text-slate-700 dark:text-slate-300">
+                      <label className="text-xs font-black text-slate-700 dark:text-zinc-300">
                         ترتيب الدرس داخل الوحدة
                       </label>
                       <input
                         type="number"
                         value={order}
                         onChange={(e) => setOrder(Number(e.target.value))}
-                        className="w-full h-10 px-3.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-[#4F46E5]"
+                        className="w-full h-10 px-3.5 rounded-xl bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-[#4F46E5]"
                       />
                     </div>
 
                     <div className="space-y-1.5">
-                      <label className="text-xs font-black text-slate-700 dark:text-slate-300">
+                      <label className="text-xs font-black text-slate-700 dark:text-zinc-300">
                         حالة نشر الدرس للطلاب
                       </label>
                       <button
@@ -550,7 +550,7 @@ export function LessonEditorModal({
                         className={`w-full h-10 px-4 rounded-xl text-xs font-black flex items-center justify-between border transition-colors ${
                           isPublished
                             ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
-                            : "bg-slate-100 text-slate-500 dark:bg-slate-900 dark:text-slate-400 border-slate-200 dark:border-slate-800"
+                            : "bg-slate-100 text-slate-500 dark:bg-zinc-900 dark:text-zinc-400 border-slate-200 dark:border-zinc-800"
                         }`}
                       >
                         <span className="flex items-center gap-2">
@@ -565,7 +565,7 @@ export function LessonEditorModal({
                               : "مسودة مخفية (غير مرئي للطلاب)"}
                           </span>
                         </span>
-                        <span className="text-[10px] px-2 py-0.5 rounded-md font-mono bg-white dark:bg-slate-800">
+                        <span className="text-[10px] px-2 py-0.5 rounded-md font-mono bg-white dark:bg-zinc-900">
                           {isPublished ? "PUBLISHED" : "DRAFT"}
                         </span>
                       </button>
@@ -573,7 +573,7 @@ export function LessonEditorModal({
                   </div>
 
                   {/* Video URL Section */}
-                  <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 space-y-3">
+                  <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-zinc-900/60 border border-slate-200 dark:border-zinc-800 space-y-3">
                     <div className="flex items-center gap-2 text-xs font-black text-[#14243D] dark:text-white">
                       <Video className="w-4 h-4 text-[#4F46E5]" />
                       <span>فيديو الدرس (YouTube / Vimeo / MP4)</span>
@@ -584,12 +584,12 @@ export function LessonEditorModal({
                       value={videoUrl}
                       onChange={(e) => setVideoUrl(e.target.value)}
                       placeholder="https://www.youtube.com/watch?v=..."
-                      className="w-full h-10 px-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-mono text-slate-900 dark:text-white focus:outline-none focus:border-[#4F46E5]"
+                      className="w-full h-10 px-3.5 rounded-xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-xs font-mono text-slate-900 dark:text-white focus:outline-none focus:border-[#4F46E5]"
                       dir="ltr"
                     />
 
                     {embedUrl ? (
-                      <div className="aspect-video w-full max-w-lg rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-black mt-2">
+                      <div className="aspect-video w-full max-w-lg rounded-xl overflow-hidden border border-slate-200 dark:border-zinc-800 bg-black mt-2">
                         <iframe
                           src={embedUrl}
                           title="معاينة الفيديو"
@@ -606,7 +606,7 @@ export function LessonEditorModal({
                   </div>
 
                   {/* Podcast / Audio URL Section */}
-                  <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 space-y-3">
+                  <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-zinc-900/60 border border-slate-200 dark:border-zinc-800 space-y-3">
                     <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center gap-2 text-xs font-black text-[#14243D] dark:text-white">
                         <Headphones className="w-4 h-4 text-emerald-500" />
@@ -622,7 +622,7 @@ export function LessonEditorModal({
                       value={audioUrl}
                       onChange={(e) => setAudioUrl(e.target.value)}
                       placeholder="https://example.com/audio/lesson-summary.mp3"
-                      className="w-full h-10 px-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-mono text-slate-900 dark:text-white focus:outline-none focus:border-[#4F46E5]"
+                      className="w-full h-10 px-3.5 rounded-xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-xs font-mono text-slate-900 dark:text-white focus:outline-none focus:border-[#4F46E5]"
                       dir="ltr"
                     />
 
@@ -648,7 +648,7 @@ export function LessonEditorModal({
                   {/* Meta */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
-                      <label className="text-xs font-black text-slate-700 dark:text-slate-300">
+                      <label className="text-xs font-black text-slate-700 dark:text-zinc-300">
                         عنوان الخريطة الذهنية
                       </label>
                       <input
@@ -656,12 +656,12 @@ export function LessonEditorModal({
                         value={mindMapTitle}
                         onChange={(e) => setMindMapTitle(e.target.value)}
                         placeholder="مثال: خريطة مفاهيم الوراثة والجينات"
-                        className="w-full h-10 px-3.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-[#4F46E5]"
+                        className="w-full h-10 px-3.5 rounded-xl bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-[#4F46E5]"
                       />
                     </div>
 
                     <div className="space-y-1.5">
-                      <label className="text-xs font-black text-slate-700 dark:text-slate-300">
+                      <label className="text-xs font-black text-slate-700 dark:text-zinc-300">
                         إرشادات أو وصف للخريطة (اختياري)
                       </label>
                       <input
@@ -669,7 +669,7 @@ export function LessonEditorModal({
                         value={mindMapDescription}
                         onChange={(e) => setMindMapDescription(e.target.value)}
                         placeholder="مثال: ركّز على الفروق في الجزء الأيمن قبل الامتحان"
-                        className="w-full h-10 px-3.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-[#4F46E5]"
+                        className="w-full h-10 px-3.5 rounded-xl bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-[#4F46E5]"
                       />
                     </div>
                   </div>
@@ -692,7 +692,7 @@ export function LessonEditorModal({
                         value={newImageUrl}
                         onChange={(e) => setNewImageUrl(e.target.value)}
                         placeholder="https://images.unsplash.com/... أو رابط مباشر للصورة"
-                        className="flex-1 h-10 px-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-mono text-slate-900 dark:text-white focus:outline-none focus:border-[#4F46E5]"
+                        className="flex-1 h-10 px-3.5 rounded-xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-xs font-mono text-slate-900 dark:text-white focus:outline-none focus:border-[#4F46E5]"
                         dir="ltr"
                         onKeyDown={(e) => {
                           if (e.key === "Enter") {
@@ -716,7 +716,7 @@ export function LessonEditorModal({
                   {/* Images Grid */}
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <h4 className="text-xs font-black text-slate-700 dark:text-slate-300">
+                      <h4 className="text-xs font-black text-slate-700 dark:text-zinc-300">
                         معرض الخرائط المرفوعة لهذا الدرس ({mindMapImages.length})
                       </h4>
                       <span className="text-[11px] text-slate-400">
@@ -725,11 +725,11 @@ export function LessonEditorModal({
                     </div>
 
                     {mindMapImages.length === 0 ? (
-                      <div className="p-8 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-dashed border-slate-200 dark:border-slate-800 text-center space-y-2">
-                        <div className="w-10 h-10 mx-auto rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 flex items-center justify-center">
+                      <div className="p-8 rounded-2xl bg-slate-50 dark:bg-zinc-900/50 border border-dashed border-slate-200 dark:border-zinc-800 text-center space-y-2">
+                        <div className="w-10 h-10 mx-auto rounded-xl bg-slate-100 dark:bg-zinc-900 text-slate-400 flex items-center justify-center">
                           <ImageIcon className="w-5 h-5" />
                         </div>
-                        <p className="text-xs font-bold text-slate-600 dark:text-slate-400">
+                        <p className="text-xs font-bold text-slate-600 dark:text-zinc-400">
                           لم يتم رفع أي صور خرائط ذهنية بعد.
                         </p>
                         <p className="text-[11px] text-slate-400 max-w-md mx-auto">
@@ -742,9 +742,9 @@ export function LessonEditorModal({
                         {mindMapImages.map((imgUrl, idx) => (
                           <div
                             key={idx}
-                            className="group relative rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 overflow-hidden shadow-2xs flex flex-col justify-between"
+                            className="group relative rounded-2xl bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 overflow-hidden shadow-2xs flex flex-col justify-between"
                           >
-                            <div className="relative aspect-video bg-slate-200 dark:bg-slate-800 overflow-hidden">
+                            <div className="relative aspect-video bg-slate-200 dark:bg-zinc-900 overflow-hidden">
                               <img
                                 src={imgUrl}
                                 alt={`خريطة ${idx + 1}`}
@@ -770,7 +770,7 @@ export function LessonEditorModal({
                               </button>
                             </div>
 
-                            <div className="p-2.5 flex items-center justify-between gap-2 border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900">
+                            <div className="p-2.5 flex items-center justify-between gap-2 border-t border-slate-100 dark:border-zinc-800 bg-white dark:bg-zinc-900">
                               <span className="text-[10px] font-mono text-slate-400 truncate max-w-[120px]" dir="ltr">
                                 {imgUrl.split("/").pop() || "image"}
                               </span>
@@ -816,9 +816,9 @@ export function LessonEditorModal({
               {activeTab === "content" && (
                 <div className="space-y-6">
                   {/* Objectives */}
-                  <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 space-y-3">
+                  <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-zinc-900/60 border border-slate-200 dark:border-zinc-800 space-y-3">
                     <div className="flex items-center justify-between">
-                      <label className="text-xs font-black text-slate-700 dark:text-slate-300 flex items-center gap-2">
+                      <label className="text-xs font-black text-slate-700 dark:text-zinc-300 flex items-center gap-2">
                         <CheckCircle2 className="w-4 h-4 text-[#4F46E5]" />
                         <span>الأهداف التعليمية ومخرجات التعلم ({objectives.length})</span>
                       </label>
@@ -833,7 +833,7 @@ export function LessonEditorModal({
                         value={newObjective}
                         onChange={(e) => setNewObjective(e.target.value)}
                         placeholder="مثال: التمييز بين الانقسام الميتوزي والميوزي بدقة"
-                        className="flex-1 h-10 px-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-[#4F46E5]"
+                        className="flex-1 h-10 px-3.5 rounded-xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-[#4F46E5]"
                         onKeyDown={(e) => {
                           if (e.key === "Enter") {
                             e.preventDefault();
@@ -857,7 +857,7 @@ export function LessonEditorModal({
                         {objectives.map((obj, i) => (
                           <li
                             key={i}
-                            className="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-between gap-3 text-xs font-bold text-slate-800 dark:text-slate-200"
+                            className="p-2.5 rounded-xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 flex items-center justify-between gap-3 text-xs font-bold text-slate-800 dark:text-zinc-200"
                           >
                             <div className="flex items-center gap-2.5">
                               <span className="w-5 h-5 rounded-lg bg-[#4F46E5]/10 text-[#4F46E5] text-[10px] flex items-center justify-center font-bold">
@@ -881,7 +881,7 @@ export function LessonEditorModal({
                   {/* Body Textarea */}
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <label className="text-xs font-black text-slate-700 dark:text-slate-300">
+                      <label className="text-xs font-black text-slate-700 dark:text-zinc-300">
                         الشرح التفصيلي للدرس (Body Text)
                       </label>
                       <span className="text-[11px] text-slate-400">
@@ -894,7 +894,7 @@ export function LessonEditorModal({
                       value={bodyText}
                       onChange={(e) => setBodyText(e.target.value)}
                       placeholder="اكتب أو الصق شرح الدرس هنا..."
-                      className="w-full p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs sm:text-sm font-sans leading-relaxed text-slate-900 dark:text-white focus:outline-none focus:border-[#4F46E5]"
+                      className="w-full p-4 rounded-2xl bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-xs sm:text-sm font-sans leading-relaxed text-slate-900 dark:text-white focus:outline-none focus:border-[#4F46E5]"
                     />
                   </div>
                 </div>
@@ -904,8 +904,8 @@ export function LessonEditorModal({
               {activeTab === "summary" && (
                 <div className="space-y-6">
                   {/* Key Concepts */}
-                  <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 space-y-3">
-                    <label className="text-xs font-black text-slate-700 dark:text-slate-300 flex items-center gap-2">
+                  <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-zinc-900/60 border border-slate-200 dark:border-zinc-800 space-y-3">
+                    <label className="text-xs font-black text-slate-700 dark:text-zinc-300 flex items-center gap-2">
                       <Sparkles className="w-4 h-4 text-amber-500" />
                       <span>المفاهيم والنقاط الجوهرية (الزتونة الذهبية)</span>
                     </label>
@@ -916,7 +916,7 @@ export function LessonEditorModal({
                         value={newConcept}
                         onChange={(e) => setNewConcept(e.target.value)}
                         placeholder="أضف مفهوماً جوهرياً..."
-                        className="flex-1 h-10 px-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-[#4F46E5]"
+                        className="flex-1 h-10 px-3.5 rounded-xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-[#4F46E5]"
                         onKeyDown={(e) => {
                           if (e.key === "Enter") {
                             e.preventDefault();
@@ -940,7 +940,7 @@ export function LessonEditorModal({
                         {keyConcepts.map((item, i) => (
                           <div
                             key={i}
-                            className="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs font-bold text-slate-800 dark:text-slate-200"
+                            className="p-2.5 rounded-xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 flex items-center justify-between text-xs font-bold text-slate-800 dark:text-zinc-200"
                           >
                             <span>{item}</span>
                             <button
@@ -957,8 +957,8 @@ export function LessonEditorModal({
                   </div>
 
                   {/* Exam Tips */}
-                  <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 space-y-3">
-                    <label className="text-xs font-black text-slate-700 dark:text-slate-300 flex items-center gap-2">
+                  <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-zinc-900/60 border border-slate-200 dark:border-zinc-800 space-y-3">
+                    <label className="text-xs font-black text-slate-700 dark:text-zinc-300 flex items-center gap-2">
                       <Clock className="w-4 h-4 text-emerald-500" />
                       <span>نصائح الامتحان الذهبية (Exam Tips)</span>
                     </label>
@@ -969,7 +969,7 @@ export function LessonEditorModal({
                         value={newExamTip}
                         onChange={(e) => setNewExamTip(e.target.value)}
                         placeholder="مثال: ركّز على كلمة (فقط) في صيغة السؤال فإنها تنفي..."
-                        className="flex-1 h-10 px-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-[#4F46E5]"
+                        className="flex-1 h-10 px-3.5 rounded-xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-[#4F46E5]"
                         onKeyDown={(e) => {
                           if (e.key === "Enter") {
                             e.preventDefault();
@@ -993,7 +993,7 @@ export function LessonEditorModal({
                         {examTips.map((tip, i) => (
                           <div
                             key={i}
-                            className="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs font-bold text-slate-800 dark:text-slate-200"
+                            className="p-2.5 rounded-xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 flex items-center justify-between text-xs font-bold text-slate-800 dark:text-zinc-200"
                           >
                             <span>{tip}</span>
                             <button
@@ -1022,14 +1022,14 @@ export function LessonEditorModal({
                         value={newMistake}
                         onChange={(e) => setNewMistake(e.target.value)}
                         placeholder="الخطأ الشائع لدى الطلاب..."
-                        className="h-10 px-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-red-500"
+                        className="h-10 px-3.5 rounded-xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-red-500"
                       />
                       <input
                         type="text"
                         value={newCorrection}
                         onChange={(e) => setNewCorrection(e.target.value)}
                         placeholder="التصحيح العلمي الدقيق..."
-                        className="h-10 px-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500"
+                        className="h-10 px-3.5 rounded-xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500"
                       />
                     </div>
                     <button
@@ -1047,7 +1047,7 @@ export function LessonEditorModal({
                         {commonMistakes.map((item, i) => (
                           <div
                             key={i}
-                            className="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-start justify-between gap-3"
+                            className="p-3 rounded-xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 flex items-start justify-between gap-3"
                           >
                             <div className="space-y-1 text-xs font-bold">
                               <p className="text-red-600 dark:text-red-400 flex items-center gap-1.5">
@@ -1078,7 +1078,7 @@ export function LessonEditorModal({
         </div>
 
         {/* Footer Actions */}
-        <div className="p-4 sm:p-5 bg-slate-50 dark:bg-slate-900/80 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between gap-4 shrink-0">
+        <div className="p-4 sm:p-5 bg-slate-50 dark:bg-zinc-900/80 border-t border-slate-200 dark:border-zinc-800 flex items-center justify-between gap-4 shrink-0">
           <div>
             {showDeleteConfirm ? (
               <div className="flex items-center gap-2">
@@ -1096,7 +1096,7 @@ export function LessonEditorModal({
                 <button
                   type="button"
                   onClick={() => setShowDeleteConfirm(false)}
-                  className="h-8 px-3 rounded-lg bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300 text-xs font-bold"
+                  className="h-8 px-3 rounded-lg bg-slate-200 text-slate-700 dark:bg-zinc-900 dark:text-zinc-300 text-xs font-bold"
                 >
                   إلغاء
                 </button>
@@ -1117,7 +1117,7 @@ export function LessonEditorModal({
             <button
               type="button"
               onClick={onClose}
-              className="h-9 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs font-bold text-slate-700 dark:text-slate-300 transition-colors"
+              className="h-9 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-zinc-900 dark:hover:bg-zinc-700 text-xs font-bold text-slate-700 dark:text-zinc-300 transition-colors"
             >
               إغلاق النافذة
             </button>

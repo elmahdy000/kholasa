@@ -53,7 +53,7 @@ export function BidiStatement({
         <code
           dir="ltr"
           className={cn(
-            "inline-block font-mono font-bold bg-slate-100 dark:bg-slate-800 text-indigo-700 dark:text-indigo-300 px-2 py-0.5 rounded-md border border-slate-200 dark:border-slate-700 text-xs sm:text-sm whitespace-nowrap mx-0.5 align-baseline shadow-2xs",
+            "inline-block font-mono font-bold bg-slate-100 dark:bg-zinc-900 text-indigo-700 dark:text-indigo-300 px-2 py-0.5 rounded-md border border-slate-200 dark:border-zinc-800 text-xs sm:text-sm whitespace-nowrap mx-0.5 align-baseline shadow-2xs",
             className
           )}
           style={{ unicodeBidi: "isolate" }}
@@ -93,7 +93,7 @@ export function BidiStatement({
             <code
               key={index}
               dir="ltr"
-              className="inline-block font-mono font-bold bg-slate-100 dark:bg-slate-800 text-indigo-700 dark:text-indigo-300 px-2 py-0.5 rounded-md border border-slate-200 dark:border-slate-700 text-xs sm:text-sm whitespace-nowrap mx-1 align-baseline shadow-2xs"
+              className="inline-block font-mono font-bold bg-slate-100 dark:bg-zinc-900 text-indigo-700 dark:text-indigo-300 px-2 py-0.5 rounded-md border border-slate-200 dark:border-zinc-800 text-xs sm:text-sm whitespace-nowrap mx-1 align-baseline shadow-2xs"
               style={{ unicodeBidi: "isolate" }}
             >
               {rawCode}
@@ -136,7 +136,7 @@ export function BidiStatement({
             <code
               key={index}
               dir="ltr"
-              className="inline-block font-mono font-bold bg-slate-100 dark:bg-slate-800 text-indigo-700 dark:text-indigo-300 px-2 py-0.5 rounded-md border border-slate-200 dark:border-slate-700 text-xs sm:text-sm whitespace-nowrap mx-1 align-baseline shadow-2xs"
+              className="inline-block font-mono font-bold bg-slate-100 dark:bg-zinc-900 text-indigo-700 dark:text-indigo-300 px-2 py-0.5 rounded-md border border-slate-200 dark:border-zinc-800 text-xs sm:text-sm whitespace-nowrap mx-1 align-baseline shadow-2xs"
               style={{ unicodeBidi: "isolate" }}
             >
               {token.trim()}

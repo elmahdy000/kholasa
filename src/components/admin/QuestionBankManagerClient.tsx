@@ -279,7 +279,7 @@ export function QuestionBankManagerClient({
   return (
     <div className="space-y-6">
       {/* Top Action & Filters */}
-      <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-zinc-950 border border-slate-200/80 dark:border-slate-800/80 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-zinc-950 border border-slate-200/80 dark:border-zinc-800/80 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         {/* Search & Dropdown Filters */}
         <div className="flex flex-wrap items-center gap-2.5 flex-1">
           {/* Search Input */}
@@ -290,14 +290,14 @@ export function QuestionBankManagerClient({
               placeholder="ابحث في نص السؤال أو المفهوم..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full h-10 pr-9 pl-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs font-bold text-[#0F172A] dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-indigo-500"
+              className="w-full h-10 pr-9 pl-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-bold text-[#0F172A] dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-indigo-500"
             />
           </div>
 
           <select
             value={selectedSubjectId}
             onChange={(e) => setSelectedSubjectId(e.target.value)}
-            className="h-10 px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs font-bold text-[#0F172A] dark:text-white"
+            className="h-10 px-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-bold text-[#0F172A] dark:text-white"
           >
             <option value="all">كل المواد الدراسية</option>
             {subjects.map((s) => (
@@ -310,7 +310,7 @@ export function QuestionBankManagerClient({
           <select
             value={selectedType}
             onChange={(e) => setSelectedType(e.target.value)}
-            className="h-10 px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs font-bold text-[#0F172A] dark:text-white"
+            className="h-10 px-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-bold text-[#0F172A] dark:text-white"
           >
             <option value="all">كل أنواع الأسئلة</option>
             <option value="MCQ">اختيار من متعدد (MCQ)</option>
@@ -321,7 +321,7 @@ export function QuestionBankManagerClient({
           <select
             value={selectedDifficulty}
             onChange={(e) => setSelectedDifficulty(e.target.value)}
-            className="h-10 px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs font-bold text-[#0F172A] dark:text-white"
+            className="h-10 px-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-bold text-[#0F172A] dark:text-white"
           >
             <option value="all">كل الصعوبات</option>
             <option value="EASY">سهل</option>
@@ -334,7 +334,7 @@ export function QuestionBankManagerClient({
         <div className="flex items-center gap-2 shrink-0">
           <Link
             href="/admin/questions/import"
-            className="h-10 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-[#0F172A] dark:text-white text-xs font-bold flex items-center justify-center gap-2 transition-colors"
+            className="h-10 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-zinc-900 dark:hover:bg-zinc-700 text-[#0F172A] dark:text-white text-xs font-bold flex items-center justify-center gap-2 transition-colors"
           >
             <Upload className="w-4 h-4 text-indigo-500" />
             <span>استيراد ملف CSV</span>
@@ -360,10 +360,10 @@ export function QuestionBankManagerClient({
         {filteredQuestions.map((q, idx) => (
           <div
             key={q.id}
-            className="p-6 rounded-3xl bg-white dark:bg-zinc-950 border border-slate-200/80 dark:border-slate-800/80 shadow-xs space-y-4"
+            className="p-6 rounded-3xl bg-white dark:bg-zinc-950 border border-slate-200/80 dark:border-zinc-800/80 shadow-xs space-y-4"
           >
             {/* Top Bar with Badges and Edit/Delete Actions */}
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800/80 pb-3">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 dark:border-zinc-800/80 pb-3">
               <div className="flex flex-wrap items-center gap-2">
                 <span className="text-xs font-black text-indigo-600">
                   #{idx + 1}
@@ -372,11 +372,11 @@ export function QuestionBankManagerClient({
                   {q.subject.name}
                 </span>
                 {q.unit && (
-                  <span className="px-2.5 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[11px] font-bold">
+                  <span className="px-2.5 py-0.5 rounded-lg bg-slate-100 dark:bg-zinc-900 text-slate-600 dark:text-zinc-300 text-[11px] font-bold">
                     {q.unit.title}
                   </span>
                 )}
-                <span className="px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-[10px] font-bold text-slate-500">
+                <span className="px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-zinc-900 text-[10px] font-bold text-slate-500">
                   {q.type === "MCQ"
                     ? "اختيار من متعدد"
                     : q.type === "TRUE_FALSE"
@@ -404,7 +404,7 @@ export function QuestionBankManagerClient({
               <div className="flex items-center gap-1.5">
                 <button
                   onClick={() => openEditModal(q)}
-                  className="h-8 px-3 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center gap-1.5 transition-colors"
+                  className="h-8 px-3 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-zinc-900 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-200 text-xs font-bold flex items-center gap-1.5 transition-colors"
                 >
                   <Edit2 className="w-3.5 h-3.5 text-indigo-500" />
                   <span>تعديل</span>
@@ -433,7 +433,7 @@ export function QuestionBankManagerClient({
                     className={`p-3 rounded-2xl border text-xs font-bold flex items-center justify-between gap-2 ${
                       opt.isCorrect
                         ? "bg-emerald-50 dark:bg-emerald-950/30 border-emerald-500/50 text-emerald-700 dark:text-emerald-300 font-black"
-                        : "bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300"
+                        : "bg-slate-50 dark:bg-zinc-900 border-slate-200 dark:border-zinc-800 text-slate-600 dark:text-zinc-300"
                     }`}
                   >
                     <BidiStatement as="span" text={opt.text} />
@@ -454,7 +454,7 @@ export function QuestionBankManagerClient({
                 <span className="font-black text-indigo-600 block">
                   نموذج الإجابة الاسترشادي (Rubric):
                 </span>
-                <p className="font-medium text-[11px] leading-relaxed text-slate-700 dark:text-slate-300">
+                <p className="font-medium text-[11px] leading-relaxed text-slate-700 dark:text-zinc-300">
                   {q.rubric.modelAnswer}
                 </p>
               </div>
@@ -462,11 +462,11 @@ export function QuestionBankManagerClient({
 
             {/* Explanation Preview */}
             {q.explanation && (
-              <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-800/60 text-xs text-[#0F172A] dark:text-slate-200 space-y-1">
+              <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-zinc-900/60 border border-slate-200/60 dark:border-zinc-800/60 text-xs text-[#0F172A] dark:text-zinc-200 space-y-1">
                 <span className="font-black text-indigo-600 dark:text-indigo-400 block">
                   المفهوم الأساسي: {q.explanation.concept}
                 </span>
-                <p className="font-medium text-[11px] leading-relaxed text-slate-600 dark:text-slate-400">
+                <p className="font-medium text-[11px] leading-relaxed text-slate-600 dark:text-zinc-400">
                   {q.explanation.correctReason}
                 </p>
               </div>
@@ -478,15 +478,15 @@ export function QuestionBankManagerClient({
       {/* CREATE QUESTION MODAL */}
       {isCreateOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-          <div className="w-full max-w-2xl bg-white dark:bg-zinc-950 rounded-3xl p-6 sm:p-8 space-y-5 text-right shadow-2xl border border-slate-100 dark:border-slate-800 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div className="w-full max-w-2xl bg-white dark:bg-zinc-950 rounded-3xl p-6 sm:p-8 space-y-5 text-right shadow-2xl border border-slate-100 dark:border-zinc-800 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-zinc-800 pb-4">
               <h3 className="text-base font-black text-[#0F172A] dark:text-white flex items-center gap-2">
                 <HelpCircle className="w-5 h-5 text-indigo-600" />
                 <span>إضافة سؤال جديد لبنك الأسئلة</span>
               </h3>
               <button
                 onClick={() => setIsCreateOpen(false)}
-                className="w-8 h-8 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-400 hover:text-slate-600"
+                className="w-8 h-8 rounded-xl border border-slate-200 dark:border-zinc-800 flex items-center justify-center text-slate-400 hover:text-slate-600"
               >
                 ✕
               </button>
@@ -511,7 +511,7 @@ export function QuestionBankManagerClient({
                       const target = subjects.find((s) => s.id === e.target.value);
                       setNewUnitId(target?.units[0]?.id || "");
                     }}
-                    className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs font-bold"
+                    className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-bold"
                   >
                     {subjects.map((s) => (
                       <option key={s.id} value={s.id}>
@@ -528,7 +528,7 @@ export function QuestionBankManagerClient({
                   <select
                     value={newUnitId}
                     onChange={(e) => setNewUnitId(e.target.value)}
-                    className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs font-bold"
+                    className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-bold"
                   >
                     <option value="">بدون وحدة محددة</option>
                     {activeNewSubject?.units.map((u) => (
@@ -548,7 +548,7 @@ export function QuestionBankManagerClient({
                   <select
                     value={newType}
                     onChange={(e) => setNewType(e.target.value as any)}
-                    className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs font-bold"
+                    className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-bold"
                   >
                     <option value="MCQ">اختيار من متعدد (MCQ)</option>
                     <option value="TRUE_FALSE">صح أو خطأ</option>
@@ -563,7 +563,7 @@ export function QuestionBankManagerClient({
                   <select
                     value={newDifficulty}
                     onChange={(e) => setNewDifficulty(e.target.value as any)}
-                    className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs font-bold"
+                    className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-bold"
                   >
                     <option value="EASY">سهل</option>
                     <option value="MEDIUM">متوسط</option>
@@ -582,14 +582,14 @@ export function QuestionBankManagerClient({
                   value={newStatement}
                   onChange={(e) => setNewStatement(e.target.value)}
                   placeholder="اكتب نص السؤال بدقة هنا..."
-                  className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs font-medium"
+                  className="w-full p-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-medium"
                 />
               </div>
 
               {/* Options Form for MCQ */}
               {newType === "MCQ" && (
                 <div className="space-y-3">
-                  <label className="block text-xs font-black text-slate-700 dark:text-slate-300">
+                  <label className="block text-xs font-black text-slate-700 dark:text-zinc-300">
                     خيارات الإجابة (حدد الإجابة الصحيحة بالدائرة الخضراء):
                   </label>
                   {newOptions.map((opt, i) => (
@@ -621,7 +621,7 @@ export function QuestionBankManagerClient({
                           updated[i].text = e.target.value;
                           setNewOptions(updated);
                         }}
-                        className="flex-1 h-9 px-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs font-bold"
+                        className="flex-1 h-9 px-3 rounded-lg border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-bold"
                       />
                     </div>
                   ))}
@@ -631,7 +631,7 @@ export function QuestionBankManagerClient({
               {/* Options Form for True/False */}
               {newType === "TRUE_FALSE" && (
                 <div className="space-y-2">
-                  <label className="block text-xs font-black text-slate-700 dark:text-slate-300">
+                  <label className="block text-xs font-black text-slate-700 dark:text-zinc-300">
                     الإجابة الصحيحة:
                   </label>
                   <div className="flex items-center gap-4">
@@ -676,7 +676,7 @@ export function QuestionBankManagerClient({
                     value={newModelAnswer}
                     onChange={(e) => setNewModelAnswer(e.target.value)}
                     placeholder="اكتب الإجابة النموذجية المعتمدة لتقييم إجابة الطالب..."
-                    className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs font-medium"
+                    className="w-full p-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-medium"
                   />
                 </div>
               )}
@@ -692,7 +692,7 @@ export function QuestionBankManagerClient({
                     value={newConcept}
                     onChange={(e) => setNewConcept(e.target.value)}
                     placeholder="مثال: قانون أوم للدوائر المغلقة"
-                    className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs font-bold"
+                    className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-bold"
                   />
                 </div>
 
@@ -705,16 +705,16 @@ export function QuestionBankManagerClient({
                     value={newCorrectReason}
                     onChange={(e) => setNewCorrectReason(e.target.value)}
                     placeholder="سبب اختيار هذه الإجابة وتوضيح الفكرة..."
-                    className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs font-bold"
+                    className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-bold"
                   />
                 </div>
               </div>
 
-              <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-100 dark:border-slate-800">
+              <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-100 dark:border-zinc-800">
                 <button
                   type="button"
                   onClick={() => setIsCreateOpen(false)}
-                  className="h-10 px-4 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-600 dark:text-slate-300"
+                  className="h-10 px-4 rounded-xl border border-slate-200 dark:border-zinc-800 text-xs font-bold text-slate-600 dark:text-zinc-300"
                 >
                   إلغاء
                 </button>
@@ -734,15 +734,15 @@ export function QuestionBankManagerClient({
       {/* EDIT QUESTION MODAL */}
       {editingQuestion && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-          <div className="w-full max-w-2xl bg-white dark:bg-zinc-950 rounded-3xl p-6 sm:p-8 space-y-5 text-right shadow-2xl border border-slate-100 dark:border-slate-800 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div className="w-full max-w-2xl bg-white dark:bg-zinc-950 rounded-3xl p-6 sm:p-8 space-y-5 text-right shadow-2xl border border-slate-100 dark:border-zinc-800 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-zinc-800 pb-4">
               <h3 className="text-base font-black text-[#0F172A] dark:text-white flex items-center gap-2">
                 <Edit2 className="w-5 h-5 text-indigo-600" />
                 <span>تعديل بيانات السؤال</span>
               </h3>
               <button
                 onClick={() => setEditingQuestion(null)}
-                className="w-8 h-8 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-400 hover:text-slate-600"
+                className="w-8 h-8 rounded-xl border border-slate-200 dark:border-zinc-800 flex items-center justify-center text-slate-400 hover:text-slate-600"
               >
                 ✕
               </button>
@@ -767,7 +767,7 @@ export function QuestionBankManagerClient({
                       const target = subjects.find((s) => s.id === e.target.value);
                       setEditUnitId(target?.units[0]?.id || "");
                     }}
-                    className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs font-bold"
+                    className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-bold"
                   >
                     {subjects.map((s) => (
                       <option key={s.id} value={s.id}>
@@ -784,7 +784,7 @@ export function QuestionBankManagerClient({
                   <select
                     value={editUnitId}
                     onChange={(e) => setEditUnitId(e.target.value)}
-                    className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs font-bold"
+                    className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-bold"
                   >
                     <option value="">بدون وحدة محددة</option>
                     {activeEditSubject?.units.map((u) => (
@@ -804,7 +804,7 @@ export function QuestionBankManagerClient({
                   <select
                     value={editType}
                     onChange={(e) => setEditType(e.target.value as any)}
-                    className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs font-bold"
+                    className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-bold"
                   >
                     <option value="MCQ">اختيار من متعدد (MCQ)</option>
                     <option value="TRUE_FALSE">صح أو خطأ</option>
@@ -819,7 +819,7 @@ export function QuestionBankManagerClient({
                   <select
                     value={editDifficulty}
                     onChange={(e) => setEditDifficulty(e.target.value as any)}
-                    className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs font-bold"
+                    className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-bold"
                   >
                     <option value="EASY">سهل</option>
                     <option value="MEDIUM">متوسط</option>
@@ -837,14 +837,14 @@ export function QuestionBankManagerClient({
                   rows={3}
                   value={editStatement}
                   onChange={(e) => setEditStatement(e.target.value)}
-                  className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs font-medium"
+                  className="w-full p-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-medium"
                 />
               </div>
 
               {/* Edit Options */}
               {editType === "MCQ" && (
                 <div className="space-y-3">
-                  <label className="block text-xs font-black text-slate-700 dark:text-slate-300">
+                  <label className="block text-xs font-black text-slate-700 dark:text-zinc-300">
                     خيارات الإجابة:
                   </label>
                   {editOptions.map((opt, i) => (
@@ -875,7 +875,7 @@ export function QuestionBankManagerClient({
                           updated[i].text = e.target.value;
                           setEditOptions(updated);
                         }}
-                        className="flex-1 h-9 px-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs font-bold"
+                        className="flex-1 h-9 px-3 rounded-lg border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-bold"
                       />
                     </div>
                   ))}
@@ -892,7 +892,7 @@ export function QuestionBankManagerClient({
                     rows={3}
                     value={editModelAnswer}
                     onChange={(e) => setEditModelAnswer(e.target.value)}
-                    className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs font-medium"
+                    className="w-full p-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-medium"
                   />
                 </div>
               )}
@@ -907,7 +907,7 @@ export function QuestionBankManagerClient({
                     type="text"
                     value={editConcept}
                     onChange={(e) => setEditConcept(e.target.value)}
-                    className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs font-bold"
+                    className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-bold"
                   />
                 </div>
 
@@ -919,16 +919,16 @@ export function QuestionBankManagerClient({
                     type="text"
                     value={editCorrectReason}
                     onChange={(e) => setEditCorrectReason(e.target.value)}
-                    className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs font-bold"
+                    className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-bold"
                   />
                 </div>
               </div>
 
-              <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-100 dark:border-slate-800">
+              <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-100 dark:border-zinc-800">
                 <button
                   type="button"
                   onClick={() => setEditingQuestion(null)}
-                  className="h-10 px-4 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-600 dark:text-slate-300"
+                  className="h-10 px-4 rounded-xl border border-slate-200 dark:border-zinc-800 text-xs font-bold text-slate-600 dark:text-zinc-300"
                 >
                   إلغاء
                 </button>

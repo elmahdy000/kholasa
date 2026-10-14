@@ -132,7 +132,7 @@ export function ProfileView({
   return (
     <div className="max-w-4xl mx-auto space-y-6 text-right font-sans pb-28">
       {/* Profile Header Card */}
-      <div className="p-6 sm:p-7 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+      <div className="p-6 sm:p-7 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-6">
         <div className="flex items-center gap-4">
           <div className="w-14 h-14 rounded-2xl bg-[#4F46E5] text-white flex items-center justify-center text-xl font-bold shadow-2xs shrink-0">
             {user.name.charAt(0)}
@@ -173,8 +173,8 @@ export function ProfileView({
       </div>
 
       {/* Academic Setup Card */}
-      <div className="p-6 sm:p-7 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-xs space-y-4">
-        <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+      <div className="p-6 sm:p-7 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 shadow-xs space-y-4">
+        <div className="flex items-center justify-between border-b border-slate-100 dark:border-zinc-800 pb-3">
           <h2 className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
             <GraduationCap className="w-5 h-5 text-[#4F46E5] dark:text-indigo-400" />
             <span>المسار التعليمي والصف الدراسي</span>
@@ -192,8 +192,8 @@ export function ProfileView({
 
         {!isEditingAcademic ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800">
-              <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 block mb-1">
+            <div className="p-4 rounded-xl bg-slate-50 dark:bg-zinc-900/50 border border-slate-200 dark:border-zinc-800">
+              <span className="text-[11px] font-bold text-slate-500 dark:text-zinc-400 block mb-1">
                 النظام التعليمي
               </span>
               <span className="text-sm font-bold text-[#0F172A] dark:text-white">
@@ -201,8 +201,8 @@ export function ProfileView({
               </span>
             </div>
 
-            <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800">
-              <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 block mb-1">
+            <div className="p-4 rounded-xl bg-slate-50 dark:bg-zinc-900/50 border border-slate-200 dark:border-zinc-800">
+              <span className="text-[11px] font-bold text-slate-500 dark:text-zinc-400 block mb-1">
                 الصف الدراسي
               </span>
               <span className="text-sm font-bold text-[#0F172A] dark:text-white">
@@ -214,13 +214,13 @@ export function ProfileView({
           <div className="space-y-4 pt-2">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold text-[#0F172A] dark:text-slate-200 mb-1.5">
+                <label className="block text-xs font-bold text-[#0F172A] dark:text-zinc-200 mb-1.5">
                   النظام التعليمي
                 </label>
                 <select
                   value={selectedSystemId}
                   onChange={(e) => handleSystemChange(e.target.value)}
-                  className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-zinc-950 text-xs font-bold text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#4F46E5]"
+                  className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-xs font-bold text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#4F46E5]"
                 >
                   {systems.map((s) => (
                     <option key={s.id} value={s.id}>
@@ -231,13 +231,13 @@ export function ProfileView({
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-[#0F172A] dark:text-slate-200 mb-1.5">
+                <label className="block text-xs font-bold text-[#0F172A] dark:text-zinc-200 mb-1.5">
                   الصف الدراسي
                 </label>
                 <select
                   value={selectedGradeId}
                   onChange={(e) => setSelectedGradeId(e.target.value)}
-                  className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-zinc-950 text-xs font-bold text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#4F46E5]"
+                  className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-xs font-bold text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#4F46E5]"
                 >
                   {currentGrades.map((g) => (
                     <option key={g.id} value={g.id}>
@@ -259,7 +259,7 @@ export function ProfileView({
               </button>
               <button
                 onClick={() => setIsEditingAcademic(false)}
-                className="h-9 px-3.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-medium text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors"
+                className="h-9 px-3.5 rounded-xl border border-slate-200 dark:border-zinc-800 text-xs font-medium text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors"
               >
                 إلغاء
               </button>
@@ -270,7 +270,7 @@ export function ProfileView({
 
       {/* 4 Statistics Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs text-right">
+        <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 shadow-2xs text-right">
           <div className="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 text-[#4F46E5] dark:text-indigo-400 flex items-center justify-center mb-2.5">
             <BookOpen className="w-4 h-4" />
           </div>
@@ -282,7 +282,7 @@ export function ProfileView({
           </span>
         </div>
 
-        <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs text-right">
+        <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 shadow-2xs text-right">
           <div className="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 text-[#4F46E5] dark:text-indigo-400 flex items-center justify-center mb-2.5">
             <Trophy className="w-4 h-4" />
           </div>
@@ -294,7 +294,7 @@ export function ProfileView({
           </span>
         </div>
 
-        <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs text-right">
+        <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 shadow-2xs text-right">
           <div className="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 flex items-center justify-center mb-2.5">
             <Sparkles className="w-4 h-4" />
           </div>
@@ -306,7 +306,7 @@ export function ProfileView({
           </span>
         </div>
 
-        <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs text-right">
+        <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 shadow-2xs text-right">
           <div className="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-2.5">
             <CheckCircle2 className="w-4 h-4" />
           </div>
@@ -320,14 +320,14 @@ export function ProfileView({
       </div>
 
       {/* Bookmarked Lessons */}
-      <div className="p-6 sm:p-7 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-xs space-y-4">
+      <div className="p-6 sm:p-7 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 shadow-xs space-y-4">
         <h2 className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
           <Bookmark className="w-5 h-5 text-amber-500 fill-amber-500" />
           <span>الدروس المحفوظة في المفضلة ({bookmarks.length})</span>
         </h2>
 
         {bookmarks.length > 0 ? (
-          <div className="divide-y divide-slate-100 dark:divide-slate-800">
+          <div className="divide-y divide-slate-100 dark:divide-zinc-800">
             {bookmarks.map((b) => {
               if (!b.lesson) return null;
               return (

@@ -37,7 +37,7 @@ export default async function AdminQuestionsPage() {
   return (
     <AdminShell user={user}>
       <div className="space-y-6 text-right font-sans">
-        <div className="border-b border-slate-200 dark:border-slate-800 pb-4">
+        <div className="border-b border-slate-200 dark:border-zinc-800 pb-4">
           <h1 className="text-xl sm:text-2xl font-black text-[#14243D] dark:text-white">
             بنك الأسئلة والتفسيرات التفاعلية
           </h1>

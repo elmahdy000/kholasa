@@ -174,12 +174,12 @@ export function MistakeHubClient({
     <div className="space-y-6">
       {/* Overview Analytics Bar */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="p-5 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs flex items-center justify-between">
+        <div className="p-5 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 shadow-2xs flex items-center justify-between">
           <div>
             <span className="text-2xl sm:text-3xl font-black text-rose-600 block tracking-tight">
               {unresolvedCount}
             </span>
-            <span className="text-xs font-bold text-[#475569] dark:text-slate-400">
+            <span className="text-xs font-bold text-[#475569] dark:text-zinc-400">
               أسئلة محتاجة تتظبّط
             </span>
           </div>
@@ -188,12 +188,12 @@ export function MistakeHubClient({
           </div>
         </div>
 
-        <div className="p-5 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs flex items-center justify-between">
+        <div className="p-5 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 shadow-2xs flex items-center justify-between">
           <div>
             <span className="text-2xl sm:text-3xl font-black text-emerald-600 block tracking-tight">
               {resolvedCount}
             </span>
-            <span className="text-xs font-bold text-[#475569] dark:text-slate-400">
+            <span className="text-xs font-bold text-[#475569] dark:text-zinc-400">
               أسئلة قفلتها وظبّطتها
             </span>
           </div>
@@ -202,12 +202,12 @@ export function MistakeHubClient({
           </div>
         </div>
 
-        <div className="p-5 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs flex items-center justify-between">
+        <div className="p-5 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 shadow-2xs flex items-center justify-between">
           <div>
             <span className="text-2xl sm:text-3xl font-black text-[#4F46E5] dark:text-indigo-400 block tracking-tight">
               {masteryPercentage}%
             </span>
-            <span className="text-xs font-bold text-[#475569] dark:text-slate-400">
+            <span className="text-xs font-bold text-[#475569] dark:text-zinc-400">
               نسبة التمكّن والتثبيت
             </span>
           </div>
@@ -219,7 +219,7 @@ export function MistakeHubClient({
 
       {/* Quick Exam Banner when there are unresolved mistakes */}
       {actionableUnresolvedCount > 0 && (
-        <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-l from-indigo-50 to-white dark:from-zinc-950 dark:to-slate-900 border border-indigo-200/80 dark:border-indigo-900/50 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-l from-indigo-50 to-white dark:from-zinc-950 dark:to-zinc-950 border border-indigo-200/80 dark:border-indigo-900/50 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-[#4F46E5] animate-ping" />
@@ -227,7 +227,7 @@ export function MistakeHubClient({
                 عاوز تتدرب عليهم في امتحان عملي مجمع؟
               </h3>
             </div>
-            <p className="text-xs text-[#475569] dark:text-slate-400">
+            <p className="text-xs text-[#475569] dark:text-zinc-400">
               هنعملك امتحان فوري بـ {actionableUnresolvedCount} أسئلة اللي لسه ما قفلتهمش عشان تثبتهم فوراً.
             </p>
           </div>
@@ -254,15 +254,15 @@ export function MistakeHubClient({
       )}
 
       {/* Filters Bar */}
-      <div className="p-3.5 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="p-3.5 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         {/* Status Filter */}
-        <div className="flex items-center gap-1 p-1 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800">
+        <div className="flex items-center gap-1 p-1 rounded-xl bg-slate-100 dark:bg-zinc-900 border border-slate-200/80 dark:border-zinc-800">
           <button
             onClick={() => setFilterStatus("unresolved")}
             className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
               filterStatus === "unresolved"
                 ? "bg-rose-600 text-white shadow-2xs"
-                : "text-slate-600 dark:text-slate-400 hover:text-[#0F172A] dark:hover:text-white"
+                : "text-slate-600 dark:text-zinc-400 hover:text-[#0F172A] dark:hover:text-white"
             }`}
           >
             بحاجة لمراجعة ({unresolvedCount})
@@ -272,7 +272,7 @@ export function MistakeHubClient({
             className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
               filterStatus === "resolved"
                 ? "bg-emerald-600 text-white shadow-2xs"
-                : "text-slate-600 dark:text-slate-400 hover:text-[#0F172A] dark:hover:text-white"
+                : "text-slate-600 dark:text-zinc-400 hover:text-[#0F172A] dark:hover:text-white"
             }`}
           >
             تم إتقانها ({resolvedCount})
@@ -281,8 +281,8 @@ export function MistakeHubClient({
             onClick={() => setFilterStatus("all")}
             className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
               filterStatus === "all"
-                ? "bg-white dark:bg-slate-800 text-[#0F172A] dark:text-white shadow-2xs border border-slate-200/80 dark:border-slate-700/80"
-                : "text-slate-600 dark:text-slate-400 hover:text-[#0F172A] dark:hover:text-white"
+                ? "bg-white dark:bg-zinc-900 text-[#0F172A] dark:text-white shadow-2xs border border-slate-200/80 dark:border-zinc-800/80"
+                : "text-slate-600 dark:text-zinc-400 hover:text-[#0F172A] dark:hover:text-white"
             }`}
           >
             الكل ({totalCount})
@@ -295,7 +295,7 @@ export function MistakeHubClient({
           <select
             value={selectedSubjectId}
             onChange={(e) => setSelectedSubjectId(e.target.value)}
-            className="h-9 px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs font-bold text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#4F46E5]"
+            className="h-9 px-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-bold text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#4F46E5]"
           >
             <option value="all">جميع المواد</option>
             {subjects.map((s) => (
@@ -321,11 +321,11 @@ export function MistakeHubClient({
                 className={`p-6 sm:p-7 rounded-2xl border shadow-2xs space-y-4 transition-all ${
                   mistake.isResolved
                     ? "bg-emerald-50/20 dark:bg-emerald-950/10 border-emerald-200 dark:border-emerald-900/40"
-                    : "bg-white dark:bg-zinc-950 border-slate-200 dark:border-slate-800"
+                    : "bg-white dark:bg-zinc-950 border-slate-200 dark:border-zinc-800"
                 }`}
               >
                 {/* Header */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-3.5">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-zinc-800 pb-3.5">
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 text-[#4F46E5] dark:text-indigo-300 text-[11px] font-bold border border-indigo-200/50 dark:border-indigo-800/50">
                       <BidiStatement as="span" text={q.subject.name} />
@@ -366,7 +366,7 @@ export function MistakeHubClient({
 
                 {/* Inline Options to Retake */}
                 <div className="space-y-2.5">
-                  <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 block mb-1">
+                  <span className="text-[11px] font-bold text-slate-500 dark:text-zinc-400 block mb-1">
                     جرب تحلها تاني دلوقتي وافهم الصح عشان متغلطش فيها:
                   </span>
                   {q.options.map((opt, optIdx) => {
@@ -375,7 +375,7 @@ export function MistakeHubClient({
                     const isChecked = !!answerState?.result;
 
                     let rowStyle =
-                      "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-[#0F172A] dark:text-slate-200 hover:border-slate-300";
+                      "bg-white dark:bg-zinc-900 border-slate-200 dark:border-zinc-800 text-[#0F172A] dark:text-zinc-200 hover:border-slate-300";
 
                     if (isChecked) {
                       if (opt.isCorrect) {
@@ -397,7 +397,7 @@ export function MistakeHubClient({
                         className={`w-full p-3.5 sm:p-4 rounded-xl border text-right text-xs sm:text-sm font-medium flex items-start sm:items-center justify-between gap-3 transition-colors ${rowStyle}`}
                       >
                         <div className="flex items-start sm:items-center gap-2.5 min-w-0 flex-1">
-                          <span className="w-6 h-6 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center justify-center text-xs font-mono font-bold shrink-0 mt-0.5 sm:mt-0 border border-slate-200/60 dark:border-slate-700/60">
+                          <span className="w-6 h-6 rounded-lg bg-slate-100 dark:bg-zinc-900 text-slate-600 dark:text-zinc-300 flex items-center justify-center text-xs font-mono font-bold shrink-0 mt-0.5 sm:mt-0 border border-slate-200/60 dark:border-zinc-800/60">
                             {arabicLetters[optIdx] || opt.order}
                           </span>
                           <div className="min-w-0 flex-1 leading-relaxed">
@@ -431,7 +431,7 @@ export function MistakeHubClient({
                       <Lightbulb className="w-3.5 h-3.5 text-amber-500" />
                       <span>المفهوم: {q.explanation.concept}</span>
                     </div>
-                    <p className="text-xs text-[#0F172A] dark:text-slate-200 leading-relaxed font-medium">
+                    <p className="text-xs text-[#0F172A] dark:text-zinc-200 leading-relaxed font-medium">
                       {q.explanation.correctReason}
                     </p>
                   </div>
@@ -441,14 +441,14 @@ export function MistakeHubClient({
           })}
         </div>
       ) : (
-        <div className="p-12 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 text-center space-y-3 shadow-2xs">
+        <div className="p-12 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 text-center space-y-3 shadow-2xs">
           <div className="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 flex items-center justify-center mx-auto">
             <CheckCircle2 className="w-6 h-6" />
           </div>
           <h3 className="text-base font-bold text-[#0F172A] dark:text-white">
             رائع! لا توجد أخطاء في هذا التحديد
           </h3>
-          <p className="text-xs text-[#475569] dark:text-slate-400">
+          <p className="text-xs text-[#475569] dark:text-zinc-400">
             استمر في خوض الامتحانات وحل التدريبات لاكتشاف المزيد وتثبيت حفظك وفهمك.
           </p>
           <Link

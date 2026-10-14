@@ -231,7 +231,7 @@ export function UnitEditorModal({
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-black text-slate-700 dark:text-slate-300">
+              <label className="text-xs font-black text-slate-700 dark:text-zinc-300">
                 حالة النشر
               </label>
               <button
@@ -249,7 +249,7 @@ export function UnitEditorModal({
           </div>
 
           {/* Footer Actions */}
-          <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-3">
+          <div className="pt-3 border-t border-slate-100 dark:border-zinc-800 flex items-center justify-between gap-3">
             {mode === "edit" && onDeleted ? (
               <div>
                 {showDeleteConfirm ? (
@@ -289,7 +289,7 @@ export function UnitEditorModal({
               <button
                 type="button"
                 onClick={onClose}
-                className="h-9 px-3.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300"
+                className="h-9 px-3.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-zinc-900 text-xs font-bold text-slate-700 dark:text-zinc-300"
               >
                 إلغاء
               </button>

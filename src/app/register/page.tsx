@@ -165,7 +165,7 @@ export default function RegisterPage() {
         </div>
 
         {/* Card */}
-        <div className="bg-white dark:bg-zinc-950 py-8 px-6 sm:px-8 shadow-xs border border-slate-200 dark:border-slate-800 rounded-2xl">
+        <div className="bg-white dark:bg-zinc-950 py-8 px-6 sm:px-8 shadow-xs border border-slate-200 dark:border-zinc-800 rounded-2xl">
           {error && (
             <div className="mb-6 p-4 rounded-xl bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/40 flex items-start gap-3 text-right">
               <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
@@ -180,7 +180,7 @@ export default function RegisterPage() {
             <div>
               <label
                 htmlFor="name"
-                className="block text-xs sm:text-sm font-bold text-[#0F172A] dark:text-slate-200 mb-1.5"
+                className="block text-xs sm:text-sm font-bold text-[#0F172A] dark:text-zinc-200 mb-1.5"
               >
                 الاسم الكامل <span className="text-red-500">*</span>
               </label>
@@ -192,7 +192,7 @@ export default function RegisterPage() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="محمد أحمد"
-                  className="w-full h-11 pr-11 pl-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50 text-[#0F172A] dark:text-white placeholder:text-slate-400 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#4F46E5] transition-all"
+                  className="w-full h-11 pr-11 pl-4 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-900/50 text-[#0F172A] dark:text-white placeholder:text-slate-400 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#4F46E5] transition-all"
                 />
                 <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
                   <User className="w-4 h-4" />
@@ -205,7 +205,7 @@ export default function RegisterPage() {
               <div>
                 <label
                   htmlFor="email"
-                  className="block text-xs font-bold text-[#0F172A] dark:text-slate-200 mb-1.5"
+                  className="block text-xs font-bold text-[#0F172A] dark:text-zinc-200 mb-1.5"
                 >
                   البريد الإلكتروني
                 </label>
@@ -216,7 +216,7 @@ export default function RegisterPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="student@example.com"
-                    className="w-full h-11 pr-10 pl-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50 text-[#0F172A] dark:text-white placeholder:text-slate-400 text-xs focus:outline-none focus:ring-2 focus:ring-[#4F46E5] transition-all"
+                    className="w-full h-11 pr-10 pl-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-900/50 text-[#0F172A] dark:text-white placeholder:text-slate-400 text-xs focus:outline-none focus:ring-2 focus:ring-[#4F46E5] transition-all"
                     dir="ltr"
                   />
                   <div className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
@@ -228,7 +228,7 @@ export default function RegisterPage() {
               <div>
                 <label
                   htmlFor="phone"
-                  className="block text-xs font-bold text-[#0F172A] dark:text-slate-200 mb-1.5"
+                  className="block text-xs font-bold text-[#0F172A] dark:text-zinc-200 mb-1.5"
                 >
                   رقم الهاتف (واتساب)
                 </label>
@@ -239,7 +239,7 @@ export default function RegisterPage() {
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="01012345678"
-                    className="w-full h-11 pr-10 pl-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50 text-[#0F172A] dark:text-white placeholder:text-slate-400 text-xs focus:outline-none focus:ring-2 focus:ring-[#4F46E5] transition-all"
+                    className="w-full h-11 pr-10 pl-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-900/50 text-[#0F172A] dark:text-white placeholder:text-slate-400 text-xs focus:outline-none focus:ring-2 focus:ring-[#4F46E5] transition-all"
                     dir="ltr"
                   />
                   <div className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
@@ -250,7 +250,7 @@ export default function RegisterPage() {
             </div>
 
             {/* Academic System & Grade */}
-            <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 space-y-3">
+            <div className="p-4 rounded-xl bg-slate-50 dark:bg-zinc-900/50 border border-slate-200 dark:border-zinc-800 space-y-3">
               <div className="flex items-center gap-2 text-xs font-bold text-[#4F46E5] dark:text-indigo-400">
                 <GraduationCap className="w-4 h-4" />
                 <span>المسار والصف الدراسي</span>
@@ -258,14 +258,14 @@ export default function RegisterPage() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">
+                  <label className="block text-[11px] font-bold text-slate-500 dark:text-zinc-400 mb-1">
                     النظام التعليمي
                   </label>
                   <select
                     value={selectedSystemId}
                     onChange={(e) => handleSystemChange(e.target.value)}
                     disabled={isFetchingSystems}
-                    className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-zinc-950 text-xs font-bold text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#4F46E5]"
+                    className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-xs font-bold text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#4F46E5]"
                   >
                     {systems.map((s) => (
                       <option key={s.id} value={s.id}>
@@ -276,14 +276,14 @@ export default function RegisterPage() {
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">
+                  <label className="block text-[11px] font-bold text-slate-500 dark:text-zinc-400 mb-1">
                     الصف الدراسي
                   </label>
                   <select
                     value={selectedGradeId}
                     onChange={(e) => setSelectedGradeId(e.target.value)}
                     disabled={isFetchingSystems || currentGrades.length === 0}
-                    className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-zinc-950 text-xs font-bold text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#4F46E5]"
+                    className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-xs font-bold text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#4F46E5]"
                   >
                     {currentGrades.map((g) => (
                       <option key={g.id} value={g.id}>
@@ -300,7 +300,7 @@ export default function RegisterPage() {
               <div>
                 <label
                   htmlFor="password"
-                  className="block text-xs font-bold text-[#0F172A] dark:text-slate-200 mb-1.5"
+                  className="block text-xs font-bold text-[#0F172A] dark:text-zinc-200 mb-1.5"
                 >
                   كلمة المرور <span className="text-red-500">*</span>
                 </label>
@@ -312,7 +312,7 @@ export default function RegisterPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full h-11 pr-10 pl-10 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50 text-[#0F172A] dark:text-white placeholder:text-slate-400 text-xs focus:outline-none focus:ring-2 focus:ring-[#4F46E5] transition-all"
+                    className="w-full h-11 pr-10 pl-10 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-900/50 text-[#0F172A] dark:text-white placeholder:text-slate-400 text-xs focus:outline-none focus:ring-2 focus:ring-[#4F46E5] transition-all"
                     dir="ltr"
                   />
                   <div className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
@@ -335,7 +335,7 @@ export default function RegisterPage() {
               <div>
                 <label
                   htmlFor="confirmPassword"
-                  className="block text-xs font-bold text-[#0F172A] dark:text-slate-200 mb-1.5"
+                  className="block text-xs font-bold text-[#0F172A] dark:text-zinc-200 mb-1.5"
                 >
                   تأكيد كلمة المرور <span className="text-red-500">*</span>
                 </label>
@@ -347,7 +347,7 @@ export default function RegisterPage() {
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full h-11 pr-10 pl-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50 text-[#0F172A] dark:text-white placeholder:text-slate-400 text-xs focus:outline-none focus:ring-2 focus:ring-[#4F46E5] transition-all"
+                    className="w-full h-11 pr-10 pl-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-900/50 text-[#0F172A] dark:text-white placeholder:text-slate-400 text-xs focus:outline-none focus:ring-2 focus:ring-[#4F46E5] transition-all"
                     dir="ltr"
                   />
                   <div className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">

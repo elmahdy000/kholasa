@@ -31,7 +31,7 @@ export function FeaturesBento() {
         {/* Bento Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {/* Bento Card 1: الشرح التفاعلي (Span 2 cols on md) */}
-          <div className="md:col-span-2 p-7 sm:p-8 rounded-2xl bg-[#F8FAFC] dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs hover:border-[#4F46E5]/40 transition-colors flex flex-col justify-between space-y-6">
+          <div className="md:col-span-2 p-7 sm:p-8 rounded-2xl bg-[#F8FAFC] dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 shadow-2xs hover:border-[#4F46E5]/40 transition-colors flex flex-col justify-between space-y-6">
             <div className="space-y-4">
               <div className="w-11 h-11 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 text-[#4F46E5] dark:text-indigo-400 flex items-center justify-center font-bold">
                 <BookOpen className="w-5 h-5" />
@@ -44,7 +44,7 @@ export function FeaturesBento() {
               </p>
             </div>
 
-            <div className="pt-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs font-bold text-[#4F46E5] dark:text-indigo-400">
+            <div className="pt-4 border-t border-slate-200 dark:border-zinc-800 flex items-center justify-between text-xs font-bold text-[#4F46E5] dark:text-indigo-400">
               <span>مصحوب ببودكاست صوتي لكل درس (بودكاست الخلاصة)</span>
               <Link href="/subjects" className="flex items-center gap-1 hover:underline">
                 <span>تصفح المواد</span>
@@ -78,7 +78,7 @@ export function FeaturesBento() {
           </div>
 
           {/* Bento Card 3: بنك الأسئلة المتكيف */}
-          <div className="p-7 rounded-2xl bg-[#F8FAFC] dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs hover:border-[#4F46E5]/40 transition-colors flex flex-col justify-between space-y-4">
+          <div className="p-7 rounded-2xl bg-[#F8FAFC] dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 shadow-2xs hover:border-[#4F46E5]/40 transition-colors flex flex-col justify-between space-y-4">
             <div className="space-y-3">
               <div className="w-11 h-11 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 text-[#4F46E5] dark:text-indigo-400 flex items-center justify-center font-bold">
                 <Zap className="w-5 h-5" />
@@ -93,7 +93,7 @@ export function FeaturesBento() {
           </div>
 
           {/* Bento Card 4: ركن غلطاتي */}
-          <div className="p-7 rounded-2xl bg-[#F8FAFC] dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs hover:border-[#4F46E5]/40 transition-colors flex flex-col justify-between space-y-4">
+          <div className="p-7 rounded-2xl bg-[#F8FAFC] dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 shadow-2xs hover:border-[#4F46E5]/40 transition-colors flex flex-col justify-between space-y-4">
             <div className="space-y-3">
               <div className="w-11 h-11 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 text-[#4F46E5] dark:text-indigo-400 flex items-center justify-center font-bold">
                 <RotateCcw className="w-5 h-5" />
@@ -108,7 +108,7 @@ export function FeaturesBento() {
           </div>
 
           {/* Bento Card 5: الخرائط الذهنية & PWA */}
-          <div className="p-7 rounded-2xl bg-[#F8FAFC] dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs hover:border-[#4F46E5]/40 transition-colors flex flex-col justify-between space-y-4">
+          <div className="p-7 rounded-2xl bg-[#F8FAFC] dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 shadow-2xs hover:border-[#4F46E5]/40 transition-colors flex flex-col justify-between space-y-4">
             <div className="space-y-3">
               <div className="w-11 h-11 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 text-[#4F46E5] dark:text-indigo-400 flex items-center justify-center font-bold">
                 <Brain className="w-5 h-5" />

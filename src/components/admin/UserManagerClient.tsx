@@ -151,25 +151,25 @@ export function UserManagerClient({
     <div className="space-y-6">
       {/* Metrics Strip */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
-        <div className="p-4 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200/80 dark:border-slate-800/80 shadow-xs">
+        <div className="p-4 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200/80 dark:border-zinc-800/80 shadow-xs">
           <span className="text-[11px] font-bold text-slate-500">إجمالي الحسابات</span>
           <span className="text-2xl font-black text-[#0F172A] dark:text-white block mt-1">
             {users.length}
           </span>
         </div>
-        <div className="p-4 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200/80 dark:border-slate-800/80 shadow-xs">
+        <div className="p-4 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200/80 dark:border-zinc-800/80 shadow-xs">
           <span className="text-[11px] font-bold text-indigo-500">الطلاب المسجلون</span>
           <span className="text-2xl font-black text-indigo-600 dark:text-indigo-400 block mt-1">
             {studentsCount}
           </span>
         </div>
-        <div className="p-4 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200/80 dark:border-slate-800/80 shadow-xs">
+        <div className="p-4 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200/80 dark:border-zinc-800/80 shadow-xs">
           <span className="text-[11px] font-bold text-amber-500">المسؤولون والمشرفون</span>
           <span className="text-2xl font-black text-amber-600 dark:text-amber-400 block mt-1">
             {adminsCount}
           </span>
         </div>
-        <div className="p-4 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200/80 dark:border-slate-800/80 shadow-xs">
+        <div className="p-4 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200/80 dark:border-zinc-800/80 shadow-xs">
           <span className="text-[11px] font-bold text-emerald-500">إجمالي الامتحانات المنفذة</span>
           <span className="text-2xl font-black text-emerald-600 dark:text-emerald-400 block mt-1">
             {users.reduce((sum, u) => sum + u.attempts.length, 0)}
@@ -178,7 +178,7 @@ export function UserManagerClient({
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-zinc-950 border border-slate-200/80 dark:border-slate-800/80 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-zinc-950 border border-slate-200/80 dark:border-zinc-800/80 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex flex-wrap items-center gap-2.5 flex-1">
           {/* Search Box */}
           <div className="relative min-w-[240px] flex-1 max-w-sm">
@@ -188,7 +188,7 @@ export function UserManagerClient({
               placeholder="ابحث بالاسم، رقم الهاتف، أو البريد..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full h-10 pr-9 pl-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs font-bold text-[#0F172A] dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-indigo-500"
+              className="w-full h-10 pr-9 pl-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-bold text-[#0F172A] dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-indigo-500"
             />
           </div>
 
@@ -196,7 +196,7 @@ export function UserManagerClient({
           <select
             value={selectedRole}
             onChange={(e) => setSelectedRole(e.target.value)}
-            className="h-10 px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs font-bold text-[#0F172A] dark:text-white"
+            className="h-10 px-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-bold text-[#0F172A] dark:text-white"
           >
             <option value="all">كل الرتب والصلاحيات</option>
             <option value="STUDENT">طالب (STUDENT)</option>
@@ -210,7 +210,7 @@ export function UserManagerClient({
           <select
             value={selectedSystemId}
             onChange={(e) => setSelectedSystemId(e.target.value)}
-            className="h-10 px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs font-bold text-[#0F172A] dark:text-white"
+            className="h-10 px-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-bold text-[#0F172A] dark:text-white"
           >
             <option value="all">كل الأنظمة التعليمية</option>
             {systems.map((s) => (
@@ -227,10 +227,10 @@ export function UserManagerClient({
       </div>
 
       {/* Users Table */}
-      <div className="rounded-3xl bg-white dark:bg-zinc-950 border border-slate-200/80 dark:border-slate-800/80 overflow-hidden shadow-xs">
+      <div className="rounded-3xl bg-white dark:bg-zinc-950 border border-slate-200/80 dark:border-zinc-800/80 overflow-hidden shadow-xs">
         <div className="overflow-x-auto">
           <table className="w-full text-right text-xs">
-            <thead className="bg-slate-50 dark:bg-slate-900/80 border-b border-slate-200/80 dark:border-slate-800/80 text-slate-500 font-black">
+            <thead className="bg-slate-50 dark:bg-zinc-900/80 border-b border-slate-200/80 dark:border-zinc-800/80 text-slate-500 font-black">
               <tr>
                 <th className="p-4">المستخدم</th>
                 <th className="p-4">بيانات الاتصال</th>
@@ -241,13 +241,13 @@ export function UserManagerClient({
                 <th className="p-4 text-center">الإجراءات</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60 font-bold text-[#0F172A] dark:text-slate-200">
+            <tbody className="divide-y divide-slate-100 dark:divide-zinc-800/60 font-bold text-[#0F172A] dark:text-zinc-200">
               {filteredUsers.map((u) => {
                 const completedLessons = u.progress.filter((p) => p.isCompleted).length;
                 return (
                   <tr
                     key={u.id}
-                    className="hover:bg-slate-50/50 dark:hover:bg-slate-800/20 transition-colors"
+                    className="hover:bg-slate-50/50 dark:hover:bg-zinc-800/20 transition-colors"
                   >
                     {/* User info */}
                     <td className="p-4">
@@ -312,14 +312,14 @@ export function UserManagerClient({
 
                     {/* Progress */}
                     <td className="p-4">
-                      <span className="text-xs font-bold text-slate-600 dark:text-slate-300">
+                      <span className="text-xs font-bold text-slate-600 dark:text-zinc-300">
                         {completedLessons} درس
                       </span>
                     </td>
 
                     {/* Attempts */}
                     <td className="p-4">
-                      <span className="text-xs font-bold text-slate-600 dark:text-slate-300">
+                      <span className="text-xs font-bold text-slate-600 dark:text-zinc-300">
                         {u.attempts.length} اختبار
                       </span>
                     </td>
@@ -332,7 +332,7 @@ export function UserManagerClient({
                             setSelectedUser(u);
                             setNewRole(u.role);
                           }}
-                          className="h-8 px-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs font-bold text-indigo-600 dark:text-indigo-400 flex items-center gap-1 transition-colors"
+                          className="h-8 px-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-zinc-900 dark:hover:bg-zinc-700 text-xs font-bold text-indigo-600 dark:text-indigo-400 flex items-center gap-1 transition-colors"
                           title="تعديل الرتبة"
                         >
                           <Shield className="w-3.5 h-3.5" />
@@ -360,21 +360,21 @@ export function UserManagerClient({
       {/* EDIT ROLE MODAL */}
       {selectedUser && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="w-full max-w-md bg-white dark:bg-zinc-950 rounded-3xl p-6 space-y-5 text-right shadow-2xl border border-slate-100 dark:border-slate-800">
-            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+          <div className="w-full max-w-md bg-white dark:bg-zinc-950 rounded-3xl p-6 space-y-5 text-right shadow-2xl border border-slate-100 dark:border-zinc-800">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-zinc-800 pb-3">
               <h3 className="text-base font-black text-[#0F172A] dark:text-white flex items-center gap-2">
                 <Shield className="w-5 h-5 text-indigo-600" />
                 <span>تعديل رتبة وصلاحيات المستخدم</span>
               </h3>
               <button
                 onClick={() => setSelectedUser(null)}
-                className="w-8 h-8 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-400 hover:text-slate-600"
+                className="w-8 h-8 rounded-xl border border-slate-200 dark:border-zinc-800 flex items-center justify-center text-slate-400 hover:text-slate-600"
               >
                 ✕
               </button>
             </div>
 
-            <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-800/60 text-xs space-y-1">
+            <div className="p-3 rounded-2xl bg-slate-50 dark:bg-zinc-900/60 border border-slate-200/60 dark:border-zinc-800/60 text-xs space-y-1">
               <span className="text-slate-400 font-bold block">المستخدم المستهدف:</span>
               <span className="font-black text-[#0F172A] dark:text-white block text-sm">
                 {selectedUser.name || "مستخدم"}
@@ -398,7 +398,7 @@ export function UserManagerClient({
                 <select
                   value={newRole}
                   onChange={(e) => setNewRole(e.target.value)}
-                  className="w-full h-11 px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs font-bold"
+                  className="w-full h-11 px-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-bold"
                 >
                   <option value="STUDENT">طالب (STUDENT) - تصفح وحل الامتحانات</option>
                   <option value="TEACHER">معلم (TEACHER) - متابعة درجات الطلاب</option>
@@ -410,11 +410,11 @@ export function UserManagerClient({
                 </select>
               </div>
 
-              <div className="pt-3 flex items-center justify-end gap-3 border-t border-slate-100 dark:border-slate-800">
+              <div className="pt-3 flex items-center justify-end gap-3 border-t border-slate-100 dark:border-zinc-800">
                 <button
                   type="button"
                   onClick={() => setSelectedUser(null)}
-                  className="h-10 px-4 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-600 dark:text-slate-300"
+                  className="h-10 px-4 rounded-xl border border-slate-200 dark:border-zinc-800 text-xs font-bold text-slate-600 dark:text-zinc-300"
                 >
                   إلغاء
                 </button>

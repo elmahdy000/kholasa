@@ -40,7 +40,7 @@ export default async function ExamsHubPage() {
     <StudentShell user={user}>
       <div className="space-y-7 text-right font-sans">
         {/* Compact & Refined Hero Section */}
-        <div className="relative overflow-hidden rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 p-5 sm:p-6 lg:p-7 shadow-2xs">
+        <div className="relative overflow-hidden rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 p-5 sm:p-6 lg:p-7 shadow-2xs">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             {/* Text & Actions */}
             <div className="space-y-3 max-w-xl">
@@ -53,12 +53,12 @@ export default async function ExamsHubPage() {
                 قيس مستواك وظبّط نقط ضعفك عشان تقفّل المادة
               </h1>
 
-              <p className="text-xs sm:text-sm text-[#475569] dark:text-slate-300 leading-relaxed font-medium">
+              <p className="text-xs sm:text-sm text-[#475569] dark:text-zinc-300 leading-relaxed font-medium">
                 اتدرب براحتك مع شرح وتفسير لكل خطوة، أو جرب امتحان بوقت حقيقي يعيشك جو الامتحان النهائي بالظبط.
               </p>
 
               {/* Compact Value Points */}
-              <div className="flex flex-wrap items-center gap-4 pt-1 text-[11px] sm:text-xs font-semibold text-slate-500 dark:text-slate-400">
+              <div className="flex flex-wrap items-center gap-4 pt-1 text-[11px] sm:text-xs font-semibold text-slate-500 dark:text-zinc-400">
                 <span className="flex items-center gap-1.5">
                   <Clock className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
                   <span>مؤقت زي الامتحان بالظبط</span>
@@ -87,7 +87,7 @@ export default async function ExamsHubPage() {
             </div>
 
             {/* Compact 3D Illustration */}
-            <div className="relative w-36 h-36 sm:w-44 sm:h-44 md:w-48 md:h-48 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-md shrink-0 self-center">
+            <div className="relative w-36 h-36 sm:w-44 sm:h-44 md:w-48 md:h-48 rounded-2xl overflow-hidden border border-slate-200 dark:border-zinc-800 shadow-md shrink-0 self-center">
               <Image
                 src="/images/exams-hero.jpg"
                 alt="امتحانات وتدريبات متفصلة ليك"
@@ -130,7 +130,7 @@ export default async function ExamsHubPage() {
               return (
                 <div
                   key={exam.id}
-                  className="p-5 rounded-2xl bg-white dark:bg-zinc-950/50 border border-slate-200 dark:border-slate-800 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between gap-4"
+                  className="p-5 rounded-2xl bg-white dark:bg-zinc-950/50 border border-slate-200 dark:border-zinc-800 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between gap-4"
                 >
                   <div>
                     <div className="flex items-center justify-between gap-2 mb-2.5">
@@ -154,8 +154,8 @@ export default async function ExamsHubPage() {
                     )}
                   </div>
 
-                  <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
-                    <span className="text-xs font-bold text-slate-500 dark:text-slate-400">
+                  <div className="pt-3 border-t border-slate-100 dark:border-zinc-800 flex items-center justify-between">
+                    <span className="text-xs font-bold text-slate-500 dark:text-zinc-400">
                       {qText}
                     </span>
                     <Link
@@ -180,7 +180,7 @@ export default async function ExamsHubPage() {
               <span>امتحاناتك اللي حلتها قبل كدة</span>
             </h2>
 
-            <div className="rounded-2xl bg-white dark:bg-zinc-950/50 border border-slate-200 dark:border-slate-800 divide-y divide-slate-100 dark:divide-slate-800 overflow-hidden shadow-2xs">
+            <div className="rounded-2xl bg-white dark:bg-zinc-950/50 border border-slate-200 dark:border-zinc-800 divide-y divide-slate-100 dark:divide-zinc-800 overflow-hidden shadow-2xs">
               {recentAttempts.map((attempt) => {
                 const isGood = attempt.percentage >= 70;
                 const isPass = attempt.percentage >= 50;
@@ -200,7 +200,7 @@ export default async function ExamsHubPage() {
                 return (
                   <div
                     key={attempt.id}
-                    className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition-colors"
+                    className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-slate-50/70 dark:hover:bg-zinc-800/40 transition-colors"
                   >
                     <div className="flex items-start sm:items-center gap-3.5 min-w-0 flex-1">
                       <div
@@ -226,7 +226,7 @@ export default async function ExamsHubPage() {
 
                     <Link
                       href={`/exams/${attempt.examId}/results?attemptId=${attempt.id}`}
-                      className="h-9 px-4 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-indigo-400 hover:text-indigo-600 dark:hover:border-indigo-500 dark:hover:text-indigo-400 text-xs font-bold text-[#14243D] dark:text-white flex items-center justify-center gap-1.5 transition-colors shrink-0 self-stretch sm:self-center"
+                      className="h-9 px-4 rounded-xl border border-slate-200 dark:border-zinc-800 hover:border-indigo-400 hover:text-indigo-600 dark:hover:border-indigo-500 dark:hover:text-indigo-400 text-xs font-bold text-[#14243D] dark:text-white flex items-center justify-center gap-1.5 transition-colors shrink-0 self-stretch sm:self-center"
                     >
                       <span>راجع إجاباتك</span>
                       <ArrowLeft className="w-3.5 h-3.5" />

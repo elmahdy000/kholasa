@@ -47,7 +47,7 @@ export default async function SetupPage() {
         </div>
 
         {/* Setup Form Card */}
-        <div className="p-6 sm:p-8 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-xs">
+        <div className="p-6 sm:p-8 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 shadow-xs">
           <SetupForm systems={systems} userId={user.id} />
         </div>
       </div>

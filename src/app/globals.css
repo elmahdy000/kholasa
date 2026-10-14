@@ -50,19 +50,19 @@
   --card: #121215;
   --card-foreground: #FAFAFA;
   
-  --primary: #818CF8;
-  --primary-hover: #6366F1;
-  --primary-foreground: #09090B;
+  --primary: #6366F1;
+  --primary-hover: #4F46E5;
+  --primary-foreground: #FFFFFF;
   
   --accent: #F59E0B;
   --accent-hover: #D97706;
-  --accent-foreground: #09090B;
+  --accent-foreground: #FFFFFF;
   
   --navy: #09090B;
   --navy-light: #18181B;
   
   --success: #10B981;
-  --success-foreground: #09090B;
+  --success-foreground: #FFFFFF;
   
   --destructive: #EF4444;
   --destructive-foreground: #FFFFFF;

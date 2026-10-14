@@ -139,7 +139,7 @@ export function LessonCreateModal({
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-black text-slate-700 dark:text-slate-300">
+              <label className="text-xs font-black text-slate-700 dark:text-zinc-300">
                 حالة النشر
               </label>
               <button
@@ -157,7 +157,7 @@ export function LessonCreateModal({
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-black text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+            <label className="text-xs font-black text-slate-700 dark:text-zinc-300 flex items-center gap-1.5">
               <Video className="w-3.5 h-3.5 text-[#4F46E5]" />
               <span>رابط فيديو الدرس (YouTube أو مباشر - اختياري)</span>
             </label>
@@ -166,13 +166,13 @@ export function LessonCreateModal({
               value={videoUrl}
               onChange={(e) => setVideoUrl(e.target.value)}
               placeholder="https://www.youtube.com/watch?v=..."
-              className="w-full h-10 px-3.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-mono text-slate-900 dark:text-white focus:outline-none focus:border-[#4F46E5]"
+              className="w-full h-10 px-3.5 rounded-xl bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-xs font-mono text-slate-900 dark:text-white focus:outline-none focus:border-[#4F46E5]"
               dir="ltr"
             />
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-black text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+            <label className="text-xs font-black text-slate-700 dark:text-zinc-300 flex items-center gap-1.5">
               <Headphones className="w-3.5 h-3.5 text-emerald-500" />
               <span>رابط بودكاست الدرس الصوتي (audioUrl - اختياري)</span>
             </label>
@@ -181,17 +181,17 @@ export function LessonCreateModal({
               value={audioUrl}
               onChange={(e) => setAudioUrl(e.target.value)}
               placeholder="https://example.com/audio/lesson.mp3"
-              className="w-full h-10 px-3.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-mono text-slate-900 dark:text-white focus:outline-none focus:border-[#4F46E5]"
+              className="w-full h-10 px-3.5 rounded-xl bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-xs font-mono text-slate-900 dark:text-white focus:outline-none focus:border-[#4F46E5]"
               dir="ltr"
             />
           </div>
 
           {/* Footer Actions */}
-          <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-2">
+          <div className="pt-3 border-t border-slate-100 dark:border-zinc-800 flex items-center justify-end gap-2">
             <button
               type="button"
               onClick={onClose}
-              className="h-9 px-3.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300"
+              className="h-9 px-3.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-zinc-900 text-xs font-bold text-slate-700 dark:text-zinc-300"
             >
               إلغاء
             </button>

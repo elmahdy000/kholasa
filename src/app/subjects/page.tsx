@@ -2,7 +2,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { StudentShell } from "@/components/layout/StudentShell";
-import { BookOpen, ArrowLeft, Layers, Sparkles } from "lucide-react";
+import { BookOpen, ArrowLeft, Layers, Sparkles, Zap } from "lucide-react";
 
 export default async function SubjectsPage() {
   const user = await getCurrentUser();
@@ -25,19 +25,35 @@ export default async function SubjectsPage() {
 
   return (
     <StudentShell user={user}>
-      <div className="space-y-6 text-right pb-28">
-        {/* Header */}
+      <div className="space-y-6 text-right pb-16">
+        {/* Breadcrumb & Header */}
         <div className="space-y-2">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300">
-            <BookOpen className="w-3.5 h-3.5 text-[#4F46E5]" />
-            <span>المناهج والمقررات المعتمدة</span>
+          <div className="flex items-center gap-2 text-xs font-medium text-zinc-500 dark:text-zinc-400">
+            <Link href="/dashboard" className="hover:text-zinc-900 dark:hover:text-zinc-100">
+              الرئيسية
+            </Link>
+            <span>/</span>
+            <span className="text-zinc-900 dark:text-zinc-100 font-bold">المواد الدراسية</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-[#0F172A] dark:text-white">
-            المواد الدراسية
-          </h1>
-          <p className="text-xs sm:text-sm text-[#475569] dark:text-slate-400 max-w-xl">
-            اختر المادة لتستعرض وحداتها ودروسها التفصيلية وملخصات الزتونة الخاصة بها.
-          </p>
+
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-1">
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-black text-zinc-900 dark:text-zinc-100">
+                المواد الدراسية والمناهج
+              </h1>
+              <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 max-w-xl mt-1">
+                اختر المادة لتستعرض وحداتها ودروسها التفصيلية وملخصات الزتونة المركزة.
+              </p>
+            </div>
+
+            <Link
+              href="/exams/builder"
+              className="h-10 px-4 rounded-xl bg-zinc-100 dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-900 dark:text-zinc-100 border border-zinc-200 dark:border-zinc-800 text-xs font-bold flex items-center gap-2 transition-all self-start sm:self-center shrink-0"
+            >
+              <Zap className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+              <span>إنشاء اختبار شامل</span>
+            </Link>
+          </div>
         </div>
 
         {/* Subjects Grid */}
@@ -52,7 +68,7 @@ export default async function SubjectsPage() {
               <Link
                 key={subj.id}
                 href={`/subjects/${subj.id}`}
-                className="group p-6 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs hover:border-slate-300 dark:hover:border-slate-700 transition-all flex flex-col justify-between space-y-5"
+                className="group p-6 rounded-2xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 shadow-2xs hover:border-zinc-300 dark:hover:border-zinc-700 transition-all flex flex-col justify-between space-y-5"
               >
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
@@ -62,26 +78,26 @@ export default async function SubjectsPage() {
                     >
                       {subj.name[0]}
                     </div>
-                    <span className="text-[11px] font-mono font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800/80 px-2.5 py-0.5 rounded-md border border-slate-200/60 dark:border-slate-700/60">
+                    <span className="text-[11px] font-mono font-bold text-zinc-500 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-900 px-2.5 py-0.5 rounded-md border border-zinc-200/60 dark:border-zinc-800">
                       {subj.units.length} وحدات
                     </span>
                   </div>
 
                   <div>
-                    <h2 className="text-base sm:text-lg font-bold text-[#0F172A] dark:text-white group-hover:text-[#4F46E5] transition-colors">
+                    <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-[#4F46E5] dark:group-hover:text-indigo-400 transition-colors">
                       {subj.name}
                     </h2>
-                    <p className="text-xs text-[#475569] dark:text-slate-400 font-medium leading-relaxed mt-1.5 line-clamp-3">
+                    <p className="text-xs text-zinc-600 dark:text-zinc-400 font-medium leading-relaxed mt-1.5 line-clamp-3">
                       {subj.description}
                     </p>
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs font-semibold">
-                  <span className="text-[#475569] dark:text-slate-400 font-mono text-[11px]">
+                <div className="pt-4 border-t border-zinc-100 dark:border-zinc-800/80 flex items-center justify-between text-xs font-semibold">
+                  <span className="text-zinc-500 dark:text-zinc-400 font-mono text-[11px]">
                     {totalLessons} درس وملخص
                   </span>
-                  <span className="text-[#4F46E5] flex items-center gap-1 group-hover:-translate-x-1 transition-transform font-bold">
+                  <span className="text-[#4F46E5] dark:text-indigo-400 flex items-center gap-1 group-hover:-translate-x-1 transition-transform font-bold">
                     <span>فتح المادة</span>
                     <ArrowLeft className="w-3.5 h-3.5" />
                   </span>

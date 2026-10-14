@@ -93,7 +93,7 @@ export function LeaderboardClient({
 
       {/* Current User Standing Card */}
       {currentUser && (
-        <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3.5">
             <div className="w-12 h-12 rounded-xl bg-[#4F46E5] text-white flex items-center justify-center font-bold text-lg shadow-2xs">
               #{currentUserRank || "-"}
@@ -116,11 +116,11 @@ export function LeaderboardClient({
               <Zap className="w-3.5 h-3.5 fill-current" />
               <span>{currentUser.xp} XP</span>
             </div>
-            <div className="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-amber-600 dark:text-amber-400 flex items-center gap-1 font-mono">
+            <div className="px-3 py-1.5 rounded-lg bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-amber-600 dark:text-amber-400 flex items-center gap-1 font-mono">
               <Flame className="w-3.5 h-3.5 fill-amber-500" />
               <span>{currentUser.streak} أيام</span>
             </div>
-            <div className="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-emerald-600 dark:text-emerald-400 font-mono">
+            <div className="px-3 py-1.5 rounded-lg bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-emerald-600 dark:text-emerald-400 font-mono">
               {currentUser.completedExams} امتحان
             </div>
           </div>
@@ -128,9 +128,9 @@ export function LeaderboardClient({
       )}
 
       {/* Filters Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-3 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-3 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 shadow-2xs">
         {/* System tabs */}
-        <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-900/80 p-1 rounded-xl">
+        <div className="flex items-center gap-1 bg-slate-100 dark:bg-zinc-900/80 p-1 rounded-xl">
           <button
             onClick={() => setSystemFilter("ALL")}
             className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
@@ -165,13 +165,13 @@ export function LeaderboardClient({
 
         {/* Metric Sorting */}
         <div className="flex items-center gap-2">
-          <span className="text-xs font-bold text-slate-500 dark:text-slate-400">
+          <span className="text-xs font-bold text-slate-500 dark:text-zinc-400">
             الترتيب بحسب:
           </span>
           <select
             value={metricFilter}
             onChange={(e) => setMetricFilter(e.target.value as any)}
-            className="h-9 px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-bold text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#4F46E5]"
+            className="h-9 px-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-xs font-bold text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#4F46E5]"
           >
             <option value="xp">نقاط الخبرة (XP)</option>
             <option value="exams">الامتحانات المكتملة</option>
@@ -185,11 +185,11 @@ export function LeaderboardClient({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">
           {/* Rank 2 (Silver) */}
           {top3[1] && (
-            <div className="order-2 md:order-1 p-5 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs flex flex-col items-center text-center space-y-3 relative">
-              <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 flex items-center justify-center font-bold text-slate-600 dark:text-slate-300 shadow-2xs">
-                <Medal className="w-6 h-6 text-slate-400 dark:text-slate-300" />
+            <div className="order-2 md:order-1 p-5 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 shadow-2xs flex flex-col items-center text-center space-y-3 relative">
+              <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-zinc-900 border border-slate-300 dark:border-zinc-800 flex items-center justify-center font-bold text-slate-600 dark:text-zinc-300 shadow-2xs">
+                <Medal className="w-6 h-6 text-slate-400 dark:text-zinc-300" />
               </div>
-              <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2.5 py-0.5 rounded-full">
+              <span className="text-[11px] font-bold text-slate-500 dark:text-zinc-400 bg-slate-100 dark:bg-zinc-900 px-2.5 py-0.5 rounded-full">
                 المركز الثاني
               </span>
               <h3 className="text-base font-bold text-[#0F172A] dark:text-white">
@@ -198,7 +198,7 @@ export function LeaderboardClient({
               <p className="text-xs text-[#64748B] dark:text-[#94A3B8]">
                 {top3[1].systemName}
               </p>
-              <div className="pt-2 w-full flex items-center justify-around border-t border-slate-100 dark:border-slate-800 text-xs font-bold font-mono">
+              <div className="pt-2 w-full flex items-center justify-around border-t border-slate-100 dark:border-zinc-800 text-xs font-bold font-mono">
                 <span className="text-[#4F46E5] flex items-center gap-1">
                   <Zap className="w-3.5 h-3.5 fill-current" />
                   <span>{top3[1].xp} XP</span>
@@ -248,7 +248,7 @@ export function LeaderboardClient({
 
           {/* Rank 3 (Bronze) */}
           {top3[2] && (
-            <div className="order-3 md:order-3 p-5 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs flex flex-col items-center text-center space-y-3 relative">
+            <div className="order-3 md:order-3 p-5 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 shadow-2xs flex flex-col items-center text-center space-y-3 relative">
               <div className="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-700/60 flex items-center justify-center shadow-2xs">
                 <Medal className="w-6 h-6 text-amber-700 dark:text-amber-400" />
               </div>
@@ -261,7 +261,7 @@ export function LeaderboardClient({
               <p className="text-xs text-[#64748B] dark:text-[#94A3B8]">
                 {top3[2].systemName}
               </p>
-              <div className="pt-2 w-full flex items-center justify-around border-t border-slate-100 dark:border-slate-800 text-xs font-bold">
+              <div className="pt-2 w-full flex items-center justify-around border-t border-slate-100 dark:border-zinc-800 text-xs font-bold">
                 <span className="text-[#4F46E5] flex items-center gap-1">
                   <Zap className="w-3.5 h-3.5 fill-current" />
                   <span>{top3[2].xp} XP</span>
@@ -283,7 +283,7 @@ export function LeaderboardClient({
         </h2>
 
         {remaining.length === 0 && top3.length <= 3 && (
-          <div className="p-8 text-center rounded-2xl bg-white dark:bg-[#111A2B] border border-slate-200 dark:border-slate-800 text-slate-500 text-xs">
+          <div className="p-8 text-center rounded-2xl bg-white dark:bg-[#111A2B] border border-slate-200 dark:border-zinc-800 text-slate-500 text-xs">
             أنت من أوائل المنضمين للتصنيف! شارك وحل الامتحانات لتثبيت صدارتك.
           </div>
         )}
@@ -296,14 +296,14 @@ export function LeaderboardClient({
               className={`p-4 rounded-xl border transition-colors flex items-center justify-between gap-4 ${
                 user.isCurrentUser
                   ? "bg-indigo-50/50 dark:bg-indigo-950/20 border-[#4F46E5]"
-                  : "bg-white dark:bg-zinc-950 border-slate-200 dark:border-slate-800"
+                  : "bg-white dark:bg-zinc-950 border-slate-200 dark:border-zinc-800"
               }`}
             >
               <div className="flex items-center gap-3.5">
                 <span className="w-8 text-center font-bold text-sm text-[#64748B] dark:text-[#94A3B8]">
                   #{rank}
                 </span>
-                <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 text-[#0F172A] dark:text-white flex items-center justify-center font-bold text-xs">
+                <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-zinc-900 text-[#0F172A] dark:text-white flex items-center justify-center font-bold text-xs">
                   {user.name[0]}
                 </div>
                 <div>

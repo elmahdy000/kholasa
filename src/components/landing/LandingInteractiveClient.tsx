@@ -72,13 +72,13 @@ export function LandingInteractiveClient() {
         </div>
 
         {/* Feature Tabs Selector */}
-        <div className="flex flex-wrap items-center justify-center gap-1.5 max-w-3xl mx-auto p-1.5 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+        <div className="flex flex-wrap items-center justify-center gap-1.5 max-w-3xl mx-auto p-1.5 rounded-xl bg-slate-100 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800">
           <button
             onClick={() => setActiveTab("zatona")}
             className={`h-9 px-3.5 rounded-lg text-xs font-bold transition-all flex items-center gap-2 interactive-tap ${
               activeTab === "zatona"
                 ? "bg-white dark:bg-zinc-950 text-[#4F46E5] dark:text-indigo-400 shadow-2xs"
-                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                : "text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white"
             }`}
           >
             <BookOpen className="w-4 h-4 text-[#4F46E5]" />
@@ -90,7 +90,7 @@ export function LandingInteractiveClient() {
             className={`h-9 px-3.5 rounded-lg text-xs font-bold transition-all flex items-center gap-2 interactive-tap ${
               activeTab === "questions"
                 ? "bg-white dark:bg-zinc-950 text-[#4F46E5] dark:text-indigo-400 shadow-2xs"
-                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                : "text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white"
             }`}
           >
             <Zap className="w-4 h-4 text-amber-500" />
@@ -102,7 +102,7 @@ export function LandingInteractiveClient() {
             className={`h-9 px-3.5 rounded-lg text-xs font-bold transition-all flex items-center gap-2 interactive-tap ${
               activeTab === "mistakes"
                 ? "bg-white dark:bg-zinc-950 text-rose-500 shadow-2xs"
-                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                : "text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white"
             }`}
           >
             <RotateCcw className="w-4 h-4 text-rose-500" />
@@ -114,7 +114,7 @@ export function LandingInteractiveClient() {
             className={`h-9 px-3.5 rounded-lg text-xs font-bold transition-all flex items-center gap-2 interactive-tap ${
               activeTab === "mindmap"
                 ? "bg-white dark:bg-zinc-950 text-[#4F46E5] dark:text-indigo-400 shadow-2xs"
-                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                : "text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white"
             }`}
           >
             <Brain className="w-4 h-4 text-[#4F46E5]" />
@@ -124,8 +124,8 @@ export function LandingInteractiveClient() {
 
         {/* Tab 1: الزتونة الذهبية */}
         {activeTab === "zatona" && (
-          <div className="max-w-4xl mx-auto p-6 sm:p-8 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-xs space-y-6 animate-in fade-in duration-300">
-            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div className="max-w-4xl mx-auto p-6 sm:p-8 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 shadow-xs space-y-6 animate-in fade-in duration-300">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-zinc-800 pb-4">
               <div>
                 <span className="text-[11px] font-bold text-[#4F46E5] dark:text-indigo-400 block font-mono">
                   عينة حقيقية من ملخص الزتونة • الأحياء
@@ -145,7 +145,7 @@ export function LandingInteractiveClient() {
                 <span className="text-xs font-black text-[#4F46E5] dark:text-indigo-400 block">
                   المفهوم الجوهري (Concept):
                 </span>
-                <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
+                <p className="text-xs text-slate-700 dark:text-zinc-300 leading-relaxed">
                   الدعامة الفسيولوجية دعامة مؤقتة تعتمد على الخاصية الأسموزية وانتفاخ الفجوة العصارية، بينما الدعامة التركيبية دائمة وتعتمد على ترسب مواد صلبة مثل السيليلوز والليجنين.
                 </p>
               </div>
@@ -155,7 +155,7 @@ export function LandingInteractiveClient() {
                   <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />
                   <span>تكة امتحان ثانوية عامة مكررة:</span>
                 </span>
-                <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
+                <p className="text-xs text-slate-700 dark:text-zinc-300 leading-relaxed">
                   فقدان الماء بعملية النتح السريع في وقت الظهيرة يؤدي لفقدان الدعامة الفسيولوجية مؤقتاً، وتستعاد عند الري ليلاً بامتصاص الماء.
                 </p>
               </div>
@@ -165,7 +165,7 @@ export function LandingInteractiveClient() {
               <span className="text-xs font-black text-emerald-700 dark:text-emerald-300 block">
                 قائمة التحقق السريعة قبل الامتحان (Checklist):
               </span>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-700 dark:text-slate-300">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-700 dark:text-zinc-300">
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
                   <span>التمييز بين النسيج البارنشيمي والكولنشيمي</span>
@@ -181,7 +181,7 @@ export function LandingInteractiveClient() {
 
         {/* Tab 2: تفسير كل اختيار */}
         {activeTab === "questions" && (
-          <div className="max-w-4xl mx-auto p-6 sm:p-8 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-xs space-y-6 animate-in fade-in duration-300">
+          <div className="max-w-4xl mx-auto p-6 sm:p-8 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 shadow-xs space-y-6 animate-in fade-in duration-300">
             <div className="space-y-1">
               <span className="text-[11px] font-bold text-[#4F46E5] dark:text-indigo-400 block font-mono">
                 سؤال تفاعلي من بنك الأسئلة الذكي
@@ -220,7 +220,7 @@ export function LandingInteractiveClient() {
               ].map((opt) => {
                 const isSelected = selectedDemoOption === opt.id;
                 let cardStyle =
-                  "bg-slate-50 dark:bg-slate-900/60 border-slate-200 dark:border-slate-800";
+                  "bg-slate-50 dark:bg-zinc-900/60 border-slate-200 dark:border-zinc-800";
 
                 if (demoSubmitted) {
                   if (opt.isCorrect) {
@@ -256,7 +256,7 @@ export function LandingInteractiveClient() {
                     </div>
                     {demoSubmitted && (
                       <p
-                        className={`text-[11px] leading-relaxed pt-1 border-t border-slate-200/60 dark:border-slate-800 ${
+                        className={`text-[11px] leading-relaxed pt-1 border-t border-slate-200/60 dark:border-zinc-800 ${
                           opt.isCorrect
                             ? "text-emerald-700 dark:text-emerald-300 font-semibold"
                             : "text-rose-600 dark:text-rose-400"
@@ -280,8 +280,8 @@ export function LandingInteractiveClient() {
 
         {/* Tab 3: دفتر غلطاتي */}
         {activeTab === "mistakes" && (
-          <div className="max-w-4xl mx-auto p-6 sm:p-8 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-xs space-y-6 animate-in fade-in duration-300">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div className="max-w-4xl mx-auto p-6 sm:p-8 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 shadow-xs space-y-6 animate-in fade-in duration-300">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-zinc-800 pb-4">
               <div>
                 <span className="text-[11px] font-bold text-rose-500 block font-mono">
                   ركن المذاكرة الأكثر فاعلية في الثانوية
@@ -300,7 +300,7 @@ export function LandingInteractiveClient() {
               </div>
             </div>
 
-            <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 space-y-3">
+            <div className="p-4 rounded-xl bg-slate-50 dark:bg-zinc-900/60 border border-slate-200 dark:border-zinc-800 space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-[11px] font-medium text-slate-500">
                   سؤال أخطأت فيه في امتحان الوحدة الأولى (الكيمياء)
@@ -312,7 +312,7 @@ export function LandingInteractiveClient() {
               <p className="text-xs sm:text-sm font-bold text-[#0F172A] dark:text-white">
                 ما التوزيع الإلكتروني لأيون الحديد الثلاثي Fe³⁺ في مركب FeCl₃؟
               </p>
-              <div className="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
+              <div className="p-3 rounded-xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-xs text-slate-700 dark:text-zinc-300 leading-relaxed">
                 <span className="font-bold text-[#4F46E5] dark:text-indigo-400">
                   التحليل العلاجي:{" "}
                 </span>
@@ -333,7 +333,7 @@ export function LandingInteractiveClient() {
 
         {/* Tab 4: الخرائط الذهنية */}
         {activeTab === "mindmap" && (
-          <div className="max-w-4xl mx-auto p-6 sm:p-8 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-xs space-y-6 animate-in fade-in duration-300 text-center">
+          <div className="max-w-4xl mx-auto p-6 sm:p-8 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 shadow-xs space-y-6 animate-in fade-in duration-300 text-center">
             <div className="space-y-1">
               <span className="text-[11px] font-bold text-[#4F46E5] dark:text-indigo-400 block font-mono">
                 العلاقات المفاهيمية البصرية
@@ -343,7 +343,7 @@ export function LandingInteractiveClient() {
               </h3>
             </div>
 
-            <div className="p-6 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 flex flex-col md:flex-row items-center justify-around gap-4">
+            <div className="p-6 rounded-xl bg-slate-50 dark:bg-zinc-900/60 border border-slate-200 dark:border-zinc-800 flex flex-col md:flex-row items-center justify-around gap-4">
               <div className="p-4 rounded-xl bg-[#4F46E5] text-white font-bold text-xs shadow-2xs">
                 المفهوم الأساسي
                 <br />
@@ -354,7 +354,7 @@ export function LandingInteractiveClient() {
               <div className="text-[#4F46E5] font-bold text-lg rotate-90 md:rotate-0">
                 ↔
               </div>
-              <div className="p-4 rounded-xl bg-slate-900 dark:bg-slate-800 text-white font-bold text-xs border border-slate-700 shadow-2xs">
+              <div className="p-4 rounded-xl bg-slate-900 dark:bg-zinc-900 text-white font-bold text-xs border border-slate-700 shadow-2xs">
                 العوامل المؤثرة
                 <br />
                 <span className="text-[10px] text-slate-300 font-normal">
@@ -390,14 +390,14 @@ export function LandingInteractiveClient() {
           </p>
         </div>
 
-        <div className="max-w-4xl mx-auto rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden bg-white dark:bg-zinc-950 shadow-xs">
-          <div className="grid grid-cols-3 p-4 bg-slate-100 dark:bg-slate-900 font-bold text-xs sm:text-sm text-[#0F172A] dark:text-white border-b border-slate-200 dark:border-slate-800 text-center">
+        <div className="max-w-4xl mx-auto rounded-2xl border border-slate-200 dark:border-zinc-800 overflow-hidden bg-white dark:bg-zinc-950 shadow-xs">
+          <div className="grid grid-cols-3 p-4 bg-slate-100 dark:bg-zinc-900 font-bold text-xs sm:text-sm text-[#0F172A] dark:text-white border-b border-slate-200 dark:border-zinc-800 text-center">
             <div>المعيار</div>
             <div className="text-rose-500 font-bold">الطرق التقليدية</div>
             <div className="text-[#4F46E5] dark:text-indigo-400 font-bold">منصة الخلاصة</div>
           </div>
 
-          <div className="divide-y divide-slate-100 dark:divide-slate-800 text-xs sm:text-sm">
+          <div className="divide-y divide-slate-100 dark:divide-zinc-800 text-xs sm:text-sm">
             <div className="grid grid-cols-3 p-4 items-center text-center">
               <div className="font-bold text-[#0F172A] dark:text-white">
                 زمن مراجعة الدرس
@@ -458,7 +458,7 @@ export function LandingInteractiveClient() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-5xl mx-auto">
-          <div className="p-6 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
+          <div className="p-6 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 shadow-2xs space-y-3">
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 text-[#4F46E5] dark:text-indigo-400 font-bold flex items-center justify-center">
                 ي
@@ -472,12 +472,12 @@ export function LandingInteractiveClient() {
                 </span>
               </div>
             </div>
-            <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+            <p className="text-xs text-slate-600 dark:text-zinc-300 leading-relaxed">
               "أكتر حاجة فادتني هي تفسير الخيارات الغلط. زمان كنت أحل ومش فاهم ليه اخترت كذا، في الخلاصة فهمت فكر واضعي الامتحانات وتجنبت الفخاخ تماماً."
             </p>
           </div>
 
-          <div className="p-6 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
+          <div className="p-6 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 shadow-2xs space-y-3">
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 text-[#4F46E5] dark:text-indigo-400 font-bold flex items-center justify-center">
                 م
@@ -491,12 +491,12 @@ export function LandingInteractiveClient() {
                 </span>
               </div>
             </div>
-            <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+            <p className="text-xs text-slate-600 dark:text-zinc-300 leading-relaxed">
               "ملخصات الزتونة في الرياضة والفيزياء كانت معايا على الموبايل في المواصلات. في أقل من 5 دقائق كنت أسترجع قوانين الوحدة كلها كأني ذاكرتها من جديد."
             </p>
           </div>
 
-          <div className="p-6 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
+          <div className="p-6 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 shadow-2xs space-y-3">
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 font-bold flex items-center justify-center">
                 ع
@@ -510,7 +510,7 @@ export function LandingInteractiveClient() {
                 </span>
               </div>
             </div>
-            <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+            <p className="text-xs text-slate-600 dark:text-zinc-300 leading-relaxed">
               "ركن غلطاتي غير طريقتي في التعامل مع التاريخ والفلسفة. الأسئلة اللي كنت بأغلط فيها رجعت وحليتها صح لغاية ما اتقنتها 100% بدون أي قلق."
             </p>
           </div>
@@ -520,7 +520,7 @@ export function LandingInteractiveClient() {
       {/* 4. Interactive FAQ Accordion */}
       <section className="space-y-6 max-w-3xl mx-auto">
         <div className="text-center space-y-2">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-xs font-bold text-slate-600 dark:text-slate-300">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 dark:bg-zinc-900 text-xs font-bold text-slate-600 dark:text-zinc-300">
             <HelpCircle className="w-3.5 h-3.5" />
             <span>إجابات واضحة</span>
           </div>
@@ -535,7 +535,7 @@ export function LandingInteractiveClient() {
             return (
               <div
                 key={idx}
-                className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-zinc-950 overflow-hidden transition-all shadow-2xs"
+                className="rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 overflow-hidden transition-all shadow-2xs"
               >
                 <button
                   type="button"
@@ -550,7 +550,7 @@ export function LandingInteractiveClient() {
                   />
                 </button>
                 {isOpen && (
-                  <div className="px-4 pb-5 sm:px-5 text-xs text-[#64748B] dark:text-[#94A3B8] leading-relaxed border-t border-slate-100 dark:border-slate-800/80 pt-3">
+                  <div className="px-4 pb-5 sm:px-5 text-xs text-[#64748B] dark:text-[#94A3B8] leading-relaxed border-t border-slate-100 dark:border-zinc-800/80 pt-3">
                     {faq.a}
                   </div>
                 )}

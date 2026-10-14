@@ -281,7 +281,7 @@ export function BulkImportClient({ subjects }: BulkImportClientProps) {
   return (
     <div className="space-y-6">
       {/* Top Header & Breadcrumb */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-zinc-800 pb-4">
         <div>
           <Link
             href="/admin/questions"
@@ -301,7 +301,7 @@ export function BulkImportClient({ subjects }: BulkImportClientProps) {
         {/* Download Sample Button */}
         <button
           onClick={handleDownloadSample}
-          className="h-10 px-4 rounded-xl bg-white dark:bg-[#111A2B] border border-slate-200 dark:border-slate-700 text-xs font-bold text-[#14243D] dark:text-white hover:border-[#4F46E5] flex items-center gap-2 shadow-sm transition-all"
+          className="h-10 px-4 rounded-xl bg-white dark:bg-[#111A2B] border border-slate-200 dark:border-zinc-800 text-xs font-bold text-[#14243D] dark:text-white hover:border-[#4F46E5] flex items-center gap-2 shadow-sm transition-all"
         >
           <Download className="w-4 h-4 text-[#4F46E5]" />
           <span>تحميل قالب CSV الاسترشادي</span>
@@ -335,7 +335,7 @@ export function BulkImportClient({ subjects }: BulkImportClientProps) {
                 setPastedText("");
                 setFileName(null);
               }}
-              className="h-11 px-5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 transition-colors"
+              className="h-11 px-5 rounded-xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-xs font-bold text-slate-700 dark:text-zinc-200 hover:bg-slate-50 transition-colors"
             >
               استيراد دفعة أخرى
             </button>
@@ -344,13 +344,13 @@ export function BulkImportClient({ subjects }: BulkImportClientProps) {
       ) : (
         <>
           {/* Target Subject & Unit Selector */}
-          <div className="p-5 rounded-2xl bg-white dark:bg-[#111A2B] border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
-            <span className="text-xs font-bold text-slate-500 dark:text-slate-400 block">
+          <div className="p-5 rounded-2xl bg-white dark:bg-[#111A2B] border border-slate-200 dark:border-zinc-800 shadow-sm space-y-3">
+            <span className="text-xs font-bold text-slate-500 dark:text-zinc-400 block">
               1. اختر المادة والوحدة المستهدفة للأسئلة المستوردة:
             </span>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="text-[11px] font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                <label className="text-[11px] font-bold text-slate-700 dark:text-zinc-300 block mb-1">
                   المادة المقررة *
                 </label>
                 <select
@@ -359,7 +359,7 @@ export function BulkImportClient({ subjects }: BulkImportClientProps) {
                     setSelectedSubjectId(e.target.value);
                     setSelectedUnitId("");
                   }}
-                  className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs font-bold text-[#14243D] dark:text-white"
+                  className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-bold text-[#14243D] dark:text-white"
                 >
                   {subjects.map((s) => (
                     <option key={s.id} value={s.id}>
@@ -370,13 +370,13 @@ export function BulkImportClient({ subjects }: BulkImportClientProps) {
               </div>
 
               <div>
-                <label className="text-[11px] font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                <label className="text-[11px] font-bold text-slate-700 dark:text-zinc-300 block mb-1">
                   الوحدة (اختياري)
                 </label>
                 <select
                   value={selectedUnitId}
                   onChange={(e) => setSelectedUnitId(e.target.value)}
-                  className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs font-bold text-[#14243D] dark:text-white"
+                  className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-bold text-[#14243D] dark:text-white"
                 >
                   <option value="">بدون وحدة محددة (عام للمادة)</option>
                   {activeSubject?.units.map((u) => (
@@ -390,18 +390,18 @@ export function BulkImportClient({ subjects }: BulkImportClientProps) {
           </div>
 
           {/* Import Modes: File Upload or Direct Paste */}
-          <div className="p-5 rounded-2xl bg-white dark:bg-[#111A2B] border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-              <span className="text-xs font-bold text-slate-500 dark:text-slate-400">
+          <div className="p-5 rounded-2xl bg-white dark:bg-[#111A2B] border border-slate-200 dark:border-zinc-800 shadow-sm space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-zinc-800 pb-3">
+              <span className="text-xs font-bold text-slate-500 dark:text-zinc-400">
                 2. إدخال بيانات الملف:
               </span>
-              <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
+              <div className="flex items-center gap-1 bg-slate-100 dark:bg-zinc-900 p-1 rounded-xl">
                 <button
                   type="button"
                   onClick={() => setActiveTab("file")}
                   className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
                     activeTab === "file"
-                      ? "bg-white dark:bg-slate-700 text-[#4F46E5] shadow-xs"
+                      ? "bg-white dark:bg-zinc-800 text-[#4F46E5] shadow-xs"
                       : "text-slate-500 hover:text-slate-900 dark:hover:text-white"
                   }`}
                 >
@@ -413,7 +413,7 @@ export function BulkImportClient({ subjects }: BulkImportClientProps) {
                   onClick={() => setActiveTab("paste")}
                   className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
                     activeTab === "paste"
-                      ? "bg-white dark:bg-slate-700 text-[#4F46E5] shadow-xs"
+                      ? "bg-white dark:bg-zinc-800 text-[#4F46E5] shadow-xs"
                       : "text-slate-500 hover:text-slate-900 dark:hover:text-white"
                   }`}
                 >
@@ -424,7 +424,7 @@ export function BulkImportClient({ subjects }: BulkImportClientProps) {
             </div>
 
             {activeTab === "file" ? (
-              <div className="border-2 border-dashed border-slate-200 dark:border-slate-700 hover:border-[#4F46E5] rounded-2xl p-8 text-center transition-colors">
+              <div className="border-2 border-dashed border-slate-200 dark:border-zinc-800 hover:border-[#4F46E5] rounded-2xl p-8 text-center transition-colors">
                 <input
                   type="file"
                   id="csv-file-input"
@@ -456,7 +456,7 @@ export function BulkImportClient({ subjects }: BulkImportClientProps) {
                   value={pastedText}
                   onChange={(e) => setPastedText(e.target.value)}
                   placeholder="الصق أسطر CSV هنا متضمنة الرأس (Header)..."
-                  className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs font-mono text-[#14243D] dark:text-white focus:outline-none focus:border-[#4F46E5]"
+                  className="w-full p-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-mono text-[#14243D] dark:text-white focus:outline-none focus:border-[#4F46E5]"
                 />
                 <button
                   type="button"
@@ -472,9 +472,9 @@ export function BulkImportClient({ subjects }: BulkImportClientProps) {
           {/* Parsed Preview Table & Actions */}
           {parsedQuestions.length > 0 && (
             <div className="space-y-4">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-[#111A2B] p-4 rounded-2xl border border-slate-200 dark:border-slate-800">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-[#111A2B] p-4 rounded-2xl border border-slate-200 dark:border-zinc-800">
                 <div className="flex items-center gap-3">
-                  <div className="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-xs font-bold text-[#14243D] dark:text-white">
+                  <div className="px-3 py-1 rounded-full bg-slate-100 dark:bg-zinc-900 text-xs font-bold text-[#14243D] dark:text-white">
                     إجمالي الأسئلة المحللة: {parsedQuestions.length}
                   </div>
                   <div className="px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950/40 text-xs font-bold text-emerald-700 dark:text-emerald-400 flex items-center gap-1">
@@ -523,14 +523,14 @@ export function BulkImportClient({ subjects }: BulkImportClientProps) {
                     key={idx}
                     className={`p-4 rounded-2xl border transition-all ${
                       q.isValid
-                        ? "bg-white dark:bg-[#111A2B] border-slate-200 dark:border-slate-800"
+                        ? "bg-white dark:bg-[#111A2B] border-slate-200 dark:border-zinc-800"
                         : "bg-rose-50/50 dark:bg-rose-950/20 border-rose-200 dark:border-rose-900"
                     }`}
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div className="space-y-2 flex-1">
                         <div className="flex flex-wrap items-center gap-2">
-                          <span className="text-[10px] font-black px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                          <span className="text-[10px] font-black px-2 py-0.5 rounded-md bg-slate-100 dark:bg-zinc-900 text-slate-600 dark:text-zinc-300">
                             سؤال #{idx + 1}
                           </span>
                           <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/50 text-[#4F46E5]">
@@ -563,7 +563,7 @@ export function BulkImportClient({ subjects }: BulkImportClientProps) {
                               className={`p-2 rounded-xl text-xs flex items-center justify-between border ${
                                 opt.isCorrect
                                   ? "bg-emerald-50 dark:bg-emerald-950/30 border-emerald-300 dark:border-emerald-800 text-emerald-900 dark:text-emerald-200 font-bold"
-                                  : "bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300"
+                                  : "bg-slate-50 dark:bg-zinc-900 border-slate-200 dark:border-zinc-800 text-slate-700 dark:text-zinc-300"
                               }`}
                             >
                               <BidiStatement as="span" text={opt.text} />
@@ -578,7 +578,7 @@ export function BulkImportClient({ subjects }: BulkImportClientProps) {
                         </div>
 
                         {q.concept && (
-                          <div className="pt-2 text-[11px] text-slate-500 dark:text-slate-400">
+                          <div className="pt-2 text-[11px] text-slate-500 dark:text-zinc-400">
                             <span className="font-bold text-[#4F46E5]">
                               المفهوم:{" "}
                             </span>

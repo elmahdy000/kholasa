@@ -183,7 +183,7 @@ export function ExamManagerClient({
   return (
     <div className="space-y-6">
       {/* Action Header & Filters */}
-      <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-zinc-950 border border-slate-200/80 dark:border-slate-800/80 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-zinc-950 border border-slate-200/80 dark:border-zinc-800/80 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         {/* Search & Dropdown Filters */}
         <div className="flex flex-wrap items-center gap-2.5 flex-1">
           {/* Search Bar */}
@@ -194,7 +194,7 @@ export function ExamManagerClient({
               placeholder="ابحث عن امتحان أو مادة..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full h-10 pr-9 pl-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs font-bold text-[#0F172A] dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-indigo-500"
+              className="w-full h-10 pr-9 pl-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-bold text-[#0F172A] dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-indigo-500"
             />
           </div>
 
@@ -202,7 +202,7 @@ export function ExamManagerClient({
           <select
             value={selectedSubjectId}
             onChange={(e) => setSelectedSubjectId(e.target.value)}
-            className="h-10 px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs font-bold text-[#0F172A] dark:text-white"
+            className="h-10 px-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-bold text-[#0F172A] dark:text-white"
           >
             <option value="all">كل المواد الدراسية</option>
             {subjects.map((s) => (
@@ -216,7 +216,7 @@ export function ExamManagerClient({
           <select
             value={selectedType}
             onChange={(e) => setSelectedType(e.target.value)}
-            className="h-10 px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs font-bold text-[#0F172A] dark:text-white"
+            className="h-10 px-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-bold text-[#0F172A] dark:text-white"
           >
             <option value="all">كل التصنيفات</option>
             <option value="exam">امتحانات رسمية بمؤقت</option>
@@ -241,7 +241,7 @@ export function ExamManagerClient({
 
       {/* Exams Grid */}
       {filteredExams.length === 0 ? (
-        <div className="p-12 text-center rounded-3xl bg-white dark:bg-zinc-950 border border-slate-200/80 dark:border-slate-800/80 space-y-3">
+        <div className="p-12 text-center rounded-3xl bg-white dark:bg-zinc-950 border border-slate-200/80 dark:border-zinc-800/80 space-y-3">
           <Award className="w-10 h-10 text-slate-300 mx-auto" />
           <h3 className="text-sm font-black text-[#0F172A] dark:text-white">
             لا توجد امتحانات مطابقة للبحث
@@ -255,7 +255,7 @@ export function ExamManagerClient({
           {filteredExams.map((exam) => (
             <div
               key={exam.id}
-              className="p-6 rounded-3xl bg-white dark:bg-zinc-950 border border-slate-200/80 dark:border-slate-800/80 transition-all shadow-xs flex flex-col justify-between space-y-4"
+              className="p-6 rounded-3xl bg-white dark:bg-zinc-950 border border-slate-200/80 dark:border-zinc-800/80 transition-all shadow-xs flex flex-col justify-between space-y-4"
             >
               {/* Header & Badges */}
               <div className="space-y-3">
@@ -283,7 +283,7 @@ export function ExamManagerClient({
                     {exam.title}
                   </h3>
                   {exam.description && (
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-2 leading-relaxed">
+                    <p className="text-xs text-slate-500 dark:text-zinc-400 mt-1 line-clamp-2 leading-relaxed">
                       {exam.description}
                     </p>
                   )}
@@ -291,12 +291,12 @@ export function ExamManagerClient({
               </div>
 
               {/* Stats Bar */}
-              <div className="grid grid-cols-3 gap-2 p-3 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-100 dark:border-slate-800/60 text-center">
+              <div className="grid grid-cols-3 gap-2 p-3 rounded-2xl bg-slate-50 dark:bg-zinc-900/60 border border-slate-100 dark:border-zinc-800/60 text-center">
                 <div>
                   <span className="text-[10px] text-slate-400 font-bold block">
                     المدة
                   </span>
-                  <span className="text-xs font-black text-[#0F172A] dark:text-slate-200 flex items-center justify-center gap-1 mt-0.5">
+                  <span className="text-xs font-black text-[#0F172A] dark:text-zinc-200 flex items-center justify-center gap-1 mt-0.5">
                     <Clock className="w-3 h-3 text-slate-400" />
                     {exam.durationMinutes} د
                   </span>
@@ -306,7 +306,7 @@ export function ExamManagerClient({
                   <span className="text-[10px] text-slate-400 font-bold block">
                     الأسئلة
                   </span>
-                  <span className="text-xs font-black text-[#0F172A] dark:text-slate-200 flex items-center justify-center gap-1 mt-0.5">
+                  <span className="text-xs font-black text-[#0F172A] dark:text-zinc-200 flex items-center justify-center gap-1 mt-0.5">
                     <HelpCircle className="w-3 h-3 text-slate-400" />
                     {exam.questionsCount}
                   </span>
@@ -316,7 +316,7 @@ export function ExamManagerClient({
                   <span className="text-[10px] text-slate-400 font-bold block">
                     المحاولات
                   </span>
-                  <span className="text-xs font-black text-[#0F172A] dark:text-slate-200 flex items-center justify-center gap-1 mt-0.5">
+                  <span className="text-xs font-black text-[#0F172A] dark:text-zinc-200 flex items-center justify-center gap-1 mt-0.5">
                     <Users className="w-3 h-3 text-slate-400" />
                     {exam.attemptsCount}
                   </span>
@@ -324,11 +324,11 @@ export function ExamManagerClient({
               </div>
 
               {/* Actions Footer */}
-              <div className="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-800/80">
+              <div className="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-zinc-800/80">
                 <Link
                   href={`/exams/${exam.id}`}
                   target="_blank"
-                  className="h-8 px-3 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-[11px] font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5 transition-colors"
+                  className="h-8 px-3 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-zinc-900 dark:hover:bg-zinc-700 text-[11px] font-bold text-slate-700 dark:text-zinc-300 flex items-center gap-1.5 transition-colors"
                 >
                   <ExternalLink className="w-3 h-3 text-indigo-500" />
                   <span>معاينة كطالب</span>
@@ -337,7 +337,7 @@ export function ExamManagerClient({
                 <div className="flex items-center gap-1">
                   <button
                     onClick={() => handleTogglePractice(exam.id, exam.isPractice)}
-                    className="h-8 px-2.5 rounded-lg border border-slate-200 dark:border-slate-700 text-[10px] font-bold text-slate-600 dark:text-slate-400 hover:text-indigo-600"
+                    className="h-8 px-2.5 rounded-lg border border-slate-200 dark:border-zinc-800 text-[10px] font-bold text-slate-600 dark:text-zinc-400 hover:text-indigo-600"
                     title="التبديل بين وضع الامتحان والتدريب"
                   >
                     تبديل الوضع
@@ -359,15 +359,15 @@ export function ExamManagerClient({
       {/* Create Exam Modal */}
       {isCreateOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-          <div className="w-full max-w-xl bg-white dark:bg-zinc-950 rounded-3xl p-6 sm:p-8 space-y-5 text-right shadow-2xl border border-slate-100 dark:border-slate-800">
-            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div className="w-full max-w-xl bg-white dark:bg-zinc-950 rounded-3xl p-6 sm:p-8 space-y-5 text-right shadow-2xl border border-slate-100 dark:border-zinc-800">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-zinc-800 pb-4">
               <h3 className="text-base font-black text-[#0F172A] dark:text-white flex items-center gap-2">
                 <Award className="w-5 h-5 text-indigo-600" />
                 <span>إنشاء امتحان رسمي جديد</span>
               </h3>
               <button
                 onClick={() => setIsCreateOpen(false)}
-                className="w-8 h-8 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-400 hover:text-slate-600"
+                className="w-8 h-8 rounded-xl border border-slate-200 dark:border-zinc-800 flex items-center justify-center text-slate-400 hover:text-slate-600"
               >
                 ✕
               </button>
@@ -391,7 +391,7 @@ export function ExamManagerClient({
                   placeholder="مثال: امتحان شامل على الباب الأول - الفيزياء الكهربية"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="w-full h-11 px-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs font-bold"
+                  className="w-full h-11 px-3.5 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-bold"
                 />
               </div>
 
@@ -404,7 +404,7 @@ export function ExamManagerClient({
                   placeholder="ملاحظات أو إرشادات للطالب قبل بدء الامتحان..."
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs font-medium resize-none"
+                  className="w-full p-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-medium resize-none"
                 />
               </div>
 
@@ -416,7 +416,7 @@ export function ExamManagerClient({
                   <select
                     value={subjectId}
                     onChange={(e) => setSubjectId(e.target.value)}
-                    className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs font-bold"
+                    className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-bold"
                   >
                     {subjects.map((s) => (
                       <option key={s.id} value={s.id}>
@@ -436,7 +436,7 @@ export function ExamManagerClient({
                     max={180}
                     value={durationMinutes}
                     onChange={(e) => setDurationMinutes(Number(e.target.value))}
-                    className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs font-bold font-mono"
+                    className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-bold font-mono"
                   />
                 </div>
               </div>
@@ -449,7 +449,7 @@ export function ExamManagerClient({
                   <select
                     value={isPractice ? "practice" : "exam"}
                     onChange={(e) => setIsPractice(e.target.value === "practice")}
-                    className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs font-bold"
+                    className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-bold"
                   >
                     <option value="exam">امتحان رسمي تقييمي بمؤقت</option>
                     <option value="practice">تدريب تكيفي فوري مع التفسير</option>
@@ -466,16 +466,16 @@ export function ExamManagerClient({
                     max={50}
                     value={randomCount}
                     onChange={(e) => setRandomCount(Number(e.target.value))}
-                    className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-xs font-bold font-mono"
+                    className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-bold font-mono"
                   />
                 </div>
               </div>
 
-              <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-100 dark:border-slate-800">
+              <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-100 dark:border-zinc-800">
                 <button
                   type="button"
                   onClick={() => setIsCreateOpen(false)}
-                  className="h-10 px-4 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-600 dark:text-slate-300"
+                  className="h-10 px-4 rounded-xl border border-slate-200 dark:border-zinc-800 text-xs font-bold text-slate-600 dark:text-zinc-300"
                 >
                   إلغاء
                 </button>

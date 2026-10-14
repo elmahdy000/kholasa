@@ -41,7 +41,7 @@ export default function OfflinePage() {
         </div>
 
         {/* Study Advice Box */}
-        <div className="w-full p-4 rounded-xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 text-right space-y-2 shadow-2xs">
+        <div className="w-full p-4 rounded-xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 text-right space-y-2 shadow-2xs">
           <div className="flex items-center gap-2 text-xs font-bold text-[#4F46E5] dark:text-indigo-400">
             <Sparkles className="w-4 h-4" />
             <span>نصيحة المذاكرة أوفلاين:</span>
@@ -63,7 +63,7 @@ export default function OfflinePage() {
 
           <Link
             href="/dashboard"
-            className="w-full sm:flex-1 h-10 px-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-[#0F172A] dark:text-white text-xs font-bold flex items-center justify-center gap-2 hover:bg-slate-50 transition-colors interactive-tap"
+            className="w-full sm:flex-1 h-10 px-4 rounded-xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-[#0F172A] dark:text-white text-xs font-bold flex items-center justify-center gap-2 hover:bg-slate-50 transition-colors interactive-tap"
           >
             <span>العودة للرئيسية</span>
             <ArrowRight className="w-3.5 h-3.5 rotate-180" />

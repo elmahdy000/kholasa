@@ -104,7 +104,7 @@ export default function LoginPage() {
         </div>
 
         {/* Card */}
-        <div className="bg-white dark:bg-zinc-950 py-8 px-6 sm:px-8 shadow-xs border border-slate-200 dark:border-slate-800 rounded-2xl">
+        <div className="bg-white dark:bg-zinc-950 py-8 px-6 sm:px-8 shadow-xs border border-slate-200 dark:border-zinc-800 rounded-2xl">
           {error && (
             <div className="mb-6 p-4 rounded-xl bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/40 flex items-start gap-3 text-right">
               <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
@@ -118,7 +118,7 @@ export default function LoginPage() {
             <div>
               <label
                 htmlFor="identifier"
-                className="block text-xs sm:text-sm font-bold text-[#0F172A] dark:text-slate-200 mb-1.5"
+                className="block text-xs sm:text-sm font-bold text-[#0F172A] dark:text-zinc-200 mb-1.5"
               >
                 البريد الإلكتروني أو رقم الهاتف
               </label>
@@ -130,7 +130,7 @@ export default function LoginPage() {
                   value={identifier}
                   onChange={(e) => setIdentifier(e.target.value)}
                   placeholder="student@kholasa.app أو 01012345678"
-                  className="w-full h-11 pr-11 pl-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50 text-[#0F172A] dark:text-white placeholder:text-slate-400 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#4F46E5] focus:border-transparent transition-all"
+                  className="w-full h-11 pr-11 pl-4 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-900/50 text-[#0F172A] dark:text-white placeholder:text-slate-400 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#4F46E5] focus:border-transparent transition-all"
                   dir="ltr"
                 />
                 <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
@@ -143,7 +143,7 @@ export default function LoginPage() {
               <div className="flex items-center justify-between mb-1.5">
                 <label
                   htmlFor="password"
-                  className="block text-xs sm:text-sm font-bold text-[#0F172A] dark:text-slate-200"
+                  className="block text-xs sm:text-sm font-bold text-[#0F172A] dark:text-zinc-200"
                 >
                   كلمة المرور
                 </label>
@@ -163,7 +163,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full h-11 pr-11 pl-11 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50 text-[#0F172A] dark:text-white placeholder:text-slate-400 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#4F46E5] focus:border-transparent transition-all"
+                  className="w-full h-11 pr-11 pl-11 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-900/50 text-[#0F172A] dark:text-white placeholder:text-slate-400 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#4F46E5] focus:border-transparent transition-all"
                   dir="ltr"
                 />
                 <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
@@ -200,7 +200,7 @@ export default function LoginPage() {
           </form>
 
           {/* Quick Demo Section */}
-          <div className="mt-8 pt-6 border-t border-slate-100 dark:border-slate-800">
+          <div className="mt-8 pt-6 border-t border-slate-100 dark:border-zinc-800">
             <p className="text-xs font-bold text-center text-[#64748B] dark:text-[#94A3B8] mb-3">
               جرّب الحسابات الجاهزة بنقرة واحدة:
             </p>
@@ -208,7 +208,7 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => handleFillDemo("student")}
-                className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 hover:border-[#4F46E5] text-right flex items-center gap-2 transition-colors interactive-tap"
+                className="p-2.5 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900/60 hover:border-[#4F46E5] text-right flex items-center gap-2 transition-colors interactive-tap"
               >
                 <div className="w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 text-[#4F46E5] dark:text-indigo-400 flex items-center justify-center shrink-0">
                   <GraduationCap className="w-4 h-4" />
@@ -226,9 +226,9 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => handleFillDemo("admin")}
-                className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 hover:border-[#4F46E5] text-right flex items-center gap-2 transition-colors interactive-tap"
+                className="p-2.5 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900/60 hover:border-[#4F46E5] text-right flex items-center gap-2 transition-colors interactive-tap"
               >
-                <div className="w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-800 text-[#0F172A] dark:text-slate-200 flex items-center justify-center shrink-0">
+                <div className="w-7 h-7 rounded-lg bg-slate-100 dark:bg-zinc-900 text-[#0F172A] dark:text-zinc-200 flex items-center justify-center shrink-0">
                   <Shield className="w-4 h-4" />
                 </div>
                 <div className="truncate">

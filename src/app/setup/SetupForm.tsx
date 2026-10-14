@@ -93,7 +93,7 @@ export function SetupForm({ systems, userId }: SetupFormProps) {
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
                 isActive
                   ? "bg-indigo-50 dark:bg-indigo-950/40 text-[#4F46E5] dark:text-indigo-400 border border-[#4F46E5]/30"
-                  : "bg-slate-100 dark:bg-slate-900 text-slate-400 border border-transparent"
+                  : "bg-slate-100 dark:bg-zinc-900 text-slate-400 border border-transparent"
               }`}
             >
               {isActive ? (
@@ -132,7 +132,7 @@ export function SetupForm({ systems, userId }: SetupFormProps) {
               className={`p-4 rounded-xl border text-right transition-all interactive-tap ${
                 systemId === sys.id
                   ? "border-[#4F46E5] bg-indigo-50/50 dark:bg-indigo-950/30 text-[#4F46E5] dark:text-indigo-400 shadow-2xs"
-                  : "border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-white dark:bg-zinc-950 text-[#0F172A] dark:text-white"
+                  : "border-slate-200 dark:border-zinc-800 hover:border-slate-300 dark:hover:border-zinc-700 bg-white dark:bg-zinc-950 text-[#0F172A] dark:text-white"
               }`}
             >
               <span className="text-xs sm:text-sm font-bold block">
@@ -160,7 +160,7 @@ export function SetupForm({ systems, userId }: SetupFormProps) {
                 className={`p-4 rounded-xl border text-right transition-all interactive-tap ${
                   gradeId === grade.id
                     ? "border-[#4F46E5] bg-indigo-50/50 dark:bg-indigo-950/30 text-[#4F46E5] dark:text-indigo-400 shadow-2xs"
-                    : "border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-white dark:bg-zinc-950 text-[#0F172A] dark:text-white"
+                    : "border-slate-200 dark:border-zinc-800 hover:border-slate-300 dark:hover:border-zinc-700 bg-white dark:bg-zinc-950 text-[#0F172A] dark:text-white"
                 }`}
               >
                 <span className="text-xs sm:text-sm font-bold block">
@@ -186,7 +186,7 @@ export function SetupForm({ systems, userId }: SetupFormProps) {
                 className={`p-4 rounded-xl border text-right transition-all interactive-tap ${
                   trackId === track.id
                     ? "border-[#4F46E5] bg-indigo-50/50 dark:bg-indigo-950/30 text-[#4F46E5] dark:text-indigo-400 shadow-2xs"
-                    : "border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-white dark:bg-zinc-950 text-[#0F172A] dark:text-white"
+                    : "border-slate-200 dark:border-zinc-800 hover:border-slate-300 dark:hover:border-zinc-700 bg-white dark:bg-zinc-950 text-[#0F172A] dark:text-white"
                 }`}
               >
                 <span className="text-xs sm:text-sm font-bold block">

@@ -54,7 +54,7 @@ export function ExamResultActions({
       <button
         type="button"
         onClick={handleShare}
-        className="h-9 px-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-bold text-[#0F172A] dark:text-white flex items-center gap-1.5 transition-colors interactive-tap shadow-2xs"
+        className="h-9 px-3.5 rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:bg-slate-50 dark:hover:bg-zinc-800 text-xs font-bold text-[#0F172A] dark:text-white flex items-center gap-1.5 transition-colors interactive-tap shadow-2xs"
         title="مشاركة النتيجة أو نسخ الرابط"
       >
         {copied ? (
@@ -73,7 +73,7 @@ export function ExamResultActions({
       <button
         type="button"
         onClick={handlePrint}
-        className="h-9 px-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-bold text-[#0F172A] dark:text-white flex items-center gap-1.5 transition-colors interactive-tap shadow-2xs"
+        className="h-9 px-3.5 rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:bg-slate-50 dark:hover:bg-zinc-800 text-xs font-bold text-[#0F172A] dark:text-white flex items-center gap-1.5 transition-colors interactive-tap shadow-2xs"
         title="طباعة التقرير أو حفظ كـ PDF"
       >
         <Printer className="w-3.5 h-3.5 text-slate-500" />
