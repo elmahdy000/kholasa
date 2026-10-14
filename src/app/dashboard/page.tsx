@@ -101,7 +101,7 @@ export default async function DashboardPage() {
 
       {/* Continue Learning Featured Card */}
       {firstLesson && (
-        <section className="mt-8 p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-2xs">
+        <section className="mt-8 p-5 sm:p-6 rounded-2xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 shadow-2xs">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-start gap-3.5">
               <div className="w-11 h-11 rounded-xl bg-[#4F46E5] text-white flex items-center justify-center shrink-0 shadow-2xs mt-0.5">

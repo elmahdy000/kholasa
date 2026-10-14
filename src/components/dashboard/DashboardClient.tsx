@@ -74,7 +74,7 @@ export function DashboardClient({
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.25 }}
-        className="rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 p-6 sm:p-8 lg:p-9 relative overflow-hidden shadow-2xs"
+        className="rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 p-6 sm:p-8 lg:p-9 relative overflow-hidden shadow-2xs"
       >
         <div className="absolute inset-0 bg-grid-pattern opacity-40 pointer-events-none" />
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -121,7 +121,7 @@ export function DashboardClient({
           <motion.div
             key={i}
             variants={fadeInUp}
-            className="p-5 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-2xs hover:border-slate-300 dark:hover:border-slate-700 transition-colors flex flex-col justify-between space-y-3"
+            className="p-5 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs hover:border-slate-300 dark:hover:border-slate-700 transition-colors flex flex-col justify-between space-y-3"
           >
             <div className="flex items-center justify-between">
               <span className="text-xs text-[#475569] dark:text-slate-400 font-bold block">
@@ -174,7 +174,7 @@ export function DashboardClient({
             <motion.div key={subj.id} variants={fadeInUp}>
               <Link
                 href={`/subjects/${subj.id}`}
-                className="group p-5 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 shadow-2xs transition-all flex flex-col justify-between space-y-4 h-full block"
+                className="group p-5 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 shadow-2xs transition-all flex flex-col justify-between space-y-4 h-full block"
               >
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">

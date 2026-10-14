@@ -77,7 +77,7 @@ export function LandingInteractiveClient() {
             onClick={() => setActiveTab("zatona")}
             className={`h-9 px-3.5 rounded-lg text-xs font-bold transition-all flex items-center gap-2 interactive-tap ${
               activeTab === "zatona"
-                ? "bg-white dark:bg-[#131B2E] text-[#4F46E5] dark:text-indigo-400 shadow-2xs"
+                ? "bg-white dark:bg-zinc-950 text-[#4F46E5] dark:text-indigo-400 shadow-2xs"
                 : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
             }`}
           >
@@ -89,7 +89,7 @@ export function LandingInteractiveClient() {
             onClick={() => setActiveTab("questions")}
             className={`h-9 px-3.5 rounded-lg text-xs font-bold transition-all flex items-center gap-2 interactive-tap ${
               activeTab === "questions"
-                ? "bg-white dark:bg-[#131B2E] text-[#4F46E5] dark:text-indigo-400 shadow-2xs"
+                ? "bg-white dark:bg-zinc-950 text-[#4F46E5] dark:text-indigo-400 shadow-2xs"
                 : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
             }`}
           >
@@ -101,7 +101,7 @@ export function LandingInteractiveClient() {
             onClick={() => setActiveTab("mistakes")}
             className={`h-9 px-3.5 rounded-lg text-xs font-bold transition-all flex items-center gap-2 interactive-tap ${
               activeTab === "mistakes"
-                ? "bg-white dark:bg-[#131B2E] text-rose-500 shadow-2xs"
+                ? "bg-white dark:bg-zinc-950 text-rose-500 shadow-2xs"
                 : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
             }`}
           >
@@ -113,7 +113,7 @@ export function LandingInteractiveClient() {
             onClick={() => setActiveTab("mindmap")}
             className={`h-9 px-3.5 rounded-lg text-xs font-bold transition-all flex items-center gap-2 interactive-tap ${
               activeTab === "mindmap"
-                ? "bg-white dark:bg-[#131B2E] text-[#4F46E5] dark:text-indigo-400 shadow-2xs"
+                ? "bg-white dark:bg-zinc-950 text-[#4F46E5] dark:text-indigo-400 shadow-2xs"
                 : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
             }`}
           >
@@ -124,7 +124,7 @@ export function LandingInteractiveClient() {
 
         {/* Tab 1: الزتونة الذهبية */}
         {activeTab === "zatona" && (
-          <div className="max-w-4xl mx-auto p-6 sm:p-8 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-xs space-y-6 animate-in fade-in duration-300">
+          <div className="max-w-4xl mx-auto p-6 sm:p-8 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-xs space-y-6 animate-in fade-in duration-300">
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
               <div>
                 <span className="text-[11px] font-bold text-[#4F46E5] dark:text-indigo-400 block font-mono">
@@ -181,7 +181,7 @@ export function LandingInteractiveClient() {
 
         {/* Tab 2: تفسير كل اختيار */}
         {activeTab === "questions" && (
-          <div className="max-w-4xl mx-auto p-6 sm:p-8 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-xs space-y-6 animate-in fade-in duration-300">
+          <div className="max-w-4xl mx-auto p-6 sm:p-8 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-xs space-y-6 animate-in fade-in duration-300">
             <div className="space-y-1">
               <span className="text-[11px] font-bold text-[#4F46E5] dark:text-indigo-400 block font-mono">
                 سؤال تفاعلي من بنك الأسئلة الذكي
@@ -280,7 +280,7 @@ export function LandingInteractiveClient() {
 
         {/* Tab 3: دفتر غلطاتي */}
         {activeTab === "mistakes" && (
-          <div className="max-w-4xl mx-auto p-6 sm:p-8 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-xs space-y-6 animate-in fade-in duration-300">
+          <div className="max-w-4xl mx-auto p-6 sm:p-8 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-xs space-y-6 animate-in fade-in duration-300">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
               <div>
                 <span className="text-[11px] font-bold text-rose-500 block font-mono">
@@ -333,7 +333,7 @@ export function LandingInteractiveClient() {
 
         {/* Tab 4: الخرائط الذهنية */}
         {activeTab === "mindmap" && (
-          <div className="max-w-4xl mx-auto p-6 sm:p-8 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-xs space-y-6 animate-in fade-in duration-300 text-center">
+          <div className="max-w-4xl mx-auto p-6 sm:p-8 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-xs space-y-6 animate-in fade-in duration-300 text-center">
             <div className="space-y-1">
               <span className="text-[11px] font-bold text-[#4F46E5] dark:text-indigo-400 block font-mono">
                 العلاقات المفاهيمية البصرية
@@ -390,7 +390,7 @@ export function LandingInteractiveClient() {
           </p>
         </div>
 
-        <div className="max-w-4xl mx-auto rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden bg-white dark:bg-[#131B2E] shadow-xs">
+        <div className="max-w-4xl mx-auto rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden bg-white dark:bg-zinc-950 shadow-xs">
           <div className="grid grid-cols-3 p-4 bg-slate-100 dark:bg-slate-900 font-bold text-xs sm:text-sm text-[#0F172A] dark:text-white border-b border-slate-200 dark:border-slate-800 text-center">
             <div>المعيار</div>
             <div className="text-rose-500 font-bold">الطرق التقليدية</div>
@@ -458,7 +458,7 @@ export function LandingInteractiveClient() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-5xl mx-auto">
-          <div className="p-6 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
+          <div className="p-6 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 text-[#4F46E5] dark:text-indigo-400 font-bold flex items-center justify-center">
                 ي
@@ -477,7 +477,7 @@ export function LandingInteractiveClient() {
             </p>
           </div>
 
-          <div className="p-6 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
+          <div className="p-6 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 text-[#4F46E5] dark:text-indigo-400 font-bold flex items-center justify-center">
                 م
@@ -496,7 +496,7 @@ export function LandingInteractiveClient() {
             </p>
           </div>
 
-          <div className="p-6 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
+          <div className="p-6 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3">
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 font-bold flex items-center justify-center">
                 ع
@@ -535,7 +535,7 @@ export function LandingInteractiveClient() {
             return (
               <div
                 key={idx}
-                className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#131B2E] overflow-hidden transition-all shadow-2xs"
+                className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-zinc-950 overflow-hidden transition-all shadow-2xs"
               >
                 <button
                   type="button"

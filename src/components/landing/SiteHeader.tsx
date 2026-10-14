@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Sparkles, ArrowLeft, Trophy, Menu, X, BookOpen, Zap } from "lucide-react";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
 
 export function SiteHeader() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -44,7 +45,7 @@ export function SiteHeader() {
             <a
               key={link.href}
               href={link.href}
-              className="px-3.5 py-2 rounded-xl text-xs font-bold text-[#475569] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60 transition-all"
+              className="px-3.5 py-2 rounded-xl text-xs font-bold text-[#475569] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-800/60 transition-all"
             >
               {link.label}
             </a>
@@ -53,6 +54,7 @@ export function SiteHeader() {
 
         {/* Desktop Actions */}
         <div className="hidden sm:flex items-center gap-2.5">
+          <ThemeToggle />
           <Link
             href="/admin"
             className="px-3 py-2 rounded-xl text-xs font-bold text-[#475569] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white transition-colors"
@@ -61,7 +63,7 @@ export function SiteHeader() {
           </Link>
           <Link
             href="/login"
-            className="px-4 py-2 rounded-xl text-xs font-bold text-[#0F172A] dark:text-white border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#131B2E] hover:border-[#4F46E5] shadow-xs transition-all"
+            className="px-4 py-2 rounded-xl text-xs font-bold text-[#0F172A] dark:text-white border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 hover:border-[#4F46E5] shadow-xs transition-all"
           >
             تسجيل الدخول
           </Link>
@@ -74,23 +76,28 @@ export function SiteHeader() {
           </Link>
         </div>
 
-        {/* Mobile Menu Button */}
-        <button
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="lg:hidden w-10 h-10 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center justify-center text-[#0F172A] dark:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-          aria-label="القائمة"
-        >
-          {isMobileMenuOpen ? (
-            <X className="w-5 h-5" />
-          ) : (
-            <Menu className="w-5 h-5" />
-          )}
-        </button>
+        {/* Mobile Buttons */}
+        <div className="flex lg:hidden items-center gap-2">
+          <div className="sm:hidden">
+            <ThemeToggle />
+          </div>
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="w-10 h-10 rounded-xl border border-slate-200 dark:border-zinc-800 flex items-center justify-center text-[#0F172A] dark:text-white hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
+            aria-label="القائمة"
+          >
+            {isMobileMenuOpen ? (
+              <X className="w-5 h-5" />
+            ) : (
+              <Menu className="w-5 h-5" />
+            )}
+          </button>
+        </div>
       </div>
 
       {/* Mobile Drawer */}
       {isMobileMenuOpen && (
-        <div className="lg:hidden border-t border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-[#0F172A]/95 backdrop-blur-xl p-5 space-y-3 animate-in fade-in slide-in-from-top-2">
+        <div className="lg:hidden border-t border-slate-200 dark:border-zinc-800 bg-white/95 dark:bg-[#09090B]/95 backdrop-blur-xl p-5 space-y-3 animate-in fade-in slide-in-from-top-2">
           <nav className="space-y-1">
             {navLinks.map((link) => (
               <a

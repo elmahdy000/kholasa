@@ -151,25 +151,25 @@ export function UserManagerClient({
     <div className="space-y-6">
       {/* Metrics Strip */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
-        <div className="p-4 rounded-2xl bg-white dark:bg-[#0E1322] border border-slate-200/80 dark:border-slate-800/80 shadow-xs">
+        <div className="p-4 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200/80 dark:border-slate-800/80 shadow-xs">
           <span className="text-[11px] font-bold text-slate-500">إجمالي الحسابات</span>
           <span className="text-2xl font-black text-[#0F172A] dark:text-white block mt-1">
             {users.length}
           </span>
         </div>
-        <div className="p-4 rounded-2xl bg-white dark:bg-[#0E1322] border border-slate-200/80 dark:border-slate-800/80 shadow-xs">
+        <div className="p-4 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200/80 dark:border-slate-800/80 shadow-xs">
           <span className="text-[11px] font-bold text-indigo-500">الطلاب المسجلون</span>
           <span className="text-2xl font-black text-indigo-600 dark:text-indigo-400 block mt-1">
             {studentsCount}
           </span>
         </div>
-        <div className="p-4 rounded-2xl bg-white dark:bg-[#0E1322] border border-slate-200/80 dark:border-slate-800/80 shadow-xs">
+        <div className="p-4 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200/80 dark:border-slate-800/80 shadow-xs">
           <span className="text-[11px] font-bold text-amber-500">المسؤولون والمشرفون</span>
           <span className="text-2xl font-black text-amber-600 dark:text-amber-400 block mt-1">
             {adminsCount}
           </span>
         </div>
-        <div className="p-4 rounded-2xl bg-white dark:bg-[#0E1322] border border-slate-200/80 dark:border-slate-800/80 shadow-xs">
+        <div className="p-4 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200/80 dark:border-slate-800/80 shadow-xs">
           <span className="text-[11px] font-bold text-emerald-500">إجمالي الامتحانات المنفذة</span>
           <span className="text-2xl font-black text-emerald-600 dark:text-emerald-400 block mt-1">
             {users.reduce((sum, u) => sum + u.attempts.length, 0)}
@@ -178,7 +178,7 @@ export function UserManagerClient({
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#0E1322] border border-slate-200/80 dark:border-slate-800/80 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-zinc-950 border border-slate-200/80 dark:border-slate-800/80 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex flex-wrap items-center gap-2.5 flex-1">
           {/* Search Box */}
           <div className="relative min-w-[240px] flex-1 max-w-sm">
@@ -227,7 +227,7 @@ export function UserManagerClient({
       </div>
 
       {/* Users Table */}
-      <div className="rounded-3xl bg-white dark:bg-[#0E1322] border border-slate-200/80 dark:border-slate-800/80 overflow-hidden shadow-xs">
+      <div className="rounded-3xl bg-white dark:bg-zinc-950 border border-slate-200/80 dark:border-slate-800/80 overflow-hidden shadow-xs">
         <div className="overflow-x-auto">
           <table className="w-full text-right text-xs">
             <thead className="bg-slate-50 dark:bg-slate-900/80 border-b border-slate-200/80 dark:border-slate-800/80 text-slate-500 font-black">
@@ -360,7 +360,7 @@ export function UserManagerClient({
       {/* EDIT ROLE MODAL */}
       {selectedUser && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="w-full max-w-md bg-white dark:bg-[#0E1322] rounded-3xl p-6 space-y-5 text-right shadow-2xl border border-slate-100 dark:border-slate-800">
+          <div className="w-full max-w-md bg-white dark:bg-zinc-950 rounded-3xl p-6 space-y-5 text-right shadow-2xl border border-slate-100 dark:border-slate-800">
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
               <h3 className="text-base font-black text-[#0F172A] dark:text-white flex items-center gap-2">
                 <Shield className="w-5 h-5 text-indigo-600" />

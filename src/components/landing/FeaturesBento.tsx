@@ -12,7 +12,7 @@ import {
 
 export function FeaturesBento() {
   return (
-    <section id="features" className="py-20 sm:py-28 bg-white dark:bg-[#0B0F19]">
+    <section id="features" className="py-20 sm:py-28 bg-white dark:bg-[#09090B]">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-12 text-right">
         {/* Section Header */}
         <div className="text-center max-w-2xl mx-auto space-y-3">
@@ -31,7 +31,7 @@ export function FeaturesBento() {
         {/* Bento Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {/* Bento Card 1: الشرح التفاعلي (Span 2 cols on md) */}
-          <div className="md:col-span-2 p-7 sm:p-8 rounded-2xl bg-[#F8FAFC] dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-2xs hover:border-[#4F46E5]/40 transition-colors flex flex-col justify-between space-y-6">
+          <div className="md:col-span-2 p-7 sm:p-8 rounded-2xl bg-[#F8FAFC] dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs hover:border-[#4F46E5]/40 transition-colors flex flex-col justify-between space-y-6">
             <div className="space-y-4">
               <div className="w-11 h-11 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 text-[#4F46E5] dark:text-indigo-400 flex items-center justify-center font-bold">
                 <BookOpen className="w-5 h-5" />
@@ -54,7 +54,7 @@ export function FeaturesBento() {
           </div>
 
           {/* Bento Card 2: الزتونة الذهبية (Signature Feature) */}
-          <div className="p-7 sm:p-8 rounded-2xl bg-amber-50/40 dark:bg-[#131B2E] border-2 border-amber-300 dark:border-amber-700/60 shadow-2xs hover:border-amber-400 transition-colors flex flex-col justify-between space-y-6">
+          <div className="p-7 sm:p-8 rounded-2xl bg-amber-50/40 dark:bg-zinc-950 border-2 border-amber-300 dark:border-amber-700/60 shadow-2xs hover:border-amber-400 transition-colors flex flex-col justify-between space-y-6">
             <div className="space-y-4">
               <div className="w-11 h-11 rounded-xl bg-amber-500 text-white flex items-center justify-center font-bold shadow-2xs">
                 <Sparkles className="w-5 h-5 fill-current" />
@@ -78,7 +78,7 @@ export function FeaturesBento() {
           </div>
 
           {/* Bento Card 3: بنك الأسئلة المتكيف */}
-          <div className="p-7 rounded-2xl bg-[#F8FAFC] dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-2xs hover:border-[#4F46E5]/40 transition-colors flex flex-col justify-between space-y-4">
+          <div className="p-7 rounded-2xl bg-[#F8FAFC] dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs hover:border-[#4F46E5]/40 transition-colors flex flex-col justify-between space-y-4">
             <div className="space-y-3">
               <div className="w-11 h-11 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 text-[#4F46E5] dark:text-indigo-400 flex items-center justify-center font-bold">
                 <Zap className="w-5 h-5" />
@@ -93,7 +93,7 @@ export function FeaturesBento() {
           </div>
 
           {/* Bento Card 4: ركن غلطاتي */}
-          <div className="p-7 rounded-2xl bg-[#F8FAFC] dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-2xs hover:border-[#4F46E5]/40 transition-colors flex flex-col justify-between space-y-4">
+          <div className="p-7 rounded-2xl bg-[#F8FAFC] dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs hover:border-[#4F46E5]/40 transition-colors flex flex-col justify-between space-y-4">
             <div className="space-y-3">
               <div className="w-11 h-11 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 text-[#4F46E5] dark:text-indigo-400 flex items-center justify-center font-bold">
                 <RotateCcw className="w-5 h-5" />
@@ -108,7 +108,7 @@ export function FeaturesBento() {
           </div>
 
           {/* Bento Card 5: الخرائط الذهنية & PWA */}
-          <div className="p-7 rounded-2xl bg-[#F8FAFC] dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-2xs hover:border-[#4F46E5]/40 transition-colors flex flex-col justify-between space-y-4">
+          <div className="p-7 rounded-2xl bg-[#F8FAFC] dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs hover:border-[#4F46E5]/40 transition-colors flex flex-col justify-between space-y-4">
             <div className="space-y-3">
               <div className="w-11 h-11 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 text-[#4F46E5] dark:text-indigo-400 flex items-center justify-center font-bold">
                 <Brain className="w-5 h-5" />

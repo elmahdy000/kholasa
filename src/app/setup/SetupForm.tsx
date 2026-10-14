@@ -132,7 +132,7 @@ export function SetupForm({ systems, userId }: SetupFormProps) {
               className={`p-4 rounded-xl border text-right transition-all interactive-tap ${
                 systemId === sys.id
                   ? "border-[#4F46E5] bg-indigo-50/50 dark:bg-indigo-950/30 text-[#4F46E5] dark:text-indigo-400 shadow-2xs"
-                  : "border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-white dark:bg-[#131B2E] text-[#0F172A] dark:text-white"
+                  : "border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-white dark:bg-zinc-950 text-[#0F172A] dark:text-white"
               }`}
             >
               <span className="text-xs sm:text-sm font-bold block">
@@ -160,7 +160,7 @@ export function SetupForm({ systems, userId }: SetupFormProps) {
                 className={`p-4 rounded-xl border text-right transition-all interactive-tap ${
                   gradeId === grade.id
                     ? "border-[#4F46E5] bg-indigo-50/50 dark:bg-indigo-950/30 text-[#4F46E5] dark:text-indigo-400 shadow-2xs"
-                    : "border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-white dark:bg-[#131B2E] text-[#0F172A] dark:text-white"
+                    : "border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-white dark:bg-zinc-950 text-[#0F172A] dark:text-white"
                 }`}
               >
                 <span className="text-xs sm:text-sm font-bold block">
@@ -186,7 +186,7 @@ export function SetupForm({ systems, userId }: SetupFormProps) {
                 className={`p-4 rounded-xl border text-right transition-all interactive-tap ${
                   trackId === track.id
                     ? "border-[#4F46E5] bg-indigo-50/50 dark:bg-indigo-950/30 text-[#4F46E5] dark:text-indigo-400 shadow-2xs"
-                    : "border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-white dark:bg-[#131B2E] text-[#0F172A] dark:text-white"
+                    : "border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-white dark:bg-zinc-950 text-[#0F172A] dark:text-white"
                 }`}
               >
                 <span className="text-xs sm:text-sm font-bold block">

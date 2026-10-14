@@ -279,7 +279,7 @@ export function QuestionBankManagerClient({
   return (
     <div className="space-y-6">
       {/* Top Action & Filters */}
-      <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#0E1322] border border-slate-200/80 dark:border-slate-800/80 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-zinc-950 border border-slate-200/80 dark:border-slate-800/80 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         {/* Search & Dropdown Filters */}
         <div className="flex flex-wrap items-center gap-2.5 flex-1">
           {/* Search Input */}
@@ -360,7 +360,7 @@ export function QuestionBankManagerClient({
         {filteredQuestions.map((q, idx) => (
           <div
             key={q.id}
-            className="p-6 rounded-3xl bg-white dark:bg-[#0E1322] border border-slate-200/80 dark:border-slate-800/80 shadow-xs space-y-4"
+            className="p-6 rounded-3xl bg-white dark:bg-zinc-950 border border-slate-200/80 dark:border-slate-800/80 shadow-xs space-y-4"
           >
             {/* Top Bar with Badges and Edit/Delete Actions */}
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800/80 pb-3">
@@ -478,7 +478,7 @@ export function QuestionBankManagerClient({
       {/* CREATE QUESTION MODAL */}
       {isCreateOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-          <div className="w-full max-w-2xl bg-white dark:bg-[#0E1322] rounded-3xl p-6 sm:p-8 space-y-5 text-right shadow-2xl border border-slate-100 dark:border-slate-800 max-h-[90vh] overflow-y-auto">
+          <div className="w-full max-w-2xl bg-white dark:bg-zinc-950 rounded-3xl p-6 sm:p-8 space-y-5 text-right shadow-2xl border border-slate-100 dark:border-slate-800 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
               <h3 className="text-base font-black text-[#0F172A] dark:text-white flex items-center gap-2">
                 <HelpCircle className="w-5 h-5 text-indigo-600" />
@@ -734,7 +734,7 @@ export function QuestionBankManagerClient({
       {/* EDIT QUESTION MODAL */}
       {editingQuestion && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-          <div className="w-full max-w-2xl bg-white dark:bg-[#0E1322] rounded-3xl p-6 sm:p-8 space-y-5 text-right shadow-2xl border border-slate-100 dark:border-slate-800 max-h-[90vh] overflow-y-auto">
+          <div className="w-full max-w-2xl bg-white dark:bg-zinc-950 rounded-3xl p-6 sm:p-8 space-y-5 text-right shadow-2xl border border-slate-100 dark:border-slate-800 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
               <h3 className="text-base font-black text-[#0F172A] dark:text-white flex items-center gap-2">
                 <Edit2 className="w-5 h-5 text-indigo-600" />

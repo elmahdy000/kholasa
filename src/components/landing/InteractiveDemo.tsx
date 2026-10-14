@@ -25,7 +25,7 @@ export function InteractiveDemo() {
   );
 
   return (
-    <section id="demo" className="py-20 sm:py-28 bg-[#F8FAFC] dark:bg-[#0B0F19] border-y border-slate-200 dark:border-slate-800">
+    <section id="demo" className="py-20 sm:py-28 bg-[#F8FAFC] dark:bg-[#09090B] border-y border-slate-200 dark:border-slate-800">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-10 text-right">
         {/* Header */}
         <div className="text-center max-w-2xl mx-auto space-y-3">
@@ -42,7 +42,7 @@ export function InteractiveDemo() {
         </div>
 
         {/* Cohesive Tab Switcher */}
-        <div className="flex flex-wrap items-center justify-center gap-1.5 max-w-2xl mx-auto p-1.5 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-2xs">
+        <div className="flex flex-wrap items-center justify-center gap-1.5 max-w-2xl mx-auto p-1.5 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs">
           <button
             onClick={() => setActiveTab("zatona")}
             className={`h-10 px-5 rounded-xl text-xs font-bold transition-colors flex items-center gap-2 ${
@@ -94,7 +94,7 @@ export function InteractiveDemo() {
 
         {/* Tab 1: الزتونة الذهبية */}
         {activeTab === "zatona" && (
-          <div className="max-w-4xl mx-auto p-6 sm:p-8 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-xl space-y-6 animate-in fade-in duration-200">
+          <div className="max-w-4xl mx-auto p-6 sm:p-8 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-xl space-y-6 animate-in fade-in duration-200">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
               <div>
                 <span className="text-[11px] font-bold text-[#4F46E5] dark:text-indigo-400 block">
@@ -151,7 +151,7 @@ export function InteractiveDemo() {
 
         {/* Tab 2: تفسير كل اختيار */}
         {activeTab === "questions" && (
-          <div className="max-w-4xl mx-auto p-6 sm:p-8 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-xl space-y-6 animate-in fade-in duration-200">
+          <div className="max-w-4xl mx-auto p-6 sm:p-8 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-xl space-y-6 animate-in fade-in duration-200">
             <div className="space-y-1">
               <span className="text-[11px] font-bold text-[#4F46E5] dark:text-indigo-400 block">
                 سؤال تطبيقي من بنك الأسئلة
@@ -245,7 +245,7 @@ export function InteractiveDemo() {
 
         {/* Tab 3: دفتر غلطاتي */}
         {activeTab === "mistakes" && (
-          <div className="max-w-4xl mx-auto p-6 sm:p-8 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-xl space-y-6 animate-in fade-in duration-200">
+          <div className="max-w-4xl mx-auto p-6 sm:p-8 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-xl space-y-6 animate-in fade-in duration-200">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
               <div>
                 <span className="text-[11px] font-bold text-rose-600 dark:text-rose-400 block">
@@ -298,7 +298,7 @@ export function InteractiveDemo() {
 
         {/* Tab 4: الخريطة الذهنية */}
         {activeTab === "mindmap" && (
-          <div className="max-w-4xl mx-auto p-6 sm:p-8 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-xl space-y-6 animate-in fade-in duration-200 text-center">
+          <div className="max-w-4xl mx-auto p-6 sm:p-8 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-xl space-y-6 animate-in fade-in duration-200 text-center">
             <div className="space-y-1">
               <span className="text-[11px] font-bold text-[#4F46E5] dark:text-indigo-400 block">
                 العلاقات المفاهيمية البصرية

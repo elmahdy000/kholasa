@@ -174,7 +174,7 @@ export function MistakeHubClient({
     <div className="space-y-6">
       {/* Overview Analytics Bar */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="p-5 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-2xs flex items-center justify-between">
+        <div className="p-5 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs flex items-center justify-between">
           <div>
             <span className="text-2xl sm:text-3xl font-black text-rose-600 block tracking-tight">
               {unresolvedCount}
@@ -188,7 +188,7 @@ export function MistakeHubClient({
           </div>
         </div>
 
-        <div className="p-5 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-2xs flex items-center justify-between">
+        <div className="p-5 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs flex items-center justify-between">
           <div>
             <span className="text-2xl sm:text-3xl font-black text-emerald-600 block tracking-tight">
               {resolvedCount}
@@ -202,7 +202,7 @@ export function MistakeHubClient({
           </div>
         </div>
 
-        <div className="p-5 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-2xs flex items-center justify-between">
+        <div className="p-5 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs flex items-center justify-between">
           <div>
             <span className="text-2xl sm:text-3xl font-black text-[#4F46E5] dark:text-indigo-400 block tracking-tight">
               {masteryPercentage}%
@@ -219,7 +219,7 @@ export function MistakeHubClient({
 
       {/* Quick Exam Banner when there are unresolved mistakes */}
       {actionableUnresolvedCount > 0 && (
-        <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-l from-indigo-50 to-white dark:from-[#131B2E] dark:to-slate-900 border border-indigo-200/80 dark:border-indigo-900/50 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-l from-indigo-50 to-white dark:from-zinc-950 dark:to-slate-900 border border-indigo-200/80 dark:border-indigo-900/50 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-[#4F46E5] animate-ping" />
@@ -254,7 +254,7 @@ export function MistakeHubClient({
       )}
 
       {/* Filters Bar */}
-      <div className="p-3.5 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="p-3.5 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         {/* Status Filter */}
         <div className="flex items-center gap-1 p-1 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800">
           <button
@@ -321,7 +321,7 @@ export function MistakeHubClient({
                 className={`p-6 sm:p-7 rounded-2xl border shadow-2xs space-y-4 transition-all ${
                   mistake.isResolved
                     ? "bg-emerald-50/20 dark:bg-emerald-950/10 border-emerald-200 dark:border-emerald-900/40"
-                    : "bg-white dark:bg-[#131B2E] border-slate-200 dark:border-slate-800"
+                    : "bg-white dark:bg-zinc-950 border-slate-200 dark:border-slate-800"
                 }`}
               >
                 {/* Header */}
@@ -441,7 +441,7 @@ export function MistakeHubClient({
           })}
         </div>
       ) : (
-        <div className="p-12 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 text-center space-y-3 shadow-2xs">
+        <div className="p-12 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 text-center space-y-3 shadow-2xs">
           <div className="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 flex items-center justify-center mx-auto">
             <CheckCircle2 className="w-6 h-6" />
           </div>

@@ -90,7 +90,7 @@ export function DailyChallengeCard({ question }: DailyChallengeCardProps) {
   const correctOption = question.options.find((o) => o.isCorrect);
 
   return (
-    <div className="rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 p-5 sm:p-6 shadow-sm mb-6">
+    <div className="rounded-2xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-5 sm:p-6 shadow-sm mb-6">
       <div className="space-y-4">
         {/* Top Header */}
         <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">

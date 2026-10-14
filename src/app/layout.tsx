@@ -39,6 +39,7 @@ export const metadata: Metadata = {
 };
 
 import { PwaRegister } from "@/components/pwa/PwaRegister";
+import { ThemeProvider } from "@/components/theme/ThemeProvider";
 
 export default function RootLayout({
   children,
@@ -53,19 +54,26 @@ export default function RootLayout({
             __html: `
               try {
                 const theme = localStorage.getItem('kholasa_theme');
-                if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                const isDark = theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches);
+                if (isDark) {
                   document.documentElement.classList.add('dark');
+                  document.documentElement.setAttribute('data-theme', 'dark');
+                  document.documentElement.style.colorScheme = 'dark';
                 } else {
                   document.documentElement.classList.remove('dark');
+                  document.documentElement.setAttribute('data-theme', 'light');
+                  document.documentElement.style.colorScheme = 'light';
                 }
               } catch (_) {}
             `,
           }}
         />
       </head>
-      <body className="min-h-screen font-sans bg-[#F8FAFC] dark:bg-[#0B0F19] text-[#0F172A] dark:text-[#E2E8F0] antialiased selection:bg-[#4F46E5]/20 dark:selection:bg-indigo-500/30 selection:text-[#4F46E5] dark:selection:text-indigo-200">
-        <PwaRegister />
-        {children}
+      <body className="min-h-screen font-sans bg-[#F8FAFC] dark:bg-[#09090B] text-[#0F172A] dark:text-[#F4F4F5] antialiased selection:bg-[#4F46E5]/20 dark:selection:bg-indigo-500/30 selection:text-[#4F46E5] dark:selection:text-indigo-200">
+        <ThemeProvider>
+          <PwaRegister />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

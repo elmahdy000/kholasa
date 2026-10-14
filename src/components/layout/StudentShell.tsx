@@ -37,45 +37,20 @@ interface SearchResult {
   url: string;
 }
 
+import { useTheme } from "@/components/theme/ThemeProvider";
+
 export function StudentShell({ children, user }: StudentShellProps) {
   const pathname = usePathname();
   const router = useRouter();
 
-  // Dark Mode State
-  const [isDark, setIsDark] = useState(false);
+  // Unified Dark Mode State from ThemeProvider
+  const { isDark, toggleTheme } = useTheme();
 
   // Search Modal State
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
-
-  // Check saved theme
-  useEffect(() => {
-    const saved = localStorage.getItem("kholasa_theme");
-    if (
-      saved === "dark" ||
-      (!saved && window.matchMedia("(prefers-color-scheme: dark)").matches)
-    ) {
-      setIsDark(true);
-      document.documentElement.classList.add("dark");
-    } else {
-      setIsDark(false);
-      document.documentElement.classList.remove("dark");
-    }
-  }, []);
-
-  const toggleDarkMode = () => {
-    if (isDark) {
-      document.documentElement.classList.remove("dark");
-      localStorage.setItem("kholasa_theme", "light");
-      setIsDark(false);
-    } else {
-      document.documentElement.classList.add("dark");
-      localStorage.setItem("kholasa_theme", "dark");
-      setIsDark(true);
-    }
-  };
 
   // Keyboard shortcut Ctrl+K
   useEffect(() => {
@@ -126,9 +101,9 @@ export function StudentShell({ children, user }: StudentShellProps) {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#F8FAFC] dark:bg-[#0B0F19] text-[#0F172A] dark:text-[#E2E8F0]">
+    <div className="min-h-screen flex flex-col bg-[#F8FAFC] dark:bg-[#09090B] text-zinc-900 dark:text-zinc-100">
       {/* Desktop & Tablet Top Navbar (Vercel / Replit Style) */}
-      <header className="sticky top-0 z-40 w-full bg-white/80 dark:bg-[#0B0F19]/80 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/80 transition-colors">
+      <header className="sticky top-0 z-40 w-full bg-white/80 dark:bg-[#09090B]/80 backdrop-blur-md border-b border-zinc-200/80 dark:border-zinc-800/80 transition-colors">
         <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 h-15 flex items-center justify-between gap-4">
           {/* Logo & Brand */}
           <Link href="/dashboard" className="flex items-center gap-2.5 shrink-0 group">
@@ -193,7 +168,7 @@ export function StudentShell({ children, user }: StudentShellProps) {
 
             {/* Dark Mode Toggle */}
             <button
-              onClick={toggleDarkMode}
+              onClick={toggleTheme}
               className="w-8.5 h-8.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:text-[#0F172A] dark:hover:text-white hover:border-slate-300 dark:hover:border-slate-700 transition-colors shadow-2xs"
               title={isDark ? "تفعيل الوضع الفاتح" : "تفعيل الوضع الداكن"}
             >
@@ -230,7 +205,7 @@ export function StudentShell({ children, user }: StudentShellProps) {
       {/* Mobile & Tablet Floating Dock Navigation - Distinctive, Modern & Ergonomic */}
       <nav
         aria-label="شريط التنقل السفلي"
-        className="md:hidden fixed bottom-2.5 inset-x-2.5 sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2 sm:w-[420px] z-40 bg-white/95 dark:bg-[#111827]/95 backdrop-blur-2xl border border-slate-200/90 dark:border-slate-800/90 rounded-2xl sm:rounded-3xl shadow-[0_12px_36px_-6px_rgba(15,23,42,0.18)] dark:shadow-[0_16px_40px_-6px_rgba(0,0,0,0.7)] px-1.5 py-1 pb-[max(0.35rem,env(safe-area-inset-bottom))] flex items-center justify-around ring-1 ring-black/[0.04] dark:ring-white/[0.08]"
+        className="md:hidden fixed bottom-2.5 inset-x-2.5 sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2 sm:w-[420px] z-40 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-2xl border border-zinc-200/90 dark:border-zinc-800/90 rounded-2xl sm:rounded-3xl shadow-[0_12px_36px_-6px_rgba(15,23,42,0.18)] dark:shadow-[0_16px_40px_-6px_rgba(0,0,0,0.7)] px-1.5 py-1 pb-[max(0.35rem,env(safe-area-inset-bottom))] flex items-center justify-around ring-1 ring-black/[0.04] dark:ring-white/[0.08]"
       >
         {navItems.map((item) => {
           const Icon = item.icon;
@@ -307,10 +282,10 @@ export function StudentShell({ children, user }: StudentShellProps) {
 
       {/* Global Search Modal (Vercel cmdk style) */}
       {isSearchOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-950/50 backdrop-blur-sm flex items-start justify-center p-4 pt-16 sm:pt-24 transition-opacity">
-          <div className="w-full max-w-xl bg-white dark:bg-[#131B2E] rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden text-right">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-start justify-center p-4 pt-16 sm:pt-24 transition-opacity">
+          <div className="w-full max-w-xl bg-white dark:bg-zinc-950 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-2xl overflow-hidden text-right">
             {/* Search Input Bar */}
-            <div className="relative border-b border-slate-200 dark:border-slate-800 flex items-center px-4">
+            <div className="relative border-b border-zinc-200 dark:border-zinc-800 flex items-center px-4">
               <div className="text-slate-400 shrink-0">
                 {isSearching ? (
                   <SpinnerGap className="w-4 h-4 animate-spin text-[#4F46E5]" weight="bold" />

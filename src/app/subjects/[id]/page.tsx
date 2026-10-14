@@ -66,7 +66,7 @@ export default async function SubjectDetailPage({ params }: SubjectDetailPagePro
         </div>
 
         {/* Subject Header Banner (Vercel Style) */}
-        <section className="relative overflow-hidden rounded-2xl p-6 sm:p-8 bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-2xs">
+        <section className="relative overflow-hidden rounded-2xl p-6 sm:p-8 bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs">
           <div className="absolute inset-0 bg-grid-pattern opacity-40 pointer-events-none" />
           <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="space-y-3">
@@ -102,7 +102,7 @@ export default async function SubjectDetailPage({ params }: SubjectDetailPagePro
             {subject.units.map((unit, index) => (
               <div
                 key={unit.id}
-                className="rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden"
+                className="rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden"
               >
                 {/* Unit Header */}
                 <div className="p-5 sm:p-6 bg-slate-50/70 dark:bg-slate-900/40 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">

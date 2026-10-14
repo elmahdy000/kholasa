@@ -404,7 +404,7 @@ export function LessonViewer({
       </div>
 
       {/* Smart Audio Companion Bar (الخلاصة الصوتية) */}
-      <div className="p-4 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div className="p-4 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-3">
         <div className="flex items-center gap-3 w-full sm:w-auto">
           <button
             onClick={() => setIsPlayingAudio(!isPlayingAudio)}
@@ -869,7 +869,7 @@ export function LessonViewer({
         <div className="space-y-6">
           {lesson.mindMap ? (
             lesson.mindMap.images && lesson.mindMap.images.length > 0 ? (
-              <div className="rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden space-y-4 p-4 sm:p-6">
+              <div className="rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden space-y-4 p-4 sm:p-6">
                 {/* Header & Image Selector Tabs */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
                   <div>

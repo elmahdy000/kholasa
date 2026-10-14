@@ -373,9 +373,9 @@ export function LessonEditorModal({
       className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 overflow-y-auto font-sans"
       dir="rtl"
     >
-      <div className="relative w-full max-w-4xl bg-white dark:bg-[#0F172A] rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden flex flex-col max-h-[92vh] my-auto">
+      <div className="relative w-full max-w-4xl bg-white dark:bg-zinc-950 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-2xl overflow-hidden flex flex-col max-h-[92vh] my-auto">
         {/* Header */}
-        <div className="p-4 sm:p-6 bg-slate-50/80 dark:bg-slate-900/80 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between gap-4 shrink-0">
+        <div className="p-4 sm:p-6 bg-zinc-50/80 dark:bg-zinc-900/80 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between gap-4 shrink-0">
           <div className="flex items-center gap-3">
             <div
               className="w-10 h-10 rounded-2xl flex items-center justify-center text-white shrink-0 shadow-sm"
@@ -452,7 +452,7 @@ export function LessonEditorModal({
         )}
 
         {/* Tab Navigation */}
-        <div className="px-4 sm:px-6 pt-3 bg-white dark:bg-[#0F172A] border-b border-slate-100 dark:border-slate-800 flex items-center gap-2 overflow-x-auto shrink-0">
+        <div className="px-4 sm:px-6 pt-3 bg-white dark:bg-zinc-950 border-b border-zinc-200 dark:border-zinc-800 flex items-center gap-2 overflow-x-auto shrink-0">
           {[
             { id: "media", label: "الوسائط والبيانات", icon: Video },
             {

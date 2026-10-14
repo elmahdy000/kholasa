@@ -134,7 +134,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0B0F19] text-[#0F172A] dark:text-[#F8FAFC] flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 text-right font-sans relative">
+    <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#09090B] text-[#0F172A] dark:text-[#F8FAFC] flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 text-right font-sans relative">
       <div className="absolute inset-0 bg-grid-pattern opacity-60 pointer-events-none" />
 
       <div className="sm:mx-auto sm:w-full sm:max-w-lg relative z-10">
@@ -165,7 +165,7 @@ export default function RegisterPage() {
         </div>
 
         {/* Card */}
-        <div className="bg-white dark:bg-[#131B2E] py-8 px-6 sm:px-8 shadow-xs border border-slate-200 dark:border-slate-800 rounded-2xl">
+        <div className="bg-white dark:bg-zinc-950 py-8 px-6 sm:px-8 shadow-xs border border-slate-200 dark:border-slate-800 rounded-2xl">
           {error && (
             <div className="mb-6 p-4 rounded-xl bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/40 flex items-start gap-3 text-right">
               <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
@@ -265,7 +265,7 @@ export default function RegisterPage() {
                     value={selectedSystemId}
                     onChange={(e) => handleSystemChange(e.target.value)}
                     disabled={isFetchingSystems}
-                    className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#131B2E] text-xs font-bold text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#4F46E5]"
+                    className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-zinc-950 text-xs font-bold text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#4F46E5]"
                   >
                     {systems.map((s) => (
                       <option key={s.id} value={s.id}>
@@ -283,7 +283,7 @@ export default function RegisterPage() {
                     value={selectedGradeId}
                     onChange={(e) => setSelectedGradeId(e.target.value)}
                     disabled={isFetchingSystems || currentGrades.length === 0}
-                    className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#131B2E] text-xs font-bold text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#4F46E5]"
+                    className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-zinc-950 text-xs font-bold text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#4F46E5]"
                   >
                     {currentGrades.map((g) => (
                       <option key={g.id} value={g.id}>

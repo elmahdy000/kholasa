@@ -259,7 +259,7 @@ export function ExamBuilderForm({
       )}
 
       {/* 1. المادة الدراسية */}
-      <section className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4">
+      <section className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 text-[#4F46E5] dark:text-indigo-400 flex items-center justify-center font-bold">
@@ -330,7 +330,7 @@ export function ExamBuilderForm({
       </section>
 
       {/* 2. الوحدة والدروس */}
-      <section className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4">
+      <section className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 text-[#4F46E5] dark:text-indigo-400 flex items-center justify-center font-bold">
@@ -488,7 +488,7 @@ export function ExamBuilderForm({
       {/* Grid: 3. نوع الأسئلة & 4. مستوى الصعوبة */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* 3. نوع الأسئلة */}
-        <section className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4 flex flex-col justify-between">
+        <section className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4 flex flex-col justify-between">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <div className="w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 text-[#4F46E5] dark:text-indigo-400 flex items-center justify-center font-bold">
@@ -539,7 +539,7 @@ export function ExamBuilderForm({
         </section>
 
         {/* 4. مستوى الصعوبة */}
-        <section className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4 flex flex-col justify-between">
+        <section className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4 flex flex-col justify-between">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <div className="w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 text-[#4F46E5] dark:text-indigo-400 flex items-center justify-center font-bold">
@@ -593,7 +593,7 @@ export function ExamBuilderForm({
       {/* Grid: 5. عدد الأسئلة & 6. نظام الاختبار */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* 5. عدد الأسئلة */}
-        <section className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4 flex flex-col justify-between">
+        <section className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4 flex flex-col justify-between">
           <div className="space-y-1">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -658,7 +658,7 @@ export function ExamBuilderForm({
         </section>
 
         {/* 6. نظام الاختبار */}
-        <section className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4 flex flex-col justify-between">
+        <section className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4 flex flex-col justify-between">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <div className="w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 text-[#4F46E5] dark:text-indigo-400 flex items-center justify-center font-bold">
@@ -758,7 +758,7 @@ export function ExamBuilderForm({
       </div>
 
       {/* 7. ملخص إعدادات الاختبار وإجراء البدء */}
-      <section className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-sm space-y-5">
+      <section className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-sm space-y-5">
         <div className="space-y-1 border-b border-slate-100 dark:border-slate-800 pb-3">
           <h3 className="text-sm font-bold text-[#0F172A] dark:text-white">
             ملخص إعدادات الاختبار

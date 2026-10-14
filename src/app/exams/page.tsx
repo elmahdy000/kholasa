@@ -40,7 +40,7 @@ export default async function ExamsHubPage() {
     <StudentShell user={user}>
       <div className="space-y-7 text-right font-sans">
         {/* Compact & Refined Hero Section */}
-        <div className="relative overflow-hidden rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 p-5 sm:p-6 lg:p-7 shadow-2xs">
+        <div className="relative overflow-hidden rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 p-5 sm:p-6 lg:p-7 shadow-2xs">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             {/* Text & Actions */}
             <div className="space-y-3 max-w-xl">
@@ -130,7 +130,7 @@ export default async function ExamsHubPage() {
               return (
                 <div
                   key={exam.id}
-                  className="p-5 rounded-2xl bg-white dark:bg-[#14243D]/50 border border-slate-200 dark:border-slate-800 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between gap-4"
+                  className="p-5 rounded-2xl bg-white dark:bg-zinc-950/50 border border-slate-200 dark:border-slate-800 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between gap-4"
                 >
                   <div>
                     <div className="flex items-center justify-between gap-2 mb-2.5">
@@ -180,7 +180,7 @@ export default async function ExamsHubPage() {
               <span>امتحاناتك اللي حلتها قبل كدة</span>
             </h2>
 
-            <div className="rounded-2xl bg-white dark:bg-[#14243D]/50 border border-slate-200 dark:border-slate-800 divide-y divide-slate-100 dark:divide-slate-800 overflow-hidden shadow-2xs">
+            <div className="rounded-2xl bg-white dark:bg-zinc-950/50 border border-slate-200 dark:border-slate-800 divide-y divide-slate-100 dark:divide-slate-800 overflow-hidden shadow-2xs">
               {recentAttempts.map((attempt) => {
                 const isGood = attempt.percentage >= 70;
                 const isPass = attempt.percentage >= 50;

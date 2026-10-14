@@ -34,6 +34,7 @@ import {
   Check,
   Plus,
 } from "lucide-react";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
 
 interface AdminShellProps {
   children: ReactNode;
@@ -209,7 +210,7 @@ export function AdminShell({ children, user }: AdminShellProps) {
 
   return (
     <div
-      className="min-h-screen bg-[#F8FAFC] dark:bg-[#000000] text-zinc-900 dark:text-zinc-100 font-sans text-right antialiased selection:bg-zinc-800 selection:text-white flex flex-col md:flex-row"
+      className="min-h-screen bg-[#F8FAFC] dark:bg-[#09090B] text-zinc-900 dark:text-zinc-100 font-sans text-right antialiased selection:bg-zinc-800 selection:text-white flex flex-col md:flex-row"
       dir="rtl"
     >
       {/* =========================================================================
@@ -230,7 +231,8 @@ export function AdminShell({ children, user }: AdminShellProps) {
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5">
+          <ThemeToggle className="h-8 w-8" />
           <button
             onClick={() => setIsCommandOpen(true)}
             className="p-2 rounded-lg text-zinc-500 hover:text-zinc-900 dark:hover:text-white"
@@ -457,16 +459,19 @@ export function AdminShell({ children, user }: AdminShellProps) {
               )}
             </div>
 
-            {!isCollapsed && (
-              <button
-                onClick={handleLogout}
-                disabled={isLoggingOut}
-                title="تسجيل الخروج"
-                className="p-1 rounded text-zinc-400 hover:text-red-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer shrink-0"
-              >
-                <LogOut className="w-3.5 h-3.5" />
-              </button>
-            )}
+            <div className="flex items-center gap-1.5">
+              <ThemeToggle className="h-7 w-7" />
+              {!isCollapsed && (
+                <button
+                  onClick={handleLogout}
+                  disabled={isLoggingOut}
+                  title="تسجيل الخروج"
+                  className="p-1 rounded text-zinc-400 hover:text-red-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer shrink-0"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </aside>
@@ -476,7 +481,7 @@ export function AdminShell({ children, user }: AdminShellProps) {
          ========================================================================= */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Desktop Topbar */}
-        <header className="hidden md:flex items-center justify-between px-8 h-14 bg-white/80 dark:bg-black/80 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800/80 sticky top-0 z-30">
+        <header className="hidden md:flex items-center justify-between px-8 h-14 bg-white/80 dark:bg-[#09090B]/80 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800/80 sticky top-0 z-30">
           {/* Breadcrumbs with active section icon */}
           <div className="flex items-center gap-2 text-xs">
             <span className="text-zinc-400 font-medium">لوحة الإدارة</span>
@@ -489,8 +494,8 @@ export function AdminShell({ children, user }: AdminShellProps) {
             </div>
           </div>
 
-          {/* Top Actions: Search trigger, DB health, Role badge */}
-          <div className="flex items-center gap-3">
+          {/* Top Actions: Search trigger, Theme toggle, DB health, Student link */}
+          <div className="flex items-center gap-2.5">
             {/* Quick Command Trigger */}
             <button
               onClick={() => setIsCommandOpen(true)}
@@ -502,6 +507,9 @@ export function AdminShell({ children, user }: AdminShellProps) {
                 ⌘K
               </kbd>
             </button>
+
+            {/* Professional Theme Switcher Dropdown */}
+            <ThemeToggle variant="dropdown" />
 
             {/* PostgreSQL Connection Status */}
             <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-mono text-zinc-500 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50">

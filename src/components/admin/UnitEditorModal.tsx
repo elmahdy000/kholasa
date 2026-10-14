@@ -155,18 +155,18 @@ export function UnitEditorModal({
       className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 font-sans"
       dir="rtl"
     >
-      <div className="relative w-full max-w-lg bg-white dark:bg-[#0F172A] rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden flex flex-col">
+      <div className="relative w-full max-w-lg bg-white dark:bg-zinc-950 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-2xl overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="p-5 bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+        <div className="p-5 bg-zinc-50 dark:bg-zinc-900/60 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-xl bg-[#4F46E5]/10 text-[#4F46E5] flex items-center justify-center font-bold">
               <Layers className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-sm sm:text-base font-black text-[#14243D] dark:text-white">
+              <h3 className="text-sm sm:text-base font-black text-zinc-900 dark:text-zinc-100">
                 {mode === "create" ? "إضافة وحدة تعليمية جديدة" : "تعديل بيانات الوحدة"}
               </h3>
-              <p className="text-[11px] text-slate-500 font-bold">
+              <p className="text-[11px] text-zinc-500 font-bold">
                 المادة: {subjectName}
               </p>
             </div>
@@ -174,7 +174,7 @@ export function UnitEditorModal({
 
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-colors"
+            className="w-8 h-8 rounded-lg bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-500 hover:text-zinc-900 dark:hover:text-white flex items-center justify-center transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
@@ -191,7 +191,7 @@ export function UnitEditorModal({
         {/* Form Body */}
         <form onSubmit={handleSubmit} className="p-5 space-y-4">
           <div className="space-y-1.5">
-            <label className="text-xs font-black text-slate-700 dark:text-slate-300">
+            <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
               عنوان الوحدة *
             </label>
             <input
@@ -200,12 +200,12 @@ export function UnitEditorModal({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="مثال: الوحدة الأولى: التركيب والوظيفة في الكائنات الحية"
-              className="w-full h-10 px-3.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-[#4F46E5]"
+              className="w-full h-10 px-3.5 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs font-bold text-zinc-900 dark:text-white focus:outline-none focus:border-[#4F46E5]"
             />
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-black text-slate-700 dark:text-slate-300">
+            <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
               وصف توضيحي للوحدة (اختياري)
             </label>
             <textarea
@@ -213,20 +213,20 @@ export function UnitEditorModal({
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="وصف مختصر لأهداف ومواضيع الوحدة..."
-              className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:border-[#4F46E5]"
+              className="w-full p-3 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs font-medium text-zinc-900 dark:text-white focus:outline-none focus:border-[#4F46E5]"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <label className="text-xs font-black text-slate-700 dark:text-slate-300">
+              <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
                 الترتيب
               </label>
               <input
                 type="number"
                 value={order}
                 onChange={(e) => setOrder(Number(e.target.value))}
-                className="w-full h-10 px-3.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-[#4F46E5]"
+                className="w-full h-10 px-3.5 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-xs font-bold text-zinc-900 dark:text-white focus:outline-none focus:border-[#4F46E5]"
               />
             </div>
 

@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export function SiteFooter() {
   return (
-    <footer className="bg-[#0F172A] text-white py-12 sm:py-16">
+    <footer className="bg-zinc-950 text-white py-12 sm:py-16 border-t border-zinc-200 dark:border-zinc-800/80">
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-12">
           {/* Brand Column */}

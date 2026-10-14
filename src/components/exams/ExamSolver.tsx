@@ -208,7 +208,7 @@ export function ExamSolver({
   return (
     <div className="max-w-4xl mx-auto space-y-6 text-right font-ui pb-12">
       {/* Top Header Bar */}
-      <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <span className="text-[11px] font-bold text-[#4F46E5] block">
             {exam.subject.name} •{" "}
@@ -248,7 +248,7 @@ export function ExamSolver({
       </div>
 
       {/* Question Navigator Carousel / Dots */}
-      <div className="p-3.5 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-2xs overflow-x-auto scrollbar-none">
+      <div className="p-3.5 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs overflow-x-auto scrollbar-none">
         <div className="flex items-center gap-2 min-w-max">
           {questions.map((q, idx) => {
             const hasAnswer =
@@ -284,7 +284,7 @@ export function ExamSolver({
 
       {/* Main Question Card */}
       {currentQ && (
-        <div className="p-6 sm:p-8 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-2xs space-y-6">
+        <div className="p-6 sm:p-8 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-6">
           {/* Question Header & Badges */}
           <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
             <div className="flex items-center gap-2">

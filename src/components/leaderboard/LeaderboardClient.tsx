@@ -93,7 +93,7 @@ export function LeaderboardClient({
 
       {/* Current User Standing Card */}
       {currentUser && (
-        <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3.5">
             <div className="w-12 h-12 rounded-xl bg-[#4F46E5] text-white flex items-center justify-center font-bold text-lg shadow-2xs">
               #{currentUserRank || "-"}
@@ -128,14 +128,14 @@ export function LeaderboardClient({
       )}
 
       {/* Filters Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-3 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-2xs">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-3 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs">
         {/* System tabs */}
         <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-900/80 p-1 rounded-xl">
           <button
             onClick={() => setSystemFilter("ALL")}
             className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
               systemFilter === "ALL"
-                ? "bg-white dark:bg-[#131B2E] text-[#4F46E5] dark:text-indigo-400 shadow-2xs"
+                ? "bg-white dark:bg-zinc-950 text-[#4F46E5] dark:text-indigo-400 shadow-2xs"
                 : "text-slate-500 hover:text-slate-900 dark:hover:text-white"
             }`}
           >
@@ -145,7 +145,7 @@ export function LeaderboardClient({
             onClick={() => setSystemFilter("الثانوية")}
             className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
               systemFilter === "الثانوية"
-                ? "bg-white dark:bg-[#131B2E] text-[#4F46E5] dark:text-indigo-400 shadow-2xs"
+                ? "bg-white dark:bg-zinc-950 text-[#4F46E5] dark:text-indigo-400 shadow-2xs"
                 : "text-slate-500 hover:text-slate-900 dark:hover:text-white"
             }`}
           >
@@ -155,7 +155,7 @@ export function LeaderboardClient({
             onClick={() => setSystemFilter("البكالوريا")}
             className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
               systemFilter === "البكالوريا"
-                ? "bg-white dark:bg-[#131B2E] text-[#4F46E5] dark:text-indigo-400 shadow-2xs"
+                ? "bg-white dark:bg-zinc-950 text-[#4F46E5] dark:text-indigo-400 shadow-2xs"
                 : "text-slate-500 hover:text-slate-900 dark:hover:text-white"
             }`}
           >
@@ -185,7 +185,7 @@ export function LeaderboardClient({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">
           {/* Rank 2 (Silver) */}
           {top3[1] && (
-            <div className="order-2 md:order-1 p-5 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-2xs flex flex-col items-center text-center space-y-3 relative">
+            <div className="order-2 md:order-1 p-5 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs flex flex-col items-center text-center space-y-3 relative">
               <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 flex items-center justify-center font-bold text-slate-600 dark:text-slate-300 shadow-2xs">
                 <Medal className="w-6 h-6 text-slate-400 dark:text-slate-300" />
               </div>
@@ -213,7 +213,7 @@ export function LeaderboardClient({
 
           {/* Rank 1 (Gold - Elevated) */}
           {top3[0] && (
-            <div className="order-1 md:order-2 p-6 rounded-2xl bg-amber-50/40 dark:bg-[#131B2E] border-2 border-amber-300 dark:border-amber-600 shadow-md flex flex-col items-center text-center space-y-3 relative md:-mt-4">
+            <div className="order-1 md:order-2 p-6 rounded-2xl bg-amber-50/40 dark:bg-zinc-950 border-2 border-amber-300 dark:border-amber-600 shadow-md flex flex-col items-center text-center space-y-3 relative md:-mt-4">
               <div className="absolute -top-3 px-3 py-1 rounded-full bg-amber-500 text-white text-[10px] font-bold shadow-2xs flex items-center gap-1">
                 <Crown className="w-3.5 h-3.5 fill-current" />
                 <span>متصدر الدفعة الأول</span>
@@ -248,7 +248,7 @@ export function LeaderboardClient({
 
           {/* Rank 3 (Bronze) */}
           {top3[2] && (
-            <div className="order-3 md:order-3 p-5 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-2xs flex flex-col items-center text-center space-y-3 relative">
+            <div className="order-3 md:order-3 p-5 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs flex flex-col items-center text-center space-y-3 relative">
               <div className="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-700/60 flex items-center justify-center shadow-2xs">
                 <Medal className="w-6 h-6 text-amber-700 dark:text-amber-400" />
               </div>
@@ -296,7 +296,7 @@ export function LeaderboardClient({
               className={`p-4 rounded-xl border transition-colors flex items-center justify-between gap-4 ${
                 user.isCurrentUser
                   ? "bg-indigo-50/50 dark:bg-indigo-950/20 border-[#4F46E5]"
-                  : "bg-white dark:bg-[#131B2E] border-slate-200 dark:border-slate-800"
+                  : "bg-white dark:bg-zinc-950 border-slate-200 dark:border-slate-800"
               }`}
             >
               <div className="flex items-center gap-3.5">

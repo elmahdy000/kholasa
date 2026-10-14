@@ -29,7 +29,7 @@ export default async function SetupPage() {
   });
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0B0F19] text-[#0F172A] dark:text-[#F8FAFC] flex items-center justify-center p-4 relative font-sans">
+    <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#09090B] text-[#0F172A] dark:text-[#F8FAFC] flex items-center justify-center p-4 relative font-sans">
       <div className="absolute inset-0 bg-grid-pattern opacity-60 pointer-events-none" />
 
       <div className="w-full max-w-2xl space-y-8 relative z-10">
@@ -47,7 +47,7 @@ export default async function SetupPage() {
         </div>
 
         {/* Setup Form Card */}
-        <div className="p-6 sm:p-8 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-xs">
+        <div className="p-6 sm:p-8 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-xs">
           <SetupForm systems={systems} userId={user.id} />
         </div>
       </div>

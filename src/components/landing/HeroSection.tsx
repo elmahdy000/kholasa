@@ -36,13 +36,13 @@ export function HeroSection() {
   ];
 
   return (
-    <section className="relative overflow-hidden pt-12 pb-20 sm:pt-20 sm:pb-28 bg-[#F8FAFC] dark:bg-[#0B0F19] bg-grid-pattern">
+    <section className="relative overflow-hidden pt-12 pb-20 sm:pt-20 sm:pb-28 bg-[#F8FAFC] dark:bg-[#09090B] bg-grid-pattern">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="grid lg:grid-cols-12 gap-12 lg:gap-8 items-center">
           {/* Left / Main Text Column (7 cols) */}
           <div className="lg:col-span-7 text-right space-y-6 sm:space-y-8">
             {/* Top Pill Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-2xs">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               <span className="text-xs font-bold text-[#4F46E5] dark:text-indigo-400">
                 المنصة التعليمية الشاملة لطلاب الثانوية العامة 2026
@@ -77,7 +77,7 @@ export function HeroSection() {
 
               <Link
                 href="/exams/builder"
-                className="h-12 px-6 rounded-xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 text-[#0F172A] dark:text-white text-sm font-bold flex items-center gap-2 hover:border-[#4F46E5] shadow-2xs transition-all active:scale-95"
+                className="h-12 px-6 rounded-xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 text-[#0F172A] dark:text-white text-sm font-bold flex items-center gap-2 hover:border-[#4F46E5] shadow-2xs transition-all active:scale-95"
               >
                 <Zap className="w-4 h-4 text-amber-500 fill-amber-500" />
                 <span>جرّب بنك الأسئلة</span>
@@ -124,7 +124,7 @@ export function HeroSection() {
           {/* Right Product Preview Mockup (5 cols) */}
           <div className="lg:col-span-5 relative">
             {/* Floating Achievement 1 (Top Left) */}
-            <div className="absolute -top-4 -left-4 sm:-left-6 z-20 px-3.5 py-2 rounded-xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-md flex items-center gap-2">
+            <div className="absolute -top-4 -left-4 sm:-left-6 z-20 px-3.5 py-2 rounded-xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-md flex items-center gap-2">
               <div className="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-950/40 text-amber-600 flex items-center justify-center font-bold">
                 <Flame className="w-4 h-4 fill-amber-500" />
               </div>
@@ -140,7 +140,7 @@ export function HeroSection() {
             </div>
 
             {/* Floating Achievement 2 (Bottom Right) */}
-            <div className="absolute -bottom-4 -right-4 sm:-right-6 z-20 px-3.5 py-2 rounded-xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-md flex items-center gap-2">
+            <div className="absolute -bottom-4 -right-4 sm:-right-6 z-20 px-3.5 py-2 rounded-xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-md flex items-center gap-2">
               <div className="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 flex items-center justify-center font-bold">
                 <CheckCircle2 className="w-4 h-4" />
               </div>
@@ -155,7 +155,7 @@ export function HeroSection() {
             </div>
 
             {/* Main Interactive Preview Card */}
-            <div className="p-6 rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-xl relative overflow-hidden space-y-4 text-right">
+            <div className="p-6 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-xl relative overflow-hidden space-y-4 text-right">
               {/* Card Header */}
               <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
                 <div className="flex items-center gap-2">

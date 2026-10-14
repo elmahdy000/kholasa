@@ -147,7 +147,7 @@ export default async function ExamResultsPage({
         </div>
 
         {/* Hero Performance Card */}
-        <div className="relative overflow-hidden rounded-2xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-8">
+        <div className="relative overflow-hidden rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-8">
           <div className="absolute inset-0 bg-grid-pattern opacity-40 pointer-events-none" />
 
           <div className="space-y-3 relative z-10">
@@ -213,7 +213,7 @@ export default async function ExamResultsPage({
 
         {/* 4 Stats Cards */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <div className="p-4 rounded-xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-2xs text-right">
+          <div className="p-4 rounded-xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs text-right">
             <div className="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-2">
               <CheckCircle2 className="w-4 h-4" />
             </div>
@@ -225,7 +225,7 @@ export default async function ExamResultsPage({
             </span>
           </div>
 
-          <div className="p-4 rounded-xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-2xs text-right">
+          <div className="p-4 rounded-xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs text-right">
             <div className="w-8 h-8 rounded-lg bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 flex items-center justify-center mb-2">
               <XCircle className="w-4 h-4" />
             </div>
@@ -237,7 +237,7 @@ export default async function ExamResultsPage({
             </span>
           </div>
 
-          <div className="p-4 rounded-xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-2xs text-right">
+          <div className="p-4 rounded-xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs text-right">
             <div className="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 flex items-center justify-center mb-2">
               <HelpCircle className="w-4 h-4" />
             </div>
@@ -249,7 +249,7 @@ export default async function ExamResultsPage({
             </span>
           </div>
 
-          <div className="p-4 rounded-xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 shadow-2xs text-right">
+          <div className="p-4 rounded-xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 shadow-2xs text-right">
             <div className="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 text-[#4F46E5] dark:text-indigo-400 flex items-center justify-center mb-2">
               <Clock className="w-4 h-4" />
             </div>
@@ -284,8 +284,8 @@ export default async function ExamResultsPage({
                   key={ans.id}
                   className={`p-5 sm:p-6 rounded-2xl border shadow-2xs space-y-4 ${
                     isCorrect
-                      ? "bg-white dark:bg-[#131B2E] border-slate-200 dark:border-slate-800"
-                      : "bg-white dark:bg-[#131B2E] border-red-200 dark:border-red-900/40"
+                      ? "bg-white dark:bg-zinc-950 border-slate-200 dark:border-slate-800"
+                      : "bg-white dark:bg-zinc-950 border-red-200 dark:border-red-900/40"
                   }`}
                 >
                   {/* Status header */}

@@ -5,7 +5,7 @@ import { WifiOff, RefreshCw, BookOpen, Sparkles, ArrowRight } from "lucide-react
 
 export default function OfflinePage() {
   return (
-    <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0B0F19] text-[#0F172A] dark:text-[#F8FAFC] flex flex-col justify-between p-6 text-right font-sans relative" dir="rtl">
+    <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#09090B] text-[#0F172A] dark:text-[#F8FAFC] flex flex-col justify-between p-6 text-right font-sans relative" dir="rtl">
       <div className="absolute inset-0 bg-grid-pattern opacity-50 pointer-events-none" />
 
       {/* Top Header */}
@@ -41,7 +41,7 @@ export default function OfflinePage() {
         </div>
 
         {/* Study Advice Box */}
-        <div className="w-full p-4 rounded-xl bg-white dark:bg-[#131B2E] border border-slate-200 dark:border-slate-800 text-right space-y-2 shadow-2xs">
+        <div className="w-full p-4 rounded-xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-slate-800 text-right space-y-2 shadow-2xs">
           <div className="flex items-center gap-2 text-xs font-bold text-[#4F46E5] dark:text-indigo-400">
             <Sparkles className="w-4 h-4" />
             <span>نصيحة المذاكرة أوفلاين:</span>
