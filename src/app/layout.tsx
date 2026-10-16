@@ -38,6 +38,7 @@ export const metadata: Metadata = {
   },
 };
 
+import Script from "next/script";
 import { PwaRegister } from "@/components/pwa/PwaRegister";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
 
@@ -48,8 +49,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ar" dir="rtl" className={`${cairo.variable} ${ibmPlexArabic.variable}`} suppressHydrationWarning>
-      <head>
-        <script
+      <body className="min-h-screen font-sans bg-[#F8FAFC] dark:bg-[#09090B] text-[#0F172A] dark:text-[#F4F4F5] antialiased selection:bg-[#4F46E5]/20 dark:selection:bg-indigo-500/30 selection:text-[#4F46E5] dark:selection:text-indigo-200">
+        <Script
+          id="theme-initializer"
+          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
             __html: `
               try {
@@ -68,8 +71,6 @@ export default function RootLayout({
             `,
           }}
         />
-      </head>
-      <body className="min-h-screen font-sans bg-[#F8FAFC] dark:bg-[#09090B] text-[#0F172A] dark:text-[#F4F4F5] antialiased selection:bg-[#4F46E5]/20 dark:selection:bg-indigo-500/30 selection:text-[#4F46E5] dark:selection:text-indigo-200">
         <ThemeProvider>
           <PwaRegister />
           {children}
