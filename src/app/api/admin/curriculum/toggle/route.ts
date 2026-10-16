@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getCurrentUser } from "@/lib/auth";
+import { getCurrentUser, canManageCurriculum } from "@/lib/auth";
 
 export async function POST(req: Request) {
   try {
     const user = await getCurrentUser();
-    if (!user || (user.role !== "ADMIN" && user.role !== "SUPER_ADMIN")) {
+    if (!user || !canManageCurriculum(user.role)) {
       return NextResponse.json({ error: "غير مصرح" }, { status: 403 });
     }
 

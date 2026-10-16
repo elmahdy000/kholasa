@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getCurrentUser } from "@/lib/auth";
+import { getCurrentUser, canViewAnalytics } from "@/lib/auth";
 
 export async function GET() {
   try {
     const user = await getCurrentUser();
-    if (!user || (user.role !== "ADMIN" && user.role !== "SUPER_ADMIN")) {
+    if (!user || !canViewAnalytics(user.role)) {
       return NextResponse.json({ error: "غير مصرح" }, { status: 403 });
     }
 

@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getCurrentUser } from "@/lib/auth";
+import { getCurrentUser, canGradeAttempts } from "@/lib/auth";
 
 // GET: Return student exam attempts with optional filters (examId, userId, search)
 export async function GET(req: Request) {
   try {
     const user = await getCurrentUser();
-    if (!user || (user.role !== "ADMIN" && user.role !== "SUPER_ADMIN")) {
+    if (!user || !canGradeAttempts(user.role)) {
       return NextResponse.json({ error: "غير مصرح" }, { status: 403 });
     }
 
@@ -96,7 +96,7 @@ export async function GET(req: Request) {
 export async function PATCH(req: Request) {
   try {
     const user = await getCurrentUser();
-    if (!user || (user.role !== "ADMIN" && user.role !== "SUPER_ADMIN")) {
+    if (!user || !canGradeAttempts(user.role)) {
       return NextResponse.json({ error: "غير مصرح" }, { status: 403 });
     }
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   X,
   Save,
@@ -23,6 +23,8 @@ import {
   HelpCircle,
   Clock,
   CheckCircle2,
+  Upload,
+  Loader2,
 } from "lucide-react";
 
 interface LessonData {
@@ -110,6 +112,10 @@ export function LessonEditorModal({
   // Media State
   const [videoUrl, setVideoUrl] = useState("");
   const [audioUrl, setAudioUrl] = useState("");
+  const [uploadingMedia, setUploadingMedia] = useState<"video" | "audio" | "mindmap" | null>(null);
+  const videoInputRef = useRef<HTMLInputElement>(null);
+  const audioInputRef = useRef<HTMLInputElement>(null);
+  const mindMapInputRef = useRef<HTMLInputElement>(null);
 
   // Mind Map State
   const [mindMapTitle, setMindMapTitle] = useState("");
@@ -205,6 +211,41 @@ export function LessonEditorModal({
       /(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/
     );
     return match && match[1] ? `https://www.youtube.com/embed/${match[1]}` : null;
+  };
+
+  const handleMediaUpload = async (
+    file: File,
+    target: "video" | "audio" | "mindmap"
+  ) => {
+    setUploadingMedia(target);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch("/api/admin/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (!res.ok || data.error) {
+        throw new Error(data.error || "فشل رفع الملف إلى الخادم");
+      }
+
+      if (target === "video") {
+        setVideoUrl(data.url);
+      } else if (target === "audio") {
+        setAudioUrl(data.url);
+      } else if (target === "mindmap") {
+        setMindMapImages((prev) => [...prev, data.url]);
+      }
+      setStatusMessage({ type: "success", text: "تم رفع الملف بنجاح وتعيينه" });
+      setTimeout(() => setStatusMessage(null), 3000);
+    } catch (err: any) {
+      alert(err.message || "تعذر رفع الملف");
+    } finally {
+      setUploadingMedia(null);
+    }
   };
 
   const handleAddImage = () => {
@@ -574,16 +615,42 @@ export function LessonEditorModal({
 
                   {/* Video URL Section */}
                   <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-zinc-900/60 border border-slate-200 dark:border-zinc-800 space-y-3">
-                    <div className="flex items-center gap-2 text-xs font-black text-[#14243D] dark:text-white">
-                      <Video className="w-4 h-4 text-[#4F46E5]" />
-                      <span>فيديو الدرس (YouTube / Vimeo / MP4)</span>
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                      <div className="flex items-center gap-2 text-xs font-black text-[#14243D] dark:text-white">
+                        <Video className="w-4 h-4 text-[#4F46E5]" />
+                        <span>فيديو الدرس (YouTube / Vimeo / MP4 مباشر)</span>
+                      </div>
+                      <div>
+                        <input
+                          type="file"
+                          ref={videoInputRef}
+                          accept="video/mp4,video/webm,video/*"
+                          className="hidden"
+                          onChange={(e) => {
+                            if (e.target.files?.[0]) handleMediaUpload(e.target.files[0], "video");
+                          }}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => videoInputRef.current?.click()}
+                          disabled={uploadingMedia === "video"}
+                          className="h-7 px-3 rounded-lg bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/50 text-[#4F46E5] dark:text-indigo-400 text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50"
+                        >
+                          {uploadingMedia === "video" ? (
+                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                          ) : (
+                            <Upload className="w-3.5 h-3.5" />
+                          )}
+                          <span>{uploadingMedia === "video" ? "جاري الرفع..." : "رفع فيديو MP4"}</span>
+                        </button>
+                      </div>
                     </div>
 
                     <input
                       type="url"
                       value={videoUrl}
                       onChange={(e) => setVideoUrl(e.target.value)}
-                      placeholder="https://www.youtube.com/watch?v=..."
+                      placeholder="https://www.youtube.com/watch?v=... أو /uploads/video.mp4"
                       className="w-full h-10 px-3.5 rounded-xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-xs font-mono text-slate-900 dark:text-white focus:outline-none focus:border-[#4F46E5]"
                       dir="ltr"
                     />
@@ -599,29 +666,57 @@ export function LessonEditorModal({
                         />
                       </div>
                     ) : videoUrl ? (
-                      <p className="text-[11px] text-amber-600 font-bold">
-                        تنبيه: تأكد من صحة الرابط ليعمل المشغل المضمن للطالب.
-                      </p>
+                      <div className="rounded-xl overflow-hidden border border-slate-200 dark:border-zinc-800 bg-black mt-2 max-w-lg">
+                        <video
+                          src={videoUrl}
+                          controls
+                          className="w-full max-h-[300px]"
+                        />
+                      </div>
                     ) : null}
                   </div>
 
                   {/* Podcast / Audio URL Section */}
                   <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-zinc-900/60 border border-slate-200 dark:border-zinc-800 space-y-3">
-                    <div className="flex items-center justify-between gap-2">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                       <div className="flex items-center gap-2 text-xs font-black text-[#14243D] dark:text-white">
                         <Headphones className="w-4 h-4 text-emerald-500" />
                         <span>بودكاست الدرس / التسجيل الصوتي (audioUrl)</span>
                       </div>
-                      <span className="text-[10px] font-bold text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-md">
-                        الخلاصة الصوتية
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="file"
+                          ref={audioInputRef}
+                          accept="audio/mp3,audio/wav,audio/m4a,audio/*"
+                          className="hidden"
+                          onChange={(e) => {
+                            if (e.target.files?.[0]) handleMediaUpload(e.target.files[0], "audio");
+                          }}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => audioInputRef.current?.click()}
+                          disabled={uploadingMedia === "audio"}
+                          className="h-7 px-3 rounded-lg bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50"
+                        >
+                          {uploadingMedia === "audio" ? (
+                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                          ) : (
+                            <Upload className="w-3.5 h-3.5" />
+                          )}
+                          <span>{uploadingMedia === "audio" ? "جاري الرفع..." : "رفع تسجيل صوتي"}</span>
+                        </button>
+                        <span className="text-[10px] font-bold text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-md">
+                          الخلاصة الصوتية
+                        </span>
+                      </div>
                     </div>
 
                     <input
                       type="url"
                       value={audioUrl}
                       onChange={(e) => setAudioUrl(e.target.value)}
-                      placeholder="https://example.com/audio/lesson-summary.mp3"
+                      placeholder="https://example.com/audio/lesson-summary.mp3 أو /uploads/podcast.mp3"
                       className="w-full h-10 px-3.5 rounded-xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-xs font-mono text-slate-900 dark:text-white focus:outline-none focus:border-[#4F46E5]"
                       dir="ltr"
                     />
@@ -708,7 +803,30 @@ export function LessonEditorModal({
                         className="h-10 px-4 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-xs font-black flex items-center gap-1.5 shrink-0 transition-transform active:scale-95 disabled:opacity-50"
                       >
                         <Plus className="w-4 h-4" />
-                        <span>إضافة الصورة</span>
+                        <span>إضافة بالرابط</span>
+                      </button>
+
+                      <input
+                        type="file"
+                        ref={mindMapInputRef}
+                        accept="image/png,image/jpeg,image/webp,image/svg+xml,image/*"
+                        className="hidden"
+                        onChange={(e) => {
+                          if (e.target.files?.[0]) handleMediaUpload(e.target.files[0], "mindmap");
+                        }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => mindMapInputRef.current?.click()}
+                        disabled={uploadingMedia === "mindmap"}
+                        className="h-10 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-zinc-100 dark:hover:bg-white text-white dark:text-zinc-900 text-xs font-black flex items-center gap-1.5 shrink-0 transition-transform active:scale-95 disabled:opacity-50 cursor-pointer"
+                      >
+                        {uploadingMedia === "mindmap" ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <Upload className="w-4 h-4" />
+                        )}
+                        <span>{uploadingMedia === "mindmap" ? "جاري الرفع..." : "رفع من الجهاز"}</span>
                       </button>
                     </div>
                   </div>

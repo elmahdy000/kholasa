@@ -1,11 +1,42 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getCurrentUser } from "@/lib/auth";
+import { getCurrentUser, isStaff, canManageCurriculum } from "@/lib/auth";
+
+// GET: List lessons for a unit or search
+export async function GET(req: Request) {
+  try {
+    const user = await getCurrentUser();
+    if (!user || !isStaff(user.role)) {
+      return NextResponse.json({ error: "غير مصرح لك بالوصول" }, { status: 403 });
+    }
+
+    const { searchParams } = new URL(req.url);
+    const unitId = searchParams.get("unitId");
+
+    const where: any = {};
+    if (unitId) where.unitId = unitId;
+
+    const lessons = await prisma.lesson.findMany({
+      where,
+      orderBy: { order: "asc" },
+      include: {
+        content: { select: { videoUrl: true, audioUrl: true } },
+        mindMap: { select: { images: true } },
+        _count: { select: { questions: true } },
+      },
+    });
+
+    return NextResponse.json({ lessons });
+  } catch (error) {
+    console.error("Failed to fetch admin lessons:", error);
+    return NextResponse.json({ error: "تعذر تحميل قائمة الدروس" }, { status: 500 });
+  }
+}
 
 export async function POST(req: Request) {
   try {
     const user = await getCurrentUser();
-    if (!user || (user.role !== "ADMIN" && user.role !== "SUPER_ADMIN")) {
+    if (!user || !canManageCurriculum(user.role)) {
       return NextResponse.json({ error: "غير مصرح لك بالوصول" }, { status: 403 });
     }
 

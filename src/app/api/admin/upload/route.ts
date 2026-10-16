@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getCurrentUser } from "@/lib/auth";
+import { getCurrentUser, isStaff } from "@/lib/auth";
 import { writeFile, readdir, stat, unlink, mkdir } from "fs/promises";
 import path from "path";
 
@@ -18,7 +18,7 @@ async function ensureUploadsDir() {
 export async function GET() {
   try {
     const user = await getCurrentUser();
-    if (!user || (user.role !== "ADMIN" && user.role !== "SUPER_ADMIN")) {
+    if (!user || !isStaff(user.role)) {
       return NextResponse.json({ error: "غير مصرح" }, { status: 403 });
     }
 
@@ -71,7 +71,7 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const user = await getCurrentUser();
-    if (!user || (user.role !== "ADMIN" && user.role !== "SUPER_ADMIN")) {
+    if (!user || !isStaff(user.role)) {
       return NextResponse.json({ error: "غير مصرح" }, { status: 403 });
     }
 
@@ -128,7 +128,7 @@ export async function POST(req: Request) {
 export async function DELETE(req: Request) {
   try {
     const user = await getCurrentUser();
-    if (!user || (user.role !== "ADMIN" && user.role !== "SUPER_ADMIN")) {
+    if (!user || !isStaff(user.role)) {
       return NextResponse.json({ error: "غير مصرح" }, { status: 403 });
     }
 

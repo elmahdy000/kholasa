@@ -1,13 +1,13 @@
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { getCurrentUser } from "@/lib/auth";
+import { getCurrentUser, isStaff } from "@/lib/auth";
 import { AdminShell } from "@/components/layout/AdminShell";
 import { CurriculumManagerClient } from "@/components/admin/CurriculumManagerClient";
 
 export default async function AdminCurriculumPage() {
   const user = await getCurrentUser();
 
-  if (!user || (user.role !== "ADMIN" && user.role !== "SUPER_ADMIN")) {
+  if (!user || !isStaff(user.role)) {
     redirect("/login?callbackUrl=/admin/curriculum");
   }
 

@@ -103,6 +103,63 @@ export async function requireRole(allowedRoles: Role[]) {
   return user;
 }
 
+// Role groups
+export const ADMIN_ROLES: Role[] = [Role.ADMIN, Role.SUPER_ADMIN];
+export const STAFF_ROLES: Role[] = [Role.TEACHER, Role.EDITOR, Role.ADMIN, Role.SUPER_ADMIN];
+export const CONTENT_ROLES: Role[] = [Role.EDITOR, Role.ADMIN, Role.SUPER_ADMIN];
+export const GRADING_ROLES: Role[] = [Role.TEACHER, Role.ADMIN, Role.SUPER_ADMIN];
+export const EXAM_ROLES: Role[] = [Role.TEACHER, Role.EDITOR, Role.ADMIN, Role.SUPER_ADMIN];
+
+// Permission checks for admin & subadmin roles
+export function isStaff(role?: string | null): boolean {
+  if (!role) return false;
+  return ["TEACHER", "EDITOR", "ADMIN", "SUPER_ADMIN"].includes(role);
+}
+
+export function canManageCurriculum(role?: string | null): boolean {
+  if (!role) return false;
+  return ["EDITOR", "ADMIN", "SUPER_ADMIN"].includes(role);
+}
+
+export function canManageQuestions(role?: string | null): boolean {
+  if (!role) return false;
+  return ["TEACHER", "EDITOR", "ADMIN", "SUPER_ADMIN"].includes(role);
+}
+
+export function canManageExams(role?: string | null): boolean {
+  if (!role) return false;
+  return ["TEACHER", "EDITOR", "ADMIN", "SUPER_ADMIN"].includes(role);
+}
+
+export function canGradeAttempts(role?: string | null): boolean {
+  if (!role) return false;
+  return ["TEACHER", "ADMIN", "SUPER_ADMIN"].includes(role);
+}
+
+export function canManageMedia(role?: string | null): boolean {
+  if (!role) return false;
+  return ["TEACHER", "EDITOR", "ADMIN", "SUPER_ADMIN"].includes(role);
+}
+
+export function canManageUsers(role?: string | null): boolean {
+  if (!role) return false;
+  return ["ADMIN", "SUPER_ADMIN"].includes(role);
+}
+
+export function canManageStructure(role?: string | null): boolean {
+  if (!role) return false;
+  return ["ADMIN", "SUPER_ADMIN"].includes(role);
+}
+
+export function canViewAnalytics(role?: string | null): boolean {
+  if (!role) return false;
+  return ["TEACHER", "ADMIN", "SUPER_ADMIN"].includes(role);
+}
+
 export async function requireAdmin() {
-  return requireRole([Role.ADMIN, Role.SUPER_ADMIN]);
+  return requireRole(ADMIN_ROLES);
+}
+
+export async function requireStaff() {
+  return requireRole(STAFF_ROLES);
 }

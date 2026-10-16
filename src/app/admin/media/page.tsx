@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { getCurrentUser } from "@/lib/auth";
+import { getCurrentUser, isStaff } from "@/lib/auth";
 import { AdminShell } from "@/components/layout/AdminShell";
 import { MediaManagerClient } from "@/components/admin/MediaManagerClient";
 import { readdir, stat, mkdir } from "fs/promises";
@@ -8,7 +8,7 @@ import path from "path";
 export default async function AdminMediaPage() {
   const user = await getCurrentUser();
 
-  if (!user || (user.role !== "ADMIN" && user.role !== "SUPER_ADMIN")) {
+  if (!user || !isStaff(user.role)) {
     redirect("/login?callbackUrl=/admin/media");
   }
 

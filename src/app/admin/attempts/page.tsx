@@ -1,13 +1,13 @@
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { getCurrentUser } from "@/lib/auth";
+import { getCurrentUser, canGradeAttempts } from "@/lib/auth";
 import { AdminShell } from "@/components/layout/AdminShell";
 import { AttemptsManagerClient } from "@/components/admin/AttemptsManagerClient";
 
 export default async function AdminAttemptsPage() {
   const user = await getCurrentUser();
 
-  if (!user || (user.role !== "ADMIN" && user.role !== "SUPER_ADMIN")) {
+  if (!user || !canGradeAttempts(user.role)) {
     redirect("/login?callbackUrl=/admin/attempts");
   }
 

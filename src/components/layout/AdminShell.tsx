@@ -56,7 +56,7 @@ export function AdminShell({ children, user }: AdminShellProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   // Categorized Navigation Groups for a Standout Sidebar
-  const navigationGroups = [
+  const rawNavigationGroups = [
     {
       title: "الرئيسية والتحليلات",
       items: [
@@ -66,6 +66,7 @@ export function AdminShell({ children, user }: AdminShellProps) {
           icon: LayoutDashboard,
           exact: true,
           badge: null,
+          allowedRoles: ["TEACHER", "EDITOR", "ADMIN", "SUPER_ADMIN"],
         },
         {
           label: "التحليلات وسجل التدقيق",
@@ -73,6 +74,7 @@ export function AdminShell({ children, user }: AdminShellProps) {
           icon: Activity,
           badge: "مباشر",
           badgeColor: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20",
+          allowedRoles: ["TEACHER", "ADMIN", "SUPER_ADMIN"],
         },
       ],
     },
@@ -84,6 +86,7 @@ export function AdminShell({ children, user }: AdminShellProps) {
           href: "/admin/curriculum",
           icon: BookOpen,
           badge: null,
+          allowedRoles: ["TEACHER", "EDITOR", "ADMIN", "SUPER_ADMIN"],
         },
         {
           label: "الأنظمة والصفوف الدراسية",
@@ -91,6 +94,7 @@ export function AdminShell({ children, user }: AdminShellProps) {
           icon: Layers,
           badge: "جديد",
           badgeColor: "bg-indigo-500/10 text-indigo-400 border-indigo-500/20",
+          allowedRoles: ["ADMIN", "SUPER_ADMIN"],
         },
         {
           label: "مركز الوسائط والملفات",
@@ -98,6 +102,7 @@ export function AdminShell({ children, user }: AdminShellProps) {
           icon: HardDrive,
           badge: "Uploads",
           badgeColor: "bg-zinc-500/10 text-zinc-400 border-zinc-500/20",
+          allowedRoles: ["TEACHER", "EDITOR", "ADMIN", "SUPER_ADMIN"],
         },
       ],
     },
@@ -110,6 +115,7 @@ export function AdminShell({ children, user }: AdminShellProps) {
           icon: HelpCircle,
           exact: true,
           badge: null,
+          allowedRoles: ["TEACHER", "EDITOR", "ADMIN", "SUPER_ADMIN"],
         },
         {
           label: "استيراد الأسئلة المجمع",
@@ -117,12 +123,14 @@ export function AdminShell({ children, user }: AdminShellProps) {
           icon: Upload,
           badge: "CSV",
           badgeColor: "bg-amber-500/10 text-amber-500 border-amber-500/20",
+          allowedRoles: ["EDITOR", "ADMIN", "SUPER_ADMIN"],
         },
         {
           label: "إدارة الامتحانات الرسمية",
           href: "/admin/exams",
           icon: Award,
           badge: null,
+          allowedRoles: ["TEACHER", "EDITOR", "ADMIN", "SUPER_ADMIN"],
         },
         {
           label: "سجل المحاولات والتصحيح",
@@ -130,6 +138,7 @@ export function AdminShell({ children, user }: AdminShellProps) {
           icon: CheckCircle2,
           badge: "تصحيح",
           badgeColor: "bg-purple-500/10 text-purple-400 border-purple-500/20",
+          allowedRoles: ["TEACHER", "ADMIN", "SUPER_ADMIN"],
         },
       ],
     },
@@ -141,13 +150,37 @@ export function AdminShell({ children, user }: AdminShellProps) {
           href: "/admin/users",
           icon: Users,
           badge: null,
+          allowedRoles: ["ADMIN", "SUPER_ADMIN"],
         },
       ],
     },
   ];
 
+  // Filter groups according to user role
+  const navigationGroups = rawNavigationGroups
+    .map((group) => ({
+      ...group,
+      items: group.items.filter((item) => item.allowedRoles.includes(user.role)),
+    }))
+    .filter((group) => group.items.length > 0);
+
   // Flat items list for Command Palette search
   const allNavItems = navigationGroups.flatMap((g) => g.items);
+
+  const getRoleArabicLabel = (role: string) => {
+    switch (role) {
+      case "SUPER_ADMIN":
+        return "مشرف عام أعلى";
+      case "ADMIN":
+        return "مسؤول المنصة";
+      case "EDITOR":
+        return "محرر محتوى (Subadmin)";
+      case "TEACHER":
+        return "معلم ومصحح (Subadmin)";
+      default:
+        return role;
+    }
+  };
 
   // Active page title calculation for breadcrumbs
   const getActivePageDetails = () => {
@@ -453,7 +486,7 @@ export function AdminShell({ children, user }: AdminShellProps) {
                     {user.name || "مشرف المنصة"}
                   </span>
                   <span className="text-[10px] font-mono text-zinc-400 block truncate leading-none mt-0.5">
-                    {user.role}
+                    {getRoleArabicLabel(user.role)}
                   </span>
                 </div>
               )}

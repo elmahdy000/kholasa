@@ -1,13 +1,13 @@
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { getCurrentUser } from "@/lib/auth";
+import { getCurrentUser, canViewAnalytics } from "@/lib/auth";
 import { AdminShell } from "@/components/layout/AdminShell";
 import { AnalyticsManagerClient } from "@/components/admin/AnalyticsManagerClient";
 
 export default async function AdminAnalyticsPage() {
   const user = await getCurrentUser();
 
-  if (!user || (user.role !== "ADMIN" && user.role !== "SUPER_ADMIN")) {
+  if (!user || !canViewAnalytics(user.role)) {
     redirect("/login?callbackUrl=/admin/analytics");
   }
 

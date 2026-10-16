@@ -1,13 +1,13 @@
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { getCurrentUser } from "@/lib/auth";
+import { getCurrentUser, canManageCurriculum } from "@/lib/auth";
 import { AdminShell } from "@/components/layout/AdminShell";
 import { BulkImportClient } from "@/components/admin/BulkImportClient";
 
 export default async function AdminQuestionsImportPage() {
   const user = await getCurrentUser();
 
-  if (!user || (user.role !== "ADMIN" && user.role !== "SUPER_ADMIN")) {
+  if (!user || !canManageCurriculum(user.role)) {
     redirect("/login?callbackUrl=/admin/questions/import");
   }
 

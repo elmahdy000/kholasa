@@ -1,13 +1,13 @@
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { getCurrentUser } from "@/lib/auth";
+import { getCurrentUser, isStaff } from "@/lib/auth";
 import { AdminShell } from "@/components/layout/AdminShell";
 import { QuestionBankManagerClient } from "@/components/admin/QuestionBankManagerClient";
 
 export default async function AdminQuestionsPage() {
   const user = await getCurrentUser();
 
-  if (!user || (user.role !== "ADMIN" && user.role !== "SUPER_ADMIN")) {
+  if (!user || !isStaff(user.role)) {
     redirect("/login?callbackUrl=/admin/questions");
   }
 

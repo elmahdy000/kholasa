@@ -17,6 +17,8 @@ import {
   ChevronDown,
   UserCheck,
   Award,
+  Plus,
+  X,
 } from "lucide-react";
 
 interface EducationalSystem {
@@ -71,6 +73,59 @@ export function UserManagerClient({
 
   // Student Details Modal State
   const [inspectUser, setInspectUser] = useState<UserItem | null>(null);
+
+  // Create User Modal State
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [createName, setCreateName] = useState("");
+  const [createPhone, setCreatePhone] = useState("");
+  const [createEmail, setCreateEmail] = useState("");
+  const [createPassword, setCreatePassword] = useState("");
+  const [createRole, setCreateRole] = useState("STUDENT");
+  const [createSystemId, setCreateSystemId] = useState("");
+  const [createGradeId, setCreateGradeId] = useState("");
+  const [isCreating, setIsCreating] = useState(false);
+  const [createError, setCreateError] = useState<string | null>(null);
+
+  const handleCreateUser = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsCreating(true);
+    setCreateError(null);
+
+    try {
+      const res = await fetch("/api/admin/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: createName.trim(),
+          phone: createPhone.trim(),
+          email: createEmail.trim() || undefined,
+          password: createPassword,
+          role: createRole,
+          systemId: createSystemId || undefined,
+          gradeId: createGradeId || undefined,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok || data.error) {
+        throw new Error(data.error || "تعذر إنشاء المستخدم");
+      }
+
+      setUsers((prev) => [data.user, ...prev]);
+      setIsCreateOpen(false);
+      setCreateName("");
+      setCreatePhone("");
+      setCreateEmail("");
+      setCreatePassword("");
+      setCreateRole("STUDENT");
+      setCreateSystemId("");
+      setCreateGradeId("");
+    } catch (err: any) {
+      setCreateError(err.message || "حدث خطأ أثناء إنشاء المستخدم");
+    } finally {
+      setIsCreating(false);
+    }
+  };
 
   // Handle Role Change
   const handleUpdateRole = async (e: React.FormEvent) => {
@@ -221,9 +276,21 @@ export function UserManagerClient({
           </select>
         </div>
 
-        <span className="text-xs font-bold text-slate-400 shrink-0">
-          عرض {filteredUsers.length} من أصل {users.length} مستخدم
-        </span>
+        <div className="flex items-center gap-3 shrink-0">
+          <span className="text-xs font-bold text-slate-400">
+            عرض {filteredUsers.length} من أصل {users.length} مستخدم
+          </span>
+          <button
+            onClick={() => {
+              setIsCreateOpen(true);
+              setCreateError(null);
+            }}
+            className="h-10 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-black flex items-center gap-2 shadow-xs cursor-pointer transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+            <span>إضافة مستخدم أو مشرف</span>
+          </button>
+        </div>
       </div>
 
       {/* Users Table */}
@@ -424,6 +491,176 @@ export function UserManagerClient({
                   className="h-10 px-6 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-black disabled:opacity-50"
                 >
                   {isUpdating ? "جاري الحفظ..." : "حفظ التعديل"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Create User / Subadmin Modal */}
+      {isCreateOpen && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="w-full max-w-lg rounded-3xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-zinc-800">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 flex items-center justify-center">
+                  <Plus className="w-4 h-4" />
+                </div>
+                <h3 className="text-base font-black text-[#0F172A] dark:text-white">
+                  إضافة مستخدم أو مشرف جديد
+                </h3>
+              </div>
+              <button
+                onClick={() => setIsCreateOpen(false)}
+                className="w-8 h-8 rounded-xl border border-slate-200 dark:border-zinc-800 flex items-center justify-center text-slate-400 hover:text-slate-600"
+              >
+                ✕
+              </button>
+            </div>
+
+            {createError && (
+              <div className="p-3 rounded-xl bg-rose-50 text-rose-600 text-xs font-bold">
+                {createError}
+              </div>
+            )}
+
+            <form onSubmit={handleCreateUser} className="space-y-3.5">
+              <div>
+                <label className="block text-xs font-bold text-slate-500 mb-1">
+                  الاسم الكامل *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={createName}
+                  onChange={(e) => setCreateName(e.target.value)}
+                  placeholder="مثال: أحمد محمد علي"
+                  className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-bold text-[#0F172A] dark:text-white"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 mb-1">
+                    رقم الهاتف *
+                  </label>
+                  <input
+                    type="tel"
+                    required
+                    value={createPhone}
+                    onChange={(e) => setCreatePhone(e.target.value)}
+                    placeholder="01012345678"
+                    className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-bold text-[#0F172A] dark:text-white"
+                    dir="ltr"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 mb-1">
+                    البريد الإلكتروني (اختياري)
+                  </label>
+                  <input
+                    type="email"
+                    value={createEmail}
+                    onChange={(e) => setCreateEmail(e.target.value)}
+                    placeholder="name@example.com"
+                    className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-bold text-[#0F172A] dark:text-white"
+                    dir="ltr"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-500 mb-1">
+                  كلمة المرور * (6 أحرف على الأقل)
+                </label>
+                <input
+                  type="password"
+                  required
+                  value={createPassword}
+                  onChange={(e) => setCreatePassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-bold text-[#0F172A] dark:text-white"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-500 mb-1">
+                  الرتبة / نوع الحساب *
+                </label>
+                <select
+                  value={createRole}
+                  onChange={(e) => setCreateRole(e.target.value)}
+                  className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-bold text-[#0F172A] dark:text-white"
+                >
+                  <option value="STUDENT">طالب (STUDENT) - حساب طالب اعتيادي</option>
+                  <option value="TEACHER">معلم (TEACHER) - Subadmin لمتابعة وتصحيح الامتحانات</option>
+                  <option value="EDITOR">محرر محتوى (EDITOR) - Subadmin لإدارة المناهج والأسئلة والوسائط</option>
+                  <option value="ADMIN">مسؤول (ADMIN) - مشرف كامل الصلاحيات</option>
+                  {currentUserRole === "SUPER_ADMIN" && (
+                    <option value="SUPER_ADMIN">مشرف عام أعلى (SUPER_ADMIN)</option>
+                  )}
+                </select>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 mb-1">
+                    النظام التعليمي
+                  </label>
+                  <select
+                    value={createSystemId}
+                    onChange={(e) => {
+                      setCreateSystemId(e.target.value);
+                      setCreateGradeId("");
+                    }}
+                    className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-bold text-[#0F172A] dark:text-white"
+                  >
+                    <option value="">بدون تحديد</option>
+                    {systems.map((s) => (
+                      <option key={s.id} value={s.id}>
+                        {s.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 mb-1">
+                    الصف الدراسي
+                  </label>
+                  <select
+                    value={createGradeId}
+                    onChange={(e) => setCreateGradeId(e.target.value)}
+                    className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-bold text-[#0F172A] dark:text-white"
+                  >
+                    <option value="">بدون تحديد</option>
+                    {grades
+                      .filter((g) => !createSystemId || g.systemId === createSystemId)
+                      .map((g) => (
+                        <option key={g.id} value={g.id}>
+                          {g.name}
+                        </option>
+                      ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="pt-3 flex items-center justify-end gap-3 border-t border-slate-100 dark:border-zinc-800">
+                <button
+                  type="button"
+                  onClick={() => setIsCreateOpen(false)}
+                  className="h-10 px-4 rounded-xl border border-slate-200 dark:border-zinc-800 text-xs font-bold text-slate-600 dark:text-zinc-300"
+                >
+                  إلغاء
+                </button>
+                <button
+                  type="submit"
+                  disabled={isCreating}
+                  className="h-10 px-6 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-black disabled:opacity-50"
+                >
+                  {isCreating ? "جاري الإنشاء..." : "إنشاء المستخدم"}
                 </button>
               </div>
             </form>

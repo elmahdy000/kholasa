@@ -1,15 +1,66 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getCurrentUser } from "@/lib/auth";
+import { getCurrentUser, canManageExams } from "@/lib/auth";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
 }
 
+export async function GET(req: Request, { params }: RouteParams) {
+  try {
+    const user = await getCurrentUser();
+    if (!user || !canManageExams(user.role)) {
+      return NextResponse.json({ error: "غير مصرح لك بالوصول" }, { status: 403 });
+    }
+
+    const { id } = await params;
+
+    const exam = await prisma.exam.findUnique({
+      where: { id },
+      include: {
+        subject: { select: { id: true, name: true, color: true } },
+        questions: {
+          orderBy: { order: "asc" },
+          include: {
+            question: {
+              include: {
+                options: { orderBy: { order: "asc" } },
+                explanation: true,
+                rubric: true,
+              },
+            },
+          },
+        },
+        attempts: {
+          take: 10,
+          orderBy: { startedAt: "desc" },
+          select: {
+            id: true,
+            score: true,
+            percentage: true,
+            timeSpentSeconds: true,
+            isCompleted: true,
+            user: { select: { id: true, name: true } },
+          },
+        },
+      },
+    });
+
+    if (!exam) {
+      return NextResponse.json({ error: "الامتحان غير موجود" }, { status: 404 });
+    }
+
+    return NextResponse.json({ exam });
+  } catch (error) {
+    console.error("Failed to fetch exam:", error);
+    return NextResponse.json({ error: "تعذر تحميل بيانات الامتحان" }, { status: 500 });
+  }
+}
+
 export async function PATCH(req: Request, { params }: RouteParams) {
   try {
     const user = await getCurrentUser();
-    if (!user || (user.role !== "ADMIN" && user.role !== "SUPER_ADMIN")) {
+    if (!user || !canManageExams(user.role)) {
       return NextResponse.json({ error: "غير مصرح لك بالوصول" }, { status: 403 });
     }
 
@@ -37,7 +88,7 @@ export async function PATCH(req: Request, { params }: RouteParams) {
 export async function DELETE(req: Request, { params }: RouteParams) {
   try {
     const user = await getCurrentUser();
-    if (!user || (user.role !== "ADMIN" && user.role !== "SUPER_ADMIN")) {
+    if (!user || !canManageExams(user.role)) {
       return NextResponse.json({ error: "غير مصرح لك بالوصول" }, { status: 403 });
     }
 

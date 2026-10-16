@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getCurrentUser } from "@/lib/auth";
+import { getCurrentUser, isStaff, canManageStructure } from "@/lib/auth";
 
 // GET: Return full structure tree (Systems -> Grades -> Tracks -> Subjects)
 export async function GET() {
   try {
     const user = await getCurrentUser();
-    if (!user || (user.role !== "ADMIN" && user.role !== "SUPER_ADMIN")) {
+    if (!user || !isStaff(user.role)) {
       return NextResponse.json({ error: "غير مصرح" }, { status: 403 });
     }
 
