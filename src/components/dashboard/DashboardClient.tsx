@@ -196,6 +196,16 @@ export function DashboardClient({
           </div>
 
           <div className="flex flex-wrap items-center gap-2.5">
+            <button
+              type="button"
+              onClick={() => {
+                window.dispatchEvent(new CustomEvent("kholasa_open_entrance_exam"));
+              }}
+              className="h-10 px-4 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/60 text-amber-800 dark:text-amber-200 text-xs font-bold flex items-center gap-2 hover:bg-amber-100 dark:hover:bg-amber-900/50 transition-all shadow-2xs active:scale-95"
+            >
+              <Fire className="w-3.5 h-3.5 text-amber-500" weight="fill" />
+              <span>تحدي الدخول اليومي</span>
+            </button>
             <Link
               href="/exams/builder"
               className="h-10 px-5 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-xs font-bold flex items-center gap-2 transition-all shadow-sm active:scale-95"

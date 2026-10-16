@@ -18,10 +18,12 @@ import {
   Trophy,
 } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
+import { EntranceGatekeeperModal } from "@/components/student/EntranceGatekeeperModal";
 
 interface StudentShellProps {
   children: React.ReactNode;
   user?: {
+    id?: string;
     name?: string | null;
     email?: string | null;
     phone?: string | null;
@@ -366,6 +368,9 @@ export function StudentShell({ children, user }: StudentShellProps) {
           </div>
         </div>
       )}
+
+      {/* Mandatory Entrance Gatekeeper Exam for Students */}
+      <EntranceGatekeeperModal userRole={user?.role} userId={user?.id} />
     </div>
   );
 }
