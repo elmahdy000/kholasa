@@ -21,6 +21,7 @@ import {
   Video,
   Headphones,
   Image as ImageIcon,
+  FileText,
 } from "lucide-react";
 import { LessonEditorModal } from "./LessonEditorModal";
 import { UnitEditorModal } from "./UnitEditorModal";
@@ -426,6 +427,15 @@ export function CurriculumManagerClient({
                                 <span>إضافة درس</span>
                               </button>
 
+                              <Link
+                                href={`/admin/questions/import?subjectId=${subject.id}&unitId=${unit.id}`}
+                                className="h-7 px-2.5 rounded-lg bg-blue-50 dark:bg-blue-950/40 hover:bg-blue-100 text-blue-700 dark:text-blue-300 text-[11px] font-bold flex items-center gap-1 transition-colors border border-blue-200/50 dark:border-blue-800/50"
+                                title="استيراد أو إضافة أسئلة وورد لهذه الوحدة"
+                              >
+                                <FileText className="w-3 h-3 text-blue-600 dark:text-blue-400" />
+                                <span>أسئلة الوحدة</span>
+                              </Link>
+
                               <button
                                 onClick={() =>
                                   handleTogglePublished(
@@ -506,6 +516,15 @@ export function CurriculumManagerClient({
                                         <Settings2 className="w-3 h-3" />
                                         <span>إدارة المحتوى والوسائط</span>
                                       </button>
+
+                                      <Link
+                                        href={`/admin/questions/import?subjectId=${subject.id}&unitId=${unit.id}&lessonId=${lesson.id}`}
+                                        className="h-7 px-2.5 rounded-lg bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/40 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-300 text-[11px] font-bold flex items-center gap-1 transition-colors border border-blue-200/50 dark:border-blue-800/50"
+                                        title="استيراد أو ربط أسئلة وورد بهذا الدرس"
+                                      >
+                                        <FileText className="w-3 h-3 text-blue-600 dark:text-blue-400" />
+                                        <span>أسئلة الدرس</span>
+                                      </Link>
 
                                       <Link
                                         href={`/lessons/${lesson.id}`}

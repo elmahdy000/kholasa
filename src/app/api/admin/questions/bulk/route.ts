@@ -40,12 +40,31 @@ export async function POST(req: Request) {
                 explanation: opt.explanation || null,
               })),
             },
+            ...(q.lessonId
+              ? {
+                  lessons: {
+                    create: {
+                      lessonId: q.lessonId,
+                    },
+                  },
+                }
+              : {}),
             ...(q.concept && q.correctReason
               ? {
                   explanation: {
                     create: {
                       concept: q.concept,
                       correctReason: q.correctReason,
+                    },
+                  },
+                }
+              : {}),
+            ...(q.type === "ESSAY" && q.modelAnswer
+              ? {
+                  rubric: {
+                    create: {
+                      modelAnswer: q.modelAnswer,
+                      maxScore: q.points || 10,
                     },
                   },
                 }

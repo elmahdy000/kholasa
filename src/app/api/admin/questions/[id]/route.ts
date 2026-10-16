@@ -19,6 +19,11 @@ export async function GET(req: Request, { params }: RouteParams) {
       include: {
         subject: { select: { id: true, name: true } },
         unit: { select: { id: true, title: true } },
+        lessons: {
+          include: {
+            lesson: { select: { id: true, title: true } },
+          },
+        },
         options: { orderBy: { order: "asc" } },
         explanation: true,
         rubric: true,
@@ -51,6 +56,7 @@ export async function PUT(req: Request, { params }: RouteParams) {
       difficulty,
       subjectId,
       unitId,
+      lessonId,
       options,
       concept,
       correctReason,
@@ -90,7 +96,17 @@ export async function PUT(req: Request, { params }: RouteParams) {
         });
       }
 
-      // 3. Explanation
+      // 3. Update lesson connection if provided
+      if (lessonId !== undefined) {
+        await tx.questionLesson.deleteMany({ where: { questionId: id } });
+        if (lessonId) {
+          await tx.questionLesson.create({
+            data: { questionId: id, lessonId },
+          });
+        }
+      }
+
+      // 4. Explanation
       if (concept || correctReason) {
         await tx.questionExplanation.upsert({
           where: { questionId: id },
@@ -106,7 +122,7 @@ export async function PUT(req: Request, { params }: RouteParams) {
         });
       }
 
-      // 4. Rubric if essay
+      // 5. Rubric if essay
       if (type === "ESSAY" && modelAnswer) {
         await tx.essayRubric.upsert({
           where: { questionId: id },
@@ -130,6 +146,11 @@ export async function PUT(req: Request, { params }: RouteParams) {
       include: {
         subject: { select: { id: true, name: true } },
         unit: { select: { id: true, title: true } },
+        lessons: {
+          include: {
+            lesson: { select: { id: true, title: true } },
+          },
+        },
         options: { orderBy: { order: "asc" } },
         explanation: true,
         rubric: true,

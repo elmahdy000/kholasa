@@ -11,11 +11,19 @@ export async function GET(req: Request) {
 
     const { searchParams } = new URL(req.url);
     const subjectId = searchParams.get("subjectId");
+    const unitId = searchParams.get("unitId");
+    const lessonId = searchParams.get("lessonId");
     const type = searchParams.get("type");
     const difficulty = searchParams.get("difficulty");
 
     const where: any = {};
     if (subjectId && subjectId !== "all") where.subjectId = subjectId;
+    if (unitId && unitId !== "all") where.unitId = unitId;
+    if (lessonId && lessonId !== "all") {
+      where.lessons = {
+        some: { lessonId },
+      };
+    }
     if (type && type !== "all") where.type = type;
     if (difficulty && difficulty !== "all") where.difficulty = difficulty;
 
@@ -25,6 +33,11 @@ export async function GET(req: Request) {
       include: {
         subject: { select: { id: true, name: true } },
         unit: { select: { id: true, title: true } },
+        lessons: {
+          include: {
+            lesson: { select: { id: true, title: true } },
+          },
+        },
         options: { orderBy: { order: "asc" } },
         explanation: true,
         rubric: true,
@@ -95,14 +108,14 @@ export async function POST(req: Request) {
           : {}),
         ...(concept && correctReason
           ? {
-              explanation: {
-                create: {
-                  concept,
-                  correctReason,
-                },
-              },
-            }
-          : {}),
+                  explanation: {
+                    create: {
+                      concept,
+                      correctReason,
+                    },
+                  },
+                }
+              : {}),
         ...(modelAnswer
           ? {
               rubric: {
@@ -117,6 +130,12 @@ export async function POST(req: Request) {
       include: {
         options: true,
         explanation: true,
+        rubric: true,
+        lessons: {
+          include: {
+            lesson: { select: { id: true, title: true } },
+          },
+        },
       },
     });
 

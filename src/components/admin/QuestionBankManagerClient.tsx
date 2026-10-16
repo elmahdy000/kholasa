@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   HelpCircle,
   Plus,
@@ -18,8 +19,11 @@ import {
   Edit2,
   Trash2,
   Check,
+  FileText,
+  Layers,
 } from "lucide-react";
 import { BidiStatement } from "@/components/ui/BidiStatement";
+import { QuestionWordImporter } from "@/components/admin/QuestionWordImporter";
 
 interface QuestionOption {
   id?: string;
@@ -46,6 +50,7 @@ interface Question {
   difficulty: string;
   subject: { id: string; name: string };
   unit?: { id: string; title: string } | null;
+  lessons?: { lesson: { id: string; title: string } }[] | null;
   options: QuestionOption[];
   explanation?: QuestionExplanation | null;
   rubric?: EssayRubric | null;
@@ -54,7 +59,11 @@ interface Question {
 interface Subject {
   id: string;
   name: string;
-  units: { id: string; title: string }[];
+  units: {
+    id: string;
+    title: string;
+    lessons?: { id: string; title: string }[];
+  }[];
 }
 
 interface QuestionBankManagerClientProps {
@@ -66,11 +75,15 @@ export function QuestionBankManagerClient({
   initialQuestions,
   subjects,
 }: QuestionBankManagerClientProps) {
+  const router = useRouter();
   const [questions, setQuestions] = useState<Question[]>(initialQuestions);
   const [selectedSubjectId, setSelectedSubjectId] = useState<string>("all");
   const [selectedType, setSelectedType] = useState<string>("all");
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Word Import Modal State
+  const [isWordImportOpen, setIsWordImportOpen] = useState(false);
 
   // Create Modal State
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -80,6 +93,7 @@ export function QuestionBankManagerClient({
   // New Question Form State
   const [newSubjectId, setNewSubjectId] = useState<string>(subjects[0]?.id || "");
   const [newUnitId, setNewUnitId] = useState<string>("");
+  const [newLessonId, setNewLessonId] = useState<string>("");
   const [newStatement, setNewStatement] = useState("");
   const [newType, setNewType] = useState<"MCQ" | "TRUE_FALSE" | "ESSAY">("MCQ");
   const [newDifficulty, setNewDifficulty] = useState<"EASY" | "MEDIUM" | "HARD">("MEDIUM");
@@ -97,6 +111,7 @@ export function QuestionBankManagerClient({
   const [editingQuestion, setEditingQuestion] = useState<Question | null>(null);
   const [editSubjectId, setEditSubjectId] = useState("");
   const [editUnitId, setEditUnitId] = useState("");
+  const [editLessonId, setEditLessonId] = useState("");
   const [editStatement, setEditStatement] = useState("");
   const [editType, setEditType] = useState<"MCQ" | "TRUE_FALSE" | "ESSAY">("MCQ");
   const [editDifficulty, setEditDifficulty] = useState<"EASY" | "MEDIUM" | "HARD">("MEDIUM");
@@ -115,6 +130,7 @@ export function QuestionBankManagerClient({
     setEditingQuestion(q);
     setEditSubjectId(q.subject.id);
     setEditUnitId(q.unit?.id || "");
+    setEditLessonId(q.lessons?.[0]?.lesson?.id || "");
     setEditStatement(q.statement);
     setEditType(q.type as any);
     setEditDifficulty(q.difficulty as any);
@@ -164,6 +180,7 @@ export function QuestionBankManagerClient({
           statement: editStatement.trim(),
           subjectId: editSubjectId,
           unitId: editUnitId || undefined,
+          lessonId: editLessonId || undefined,
           type: editType,
           difficulty: editDifficulty,
           concept: editConcept.trim() || undefined,
@@ -225,6 +242,7 @@ export function QuestionBankManagerClient({
           statement: newStatement,
           subjectId: newSubjectId,
           unitId: newUnitId || undefined,
+          lessonId: newLessonId || undefined,
           type: newType,
           difficulty: newDifficulty,
           concept: newConcept || undefined,
@@ -250,6 +268,7 @@ export function QuestionBankManagerClient({
 
       // Reset
       setNewStatement("");
+      setNewLessonId("");
       setNewConcept("");
       setNewCorrectReason("");
       setNewModelAnswer("");
@@ -331,13 +350,21 @@ export function QuestionBankManagerClient({
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex flex-wrap items-center gap-2 shrink-0">
+          <button
+            onClick={() => setIsWordImportOpen(true)}
+            className="h-10 px-4 rounded-xl bg-blue-50 dark:bg-blue-950/40 hover:bg-blue-100 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-300 text-xs font-bold flex items-center justify-center gap-2 border border-blue-200 dark:border-blue-800 transition-colors shadow-2xs"
+          >
+            <FileText className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+            <span>استيراد ملف وورد (.docx)</span>
+          </button>
+
           <Link
             href="/admin/questions/import"
             className="h-10 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-zinc-900 dark:hover:bg-zinc-700 text-[#0F172A] dark:text-white text-xs font-bold flex items-center justify-center gap-2 transition-colors"
           >
             <Upload className="w-4 h-4 text-indigo-500" />
-            <span>استيراد ملف CSV</span>
+            <span>استيراد شامل / CSV</span>
           </Link>
 
           <button
@@ -374,6 +401,11 @@ export function QuestionBankManagerClient({
                 {q.unit && (
                   <span className="px-2.5 py-0.5 rounded-lg bg-slate-100 dark:bg-zinc-900 text-slate-600 dark:text-zinc-300 text-[11px] font-bold">
                     {q.unit.title}
+                  </span>
+                )}
+                {q.lessons && q.lessons.length > 0 && q.lessons[0].lesson && (
+                  <span className="px-2.5 py-0.5 rounded-lg bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 text-[11px] font-bold border border-blue-200/50 dark:border-blue-800/50">
+                    درس: {q.lessons[0].lesson.title}
                   </span>
                 )}
                 <span className="px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-zinc-900 text-[10px] font-bold text-slate-500">
@@ -527,7 +559,10 @@ export function QuestionBankManagerClient({
                   </label>
                   <select
                     value={newUnitId}
-                    onChange={(e) => setNewUnitId(e.target.value)}
+                    onChange={(e) => {
+                      setNewUnitId(e.target.value);
+                      setNewLessonId("");
+                    }}
                     className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-bold"
                   >
                     <option value="">بدون وحدة محددة</option>
@@ -536,6 +571,27 @@ export function QuestionBankManagerClient({
                         {u.title}
                       </option>
                     ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 mb-1">
+                    الدرس المستهدف (اختياري)
+                  </label>
+                  <select
+                    value={newLessonId}
+                    onChange={(e) => setNewLessonId(e.target.value)}
+                    disabled={!newUnitId}
+                    className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-bold disabled:opacity-50"
+                  >
+                    <option value="">بدون درس محدد (عام للوحدة)</option>
+                    {activeNewSubject?.units
+                      .find((u) => u.id === newUnitId)
+                      ?.lessons?.map((l) => (
+                        <option key={l.id} value={l.id}>
+                          {l.title}
+                        </option>
+                      ))}
                   </select>
                 </div>
               </div>
@@ -783,7 +839,10 @@ export function QuestionBankManagerClient({
                   </label>
                   <select
                     value={editUnitId}
-                    onChange={(e) => setEditUnitId(e.target.value)}
+                    onChange={(e) => {
+                      setEditUnitId(e.target.value);
+                      setEditLessonId("");
+                    }}
                     className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-bold"
                   >
                     <option value="">بدون وحدة محددة</option>
@@ -792,6 +851,27 @@ export function QuestionBankManagerClient({
                         {u.title}
                       </option>
                     ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 mb-1">
+                    الدرس المستهدف (اختياري)
+                  </label>
+                  <select
+                    value={editLessonId}
+                    onChange={(e) => setEditLessonId(e.target.value)}
+                    disabled={!editUnitId}
+                    className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-bold disabled:opacity-50"
+                  >
+                    <option value="">بدون درس محدد (عام للوحدة)</option>
+                    {activeEditSubject?.units
+                      .find((u) => u.id === editUnitId)
+                      ?.lessons?.map((l) => (
+                        <option key={l.id} value={l.id}>
+                          {l.title}
+                        </option>
+                      ))}
                   </select>
                 </div>
               </div>
@@ -941,6 +1021,50 @@ export function QuestionBankManagerClient({
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* WORD IMPORT MODAL */}
+      {isWordImportOpen && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
+          <div className="bg-white dark:bg-[#111A2B] border border-slate-200 dark:border-zinc-800 rounded-3xl w-full max-w-4xl max-h-[92vh] overflow-y-auto p-5 sm:p-7 space-y-5 shadow-2xl relative">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-zinc-800 pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-10 h-10 rounded-2xl bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 flex items-center justify-center shadow-xs">
+                  <FileText className="w-5 h-5" />
+                </div>
+                <div>
+                  <h2 className="text-base sm:text-lg font-black text-[#14243D] dark:text-white">
+                    استيراد الأسئلة من ملف وورد (.docx)
+                  </h2>
+                  <p className="text-xs text-slate-500 dark:text-zinc-400">
+                    استخراج فوري للأسئلة مع شاشة معاينة تفاعلية وتعديل كامل قبل الحفظ
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setIsWordImportOpen(false)}
+                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 flex items-center justify-center text-slate-500 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <QuestionWordImporter
+              subjects={subjects as any}
+              isModal={true}
+              onSuccess={() => {
+                setIsWordImportOpen(false);
+                router.refresh();
+                fetch("/api/admin/questions")
+                  .then((res) => res.json())
+                  .then((data) => {
+                    if (data.questions) setQuestions(data.questions);
+                  })
+                  .catch(() => {});
+              }}
+            />
           </div>
         </div>
       )}

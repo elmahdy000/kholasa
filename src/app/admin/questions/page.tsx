@@ -11,13 +11,18 @@ export default async function AdminQuestionsPage() {
     redirect("/login?callbackUrl=/admin/questions");
   }
 
-  // Fetch all questions and subjects with units
+  // Fetch all questions and subjects with units and lessons
   const [questions, subjects] = await Promise.all([
     prisma.question.findMany({
       orderBy: { createdAt: "desc" },
       include: {
         subject: { select: { id: true, name: true } },
         unit: { select: { id: true, title: true } },
+        lessons: {
+          include: {
+            lesson: { select: { id: true, title: true } },
+          },
+        },
         options: { orderBy: { order: "asc" } },
         explanation: true,
         rubric: true,
@@ -28,7 +33,14 @@ export default async function AdminQuestionsPage() {
       include: {
         units: {
           orderBy: { order: "asc" },
-          select: { id: true, title: true },
+          select: {
+            id: true,
+            title: true,
+            lessons: {
+              orderBy: { order: "asc" },
+              select: { id: true, title: true },
+            },
+          },
         },
       },
     }),
@@ -42,7 +54,7 @@ export default async function AdminQuestionsPage() {
             بنك الأسئلة والتفسيرات التفاعلية
           </h1>
           <p className="text-xs sm:text-sm text-[#64748B] dark:text-[#94A3B8] mt-1">
-            إدارة الأسئلة، مراجعة خيارات الإجابة، وربط المفاهيم التعليمية بالدروس
+            إدارة الأسئلة، مراجعة خيارات الإجابة، استيراد ملفات الوورد، وربط المفاهيم التعليمية بالدروس
           </p>
         </div>
 
