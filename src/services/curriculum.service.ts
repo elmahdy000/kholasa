@@ -358,4 +358,278 @@ export class CurriculumService {
       data: { isPublished },
     });
   }
+
+  /**
+   * Get full educational structure tree (Systems -> Grades -> Tracks -> Subjects)
+   */
+  static async getStructureTree() {
+    return prisma.educationalSystem.findMany({
+      orderBy: { order: "asc" },
+      include: {
+        grades: {
+          orderBy: { order: "asc" },
+          include: {
+            tracks: true,
+            subjects: {
+              orderBy: { order: "asc" },
+              include: {
+                _count: {
+                  select: {
+                    units: true,
+                    questions: true,
+                    exams: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+  }
+
+  /**
+   * Educational Systems Management
+   */
+  static async createSystem(data: {
+    name: string;
+    code: string;
+    description?: string | null;
+    isActive?: boolean;
+    order?: number;
+  }) {
+    const existing = await prisma.educationalSystem.findUnique({ where: { code: data.code } });
+    if (existing) {
+      throw new Error("هذا الرمز مستخدم بالفعل لنظام آخر");
+    }
+
+    return prisma.educationalSystem.create({
+      data: {
+        name: data.name.trim(),
+        code: data.code.trim(),
+        description: data.description?.trim() || null,
+        isActive: data.isActive !== undefined ? Boolean(data.isActive) : true,
+        order: data.order !== undefined ? Number(data.order) : 0,
+      },
+    });
+  }
+
+  static async updateSystem(
+    id: string,
+    data: {
+      name?: string;
+      code?: string;
+      description?: string | null;
+      isActive?: boolean;
+      order?: number;
+    }
+  ) {
+    return prisma.educationalSystem.update({
+      where: { id },
+      data: {
+        ...(data.name !== undefined ? { name: data.name.trim() } : {}),
+        ...(data.code !== undefined ? { code: data.code.trim() } : {}),
+        ...(data.description !== undefined ? { description: data.description?.trim() || null } : {}),
+        ...(data.isActive !== undefined ? { isActive: Boolean(data.isActive) } : {}),
+        ...(data.order !== undefined ? { order: Number(data.order) } : {}),
+      },
+    });
+  }
+
+  static async deleteSystem(id: string) {
+    return prisma.educationalSystem.delete({ where: { id } });
+  }
+
+  /**
+   * Academic Grades Management
+   */
+  static async createGrade(data: {
+    name: string;
+    code: string;
+    systemId: string;
+    order?: number;
+  }) {
+    return prisma.grade.create({
+      data: {
+        name: data.name.trim(),
+        code: data.code.trim(),
+        systemId: data.systemId,
+        order: data.order !== undefined ? Number(data.order) : 0,
+      },
+    });
+  }
+
+  static async updateGrade(
+    id: string,
+    data: {
+      name?: string;
+      code?: string;
+      order?: number;
+    }
+  ) {
+    return prisma.grade.update({
+      where: { id },
+      data: {
+        ...(data.name !== undefined ? { name: data.name.trim() } : {}),
+        ...(data.code !== undefined ? { code: data.code.trim() } : {}),
+        ...(data.order !== undefined ? { order: Number(data.order) } : {}),
+      },
+    });
+  }
+
+  static async deleteGrade(id: string) {
+    return prisma.grade.delete({ where: { id } });
+  }
+
+  /**
+   * Subjects Management
+   */
+  static async createSubject(data: {
+    name: string;
+    code: string;
+    icon?: string | null;
+    color?: string;
+    description?: string | null;
+    systemId: string;
+    gradeId: string;
+    trackId?: string | null;
+    isPublished?: boolean;
+    order?: number;
+  }) {
+    return prisma.subject.create({
+      data: {
+        name: data.name.trim(),
+        code: data.code.trim(),
+        icon: data.icon || null,
+        color: data.color || "#4F46E5",
+        description: data.description?.trim() || null,
+        systemId: data.systemId,
+        gradeId: data.gradeId,
+        trackId: data.trackId || null,
+        isPublished: data.isPublished !== undefined ? Boolean(data.isPublished) : true,
+        order: data.order !== undefined ? Number(data.order) : 0,
+      },
+    });
+  }
+
+  static async updateSubject(
+    id: string,
+    data: {
+      name?: string;
+      code?: string;
+      icon?: string | null;
+      color?: string;
+      description?: string | null;
+      order?: number;
+      isPublished?: boolean;
+    }
+  ) {
+    return prisma.subject.update({
+      where: { id },
+      data: {
+        ...(data.name !== undefined ? { name: data.name.trim() } : {}),
+        ...(data.code !== undefined ? { code: data.code.trim() } : {}),
+        ...(data.icon !== undefined ? { icon: data.icon } : {}),
+        ...(data.color !== undefined ? { color: data.color } : {}),
+        ...(data.description !== undefined ? { description: data.description?.trim() || null } : {}),
+        ...(data.order !== undefined ? { order: Number(data.order) } : {}),
+        ...(data.isPublished !== undefined ? { isPublished: Boolean(data.isPublished) } : {}),
+      },
+    });
+  }
+
+  static async deleteSubject(id: string) {
+    return prisma.subject.delete({ where: { id } });
+  }
+
+  /**
+   * Units Management
+   */
+  static async getUnits(subjectId?: string) {
+    const where: any = {};
+    if (subjectId) where.subjectId = subjectId;
+
+    return prisma.unit.findMany({
+      where,
+      orderBy: { order: "asc" },
+      include: {
+        lessons: { orderBy: { order: "asc" } },
+        _count: { select: { questions: true } },
+      },
+    });
+  }
+
+  static async createUnit(data: {
+    subjectId: string;
+    title: string;
+    description?: string | null;
+    order?: number;
+    isPublished?: boolean;
+  }) {
+    let unitOrder = data.order;
+    if (unitOrder === undefined || unitOrder === null) {
+      const highest = await prisma.unit.findFirst({
+        where: { subjectId: data.subjectId },
+        orderBy: { order: "desc" },
+        select: { order: true },
+      });
+      unitOrder = (highest?.order ?? -1) + 1;
+    }
+
+    return prisma.unit.create({
+      data: {
+        subjectId: data.subjectId,
+        title: data.title.trim(),
+        description: data.description?.trim() || null,
+        order: Number(unitOrder),
+        isPublished: data.isPublished !== undefined ? Boolean(data.isPublished) : true,
+      },
+      include: {
+        lessons: true,
+      },
+    });
+  }
+
+  static async updateUnit(
+    id: string,
+    data: {
+      title?: string;
+      description?: string | null;
+      order?: number;
+      isPublished?: boolean;
+    }
+  ) {
+    return prisma.unit.update({
+      where: { id },
+      data: {
+        ...(data.title !== undefined ? { title: data.title.trim() } : {}),
+        ...(data.description !== undefined ? { description: data.description?.trim() || null } : {}),
+        ...(data.order !== undefined ? { order: Number(data.order) } : {}),
+        ...(data.isPublished !== undefined ? { isPublished: Boolean(data.isPublished) } : {}),
+      },
+      include: {
+        lessons: {
+          orderBy: { order: "asc" },
+        },
+      },
+    });
+  }
+
+  static async deleteUnit(id: string) {
+    return prisma.unit.delete({
+      where: { id },
+    });
+  }
+
+  static async reorderUnits(subjectId: string, orderedUnitIds: string[]) {
+    return prisma.$transaction(
+      orderedUnitIds.map((id, index) =>
+        prisma.unit.update({
+          where: { id, subjectId },
+          data: { order: index },
+        })
+      )
+    );
+  }
 }
+

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
 import { getCurrentUser, isStaff, canManageCurriculum } from "@/lib/auth";
+import { CurriculumService } from "@/services";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -14,14 +14,7 @@ export async function GET(req: Request, { params }: RouteParams) {
     }
 
     const { id } = await params;
-
-    const unit = await prisma.unit.findUnique({
-      where: { id },
-      include: {
-        subject: { select: { id: true, name: true, color: true } },
-        lessons: { orderBy: { order: "asc" } },
-      },
-    });
+    const unit = await CurriculumService.getUnitDetails(id);
 
     if (!unit) {
       return NextResponse.json({ error: "الوحدة غير موجودة" }, { status: 404 });
@@ -45,19 +38,11 @@ export async function PUT(req: Request, { params }: RouteParams) {
     const body = await req.json();
     const { title, description, order, isPublished } = body;
 
-    const unit = await prisma.unit.update({
-      where: { id },
-      data: {
-        ...(title !== undefined ? { title: title.trim() } : {}),
-        ...(description !== undefined ? { description: description?.trim() || null } : {}),
-        ...(order !== undefined ? { order: Number(order) } : {}),
-        ...(isPublished !== undefined ? { isPublished: Boolean(isPublished) } : {}),
-      },
-      include: {
-        lessons: {
-          orderBy: { order: "asc" },
-        },
-      },
+    const unit = await CurriculumService.updateUnit(id, {
+      title,
+      description,
+      order,
+      isPublished,
     });
 
     return NextResponse.json({ success: true, unit });
@@ -75,10 +60,7 @@ export async function DELETE(req: Request, { params }: RouteParams) {
     }
 
     const { id } = await params;
-
-    await prisma.unit.delete({
-      where: { id },
-    });
+    await CurriculumService.deleteUnit(id);
 
     return NextResponse.json({ success: true, message: "تم حذف الوحدة بنجاح" });
   } catch (error) {

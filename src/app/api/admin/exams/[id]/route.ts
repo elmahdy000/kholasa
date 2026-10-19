@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
 import { getCurrentUser, canManageExams } from "@/lib/auth";
+import { ExamService } from "@/services";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -14,37 +14,7 @@ export async function GET(req: Request, { params }: RouteParams) {
     }
 
     const { id } = await params;
-
-    const exam = await prisma.exam.findUnique({
-      where: { id },
-      include: {
-        subject: { select: { id: true, name: true, color: true } },
-        questions: {
-          orderBy: { order: "asc" },
-          include: {
-            question: {
-              include: {
-                options: { orderBy: { order: "asc" } },
-                explanation: true,
-                rubric: true,
-              },
-            },
-          },
-        },
-        attempts: {
-          take: 10,
-          orderBy: { startedAt: "desc" },
-          select: {
-            id: true,
-            score: true,
-            percentage: true,
-            timeSpentSeconds: true,
-            isCompleted: true,
-            user: { select: { id: true, name: true } },
-          },
-        },
-      },
-    });
+    const exam = await ExamService.getExamById(id);
 
     if (!exam) {
       return NextResponse.json({ error: "الامتحان غير موجود" }, { status: 404 });
@@ -68,14 +38,11 @@ export async function PATCH(req: Request, { params }: RouteParams) {
     const body = await req.json();
     const { isPractice, title, durationMinutes, description } = body;
 
-    const updated = await prisma.exam.update({
-      where: { id },
-      data: {
-        ...(isPractice !== undefined ? { isPractice: Boolean(isPractice) } : {}),
-        ...(title !== undefined ? { title: title.trim() } : {}),
-        ...(durationMinutes !== undefined ? { durationMinutes: Number(durationMinutes) } : {}),
-        ...(description !== undefined ? { description: description?.trim() || null } : {}),
-      },
+    const updated = await ExamService.updateExam(id, {
+      isPractice,
+      title,
+      durationMinutes,
+      description,
     });
 
     return NextResponse.json({ success: true, exam: updated });
@@ -93,10 +60,7 @@ export async function DELETE(req: Request, { params }: RouteParams) {
     }
 
     const { id } = await params;
-
-    await prisma.exam.delete({
-      where: { id },
-    });
+    await ExamService.deleteExam(id);
 
     return NextResponse.json({ success: true });
   } catch (error) {

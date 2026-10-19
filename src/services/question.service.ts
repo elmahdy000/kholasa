@@ -333,4 +333,71 @@ export class QuestionService {
       },
     };
   }
+
+  /**
+   * Bulk import questions in an atomic database transaction
+   */
+  static async bulkCreateQuestions(questions: any[]) {
+    if (!Array.isArray(questions) || questions.length === 0) {
+      throw new Error("لم يتم تقديم أي أسئلة صالحة للاستيراد");
+    }
+
+    return prisma.$transaction(async (tx) => {
+      let count = 0;
+      for (const q of questions) {
+        if (!q.statement || !q.subjectId) continue;
+
+        await tx.question.create({
+          data: {
+            statement: q.statement.trim(),
+            type: q.type || "MCQ",
+            difficulty: q.difficulty || "MEDIUM",
+            status: "PUBLISHED",
+            subjectId: q.subjectId,
+            unitId: q.unitId || null,
+            options: {
+              create: (q.options || []).map((opt: any, idx: number) => ({
+                text: opt.text.trim(),
+                isCorrect: Boolean(opt.isCorrect),
+                order: idx + 1,
+                explanation: opt.explanation?.trim() || null,
+              })),
+            },
+            ...(q.lessonId
+              ? {
+                  lessons: {
+                    create: {
+                      lessonId: q.lessonId,
+                    },
+                  },
+                }
+              : {}),
+            ...(q.concept && q.correctReason
+              ? {
+                  explanation: {
+                    create: {
+                      concept: q.concept.trim(),
+                      correctReason: q.correctReason.trim(),
+                    },
+                  },
+                }
+              : {}),
+            ...(q.type === "ESSAY" && q.modelAnswer
+              ? {
+                  rubric: {
+                    create: {
+                      modelAnswer: q.modelAnswer.trim(),
+                      maxScore: Number(q.points || 10),
+                    },
+                  },
+                }
+              : {}),
+          },
+        });
+        count++;
+      }
+      return count;
+    });
+  }
 }
+

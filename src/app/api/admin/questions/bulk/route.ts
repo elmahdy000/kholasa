@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
 import { getCurrentUser, canManageCurriculum } from "@/lib/auth";
+import { QuestionService } from "@/services";
 
 export async function POST(req: Request) {
   try {
@@ -19,71 +19,16 @@ export async function POST(req: Request) {
       );
     }
 
-    const importedCount = await prisma.$transaction(async (tx) => {
-      let count = 0;
-      for (const q of questions) {
-        if (!q.statement || !q.subjectId) continue;
-
-        await tx.question.create({
-          data: {
-            statement: q.statement,
-            type: q.type || "MCQ",
-            difficulty: q.difficulty || "MEDIUM",
-            status: "PUBLISHED",
-            subjectId: q.subjectId,
-            unitId: q.unitId || null,
-            options: {
-              create: (q.options || []).map((opt: any, idx: number) => ({
-                text: opt.text,
-                isCorrect: !!opt.isCorrect,
-                order: idx + 1,
-                explanation: opt.explanation || null,
-              })),
-            },
-            ...(q.lessonId
-              ? {
-                  lessons: {
-                    create: {
-                      lessonId: q.lessonId,
-                    },
-                  },
-                }
-              : {}),
-            ...(q.concept && q.correctReason
-              ? {
-                  explanation: {
-                    create: {
-                      concept: q.concept,
-                      correctReason: q.correctReason,
-                    },
-                  },
-                }
-              : {}),
-            ...(q.type === "ESSAY" && q.modelAnswer
-              ? {
-                  rubric: {
-                    create: {
-                      modelAnswer: q.modelAnswer,
-                      maxScore: q.points || 10,
-                    },
-                  },
-                }
-              : {}),
-          },
-        });
-        count++;
-      }
-      return count;
-    });
+    const importedCount = await QuestionService.bulkCreateQuestions(questions);
 
     return NextResponse.json({
       success: true,
       importedCount,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Bulk import failed:", error);
     return NextResponse.json(
-      { error: "حدث خطأ أثناء استيراد الأسئلة" },
+      { error: error?.message || "حدث خطأ أثناء استيراد الأسئلة" },
       { status: 500 }
     );
   }

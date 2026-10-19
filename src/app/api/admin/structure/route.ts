@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { getCurrentUser, isStaff, canManageStructure } from "@/lib/auth";
+import { getCurrentUser, isStaff } from "@/lib/auth";
+import { CurriculumService } from "@/services";
 
 // GET: Return full structure tree (Systems -> Grades -> Tracks -> Subjects)
 export async function GET() {
@@ -10,30 +10,7 @@ export async function GET() {
       return NextResponse.json({ error: "غير مصرح" }, { status: 403 });
     }
 
-    const systems = await prisma.educationalSystem.findMany({
-      orderBy: { order: "asc" },
-      include: {
-        grades: {
-          orderBy: { order: "asc" },
-          include: {
-            tracks: true,
-            subjects: {
-              orderBy: { order: "asc" },
-              include: {
-                _count: {
-                  select: {
-                    units: true,
-                    questions: true,
-                    exams: true,
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    });
-
+    const systems = await CurriculumService.getStructureTree();
     return NextResponse.json({ systems });
   } catch (error) {
     console.error("Failed to fetch educational structure:", error);
@@ -65,18 +42,11 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: "اسم النظام والرمز مطلوبان" }, { status: 400 });
       }
 
-      const existing = await prisma.educationalSystem.findUnique({ where: { code } });
-      if (existing) {
-        return NextResponse.json({ error: "هذا الرمز مستخدم بالفعل لنظام آخر" }, { status: 400 });
-      }
-
-      const system = await prisma.educationalSystem.create({
-        data: {
-          name,
-          code,
-          description: description || null,
-          isActive: isActive !== undefined ? !!isActive : true,
-        },
+      const system = await CurriculumService.createSystem({
+        name,
+        code,
+        description,
+        isActive,
       });
 
       return NextResponse.json({ success: true, item: system });
@@ -88,13 +58,11 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: "البيانات الأساسية للصف ناقصة" }, { status: 400 });
       }
 
-      const grade = await prisma.grade.create({
-        data: {
-          name,
-          code,
-          systemId,
-          order: order || 0,
-        },
+      const grade = await CurriculumService.createGrade({
+        name,
+        code,
+        systemId,
+        order,
       });
 
       return NextResponse.json({ success: true, item: grade });
@@ -106,29 +74,27 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: "البيانات الأساسية للمادة ناقصة" }, { status: 400 });
       }
 
-      const subject = await prisma.subject.create({
-        data: {
-          name,
-          code,
-          icon: icon || null,
-          color: color || "#4F46E5",
-          description: description || null,
-          systemId,
-          gradeId,
-          trackId: trackId || null,
-          isPublished: isPublished !== undefined ? !!isPublished : true,
-          order: order || 0,
-        },
+      const subject = await CurriculumService.createSubject({
+        name,
+        code,
+        icon,
+        color,
+        description,
+        systemId,
+        gradeId,
+        trackId,
+        isPublished,
+        order,
       });
 
       return NextResponse.json({ success: true, item: subject });
     }
 
     return NextResponse.json({ error: "نوع العنصر غير معروف" }, { status: 400 });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Failed to create educational structure item:", error);
     return NextResponse.json(
-      { error: "تعذر إضافة العنصر، تحقق من عدم تكرار الرمز" },
+      { error: error?.message || "تعذر إضافة العنصر، تحقق من عدم تكرار الرمز" },
       { status: 500 }
     );
   }
@@ -150,44 +116,17 @@ export async function PATCH(req: Request) {
     }
 
     if (type === "system") {
-      const updated = await prisma.educationalSystem.update({
-        where: { id },
-        data: {
-          name: data.name,
-          code: data.code,
-          description: data.description,
-          isActive: data.isActive !== undefined ? !!data.isActive : undefined,
-          order: data.order !== undefined ? Number(data.order) : undefined,
-        },
-      });
+      const updated = await CurriculumService.updateSystem(id, data);
       return NextResponse.json({ success: true, item: updated });
     }
 
     if (type === "grade") {
-      const updated = await prisma.grade.update({
-        where: { id },
-        data: {
-          name: data.name,
-          code: data.code,
-          order: data.order !== undefined ? Number(data.order) : undefined,
-        },
-      });
+      const updated = await CurriculumService.updateGrade(id, data);
       return NextResponse.json({ success: true, item: updated });
     }
 
     if (type === "subject") {
-      const updated = await prisma.subject.update({
-        where: { id },
-        data: {
-          name: data.name,
-          code: data.code,
-          icon: data.icon,
-          color: data.color,
-          description: data.description,
-          order: data.order !== undefined ? Number(data.order) : undefined,
-          isPublished: data.isPublished !== undefined ? !!data.isPublished : undefined,
-        },
-      });
+      const updated = await CurriculumService.updateSubject(id, data);
       return NextResponse.json({ success: true, item: updated });
     }
 
@@ -218,17 +157,17 @@ export async function DELETE(req: Request) {
     }
 
     if (type === "system") {
-      await prisma.educationalSystem.delete({ where: { id } });
+      await CurriculumService.deleteSystem(id);
       return NextResponse.json({ success: true });
     }
 
     if (type === "grade") {
-      await prisma.grade.delete({ where: { id } });
+      await CurriculumService.deleteGrade(id);
       return NextResponse.json({ success: true });
     }
 
     if (type === "subject") {
-      await prisma.subject.delete({ where: { id } });
+      await CurriculumService.deleteSubject(id);
       return NextResponse.json({ success: true });
     }
 

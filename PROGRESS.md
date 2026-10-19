@@ -58,21 +58,25 @@
 - [x] **TASK-011**: توحيد الهوية البصرية ونظام الـ Dark Mode (Carbon Zinc) وإزالة الإيموجي العشوائي تماماً.
 - [x] **TASK-012**: دعم طباعة ملخصات "الزتونة" وتقارير نتائج الامتحانات كملفات PDF منسقة.
 
-- [x] **TASK-013**: بناء طبقة الخدمات المركزية المتكاملة (`src/services/`):
-  - [`CurriculumService`](src/services/curriculum.service.ts): إدارة الأنظمة التعليمية، الصفوف، المواد، الوحدات، والدروس ونشرها.
-  - [`QuestionService`](src/services/question.service.ts): بنك الأسئلة، التصنيفات، الخيارات، والشروحات التفصيلية.
-  - [`ExamService`](src/services/exam.service.ts): توليد الامتحانات، إدارة المحاولات، وحساب درجات الأسئلة الموضوعية حصراً وفق قرار عدم تقييم المقالي آلياً (DEC-011).
-  - [`MistakeService`](src/services/mistake.service.ts): التكرار المتباعد وركن غلطاتي وتوليد امتحانات الأخطاء التراكمية.
+- [x] **TASK-013**: بناء وإتمام طبقة الخدمات المركزية المتكاملة (14 خدمة نطاقية في `src/services/`):
+  - [`CurriculumService`](src/services/curriculum.service.ts): إدارة الأنظمة التعليمية، الصفوف، المسارات، المواد، الوحدات، والدروس ونشرها وهيكلها الشجري.
+  - [`QuestionService`](src/services/question.service.ts): بنك الأسئلة، التصنيفات، الخيارات، الشروحات، والاستيراد الذكي المجمع (`bulkCreateQuestions`).
+  - [`ExamService`](src/services/exam.service.ts): توليد الامتحانات المخصصة والرسمية، إدارة المحاولات، حساب الدرجات الموضوعية، وتصحيح الأسئلة المقالية يدوياً للإدارة.
+  - [`DailyCheckinService`](src/services/daily-checkin.service.ts): توليد ومراجعة امتحان الدخول اليومي الإجباري مع الالتزام الصارم بقرار عدم تقييم المقالي آلياً (DEC-011).
+  - [`MistakeService`](src/services/mistake.service.ts): التكرار المتباعد وركن غلطاتي وتوليد امتحانات الأخطاء التراكمية وحساب عدد الأسئلة غير المتقنة.
   - [`StudentService`](src/services/student.service.ts): إحصائيات لوحة تحكم الطالب، متابعة تقدم المذاكرة، والإشارات المرجعية.
-  - [`AnalyticsService`](src/services/analytics.service.ts): مؤشرات الأداء لمنصة الإدارة وسجل النشاطات (`AuditLog`).
+  - [`LeaderboardService`](src/services/leaderboard.service.ts): حساب لوحة الصدارة، النقاط التراكمية (XP)، وسلاسل الالتزام مع محاكاة المنافسين الأكاديميين.
+  - [`SearchService`](src/services/search.service.ts): محرك البحث الشامل والموحد عبر المناهج والدروس وبنوك الأسئلة.
+  - [`AnalyticsService`](src/services/analytics.service.ts): مؤشرات الأداء لمنصة الإدارة وسجل النشاطات التدقيقي (`AuditLog`).
   - [`UserService`](src/services/user.service.ts): شؤون الطلاب، صلاحيات المشرفين والمعلمين، وإدارة الحسابات.
-  - [`MediaService`](src/services/media.service.ts): معالجة وحفظ ملفات البودكاست والخرائط الذهنية ومستندات PDF.
-  - [`OtpService`](src/services/otp.service.ts): التحقق بخطوتين OTP واسترجاع الحساب وكلمة المرور بأمان.
-  - [`NotificationService`](src/services/notification.service.ts): التنبيهات اللحظية والتذكير بامتحان الدخول وشعلة الالتزام.
+  - [`MediaService`](src/services/media.service.ts): معالجة وحفظ وتصنيف ملفات البودكاست والخرائط الذهنية ومستندات PDF.
+  - [`OtpService`](src/services/otp.service.ts): التحقق بخطوتين OTP واسترجاع الحساب وتحديث كلمة المرور بأمان.
+  - [`NotificationService`](src/services/notification.service.ts): التنبيهات اللحظية والتذكير اليومي وشعلة الالتزام وحمولة الـ Web Push.
   - [`OfflineService`](src/services/offline.service.ts) & [`offline-db.ts`](src/lib/offline-db.ts): حزم التخزين المحلي للدروس أوفلاين عبر IndexedDB.
 - [x] **TASK-014**: تطبيق قرار DEC-011 (عدم تقييم المقالي آلياً):
   - تمكين الطالب فور انتهاء وقت الامتحان من مقارنة إجابته المكتوبة ذاتياً بنموذج الإجابة المثالي المسترجع من بنك الأسئلة.
-  - منع احتساب الأسئلة المقالية كأخطاء تلقائية أو إنقاص النسبة المئوية للأسئلة الموضوعية.
+  - منع احتساب الأسئلة المقالية كأخطاء تلقائية أو إنقاص النسبة المئوية للأسئلة الموضوعية سواء في الامتحانات العامة أو امتحان الدخول اليومي.
+- [x] **TASK-015**: تفويض وتحديث كافة مسارات الـ API وصفحة المتصدرين للاعتماد الحصري على طبقة الخدمات الخلفية.
 
 ### المهام المعلقة والقادمة بحسب خارطة الطريق (Pending Roadmap Tasks)
 - [ ] **TASK-ROADMAP-1**: دمج واجهة استرجاع كلمة المرور (`/forgot-password`) على واجهات الـ Frontend لربطها بـ `OtpService`.
@@ -83,6 +87,7 @@
 
 ## 4. المهمة الحالية والإجراء التالي المطلوب (Active Task & Next Action)
 
-- **المهمة الحالية (Current Active Task):** تم بناء طبقة الخدمات المركزية الكاملة وحل متطلب مقارنة المقالي بنموذج الإجابة المثالي.
+- **المهمة الحالية (Current Active Task):** اكتمال بناء وربط طبقة الخدمات الخلفية المركزية بالكامل (14 خدمة) وتفويض كافة مسارات الـ API وصفحات الخادم إليها.
 - **الإجراء التالي المحدد (Exact Next Action Required):** استكمال ربط الواجهات التفاعلية للميزات الجديدة أو أي مهمة إضافية يوجه بها المستخدم.
-- **التبعيات والعوائق (Dependencies & Blockers):** تم اجتياز الفحص البرمجي بنجاح تام ولا توجد أي أخطاء برمجية أو عوائق.
+- **التبعيات والعوائق (Dependencies & Blockers):** لا توجد أي عوائق، قاعدة البيانات نشطة، واجتازت جميع اختبارات TypeScript و E2E بنسبة 100%.
+

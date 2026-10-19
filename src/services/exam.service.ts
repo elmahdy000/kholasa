@@ -388,4 +388,292 @@ export class ExamService {
       questionsBreakdown,
     };
   }
+
+  /**
+   * Create official pre-built exam (Admin)
+   */
+  static async createOfficialExam(input: {
+    title: string;
+    description?: string | null;
+    subjectId: string;
+    durationMinutes?: number;
+    isPractice?: boolean;
+    questionIds?: string[];
+    randomQuestionsCount?: number;
+  }) {
+    const {
+      title,
+      description,
+      subjectId,
+      durationMinutes = 30,
+      isPractice = false,
+      questionIds = [],
+      randomQuestionsCount = 0,
+    } = input;
+
+    let selectedQuestionIds: string[] = Array.isArray(questionIds) ? questionIds : [];
+
+    if (selectedQuestionIds.length === 0 && Number(randomQuestionsCount) > 0) {
+      const availableQuestions = await prisma.question.findMany({
+        where: { subjectId, status: "PUBLISHED" },
+        select: { id: true },
+        take: Number(randomQuestionsCount),
+      });
+      selectedQuestionIds = availableQuestions.map((q) => q.id);
+    }
+
+    return prisma.exam.create({
+      data: {
+        title: title.trim(),
+        description: description?.trim() || null,
+        subjectId,
+        durationMinutes: Number(durationMinutes),
+        isPractice: Boolean(isPractice),
+        questions: {
+          create: selectedQuestionIds.map((qId, idx) => ({
+            questionId: qId,
+            order: idx + 1,
+          })),
+        },
+      },
+      include: {
+        subject: { select: { id: true, name: true, color: true } },
+        questions: { select: { id: true } },
+      },
+    });
+  }
+
+  /**
+   * Update an existing exam (Admin)
+   */
+  static async updateExam(
+    id: string,
+    data: {
+      title?: string;
+      description?: string | null;
+      durationMinutes?: number;
+      isPractice?: boolean;
+    }
+  ) {
+    return prisma.exam.update({
+      where: { id },
+      data: {
+        ...(data.title !== undefined ? { title: data.title.trim() } : {}),
+        ...(data.description !== undefined ? { description: data.description?.trim() || null } : {}),
+        ...(data.durationMinutes !== undefined ? { durationMinutes: Number(data.durationMinutes) } : {}),
+        ...(data.isPractice !== undefined ? { isPractice: Boolean(data.isPractice) } : {}),
+      },
+    });
+  }
+
+  /**
+   * Delete an exam
+   */
+  static async deleteExam(id: string) {
+    return prisma.exam.delete({
+      where: { id },
+    });
+  }
+
+  /**
+   * List exams with analytics summary for Admin dashboard
+   */
+  static async getAdminExamsList(subjectId?: string) {
+    const where: any = {};
+    if (subjectId && subjectId !== "all") {
+      where.subjectId = subjectId;
+    }
+
+    const exams = await prisma.exam.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      include: {
+        subject: { select: { id: true, name: true, color: true } },
+        questions: {
+          select: { id: true, questionId: true },
+        },
+        attempts: {
+          select: { id: true, score: true, percentage: true, isCompleted: true },
+        },
+      },
+    });
+
+    return exams.map((exam) => {
+      const completedAttempts = exam.attempts.filter((a) => a.isCompleted);
+      const attemptsCount = completedAttempts.length;
+      const avgPercentage =
+        attemptsCount > 0
+          ? Math.round(
+              completedAttempts.reduce((sum, a) => sum + (a.percentage || 0), 0) /
+                attemptsCount
+            )
+          : 0;
+
+      return {
+        id: exam.id,
+        title: exam.title,
+        description: exam.description,
+        durationMinutes: exam.durationMinutes,
+        isPractice: exam.isPractice,
+        subject: exam.subject,
+        questionsCount: exam.questions.length,
+        attemptsCount,
+        avgPercentage,
+        createdAt: exam.createdAt,
+      };
+    });
+  }
+
+  /**
+   * Get student attempts list or single attempt with answers for grading
+   */
+  static async getAdminAttemptsList(params: {
+    examId?: string;
+    userId?: string;
+    search?: string;
+    id?: string;
+  }) {
+    const { examId, userId, search, id } = params;
+
+    if (id) {
+      return prisma.examAttempt.findUnique({
+        where: { id },
+        include: {
+          user: {
+            select: { id: true, name: true, phone: true, email: true },
+          },
+          exam: {
+            select: {
+              id: true,
+              title: true,
+              durationMinutes: true,
+              subject: { select: { id: true, name: true, color: true } },
+            },
+          },
+          answers: {
+            include: {
+              question: {
+                include: {
+                  options: true,
+                  explanation: true,
+                  rubric: true,
+                },
+              },
+            },
+          },
+        },
+      });
+    }
+
+    const where: any = {};
+    if (examId) where.examId = examId;
+    if (userId) where.userId = userId;
+    if (search) {
+      where.OR = [
+        { title: { contains: search, mode: "insensitive" } },
+        { user: { name: { contains: search, mode: "insensitive" } } },
+        { user: { phone: { contains: search } } },
+      ];
+    }
+
+    return prisma.examAttempt.findMany({
+      where,
+      take: 50,
+      orderBy: { startedAt: "desc" },
+      include: {
+        user: { select: { id: true, name: true, phone: true } },
+        exam: {
+          select: {
+            id: true,
+            title: true,
+            subject: { select: { id: true, name: true, color: true } },
+          },
+        },
+        _count: {
+          select: { answers: true },
+        },
+      },
+    });
+  }
+
+  /**
+   * Grade an individual student answer and optionally recalculate attempt total
+   */
+  static async gradeStudentAnswer(
+    answerId: string,
+    isCorrect?: boolean,
+    score?: number,
+    attemptId?: string
+  ) {
+    await prisma.studentAnswer.update({
+      where: { id: answerId },
+      data: {
+        isCorrect: isCorrect !== undefined ? Boolean(isCorrect) : undefined,
+        score: score !== undefined ? Number(score) : undefined,
+      },
+    });
+
+    if (attemptId) {
+      const allAnswers = await prisma.studentAnswer.findMany({
+        where: { attemptId },
+        select: { isCorrect: true, score: true },
+      });
+
+      const totalCorrect = allAnswers.filter((a) => a.isCorrect === true).length;
+      const totalAnswers = allAnswers.length || 1;
+      const percentage = Math.round((totalCorrect / totalAnswers) * 100);
+
+      return prisma.examAttempt.update({
+        where: { id: attemptId },
+        data: {
+          score: totalCorrect,
+          percentage,
+        },
+      });
+    }
+
+    return null;
+  }
+
+  /**
+   * Calculate available question count for custom exam builder
+   */
+  static async getExamBuilderStats(params: {
+    subjectId?: string;
+    unitId?: string;
+    lessonIds?: string[];
+    type?: string;
+    difficulty?: string;
+  }) {
+    const { subjectId, unitId, lessonIds, type, difficulty } = params;
+    if (!subjectId) return 0;
+
+    const where: any = {
+      status: "PUBLISHED",
+      subjectId,
+    };
+
+    if (unitId && unitId !== "all") {
+      where.unitId = unitId;
+    }
+
+    if (lessonIds && lessonIds.length > 0) {
+      where.lessons = {
+        some: {
+          lessonId: { in: lessonIds },
+        },
+      };
+    }
+
+    if (type && type !== "ALL" && type !== "MIXED") {
+      where.type = type;
+    }
+
+    if (difficulty && difficulty !== "ALL") {
+      where.difficulty = difficulty;
+    }
+
+    return prisma.question.count({ where });
+  }
 }
+

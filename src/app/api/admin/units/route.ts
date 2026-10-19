@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
 import { getCurrentUser, isStaff, canManageCurriculum } from "@/lib/auth";
+import { CurriculumService } from "@/services";
 
 // GET: List units by subjectId
 export async function GET(req: Request) {
@@ -11,20 +11,9 @@ export async function GET(req: Request) {
     }
 
     const { searchParams } = new URL(req.url);
-    const subjectId = searchParams.get("subjectId");
+    const subjectId = searchParams.get("subjectId") || undefined;
 
-    const where: any = {};
-    if (subjectId) where.subjectId = subjectId;
-
-    const units = await prisma.unit.findMany({
-      where,
-      orderBy: { order: "asc" },
-      include: {
-        lessons: { orderBy: { order: "asc" } },
-        _count: { select: { questions: true } },
-      },
-    });
-
+    const units = await CurriculumService.getUnits(subjectId);
     return NextResponse.json({ units });
   } catch (error) {
     console.error("Failed to fetch units:", error);
@@ -46,28 +35,12 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "يرجى تحديد المادة وعنوان الوحدة" }, { status: 400 });
     }
 
-    // Determine order if not specified
-    let unitOrder = order;
-    if (unitOrder === undefined || unitOrder === null) {
-      const highest = await prisma.unit.findFirst({
-        where: { subjectId },
-        orderBy: { order: "desc" },
-        select: { order: true },
-      });
-      unitOrder = (highest?.order ?? -1) + 1;
-    }
-
-    const unit = await prisma.unit.create({
-      data: {
-        subjectId,
-        title: title.trim(),
-        description: description?.trim() || null,
-        order: Number(unitOrder),
-        isPublished: isPublished !== undefined ? Boolean(isPublished) : true,
-      },
-      include: {
-        lessons: true,
-      },
+    const unit = await CurriculumService.createUnit({
+      subjectId,
+      title,
+      description,
+      order,
+      isPublished,
     });
 
     return NextResponse.json({ success: true, unit });

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
 import { getCurrentUser, canManageExams } from "@/lib/auth";
+import { ExamService } from "@/services";
 
 export async function GET(req: Request) {
   try {
@@ -10,52 +10,9 @@ export async function GET(req: Request) {
     }
 
     const { searchParams } = new URL(req.url);
-    const subjectId = searchParams.get("subjectId");
+    const subjectId = searchParams.get("subjectId") || undefined;
 
-    const where: any = {};
-    if (subjectId && subjectId !== "all") {
-      where.subjectId = subjectId;
-    }
-
-    const exams = await prisma.exam.findMany({
-      where,
-      orderBy: { createdAt: "desc" },
-      include: {
-        subject: { select: { id: true, name: true, color: true } },
-        questions: {
-          select: { id: true, questionId: true },
-        },
-        attempts: {
-          select: { id: true, score: true, percentage: true, isCompleted: true },
-        },
-      },
-    });
-
-    const formatted = exams.map((exam) => {
-      const completedAttempts = exam.attempts.filter((a) => a.isCompleted);
-      const attemptsCount = completedAttempts.length;
-      const avgPercentage =
-        attemptsCount > 0
-          ? Math.round(
-              completedAttempts.reduce((sum, a) => sum + (a.percentage || 0), 0) /
-                attemptsCount
-            )
-          : 0;
-
-      return {
-        id: exam.id,
-        title: exam.title,
-        description: exam.description,
-        durationMinutes: exam.durationMinutes,
-        isPractice: exam.isPractice,
-        subject: exam.subject,
-        questionsCount: exam.questions.length,
-        attemptsCount,
-        avgPercentage,
-        createdAt: exam.createdAt,
-      };
-    });
-
+    const formatted = await ExamService.getAdminExamsList(subjectId);
     return NextResponse.json({ exams: formatted });
   } catch (error) {
     console.error("Failed to fetch admin exams:", error);
@@ -88,36 +45,14 @@ export async function POST(req: Request) {
       );
     }
 
-    let selectedQuestionIds: string[] = Array.isArray(questionIds) ? questionIds : [];
-
-    // If random questions requested and no specific IDs provided
-    if (selectedQuestionIds.length === 0 && Number(randomQuestionsCount) > 0) {
-      const availableQuestions = await prisma.question.findMany({
-        where: { subjectId, status: "PUBLISHED" },
-        select: { id: true },
-        take: Number(randomQuestionsCount),
-      });
-      selectedQuestionIds = availableQuestions.map((q) => q.id);
-    }
-
-    const exam = await prisma.exam.create({
-      data: {
-        title: title.trim(),
-        description: description?.trim() || null,
-        subjectId,
-        durationMinutes: Number(durationMinutes),
-        isPractice: Boolean(isPractice),
-        questions: {
-          create: selectedQuestionIds.map((qId, idx) => ({
-            questionId: qId,
-            order: idx + 1,
-          })),
-        },
-      },
-      include: {
-        subject: { select: { id: true, name: true, color: true } },
-        questions: { select: { id: true } },
-      },
+    const exam = await ExamService.createOfficialExam({
+      title,
+      description,
+      subjectId,
+      durationMinutes,
+      isPractice,
+      questionIds,
+      randomQuestionsCount,
     });
 
     return NextResponse.json({

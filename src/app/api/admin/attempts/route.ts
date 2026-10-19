@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
 import { getCurrentUser, canGradeAttempts } from "@/lib/auth";
+import { ExamService } from "@/services";
 
 // GET: Return student exam attempts with optional filters (examId, userId, search)
 export async function GET(req: Request) {
@@ -11,75 +11,23 @@ export async function GET(req: Request) {
     }
 
     const { searchParams } = new URL(req.url);
-    const examId = searchParams.get("examId");
-    const userId = searchParams.get("userId");
-    const search = searchParams.get("search");
-    const id = searchParams.get("id"); // Fetch single attempt with detailed answers
+    const examId = searchParams.get("examId") || undefined;
+    const userId = searchParams.get("userId") || undefined;
+    const search = searchParams.get("search") || undefined;
+    const id = searchParams.get("id") || undefined;
 
     if (id) {
-      const singleAttempt = await prisma.examAttempt.findUnique({
-        where: { id },
-        include: {
-          user: {
-            select: { id: true, name: true, phone: true, email: true },
-          },
-          exam: {
-            select: {
-              id: true,
-              title: true,
-              durationMinutes: true,
-              subject: { select: { id: true, name: true, color: true } },
-            },
-          },
-          answers: {
-            include: {
-              question: {
-                include: {
-                  options: true,
-                  explanation: true,
-                  rubric: true,
-                },
-              },
-            },
-          },
-        },
-      });
-
-      if (!singleAttempt) {
+      const singleAttempt = await ExamService.getAdminAttemptsList({ id });
+      if (!singleAttempt || Array.isArray(singleAttempt)) {
         return NextResponse.json({ error: "المحاولة غير موجودة" }, { status: 404 });
       }
-
       return NextResponse.json({ attempt: singleAttempt });
     }
 
-    const where: any = {};
-    if (examId) where.examId = examId;
-    if (userId) where.userId = userId;
-    if (search) {
-      where.OR = [
-        { title: { contains: search, mode: "insensitive" } },
-        { user: { name: { contains: search, mode: "insensitive" } } },
-        { user: { phone: { contains: search } } },
-      ];
-    }
-
-    const attempts = await prisma.examAttempt.findMany({
-      where,
-      take: 50,
-      orderBy: { startedAt: "desc" },
-      include: {
-        user: { select: { id: true, name: true, phone: true } },
-        exam: {
-          select: {
-            id: true,
-            title: true,
-            subject: { select: { id: true, name: true, color: true } },
-          },
-        },
-        _count: {
-          select: { answers: true },
-        },
-      },
+    const attempts = await ExamService.getAdminAttemptsList({
+      examId,
+      userId,
+      search,
     });
 
     return NextResponse.json({ attempts });
@@ -107,38 +55,14 @@ export async function PATCH(req: Request) {
       return NextResponse.json({ error: "معرف الإجابة مطلوب" }, { status: 400 });
     }
 
-    // Update the individual answer
-    await prisma.studentAnswer.update({
-      where: { id: answerId },
-      data: {
-        isCorrect: isCorrect !== undefined ? !!isCorrect : undefined,
-        score: score !== undefined ? Number(score) : undefined,
-      },
-    });
+    const updatedAttempt = await ExamService.gradeStudentAnswer(
+      answerId,
+      isCorrect,
+      score,
+      attemptId
+    );
 
-    // If attemptId is provided, recalculate total score & percentage
-    if (attemptId) {
-      const allAnswers = await prisma.studentAnswer.findMany({
-        where: { attemptId },
-        select: { isCorrect: true, score: true },
-      });
-
-      const totalCorrect = allAnswers.filter((a) => a.isCorrect === true).length;
-      const totalAnswers = allAnswers.length || 1;
-      const percentage = Math.round((totalCorrect / totalAnswers) * 100);
-
-      const updatedAttempt = await prisma.examAttempt.update({
-        where: { id: attemptId },
-        data: {
-          score: totalCorrect,
-          percentage,
-        },
-      });
-
-      return NextResponse.json({ success: true, updatedAttempt });
-    }
-
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, updatedAttempt });
   } catch (error) {
     console.error("Failed to update student grade:", error);
     return NextResponse.json(
