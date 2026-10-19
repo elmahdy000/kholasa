@@ -97,10 +97,12 @@ export default async function ExamResultsPage({
     include: { subject: true },
   });
 
-  const correctAnswers = attempt.answers.filter((a) => a.isCorrect === true);
-  const wrongAnswers = attempt.answers.filter((a) => a.isCorrect === false);
+  const essayAnswers = attempt.answers.filter((a) => a.question.type === "ESSAY");
+  const objectiveAnswers = attempt.answers.filter((a) => a.question.type !== "ESSAY");
+  const correctAnswers = objectiveAnswers.filter((a) => a.isCorrect === true);
+  const wrongAnswers = objectiveAnswers.filter((a) => a.isCorrect === false);
   const unansweredCount =
-    attempt.totalQuestions - (correctAnswers.length + wrongAnswers.length);
+    attempt.totalQuestions - (correctAnswers.length + wrongAnswers.length + essayAnswers.length);
 
   const percentage = attempt.percentage;
   const minutesSpent = Math.floor(attempt.timeSpentSeconds / 60);
@@ -282,10 +284,12 @@ export default async function ExamResultsPage({
               return (
                 <div
                   key={ans.id}
-                  className={`p-5 sm:p-6 rounded-2xl border shadow-2xs space-y-4 ${
-                    isCorrect
-                      ? "bg-white dark:bg-zinc-950 border-slate-200 dark:border-zinc-800"
-                      : "bg-white dark:bg-zinc-950 border-red-200 dark:border-red-900/40"
+                  className={`p-5 sm:p-6 rounded-2xl border shadow-2xs space-y-4 bg-white dark:bg-zinc-950 ${
+                    q.type === "ESSAY"
+                      ? "border-indigo-200 dark:border-indigo-900/50"
+                      : isCorrect
+                      ? "border-slate-200 dark:border-zinc-800"
+                      : "border-red-200 dark:border-red-900/40"
                   }`}
                 >
                   {/* Status header */}
@@ -294,25 +298,32 @@ export default async function ExamResultsPage({
                       <span className="text-xs font-mono font-bold text-[#4F46E5] dark:text-indigo-400">
                         سؤال {idx + 1}
                       </span>
-                      <span
-                        className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
-                          isCorrect
-                            ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400"
-                            : "bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400"
-                        }`}
-                      >
-                        {isCorrect ? (
-                          <>
-                            <CheckCircle2 className="w-3 h-3" />
-                            <span>صح عليك! برافو</span>
-                          </>
-                        ) : (
-                          <>
-                            <XCircle className="w-3 h-3" />
-                            <span>مش صحيحة</span>
-                          </>
-                        )}
-                      </span>
+                      {q.type === "ESSAY" ? (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800">
+                          <BookOpen className="w-3 h-3" />
+                          <span>سؤال مقالي • قارن إجابتك بالنموذج المثالي</span>
+                        </span>
+                      ) : (
+                        <span
+                          className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
+                            isCorrect
+                              ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400"
+                              : "bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400"
+                          }`}
+                        >
+                          {isCorrect ? (
+                            <>
+                              <CheckCircle2 className="w-3 h-3" />
+                              <span>صح عليك! برافو</span>
+                            </>
+                          ) : (
+                            <>
+                              <XCircle className="w-3 h-3" />
+                              <span>مش صحيحة</span>
+                            </>
+                          )}
+                        </span>
+                      )}
                     </div>
 
                     {relatedLesson && (
@@ -336,24 +347,28 @@ export default async function ExamResultsPage({
                   {/* Essay or MCQ Options comparison */}
                   {q.type === "ESSAY" ? (
                     <div className="space-y-3 pt-1">
-                      {ans.essayText && (
-                        <div className="p-4 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900/60 space-y-1.5">
-                          <span className="text-xs font-bold text-slate-500 dark:text-zinc-400 block">
-                            إجابتك المسجلة:
-                          </span>
-                          <p className="text-xs sm:text-sm text-[#0F172A] dark:text-zinc-100 leading-relaxed font-medium">
-                            {ans.essayText}
-                          </p>
-                        </div>
-                      )}
+                      {/* Notice banner */}
+                      <div className="p-3 rounded-xl bg-indigo-50/70 dark:bg-indigo-950/30 border border-indigo-200/60 dark:border-indigo-800/40 text-xs text-indigo-800 dark:text-indigo-300 flex items-start gap-2">
+                        <Sparkles className="w-4 h-4 text-indigo-600 dark:text-indigo-400 shrink-0 mt-0.5" />
+                        <span>الأسئلة المقالية لا يتم تقييمها آلياً؛ قارن إجابتك المكتوبة بنموذج الإجابة الرسمي من بنك الأسئلة أدناه لتحديد مدى تغطيتك للنقاط المطلوبة.</span>
+                      </div>
+
+                      <div className="p-4 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900/60 space-y-1.5">
+                        <span className="text-xs font-bold text-slate-500 dark:text-zinc-400 block">
+                          إجابتك المسجلة:
+                        </span>
+                        <p className="text-xs sm:text-sm text-[#0F172A] dark:text-zinc-100 leading-relaxed font-medium">
+                          {ans.essayText?.trim() || <span className="text-slate-400 italic">لم يتم إدخال إجابة مكتوبة لهذا السؤال</span>}
+                        </p>
+                      </div>
 
                       {q.rubric && (
                         <div className="p-4 rounded-xl border border-emerald-200 dark:border-emerald-900/40 bg-emerald-50/50 dark:bg-emerald-950/20 space-y-2">
                           <span className="text-xs font-bold text-emerald-700 dark:text-emerald-400 block flex items-center gap-1.5">
                             <CheckCircle2 className="w-4 h-4 shrink-0" />
-                            <span>نموذج الإجابة ومعايير التقييم:</span>
+                            <span>نموذج الإجابة المثالي من بنك الأسئلة:</span>
                           </span>
-                          <p className="text-xs sm:text-sm text-emerald-900 dark:text-emerald-200 leading-relaxed font-medium">
+                          <p className="text-xs sm:text-sm text-emerald-900 dark:text-emerald-200 leading-relaxed font-medium whitespace-pre-line">
                             {q.rubric.modelAnswer}
                           </p>
                         </div>

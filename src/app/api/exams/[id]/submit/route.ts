@@ -39,6 +39,7 @@ export async function POST(
 
     let correctCount = 0;
     const totalQuestions = exam.questions.length;
+    let totalObjectiveQuestions = 0;
     const studentAnswersToCreate: any[] = [];
     const mistakesToUpsert: string[] = [];
 
@@ -53,6 +54,7 @@ export async function POST(
       let score = 0;
 
       if (q.type === "MCQ" || q.type === "TRUE_FALSE") {
+        totalObjectiveQuestions++;
         const selectedOpt = q.options.find((o) => o.id === selectedOptionId);
         if (selectedOpt && selectedOpt.isCorrect) {
           isCorrect = true;
@@ -64,15 +66,10 @@ export async function POST(
           mistakesToUpsert.push(q.id);
         }
       } else if (q.type === "ESSAY") {
-        // Simple heuristic essay check (in production or with rubric comparison)
-        if (essayText && essayText.trim().length > 10) {
-          isCorrect = true;
-          score = q.rubric?.maxScore || 10;
-          correctCount++;
-        } else {
-          isCorrect = false;
-          mistakesToUpsert.push(q.id);
-        }
+        // DEC-011: Essay questions are NOT evaluated automatically.
+        // The student compares their answer with the ideal model answer after time finishes.
+        isCorrect = null;
+        score = 0;
       }
 
       studentAnswersToCreate.push({
@@ -86,7 +83,9 @@ export async function POST(
     }
 
     const percentage =
-      totalQuestions > 0 ? (correctCount / totalQuestions) * 100 : 0;
+      totalObjectiveQuestions > 0
+        ? (correctCount / totalObjectiveQuestions) * 100
+        : 100;
 
     // Transaction to update attempt, save answers, and record mistakes
     const result = await prisma.$transaction(async (tx) => {
