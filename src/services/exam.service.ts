@@ -253,19 +253,27 @@ export class ExamService {
       throw new Error("محاولة الامتحان غير صالحة أو غير مصرح بها");
     }
 
-    // 1. Calculate score on objective questions
+    // Collect all exam questions (from exam.questions, or fallback to attempt.answers questions)
+    const examQuestions = attempt.exam?.questions?.length
+      ? attempt.exam.questions.map((eq) => eq.question)
+      : attempt.answers.map((a) => a.question);
+
+    const studentAnswersMap = new Map(
+      attempt.answers.map((a) => [a.questionId, a])
+    );
+
+    // 1. Calculate score on objective questions across all exam questions
     let objectiveQuestionsCount = 0;
     let correctCount = 0;
     const mistakesToRecord: string[] = [];
 
-    for (const ans of attempt.answers) {
-      const q = ans.question;
-
+    for (const q of examQuestions) {
       if (q.type === QuestionType.MCQ || q.type === QuestionType.TRUE_FALSE) {
         objectiveQuestionsCount++;
+        const ans = studentAnswersMap.get(q.id);
         const correctOption = q.options.find((o) => o.isCorrect);
 
-        if (ans.selectedOptionId && correctOption && ans.selectedOptionId === correctOption.id) {
+        if (ans && ans.selectedOptionId && correctOption && ans.selectedOptionId === correctOption.id) {
           correctCount++;
         } else {
           mistakesToRecord.push(q.id);
@@ -619,9 +627,11 @@ export class ExamService {
         select: { isCorrect: true, score: true },
       });
 
-      const totalCorrect = allAnswers.filter((a) => a.isCorrect === true).length;
-      const totalAnswers = allAnswers.length || 1;
-      const percentage = Math.round((totalCorrect / totalAnswers) * 100);
+      // Filter out answers with isCorrect === null (e.g. ungraded essay questions under DEC-011)
+      const scorableAnswers = allAnswers.filter((a) => a.isCorrect !== null);
+      const totalCorrect = scorableAnswers.filter((a) => a.isCorrect === true).length;
+      const totalDenominator = scorableAnswers.length || 1;
+      const percentage = Math.round((totalCorrect / totalDenominator) * 100);
 
       return prisma.examAttempt.update({
         where: { id: attemptId },

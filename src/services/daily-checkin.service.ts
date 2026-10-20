@@ -254,7 +254,7 @@ export class DailyCheckinService {
                 selectedOptionId: ans.selectedOptionId || null,
                 essayText: ans.essayText || null,
                 isCorrect: isQCorrect,
-                score: isQCorrect === true ? 1 : 0,
+                score: isQCorrect === true ? 1 : isEssay ? null : 0,
               };
             }),
           },

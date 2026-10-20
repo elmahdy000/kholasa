@@ -229,6 +229,13 @@ export class QuestionService {
       },
     });
 
+    // 1.5 Clean mismatched options or rubric when changing question type
+    if (data.type === QuestionType.ESSAY) {
+      await prisma.questionOption.deleteMany({ where: { questionId: id } });
+    } else if (data.type === QuestionType.MCQ || data.type === QuestionType.TRUE_FALSE) {
+      await prisma.essayRubric.deleteMany({ where: { questionId: id } });
+    }
+
     // 2. Replace options if provided
     if (data.options) {
       await prisma.questionOption.deleteMany({ where: { questionId: id } });

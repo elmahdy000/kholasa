@@ -130,6 +130,22 @@ export class UserService {
       throw new Error("غير مصرح لك بحذف المستخدمين");
     }
 
+    const targetUser = await prisma.user.findUnique({
+      where: { id: targetUserId },
+      select: { role: true },
+    });
+
+    if (!targetUser) {
+      throw new Error("المستخدم المراد حذفه غير موجود");
+    }
+
+    if (
+      (targetUser.role === Role.SUPER_ADMIN || targetUser.role === Role.ADMIN) &&
+      actorRole !== Role.SUPER_ADMIN
+    ) {
+      throw new Error("فقط المشرف العام يملك صلاحية حذف حسابات المسؤولين");
+    }
+
     return prisma.user.delete({
       where: { id: targetUserId },
     });

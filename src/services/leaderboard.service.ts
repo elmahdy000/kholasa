@@ -85,9 +85,10 @@ export class LeaderboardService {
    * Fetch leaderboard rankings with real student metrics
    */
   static async getLeaderboard(currentUserId?: string, limit = 20): Promise<LeaderboardEntry[]> {
+    // Fetch up to 100 students to properly compute and rank by XP
     const realUsers = await prisma.user.findMany({
       where: { role: Role.STUDENT },
-      take: limit,
+      take: Math.max(limit * 3, 100),
       include: {
         system: true,
         grade: true,
@@ -101,6 +102,28 @@ export class LeaderboardService {
         },
       },
     });
+
+    // Ensure current student is included in calculation even if outside the initial slice
+    if (currentUserId && !realUsers.some((u) => u.id === currentUserId)) {
+      const currentUser = await prisma.user.findUnique({
+        where: { id: currentUserId },
+        include: {
+          system: true,
+          grade: true,
+          progress: {
+            where: { isCompleted: true },
+            select: { id: true },
+          },
+          attempts: {
+            where: { isCompleted: true },
+            select: { id: true, score: true, percentage: true },
+          },
+        },
+      });
+      if (currentUser) {
+        realUsers.push(currentUser);
+      }
+    }
 
     const mappedReal: LeaderboardEntry[] = realUsers.map((u) => {
       const completedLessons = u.progress.length;

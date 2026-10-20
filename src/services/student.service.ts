@@ -26,32 +26,36 @@ export class StudentService {
       : [];
 
     // Fetch progress and completions
-    const [progressRecords, attempts, unresolvedMistakes, bookmarksCount] = await Promise.all([
-      prisma.studentProgress.findMany({
-        where: { userId },
-        include: { lesson: { select: { id: true, title: true, unitId: true } } },
-      }),
-      prisma.examAttempt.findMany({
-        where: { userId, isCompleted: true },
-        orderBy: { completedAt: "desc" },
-        take: 5,
-        include: {
-          exam: {
-            select: {
-              id: true,
-              title: true,
-              subject: { select: { name: true, color: true } },
+    const [progressRecords, recentAttempts, totalAttemptsCount, unresolvedMistakes, bookmarksCount] =
+      await Promise.all([
+        prisma.studentProgress.findMany({
+          where: { userId },
+          include: { lesson: { select: { id: true, title: true, unitId: true } } },
+        }),
+        prisma.examAttempt.findMany({
+          where: { userId, isCompleted: true },
+          orderBy: { completedAt: "desc" },
+          take: 5,
+          include: {
+            exam: {
+              select: {
+                id: true,
+                title: true,
+                subject: { select: { name: true, color: true } },
+              },
             },
           },
-        },
-      }),
-      prisma.mistakeReview.count({
-        where: { userId, isResolved: false },
-      }),
-      prisma.bookmark.count({
-        where: { userId },
-      }),
-    ]);
+        }),
+        prisma.examAttempt.count({
+          where: { userId, isCompleted: true },
+        }),
+        prisma.mistakeReview.count({
+          where: { userId, isResolved: false },
+        }),
+        prisma.bookmark.count({
+          where: { userId },
+        }),
+      ]);
 
     const completedLessonsCount = progressRecords.filter((p) => p.isCompleted).length;
 
@@ -69,10 +73,10 @@ export class StudentService {
 
     const isDailyExamCompletedToday = !!todayAttempt;
 
-    // Calculate overall average score
+    // Calculate recent average score
     const avgScore =
-      attempts.length > 0
-        ? Math.round(attempts.reduce((sum, a) => sum + a.percentage, 0) / attempts.length)
+      recentAttempts.length > 0
+        ? Math.round(recentAttempts.reduce((sum, a) => sum + a.percentage, 0) / recentAttempts.length)
         : 0;
 
     return {
@@ -87,14 +91,14 @@ export class StudentService {
       },
       stats: {
         completedLessonsCount,
-        totalAttempts: attempts.length,
+        totalAttempts: totalAttemptsCount,
         averageScore: avgScore,
         unresolvedMistakesCount: unresolvedMistakes,
         bookmarksCount,
         isDailyExamCompletedToday,
       },
       subjects,
-      recentAttempts: attempts,
+      recentAttempts,
     };
   }
 

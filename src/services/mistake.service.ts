@@ -58,9 +58,10 @@ export class MistakeService {
    * Mark a mistake as mastered / resolved
    */
   static async resolveMistake(userId: string, questionId: string) {
-    return prisma.mistakeReview.update({
+    return prisma.mistakeReview.updateMany({
       where: {
-        userId_questionId: { userId, questionId },
+        userId,
+        questionId,
       },
       data: {
         isResolved: true,
