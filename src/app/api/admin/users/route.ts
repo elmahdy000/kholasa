@@ -42,7 +42,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "غير مصرح لك بالوصول" }, { status: 403 });
     }
 
-    const body = await req.json();
+    const body = await req.json().catch(() => ({}));
     const newUser = await UserService.createUser(body, currentUser.role);
 
     return NextResponse.json({ success: true, user: newUser });

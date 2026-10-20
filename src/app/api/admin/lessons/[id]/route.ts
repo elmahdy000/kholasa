@@ -35,7 +35,7 @@ export async function PUT(req: Request, { params }: RouteParams) {
     }
 
     const { id } = await params;
-    const body = await req.json();
+    const body = await req.json().catch(() => ({}));
 
     const fullLesson = await CurriculumService.updateLesson(id, body);
 
@@ -43,9 +43,12 @@ export async function PUT(req: Request, { params }: RouteParams) {
       success: true,
       lesson: fullLesson,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Failed to update lesson:", error);
-    return NextResponse.json({ error: "تعذر حفظ تعديلات الدرس" }, { status: 500 });
+    return NextResponse.json(
+      { error: error?.message || "تعذر حفظ تعديلات الدرس" },
+      { status: 500 }
+    );
   }
 }
 
@@ -60,8 +63,11 @@ export async function DELETE(req: Request, { params }: RouteParams) {
     await CurriculumService.deleteLesson(id);
 
     return NextResponse.json({ success: true, message: "تم حذف الدرس بنجاح" });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Failed to delete lesson:", error);
-    return NextResponse.json({ error: "تعذر حذف الدرس" }, { status: 500 });
+    return NextResponse.json(
+      { error: error?.message || "تعذر حذف الدرس" },
+      { status: 500 }
+    );
   }
 }

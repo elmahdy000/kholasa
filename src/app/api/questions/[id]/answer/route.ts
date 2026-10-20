@@ -9,7 +9,7 @@ export async function POST(
 ) {
   try {
     const { id: questionId } = await params;
-    const body = await req.json();
+    const body = await req.json().catch(() => ({}));
     const { selectedOptionId, essayText } = body;
 
     const question = await QuestionService.getQuestionById(questionId);

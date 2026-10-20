@@ -13,7 +13,7 @@ export async function POST(
     }
 
     await params; // consume params
-    const body = await req.json();
+    const body = await req.json().catch(() => ({}));
     const { attemptId, answers = {}, totalTimeSpentSeconds = 0 } = body;
 
     if (!attemptId) {
@@ -34,9 +34,11 @@ export async function POST(
     });
   } catch (error: any) {
     console.error("Failed to submit exam:", error);
+    const msg = error?.message || "";
+    const isClientError = msg.includes("غير موجودة") || msg.includes("مسبقاً") || msg.includes("غير مصرح");
     return NextResponse.json(
-      { error: error?.message || "تعذر تسليم الامتحان" },
-      { status: 500 }
+      { error: msg || "تعذر تسليم الامتحان" },
+      { status: isClientError ? 400 : 500 }
     );
   }
 }

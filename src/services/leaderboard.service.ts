@@ -157,6 +157,15 @@ export class LeaderboardService {
     // Sort descending by XP
     combined.sort((a, b) => b.xp - a.xp);
 
-    return combined.slice(0, limit);
+    const topSlice = combined.slice(0, limit);
+    if (currentUserId && !topSlice.some((u) => u.id === currentUserId)) {
+      const currentUserEntry = combined.find((u) => u.id === currentUserId);
+      if (currentUserEntry) {
+        topSlice.push(currentUserEntry);
+      }
+    }
+
+    return topSlice;
   }
 }
+

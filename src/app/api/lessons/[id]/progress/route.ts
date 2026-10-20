@@ -13,7 +13,7 @@ export async function POST(
     }
 
     const { id: lessonId } = await params;
-    const body = await req.json();
+    const body = await req.json().catch(() => ({}));
     const { progressPercent = 100 } = body;
 
     const progress = await StudentService.updateLessonProgress(
@@ -23,11 +23,13 @@ export async function POST(
     );
 
     return NextResponse.json({ success: true, progress });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Failed to update lesson progress:", error);
+    const isNotFound = error?.message?.includes("غير موجود");
     return NextResponse.json(
-      { error: "تعذر تحديث تقدم الدرس" },
-      { status: 500 }
+      { error: error?.message || "تعذر تحديث تقدم الدرس" },
+      { status: isNotFound ? 404 : 500 }
     );
   }
 }
+

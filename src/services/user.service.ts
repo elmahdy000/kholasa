@@ -169,6 +169,22 @@ export class UserService {
       throw new Error("فقط المشرف العام يمكنه ترقية مستخدمين إلى رتبة مشرف عام");
     }
 
+    if (data.phone !== undefined && data.phone.trim()) {
+      const cleanPhone = data.phone.trim();
+      const existingPhone = await prisma.user.findFirst({
+        where: { phone: cleanPhone, NOT: { id } },
+      });
+      if (existingPhone) throw new Error("رقم الهاتف مسجل بالفعل لمستخدم آخر");
+    }
+
+    if (data.email !== undefined && data.email.trim()) {
+      const cleanEmail = data.email.trim().toLowerCase();
+      const existingEmail = await prisma.user.findFirst({
+        where: { email: cleanEmail, NOT: { id } },
+      });
+      if (existingEmail) throw new Error("البريد الإلكتروني مسجل بالفعل لمستخدم آخر");
+    }
+
     return prisma.user.update({
       where: { id },
       data: {
@@ -213,6 +229,14 @@ export class UserService {
     userId: string,
     data: { name?: string; phone?: string; gradeId?: string; systemId?: string; avatar?: string }
   ) {
+    if (data.phone !== undefined && data.phone?.trim()) {
+      const cleanPhone = data.phone.trim();
+      const existingPhone = await prisma.user.findFirst({
+        where: { phone: cleanPhone, NOT: { id: userId } },
+      });
+      if (existingPhone) throw new Error("رقم الهاتف مسجل بالفعل لمستخدم آخر");
+    }
+
     return prisma.user.update({
       where: { id: userId },
       data: {
@@ -237,9 +261,13 @@ export class UserService {
   /**
    * Delete user account with permission check
    */
-  static async deleteUser(targetUserId: string, actorRole: string) {
+  static async deleteUser(targetUserId: string, actorRole: string, actorUserId?: string) {
     if (actorRole !== Role.SUPER_ADMIN && actorRole !== Role.ADMIN) {
       throw new Error("غير مصرح لك بحذف المستخدمين");
+    }
+
+    if (actorUserId && targetUserId === actorUserId) {
+      throw new Error("لا يمكنك حذف حسابك الشخصي أثناء تسجيل الدخول");
     }
 
     const targetUser = await prisma.user.findUnique({

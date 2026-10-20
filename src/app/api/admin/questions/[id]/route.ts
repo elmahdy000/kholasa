@@ -35,7 +35,7 @@ export async function PUT(req: Request, { params }: RouteParams) {
     }
 
     const { id } = await params;
-    const body = await req.json();
+    const body = await req.json().catch(() => ({}));
     const {
       statement,
       type,
@@ -78,9 +78,12 @@ export async function PUT(req: Request, { params }: RouteParams) {
       success: true,
       question: updated,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Failed to update question:", error);
-    return NextResponse.json({ error: "تعذر تحديث السؤال" }, { status: 500 });
+    return NextResponse.json(
+      { error: error?.message || "تعذر تحديث السؤال" },
+      { status: 500 }
+    );
   }
 }
 
@@ -95,8 +98,11 @@ export async function DELETE(req: Request, { params }: RouteParams) {
     await QuestionService.deleteQuestion(id);
 
     return NextResponse.json({ success: true, message: "تم حذف السؤال بنجاح" });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Failed to delete question:", error);
-    return NextResponse.json({ error: "تعذر حذف السؤال" }, { status: 500 });
+    return NextResponse.json(
+      { error: error?.message || "تعذر حذف السؤال" },
+      { status: 500 }
+    );
   }
 }

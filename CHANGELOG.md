@@ -47,6 +47,22 @@
   - تفويض مسارات المصادقة `api/auth/register` و `api/auth/login` إلى `UserService.registerStudent` و `UserService.findByIdentifier`.
   - تفويض إدارة ورفع الملفات `api/admin/upload` إلى `MediaService.listAllMediaFiles`, `MediaService.saveUploadedBuffer`, و `MediaService.deleteMediaFile`.
   - اجتياز اختبارات تدقيق الخدمات الـ 14 كاملة واختبارات E2E على الـ 26 مساراً بنجاح 100%.
+- [x] **التدقيق المنطقي وحصانة الحالات الحدية (Comprehensive Business Logic & Edge-Case Hardening):**
+  - **حماية الإشارات المرجعية (`StudentService.toggleBookmark` و `getBookmarks`):**
+    - إضافة تحقق مسبق من وجود الدرس أو السؤال لمنع حدوث Foreign Key Constraint Failure عند إرسال معرفات غير صحيحة.
+    - إثراء دالة `getBookmarks` لجلب وتضمين تفاصيل الدرس والمادة والسؤال بدلاً من مجرد المعرفات الأولية.
+    - دعم مسار `GET /api/bookmarks` لجلب إشارات الطالب المرجعية ومواءمة أخطاء عدم الوجود إلى `404`.
+  - **حماية تقدم الدروس (`StudentService.updateLessonProgress`):**
+    - تقييد نسبة التقدم داخل النطاق المغلق `[0, 100]` باستخدام `Math.min(100, Math.max(0, ...))` والتحقق من وجود الدرس لمنع انهيار الاستعلام.
+  - **حماية وتأمين المستخدمين (`UserService`):**
+    - إضافة فحص استباقي لفرادة رقم الهاتف والبريد الإلكتروني عند التحديث (`updateUser` و `updateStudentProfile`) لمنع انهيارات قيود التفرد في Prisma.
+    - حماية المشرفين من الحذف الذاتي (`self-deletion protection`) ومنع المشرفين من حذف حسابات Super Admin أو حساباتهم الشخصية.
+  - **حصانة لوحة الصدارة (`LeaderboardService`):**
+    - الحفاظ على ظهور بطاقة ورتبة الطالب الحالي في لوحة الصدارة حتى لو تجاوزت رتبته الحد الأقصى المعروض في القائمة الأولى.
+  - **حماية مسارات الـ API بالكامل ضد تعطل تحليل الـ JSON:**
+    - تأمين استدعاءات `req.json().catch(() => ({}))` في كافة مسارات الـ API لمنع انهيار الخادم بـ 500 عند إرسال طلبات فارغة أو تالفة وإعادتها كـ 400 استجابة واضحة.
+    - معالجة حذف ملفات الميديا في `MediaService.deleteMediaFile` لتكون Idempotent بأمان عند عدم وجود الملف على القرص (`ENOENT`).
+    - إضافة التحقق من وجود الكيان قبل تعديل حالة نشره في `CurriculumService.toggleEntityPublish`.
 
 
 

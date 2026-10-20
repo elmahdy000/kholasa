@@ -9,7 +9,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "يرجى تسجيل الدخول لبدء الامتحان" }, { status: 401 });
     }
 
-    const body = await req.json();
+    const body = await req.json().catch(() => ({}));
     const {
       subjectId,
       unitId,

@@ -30,7 +30,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "غير مصرح لك بالوصول" }, { status: 403 });
     }
 
-    const body = await req.json();
+    const body = await req.json().catch(() => ({}));
     const { unitId, title } = body;
 
     if (!unitId || !title?.trim()) {
@@ -39,8 +39,11 @@ export async function POST(req: Request) {
 
     const lesson = await CurriculumService.createLesson(body);
     return NextResponse.json({ success: true, lesson });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Failed to create lesson:", error);
-    return NextResponse.json({ error: "تعذر إنشاء الدرس" }, { status: 500 });
+    return NextResponse.json(
+      { error: error?.message || "تعذر إنشاء الدرس" },
+      { status: 500 }
+    );
   }
 }

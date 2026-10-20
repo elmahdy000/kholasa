@@ -3,7 +3,7 @@ import { OtpService } from "@/services/otp.service";
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
+    const body = await req.json().catch(() => ({}));
     const { identifier, token } = body;
 
     if (!identifier || !token) {

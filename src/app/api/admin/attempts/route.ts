@@ -48,7 +48,7 @@ export async function PATCH(req: Request) {
       return NextResponse.json({ error: "غير مصرح" }, { status: 403 });
     }
 
-    const body = await req.json();
+    const body = await req.json().catch(() => ({}));
     const { answerId, isCorrect, score, attemptId } = body;
 
     if (!answerId) {
@@ -63,10 +63,10 @@ export async function PATCH(req: Request) {
     );
 
     return NextResponse.json({ success: true, updatedAttempt });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Failed to update student grade:", error);
     return NextResponse.json(
-      { error: "تعذر تحديث الدرجة" },
+      { error: error?.message || "تعذر تحديث الدرجة" },
       { status: 500 }
     );
   }

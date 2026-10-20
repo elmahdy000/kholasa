@@ -5,7 +5,7 @@ import { DailyCheckinService } from "@/services";
 export async function POST(req: Request) {
   try {
     const user = await getCurrentUser();
-    const body = await req.json();
+    const body = await req.json().catch(() => ({}));
     const { answers, timeSpentSeconds = 60 } = body;
 
     if (!Array.isArray(answers) || answers.length === 0) {

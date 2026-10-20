@@ -106,7 +106,17 @@ export class StudentService {
    * Update or record lesson learning progress
    */
   static async updateLessonProgress(userId: string, lessonId: string, progressPercent: number) {
-    const isCompleted = progressPercent >= 90;
+    const clampedProgress = Math.min(100, Math.max(0, Math.round(Number(progressPercent) || 0)));
+    const isCompleted = clampedProgress >= 90;
+
+    const lesson = await prisma.lesson.findUnique({
+      where: { id: lessonId },
+      select: { id: true },
+    });
+
+    if (!lesson) {
+      throw new Error("الدرس المطلوب غير موجود");
+    }
 
     return prisma.studentProgress.upsert({
       where: {
@@ -115,12 +125,12 @@ export class StudentService {
       create: {
         userId,
         lessonId,
-        progressPercent,
+        progressPercent: clampedProgress,
         isCompleted,
         lastAccessedAt: new Date(),
       },
       update: {
-        progressPercent: Math.max(progressPercent, 0),
+        progressPercent: clampedProgress,
         isCompleted: isCompleted ? true : undefined,
         lastAccessedAt: new Date(),
       },
@@ -131,6 +141,30 @@ export class StudentService {
    * Toggle bookmark for a lesson or a question
    */
   static async toggleBookmark(userId: string, target: { lessonId?: string; questionId?: string }) {
+    if (!target.lessonId && !target.questionId) {
+      throw new Error("يجب تحديد درس أو سؤال لحفظه");
+    }
+
+    if (target.lessonId) {
+      const lesson = await prisma.lesson.findUnique({
+        where: { id: target.lessonId },
+        select: { id: true },
+      });
+      if (!lesson) {
+        throw new Error("الدرس المطلوب غير موجود");
+      }
+    }
+
+    if (target.questionId) {
+      const question = await prisma.question.findUnique({
+        where: { id: target.questionId },
+        select: { id: true },
+      });
+      if (!question) {
+        throw new Error("السؤال المطلوب غير موجود");
+      }
+    }
+
     const existing = await prisma.bookmark.findFirst({
       where: {
         userId,
@@ -156,12 +190,48 @@ export class StudentService {
   }
 
   /**
-   * Fetch all student bookmarks
+   * Fetch all student bookmarks with lesson/question details
    */
   static async getBookmarks(userId: string) {
-    return prisma.bookmark.findMany({
+    const bookmarks = await prisma.bookmark.findMany({
       where: { userId },
       orderBy: { createdAt: "desc" },
     });
+
+    const lessonIds = bookmarks.map((b) => b.lessonId).filter(Boolean) as string[];
+    const questionIds = bookmarks.map((b) => b.questionId).filter(Boolean) as string[];
+
+    const [lessons, questions] = await Promise.all([
+      lessonIds.length > 0
+        ? prisma.lesson.findMany({
+            where: { id: { in: lessonIds } },
+            select: {
+              id: true,
+              title: true,
+              unit: {
+                select: {
+                  title: true,
+                  subject: { select: { name: true, color: true } },
+                },
+              },
+            },
+          })
+        : [],
+      questionIds.length > 0
+        ? prisma.question.findMany({
+            where: { id: { in: questionIds } },
+            select: { id: true, statement: true, type: true, difficulty: true },
+          })
+        : [],
+    ]);
+
+    const lessonMap = new Map(lessons.map((l) => [l.id, l]));
+    const questionMap = new Map(questions.map((q) => [q.id, q]));
+
+    return bookmarks.map((b) => ({
+      ...b,
+      lesson: b.lessonId ? lessonMap.get(b.lessonId) || null : null,
+      question: b.questionId ? questionMap.get(b.questionId) || null : null,
+    }));
   }
 }

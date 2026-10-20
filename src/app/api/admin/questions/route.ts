@@ -41,7 +41,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "غير مصرح" }, { status: 403 });
     }
 
-    const body = await req.json();
+    const body = await req.json().catch(() => ({}));
     const {
       statement,
       type = "MCQ",
@@ -86,8 +86,11 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json({ success: true, question });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Failed to create question:", error);
-    return NextResponse.json({ error: "تعذر إضافة السؤال" }, { status: 500 });
+    return NextResponse.json(
+      { error: error?.message || "تعذر إضافة السؤال" },
+      { status: 500 }
+    );
   }
 }

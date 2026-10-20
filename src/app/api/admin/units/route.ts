@@ -28,7 +28,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "غير مصرح لك بالوصول" }, { status: 403 });
     }
 
-    const body = await req.json();
+    const body = await req.json().catch(() => ({}));
     const { subjectId, title, description, order, isPublished } = body;
 
     if (!subjectId || !title?.trim()) {
@@ -44,8 +44,11 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json({ success: true, unit });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Failed to create unit:", error);
-    return NextResponse.json({ error: "تعذر إنشاء الوحدة" }, { status: 500 });
+    return NextResponse.json(
+      { error: error?.message || "تعذر إنشاء الوحدة" },
+      { status: 500 }
+    );
   }
 }

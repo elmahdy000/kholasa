@@ -418,12 +418,18 @@ export class CurriculumService {
    */
   static async toggleEntityPublish(entity: "subject" | "unit" | "lesson", id: string, isPublished: boolean) {
     if (entity === "subject") {
+      const exists = await prisma.subject.findUnique({ where: { id }, select: { id: true } });
+      if (!exists) throw new Error("المادة غير موجودة");
       return prisma.subject.update({ where: { id }, data: { isPublished: Boolean(isPublished) } });
     }
     if (entity === "unit") {
+      const exists = await prisma.unit.findUnique({ where: { id }, select: { id: true } });
+      if (!exists) throw new Error("الوحدة غير موجودة");
       return prisma.unit.update({ where: { id }, data: { isPublished: Boolean(isPublished) } });
     }
     if (entity === "lesson") {
+      const exists = await prisma.lesson.findUnique({ where: { id }, select: { id: true } });
+      if (!exists) throw new Error("الدرس غير موجود");
       return prisma.lesson.update({ where: { id }, data: { isPublished: Boolean(isPublished) } });
     }
     throw new Error("نوع الكيان غير صالح للتعديل");

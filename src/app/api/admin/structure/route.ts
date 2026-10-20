@@ -29,7 +29,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "غير مصرح" }, { status: 403 });
     }
 
-    const body = await req.json();
+    const body = await req.json().catch(() => ({}));
     const { type, data } = body;
 
     if (!type || !data) {
@@ -108,7 +108,7 @@ export async function PATCH(req: Request) {
       return NextResponse.json({ error: "غير مصرح" }, { status: 403 });
     }
 
-    const body = await req.json();
+    const body = await req.json().catch(() => ({}));
     const { type, id, data } = body;
 
     if (!type || !id || !data) {
@@ -131,10 +131,10 @@ export async function PATCH(req: Request) {
     }
 
     return NextResponse.json({ error: "نوع العنصر غير معروف" }, { status: 400 });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Failed to update structure item:", error);
     return NextResponse.json(
-      { error: "تعذر حفظ التعديلات" },
+      { error: error?.message || "تعذر حفظ التعديلات" },
       { status: 500 }
     );
   }
@@ -172,10 +172,10 @@ export async function DELETE(req: Request) {
     }
 
     return NextResponse.json({ error: "نوع العنصر غير مدعوم" }, { status: 400 });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Failed to delete structure item:", error);
     return NextResponse.json(
-      { error: "تعذر حذف العنصر، قد يحتوي على وحدات أو أسئلة مرتبطة به" },
+      { error: error?.message || "تعذر حذف العنصر، قد يحتوي على وحدات أو أسئلة مرتبطة به" },
       { status: 500 }
     );
   }

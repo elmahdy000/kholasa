@@ -149,7 +149,13 @@ export class MediaService {
   static async deleteMediaFile(filename: string) {
     const safeFilename = path.basename(filename);
     const filePath = path.join(process.cwd(), "public", "uploads", safeFilename);
-    await fs.unlink(filePath);
+    try {
+      await fs.unlink(filePath);
+    } catch (err: any) {
+      if (err.code !== "ENOENT") {
+        throw err;
+      }
+    }
     return { success: true };
   }
 }

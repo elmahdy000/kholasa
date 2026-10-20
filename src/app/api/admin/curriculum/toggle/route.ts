@@ -9,20 +9,22 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "غير مصرح" }, { status: 403 });
     }
 
-    const body = await req.json();
+    const body = await req.json().catch(() => ({}));
     const { entity, id, isPublished } = body;
 
-    if (!entity || !id) {
-      return NextResponse.json({ error: "بيانات ناقصة" }, { status: 400 });
+    if (!entity || !id || typeof isPublished !== "boolean") {
+      return NextResponse.json({ error: "بيانات ناقصة أو غير صحيحة" }, { status: 400 });
     }
 
     await CurriculumService.toggleEntityPublish(entity, id, isPublished);
     return NextResponse.json({ success: true });
   } catch (error: any) {
     console.error("Failed to toggle curriculum status:", error);
+    const msg = error?.message || "";
+    const isNotFound = msg.includes("غير موجود");
     return NextResponse.json(
-      { error: error.message || "تعذر تحديث حالة النشر" },
-      { status: 500 }
+      { error: msg || "تعذر تحديث حالة النشر" },
+      { status: isNotFound ? 404 : 400 }
     );
   }
 }

@@ -35,7 +35,7 @@ export async function PATCH(req: Request, { params }: RouteParams) {
     }
 
     const { id } = await params;
-    const body = await req.json();
+    const body = await req.json().catch(() => ({}));
     const { isPractice, title, durationMinutes, description } = body;
 
     const updated = await ExamService.updateExam(id, {
@@ -46,9 +46,12 @@ export async function PATCH(req: Request, { params }: RouteParams) {
     });
 
     return NextResponse.json({ success: true, exam: updated });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Failed to update exam:", error);
-    return NextResponse.json({ error: "تعذر تحديث بيانات الامتحان" }, { status: 500 });
+    return NextResponse.json(
+      { error: error?.message || "تعذر تحديث بيانات الامتحان" },
+      { status: 500 }
+    );
   }
 }
 
@@ -63,8 +66,11 @@ export async function DELETE(req: Request, { params }: RouteParams) {
     await ExamService.deleteExam(id);
 
     return NextResponse.json({ success: true });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Failed to delete exam:", error);
-    return NextResponse.json({ error: "تعذر حذف الامتحان" }, { status: 500 });
+    return NextResponse.json(
+      { error: error?.message || "تعذر حذف الامتحان" },
+      { status: 500 }
+    );
   }
 }

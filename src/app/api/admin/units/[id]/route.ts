@@ -35,7 +35,7 @@ export async function PUT(req: Request, { params }: RouteParams) {
     }
 
     const { id } = await params;
-    const body = await req.json();
+    const body = await req.json().catch(() => ({}));
     const { title, description, order, isPublished } = body;
 
     const unit = await CurriculumService.updateUnit(id, {
@@ -46,9 +46,12 @@ export async function PUT(req: Request, { params }: RouteParams) {
     });
 
     return NextResponse.json({ success: true, unit });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Failed to update unit:", error);
-    return NextResponse.json({ error: "تعذر تحديث بيانات الوحدة" }, { status: 500 });
+    return NextResponse.json(
+      { error: error?.message || "تعذر تحديث بيانات الوحدة" },
+      { status: 500 }
+    );
   }
 }
 
@@ -63,8 +66,11 @@ export async function DELETE(req: Request, { params }: RouteParams) {
     await CurriculumService.deleteUnit(id);
 
     return NextResponse.json({ success: true, message: "تم حذف الوحدة بنجاح" });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Failed to delete unit:", error);
-    return NextResponse.json({ error: "تعذر حذف الوحدة" }, { status: 500 });
+    return NextResponse.json(
+      { error: error?.message || "تعذر حذف الوحدة" },
+      { status: 500 }
+    );
   }
 }

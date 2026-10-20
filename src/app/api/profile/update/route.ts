@@ -9,7 +9,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "غير مصرح" }, { status: 401 });
     }
 
-    const body = await req.json();
+    const body = await req.json().catch(() => ({}));
     const { name, phone, systemId, gradeId } = body;
 
     const updated = await UserService.updateStudentProfile(user.id, {
@@ -20,8 +20,12 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json({ success: true, user: updated });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Failed to update profile:", error);
-    return NextResponse.json({ error: "تعذر تحديث البيانات الشخصية" }, { status: 500 });
+    const msg = error?.message || "";
+    return NextResponse.json(
+      { error: msg || "تعذر تحديث البيانات الشخصية" },
+      { status: msg ? 400 : 500 }
+    );
   }
 }

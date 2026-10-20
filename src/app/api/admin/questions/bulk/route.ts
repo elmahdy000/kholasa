@@ -9,7 +9,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "غير مصرح" }, { status: 403 });
     }
 
-    const body = await req.json();
+    const body = await req.json().catch(() => ({}));
     const { questions } = body;
 
     if (!Array.isArray(questions) || questions.length === 0) {
