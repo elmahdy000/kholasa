@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { QuestionType, Difficulty } from "@prisma/client";
 
 export interface CustomExamCreateInput {
-  subjectId: string;
+  subjectId?: string;
   unitId?: string | null;
   lessonIds?: string[];
   type?: QuestionType | "ALL";
@@ -10,6 +10,8 @@ export interface CustomExamCreateInput {
   questionCount?: number;
   durationMinutes?: number;
   mode?: "PRACTICE" | "EXAM";
+  title?: string;
+  questionIds?: string[];
 }
 
 export interface RecordAnswerInput {
@@ -67,11 +69,11 @@ export class ExamService {
   }
 
   /**
-   * Create a custom dynamically generated exam based on user filters
+   * Create a custom dynamically generated exam based on user filters or explicit question list
    */
   static async createCustomExam(input: CustomExamCreateInput, userId: string) {
     const {
-      subjectId,
+      subjectId: inputSubjectId,
       unitId,
       lessonIds,
       type,
@@ -79,50 +81,83 @@ export class ExamService {
       questionCount = 10,
       durationMinutes = 20,
       mode = "EXAM",
+      title: customTitle,
+      questionIds,
     } = input;
 
-    // 1. Build question query filter
-    const questionWhere: any = {
-      subjectId,
-      status: "PUBLISHED",
-    };
+    let selected: { id: string }[] = [];
+    let targetSubjectId = inputSubjectId;
 
-    if (unitId) questionWhere.unitId = unitId;
-    if (type && type !== "ALL") questionWhere.type = type;
-    if (difficulty && difficulty !== "ALL") questionWhere.difficulty = difficulty;
+    if (Array.isArray(questionIds) && questionIds.length > 0) {
+      const explicitQuestions = await prisma.question.findMany({
+        where: { id: { in: questionIds } },
+        select: { id: true, subjectId: true },
+      });
 
-    if (lessonIds && lessonIds.length > 0) {
-      questionWhere.lessons = {
-        some: { lessonId: { in: lessonIds } },
+      if (explicitQuestions.length === 0) {
+        throw new Error("الأسئلة المحددة غير موجودة في بنك الأسئلة");
+      }
+
+      selected = explicitQuestions.map((q) => ({ id: q.id }));
+      if (!targetSubjectId) {
+        targetSubjectId = explicitQuestions[0].subjectId;
+      }
+    } else {
+      if (!targetSubjectId) {
+        throw new Error("يجب تحديد المادة الدراسية لإنشاء الامتحان");
+      }
+
+      // 1. Build question query filter
+      const questionWhere: any = {
+        subjectId: targetSubjectId,
+        status: "PUBLISHED",
       };
+
+      if (unitId && unitId !== "all") questionWhere.unitId = unitId;
+      if (type && type !== "ALL") questionWhere.type = type;
+      if (difficulty && difficulty !== "ALL") questionWhere.difficulty = difficulty;
+
+      if (lessonIds && lessonIds.length > 0) {
+        questionWhere.lessons = {
+          some: { lessonId: { in: lessonIds } },
+        };
+      }
+
+      // 2. Fetch candidate questions
+      const availableQuestions = await prisma.question.findMany({
+        where: questionWhere,
+        select: { id: true, type: true },
+      });
+
+      if (availableQuestions.length === 0) {
+        throw new Error("لا توجد أسئلة كافية مطابقة لمعايير الامتحان المحددة");
+      }
+
+      // 3. Shuffle and pick requested count
+      const shuffled = [...availableQuestions].sort(() => 0.5 - Math.random());
+      selected = shuffled.slice(0, Math.min(questionCount, availableQuestions.length));
     }
 
-    // 2. Fetch candidate questions
-    const availableQuestions = await prisma.question.findMany({
-      where: questionWhere,
-      select: { id: true, type: true },
-    });
-
-    if (availableQuestions.length === 0) {
-      throw new Error("لا توجد أسئلة كافية مطابقة لمعايير الامتحان المحددة");
+    if (!targetSubjectId) {
+      throw new Error("تعذر تحديد المادة الدراسية للامتحان");
     }
-
-    // 3. Shuffle and pick requested count
-    const shuffled = [...availableQuestions].sort(() => 0.5 - Math.random());
-    const selected = shuffled.slice(0, Math.min(questionCount, availableQuestions.length));
 
     // 4. Create Exam record
     const subject = await prisma.subject.findUnique({
-      where: { id: subjectId },
+      where: { id: targetSubjectId },
       select: { name: true },
     });
 
     const isPractice = mode === "PRACTICE";
+    const examTitle =
+      customTitle?.trim() ||
+      `امتحان ${isPractice ? "تدريبي" : "مخصص"}: ${subject?.name || "عام"} (${selected.length} سؤال)`;
+
     const exam = await prisma.exam.create({
       data: {
-        title: `امتحان تدريبي: ${subject?.name || "مخصص"} (${selected.length} سؤال)`,
-        subjectId,
-        durationMinutes,
+        title: examTitle,
+        subjectId: targetSubjectId,
+        durationMinutes: Number(durationMinutes),
         isPractice,
         questions: {
           create: selected.map((q, idx) => ({
@@ -216,7 +251,17 @@ export class ExamService {
    *   for immediate student self-comparison.
    * - Automatically populates mistakes into MistakeReview for spaced repetition.
    */
-  static async submitExamAttempt(attemptId: string, userId: string) {
+  static async submitExamAttempt(
+    attemptId: string,
+    userId: string,
+    submission?: {
+      answers?: Record<
+        string,
+        { selectedOptionId?: string | null; essayText?: string | null; timeSpentSeconds?: number }
+      >;
+      totalTimeSpentSeconds?: number;
+    }
+  ) {
     const attempt = await prisma.examAttempt.findUnique({
       where: { id: attemptId },
       include: {
@@ -258,76 +303,174 @@ export class ExamService {
       ? attempt.exam.questions.map((eq) => eq.question)
       : attempt.answers.map((a) => a.question);
 
-    const studentAnswersMap = new Map(
-      attempt.answers.map((a) => [a.questionId, a])
-    );
-
-    // 1. Calculate score on objective questions across all exam questions
     let objectiveQuestionsCount = 0;
     let correctCount = 0;
     const mistakesToRecord: string[] = [];
+    const studentAnswersToCreate: any[] = [];
 
-    for (const q of examQuestions) {
-      if (q.type === QuestionType.MCQ || q.type === QuestionType.TRUE_FALSE) {
-        objectiveQuestionsCount++;
-        const ans = studentAnswersMap.get(q.id);
-        const correctOption = q.options.find((o) => o.isCorrect);
+    const answersInput = submission?.answers;
 
-        if (ans && ans.selectedOptionId && correctOption && ans.selectedOptionId === correctOption.id) {
-          correctCount++;
-        } else {
-          mistakesToRecord.push(q.id);
+    if (answersInput && Object.keys(answersInput).length > 0) {
+      // Bulk submission payload from frontend
+      for (const q of examQuestions) {
+        const ans = answersInput[q.id];
+        const selectedOptionId = ans?.selectedOptionId || null;
+        const essayText = ans?.essayText || null;
+        const timeSpentSeconds = ans?.timeSpentSeconds || 0;
+
+        let isCorrect: boolean | null = null;
+        let score: number | null = null;
+
+        if (q.type === QuestionType.MCQ || q.type === QuestionType.TRUE_FALSE) {
+          objectiveQuestionsCount++;
+          const selectedOpt = q.options.find((o) => o.id === selectedOptionId);
+          if (selectedOpt && selectedOpt.isCorrect) {
+            isCorrect = true;
+            score = 1;
+            correctCount++;
+          } else {
+            isCorrect = false;
+            score = 0;
+            mistakesToRecord.push(q.id);
+          }
+        } else if (q.type === QuestionType.ESSAY) {
+          // DEC-011: Essay questions are NOT evaluated automatically or scored with 0.
+          // Student compares their written essay with the rubric model answer.
+          isCorrect = null;
+          score = null;
+        }
+
+        studentAnswersToCreate.push({
+          attemptId,
+          questionId: q.id,
+          selectedOptionId,
+          essayText,
+          isCorrect,
+          score,
+          timeSpentSeconds,
+        });
+      }
+
+      const percentage =
+        objectiveQuestionsCount > 0
+          ? Math.round((correctCount / objectiveQuestionsCount) * 1000) / 10
+          : 100;
+
+      const updatedAttempt = await prisma.$transaction(async (tx) => {
+        const updated = await tx.examAttempt.update({
+          where: { id: attemptId },
+          data: {
+            score: correctCount,
+            percentage,
+            timeSpentSeconds: submission.totalTimeSpentSeconds || attempt.timeSpentSeconds,
+            isCompleted: true,
+            completedAt: new Date(),
+          },
+        });
+
+        // Remove previous answers if any to prevent duplicates
+        await tx.studentAnswer.deleteMany({ where: { attemptId } });
+
+        for (const sa of studentAnswersToCreate) {
+          await tx.studentAnswer.create({ data: sa });
+        }
+
+        for (const questionId of mistakesToRecord) {
+          await tx.mistakeReview.upsert({
+            where: {
+              userId_questionId: { userId, questionId },
+            },
+            create: {
+              userId,
+              questionId,
+              wrongCount: 1,
+              isResolved: false,
+              lastAttemptAt: new Date(),
+            },
+            update: {
+              wrongCount: { increment: 1 },
+              isResolved: false,
+              lastAttemptAt: new Date(),
+            },
+          });
+        }
+
+        return updated;
+      });
+
+      return {
+        attempt: updatedAttempt,
+        score: correctCount,
+        totalQuestions: examQuestions.length,
+        totalObjective: objectiveQuestionsCount,
+        percentage,
+        mistakesCount: mistakesToRecord.length,
+      };
+    } else {
+      // Incremental answers previously recorded via recordAnswer
+      const studentAnswersMap = new Map(
+        attempt.answers.map((a) => [a.questionId, a])
+      );
+
+      for (const q of examQuestions) {
+        if (q.type === QuestionType.MCQ || q.type === QuestionType.TRUE_FALSE) {
+          objectiveQuestionsCount++;
+          const ans = studentAnswersMap.get(q.id);
+          const correctOption = q.options.find((o) => o.isCorrect);
+
+          if (ans && ans.selectedOptionId && correctOption && ans.selectedOptionId === correctOption.id) {
+            correctCount++;
+          } else {
+            mistakesToRecord.push(q.id);
+          }
         }
       }
-      // For ESSAY: DEC-011 applies — No automatic negative mark or failed status.
-      // The student will review and compare their answer directly with the rubric model answer.
-    }
 
-    // Calculate percentage based on objective questions (or 100% default if only essay)
-    const percentage =
-      objectiveQuestionsCount > 0
-        ? Math.round((correctCount / objectiveQuestionsCount) * 100)
-        : 100;
+      const percentage =
+        objectiveQuestionsCount > 0
+          ? Math.round((correctCount / objectiveQuestionsCount) * 1000) / 10
+          : 100;
 
-    // 2. Update ExamAttempt as completed
-    const updatedAttempt = await prisma.examAttempt.update({
-      where: { id: attemptId },
-      data: {
-        score: correctCount,
-        percentage,
-        isCompleted: true,
-        completedAt: new Date(),
-      },
-    });
-
-    // 3. Record mistakes in MistakeReview table
-    for (const questionId of mistakesToRecord) {
-      await prisma.mistakeReview.upsert({
-        where: {
-          userId_questionId: { userId, questionId },
-        },
-        create: {
-          userId,
-          questionId,
-          wrongCount: 1,
-          isResolved: false,
-          lastAttemptAt: new Date(),
-        },
-        update: {
-          wrongCount: { increment: 1 },
-          isResolved: false,
-          lastAttemptAt: new Date(),
+      const updatedAttempt = await prisma.examAttempt.update({
+        where: { id: attemptId },
+        data: {
+          score: correctCount,
+          percentage,
+          timeSpentSeconds: submission?.totalTimeSpentSeconds || attempt.timeSpentSeconds,
+          isCompleted: true,
+          completedAt: new Date(),
         },
       });
-    }
 
-    return {
-      attempt: updatedAttempt,
-      score: correctCount,
-      totalObjective: objectiveQuestionsCount,
-      percentage,
-      mistakesCount: mistakesToRecord.length,
-    };
+      for (const questionId of mistakesToRecord) {
+        await prisma.mistakeReview.upsert({
+          where: {
+            userId_questionId: { userId, questionId },
+          },
+          create: {
+            userId,
+            questionId,
+            wrongCount: 1,
+            isResolved: false,
+            lastAttemptAt: new Date(),
+          },
+          update: {
+            wrongCount: { increment: 1 },
+            isResolved: false,
+            lastAttemptAt: new Date(),
+          },
+        });
+      }
+
+      return {
+        attempt: updatedAttempt,
+        score: correctCount,
+        totalQuestions: examQuestions.length,
+        totalObjective: objectiveQuestionsCount,
+        percentage,
+        mistakesCount: mistakesToRecord.length,
+      };
+    }
   }
 
   /**

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
 import { getCurrentUser, isStaff } from "@/lib/auth";
+import { QuestionService } from "@/services/question.service";
 
 export async function GET(req: Request) {
   try {
@@ -10,41 +10,24 @@ export async function GET(req: Request) {
     }
 
     const { searchParams } = new URL(req.url);
-    const subjectId = searchParams.get("subjectId");
-    const unitId = searchParams.get("unitId");
-    const lessonId = searchParams.get("lessonId");
-    const type = searchParams.get("type");
-    const difficulty = searchParams.get("difficulty");
+    const subjectId = searchParams.get("subjectId") || undefined;
+    const unitId = searchParams.get("unitId") || undefined;
+    const lessonId = searchParams.get("lessonId") || undefined;
+    const type = (searchParams.get("type") as any) || undefined;
+    const difficulty = (searchParams.get("difficulty") as any) || undefined;
+    const search = searchParams.get("search") || undefined;
 
-    const where: any = {};
-    if (subjectId && subjectId !== "all") where.subjectId = subjectId;
-    if (unitId && unitId !== "all") where.unitId = unitId;
-    if (lessonId && lessonId !== "all") {
-      where.lessons = {
-        some: { lessonId },
-      };
-    }
-    if (type && type !== "all") where.type = type;
-    if (difficulty && difficulty !== "all") where.difficulty = difficulty;
-
-    const questions = await prisma.question.findMany({
-      where,
-      orderBy: { createdAt: "desc" },
-      include: {
-        subject: { select: { id: true, name: true } },
-        unit: { select: { id: true, title: true } },
-        lessons: {
-          include: {
-            lesson: { select: { id: true, title: true } },
-          },
-        },
-        options: { orderBy: { order: "asc" } },
-        explanation: true,
-        rubric: true,
-      },
+    const { questions, pagination } = await QuestionService.getQuestions({
+      subjectId: subjectId !== "all" ? subjectId : undefined,
+      unitId: unitId !== "all" ? unitId : undefined,
+      lessonId: lessonId !== "all" ? lessonId : undefined,
+      type: type !== "all" ? type : undefined,
+      difficulty: difficulty !== "all" ? difficulty : undefined,
+      search,
+      limit: 100,
     });
 
-    return NextResponse.json({ questions });
+    return NextResponse.json({ questions, pagination });
   } catch (error) {
     console.error("Failed to fetch questions:", error);
     return NextResponse.json({ error: "تعذر جلب الأسئلة" }, { status: 500 });
@@ -79,69 +62,32 @@ export async function POST(req: Request) {
       );
     }
 
-    const question = await prisma.question.create({
-      data: {
-        statement,
-        type,
-        difficulty,
-        subjectId,
-        unitId: unitId || null,
-        status: "PUBLISHED",
-        ...(lessonId
+    const question = await QuestionService.createQuestion({
+      statement: statement.trim(),
+      type,
+      difficulty,
+      subjectId,
+      unitId: unitId || null,
+      lessonIds: lessonId ? [lessonId] : [],
+      options: Array.isArray(options) ? options : [],
+      explanation:
+        concept && correctReason
           ? {
-              lessons: {
-                create: { lessonId },
-              },
+              concept: String(concept).trim(),
+              correctReason: String(correctReason).trim(),
             }
-          : {}),
-        ...(options && options.length > 0
+          : undefined,
+      rubric:
+        modelAnswer
           ? {
-              options: {
-                create: options.map((opt: any, idx: number) => ({
-                  text: opt.text,
-                  isCorrect: !!opt.isCorrect,
-                  order: idx + 1,
-                  explanation: opt.explanation || null,
-                })),
-              },
+              modelAnswer: String(modelAnswer).trim(),
             }
-          : {}),
-        ...(concept && correctReason
-          ? {
-                  explanation: {
-                    create: {
-                      concept,
-                      correctReason,
-                    },
-                  },
-                }
-              : {}),
-        ...(modelAnswer
-          ? {
-              rubric: {
-                create: {
-                  modelAnswer,
-                  maxScore: 10,
-                },
-              },
-            }
-          : {}),
-      },
-      include: {
-        options: true,
-        explanation: true,
-        rubric: true,
-        lessons: {
-          include: {
-            lesson: { select: { id: true, title: true } },
-          },
-        },
-      },
+          : undefined,
     });
 
     return NextResponse.json({ success: true, question });
   } catch (error) {
     console.error("Failed to create question:", error);
-    return NextResponse.json({ error: "تعذر حفظ السؤال" }, { status: 500 });
+    return NextResponse.json({ error: "تعذر إضافة السؤال" }, { status: 500 });
   }
 }

@@ -7,6 +7,7 @@ export class AnalyticsService {
    */
   static async getAdminPlatformMetrics() {
     const [
+      usersCount,
       studentsCount,
       teachersCount,
       subjectsCount,
@@ -15,27 +16,28 @@ export class AnalyticsService {
       questionsCount,
       examsCount,
       attemptsCount,
-      attempts,
+      completedAttempts,
       mcqQuestions,
       essayQuestions,
       trueFalseQuestions,
       easyQuestions,
       mediumQuestions,
       hardQuestions,
+      auditLogs,
+      recentAttempts,
     ] = await Promise.all([
+      prisma.user.count(),
       prisma.user.count({ where: { role: Role.STUDENT } }),
-      prisma.user.count({ where: { role: { in: [Role.TEACHER, Role.EDITOR, Role.ADMIN] } } }),
+      prisma.user.count({ where: { role: { in: [Role.TEACHER, Role.EDITOR, Role.ADMIN, Role.SUPER_ADMIN] } } }),
       prisma.subject.count(),
       prisma.unit.count(),
       prisma.lesson.count(),
       prisma.question.count(),
       prisma.exam.count(),
-      prisma.examAttempt.count({ where: { isCompleted: true } }),
+      prisma.examAttempt.count(),
       prisma.examAttempt.findMany({
         where: { isCompleted: true },
-        select: { percentage: true },
-        take: 200,
-        orderBy: { completedAt: "desc" },
+        select: { percentage: true, timeSpentSeconds: true, mode: true },
       }),
       prisma.question.count({ where: { type: QuestionType.MCQ } }),
       prisma.question.count({ where: { type: QuestionType.ESSAY } }),
@@ -43,15 +45,53 @@ export class AnalyticsService {
       prisma.question.count({ where: { difficulty: Difficulty.EASY } }),
       prisma.question.count({ where: { difficulty: Difficulty.MEDIUM } }),
       prisma.question.count({ where: { difficulty: Difficulty.HARD } }),
+      prisma.auditLog.findMany({
+        take: 20,
+        orderBy: { createdAt: "desc" },
+        include: {
+          user: { select: { name: true, role: true, email: true } },
+        },
+      }),
+      prisma.examAttempt.findMany({
+        take: 8,
+        orderBy: { startedAt: "desc" },
+        include: {
+          user: { select: { name: true } },
+          exam: { select: { title: true } },
+        },
+      }),
     ]);
 
+    // Calculate score brackets & durations
+    let scoreHigh = 0; // >= 85%
+    let scoreMid = 0;  // 50-84%
+    let scoreLow = 0;  // < 50%
+    let totalTime = 0;
+
+    completedAttempts.forEach((a) => {
+      const p = a.percentage || 0;
+      if (p >= 85) scoreHigh++;
+      else if (p >= 50) scoreMid++;
+      else scoreLow++;
+      totalTime += a.timeSpentSeconds || 0;
+    });
+
     const avgScore =
-      attempts.length > 0
-        ? Math.round(attempts.reduce((sum, a) => sum + a.percentage, 0) / attempts.length)
+      completedAttempts.length > 0
+        ? Math.round(
+            completedAttempts.reduce((sum, a) => sum + (a.percentage || 0), 0) /
+              completedAttempts.length
+          )
+        : 0;
+
+    const avgDurationMinutes =
+      completedAttempts.length > 0
+        ? Math.round(totalTime / completedAttempts.length / 60)
         : 0;
 
     return {
       overview: {
+        usersCount,
         studentsCount,
         teachersCount,
         subjectsCount,
@@ -60,7 +100,24 @@ export class AnalyticsService {
         questionsCount,
         examsCount,
         attemptsCount,
+        completedAttemptsCount: completedAttempts.length,
         avgScore,
+        avgDurationMinutes,
+      },
+      difficultyDistribution: {
+        easy: easyQuestions,
+        medium: mediumQuestions,
+        hard: hardQuestions,
+      },
+      questionTypes: {
+        mcq: mcqQuestions,
+        essay: essayQuestions,
+        trueFalse: trueFalseQuestions,
+      },
+      scoreBrackets: {
+        high: scoreHigh,
+        mid: scoreMid,
+        low: scoreLow,
       },
       questionBankDistribution: {
         byType: {
@@ -74,6 +131,8 @@ export class AnalyticsService {
           HARD: hardQuestions,
         },
       },
+      auditLogs,
+      recentAttempts,
     };
   }
 

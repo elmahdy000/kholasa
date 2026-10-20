@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { QuestionService } from "@/services/question.service";
+import { MistakeService } from "@/services/mistake.service";
 
 export async function POST(
   req: Request,
@@ -11,14 +12,7 @@ export async function POST(
     const body = await req.json();
     const { selectedOptionId, essayText } = body;
 
-    const question = await prisma.question.findUnique({
-      where: { id: questionId },
-      include: {
-        options: true,
-        explanation: true,
-        rubric: true,
-      },
-    });
+    const question = await QuestionService.getQuestionById(questionId);
 
     if (!question) {
       return NextResponse.json(
@@ -37,42 +31,12 @@ export async function POST(
       const isCorrect = selectedOption?.isCorrect ?? false;
       const correctOption = question.options.find((o) => o.isCorrect);
 
-      // If user is authenticated, update MistakeReview
+      // If user is authenticated, update MistakeReview via MistakeService
       if (user) {
         if (!isCorrect) {
-          // Upsert mistake
-          await prisma.mistakeReview.upsert({
-            where: {
-              userId_questionId: {
-                userId: user.id,
-                questionId,
-              },
-            },
-            update: {
-              wrongCount: { increment: 1 },
-              isResolved: false,
-              lastAttemptAt: new Date(),
-            },
-            create: {
-              userId: user.id,
-              questionId,
-              wrongCount: 1,
-              isResolved: false,
-              lastAttemptAt: new Date(),
-            },
-          });
+          await MistakeService.recordMistake(user.id, questionId);
         } else {
-          // If was a mistake before, mark resolved
-          await prisma.mistakeReview.updateMany({
-            where: {
-              userId: user.id,
-              questionId,
-            },
-            data: {
-              isResolved: true,
-              lastAttemptAt: new Date(),
-            },
-          });
+          await MistakeService.resolveMistake(user.id, questionId);
         }
       }
 

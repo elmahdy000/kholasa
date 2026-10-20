@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { StudentService } from "@/services/student.service";
 
 export async function POST(
   req: Request,
@@ -14,28 +14,13 @@ export async function POST(
 
     const { id: lessonId } = await params;
     const body = await req.json();
-    const { isCompleted, progressPercent = 100 } = body;
+    const { progressPercent = 100 } = body;
 
-    const progress = await prisma.studentProgress.upsert({
-      where: {
-        userId_lessonId: {
-          userId: user.id,
-          lessonId,
-        },
-      },
-      update: {
-        isCompleted: isCompleted !== undefined ? isCompleted : true,
-        progressPercent: progressPercent ?? 100,
-        lastAccessedAt: new Date(),
-      },
-      create: {
-        userId: user.id,
-        lessonId,
-        isCompleted: isCompleted !== undefined ? isCompleted : true,
-        progressPercent: progressPercent ?? 100,
-        lastAccessedAt: new Date(),
-      },
-    });
+    const progress = await StudentService.updateLessonProgress(
+      user.id,
+      lessonId,
+      Number(progressPercent ?? 100)
+    );
 
     return NextResponse.json({ success: true, progress });
   } catch (error) {

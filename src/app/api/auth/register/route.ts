@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { prisma } from "@/lib/prisma";
-import { hashPassword, createSession } from "@/lib/auth";
+import { UserService } from "@/services";
+import { createSession } from "@/lib/auth";
 
 const registerSchema = z
   .object({
@@ -31,55 +31,13 @@ export async function POST(req: Request) {
 
     const { name, email, phone, password, systemId, gradeId } = result.data;
 
-    const cleanPhone = phone && phone.trim() ? phone.trim() : null;
-    const cleanEmail = email && email.trim() ? email.trim().toLowerCase() : null;
-
-    if (!cleanPhone && !cleanEmail) {
-      return NextResponse.json(
-        { error: "يرجى إدخال البريد الإلكتروني أو رقم الهاتف" },
-        { status: 400 }
-      );
-    }
-
-    // Check if phone or email already registered
-    const orConditions = [];
-    if (cleanPhone) orConditions.push({ phone: cleanPhone });
-    if (cleanEmail) orConditions.push({ email: cleanEmail });
-
-    const existing = await prisma.user.findFirst({
-      where: {
-        OR: orConditions,
-      },
-    });
-
-    if (existing) {
-      return NextResponse.json(
-        { error: "رقم الهاتف أو البريد الإلكتروني مسجل بالفعل" },
-        { status: 409 }
-      );
-    }
-
-    const hashedPassword = await hashPassword(password);
-
-    const user = await prisma.user.create({
-      data: {
-        name,
-        phone: cleanPhone,
-        email: cleanEmail,
-        password: hashedPassword,
-        systemId: systemId || null,
-        gradeId: gradeId || null,
-        role: "STUDENT",
-      },
-      select: {
-        id: true,
-        name: true,
-        phone: true,
-        email: true,
-        role: true,
-        systemId: true,
-        gradeId: true,
-      },
+    const user = await UserService.registerStudent({
+      name,
+      email,
+      phone,
+      password,
+      systemId,
+      gradeId,
     });
 
     await createSession(user.id);
@@ -89,11 +47,13 @@ export async function POST(req: Request) {
       user,
       message: "تم إنشاء الحساب بنجاح",
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Register error:", error);
+    const isConflict = error?.message?.includes("مسجل بالفعل");
     return NextResponse.json(
-      { error: "حدث خطأ غير متوقع أثناء التسجيل" },
-      { status: 500 }
+      { error: error?.message || "حدث خطأ غير متوقع أثناء التسجيل" },
+      { status: isConflict ? 409 : 500 }
     );
   }
 }
+

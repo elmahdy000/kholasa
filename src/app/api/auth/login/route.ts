@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { prisma } from "@/lib/prisma";
+import { UserService } from "@/services";
 import { verifyPassword, createSession } from "@/lib/auth";
 
 const loginSchema = z.object({
@@ -31,11 +31,7 @@ export async function POST(req: Request) {
 
     const { identifier, password } = result.data;
 
-    const user = await prisma.user.findFirst({
-      where: {
-        OR: [{ phone: identifier }, { email: identifier }],
-      },
-    });
+    const user = await UserService.findByIdentifier(identifier);
 
     if (!user || !user.password) {
       return NextResponse.json(
@@ -74,3 +70,4 @@ export async function POST(req: Request) {
     );
   }
 }
+

@@ -1,9 +1,12 @@
 import { prisma } from "@/lib/prisma";
 import { Role } from "@prisma/client";
+import bcrypt from "bcryptjs";
 
 export interface UserFilterParams {
   role?: Role | "ALL";
   search?: string;
+  systemId?: string;
+  gradeId?: string;
   page?: number;
   limit?: number;
 }
@@ -13,10 +16,12 @@ export class UserService {
    * List users with role filtering, search, and pagination
    */
   static async getUsers(params: UserFilterParams = {}) {
-    const { role, search, page = 1, limit = 20 } = params;
+    const { role, search, systemId, gradeId, page = 1, limit = 20 } = params;
 
     const where: any = {};
     if (role && role !== "ALL") where.role = role;
+    if (systemId && systemId !== "all") where.systemId = systemId;
+    if (gradeId && gradeId !== "all") where.gradeId = gradeId;
 
     if (search?.trim()) {
       where.OR = [
@@ -76,6 +81,112 @@ export class UserService {
   }
 
   /**
+   * Create a new user or administrative staff
+   */
+  static async createUser(
+    data: {
+      name: string;
+      phone: string;
+      email?: string | null;
+      password: string;
+      role?: Role;
+      systemId?: string | null;
+      gradeId?: string | null;
+    },
+    actorRole: string
+  ) {
+    if (actorRole !== Role.SUPER_ADMIN && actorRole !== Role.ADMIN) {
+      throw new Error("غير مصرح لك بإنشاء مستخدمين");
+    }
+
+    const { name, phone, email, password, role = Role.STUDENT, systemId, gradeId } = data;
+
+    if (!name?.trim()) throw new Error("اسم المستخدم مطلوب");
+    if (!phone?.trim()) throw new Error("رقم الهاتف مطلوب");
+    if (!password || password.length < 6) throw new Error("كلمة المرور يجب أن لا تقل عن 6 أحرف");
+
+    if (role === Role.SUPER_ADMIN && actorRole !== Role.SUPER_ADMIN) {
+      throw new Error("لا يمكنك تعيين رتبة مشرف عام أعلى");
+    }
+
+    const cleanPhone = phone.trim();
+    const existingPhone = await prisma.user.findUnique({ where: { phone: cleanPhone } });
+    if (existingPhone) throw new Error("رقم الهاتف مسجل بالفعل لمستخدم آخر");
+
+    let cleanEmail: string | undefined = undefined;
+    if (email && typeof email === "string" && email.trim()) {
+      cleanEmail = email.trim().toLowerCase();
+      const existingEmail = await prisma.user.findUnique({ where: { email: cleanEmail } });
+      if (existingEmail) throw new Error("البريد الإلكتروني مسجل بالفعل لمستخدم آخر");
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    return prisma.user.create({
+      data: {
+        name: name.trim(),
+        phone: cleanPhone,
+        email: cleanEmail || null,
+        password: hashedPassword,
+        role,
+        systemId: systemId || null,
+        gradeId: gradeId || null,
+      },
+      include: {
+        system: { select: { id: true, name: true } },
+        grade: { select: { id: true, name: true } },
+      },
+    });
+  }
+
+  /**
+   * Update full user profile or staff assignment
+   */
+  static async updateUser(
+    id: string,
+    data: {
+      name?: string;
+      phone?: string;
+      email?: string;
+      role?: Role;
+      systemId?: string | null;
+      gradeId?: string | null;
+    },
+    actorRole: string
+  ) {
+    if (actorRole !== Role.SUPER_ADMIN && actorRole !== Role.ADMIN) {
+      throw new Error("غير مصرح لك بالوصول");
+    }
+
+    const targetUser = await prisma.user.findUnique({ where: { id } });
+    if (!targetUser) throw new Error("المستخدم غير موجود");
+
+    if (targetUser.role === Role.SUPER_ADMIN && actorRole !== Role.SUPER_ADMIN) {
+      throw new Error("لا يمكن تعديل صلاحيات المشرف العام الأعلى");
+    }
+
+    if (data.role === Role.SUPER_ADMIN && actorRole !== Role.SUPER_ADMIN) {
+      throw new Error("فقط المشرف العام يمكنه ترقية مستخدمين إلى رتبة مشرف عام");
+    }
+
+    return prisma.user.update({
+      where: { id },
+      data: {
+        ...(data.name !== undefined ? { name: data.name.trim() } : {}),
+        ...(data.phone !== undefined ? { phone: data.phone.trim() } : {}),
+        ...(data.email !== undefined ? { email: data.email.trim().toLowerCase() } : {}),
+        ...(data.role !== undefined ? { role: data.role } : {}),
+        ...(data.systemId !== undefined ? { systemId: data.systemId || null } : {}),
+        ...(data.gradeId !== undefined ? { gradeId: data.gradeId || null } : {}),
+      },
+      include: {
+        system: { select: { id: true, name: true } },
+        grade: { select: { id: true, name: true } },
+      },
+    });
+  }
+
+  /**
    * Update user role with authorization hierarchy checks
    */
   static async updateUserRole(targetUserId: string, newRole: Role, actorRole: string) {
@@ -100,12 +211,13 @@ export class UserService {
    */
   static async updateStudentProfile(
     userId: string,
-    data: { name?: string; gradeId?: string; systemId?: string; avatar?: string }
+    data: { name?: string; phone?: string; gradeId?: string; systemId?: string; avatar?: string }
   ) {
     return prisma.user.update({
       where: { id: userId },
       data: {
         name: data.name !== undefined ? data.name.trim() : undefined,
+        phone: data.phone !== undefined ? (data.phone ? data.phone.trim() : null) : undefined,
         gradeId: data.gradeId !== undefined ? data.gradeId : undefined,
         systemId: data.systemId !== undefined ? data.systemId : undefined,
         avatar: data.avatar !== undefined ? data.avatar : undefined,
@@ -150,4 +262,76 @@ export class UserService {
       where: { id: targetUserId },
     });
   }
+
+  /**
+   * Find user by email or phone (case-insensitive for email)
+   */
+  static async findByIdentifier(identifier: string) {
+    const clean = identifier.trim();
+    return prisma.user.findFirst({
+      where: {
+        OR: [
+          { phone: clean },
+          { email: { equals: clean.toLowerCase(), mode: "insensitive" } },
+        ],
+      },
+    });
+  }
+
+  /**
+   * Register a new student user
+   */
+  static async registerStudent(data: {
+    name: string;
+    phone?: string | null;
+    email?: string | null;
+    password: string;
+    systemId?: string | null;
+    gradeId?: string | null;
+  }) {
+    const { name, phone, email, password, systemId, gradeId } = data;
+
+    const cleanPhone = phone && phone.trim() ? phone.trim() : null;
+    const cleanEmail = email && email.trim() ? email.trim().toLowerCase() : null;
+
+    if (!cleanPhone && !cleanEmail) {
+      throw new Error("يرجى إدخال البريد الإلكتروني أو رقم الهاتف");
+    }
+
+    const orConditions = [];
+    if (cleanPhone) orConditions.push({ phone: cleanPhone });
+    if (cleanEmail) orConditions.push({ email: cleanEmail });
+
+    const existing = await prisma.user.findFirst({
+      where: { OR: orConditions },
+    });
+
+    if (existing) {
+      throw new Error("رقم الهاتف أو البريد الإلكتروني مسجل بالفعل");
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    return prisma.user.create({
+      data: {
+        name: name.trim(),
+        phone: cleanPhone,
+        email: cleanEmail,
+        password: hashedPassword,
+        systemId: systemId || null,
+        gradeId: gradeId || null,
+        role: Role.STUDENT,
+      },
+      select: {
+        id: true,
+        name: true,
+        phone: true,
+        email: true,
+        role: true,
+        systemId: true,
+        gradeId: true,
+      },
+    });
+  }
 }
+

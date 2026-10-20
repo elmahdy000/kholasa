@@ -51,7 +51,7 @@ async function runServicesAudit() {
   }
   const simulatedAnswers = checkin.questions.map((q) => ({
     questionId: q.id,
-    selectedOptionId: q.options?.[0]?.id || null,
+    selectedOptionId: (q.options?.[0] as any)?.id || null,
     essayText: q.type === "ESSAY" ? "إجابة مقالية نموذجية للتحقق الذاتي" : null,
   }));
   const checkinResult = await DailyCheckinService.submitDailyCheckin(studentUser.id, simulatedAnswers);

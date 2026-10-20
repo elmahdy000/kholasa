@@ -23,6 +23,19 @@ export interface LessonUpdateInput {
   bodyText?: string;
   objectives?: string[];
   images?: string[];
+  content?: {
+    body?: string;
+    videoUrl?: string | null;
+    audioUrl?: string | null;
+    objectives?: string[];
+  };
+  mindMap?: {
+    title?: string;
+    description?: string | null;
+    images?: string[];
+    nodes?: any;
+    edges?: any;
+  };
   summary?: {
     keyConcepts?: string[];
     definitions?: string[];
@@ -246,6 +259,35 @@ export class CurriculumService {
   }
 
   /**
+   * List lessons for a unit or search
+   */
+  static async getLessonsList(params: { unitId?: string; search?: string } = {}) {
+    const where: any = {};
+    if (params.unitId && params.unitId !== "all") where.unitId = params.unitId;
+    if (params.search?.trim()) {
+      where.title = { contains: params.search.trim(), mode: "insensitive" };
+    }
+
+    return prisma.lesson.findMany({
+      where,
+      orderBy: { order: "asc" },
+      include: {
+        unit: {
+          include: {
+            subject: {
+              select: { id: true, name: true, color: true },
+            },
+          },
+        },
+        content: { select: { videoUrl: true, audioUrl: true } },
+        mindMap: { select: { images: true } },
+        summary: true,
+        _count: { select: { questions: true } },
+      },
+    });
+  }
+
+  /**
    * Update an existing lesson
    */
   static async updateLesson(lessonId: string, data: LessonUpdateInput) {
@@ -261,38 +303,50 @@ export class CurriculumService {
     });
 
     // 2. Update content if provided
-    if (data.bodyText !== undefined || data.videoUrl !== undefined || data.audioUrl !== undefined || data.objectives !== undefined) {
+    const bodyText = data.bodyText ?? data.content?.body;
+    const videoUrl = data.videoUrl !== undefined ? data.videoUrl : data.content?.videoUrl;
+    const audioUrl = data.audioUrl !== undefined ? data.audioUrl : data.content?.audioUrl;
+    const objectives = data.objectives ?? data.content?.objectives;
+
+    if (bodyText !== undefined || videoUrl !== undefined || audioUrl !== undefined || objectives !== undefined) {
       await prisma.lessonContent.upsert({
         where: { lessonId },
         create: {
           lessonId,
-          body: data.bodyText?.trim() || "",
-          videoUrl: data.videoUrl?.trim() || null,
-          audioUrl: data.audioUrl?.trim() || null,
-          objectives: Array.isArray(data.objectives) ? data.objectives : [],
+          body: bodyText?.trim() || "",
+          videoUrl: videoUrl?.trim() || null,
+          audioUrl: audioUrl?.trim() || null,
+          objectives: Array.isArray(objectives) ? objectives : [],
         },
         update: {
-          body: data.bodyText !== undefined ? data.bodyText.trim() : undefined,
-          videoUrl: data.videoUrl !== undefined ? data.videoUrl?.trim() || null : undefined,
-          audioUrl: data.audioUrl !== undefined ? data.audioUrl?.trim() || null : undefined,
-          objectives: Array.isArray(data.objectives) ? data.objectives : undefined,
+          body: bodyText !== undefined ? bodyText.trim() : undefined,
+          videoUrl: videoUrl !== undefined ? (videoUrl?.trim() || null) : undefined,
+          audioUrl: audioUrl !== undefined ? (audioUrl?.trim() || null) : undefined,
+          objectives: Array.isArray(objectives) ? objectives : undefined,
         },
       });
     }
 
-    // 3. Update mindmap images if provided
-    if (data.images !== undefined) {
+    // 3. Update mindmap if provided
+    const mm = data.mindMap;
+    const mmImages = mm?.images ?? data.images;
+    if (mm || mmImages !== undefined) {
       await prisma.mindMap.upsert({
         where: { lessonId },
         create: {
           lessonId,
-          title: `خريطة: ${data.title || updatedLesson.title}`,
-          images: Array.isArray(data.images) ? data.images : [],
-          nodes: [],
-          edges: [],
+          title: mm?.title?.trim() || `خريطة: ${data.title || updatedLesson.title}`,
+          description: mm?.description?.trim() || null,
+          images: Array.isArray(mmImages) ? mmImages : [],
+          nodes: mm?.nodes || [],
+          edges: mm?.edges || [],
         },
         update: {
-          images: Array.isArray(data.images) ? data.images : [],
+          title: mm?.title !== undefined ? mm.title.trim() : undefined,
+          description: mm?.description !== undefined ? (mm.description?.trim() || null) : undefined,
+          images: mmImages !== undefined ? (Array.isArray(mmImages) ? mmImages : []) : undefined,
+          nodes: mm?.nodes !== undefined ? mm.nodes : undefined,
+          edges: mm?.edges !== undefined ? mm.edges : undefined,
         },
       });
     }
@@ -357,6 +411,22 @@ export class CurriculumService {
       where: { id: lessonId },
       data: { isPublished },
     });
+  }
+
+  /**
+   * Toggle publish status for Subject, Unit, or Lesson
+   */
+  static async toggleEntityPublish(entity: "subject" | "unit" | "lesson", id: string, isPublished: boolean) {
+    if (entity === "subject") {
+      return prisma.subject.update({ where: { id }, data: { isPublished: Boolean(isPublished) } });
+    }
+    if (entity === "unit") {
+      return prisma.unit.update({ where: { id }, data: { isPublished: Boolean(isPublished) } });
+    }
+    if (entity === "lesson") {
+      return prisma.lesson.update({ where: { id }, data: { isPublished: Boolean(isPublished) } });
+    }
+    throw new Error("نوع الكيان غير صالح للتعديل");
   }
 
   /**

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { ExamService } from "@/services";
 
 export async function POST(req: Request) {
   try {
@@ -23,121 +23,33 @@ export async function POST(req: Request) {
       questionIds = [],
     } = body;
 
-    let selected: { id: string }[] = [];
-    let targetSubjectId = subjectId;
-
-    if (Array.isArray(questionIds) && questionIds.length > 0) {
-      const explicitQuestions = await prisma.question.findMany({
-        where: { id: { in: questionIds } },
-        select: { id: true, subjectId: true },
-      });
-
-      if (explicitQuestions.length === 0) {
-        return NextResponse.json(
-          { error: "الأسئلة المحددة غير موجودة في بنك الأسئلة" },
-          { status: 400 }
-        );
-      }
-
-      selected = explicitQuestions.map((q) => ({ id: q.id }));
-      if (!targetSubjectId) {
-        targetSubjectId = explicitQuestions[0].subjectId;
-      }
-    } else {
-      if (!targetSubjectId) {
-        return NextResponse.json({ error: "يجب اختيار المادة الدراسية" }, { status: 400 });
-      }
-
-      // Build query filter
-      const where: any = {
-        status: "PUBLISHED",
-        subjectId: targetSubjectId,
-      };
-
-      if (unitId && unitId !== "all") {
-        where.unitId = unitId;
-      }
-
-      if (Array.isArray(lessonIds) && lessonIds.length > 0) {
-        where.lessons = {
-          some: {
-            lessonId: { in: lessonIds },
-          },
-        };
-      }
-
-      if (type && type !== "ALL" && type !== "MIXED") {
-        where.type = type;
-      }
-
-      if (difficulty && difficulty !== "ALL") {
-        where.difficulty = difficulty;
-      }
-
-      // Fetch candidate questions
-      const allQuestions = await prisma.question.findMany({
-        where,
-        select: { id: true },
-      });
-
-      if (allQuestions.length === 0) {
-        return NextResponse.json(
-          { error: "لا توجد أسئلة كافية مطابقة لمعايير التحديد الحالية" },
-          { status: 400 }
-        );
-      }
-
-      // Shuffle and pick questionCount
-      const shuffled = [...allQuestions].sort(() => 0.5 - Math.random());
-      selected = shuffled.slice(0, Math.min(Number(questionCount), allQuestions.length));
-    }
-
-    const subject = await prisma.subject.findUnique({
-      where: { id: targetSubjectId },
-    });
-
-    const subjectName = subject?.name || "المادة";
-
-    const examTitle =
-      title ||
-      `امتحان مخصص: ${subjectName} (${mode === "PRACTICE" ? "وضع التدريب" : "وضع الامتحان"})`;
-
-    // Create custom Exam
-    const exam = await prisma.exam.create({
-      data: {
-        title: examTitle,
+    const result = await ExamService.createCustomExam(
+      {
         subjectId,
-        durationMinutes: Number(durationMinutes) || 20,
-        isPractice: mode === "PRACTICE",
-        questions: {
-          create: selected.map((q, idx) => ({
-            questionId: q.id,
-            order: idx + 1,
-          })),
-        },
+        unitId,
+        lessonIds,
+        type,
+        difficulty,
+        questionCount,
+        mode,
+        durationMinutes,
+        title,
+        questionIds,
       },
-    });
-
-    // Create Initial ExamAttempt
-    const attempt = await prisma.examAttempt.create({
-      data: {
-        userId: user.id,
-        examId: exam.id,
-        title: examTitle,
-        mode: mode === "PRACTICE" ? "PRACTICE" : "EXAM",
-        totalQuestions: selected.length,
-        timeSpentSeconds: 0,
-        isCompleted: false,
-      },
-    });
+      user.id
+    );
 
     return NextResponse.json({
       success: true,
-      examId: exam.id,
-      attemptId: attempt.id,
+      examId: result.examId,
+      attemptId: result.attemptId,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Failed to create exam:", error);
-    return NextResponse.json({ error: "تعذر إنشاء الامتحان" }, { status: 500 });
+    return NextResponse.json(
+      { error: error?.message || "تعذر إنشاء الامتحان" },
+      { status: 400 }
+    );
   }
 }
+

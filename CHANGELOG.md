@@ -40,8 +40,13 @@
   - تصحيح إحصائيات لوحة تحكم الطالب في `StudentService` لاحتساب الإجمالي الكلي الحقيقي للامتحانات.
   - تعزيز مرونة `MistakeService.resolveMistake` باستخدام `updateMany` لمنع أخطاء الحذف عند عدم وجود السجل.
   - توسيع فحص لوحة الصدارة في `LeaderboardService` وضمان إدراج الطالب الحالي وترتيب الـ XP بدقة.
-  - إضافة حماية رتبة المشرف العام في `UserService.deleteUser` لمنع حذف المسؤولين بواسطة المشرفين العاديين.
-  - تنظيف الخيارات والروبريك المتعارض عند تغيير نوع السؤال في `QuestionService`.
+- [x] **جولة المراجعة والتدقيق الثانية الشاملة (100% Zero Raw Prisma Delegation):**
+  - تصفية واستبدال كافة الاستعلامات المباشرة عبر `prisma.` في جميع مسارات `src/app/api/` وتحويلها للتفويض الحصري على الخدمات الـ 14.
+  - تفويض إنشاء الامتحانات في `api/exams/create` إلى `ExamService.createCustomExam` بنسبة 100%.
+  - تفويض تسليم الامتحانات في `api/exams/[id]/submit` إلى `ExamService.submitExamAttempt` مع حفظ درجات المقالي كـ `null` وفقاً لـ DEC-011.
+  - تفويض مسارات المصادقة `api/auth/register` و `api/auth/login` إلى `UserService.registerStudent` و `UserService.findByIdentifier`.
+  - تفويض إدارة ورفع الملفات `api/admin/upload` إلى `MediaService.listAllMediaFiles`, `MediaService.saveUploadedBuffer`, و `MediaService.deleteMediaFile`.
+  - اجتياز اختبارات تدقيق الخدمات الـ 14 كاملة واختبارات E2E على الـ 26 مساراً بنجاح 100%.
 
 
 

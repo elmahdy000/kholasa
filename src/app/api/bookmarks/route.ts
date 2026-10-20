@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { StudentService } from "@/services/student.service";
 
 export async function POST(req: Request) {
   try {
@@ -19,30 +19,8 @@ export async function POST(req: Request) {
       );
     }
 
-    // Check if already bookmarked
-    const existing = await prisma.bookmark.findFirst({
-      where: {
-        userId: user.id,
-        ...(lessonId ? { lessonId } : {}),
-        ...(questionId ? { questionId } : {}),
-      },
-    });
-
-    if (existing) {
-      await prisma.bookmark.delete({
-        where: { id: existing.id },
-      });
-      return NextResponse.json({ success: true, bookmarked: false });
-    } else {
-      const bookmark = await prisma.bookmark.create({
-        data: {
-          userId: user.id,
-          lessonId: lessonId || null,
-          questionId: questionId || null,
-        },
-      });
-      return NextResponse.json({ success: true, bookmarked: true, bookmark });
-    }
+    const result = await StudentService.toggleBookmark(user.id, { lessonId, questionId });
+    return NextResponse.json({ success: true, ...result });
   } catch (error) {
     console.error("Failed to toggle bookmark:", error);
     return NextResponse.json(

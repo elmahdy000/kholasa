@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
 import { getCurrentUser, canManageCurriculum } from "@/lib/auth";
+import { CurriculumService } from "@/services/curriculum.service";
 
 export async function POST(req: Request) {
   try {
@@ -16,28 +16,12 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "بيانات ناقصة" }, { status: 400 });
     }
 
-    if (entity === "subject") {
-      await prisma.subject.update({
-        where: { id },
-        data: { isPublished: !!isPublished },
-      });
-    } else if (entity === "unit") {
-      await prisma.unit.update({
-        where: { id },
-        data: { isPublished: !!isPublished },
-      });
-    } else if (entity === "lesson") {
-      await prisma.lesson.update({
-        where: { id },
-        data: { isPublished: !!isPublished },
-      });
-    }
-
+    await CurriculumService.toggleEntityPublish(entity, id, isPublished);
     return NextResponse.json({ success: true });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Failed to toggle curriculum status:", error);
     return NextResponse.json(
-      { error: "تعذر تحديث حالة النشر" },
+      { error: error.message || "تعذر تحديث حالة النشر" },
       { status: 500 }
     );
   }
