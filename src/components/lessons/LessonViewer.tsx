@@ -283,7 +283,7 @@ export function LessonViewer({
       const res = await fetch(`/api/lessons/${lesson.id}/progress`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ isCompleted: newStatus, progressPercent: 100 }),
+        body: JSON.stringify({ isCompleted: newStatus, progressPercent: newStatus ? 100 : 0 }),
       });
       if (res.ok) {
         setIsCompleted(newStatus);

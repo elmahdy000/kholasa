@@ -205,6 +205,14 @@ export class CurriculumService {
    * Create a new lesson with attached content, summary, and mindmap
    */
   static async createLesson(data: LessonCreateInput) {
+    const unitExists = await prisma.unit.findUnique({
+      where: { id: data.unitId },
+      select: { id: true },
+    });
+    if (!unitExists) {
+      throw new Error("الوحدة المحددة غير موجودة");
+    }
+
     let lessonOrder = data.order;
     if (lessonOrder === undefined || lessonOrder === null) {
       const highest = await prisma.lesson.findFirst({
@@ -525,6 +533,14 @@ export class CurriculumService {
     systemId: string;
     order?: number;
   }) {
+    const system = await prisma.educationalSystem.findUnique({
+      where: { id: data.systemId },
+      select: { id: true },
+    });
+    if (!system) {
+      throw new Error("النظام التعليمي المحدد غير موجود");
+    }
+
     return prisma.grade.create({
       data: {
         name: data.name.trim(),
@@ -572,6 +588,13 @@ export class CurriculumService {
     isPublished?: boolean;
     order?: number;
   }) {
+    const [system, grade] = await Promise.all([
+      prisma.educationalSystem.findUnique({ where: { id: data.systemId }, select: { id: true } }),
+      prisma.grade.findUnique({ where: { id: data.gradeId }, select: { id: true } }),
+    ]);
+    if (!system) throw new Error("النظام التعليمي المحدد غير موجود");
+    if (!grade) throw new Error("الصف الدراسي المحدد غير موجود");
+
     return prisma.subject.create({
       data: {
         name: data.name.trim(),
@@ -642,6 +665,14 @@ export class CurriculumService {
     order?: number;
     isPublished?: boolean;
   }) {
+    const subject = await prisma.subject.findUnique({
+      where: { id: data.subjectId },
+      select: { id: true },
+    });
+    if (!subject) {
+      throw new Error("المادة المحددة غير موجودة");
+    }
+
     let unitOrder = data.order;
     if (unitOrder === undefined || unitOrder === null) {
       const highest = await prisma.unit.findFirst({

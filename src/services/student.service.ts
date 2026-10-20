@@ -105,9 +105,41 @@ export class StudentService {
   /**
    * Update or record lesson learning progress
    */
-  static async updateLessonProgress(userId: string, lessonId: string, progressPercent: number) {
-    const clampedProgress = Math.min(100, Math.max(0, Math.round(Number(progressPercent) || 0)));
-    const isCompleted = clampedProgress >= 90;
+  static async updateLessonProgress(
+    userId: string,
+    lessonId: string,
+    payload: number | { progressPercent?: number; isCompleted?: boolean }
+  ) {
+    let progressPercent: number | undefined;
+    let isCompleted: boolean | undefined;
+
+    if (typeof payload === "number") {
+      progressPercent = payload;
+      isCompleted = progressPercent >= 90;
+    } else {
+      progressPercent = payload.progressPercent;
+      isCompleted = payload.isCompleted;
+      if (isCompleted === true && progressPercent === undefined) {
+        progressPercent = 100;
+      } else if (isCompleted === false && progressPercent === undefined) {
+        progressPercent = 0;
+      } else if (isCompleted === undefined && progressPercent !== undefined) {
+        isCompleted = progressPercent >= 90;
+      }
+    }
+
+    let clampedProgress =
+      progressPercent !== undefined
+        ? Math.min(100, Math.max(0, Math.round(Number(progressPercent) || 0)))
+        : isCompleted
+        ? 100
+        : 0;
+
+    if (isCompleted === false && clampedProgress >= 90) {
+      clampedProgress = 0;
+    }
+
+    const finalIsCompleted = typeof isCompleted === "boolean" ? isCompleted : clampedProgress >= 90;
 
     const lesson = await prisma.lesson.findUnique({
       where: { id: lessonId },
@@ -126,13 +158,24 @@ export class StudentService {
         userId,
         lessonId,
         progressPercent: clampedProgress,
-        isCompleted,
+        isCompleted: finalIsCompleted,
         lastAccessedAt: new Date(),
       },
       update: {
         progressPercent: clampedProgress,
-        isCompleted: isCompleted ? true : undefined,
+        isCompleted: finalIsCompleted,
         lastAccessedAt: new Date(),
+      },
+    });
+  }
+
+  /**
+   * Get single lesson learning progress for a student
+   */
+  static async getLessonProgress(userId: string, lessonId: string) {
+    return prisma.studentProgress.findUnique({
+      where: {
+        userId_lessonId: { userId, lessonId },
       },
     });
   }
