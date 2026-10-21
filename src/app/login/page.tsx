@@ -147,13 +147,12 @@ export default function LoginPage() {
                 >
                   كلمة المرور
                 </label>
-                <button
-                  type="button"
-                  onClick={() => alert("كلمة المرور الافتراضية للحسابات التجريبية هي 12345678")}
+                <Link
+                  href="/forgot-password"
                   className="text-xs font-bold text-[#4F46E5] dark:text-indigo-400 hover:underline"
                 >
                   نسيت كلمة المرور؟
-                </button>
+                </Link>
               </div>
               <div className="relative">
                 <input

@@ -17,11 +17,9 @@ import {
   ArrowLeft,
   Check,
   Lightbulb,
-  ShareNetwork,
   WarningCircle,
   XCircle,
   ArrowsOut,
-  DownloadSimple,
   MagnifyingGlassPlus,
   MagnifyingGlassMinus,
   ArrowsCounterClockwise,
@@ -455,6 +453,8 @@ export function LessonViewer({
           <audio
             ref={audioElemRef}
             src={lesson.content.audioUrl}
+            controlsList="nodownload"
+            onContextMenu={(e) => e.preventDefault()}
             onTimeUpdate={(e) => {
               const el = e.currentTarget;
               if (el.duration) {
@@ -523,6 +523,9 @@ export function LessonViewer({
                   <video
                     src={lesson.content.videoUrl}
                     controls
+                    controlsList="nodownload"
+                    disablePictureInPicture
+                    onContextMenu={(e) => e.preventDefault()}
                     className="w-full max-h-[460px] rounded-xl mx-auto"
                   />
                 </div>
@@ -645,15 +648,6 @@ export function LessonViewer({
                     </p>
                   </div>
                 </div>
-
-                <button
-                  type="button"
-                  onClick={() => window.print()}
-                  className="h-10 px-4 rounded-lg bg-[#D97706] hover:bg-[#B45309] text-white font-bold text-xs flex items-center justify-center gap-2 transition-colors shrink-0"
-                >
-                  <ShareNetwork className="w-3.5 h-3.5" weight="bold" />
-                  <span>طباعة الزتونة / حفظ PDF</span>
-                </button>
               </div>
 
               {/* Key Concepts Grid */}
@@ -940,19 +934,8 @@ export function LessonViewer({
                     </button>
                   </div>
 
-                  {/* Actions: Fullscreen & Download */}
+                  {/* Action: Fullscreen */}
                   <div className="flex items-center gap-2">
-                    <a
-                      href={lesson.mindMap.images[selectedImageIndex]}
-                      download={`mindmap-${lesson.title}-${selectedImageIndex + 1}.png`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="h-8 px-3 rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-[11px] font-bold text-slate-700 dark:text-zinc-300 hover:border-slate-300 flex items-center gap-1.5 shadow-2xs"
-                    >
-                      <DownloadSimple className="w-3.5 h-3.5" weight="bold" />
-                      <span>تحميل الصورة</span>
-                    </a>
-
                     <button
                       type="button"
                       onClick={() => setIsFullscreenImage(true)}
@@ -975,6 +958,8 @@ export function LessonViewer({
                     }}
                     className="max-w-full max-h-full object-contain rounded-lg transition-transform duration-150 select-none shadow-sm cursor-zoom-in"
                     onClick={() => setIsFullscreenImage(true)}
+                    onContextMenu={(e) => e.preventDefault()}
+                    draggable={false}
                   />
                 </div>
 
@@ -998,7 +983,8 @@ export function LessonViewer({
                         <img
                           src={img}
                           alt={`خريطة ${idx + 1}`}
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-cover select-none pointer-events-none"
+                          draggable={false}
                         />
                       </button>
                     ))}
@@ -1166,15 +1152,6 @@ export function LessonViewer({
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <a
-                    href={lesson.mindMap.images[selectedImageIndex]}
-                    download={`mindmap-${lesson.title}-${selectedImageIndex + 1}.png`}
-                    className="h-8 px-3 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-bold flex items-center gap-1.5 transition-colors"
-                  >
-                    <DownloadSimple className="w-4 h-4" weight="bold" />
-                    <span>تحميل</span>
-                  </a>
-
                   <button
                     type="button"
                     onClick={() => setIsFullscreenImage(false)}
@@ -1189,7 +1166,9 @@ export function LessonViewer({
                 <img
                   src={lesson.mindMap.images[selectedImageIndex]}
                   alt={lesson.mindMap.title}
-                  className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
+                  className="max-w-full max-h-full object-contain rounded-lg shadow-2xl select-none"
+                  onContextMenu={(e) => e.preventDefault()}
+                  draggable={false}
                 />
               </div>
             </div>
