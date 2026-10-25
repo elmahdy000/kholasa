@@ -11,7 +11,7 @@ export async function GET() {
 
     const notifications = await NotificationService.getInAppNotifications(user.id);
     return NextResponse.json({ notifications });
-  } catch (err: any) {
+  } catch (err) {
     console.error("Notifications fetch error:", err);
     return NextResponse.json({ notifications: [] });
   }

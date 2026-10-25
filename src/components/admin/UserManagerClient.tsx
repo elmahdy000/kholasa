@@ -205,45 +205,45 @@ export function UserManagerClient({
   return (
     <div className="space-y-6">
       {/* Metrics Strip */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
-        <div className="p-4 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200/80 dark:border-zinc-800/80 shadow-xs">
-          <span className="text-[11px] font-bold text-slate-500">إجمالي الحسابات</span>
-          <span className="text-2xl font-black text-[#0F172A] dark:text-white block mt-1">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className="p-4 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0]/80 dark:border-[#334155]/80 ">
+          <span className="text-[13px] font-bold text-[#64748B]">إجمالي الحسابات</span>
+          <span className="text-2xl font-bold text-[#0F172A] dark:text-white block mt-1">
             {users.length}
           </span>
         </div>
-        <div className="p-4 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200/80 dark:border-zinc-800/80 shadow-xs">
-          <span className="text-[11px] font-bold text-indigo-500">الطلاب المسجلون</span>
-          <span className="text-2xl font-black text-indigo-600 dark:text-indigo-400 block mt-1">
+        <div className="p-4 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0]/80 dark:border-[#334155]/80 ">
+          <span className="text-[13px] font-bold text-[#4F46E5]">الطلاب المسجلون</span>
+          <span className="text-2xl font-bold text-[#4F46E5] dark:text-[#6366F1] block mt-1">
             {studentsCount}
           </span>
         </div>
-        <div className="p-4 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200/80 dark:border-zinc-800/80 shadow-xs">
-          <span className="text-[11px] font-bold text-amber-500">المسؤولون والمشرفون</span>
-          <span className="text-2xl font-black text-amber-600 dark:text-amber-400 block mt-1">
+        <div className="p-4 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0]/80 dark:border-[#334155]/80 ">
+          <span className="text-[13px] font-bold text-[#D97706]">المسؤولون والمشرفون</span>
+          <span className="text-2xl font-bold text-[#D97706] dark:text-[#FBBF24] block mt-1">
             {adminsCount}
           </span>
         </div>
-        <div className="p-4 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200/80 dark:border-zinc-800/80 shadow-xs">
-          <span className="text-[11px] font-bold text-emerald-500">إجمالي الامتحانات المنفذة</span>
-          <span className="text-2xl font-black text-emerald-600 dark:text-emerald-400 block mt-1">
+        <div className="p-4 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0]/80 dark:border-[#334155]/80 ">
+          <span className="text-[13px] font-bold text-[#059669]">إجمالي الامتحانات المنفذة</span>
+          <span className="text-2xl font-bold text-[#059669] dark:text-[#34D399] block mt-1">
             {users.reduce((sum, u) => sum + u.attempts.length, 0)}
           </span>
         </div>
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-zinc-950 border border-slate-200/80 dark:border-zinc-800/80 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex flex-wrap items-center gap-2.5 flex-1">
+      <div className="p-4 sm:p-5 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0]/80 dark:border-[#334155]/80  flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex flex-wrap items-center gap-3 flex-1">
           {/* Search Box */}
           <div className="relative min-w-[240px] flex-1 max-w-sm">
-            <Search className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2" />
+            <Search className="w-4 h-4 text-[#94A3B8] absolute right-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               placeholder="ابحث بالاسم، رقم الهاتف، أو البريد..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full h-10 pr-9 pl-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-bold text-[#0F172A] dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-indigo-500"
+              className="w-full h-11 pr-9 pl-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold text-[#0F172A] dark:text-white placeholder:text-[#94A3B8] focus:outline-none focus:border-[#4F46E5]"
             />
           </div>
 
@@ -251,7 +251,7 @@ export function UserManagerClient({
           <select
             value={selectedRole}
             onChange={(e) => setSelectedRole(e.target.value)}
-            className="h-10 px-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-bold text-[#0F172A] dark:text-white"
+            className="h-11 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold text-[#0F172A] dark:text-white"
           >
             <option value="all">كل الرتب والصلاحيات</option>
             <option value="STUDENT">طالب (STUDENT)</option>
@@ -265,7 +265,7 @@ export function UserManagerClient({
           <select
             value={selectedSystemId}
             onChange={(e) => setSelectedSystemId(e.target.value)}
-            className="h-10 px-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-bold text-[#0F172A] dark:text-white"
+            className="h-11 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold text-[#0F172A] dark:text-white"
           >
             <option value="all">كل الأنظمة التعليمية</option>
             {systems.map((s) => (
@@ -277,7 +277,7 @@ export function UserManagerClient({
         </div>
 
         <div className="flex items-center gap-3 shrink-0">
-          <span className="text-xs font-bold text-slate-400">
+          <span className="text-[13px] font-bold text-[#94A3B8]">
             عرض {filteredUsers.length} من أصل {users.length} مستخدم
           </span>
           <button
@@ -285,7 +285,7 @@ export function UserManagerClient({
               setIsCreateOpen(true);
               setCreateError(null);
             }}
-            className="h-10 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-black flex items-center gap-2 shadow-xs cursor-pointer transition-colors"
+            className="h-11 px-4 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[13px] font-bold flex items-center gap-2  cursor-pointer transition-colors"
           >
             <Plus className="w-4 h-4" />
             <span>إضافة مستخدم أو مشرف</span>
@@ -294,10 +294,10 @@ export function UserManagerClient({
       </div>
 
       {/* Users Table */}
-      <div className="rounded-3xl bg-white dark:bg-zinc-950 border border-slate-200/80 dark:border-zinc-800/80 overflow-hidden shadow-xs">
+      <div className="rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0]/80 dark:border-[#334155]/80 overflow-hidden ">
         <div className="overflow-x-auto">
-          <table className="w-full text-right text-xs">
-            <thead className="bg-slate-50 dark:bg-zinc-900/80 border-b border-slate-200/80 dark:border-zinc-800/80 text-slate-500 font-black">
+          <table className="w-full text-right text-[13px]">
+            <thead className="bg-[#F8FAFC] dark:bg-[#1E293B]/80 border-b border-[#E2E8F0]/80 dark:border-[#334155]/80 text-[#64748B] font-bold">
               <tr>
                 <th className="p-4">المستخدم</th>
                 <th className="p-4">بيانات الاتصال</th>
@@ -308,25 +308,25 @@ export function UserManagerClient({
                 <th className="p-4 text-center">الإجراءات</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-zinc-800/60 font-bold text-[#0F172A] dark:text-zinc-200">
+            <tbody className="divide-y divide-[#E2E8F0] dark:divide-[#334155]/60 font-bold text-[#0F172A] dark:text-[#F8FAFC]">
               {filteredUsers.map((u) => {
                 const completedLessons = u.progress.filter((p) => p.isCompleted).length;
                 return (
                   <tr
                     key={u.id}
-                    className="hover:bg-slate-50/50 dark:hover:bg-zinc-800/20 transition-colors"
+                    className="hover:bg-[#F8FAFC] dark:hover:bg-[#334155]/20 transition-colors"
                   >
                     {/* User info */}
                     <td className="p-4">
-                      <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-700 text-white flex items-center justify-center font-black text-xs shrink-0 shadow-xs">
+                      <div className="flex items-center gap-3">
+                        <div className="w-11 h-11 rounded-xl bg-[#4F46E5] text-white flex items-center justify-center font-bold text-[13px] shrink-0">
                           {(u.name || "م").charAt(0)}
                         </div>
                         <div>
-                          <span className="font-black text-[#0F172A] dark:text-white block">
+                          <span className="font-bold text-[#0F172A] dark:text-white block">
                             {u.name || "مستخدم بدون اسم"}
                           </span>
-                          <span className="text-[10px] text-slate-400 font-mono block">
+                          <span className="text-[13px] text-[#94A3B8] font-mono block">
                             {new Date(u.createdAt).toLocaleDateString("ar-EG")}
                           </span>
                         </div>
@@ -334,37 +334,37 @@ export function UserManagerClient({
                     </td>
 
                     {/* Contact */}
-                    <td className="p-4 font-mono text-[11px] text-slate-500" dir="ltr">
+                    <td className="p-4 font-mono text-[13px] text-[#64748B]" dir="ltr">
                       {u.phone || u.email || "—"}
                     </td>
 
                     {/* Educational Info */}
                     <td className="p-4">
                       {u.system?.name ? (
-                        <div className="space-y-0.5">
-                          <span className="text-xs font-black block">
+                        <div className="space-y-1">
+                          <span className="text-[13px] font-bold block">
                             {u.system.name}
                           </span>
-                          <span className="text-[10px] text-slate-400 font-medium">
+                          <span className="text-[13px] text-[#94A3B8] font-medium">
                             {u.grade?.name || "الصف غير محدد"}
                           </span>
                         </div>
                       ) : (
-                        <span className="text-slate-400 text-xs">غير محدد</span>
+                        <span className="text-[#94A3B8] text-[13px]">غير محدد</span>
                       )}
                     </td>
 
                     {/* Role Badge */}
                     <td className="p-4">
                       <span
-                        className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black ${
+                        className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-[13px] font-bold ${
                           u.role === "SUPER_ADMIN"
-                            ? "bg-purple-500/10 text-purple-600 border border-purple-500/20"
+                            ? "bg-[#4F46E5]/10 text-[#4F46E5] border border-[#4F46E5]/20"
                             : u.role === "ADMIN"
-                            ? "bg-amber-500/10 text-amber-600 border border-amber-500/20"
+                            ? "bg-[#D97706]/10 text-[#D97706] border border-[#D97706]/20"
                             : u.role === "TEACHER"
-                            ? "bg-blue-500/10 text-blue-600 border border-blue-500/20"
-                            : "bg-indigo-500/10 text-indigo-600 border border-indigo-500/20"
+                            ? "bg-[#4F46E5]/10 text-[#4F46E5] border border-[#4F46E5]/20"
+                            : "bg-[#4F46E5]/10 text-[#4F46E5] border border-[#4F46E5]/20"
                         }`}
                       >
                         {u.role === "SUPER_ADMIN"
@@ -379,27 +379,27 @@ export function UserManagerClient({
 
                     {/* Progress */}
                     <td className="p-4">
-                      <span className="text-xs font-bold text-slate-600 dark:text-zinc-300">
+                      <span className="text-[13px] font-bold text-[#64748B] dark:text-[#F8FAFC]">
                         {completedLessons} درس
                       </span>
                     </td>
 
                     {/* Attempts */}
                     <td className="p-4">
-                      <span className="text-xs font-bold text-slate-600 dark:text-zinc-300">
+                      <span className="text-[13px] font-bold text-[#64748B] dark:text-[#F8FAFC]">
                         {u.attempts.length} اختبار
                       </span>
                     </td>
 
                     {/* Actions */}
                     <td className="p-4 text-center">
-                      <div className="flex items-center justify-center gap-1.5">
+                      <div className="flex items-center justify-center gap-2">
                         <button
                           onClick={() => {
                             setSelectedUser(u);
                             setNewRole(u.role);
                           }}
-                          className="h-8 px-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-zinc-900 dark:hover:bg-zinc-700 text-xs font-bold text-indigo-600 dark:text-indigo-400 flex items-center gap-1 transition-colors"
+                          className="h-11 px-3 rounded-lg bg-[#F8FAFC] hover:bg-[#E2E8F0] dark:bg-[#1E293B] dark:hover:bg-[#1E293B] text-[13px] font-bold text-[#4F46E5] dark:text-[#6366F1] flex items-center gap-1 transition-colors"
                           title="تعديل الرتبة"
                         >
                           <Shield className="w-3.5 h-3.5" />
@@ -409,7 +409,7 @@ export function UserManagerClient({
                         <button
                           onClick={() => handleDeleteUser(u.id, u.name || "")}
                           disabled={u.id === currentUserId}
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                          className="p-2 rounded-lg text-[#94A3B8] hover:text-[#DC2626] hover:bg-[#DC2626]/10 dark:hover:bg-[#1E293B] transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                           title="حذف المستخدم"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -426,46 +426,46 @@ export function UserManagerClient({
 
       {/* EDIT ROLE MODAL */}
       {selectedUser && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="w-full max-w-md bg-white dark:bg-zinc-950 rounded-3xl p-6 space-y-5 text-right shadow-2xl border border-slate-100 dark:border-zinc-800">
-            <div className="flex items-center justify-between border-b border-slate-100 dark:border-zinc-800 pb-3">
-              <h3 className="text-base font-black text-[#0F172A] dark:text-white flex items-center gap-2">
-                <Shield className="w-5 h-5 text-indigo-600" />
+        <div className="fixed inset-0 z-50 bg-black/60  flex items-center justify-center p-4">
+          <div className="w-full max-w-md bg-white dark:bg-[#0F172A] rounded-2xl p-6 space-y-5 text-right shadow-sm border border-[#E2E8F0] dark:border-[#334155]">
+            <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#334155] pb-3">
+              <h3 className="text-base font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
+                <Shield className="w-5 h-5 text-[#4F46E5]" />
                 <span>تعديل رتبة وصلاحيات المستخدم</span>
               </h3>
               <button
                 onClick={() => setSelectedUser(null)}
-                className="w-8 h-8 rounded-xl border border-slate-200 dark:border-zinc-800 flex items-center justify-center text-slate-400 hover:text-slate-600"
+                className="w-11 h-11 rounded-xl border border-[#E2E8F0] dark:border-[#334155] flex items-center justify-center text-[#94A3B8] hover:text-[#64748B]"
               >
-                ✕
+                ×
               </button>
             </div>
 
-            <div className="p-3 rounded-2xl bg-slate-50 dark:bg-zinc-900/60 border border-slate-200/60 dark:border-zinc-800/60 text-xs space-y-1">
-              <span className="text-slate-400 font-bold block">المستخدم المستهدف:</span>
-              <span className="font-black text-[#0F172A] dark:text-white block text-sm">
+            <div className="p-3 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/60 border border-[#E2E8F0]/60 dark:border-[#334155]/60 text-[13px] space-y-1">
+              <span className="text-[#94A3B8] font-bold block">المستخدم المستهدف:</span>
+              <span className="font-bold text-[#0F172A] dark:text-white block text-sm">
                 {selectedUser.name || "مستخدم"}
               </span>
-              <span className="text-[11px] font-mono text-slate-500 block" dir="ltr">
+              <span className="text-[13px] font-mono text-[#64748B] block" dir="ltr">
                 {selectedUser.email || selectedUser.phone}
               </span>
             </div>
 
             {errorMsg && (
-              <div className="p-3 rounded-xl bg-rose-50 text-rose-600 text-xs font-bold">
+              <div className="p-3 rounded-xl bg-[#DC2626]/10 text-[#DC2626] text-[13px] font-bold">
                 {errorMsg}
               </div>
             )}
 
             <form onSubmit={handleUpdateRole} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-slate-500 mb-1.5">
+                <label className="block text-[13px] font-bold text-[#64748B] mb-2">
                   اختر الرتبة الجديدة
                 </label>
                 <select
                   value={newRole}
                   onChange={(e) => setNewRole(e.target.value)}
-                  className="w-full h-11 px-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-bold"
+                  className="w-full h-11 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold"
                 >
                   <option value="STUDENT">طالب (STUDENT) - تصفح وحل الامتحانات</option>
                   <option value="TEACHER">معلم (TEACHER) - متابعة درجات الطلاب</option>
@@ -477,18 +477,18 @@ export function UserManagerClient({
                 </select>
               </div>
 
-              <div className="pt-3 flex items-center justify-end gap-3 border-t border-slate-100 dark:border-zinc-800">
+              <div className="pt-3 flex items-center justify-end gap-3 border-t border-[#E2E8F0] dark:border-[#334155]">
                 <button
                   type="button"
                   onClick={() => setSelectedUser(null)}
-                  className="h-10 px-4 rounded-xl border border-slate-200 dark:border-zinc-800 text-xs font-bold text-slate-600 dark:text-zinc-300"
+                  className="h-11 px-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-bold text-[#64748B] dark:text-[#F8FAFC]"
                 >
                   إلغاء
                 </button>
                 <button
                   type="submit"
                   disabled={isUpdating}
-                  className="h-10 px-6 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-black disabled:opacity-50"
+                  className="h-11 px-6 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[13px] font-bold disabled:opacity-50"
                 >
                   {isUpdating ? "جاري الحفظ..." : "حفظ التعديل"}
                 </button>
@@ -500,34 +500,34 @@ export function UserManagerClient({
 
       {/* Create User / Subadmin Modal */}
       {isCreateOpen && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="w-full max-w-lg rounded-3xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-zinc-800">
+        <div className="fixed inset-0 z-50 bg-black/60  flex items-center justify-center p-4">
+          <div className="w-full max-w-lg rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] p-6 space-y-4 shadow-sm max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-[#E2E8F0] dark:border-[#334155]">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 flex items-center justify-center">
+                <div className="w-11 h-11 rounded-xl bg-[#4F46E5]/10 dark:bg-[#1E293B] text-[#4F46E5] flex items-center justify-center">
                   <Plus className="w-4 h-4" />
                 </div>
-                <h3 className="text-base font-black text-[#0F172A] dark:text-white">
+                <h3 className="text-base font-bold text-[#0F172A] dark:text-white">
                   إضافة مستخدم أو مشرف جديد
                 </h3>
               </div>
               <button
                 onClick={() => setIsCreateOpen(false)}
-                className="w-8 h-8 rounded-xl border border-slate-200 dark:border-zinc-800 flex items-center justify-center text-slate-400 hover:text-slate-600"
+                className="w-11 h-11 rounded-xl border border-[#E2E8F0] dark:border-[#334155] flex items-center justify-center text-[#94A3B8] hover:text-[#64748B]"
               >
-                ✕
+                ×
               </button>
             </div>
 
             {createError && (
-              <div className="p-3 rounded-xl bg-rose-50 text-rose-600 text-xs font-bold">
+              <div className="p-3 rounded-xl bg-[#DC2626]/10 text-[#DC2626] text-[13px] font-bold">
                 {createError}
               </div>
             )}
 
-            <form onSubmit={handleCreateUser} className="space-y-3.5">
+            <form onSubmit={handleCreateUser} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-slate-500 mb-1">
+                <label className="block text-[13px] font-bold text-[#64748B] mb-1">
                   الاسم الكامل *
                 </label>
                 <input
@@ -536,13 +536,13 @@ export function UserManagerClient({
                   value={createName}
                   onChange={(e) => setCreateName(e.target.value)}
                   placeholder="مثال: أحمد محمد علي"
-                  className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-bold text-[#0F172A] dark:text-white"
+                  className="w-full h-11 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold text-[#0F172A] dark:text-white"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 mb-1">
+                  <label className="block text-[13px] font-bold text-[#64748B] mb-1">
                     رقم الهاتف *
                   </label>
                   <input
@@ -551,13 +551,13 @@ export function UserManagerClient({
                     value={createPhone}
                     onChange={(e) => setCreatePhone(e.target.value)}
                     placeholder="01012345678"
-                    className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-bold text-[#0F172A] dark:text-white"
+                    className="w-full h-11 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold text-[#0F172A] dark:text-white"
                     dir="ltr"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 mb-1">
+                  <label className="block text-[13px] font-bold text-[#64748B] mb-1">
                     البريد الإلكتروني (اختياري)
                   </label>
                   <input
@@ -565,14 +565,14 @@ export function UserManagerClient({
                     value={createEmail}
                     onChange={(e) => setCreateEmail(e.target.value)}
                     placeholder="name@example.com"
-                    className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-bold text-[#0F172A] dark:text-white"
+                    className="w-full h-11 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold text-[#0F172A] dark:text-white"
                     dir="ltr"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-500 mb-1">
+                <label className="block text-[13px] font-bold text-[#64748B] mb-1">
                   كلمة المرور * (6 أحرف على الأقل)
                 </label>
                 <input
@@ -581,18 +581,18 @@ export function UserManagerClient({
                   value={createPassword}
                   onChange={(e) => setCreatePassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-bold text-[#0F172A] dark:text-white"
+                  className="w-full h-11 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold text-[#0F172A] dark:text-white"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-500 mb-1">
+                <label className="block text-[13px] font-bold text-[#64748B] mb-1">
                   الرتبة / نوع الحساب *
                 </label>
                 <select
                   value={createRole}
                   onChange={(e) => setCreateRole(e.target.value)}
-                  className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-bold text-[#0F172A] dark:text-white"
+                  className="w-full h-11 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold text-[#0F172A] dark:text-white"
                 >
                   <option value="STUDENT">طالب (STUDENT) - حساب طالب اعتيادي</option>
                   <option value="TEACHER">معلم (TEACHER) - Subadmin لمتابعة وتصحيح الامتحانات</option>
@@ -606,7 +606,7 @@ export function UserManagerClient({
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 mb-1">
+                  <label className="block text-[13px] font-bold text-[#64748B] mb-1">
                     النظام التعليمي
                   </label>
                   <select
@@ -615,7 +615,7 @@ export function UserManagerClient({
                       setCreateSystemId(e.target.value);
                       setCreateGradeId("");
                     }}
-                    className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-bold text-[#0F172A] dark:text-white"
+                    className="w-full h-11 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold text-[#0F172A] dark:text-white"
                   >
                     <option value="">بدون تحديد</option>
                     {systems.map((s) => (
@@ -627,13 +627,13 @@ export function UserManagerClient({
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 mb-1">
+                  <label className="block text-[13px] font-bold text-[#64748B] mb-1">
                     الصف الدراسي
                   </label>
                   <select
                     value={createGradeId}
                     onChange={(e) => setCreateGradeId(e.target.value)}
-                    className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-bold text-[#0F172A] dark:text-white"
+                    className="w-full h-11 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold text-[#0F172A] dark:text-white"
                   >
                     <option value="">بدون تحديد</option>
                     {grades
@@ -647,18 +647,18 @@ export function UserManagerClient({
                 </div>
               </div>
 
-              <div className="pt-3 flex items-center justify-end gap-3 border-t border-slate-100 dark:border-zinc-800">
+              <div className="pt-3 flex items-center justify-end gap-3 border-t border-[#E2E8F0] dark:border-[#334155]">
                 <button
                   type="button"
                   onClick={() => setIsCreateOpen(false)}
-                  className="h-10 px-4 rounded-xl border border-slate-200 dark:border-zinc-800 text-xs font-bold text-slate-600 dark:text-zinc-300"
+                  className="h-11 px-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-bold text-[#64748B] dark:text-[#F8FAFC]"
                 >
                   إلغاء
                 </button>
                 <button
                   type="submit"
                   disabled={isCreating}
-                  className="h-10 px-6 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-black disabled:opacity-50"
+                  className="h-11 px-6 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[13px] font-bold disabled:opacity-50"
                 >
                   {isCreating ? "جاري الإنشاء..." : "إنشاء المستخدم"}
                 </button>

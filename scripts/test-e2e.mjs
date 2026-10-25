@@ -5,6 +5,16 @@ async function runTests() {
   console.log("🚀 Starting End-to-End HTTP Integration Tests on http://localhost:3000...\n");
   const BASE_URL = "http://localhost:3000";
 
+  const STUDENT_PASSWORD = process.env.SEED_STUDENT_PASSWORD;
+  const ADMIN_PASSWORD = process.env.SEED_ADMIN_PASSWORD;
+  if (!STUDENT_PASSWORD || !ADMIN_PASSWORD) {
+    console.error(
+      "❌ Set SEED_STUDENT_PASSWORD and SEED_ADMIN_PASSWORD before running e2e tests " +
+        "(they must match the values used when seeding the database)."
+    );
+    process.exit(1);
+  }
+
   let studentCookie = "";
   let adminCookie = "";
   let sampleSubjectId = "";
@@ -37,7 +47,7 @@ async function runTests() {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       identifier: "student@kholasa.app",
-      password: "12345678",
+      password: STUDENT_PASSWORD,
     }),
   });
   const setCookieHeader = loginRes.headers.get("set-cookie");
@@ -160,7 +170,7 @@ async function runTests() {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       identifier: "admin@kholasa.app",
-      password: "12345678",
+      password: ADMIN_PASSWORD,
     }),
   });
   const adminCookieHeader = adminLoginRes.headers.get("set-cookie");

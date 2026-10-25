@@ -15,12 +15,9 @@ import {
   ArrowUp,
   ArrowDown,
   Maximize2,
-  Check,
   AlertCircle,
   Eye,
   EyeOff,
-  Layers,
-  HelpCircle,
   Clock,
   CheckCircle2,
   Upload,
@@ -55,18 +52,18 @@ interface LessonData {
     title: string;
     description?: string | null;
     images: string[];
-    nodes?: any;
-    edges?: any;
+    nodes?: unknown;
+    edges?: unknown;
   } | null;
   summary?: {
     id?: string;
-    keyConcepts?: any;
-    definitions?: any;
-    formulas?: any;
-    comparisons?: any;
-    examTips?: any;
-    commonMistakes?: any;
-    checklist?: any;
+    keyConcepts?: unknown;
+    definitions?: unknown;
+    formulas?: unknown;
+    comparisons?: unknown;
+    examTips?: unknown;
+    commonMistakes?: unknown;
+    checklist?: unknown;
   } | null;
 }
 
@@ -144,9 +141,13 @@ export function LessonEditorModal({
     if (!isOpen || !lessonId) return;
 
     let isMounted = true;
-    setIsLoading(true);
-    setStatusMessage(null);
-    setShowDeleteConfirm(false);
+    const timer = setTimeout(() => {
+      if (isMounted) {
+        setIsLoading(true);
+        setStatusMessage(null);
+        setShowDeleteConfirm(false);
+      }
+    }, 0);
 
     fetch(`/api/admin/lessons/${lessonId}`)
       .then((res) => res.json())
@@ -199,6 +200,7 @@ export function LessonEditorModal({
 
     return () => {
       isMounted = false;
+      clearTimeout(timer);
     };
   }, [lessonId, isOpen]);
 
@@ -241,8 +243,8 @@ export function LessonEditorModal({
       }
       setStatusMessage({ type: "success", text: "تم رفع الملف بنجاح وتعيينه" });
       setTimeout(() => setStatusMessage(null), 3000);
-    } catch (err: any) {
-      alert(err.message || "تعذر رفع الملف");
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "تعذر رفع الملف");
     } finally {
       setUploadingMedia(null);
     }
@@ -369,11 +371,11 @@ export function LessonEditorModal({
       setTimeout(() => {
         setStatusMessage(null);
       }, 3500);
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
       setStatusMessage({
         type: "error",
-        text: err.message || "تعذر حفظ التعديلات",
+        text: err instanceof Error ? err.message : "تعذر حفظ التعديلات",
       });
     } finally {
       setIsSaving(false);
@@ -396,11 +398,11 @@ export function LessonEditorModal({
 
       onLessonDeleted(lessonId);
       onClose();
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
       setStatusMessage({
         type: "error",
-        text: err.message || "حدث خطأ أثناء حذف الدرس",
+        text: err instanceof Error ? err.message : "حدث خطأ أثناء حذف الدرس",
       });
     } finally {
       setIsDeleting(false);
@@ -411,26 +413,26 @@ export function LessonEditorModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 overflow-y-auto font-sans"
+      className="fixed inset-0 z-50 bg-black/60  flex items-center justify-center p-2 sm:p-4 overflow-y-auto font-sans"
       dir="rtl"
     >
-      <div className="relative w-full max-w-4xl bg-white dark:bg-zinc-950 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-2xl overflow-hidden flex flex-col max-h-[92vh] my-auto">
+      <div className="relative w-full max-w-4xl bg-white dark:bg-[#0F172A] rounded-xl border border-[#E2E8F0] dark:border-[#334155] shadow-sm overflow-hidden flex flex-col max-h-[92vh] my-auto">
         {/* Header */}
-        <div className="p-4 sm:p-6 bg-zinc-50/80 dark:bg-zinc-900/80 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between gap-4 shrink-0">
+        <div className="p-4 sm:p-6 bg-[#F8FAFC]/80 dark:bg-[#1E293B]/80 border-b border-[#E2E8F0] dark:border-[#334155] flex items-center justify-between gap-4 shrink-0">
           <div className="flex items-center gap-3">
             <div
-              className="w-10 h-10 rounded-2xl flex items-center justify-center text-white shrink-0 shadow-sm"
+              className="w-11 h-11 rounded-xl flex items-center justify-center text-white shrink-0 shadow-sm"
               style={{ backgroundColor: unitInfo.subjectColor || "#4F46E5" }}
             >
               <BookOpen className="w-5 h-5" />
             </div>
             <div>
-              <div className="flex items-center gap-2 flex-wrap text-xs text-slate-500 font-bold mb-0.5">
+              <div className="flex items-center gap-2 flex-wrap text-[13px] text-[#64748B] font-bold mb-1">
                 <span>{unitInfo.subjectName}</span>
                 <span>/</span>
                 <span>{unitInfo.unitTitle}</span>
               </div>
-              <h2 className="text-base sm:text-lg font-black text-[#14243D] dark:text-white leading-tight">
+              <h2 className="text-base sm:text-lg font-bold text-[#0F172A] dark:text-white leading-tight">
                 {title ? `تعديل: ${title}` : "تعديل محتوى الدرس"}
               </h2>
             </div>
@@ -441,7 +443,7 @@ export function LessonEditorModal({
               href={`/lessons/${lessonId}`}
               target="_blank"
               rel="noreferrer"
-              className="hidden sm:flex h-9 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-zinc-900 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-200 text-xs font-bold items-center gap-1.5 transition-colors"
+              className="hidden sm:flex h-11 px-3 rounded-xl bg-[#F8FAFC] hover:bg-[#E2E8F0] dark:bg-[#1E293B] dark:hover:bg-[#1E293B] text-[#0F172A] dark:text-[#F8FAFC] text-[13px] font-bold items-center gap-2 transition-colors"
             >
               <span>معاينة الطالب</span>
               <ExternalLink className="w-3.5 h-3.5" />
@@ -450,7 +452,7 @@ export function LessonEditorModal({
             <button
               onClick={handleSave}
               disabled={isSaving || isLoading}
-              className="h-9 sm:h-10 px-4 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-xs font-black flex items-center gap-2 shadow-sm transition-transform active:scale-95 disabled:opacity-50"
+              className="h-11 sm:h-11 px-4 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[13px] font-bold flex items-center gap-2 shadow-sm transition-transform active:opacity-80 disabled:opacity-50"
             >
               {isSaving ? (
                 <>
@@ -467,7 +469,7 @@ export function LessonEditorModal({
 
             <button
               onClick={onClose}
-              className="w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-zinc-900 dark:hover:bg-zinc-700 text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-colors"
+              className="w-11 h-11 rounded-xl bg-[#F8FAFC] hover:bg-[#E2E8F0] dark:bg-[#1E293B] dark:hover:bg-[#1E293B] text-[#64748B] hover:text-[#0F172A] dark:hover:text-white flex items-center justify-center transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
@@ -477,24 +479,24 @@ export function LessonEditorModal({
         {/* Status Toast */}
         {statusMessage && (
           <div
-            className={`px-6 py-2.5 text-xs font-bold flex items-center gap-2 border-b transition-all ${
+            className={`px-6 py-3 text-[13px] font-bold flex items-center gap-2 border-b transition-all ${
               statusMessage.type === "success"
-                ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800"
-                : "bg-red-50 text-red-700 dark:bg-red-950/40 dark:text-red-300 border-red-200 dark:border-red-800"
+                ? "bg-[#059669]/10 text-[#059669] dark:bg-[#1E293B] dark:text-[#34D399] border-[#E2E8F0] dark:border-[#34D399]"
+                : "bg-[#DC2626]/10 text-[#DC2626] dark:bg-[#1E293B] dark:text-[#F87171] border-[#E2E8F0] dark:border-[#F87171]"
             }`}
           >
             {statusMessage.type === "success" ? (
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+              <CheckCircle2 className="w-4 h-4 text-[#059669] shrink-0" />
             ) : (
-              <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
+              <AlertCircle className="w-4 h-4 text-[#DC2626] shrink-0" />
             )}
             <span>{statusMessage.text}</span>
           </div>
         )}
 
         {/* Tab Navigation */}
-        <div className="px-4 sm:px-6 pt-3 bg-white dark:bg-zinc-950 border-b border-zinc-200 dark:border-zinc-800 flex items-center gap-2 overflow-x-auto shrink-0">
-          {[
+        <div className="px-4 sm:px-6 pt-3 bg-white dark:bg-[#0F172A] border-b border-[#E2E8F0] dark:border-[#334155] flex items-center gap-2 overflow-x-auto shrink-0">
+          {([
             { id: "media", label: "الوسائط والبيانات", icon: Video },
             {
               id: "mindmap",
@@ -503,17 +505,17 @@ export function LessonEditorModal({
             },
             { id: "content", label: "الشرح ومخرجات التعلم", icon: BookOpen },
             { id: "summary", label: "الزتونة ونقاط الامتحان", icon: Sparkles },
-          ].map((tab) => {
+          ] as const).map((tab) => {
             const Icon = tab.icon;
             const isSelected = activeTab === tab.id;
             return (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
-                className={`pb-3 px-3 text-xs font-black flex items-center gap-2 border-b-2 transition-all whitespace-nowrap ${
+                onClick={() => setActiveTab(tab.id)}
+                className={`pb-3 px-3 text-[13px] font-bold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap ${
                   isSelected
                     ? "border-[#4F46E5] text-[#4F46E5]"
-                    : "border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
+                    : "border-transparent text-[#64748B] hover:text-[#0F172A] dark:hover:text-[#F8FAFC]"
                 }`}
               >
                 <Icon className="w-4 h-4" />
@@ -527,8 +529,8 @@ export function LessonEditorModal({
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
           {isLoading ? (
             <div className="py-20 flex flex-col items-center justify-center gap-3">
-              <div className="w-8 h-8 border-3 border-[#4F46E5]/30 border-t-[#4F46E5] rounded-full animate-spin" />
-              <span className="text-xs font-bold text-slate-400">
+              <div className="w-11 h-11 border-3 border-[#4F46E5]/30 border-t-[#4F46E5] rounded-full animate-spin" />
+              <span className="text-[13px] font-bold text-[#94A3B8]">
                 جارٍ تحميل بيانات الدرس...
               </span>
             </div>
@@ -539,8 +541,8 @@ export function LessonEditorModal({
                 <div className="space-y-6">
                   {/* Basic Fields Grid */}
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div className="sm:col-span-2 space-y-1.5">
-                      <label className="text-xs font-black text-slate-700 dark:text-zinc-300">
+                    <div className="sm:col-span-2 space-y-2">
+                      <label className="text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC]">
                         عنوان الدرس *
                       </label>
                       <input
@@ -548,12 +550,12 @@ export function LessonEditorModal({
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
                         placeholder="مثال: الخلية الحية ووظائف العضيات"
-                        className="w-full h-10 px-3.5 rounded-xl bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-[#4F46E5]"
+                        className="w-full h-11 px-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#4F46E5]"
                       />
                     </div>
 
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-black text-slate-700 dark:text-zinc-300">
+                    <div className="space-y-2">
+                      <label className="text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC]">
                         المدة التقديرية (بالدقائق)
                       </label>
                       <input
@@ -563,35 +565,35 @@ export function LessonEditorModal({
                         onChange={(e) =>
                           setDurationMinutes(Number(e.target.value))
                         }
-                        className="w-full h-10 px-3.5 rounded-xl bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-[#4F46E5]"
+                        className="w-full h-11 px-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#4F46E5]"
                       />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-black text-slate-700 dark:text-zinc-300">
+                    <div className="space-y-2">
+                      <label className="text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC]">
                         ترتيب الدرس داخل الوحدة
                       </label>
                       <input
                         type="number"
                         value={order}
                         onChange={(e) => setOrder(Number(e.target.value))}
-                        className="w-full h-10 px-3.5 rounded-xl bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-[#4F46E5]"
+                        className="w-full h-11 px-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#4F46E5]"
                       />
                     </div>
 
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-black text-slate-700 dark:text-zinc-300">
+                    <div className="space-y-2">
+                      <label className="text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC]">
                         حالة نشر الدرس للطلاب
                       </label>
                       <button
                         type="button"
                         onClick={() => setIsPublished(!isPublished)}
-                        className={`w-full h-10 px-4 rounded-xl text-xs font-black flex items-center justify-between border transition-colors ${
+                        className={`w-full h-11 px-4 rounded-xl text-[13px] font-bold flex items-center justify-between border transition-colors ${
                           isPublished
-                            ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
-                            : "bg-slate-100 text-slate-500 dark:bg-zinc-900 dark:text-zinc-400 border-slate-200 dark:border-zinc-800"
+                            ? "bg-[#059669]/10 text-[#059669] dark:text-[#34D399] border-[#059669]/20"
+                            : "bg-[#F8FAFC] text-[#64748B] dark:bg-[#1E293B] dark:text-[#94A3B8] border-[#E2E8F0] dark:border-[#334155]"
                         }`}
                       >
                         <span className="flex items-center gap-2">
@@ -606,7 +608,7 @@ export function LessonEditorModal({
                               : "مسودة مخفية (غير مرئي للطلاب)"}
                           </span>
                         </span>
-                        <span className="text-[10px] px-2 py-0.5 rounded-md font-mono bg-white dark:bg-zinc-900">
+                        <span className="text-[13px] px-2 py-1 rounded-md font-mono bg-white dark:bg-[#1E293B]">
                           {isPublished ? "PUBLISHED" : "DRAFT"}
                         </span>
                       </button>
@@ -614,9 +616,9 @@ export function LessonEditorModal({
                   </div>
 
                   {/* Video URL Section */}
-                  <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-zinc-900/60 border border-slate-200 dark:border-zinc-800 space-y-3">
+                  <div className="p-4 sm:p-5 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/60 border border-[#E2E8F0] dark:border-[#334155] space-y-3">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                      <div className="flex items-center gap-2 text-xs font-black text-[#14243D] dark:text-white">
+                      <div className="flex items-center gap-2 text-[13px] font-bold text-[#0F172A] dark:text-white">
                         <Video className="w-4 h-4 text-[#4F46E5]" />
                         <span>فيديو الدرس (YouTube / Vimeo / MP4 مباشر)</span>
                       </div>
@@ -634,7 +636,7 @@ export function LessonEditorModal({
                           type="button"
                           onClick={() => videoInputRef.current?.click()}
                           disabled={uploadingMedia === "video"}
-                          className="h-7 px-3 rounded-lg bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/50 text-[#4F46E5] dark:text-indigo-400 text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50"
+                          className="h-7 px-3 rounded-lg bg-[#4F46E5]/10 hover:bg-[#4F46E5]/10 dark:bg-[#1E293B] text-[#4F46E5] dark:text-[#6366F1] text-[13px] font-bold flex items-center gap-2 transition-colors cursor-pointer disabled:opacity-50"
                         >
                           {uploadingMedia === "video" ? (
                             <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -651,12 +653,12 @@ export function LessonEditorModal({
                       value={videoUrl}
                       onChange={(e) => setVideoUrl(e.target.value)}
                       placeholder="https://www.youtube.com/watch?v=... أو /uploads/video.mp4"
-                      className="w-full h-10 px-3.5 rounded-xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-xs font-mono text-slate-900 dark:text-white focus:outline-none focus:border-[#4F46E5]"
+                      className="w-full h-11 px-4 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-mono text-[#0F172A] dark:text-white focus:outline-none focus:border-[#4F46E5]"
                       dir="ltr"
                     />
 
                     {embedUrl ? (
-                      <div className="aspect-video w-full max-w-lg rounded-xl overflow-hidden border border-slate-200 dark:border-zinc-800 bg-black mt-2">
+                      <div className="aspect-video w-full max-w-lg rounded-xl overflow-hidden border border-[#E2E8F0] dark:border-[#334155] bg-black mt-2">
                         <iframe
                           src={embedUrl}
                           title="معاينة الفيديو"
@@ -666,7 +668,7 @@ export function LessonEditorModal({
                         />
                       </div>
                     ) : videoUrl ? (
-                      <div className="rounded-xl overflow-hidden border border-slate-200 dark:border-zinc-800 bg-black mt-2 max-w-lg">
+                      <div className="rounded-xl overflow-hidden border border-[#E2E8F0] dark:border-[#334155] bg-black mt-2 max-w-lg">
                         <video
                           src={videoUrl}
                           controls
@@ -677,10 +679,10 @@ export function LessonEditorModal({
                   </div>
 
                   {/* Podcast / Audio URL Section */}
-                  <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-zinc-900/60 border border-slate-200 dark:border-zinc-800 space-y-3">
+                  <div className="p-4 sm:p-5 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/60 border border-[#E2E8F0] dark:border-[#334155] space-y-3">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                      <div className="flex items-center gap-2 text-xs font-black text-[#14243D] dark:text-white">
-                        <Headphones className="w-4 h-4 text-emerald-500" />
+                      <div className="flex items-center gap-2 text-[13px] font-bold text-[#0F172A] dark:text-white">
+                        <Headphones className="w-4 h-4 text-[#059669]" />
                         <span>بودكاست الدرس / التسجيل الصوتي (audioUrl)</span>
                       </div>
                       <div className="flex items-center gap-2">
@@ -697,7 +699,7 @@ export function LessonEditorModal({
                           type="button"
                           onClick={() => audioInputRef.current?.click()}
                           disabled={uploadingMedia === "audio"}
-                          className="h-7 px-3 rounded-lg bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50"
+                          className="h-7 px-3 rounded-lg bg-[#059669]/10 hover:bg-[#059669]/10 dark:bg-[#1E293B] text-[#059669] dark:text-[#34D399] text-[13px] font-bold flex items-center gap-2 transition-colors cursor-pointer disabled:opacity-50"
                         >
                           {uploadingMedia === "audio" ? (
                             <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -706,7 +708,7 @@ export function LessonEditorModal({
                           )}
                           <span>{uploadingMedia === "audio" ? "جاري الرفع..." : "رفع تسجيل صوتي"}</span>
                         </button>
-                        <span className="text-[10px] font-bold text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-md">
+                        <span className="text-[13px] font-bold text-[#059669] bg-[#059669]/10 px-2 py-1 rounded-md">
                           الخلاصة الصوتية
                         </span>
                       </div>
@@ -717,19 +719,19 @@ export function LessonEditorModal({
                       value={audioUrl}
                       onChange={(e) => setAudioUrl(e.target.value)}
                       placeholder="https://example.com/audio/lesson-summary.mp3 أو /uploads/podcast.mp3"
-                      className="w-full h-10 px-3.5 rounded-xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-xs font-mono text-slate-900 dark:text-white focus:outline-none focus:border-[#4F46E5]"
+                      className="w-full h-11 px-4 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-mono text-[#0F172A] dark:text-white focus:outline-none focus:border-[#4F46E5]"
                       dir="ltr"
                     />
 
                     {audioUrl && (
                       <div className="pt-2">
-                        <span className="text-[11px] font-bold text-slate-500 block mb-1.5">
+                        <span className="text-[13px] font-bold text-[#64748B] block mb-2">
                           معاينة الاستماع المباشر:
                         </span>
                         <audio
                           src={audioUrl}
                           controls
-                          className="w-full h-9 rounded-lg"
+                          className="w-full h-11 rounded-lg"
                         />
                       </div>
                     )}
@@ -742,8 +744,8 @@ export function LessonEditorModal({
                 <div className="space-y-6">
                   {/* Meta */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-black text-slate-700 dark:text-zinc-300">
+                    <div className="space-y-2">
+                      <label className="text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC]">
                         عنوان الخريطة الذهنية
                       </label>
                       <input
@@ -751,12 +753,12 @@ export function LessonEditorModal({
                         value={mindMapTitle}
                         onChange={(e) => setMindMapTitle(e.target.value)}
                         placeholder="مثال: خريطة مفاهيم الوراثة والجينات"
-                        className="w-full h-10 px-3.5 rounded-xl bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-[#4F46E5]"
+                        className="w-full h-11 px-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#4F46E5]"
                       />
                     </div>
 
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-black text-slate-700 dark:text-zinc-300">
+                    <div className="space-y-2">
+                      <label className="text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC]">
                         إرشادات أو وصف للخريطة (اختياري)
                       </label>
                       <input
@@ -764,19 +766,19 @@ export function LessonEditorModal({
                         value={mindMapDescription}
                         onChange={(e) => setMindMapDescription(e.target.value)}
                         placeholder="مثال: ركّز على الفروق في الجزء الأيمن قبل الامتحان"
-                        className="w-full h-10 px-3.5 rounded-xl bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-[#4F46E5]"
+                        className="w-full h-11 px-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#4F46E5]"
                       />
                     </div>
                   </div>
 
                   {/* Add New Image Input */}
-                  <div className="p-4 sm:p-5 rounded-2xl bg-indigo-50/50 dark:bg-indigo-950/20 border border-indigo-100 dark:border-indigo-900/40 space-y-3">
+                  <div className="p-4 sm:p-5 rounded-xl bg-[#4F46E5]/10 dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#6366F1]/40 space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-black text-[#4F46E5] dark:text-indigo-400 flex items-center gap-2">
+                      <span className="text-[13px] font-bold text-[#4F46E5] dark:text-[#6366F1] flex items-center gap-2">
                         <ImageIcon className="w-4 h-4" />
                         <span>إضافة صورة خريطة ذهنية جديدة (MindMap Image URL)</span>
                       </span>
-                      <span className="text-[11px] text-slate-500 font-bold">
+                      <span className="text-[13px] text-[#64748B] font-bold">
                         تدعم JPG, PNG, WebP, SVG
                       </span>
                     </div>
@@ -787,7 +789,7 @@ export function LessonEditorModal({
                         value={newImageUrl}
                         onChange={(e) => setNewImageUrl(e.target.value)}
                         placeholder="https://images.unsplash.com/... أو رابط مباشر للصورة"
-                        className="flex-1 h-10 px-3.5 rounded-xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-xs font-mono text-slate-900 dark:text-white focus:outline-none focus:border-[#4F46E5]"
+                        className="flex-1 h-11 px-4 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-mono text-[#0F172A] dark:text-white focus:outline-none focus:border-[#4F46E5]"
                         dir="ltr"
                         onKeyDown={(e) => {
                           if (e.key === "Enter") {
@@ -800,7 +802,7 @@ export function LessonEditorModal({
                         type="button"
                         onClick={handleAddImage}
                         disabled={!newImageUrl.trim()}
-                        className="h-10 px-4 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-xs font-black flex items-center gap-1.5 shrink-0 transition-transform active:scale-95 disabled:opacity-50"
+                        className="h-11 px-4 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[13px] font-bold flex items-center gap-2 shrink-0 transition-transform active:opacity-80 disabled:opacity-50"
                       >
                         <Plus className="w-4 h-4" />
                         <span>إضافة بالرابط</span>
@@ -819,7 +821,7 @@ export function LessonEditorModal({
                         type="button"
                         onClick={() => mindMapInputRef.current?.click()}
                         disabled={uploadingMedia === "mindmap"}
-                        className="h-10 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-zinc-100 dark:hover:bg-white text-white dark:text-zinc-900 text-xs font-black flex items-center gap-1.5 shrink-0 transition-transform active:scale-95 disabled:opacity-50 cursor-pointer"
+                        className="h-11 px-4 rounded-xl bg-[#0F172A] hover:bg-[#0F172A] dark:bg-[#F8FAFC] dark:hover:bg-white text-white dark:text-[#1E293B] text-[13px] font-bold flex items-center gap-2 shrink-0 transition-transform active:opacity-80 disabled:opacity-50 cursor-pointer"
                       >
                         {uploadingMedia === "mindmap" ? (
                           <Loader2 className="w-4 h-4 animate-spin" />
@@ -834,23 +836,23 @@ export function LessonEditorModal({
                   {/* Images Grid */}
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <h4 className="text-xs font-black text-slate-700 dark:text-zinc-300">
+                      <h4 className="text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC]">
                         معرض الخرائط المرفوعة لهذا الدرس ({mindMapImages.length})
                       </h4>
-                      <span className="text-[11px] text-slate-400">
+                      <span className="text-[13px] text-[#94A3B8]">
                         يمكنك تغيير ترتيب الصور أو حذفها في أي وقت
                       </span>
                     </div>
 
                     {mindMapImages.length === 0 ? (
-                      <div className="p-8 rounded-2xl bg-slate-50 dark:bg-zinc-900/50 border border-dashed border-slate-200 dark:border-zinc-800 text-center space-y-2">
-                        <div className="w-10 h-10 mx-auto rounded-xl bg-slate-100 dark:bg-zinc-900 text-slate-400 flex items-center justify-center">
+                      <div className="p-8 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/50 border border-dashed border-[#E2E8F0] dark:border-[#334155] text-center space-y-2">
+                        <div className="w-11 h-11 mx-auto rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] text-[#94A3B8] flex items-center justify-center">
                           <ImageIcon className="w-5 h-5" />
                         </div>
-                        <p className="text-xs font-bold text-slate-600 dark:text-zinc-400">
+                        <p className="text-[13px] font-bold text-[#64748B] dark:text-[#94A3B8]">
                           لم يتم رفع أي صور خرائط ذهنية بعد.
                         </p>
-                        <p className="text-[11px] text-slate-400 max-w-md mx-auto">
+                        <p className="text-[13px] text-[#94A3B8] max-w-md mx-auto">
                           أضف روابط الصور عالية الدقة بالأعلى لتظهر للطالب في تبويب
                           "خريطة المفاهيم" مع أدوات التكبير ومعرض الصور الكامل.
                         </p>
@@ -860,13 +862,13 @@ export function LessonEditorModal({
                         {mindMapImages.map((imgUrl, idx) => (
                           <div
                             key={idx}
-                            className="group relative rounded-2xl bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 overflow-hidden shadow-2xs flex flex-col justify-between"
+                            className="group relative rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] overflow-hidden  flex flex-col justify-between"
                           >
-                            <div className="relative aspect-video bg-slate-200 dark:bg-zinc-900 overflow-hidden">
+                            <div className="relative aspect-video bg-[#E2E8F0] dark:bg-[#1E293B] overflow-hidden">
                               <img
                                 src={imgUrl}
                                 alt={`خريطة ${idx + 1}`}
-                                className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                                className="w-full h-full object-cover transition-transform group-"
                                 onError={(e) => {
                                   (e.target as HTMLElement).setAttribute(
                                     "data-failed",
@@ -874,22 +876,22 @@ export function LessonEditorModal({
                                   );
                                 }}
                               />
-                              <div className="absolute top-2 right-2 px-2 py-0.5 rounded-md bg-black/60 backdrop-blur-xs text-white text-[10px] font-bold">
+                              <div className="absolute top-2 right-2 px-2 py-1 rounded-md bg-black/60  text-white text-[13px] font-bold">
                                 خريطة {idx + 1}
                               </div>
 
                               <button
                                 type="button"
                                 onClick={() => setPreviewLightboxImage(imgUrl)}
-                                className="absolute bottom-2 left-2 p-1.5 rounded-lg bg-black/60 hover:bg-black/80 text-white backdrop-blur-xs transition-colors"
+                                className="absolute bottom-2 left-2 p-2 rounded-lg bg-black/60 hover:bg-black/80 text-white  transition-colors"
                                 title="تكبير ومعاينة"
                               >
                                 <Maximize2 className="w-3.5 h-3.5" />
                               </button>
                             </div>
 
-                            <div className="p-2.5 flex items-center justify-between gap-2 border-t border-slate-100 dark:border-zinc-800 bg-white dark:bg-zinc-900">
-                              <span className="text-[10px] font-mono text-slate-400 truncate max-w-[120px]" dir="ltr">
+                            <div className="p-3 flex items-center justify-between gap-2 border-t border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B]">
+                              <span className="text-[13px] font-mono text-[#94A3B8] truncate max-w-[120px]" dir="ltr">
                                 {imgUrl.split("/").pop() || "image"}
                               </span>
 
@@ -898,7 +900,7 @@ export function LessonEditorModal({
                                   type="button"
                                   onClick={() => handleMoveImage(idx, "up")}
                                   disabled={idx === 0}
-                                  className="p-1 rounded-md text-slate-400 hover:text-[#4F46E5] disabled:opacity-30 transition-colors"
+                                  className="p-1 rounded-md text-[#94A3B8] hover:text-[#4F46E5] disabled:opacity-30 transition-colors"
                                   title="تقديم الترتيب"
                                 >
                                   <ArrowUp className="w-3.5 h-3.5" />
@@ -907,7 +909,7 @@ export function LessonEditorModal({
                                   type="button"
                                   onClick={() => handleMoveImage(idx, "down")}
                                   disabled={idx === mindMapImages.length - 1}
-                                  className="p-1 rounded-md text-slate-400 hover:text-[#4F46E5] disabled:opacity-30 transition-colors"
+                                  className="p-1 rounded-md text-[#94A3B8] hover:text-[#4F46E5] disabled:opacity-30 transition-colors"
                                   title="تأخير الترتيب"
                                 >
                                   <ArrowDown className="w-3.5 h-3.5" />
@@ -915,7 +917,7 @@ export function LessonEditorModal({
                                 <button
                                   type="button"
                                   onClick={() => handleRemoveImage(idx)}
-                                  className="p-1 rounded-md text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors"
+                                  className="p-1 rounded-md text-[#DC2626] hover:bg-[#DC2626]/10 dark:hover:bg-[#1E293B] transition-colors"
                                   title="حذف الصورة"
                                 >
                                   <Trash2 className="w-3.5 h-3.5" />
@@ -934,13 +936,13 @@ export function LessonEditorModal({
               {activeTab === "content" && (
                 <div className="space-y-6">
                   {/* Objectives */}
-                  <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-zinc-900/60 border border-slate-200 dark:border-zinc-800 space-y-3">
+                  <div className="p-4 sm:p-5 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/60 border border-[#E2E8F0] dark:border-[#334155] space-y-3">
                     <div className="flex items-center justify-between">
-                      <label className="text-xs font-black text-slate-700 dark:text-zinc-300 flex items-center gap-2">
+                      <label className="text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC] flex items-center gap-2">
                         <CheckCircle2 className="w-4 h-4 text-[#4F46E5]" />
                         <span>الأهداف التعليمية ومخرجات التعلم ({objectives.length})</span>
                       </label>
-                      <span className="text-[11px] text-slate-400">
+                      <span className="text-[13px] text-[#94A3B8]">
                         تظهر أعلى الدرس للطالب
                       </span>
                     </div>
@@ -951,7 +953,7 @@ export function LessonEditorModal({
                         value={newObjective}
                         onChange={(e) => setNewObjective(e.target.value)}
                         placeholder="مثال: التمييز بين الانقسام الميتوزي والميوزي بدقة"
-                        className="flex-1 h-10 px-3.5 rounded-xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-[#4F46E5]"
+                        className="flex-1 h-11 px-4 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#4F46E5]"
                         onKeyDown={(e) => {
                           if (e.key === "Enter") {
                             e.preventDefault();
@@ -963,7 +965,7 @@ export function LessonEditorModal({
                         type="button"
                         onClick={handleAddObjective}
                         disabled={!newObjective.trim()}
-                        className="h-10 px-4 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-xs font-black flex items-center gap-1.5 shrink-0 transition-transform active:scale-95 disabled:opacity-50"
+                        className="h-11 px-4 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[13px] font-bold flex items-center gap-2 shrink-0 transition-transform active:opacity-80 disabled:opacity-50"
                       >
                         <Plus className="w-4 h-4" />
                         <span>إضافة هدف</span>
@@ -975,10 +977,10 @@ export function LessonEditorModal({
                         {objectives.map((obj, i) => (
                           <li
                             key={i}
-                            className="p-2.5 rounded-xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 flex items-center justify-between gap-3 text-xs font-bold text-slate-800 dark:text-zinc-200"
+                            className="p-3 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] flex items-center justify-between gap-3 text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC]"
                           >
-                            <div className="flex items-center gap-2.5">
-                              <span className="w-5 h-5 rounded-lg bg-[#4F46E5]/10 text-[#4F46E5] text-[10px] flex items-center justify-center font-bold">
+                            <div className="flex items-center gap-3">
+                              <span className="w-5 h-5 rounded-lg bg-[#4F46E5]/10 text-[#4F46E5] text-[13px] flex items-center justify-center font-bold">
                                 {i + 1}
                               </span>
                               <span>{obj}</span>
@@ -986,7 +988,7 @@ export function LessonEditorModal({
                             <button
                               type="button"
                               onClick={() => handleRemoveObjective(i)}
-                              className="text-red-500 hover:text-red-700 p-1 rounded-md transition-colors"
+                              className="text-[#DC2626] hover:text-[#DC2626] p-1 rounded-md transition-colors"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
                             </button>
@@ -999,10 +1001,10 @@ export function LessonEditorModal({
                   {/* Body Textarea */}
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <label className="text-xs font-black text-slate-700 dark:text-zinc-300">
+                      <label className="text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC]">
                         الشرح التفصيلي للدرس (Body Text)
                       </label>
-                      <span className="text-[11px] text-slate-400">
+                      <span className="text-[13px] text-[#94A3B8]">
                         يدعم الترويسات (## عنوان رئيسي، ### عنوان فرعي، * قائمة)
                       </span>
                     </div>
@@ -1012,7 +1014,7 @@ export function LessonEditorModal({
                       value={bodyText}
                       onChange={(e) => setBodyText(e.target.value)}
                       placeholder="اكتب أو الصق شرح الدرس هنا..."
-                      className="w-full p-4 rounded-2xl bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-xs sm:text-sm font-sans leading-relaxed text-slate-900 dark:text-white focus:outline-none focus:border-[#4F46E5]"
+                      className="w-full p-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] sm:text-sm font-sans leading-relaxed text-[#0F172A] dark:text-white focus:outline-none focus:border-[#4F46E5]"
                     />
                   </div>
                 </div>
@@ -1022,9 +1024,9 @@ export function LessonEditorModal({
               {activeTab === "summary" && (
                 <div className="space-y-6">
                   {/* Key Concepts */}
-                  <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-zinc-900/60 border border-slate-200 dark:border-zinc-800 space-y-3">
-                    <label className="text-xs font-black text-slate-700 dark:text-zinc-300 flex items-center gap-2">
-                      <Sparkles className="w-4 h-4 text-amber-500" />
+                  <div className="p-4 sm:p-5 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/60 border border-[#E2E8F0] dark:border-[#334155] space-y-3">
+                    <label className="text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC] flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-[#D97706]" />
                       <span>المفاهيم والنقاط الجوهرية (الزتونة الذهبية)</span>
                     </label>
 
@@ -1034,7 +1036,7 @@ export function LessonEditorModal({
                         value={newConcept}
                         onChange={(e) => setNewConcept(e.target.value)}
                         placeholder="أضف مفهوماً جوهرياً..."
-                        className="flex-1 h-10 px-3.5 rounded-xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-[#4F46E5]"
+                        className="flex-1 h-11 px-4 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#4F46E5]"
                         onKeyDown={(e) => {
                           if (e.key === "Enter") {
                             e.preventDefault();
@@ -1046,7 +1048,7 @@ export function LessonEditorModal({
                         type="button"
                         onClick={handleAddKeyConcept}
                         disabled={!newConcept.trim()}
-                        className="h-10 px-4 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-xs font-black flex items-center gap-1.5 shrink-0 transition-transform active:scale-95 disabled:opacity-50"
+                        className="h-11 px-4 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[13px] font-bold flex items-center gap-2 shrink-0 transition-transform active:opacity-80 disabled:opacity-50"
                       >
                         <Plus className="w-4 h-4" />
                         <span>إضافة</span>
@@ -1058,13 +1060,13 @@ export function LessonEditorModal({
                         {keyConcepts.map((item, i) => (
                           <div
                             key={i}
-                            className="p-2.5 rounded-xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 flex items-center justify-between text-xs font-bold text-slate-800 dark:text-zinc-200"
+                            className="p-3 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] flex items-center justify-between text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC]"
                           >
                             <span>{item}</span>
                             <button
                               type="button"
                               onClick={() => handleRemoveKeyConcept(i)}
-                              className="text-red-500 hover:text-red-700 p-1 rounded-md"
+                              className="text-[#DC2626] hover:text-[#DC2626] p-1 rounded-md"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
                             </button>
@@ -1075,9 +1077,9 @@ export function LessonEditorModal({
                   </div>
 
                   {/* Exam Tips */}
-                  <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-zinc-900/60 border border-slate-200 dark:border-zinc-800 space-y-3">
-                    <label className="text-xs font-black text-slate-700 dark:text-zinc-300 flex items-center gap-2">
-                      <Clock className="w-4 h-4 text-emerald-500" />
+                  <div className="p-4 sm:p-5 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/60 border border-[#E2E8F0] dark:border-[#334155] space-y-3">
+                    <label className="text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC] flex items-center gap-2">
+                      <Clock className="w-4 h-4 text-[#059669]" />
                       <span>نصائح الامتحان الذهبية (Exam Tips)</span>
                     </label>
 
@@ -1087,7 +1089,7 @@ export function LessonEditorModal({
                         value={newExamTip}
                         onChange={(e) => setNewExamTip(e.target.value)}
                         placeholder="مثال: ركّز على كلمة (فقط) في صيغة السؤال فإنها تنفي..."
-                        className="flex-1 h-10 px-3.5 rounded-xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-[#4F46E5]"
+                        className="flex-1 h-11 px-4 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#4F46E5]"
                         onKeyDown={(e) => {
                           if (e.key === "Enter") {
                             e.preventDefault();
@@ -1099,7 +1101,7 @@ export function LessonEditorModal({
                         type="button"
                         onClick={handleAddExamTip}
                         disabled={!newExamTip.trim()}
-                        className="h-10 px-4 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-xs font-black flex items-center gap-1.5 shrink-0 transition-transform active:scale-95 disabled:opacity-50"
+                        className="h-11 px-4 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[13px] font-bold flex items-center gap-2 shrink-0 transition-transform active:opacity-80 disabled:opacity-50"
                       >
                         <Plus className="w-4 h-4" />
                         <span>إضافة</span>
@@ -1111,13 +1113,13 @@ export function LessonEditorModal({
                         {examTips.map((tip, i) => (
                           <div
                             key={i}
-                            className="p-2.5 rounded-xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 flex items-center justify-between text-xs font-bold text-slate-800 dark:text-zinc-200"
+                            className="p-3 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] flex items-center justify-between text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC]"
                           >
                             <span>{tip}</span>
                             <button
                               type="button"
                               onClick={() => handleRemoveExamTip(i)}
-                              className="text-red-500 hover:text-red-700 p-1 rounded-md"
+                              className="text-[#DC2626] hover:text-[#DC2626] p-1 rounded-md"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
                             </button>
@@ -1128,8 +1130,8 @@ export function LessonEditorModal({
                   </div>
 
                   {/* Common Mistakes */}
-                  <div className="p-4 sm:p-5 rounded-2xl bg-red-50/50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/40 space-y-3">
-                    <label className="text-xs font-black text-red-600 dark:text-red-400 flex items-center gap-2">
+                  <div className="p-4 sm:p-5 rounded-xl bg-[#DC2626]/10 dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#F87171]/40 space-y-3">
+                    <label className="text-[13px] font-bold text-[#DC2626] dark:text-[#F87171] flex items-center gap-2">
                       <AlertCircle className="w-4 h-4" />
                       <span>الأخطاء الشائعة وتحذيرات الامتحان</span>
                     </label>
@@ -1140,21 +1142,21 @@ export function LessonEditorModal({
                         value={newMistake}
                         onChange={(e) => setNewMistake(e.target.value)}
                         placeholder="الخطأ الشائع لدى الطلاب..."
-                        className="h-10 px-3.5 rounded-xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-red-500"
+                        className="h-11 px-4 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#DC2626]"
                       />
                       <input
                         type="text"
                         value={newCorrection}
                         onChange={(e) => setNewCorrection(e.target.value)}
                         placeholder="التصحيح العلمي الدقيق..."
-                        className="h-10 px-3.5 rounded-xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500"
+                        className="h-11 px-4 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#059669]"
                       />
                     </div>
                     <button
                       type="button"
                       onClick={handleAddMistake}
                       disabled={!newMistake.trim() || !newCorrection.trim()}
-                      className="h-9 px-4 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-black flex items-center gap-1.5 transition-transform active:scale-95 disabled:opacity-50"
+                      className="h-11 px-4 rounded-xl bg-[#DC2626] hover:bg-[#B91C1C] text-white text-[13px] font-bold flex items-center gap-2 transition-transform active:opacity-80 disabled:opacity-50"
                     >
                       <Plus className="w-3.5 h-3.5" />
                       <span>إضافة الخطأ والتصحيح</span>
@@ -1165,22 +1167,22 @@ export function LessonEditorModal({
                         {commonMistakes.map((item, i) => (
                           <div
                             key={i}
-                            className="p-3 rounded-xl bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 flex items-start justify-between gap-3"
+                            className="p-3 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] flex items-start justify-between gap-3"
                           >
-                            <div className="space-y-1 text-xs font-bold">
-                              <p className="text-red-600 dark:text-red-400 flex items-center gap-1.5">
-                                <span>❌ خطأ:</span>
+                            <div className="space-y-1 text-[13px] font-bold">
+                              <p className="text-[#DC2626] dark:text-[#F87171] flex items-center gap-2">
+                                <span>خطأ:</span>
                                 <span>{item.mistake}</span>
                               </p>
-                              <p className="text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
-                                <span>✅ الصواب:</span>
+                              <p className="text-[#059669] dark:text-[#34D399] flex items-center gap-2">
+                                <span>الصواب:</span>
                                 <span>{item.correction}</span>
                               </p>
                             </div>
                             <button
                               type="button"
                               onClick={() => handleRemoveMistake(i)}
-                              className="text-red-500 hover:text-red-700 p-1 rounded-md"
+                              className="text-[#DC2626] hover:text-[#DC2626] p-1 rounded-md"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
                             </button>
@@ -1196,25 +1198,25 @@ export function LessonEditorModal({
         </div>
 
         {/* Footer Actions */}
-        <div className="p-4 sm:p-5 bg-slate-50 dark:bg-zinc-900/80 border-t border-slate-200 dark:border-zinc-800 flex items-center justify-between gap-4 shrink-0">
+        <div className="p-4 sm:p-5 bg-[#F8FAFC] dark:bg-[#1E293B]/80 border-t border-[#E2E8F0] dark:border-[#334155] flex items-center justify-between gap-4 shrink-0">
           <div>
             {showDeleteConfirm ? (
               <div className="flex items-center gap-2">
-                <span className="text-xs font-black text-red-600">
+                <span className="text-[13px] font-bold text-[#DC2626]">
                   هل أنت متأكد من الحذف؟
                 </span>
                 <button
                   type="button"
                   onClick={handleDelete}
                   disabled={isDeleting}
-                  className="h-8 px-3 rounded-lg bg-red-600 hover:bg-red-700 text-white text-xs font-black transition-colors"
+                  className="h-11 px-3 rounded-lg bg-[#DC2626] hover:bg-[#B91C1C] text-white text-[13px] font-bold transition-colors"
                 >
                   {isDeleting ? "جارٍ الحذف..." : "نعم، احذف نهائياً"}
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowDeleteConfirm(false)}
-                  className="h-8 px-3 rounded-lg bg-slate-200 text-slate-700 dark:bg-zinc-900 dark:text-zinc-300 text-xs font-bold"
+                  className="h-11 px-3 rounded-lg bg-[#E2E8F0] text-[#0F172A] dark:bg-[#1E293B] dark:text-[#F8FAFC] text-[13px] font-bold"
                 >
                   إلغاء
                 </button>
@@ -1223,7 +1225,7 @@ export function LessonEditorModal({
               <button
                 type="button"
                 onClick={() => setShowDeleteConfirm(true)}
-                className="h-8 px-3 rounded-lg text-xs font-bold text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 flex items-center gap-1.5 transition-colors"
+                className="h-11 px-3 rounded-lg text-[13px] font-bold text-[#DC2626] hover:bg-[#DC2626]/10 dark:hover:bg-[#1E293B] flex items-center gap-2 transition-colors"
               >
                 <Trash2 className="w-3.5 h-3.5" />
                 <span>حذف هذا الدرس</span>
@@ -1235,7 +1237,7 @@ export function LessonEditorModal({
             <button
               type="button"
               onClick={onClose}
-              className="h-9 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-zinc-900 dark:hover:bg-zinc-700 text-xs font-bold text-slate-700 dark:text-zinc-300 transition-colors"
+              className="h-11 px-4 rounded-xl bg-[#F8FAFC] hover:bg-[#E2E8F0] dark:bg-[#1E293B] dark:hover:bg-[#1E293B] text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC] transition-colors"
             >
               إغلاق النافذة
             </button>
@@ -1244,7 +1246,7 @@ export function LessonEditorModal({
               type="button"
               onClick={handleSave}
               disabled={isSaving || isLoading}
-              className="h-9 px-5 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-xs font-black flex items-center gap-2 shadow-sm transition-transform active:scale-95 disabled:opacity-50"
+              className="h-11 px-5 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[13px] font-bold flex items-center gap-2 shadow-sm transition-transform active:opacity-80 disabled:opacity-50"
             >
               <Save className="w-4 h-4" />
               <span>حفظ كافة التعديلات</span>
@@ -1256,7 +1258,7 @@ export function LessonEditorModal({
       {/* Lightbox for Previewing Mind Map Images */}
       {previewLightboxImage && (
         <div
-          className="fixed inset-0 z-60 bg-black/90 backdrop-blur-md flex items-center justify-center p-4"
+          className="fixed inset-0 z-60 bg-black/90  flex items-center justify-center p-4"
           onClick={() => setPreviewLightboxImage(null)}
         >
           <div
@@ -1273,7 +1275,7 @@ export function LessonEditorModal({
             <img
               src={previewLightboxImage}
               alt="معاينة الخريطة الذهنية"
-              className="max-w-full max-h-[85vh] object-contain rounded-xl shadow-2xl"
+              className="max-w-full max-h-[85vh] object-contain rounded-xl shadow-sm"
             />
           </div>
         </div>

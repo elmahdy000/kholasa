@@ -1,6 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { getCurriculumScope, isSubjectInScope } from "@/lib/curriculum";
 import { StudentShell } from "@/components/layout/StudentShell";
 import { ExamSolver } from "@/components/exams/ExamSolver";
 
@@ -26,12 +27,15 @@ export default async function ExamPage({ params, searchParams }: ExamPageProps) 
         orderBy: { order: "asc" },
         include: {
           question: {
-            include: {
+            select: {
+              id: true,
+              statement: true,
+              type: true,
+              difficulty: true,
               options: {
+                select: { id: true, text: true, order: true },
                 orderBy: { order: "asc" },
               },
-              explanation: true,
-              rubric: true,
             },
           },
         },
@@ -43,10 +47,28 @@ export default async function ExamPage({ params, searchParams }: ExamPageProps) 
     notFound();
   }
 
-  // Find or create an attempt for this user
-  let attemptId = queryAttemptId;
-  if (!attemptId) {
-    const newAttempt = await prisma.examAttempt.create({
+  // Custom (student-generated) exams are private to their creator
+  if (exam.isCustom && exam.createdById !== user.id) {
+    notFound();
+  }
+
+  // Official exams are limited to the student's own curriculum.
+  if (!isSubjectInScope(getCurriculumScope(user), exam.subject)) {
+    notFound();
+  }
+
+  // Find the current user's attempt only (never trust a foreign attemptId)
+  let attempt = queryAttemptId
+    ? await prisma.examAttempt.findFirst({
+        where: { id: queryAttemptId, userId: user.id, examId: exam.id },
+      })
+    : await prisma.examAttempt.findFirst({
+        where: { examId: exam.id, userId: user.id, isCompleted: false },
+        orderBy: { startedAt: "desc" },
+      });
+
+  if (!attempt) {
+    attempt = await prisma.examAttempt.create({
       data: {
         userId: user.id,
         examId: exam.id,
@@ -55,15 +77,12 @@ export default async function ExamPage({ params, searchParams }: ExamPageProps) 
         totalQuestions: exam.questions.length,
       },
     });
-    attemptId = newAttempt.id;
   }
 
-  const attempt = await prisma.examAttempt.findUnique({
-    where: { id: attemptId },
-  });
+  const attemptId = attempt.id;
 
   // If already completed, redirect directly to results
-  if (attempt?.isCompleted) {
+  if (attempt.isCompleted) {
     redirect(`/exams/${exam.id}/results?attemptId=${attempt.id}`);
   }
 
@@ -72,7 +91,7 @@ export default async function ExamPage({ params, searchParams }: ExamPageProps) 
       <ExamSolver
         exam={exam as any}
         attemptId={attemptId}
-        initialMode={attempt?.mode === "PRACTICE" ? "PRACTICE" : "EXAM"}
+        initialMode={attempt.mode === "PRACTICE" ? "PRACTICE" : "EXAM"}
       />
     </StudentShell>
   );

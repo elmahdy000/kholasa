@@ -12,10 +12,8 @@ import {
   Moon,
   Sun,
   MagnifyingGlass,
-  Fire,
   X,
   SpinnerGap,
-  Trophy,
 } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 import { EntranceGatekeeperModal } from "@/components/student/EntranceGatekeeperModal";
@@ -72,8 +70,10 @@ export function StudentShell({ children, user }: StudentShellProps) {
   // Search query effect
   useEffect(() => {
     if (searchQuery.trim().length < 2) {
-      setSearchResults([]);
-      return;
+      const resetTimer = setTimeout(() => {
+        setSearchResults([]);
+      }, 0);
+      return () => clearTimeout(resetTimer);
     }
 
     const timer = setTimeout(async () => {
@@ -103,27 +103,27 @@ export function StudentShell({ children, user }: StudentShellProps) {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#F8FAFC] dark:bg-[#09090B] text-zinc-900 dark:text-zinc-100">
+    <div className="min-h-screen flex flex-col bg-[#F8FAFC] dark:bg-[#0F172A] text-[#0F172A] dark:text-[#F8FAFC]">
       {/* Desktop & Tablet Top Navbar (Vercel / Replit Style) */}
-      <header className="sticky top-0 z-40 w-full bg-white/80 dark:bg-[#09090B]/80 backdrop-blur-md border-b border-zinc-200/80 dark:border-zinc-800/80 transition-colors">
+      <header className="sticky top-0 z-40 w-full bg-white/80 dark:bg-[#0F172A]/80  border-b border-[#E2E8F0]/80 dark:border-[#334155]/80 transition-colors">
         <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 h-15 flex items-center justify-between gap-4">
           {/* Logo & Brand */}
-          <Link href="/dashboard" className="flex items-center gap-2.5 shrink-0 group">
-            <div className="w-8 h-8 rounded-lg bg-[#4F46E5] text-white flex items-center justify-center font-bold text-sm shadow-2xs group-hover:scale-105 transition-transform">
+          <Link href="/dashboard" className="flex items-center gap-3 shrink-0 group">
+            <div className="w-11 h-11 rounded-lg bg-[#4F46E5] text-white flex items-center justify-center font-bold text-sm  group- transition-transform">
               خ
             </div>
             <div>
               <span className="font-bold text-sm text-[#0F172A] dark:text-white leading-tight block">
                 الخلاصة
               </span>
-              <span className="text-[10px] text-slate-400 font-mono block -mt-0.5 tracking-wider">
+              <span className="text-[13px] text-[#94A3B8] font-mono block -mt-1 tracking-wider">
                 EL KHOLASA
               </span>
             </div>
           </Link>
 
           {/* Desktop Nav Links (Vercel-style clean segmented tabs) */}
-          <nav className="hidden md:flex items-center gap-1 bg-zinc-100/80 dark:bg-zinc-900/80 p-1 rounded-xl border border-zinc-200/80 dark:border-zinc-800/80">
+          <nav className="hidden md:flex items-center gap-1 bg-[#F8FAFC]/80 dark:bg-[#1E293B]/80 p-1 rounded-xl border border-[#E2E8F0]/80 dark:border-[#334155]/80">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive =
@@ -135,13 +135,13 @@ export function StudentShell({ children, user }: StudentShellProps) {
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    "flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all",
+                    "flex items-center gap-2 px-4 py-2 rounded-lg text-[13px] font-bold transition-all",
                     isActive
-                      ? "bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 shadow-2xs border border-zinc-200/80 dark:border-zinc-700/80"
-                      : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100"
+                      ? "bg-white dark:bg-[#334155] text-[#0F172A] dark:text-[#F8FAFC]  border border-[#E2E8F0]/80 dark:border-[#334155]"
+                      : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-[#F8FAFC]"
                   )}
                 >
-                  <Icon className={cn("w-3.5 h-3.5", isActive ? "text-[#4F46E5] dark:text-indigo-400" : "")} weight={isActive ? "fill" : "bold"} />
+                  <Icon className={cn("w-3.5 h-3.5", isActive ? "text-[#4F46E5] dark:text-[#6366F1]" : "")} weight={isActive ? "fill" : "bold"} />
                   <span>{item.label}</span>
                 </Link>
               );
@@ -153,44 +153,40 @@ export function StudentShell({ children, user }: StudentShellProps) {
             {/* Quick Search Button (⌘K) */}
             <button
               onClick={() => setIsSearchOpen(true)}
-              className="h-8.5 px-2.5 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-xs font-medium text-zinc-500 dark:text-zinc-400 hover:border-zinc-300 dark:hover:border-zinc-700 hover:text-zinc-900 dark:hover:text-zinc-100 flex items-center gap-2 transition-all shadow-2xs"
+              className="h-11 px-3 rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B] text-[13px] font-medium text-[#64748B] dark:text-[#94A3B8] hover:border-[#4F46E5]/40 dark:hover:border-[#4F46E5]/60 hover:text-[#0F172A] dark:hover:text-[#F8FAFC] flex items-center gap-2 transition-all "
             >
-              <MagnifyingGlass className="w-3.5 h-3.5 text-zinc-400" weight="bold" />
-              <span className="hidden sm:inline text-xs">ابحث...</span>
-              <kbd className="hidden sm:inline-block px-1.5 py-0.5 rounded text-[10px] bg-zinc-100 dark:bg-zinc-800 text-zinc-500 font-mono border border-zinc-200/60 dark:border-zinc-700/60">
+              <MagnifyingGlass className="w-3.5 h-3.5 text-[#64748B]" weight="bold" />
+              <span className="hidden sm:inline text-[13px]">ابحث...</span>
+              <kbd className="hidden sm:inline-block px-2 py-1 rounded text-[13px] bg-[#F8FAFC] dark:bg-[#334155] text-[#64748B] font-mono border border-[#E2E8F0]/60 dark:border-[#334155]">
                 ⌘K
               </kbd>
             </button>
 
-            {/* Daily Streak Pill */}
-            <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-50/80 dark:bg-amber-950/40 border border-amber-200/70 dark:border-amber-900/50 text-[#D97706] dark:text-amber-400 text-xs font-bold">
-              <Fire className="w-3.5 h-3.5 text-amber-500" weight="fill" />
-              <span>5 أيام</span>
-            </div>
+            {/* Daily Streak Pill: removed until real check-in data is wired */}
 
             {/* Dark Mode Toggle */}
             <button
               onClick={toggleTheme}
-              className="w-8.5 h-8.5 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex items-center justify-center text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors shadow-2xs"
+              className="w-11 h-11 rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B] flex items-center justify-center text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-[#F8FAFC] hover:border-[#4F46E5]/40 dark:hover:border-[#4F46E5]/60 transition-colors "
               title={isDark ? "تفعيل الوضع الفاتح" : "تفعيل الوضع الداكن"}
             >
               {isDark ? (
-                <Sun className="w-3.5 h-3.5 text-amber-400" weight="bold" />
+                <Sun className="w-3.5 h-3.5 text-[#D97706]" weight="bold" />
               ) : (
-                <Moon className="w-3.5 h-3.5 text-indigo-600" weight="bold" />
+                <Moon className="w-3.5 h-3.5 text-[#4F46E5]" weight="bold" />
               )}
             </button>
 
             {/* User Profile Avatar */}
             <Link
               href="/profile"
-              className="flex items-center gap-2 p-0.5 pl-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors border border-transparent hover:border-zinc-200 dark:hover:border-zinc-700"
+              className="flex items-center gap-2 p-1 pl-2 rounded-lg hover:bg-[#F8FAFC] dark:hover:bg-[#334155] transition-colors border border-transparent hover:border-[#E2E8F0] dark:hover:border-[#4F46E5]/60"
             >
-              <div className="w-7.5 h-7.5 rounded-md bg-[#4F46E5] text-white flex items-center justify-center font-bold text-xs shadow-2xs">
+              <div className="w-7.5 h-7.5 rounded-md bg-[#4F46E5] text-white flex items-center justify-center font-bold text-[13px] ">
                 {user?.name ? user.name[0] : "ط"}
               </div>
               <div className="hidden lg:block text-right">
-                <span className="text-xs font-bold text-zinc-900 dark:text-zinc-100 block line-clamp-1 max-w-[90px]">
+                <span className="text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC] block line-clamp-1 max-w-[90px]">
                   {user?.name || "طالب"}
                 </span>
               </div>
@@ -207,7 +203,7 @@ export function StudentShell({ children, user }: StudentShellProps) {
       {/* Mobile & Tablet Floating Dock Navigation - Distinctive, Modern & Ergonomic */}
       <nav
         aria-label="شريط التنقل السفلي"
-        className="md:hidden fixed bottom-3 inset-x-3 sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2 sm:w-[420px] z-40 bg-white/95 dark:bg-zinc-950/95 backdrop-blur-2xl border border-zinc-200/90 dark:border-zinc-800/90 rounded-2xl sm:rounded-3xl shadow-[0_12px_36px_-6px_rgba(15,23,42,0.18)] dark:shadow-[0_16px_40px_-6px_rgba(0,0,0,0.8)] px-1.5 py-1.5 pb-[max(0.45rem,env(safe-area-inset-bottom))] flex items-center justify-around ring-1 ring-black/[0.04] dark:ring-white/[0.08]"
+        className="md:hidden fixed bottom-3 inset-x-3 sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2 sm:w-[420px] z-40 bg-white/95 dark:bg-[#0F172A]/95  border border-[#E2E8F0]/90 dark:border-[#334155]/90 rounded-xl shadow-sm px-2 py-2 pb-[max(0.45rem,env(safe-area-inset-bottom))] flex items-center justify-around ring-1 ring-black/[0.04] dark:ring-white/[0.08]"
       >
         {navItems.map((item) => {
           const Icon = item.icon;
@@ -221,24 +217,24 @@ export function StudentShell({ children, user }: StudentShellProps) {
               <Link
                 key={item.href}
                 href={item.href}
-                className="flex-1 flex flex-col items-center justify-center relative -mt-5 group active:scale-95 transition-transform"
+                className="flex-1 flex flex-col items-center justify-center relative -mt-5 group active:opacity-80 transition-transform"
               >
                 <div
                   className={cn(
-                    "w-11 h-11 rounded-2xl flex items-center justify-center shadow-lg transition-all border-2",
+                    "w-11 h-11 rounded-xl flex items-center justify-center shadow-sm transition-all border-2",
                     isActive
-                      ? "bg-[#4F46E5] text-white border-white dark:border-zinc-950 shadow-indigo-500/40 scale-105"
-                      : "bg-[#4F46E5] text-white border-white dark:border-zinc-950 shadow-indigo-500/25 group-hover:scale-105"
+                      ? "bg-[#4F46E5] text-white border-white dark:border-[#0F172A] shadow-sm "
+                      : "bg-[#4F46E5] text-white border-white dark:border-[#0F172A] shadow-sm group-"
                   )}
                 >
                   <Icon className="w-5 h-5 text-white" weight="fill" />
                 </div>
                 <span
                   className={cn(
-                    "text-[10px] font-black leading-tight tracking-tight text-center mt-1 truncate max-w-[64px]",
+                    "text-[13px] font-bold leading-tight tracking-tight text-center mt-1 truncate max-w-[64px]",
                     isActive
-                      ? "text-[#4F46E5] dark:text-indigo-400 font-black"
-                      : "text-zinc-600 dark:text-zinc-400 font-bold"
+                      ? "text-[#4F46E5] dark:text-[#6366F1] font-bold"
+                      : "text-[#64748B] dark:text-[#94A3B8] font-bold"
                   )}
                 >
                   {item.label}
@@ -252,18 +248,18 @@ export function StudentShell({ children, user }: StudentShellProps) {
               key={item.href}
               href={item.href}
               className={cn(
-                "flex-1 flex flex-col items-center justify-center gap-0.5 py-1 px-1 rounded-xl transition-all active:scale-95",
+                "flex-1 flex flex-col items-center justify-center gap-1 py-1 px-1 rounded-xl transition-all active:opacity-80",
                 isActive
-                  ? "text-[#4F46E5] dark:text-indigo-400 font-bold"
-                  : "text-zinc-500 dark:text-zinc-400 font-medium hover:text-zinc-900 dark:hover:text-zinc-100"
+                  ? "text-[#4F46E5] dark:text-[#6366F1] font-bold"
+                  : "text-[#64748B] dark:text-[#94A3B8] font-medium hover:text-[#0F172A] dark:hover:text-[#F8FAFC]"
               )}
             >
               <div
                 className={cn(
                   "w-8.5 h-7 rounded-lg flex items-center justify-center transition-colors relative",
                   isActive
-                    ? "bg-indigo-50 dark:bg-indigo-950/60 text-[#4F46E5] dark:text-indigo-400 border border-indigo-200/50 dark:border-indigo-800/50"
-                    : "hover:bg-zinc-100/70 dark:hover:bg-zinc-800/60"
+                    ? "bg-[#4F46E5]/10 dark:bg-[#1E293B] text-[#4F46E5] dark:text-[#6366F1] border border-[#E2E8F0]/50 dark:border-[#6366F1]/50"
+                    : "hover:bg-[#F8FAFC]/70 dark:hover:bg-[#334155]/60"
                 )}
               >
                 <Icon
@@ -271,11 +267,11 @@ export function StudentShell({ children, user }: StudentShellProps) {
                   weight={isActive ? "fill" : "bold"}
                 />
               </div>
-              <span className="text-[10px] font-bold leading-tight tracking-tight text-center truncate max-w-[60px]">
+              <span className="text-[13px] font-bold leading-tight tracking-tight text-center truncate max-w-[60px]">
                 {item.label}
               </span>
               {isActive && (
-                <span className="w-1.5 h-1.5 rounded-full bg-[#4F46E5] dark:bg-indigo-400 -mt-0.5" />
+                <span className="w-1.5 h-1.5 rounded-full bg-[#4F46E5] dark:bg-[#6366F1] -mt-1" />
               )}
             </Link>
           );
@@ -284,11 +280,11 @@ export function StudentShell({ children, user }: StudentShellProps) {
 
       {/* Global Search Modal (Vercel cmdk style) */}
       {isSearchOpen && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-start justify-center p-4 pt-16 sm:pt-24 transition-opacity">
-          <div className="w-full max-w-xl bg-white dark:bg-zinc-950 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-2xl overflow-hidden text-right">
+        <div className="fixed inset-0 z-50 bg-black/60  flex items-start justify-center p-4 pt-16 sm:pt-24 transition-opacity">
+          <div className="w-full max-w-xl bg-white dark:bg-[#0F172A] rounded-xl border border-[#E2E8F0] dark:border-[#334155] shadow-sm overflow-hidden text-right">
             {/* Search Input Bar */}
-            <div className="relative border-b border-zinc-200 dark:border-zinc-800 flex items-center px-4">
-              <div className="text-zinc-400 shrink-0">
+            <div className="relative border-b border-[#E2E8F0] dark:border-[#334155] flex items-center px-4">
+              <div className="text-[#64748B] shrink-0">
                 {isSearching ? (
                   <SpinnerGap className="w-4 h-4 animate-spin text-[#4F46E5]" weight="bold" />
                 ) : (
@@ -301,11 +297,11 @@ export function StudentShell({ children, user }: StudentShellProps) {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="ابحث في الدروس، المفاهيم، القوانين، والمواد..."
-                className="w-full h-13 pr-3 pl-8 bg-transparent text-sm font-medium text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none"
+                className="w-full h-13 pr-3 pl-8 bg-transparent text-sm font-medium text-[#0F172A] dark:text-[#F8FAFC] placeholder:text-[#64748B] focus:outline-none"
               />
               <button
                 onClick={() => setIsSearchOpen(false)}
-                className="p-1 rounded-md text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                className="p-1 rounded-md text-[#64748B] hover:text-[#0F172A] dark:hover:text-[#F8FAFC] hover:bg-[#F8FAFC] dark:hover:bg-[#334155] transition-colors"
               >
                 <X className="w-4 h-4" weight="bold" />
               </button>
@@ -321,17 +317,17 @@ export function StudentShell({ children, user }: StudentShellProps) {
                       setIsSearchOpen(false);
                       router.push(res.url);
                     }}
-                    className="w-full p-2.5 rounded-xl hover:bg-zinc-50 dark:hover:bg-zinc-900/80 flex items-center justify-between text-right transition-colors group"
+                    className="w-full p-3 rounded-xl hover:bg-[#F8FAFC] dark:hover:bg-[#1E293B]/80 flex items-center justify-between text-right transition-colors group"
                   >
                     <div>
-                      <span className="text-xs font-bold text-zinc-900 dark:text-zinc-100 block group-hover:text-[#4F46E5] transition-colors">
+                      <span className="text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC] block group-hover:text-[#4F46E5] transition-colors">
                         {res.title}
                       </span>
-                      <span className="text-[11px] text-zinc-400 block mt-0.5">
+                      <span className="text-[13px] text-[#64748B] block mt-1">
                         {res.subtitle}
                       </span>
                     </div>
-                    <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 border border-zinc-200/60 dark:border-zinc-700/60">
+                    <span className="px-2 py-1 rounded text-[13px] font-mono font-bold bg-[#F8FAFC] dark:bg-[#334155] text-[#64748B] dark:text-[#F8FAFC] border border-[#E2E8F0]/60 dark:border-[#334155]">
                       {res.type === "LESSON"
                         ? "درس"
                         : res.type === "SUBJECT"
@@ -341,25 +337,25 @@ export function StudentShell({ children, user }: StudentShellProps) {
                   </button>
                 ))
               ) : searchQuery.trim().length >= 2 ? (
-                <div className="p-8 text-center text-xs text-zinc-500 font-medium">
+                <div className="p-8 text-center text-[13px] text-[#64748B] font-medium">
                   لم يتم العثور على نتائج مطابقة لـ "{searchQuery}"
                 </div>
               ) : (
-                <div className="p-6 text-center text-xs text-zinc-400">
+                <div className="p-6 text-center text-[13px] text-[#64748B]">
                   ابدأ بكتابة اسم الدرس أو القانون للبحث الفوري...
                 </div>
               )}
             </div>
 
             {/* Vercel cmdk Footer */}
-            <div className="px-4 py-2 border-t border-zinc-100 dark:border-zinc-800/80 bg-zinc-50/70 dark:bg-zinc-900/60 flex items-center justify-between text-[11px] text-zinc-400 font-mono">
+            <div className="px-4 py-2 border-t border-[#E2E8F0] dark:border-[#334155]/80 bg-[#F8FAFC]/70 dark:bg-[#1E293B]/60 flex items-center justify-between text-[13px] text-[#64748B] font-mono">
               <div className="flex items-center gap-3">
                 <span className="flex items-center gap-1">
-                  <kbd className="px-1.5 py-0.5 rounded bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-[10px]">↵</kbd>
+                  <kbd className="px-2 py-1 rounded bg-white dark:bg-[#334155] border border-[#E2E8F0] dark:border-[#334155] text-[13px]">↵</kbd>
                   <span>للاختيار</span>
                 </span>
                 <span className="flex items-center gap-1">
-                  <kbd className="px-1.5 py-0.5 rounded bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-[10px]">Esc</kbd>
+                  <kbd className="px-2 py-1 rounded bg-white dark:bg-[#334155] border border-[#E2E8F0] dark:border-[#334155] text-[13px]">Esc</kbd>
                   <span>للإغلاق</span>
                 </span>
               </div>

@@ -2,13 +2,16 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { UserService } from "@/services";
 import { createSession } from "@/lib/auth";
+import { passwordSchema } from "@/lib/validation/auth";
+import { conflict, jsonError, parseJson } from "@/lib/http";
+import { getClientIp, rateLimit, withRetryAfter } from "@/lib/rate-limit";
 
 const registerSchema = z
   .object({
-    name: z.string().min(2, "الاسم يجب أن يحتوي على حرفين على الأقل"),
+    name: z.string().trim().min(2, "الاسم يجب أن يحتوي على حرفين على الأقل").max(100),
     email: z.string().email("يرجى إدخال بريد إلكتروني صالح").optional().or(z.literal("")),
-    phone: z.string().optional().or(z.literal("")),
-    password: z.string().min(6, "كلمة المرور يجب أن لا تقل عن 6 أحرف"),
+    phone: z.string().max(30).optional().or(z.literal("")),
+    password: passwordSchema,
     systemId: z.string().optional(),
     gradeId: z.string().optional(),
   })
@@ -19,26 +22,18 @@ const registerSchema = z
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json().catch(() => ({}));
-    const result = registerSchema.safeParse(body);
+    rateLimit(`register:ip:${getClientIp(req)}`, 5, 60 * 60 * 1000);
+    const { name, email, phone, password, systemId, gradeId } = await parseJson(req, registerSchema);
 
-    if (!result.success) {
-      return NextResponse.json(
-        { error: result.error.issues[0]?.message || "بيانات غير صالحة" },
-        { status: 400 }
-      );
+    let user;
+    try {
+      user = await UserService.registerStudent({ name, email, phone, password, systemId, gradeId });
+    } catch (error) {
+      if (error instanceof Error && error.message.includes("مسجل بالفعل")) {
+        throw conflict(error.message);
+      }
+      throw error;
     }
-
-    const { name, email, phone, password, systemId, gradeId } = result.data;
-
-    const user = await UserService.registerStudent({
-      name,
-      email,
-      phone,
-      password,
-      systemId,
-      gradeId,
-    });
 
     await createSession(user.id);
 
@@ -47,13 +42,7 @@ export async function POST(req: Request) {
       user,
       message: "تم إنشاء الحساب بنجاح",
     });
-  } catch (error: any) {
-    console.error("Register error:", error);
-    const isConflict = error?.message?.includes("مسجل بالفعل");
-    return NextResponse.json(
-      { error: error?.message || "حدث خطأ غير متوقع أثناء التسجيل" },
-      { status: isConflict ? 409 : 500 }
-    );
+  } catch (error) {
+    return withRetryAfter(jsonError(error), error);
   }
 }
-

@@ -1,78 +1,69 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser, isStaff } from "@/lib/auth";
-import { MediaService } from "@/services";
+import { badRequest, forbidden, jsonError } from "@/lib/http";
+import { MediaService } from "@/services/media.service";
+import { AnalyticsService } from "@/services/analytics.service";
+
+const MAX_BYTES = 50 * 1024 * 1024;
+
+async function requireStaffUser() {
+  const user = await getCurrentUser();
+  if (!user || !isStaff(user.role)) throw forbidden("غير مصرح");
+  return user;
+}
 
 // GET: List all uploaded files with metadata
 export async function GET() {
   try {
-    const user = await getCurrentUser();
-    if (!user || !isStaff(user.role)) {
-      return NextResponse.json({ error: "غير مصرح" }, { status: 403 });
-    }
-
+    await requireStaffUser();
     const files = await MediaService.listAllMediaFiles();
     return NextResponse.json({ files });
   } catch (error) {
-    console.error("Failed to list media files:", error);
-    return NextResponse.json(
-      { error: "تعذر تحميل قائمة الملفات" },
-      { status: 500 }
-    );
+    return jsonError(error);
   }
 }
 
 // POST: Upload a file
 export async function POST(req: Request) {
   try {
-    const user = await getCurrentUser();
-    if (!user || !isStaff(user.role)) {
-      return NextResponse.json({ error: "غير مصرح" }, { status: 403 });
+    const user = await requireStaffUser();
+
+    const declared = Number(req.headers.get("content-length") || 0);
+    if (declared > MAX_BYTES + 1024 * 1024) {
+      throw badRequest("حجم الملف يتجاوز الحد الأقصى المسموح به (50 ميجابايت)");
     }
 
     const formData = await req.formData();
-    const file = formData.get("file") as File | null;
-
-    if (!file) {
-      return NextResponse.json({ error: "لم يتم تحديد أي ملف" }, { status: 400 });
+    const file = formData.get("file");
+    if (!(file instanceof File)) throw badRequest("لم يتم تحديد أي ملف");
+    if (file.size > MAX_BYTES) {
+      throw badRequest("حجم الملف يتجاوز الحد الأقصى المسموح به (50 ميجابايت)");
     }
 
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-
+    const buffer = Buffer.from(await file.arrayBuffer());
     const uploaded = await MediaService.saveUploadedBuffer(buffer, file.name, file.type);
+
+    await AnalyticsService.logAuditAction(user.id, "UPLOAD", "media", uploaded.filename, {
+      size: uploaded.size,
+      type: uploaded.type,
+    });
     return NextResponse.json(uploaded);
-  } catch (error: any) {
-    console.error("Failed to upload file:", error);
-    return NextResponse.json(
-      { error: error?.message || "حدث خطأ أثناء رفع الملف إلى الخادم" },
-      { status: 500 }
-    );
+  } catch (error) {
+    return jsonError(error);
   }
 }
 
 // DELETE: Delete an uploaded file
 export async function DELETE(req: Request) {
   try {
-    const user = await getCurrentUser();
-    if (!user || !isStaff(user.role)) {
-      return NextResponse.json({ error: "غير مصرح" }, { status: 403 });
-    }
-
-    const { searchParams } = new URL(req.url);
-    const filename = searchParams.get("filename");
-
-    if (!filename) {
-      return NextResponse.json({ error: "اسم الملف مطلوب" }, { status: 400 });
-    }
+    const user = await requireStaffUser();
+    const filename = new URL(req.url).searchParams.get("filename");
+    if (!filename) throw badRequest("اسم الملف مطلوب");
 
     await MediaService.deleteMediaFile(filename);
+    await AnalyticsService.logAuditAction(user.id, "DELETE", "media", filename);
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Failed to delete file:", error);
-    return NextResponse.json(
-      { error: "تعذر حذف الملف من الخادم" },
-      { status: 500 }
-    );
+    return jsonError(error);
   }
 }
-

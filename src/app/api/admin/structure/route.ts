@@ -1,182 +1,150 @@
 import { NextResponse } from "next/server";
+import { z } from "zod";
 import { getCurrentUser, isStaff } from "@/lib/auth";
-import { CurriculumService } from "@/services";
+import { badRequest, forbidden, jsonError, parseJson } from "@/lib/http";
+import { CurriculumService } from "@/services/curriculum.service";
+import { AnalyticsService } from "@/services/analytics.service";
+
+const name = z.string().trim().min(1).max(120);
+const code = z.string().trim().min(1).max(50);
+const order = z.coerce.number().int().min(0).max(100000).optional();
+const optText = z.string().max(2000).nullable().optional();
+
+const createSchema = z.discriminatedUnion("type", [
+  z.object({
+    type: z.literal("system"),
+    data: z.object({ name, code, description: optText, isActive: z.boolean().optional(), order }),
+  }),
+  z.object({
+    type: z.literal("grade"),
+    data: z.object({ name, code, systemId: z.string().min(1), order }),
+  }),
+  z.object({
+    type: z.literal("subject"),
+    data: z.object({
+      name,
+      code,
+      icon: z.string().max(100).nullable().optional(),
+      color: z.string().max(20).optional(),
+      description: optText,
+      systemId: z.string().min(1),
+      gradeId: z.string().min(1),
+      trackId: z.string().nullable().optional(),
+      isPublished: z.boolean().optional(),
+      order,
+    }),
+  }),
+]);
+
+const updateSchema = z.discriminatedUnion("type", [
+  z.object({
+    type: z.literal("system"),
+    id: z.string().min(1),
+    data: z.object({
+      name: name.optional(),
+      code: code.optional(),
+      description: optText,
+      isActive: z.boolean().optional(),
+      order,
+    }),
+  }),
+  z.object({
+    type: z.literal("grade"),
+    id: z.string().min(1),
+    data: z.object({ name: name.optional(), code: code.optional(), order }),
+  }),
+  z.object({
+    type: z.literal("subject"),
+    id: z.string().min(1),
+    data: z.object({
+      name: name.optional(),
+      code: code.optional(),
+      icon: z.string().max(100).nullable().optional(),
+      color: z.string().max(20).optional(),
+      description: optText,
+      order,
+      isPublished: z.boolean().optional(),
+    }),
+  }),
+]);
+
+async function requireAdminUser() {
+  const user = await getCurrentUser();
+  if (!user || (user.role !== "ADMIN" && user.role !== "SUPER_ADMIN")) throw forbidden("غير مصرح");
+  return user;
+}
 
 // GET: Return full structure tree (Systems -> Grades -> Tracks -> Subjects)
 export async function GET() {
   try {
     const user = await getCurrentUser();
-    if (!user || !isStaff(user.role)) {
-      return NextResponse.json({ error: "غير مصرح" }, { status: 403 });
-    }
+    if (!user || !isStaff(user.role)) throw forbidden("غير مصرح");
 
     const systems = await CurriculumService.getStructureTree();
     return NextResponse.json({ systems });
   } catch (error) {
-    console.error("Failed to fetch educational structure:", error);
-    return NextResponse.json(
-      { error: "تعذر تحميل الهيكل الأكاديمي" },
-      { status: 500 }
-    );
+    return jsonError(error);
   }
 }
 
-// POST: Create a system, grade, track, or subject
+// POST: Create a system, grade, or subject
 export async function POST(req: Request) {
   try {
-    const user = await getCurrentUser();
-    if (!user || (user.role !== "ADMIN" && user.role !== "SUPER_ADMIN")) {
-      return NextResponse.json({ error: "غير مصرح" }, { status: 403 });
-    }
+    const user = await requireAdminUser();
+    const body = await parseJson(req, createSchema);
 
-    const body = await req.json().catch(() => ({}));
-    const { type, data } = body;
+    let item: { id: string };
+    if (body.type === "system") item = await CurriculumService.createSystem(body.data);
+    else if (body.type === "grade") item = await CurriculumService.createGrade(body.data);
+    else item = await CurriculumService.createSubject(body.data);
 
-    if (!type || !data) {
-      return NextResponse.json({ error: "بيانات غير مكتملة" }, { status: 400 });
-    }
-
-    if (type === "system") {
-      const { name, code, description, isActive } = data;
-      if (!name || !code) {
-        return NextResponse.json({ error: "اسم النظام والرمز مطلوبان" }, { status: 400 });
-      }
-
-      const system = await CurriculumService.createSystem({
-        name,
-        code,
-        description,
-        isActive,
-      });
-
-      return NextResponse.json({ success: true, item: system });
-    }
-
-    if (type === "grade") {
-      const { name, code, systemId, order } = data;
-      if (!name || !code || !systemId) {
-        return NextResponse.json({ error: "البيانات الأساسية للصف ناقصة" }, { status: 400 });
-      }
-
-      const grade = await CurriculumService.createGrade({
-        name,
-        code,
-        systemId,
-        order,
-      });
-
-      return NextResponse.json({ success: true, item: grade });
-    }
-
-    if (type === "subject") {
-      const { name, code, icon, color, description, systemId, gradeId, trackId, isPublished, order } = data;
-      if (!name || !code || !systemId || !gradeId) {
-        return NextResponse.json({ error: "البيانات الأساسية للمادة ناقصة" }, { status: 400 });
-      }
-
-      const subject = await CurriculumService.createSubject({
-        name,
-        code,
-        icon,
-        color,
-        description,
-        systemId,
-        gradeId,
-        trackId,
-        isPublished,
-        order,
-      });
-
-      return NextResponse.json({ success: true, item: subject });
-    }
-
-    return NextResponse.json({ error: "نوع العنصر غير معروف" }, { status: 400 });
-  } catch (error: any) {
-    console.error("Failed to create educational structure item:", error);
-    return NextResponse.json(
-      { error: error?.message || "تعذر إضافة العنصر، تحقق من عدم تكرار الرمز" },
-      { status: 500 }
-    );
+    await AnalyticsService.logAuditAction(user.id, "CREATE", body.type, item.id, {
+      name: body.data.name,
+    });
+    return NextResponse.json({ success: true, item });
+  } catch (error) {
+    return jsonError(error);
   }
 }
 
 // PATCH: Update an existing system, grade, or subject
 export async function PATCH(req: Request) {
   try {
-    const user = await getCurrentUser();
-    if (!user || (user.role !== "ADMIN" && user.role !== "SUPER_ADMIN")) {
-      return NextResponse.json({ error: "غير مصرح" }, { status: 403 });
-    }
+    const user = await requireAdminUser();
+    const body = await parseJson(req, updateSchema);
 
-    const body = await req.json().catch(() => ({}));
-    const { type, id, data } = body;
+    let item: { id: string };
+    if (body.type === "system") item = await CurriculumService.updateSystem(body.id, body.data);
+    else if (body.type === "grade") item = await CurriculumService.updateGrade(body.id, body.data);
+    else item = await CurriculumService.updateSubject(body.id, body.data);
 
-    if (!type || !id || !data) {
-      return NextResponse.json({ error: "بيانات غير مكتملة للتعديل" }, { status: 400 });
-    }
-
-    if (type === "system") {
-      const updated = await CurriculumService.updateSystem(id, data);
-      return NextResponse.json({ success: true, item: updated });
-    }
-
-    if (type === "grade") {
-      const updated = await CurriculumService.updateGrade(id, data);
-      return NextResponse.json({ success: true, item: updated });
-    }
-
-    if (type === "subject") {
-      const updated = await CurriculumService.updateSubject(id, data);
-      return NextResponse.json({ success: true, item: updated });
-    }
-
-    return NextResponse.json({ error: "نوع العنصر غير معروف" }, { status: 400 });
-  } catch (error: any) {
-    console.error("Failed to update structure item:", error);
-    return NextResponse.json(
-      { error: error?.message || "تعذر حفظ التعديلات" },
-      { status: 500 }
-    );
+    await AnalyticsService.logAuditAction(user.id, "UPDATE", body.type, body.id, {
+      fields: Object.keys(body.data),
+    });
+    return NextResponse.json({ success: true, item });
+  } catch (error) {
+    return jsonError(error);
   }
 }
 
 // DELETE: Delete a system, grade, or subject
 export async function DELETE(req: Request) {
   try {
-    const user = await getCurrentUser();
-    if (!user || (user.role !== "ADMIN" && user.role !== "SUPER_ADMIN")) {
-      return NextResponse.json({ error: "غير مصرح" }, { status: 403 });
-    }
+    const user = await requireAdminUser();
 
     const { searchParams } = new URL(req.url);
     const type = searchParams.get("type");
     const id = searchParams.get("id");
+    if (!type || !id) throw badRequest("معرف العنصر ونوعه مطلوبان");
 
-    if (!type || !id) {
-      return NextResponse.json({ error: "معرف العنصر ونوعه مطلوبان" }, { status: 400 });
-    }
+    if (type === "system") await CurriculumService.deleteSystem(id);
+    else if (type === "grade") await CurriculumService.deleteGrade(id);
+    else if (type === "subject") await CurriculumService.deleteSubject(id);
+    else throw badRequest("نوع العنصر غير مدعوم");
 
-    if (type === "system") {
-      await CurriculumService.deleteSystem(id);
-      return NextResponse.json({ success: true });
-    }
-
-    if (type === "grade") {
-      await CurriculumService.deleteGrade(id);
-      return NextResponse.json({ success: true });
-    }
-
-    if (type === "subject") {
-      await CurriculumService.deleteSubject(id);
-      return NextResponse.json({ success: true });
-    }
-
-    return NextResponse.json({ error: "نوع العنصر غير مدعوم" }, { status: 400 });
-  } catch (error: any) {
-    console.error("Failed to delete structure item:", error);
-    return NextResponse.json(
-      { error: error?.message || "تعذر حذف العنصر، قد يحتوي على وحدات أو أسئلة مرتبطة به" },
-      { status: 500 }
-    );
+    await AnalyticsService.logAuditAction(user.id, "DELETE", type, id);
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    return jsonError(error);
   }
 }

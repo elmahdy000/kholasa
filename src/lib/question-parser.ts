@@ -74,7 +74,7 @@ export function isQuestionStart(line: string): boolean {
   }
 
   // Pattern 4: Explicit essay prompt keywords at line start
-  const essayKeywords = /^(?:علل|فسر|وضح|اشرح|قارن بين|ما النتائج المترتبة على|ما المقصود بـ|عرف|أثبت أن|بين سبب|لماذا)\b/;
+  const essayKeywords = /^(?:علل|فسر|وضح|اشرح|قارن بين|ما النتائج المترتبة على|ما المقصود بـ|عرف|أثبت أن|بين سبب|لماذا)(?:[:\s\-\.]|$)/;
   if (essayKeywords.test(trimmed)) return true;
 
   return false;
@@ -235,7 +235,7 @@ function processQuestionBlock(lines: string[]): ParsedQuestion | null {
 
   // First line is almost always the statement start
   statement = lines[0];
-  let statementLines = [lines[0]];
+  const statementLines = [lines[0]];
   let readingStatement = true;
 
   for (let i = 1; i < lines.length; i++) {

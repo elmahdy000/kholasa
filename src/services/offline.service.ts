@@ -6,7 +6,11 @@ export class OfflineService {
    */
   static async generateLessonOfflinePackage(lessonId: string) {
     const lesson = await prisma.lesson.findUnique({
-      where: { id: lessonId },
+      where: {
+        id: lessonId,
+        isPublished: true,
+        unit: { isPublished: true, subject: { isPublished: true } },
+      },
       include: {
         unit: {
           select: {

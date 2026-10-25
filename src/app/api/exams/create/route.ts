@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
+import { AppError, jsonError } from "@/lib/http";
+import { rateLimit, withRetryAfter } from "@/lib/rate-limit";
 import { ExamService } from "@/services";
 
 export async function POST(req: Request) {
@@ -8,6 +10,8 @@ export async function POST(req: Request) {
     if (!user) {
       return NextResponse.json({ error: "يرجى تسجيل الدخول لبدء الامتحان" }, { status: 401 });
     }
+
+    rateLimit(`exam:create:${user.id}`, 10, 60 * 1000);
 
     const body = await req.json().catch(() => ({}));
     const {
@@ -44,10 +48,14 @@ export async function POST(req: Request) {
       examId: result.examId,
       attemptId: result.attemptId,
     });
-  } catch (error: any) {
+  } catch (error) {
+    if (error instanceof AppError) {
+      return withRetryAfter(jsonError(error), error);
+    }
     console.error("Failed to create exam:", error);
+    const msg = error instanceof Error ? error.message : "";
     return NextResponse.json(
-      { error: error?.message || "تعذر إنشاء الامتحان" },
+      { error: msg || "تعذر إنشاء الامتحان، حاول مرة أخرى" },
       { status: 400 }
     );
   }

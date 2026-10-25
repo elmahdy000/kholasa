@@ -49,11 +49,11 @@ export default async function AdminQuestionsPage() {
   return (
     <AdminShell user={user}>
       <div className="space-y-6 text-right font-sans">
-        <div className="border-b border-slate-200 dark:border-zinc-800 pb-4">
-          <h1 className="text-xl sm:text-2xl font-black text-[#14243D] dark:text-white">
+        <div className="border-b border-[#E2E8F0] dark:border-[#334155] pb-4">
+          <h1 className="text-xl sm:text-2xl font-bold text-[#0F172A] dark:text-white">
             بنك الأسئلة والتفسيرات التفاعلية
           </h1>
-          <p className="text-xs sm:text-sm text-[#64748B] dark:text-[#94A3B8] mt-1">
+          <p className="text-[13px] sm:text-sm text-[#64748B] dark:text-[#94A3B8] mt-1">
             إدارة الأسئلة، مراجعة خيارات الإجابة، استيراد ملفات الوورد، وربط المفاهيم التعليمية بالدروس
           </p>
         </div>

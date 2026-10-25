@@ -98,9 +98,7 @@ interface MindMap {
 interface QuestionOption {
   id: string;
   text: string;
-  isCorrect: boolean;
   order: number;
-  explanation?: string | null;
 }
 
 interface QuestionExplanation {
@@ -110,13 +108,25 @@ interface QuestionExplanation {
   sectionId?: string | null;
 }
 
+interface RevealedOption {
+  id: string;
+  isCorrect?: boolean;
+  explanation?: string | null;
+}
+
+interface RevealedQuestion {
+  isCorrect?: boolean;
+  correctOptionId?: string;
+  explanation?: QuestionExplanation | null;
+  options?: RevealedOption[];
+}
+
 interface Question {
   id: string;
   statement: string;
   type: string;
   difficulty: string;
   options: QuestionOption[];
-  explanation?: QuestionExplanation | null;
 }
 
 interface LessonViewerProps {
@@ -197,6 +207,7 @@ export function LessonViewer({
         selectedOptionId: string;
         revealed: boolean;
         isCorrect: boolean;
+        reveal?: RevealedQuestion;
       }
     >
   >({});
@@ -303,12 +314,16 @@ export function LessonViewer({
         body: JSON.stringify({ selectedOptionId: optionId }),
       });
       const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "تعذر التحقق من الإجابة");
+      }
       setQuestionAnswers((prev) => ({
         ...prev,
         [questionId]: {
           selectedOptionId: optionId,
           revealed: true,
           isCorrect: !!data.isCorrect,
+          reveal: data,
         },
       }));
     } catch (err) {
@@ -327,9 +342,9 @@ export function LessonViewer({
   return (
     <div className="space-y-6 text-right font-ui pb-28">
       {/* Top Header & Breadcrumbs */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E2E8F0] dark:border-zinc-800 pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E2E8F0] dark:border-[#334155] pb-5">
         <div>
-          <div className="flex items-center gap-2 text-xs font-medium text-[#64748B] dark:text-zinc-400 mb-2 flex-wrap">
+          <div className="flex items-center gap-2 text-[13px] font-medium text-[#64748B] dark:text-[#94A3B8] mb-2 flex-wrap">
             <Link
               href="/subjects"
               className="hover:text-[#4F46E5] transition-colors"
@@ -349,12 +364,12 @@ export function LessonViewer({
             </span>
           </div>
 
-          <h1 className="text-xl sm:text-2xl font-bold text-[#0F172A] dark:text-white leading-tight flex items-center gap-2.5">
+          <h1 className="text-xl sm:text-2xl font-bold text-[#0F172A] dark:text-white leading-tight flex items-center gap-3">
             <span>{lesson.title}</span>
           </h1>
 
-          <div className="flex items-center gap-3 text-xs text-[#64748B] dark:text-zinc-400 font-medium mt-2">
-            <span className="flex items-center gap-1.5">
+          <div className="flex items-center gap-3 text-[13px] text-[#64748B] dark:text-[#94A3B8] font-medium mt-2">
+            <span className="flex items-center gap-2">
               <Clock className="w-3.5 h-3.5 text-[#4F46E5]" weight="bold" />
               <span>مدة الدرس: {lesson.durationMinutes} دقيقة</span>
             </span>
@@ -370,10 +385,10 @@ export function LessonViewer({
           <button
             onClick={toggleBookmark}
             disabled={isTogglingBookmark}
-            className={`h-10 px-3.5 rounded-lg border text-xs font-bold flex items-center gap-1.5 transition-colors ${
+            className={`h-11 px-4 rounded-lg border text-[13px] font-bold flex items-center gap-2 transition-colors ${
               isBookmarked
                 ? "bg-[#D97706]/10 border-[#D97706]/30 text-[#D97706]"
-                : "border-[#E2E8F0] dark:border-zinc-800 hover:bg-[#F8FAFC] dark:hover:bg-zinc-800 text-[#64748B] dark:text-zinc-400"
+                : "border-[#E2E8F0] dark:border-[#334155] hover:bg-[#F8FAFC] dark:hover:bg-[#334155] text-[#64748B] dark:text-[#94A3B8]"
             }`}
           >
             <BookmarkSimple
@@ -386,10 +401,10 @@ export function LessonViewer({
           <button
             onClick={toggleComplete}
             disabled={isTogglingComplete}
-            className={`h-10 px-4 rounded-lg text-xs font-bold flex items-center gap-2 transition-colors ${
+            className={`h-11 px-4 rounded-lg text-[13px] font-bold flex items-center gap-2 transition-colors ${
               isCompleted
                 ? "bg-[#059669] text-white"
-                : "bg-[#F8FAFC] dark:bg-zinc-900 hover:bg-[#059669]/10 hover:text-[#059669] text-[#0F172A] dark:text-white border border-[#E2E8F0] dark:border-zinc-800"
+                : "bg-[#F8FAFC] dark:bg-[#1E293B] hover:bg-[#059669]/10 hover:text-[#059669] text-[#0F172A] dark:text-white border border-[#E2E8F0] dark:border-[#334155]"
             }`}
           >
             <CheckCircle
@@ -402,26 +417,26 @@ export function LessonViewer({
       </div>
 
       {/* Smart Audio Companion Bar (الخلاصة الصوتية) */}
-      <div className="p-4 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div className="p-4 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]  flex flex-col sm:flex-row items-center justify-between gap-3">
         <div className="flex items-center gap-3 w-full sm:w-auto">
           <button
             onClick={() => setIsPlayingAudio(!isPlayingAudio)}
-            className="w-9 h-9 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white flex items-center justify-center transition-transform active:scale-95 shrink-0 shadow-2xs"
+            className="w-11 h-11 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white flex items-center justify-center transition-transform active:opacity-80 shrink-0 "
           >
             {isPlayingAudio ? (
               <Pause className="w-4 h-4 fill-current" weight="fill" />
             ) : (
-              <Play className="w-4 h-4 fill-current mr-0.5" weight="fill" />
+              <Play className="w-4 h-4 fill-current mr-1" weight="fill" />
             )}
           </button>
           <div>
-            <h4 className="text-xs sm:text-sm font-bold text-[#0F172A] dark:text-white flex items-center gap-1.5">
+            <h4 className="text-[13px] sm:text-sm font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
               <span>الخلاصة الصوتية الذكية (بودكاست الدرس)</span>
-              <span className="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-emerald-500 text-white">
+              <span className="px-2 py-1 rounded text-[13px] font-mono font-bold bg-[#059669] text-white">
                 LIVE
               </span>
             </h4>
-            <p className="text-[11px] text-[#475569] dark:text-zinc-400">
+            <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8]">
               استمع إلى ملخص مركز للدرس أثناء المشي أو الاسترخاء
             </p>
           </div>
@@ -429,7 +444,7 @@ export function LessonViewer({
 
         {/* Progress Bar & Speed */}
         <div className="flex items-center gap-3 w-full sm:w-64">
-          <div className="flex-1 h-1.5 rounded-full bg-slate-100 dark:bg-zinc-900 overflow-hidden">
+          <div className="flex-1 h-1.5 rounded-full bg-[#F8FAFC] dark:bg-[#1E293B] overflow-hidden">
             <div
               className="h-full bg-[#4F46E5] transition-all duration-300"
               style={{ width: `${audioProgress}%` }}
@@ -442,7 +457,7 @@ export function LessonViewer({
                 speeds[(speeds.indexOf(playbackSpeed) + 1) % speeds.length];
               setPlaybackSpeed(next);
             }}
-            className="px-2 py-0.5 rounded-md border border-slate-200 dark:border-zinc-800 font-mono text-[11px] font-bold text-[#0F172A] dark:text-white bg-slate-50 dark:bg-zinc-900 hover:border-slate-300 transition-colors"
+            className="px-2 py-1 rounded-md border border-[#E2E8F0] dark:border-[#334155] font-mono text-[13px] font-bold text-[#0F172A] dark:text-white bg-[#F8FAFC] dark:bg-[#1E293B] hover:border-[#E2E8F0] transition-colors"
           >
             {playbackSpeed}x
           </button>
@@ -471,7 +486,7 @@ export function LessonViewer({
       </div>
 
       {/* 4 Interactive Tabs (Vercel / Replit Segmented Tabs) */}
-      <div className="p-1 rounded-xl bg-slate-100/80 dark:bg-zinc-900/80 border border-slate-200/80 dark:border-zinc-800/80 flex items-center gap-1 overflow-x-auto scrollbar-none">
+      <div className="p-1 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/80 border border-[#E2E8F0]/80 dark:border-[#334155]/80 flex items-center gap-1 overflow-x-auto scrollbar-none">
         {[
           { id: "content", label: "الشرح والتفكيك", icon: BookOpen },
           { id: "summary", label: "الزتونة الذهبية", icon: Sparkle, badge: "مركز" },
@@ -484,16 +499,16 @@ export function LessonViewer({
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`flex-1 min-w-[110px] h-9.5 px-3 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-all shrink-0 ${
+              className={`flex-1 min-w-[110px] h-11 px-3 rounded-lg text-[13px] font-bold flex items-center justify-center gap-2 transition-all shrink-0 ${
                 isSelected
-                  ? "bg-white dark:bg-zinc-900 text-[#0F172A] dark:text-white shadow-2xs border border-slate-200/80 dark:border-zinc-800/80 font-bold"
-                  : "text-slate-600 dark:text-zinc-400 hover:text-[#0F172A] dark:hover:text-white font-medium"
+                  ? "bg-white dark:bg-[#1E293B] text-[#0F172A] dark:text-white  border border-[#E2E8F0]/80 dark:border-[#334155]/80 font-bold"
+                  : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white font-medium"
               }`}
             >
               <Icon className={`w-3.5 h-3.5 ${isSelected ? "text-[#4F46E5]" : ""}`} weight={isSelected ? "fill" : "bold"} />
               <span>{tab.label}</span>
               {tab.badge && (
-                <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-[#D97706] text-white">
+                <span className="px-2 py-0.2 rounded text-[13px] font-bold bg-[#D97706] text-white">
                   {tab.badge}
                 </span>
               )}
@@ -507,7 +522,7 @@ export function LessonViewer({
         <div className="space-y-6">
           {/* Video Player if videoUrl exists */}
           {lesson.content?.videoUrl && (
-            <div className="rounded-2xl overflow-hidden bg-black border border-slate-200 dark:border-zinc-800 shadow-sm">
+            <div className="rounded-xl overflow-hidden bg-black border border-[#E2E8F0] dark:border-[#334155] shadow-sm">
               {getEmbedUrl(lesson.content.videoUrl) ? (
                 <div className="aspect-video w-full">
                   <iframe
@@ -536,8 +551,8 @@ export function LessonViewer({
           {/* Objectives Card */}
           {lesson.content?.objectives &&
             lesson.content.objectives.length > 0 && (
-              <div className="p-5 rounded-xl bg-white dark:bg-zinc-950 border border-[#E2E8F0] dark:border-zinc-800">
-                <h3 className="text-xs font-bold uppercase text-[#4F46E5] mb-3 flex items-center gap-1.5">
+              <div className="p-5 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]">
+                <h3 className="text-[13px] font-bold uppercase text-[#4F46E5] mb-3 flex items-center gap-2">
                   <Lightbulb className="w-4 h-4" weight="fill" />
                   <span>الأهداف التعليمية ومخرجات التعلم</span>
                 </h3>
@@ -545,9 +560,9 @@ export function LessonViewer({
                   {lesson.content.objectives.map((obj, i) => (
                     <li
                       key={i}
-                      className="flex items-start gap-2.5 text-xs sm:text-sm font-medium text-[#0F172A] dark:text-zinc-200 font-content"
+                      className="flex items-start gap-3 text-[13px] sm:text-sm font-medium text-[#0F172A] dark:text-[#F8FAFC] font-content"
                     >
-                      <div className="w-4 h-4 rounded bg-[#4F46E5]/10 text-[#4F46E5] flex items-center justify-center shrink-0 mt-0.5 text-[10px] font-bold">
+                      <div className="w-4 h-4 rounded bg-[#4F46E5]/10 text-[#4F46E5] flex items-center justify-center shrink-0 mt-1 text-[13px] font-bold">
                         {i + 1}
                       </div>
                       <span>{obj}</span>
@@ -558,15 +573,15 @@ export function LessonViewer({
             )}
 
           {/* Structured Rich Body */}
-          <div className="p-6 sm:p-8 rounded-xl bg-white dark:bg-zinc-950 border border-[#E2E8F0] dark:border-zinc-800">
-            <div className="prose dark:prose-invert max-w-none text-[#0F172A] dark:text-zinc-200 leading-relaxed font-content space-y-4">
+          <div className="p-6 sm:p-8 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]">
+            <div className="prose dark:prose-invert max-w-none text-[#0F172A] dark:text-[#F8FAFC] leading-relaxed font-content space-y-4">
               {lesson.content?.body ? (
                 lesson.content.body.split("\n").map((paragraph, index) => {
                   if (paragraph.startsWith("## ")) {
                     return (
                       <h2
                         key={index}
-                        className="text-lg sm:text-xl font-bold text-[#0F172A] dark:text-white pt-4 pb-2 border-b border-[#E2E8F0] dark:border-zinc-800"
+                        className="text-lg sm:text-xl font-bold text-[#0F172A] dark:text-white pt-4 pb-2 border-b border-[#E2E8F0] dark:border-[#334155]"
                       >
                         {paragraph.replace("## ", "")}
                       </h2>
@@ -585,11 +600,11 @@ export function LessonViewer({
                   if (paragraph.startsWith("* ") || paragraph.startsWith("- ")) {
                     const items = paragraph.split("\n");
                     return (
-                      <ul key={index} className="space-y-1.5 list-disc pr-5">
+                      <ul key={index} className="space-y-2 list-disc pr-5">
                         {items.map((item, itemIdx) => (
                           <li
                             key={itemIdx}
-                            className="text-xs sm:text-sm leading-relaxed"
+                            className="text-[13px] sm:text-sm leading-relaxed"
                           >
                             {item.replace(/^[*|-]\s+/, "")}
                           </li>
@@ -605,7 +620,7 @@ export function LessonViewer({
                     return (
                       <div
                         key={index}
-                        className="p-4 rounded-lg bg-[#0F172A] text-emerald-400 font-mono text-xs sm:text-sm overflow-x-auto dir-ltr text-left"
+                        className="p-4 rounded-lg bg-[#0F172A] text-[#059669] font-mono text-[13px] sm:text-sm overflow-x-auto dir-ltr text-left"
                       >
                         <pre>{paragraph.replace(/```[a-z]*/g, "")}</pre>
                       </div>
@@ -614,14 +629,14 @@ export function LessonViewer({
                   return (
                     <p
                       key={index}
-                      className="text-xs sm:text-sm leading-relaxed"
+                      className="text-[13px] sm:text-sm leading-relaxed"
                     >
                       {paragraph}
                     </p>
                   );
                 })
               ) : (
-                <p className="text-zinc-500 dark:text-zinc-400">محتوى الدرس قيد التحديث...</p>
+                <p className="text-[#64748B] dark:text-[#94A3B8]">محتوى الدرس قيد التحديث...</p>
               )}
             </div>
           </div>
@@ -643,7 +658,7 @@ export function LessonViewer({
                     <h3 className="text-lg font-bold text-[#0F172A] dark:text-white">
                       الزتونة الذهبية — كبسولة الدرس المركزة
                     </h3>
-                    <p className="text-xs text-[#64748B] dark:text-zinc-400">
+                    <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8]">
                       كل ما تحتاجه للمراجعة السريعة قبل الامتحان في دقائق معدودة
                     </p>
                   </div>
@@ -653,7 +668,7 @@ export function LessonViewer({
               {/* Key Concepts Grid */}
               {lesson.summary.keyConcepts &&
                 lesson.summary.keyConcepts.length > 0 && (
-                  <div className="p-6 rounded-xl bg-white dark:bg-zinc-950 border border-[#E2E8F0] dark:border-zinc-800 space-y-4">
+                  <div className="p-6 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] space-y-4">
                     <h3 className="text-sm font-bold text-[#4F46E5] flex items-center gap-2">
                       <Lightbulb className="w-4 h-4" weight="fill" />
                       <span>أهم المفاهيم الأساسية</span>
@@ -663,9 +678,9 @@ export function LessonViewer({
                         (concept, idx) => (
                           <div
                             key={idx}
-                            className="p-3.5 rounded-lg bg-[#4F46E5]/5 border border-[#4F46E5]/15 text-xs sm:text-sm font-medium text-[#0F172A] dark:text-zinc-200 flex items-start gap-2.5 font-content"
+                            className="p-4 rounded-lg bg-[#4F46E5]/5 border border-[#4F46E5]/15 text-[13px] sm:text-sm font-medium text-[#0F172A] dark:text-[#F8FAFC] flex items-start gap-3 font-content"
                           >
-                            <span className="w-5 h-5 rounded bg-[#4F46E5] text-white flex items-center justify-center text-[10px] shrink-0 font-bold">
+                            <span className="w-5 h-5 rounded bg-[#4F46E5] text-white flex items-center justify-center text-[13px] shrink-0 font-bold">
                               {idx + 1}
                             </span>
                             <span>{concept}</span>
@@ -679,25 +694,25 @@ export function LessonViewer({
               {/* Definitions */}
               {lesson.summary.definitions &&
                 (lesson.summary.definitions as Definition[]).length > 0 && (
-                  <div className="p-6 rounded-xl bg-white dark:bg-zinc-950 border border-[#E2E8F0] dark:border-zinc-800 space-y-4">
+                  <div className="p-6 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] space-y-4">
                     <h3 className="text-sm font-bold text-[#059669] flex items-center gap-2">
                       <BookOpen className="w-4 h-4" weight="bold" />
                       <span>المصطلحات والتعريفات الهامة</span>
                     </h3>
-                    <div className="space-y-2.5">
+                    <div className="space-y-3">
                       {(lesson.summary.definitions as Definition[]).map(
                         (item, idx) => (
                           <div
                             key={idx}
-                            className="p-4 rounded-lg bg-[#F8FAFC] dark:bg-zinc-900 border border-[#E2E8F0] dark:border-zinc-800 flex flex-col sm:flex-row sm:items-baseline gap-2 font-content"
+                            className="p-4 rounded-lg bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] flex flex-col sm:flex-row sm:items-baseline gap-2 font-content"
                           >
-                            <span className="font-bold text-xs sm:text-sm text-[#059669] shrink-0 font-mono">
+                            <span className="font-bold text-[13px] sm:text-sm text-[#059669] shrink-0 font-mono">
                               {item.term}
                             </span>
-                            <span className="text-[#E2E8F0] dark:text-zinc-700 hidden sm:inline">
+                            <span className="text-[#E2E8F0] dark:text-[#64748B] hidden sm:inline">
                               :
                             </span>
-                            <span className="text-xs sm:text-sm text-[#0F172A] dark:text-zinc-200 font-medium">
+                            <span className="text-[13px] sm:text-sm text-[#0F172A] dark:text-[#F8FAFC] font-medium">
                               {item.meaning}
                             </span>
                           </div>
@@ -710,7 +725,7 @@ export function LessonViewer({
               {/* Formulas & Code Snippets */}
               {lesson.summary.formulas &&
                 (lesson.summary.formulas as Formula[]).length > 0 && (
-                  <div className="p-6 rounded-xl bg-white dark:bg-zinc-950 border border-[#E2E8F0] dark:border-zinc-800 space-y-4">
+                  <div className="p-6 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] space-y-4">
                     <h3 className="text-sm font-bold text-[#4F46E5] flex items-center gap-2">
                       <span className="font-mono text-base">#</span>
                       <span>القوانين والمعادلات الأساسية</span>
@@ -722,10 +737,10 @@ export function LessonViewer({
                             key={idx}
                             className="p-4 rounded-lg bg-[#0F172A] text-white space-y-2 dir-ltr text-left"
                           >
-                            <span className="text-[10px] font-bold text-slate-400 block uppercase tracking-wider">
+                            <span className="text-[13px] font-bold text-[#94A3B8] block uppercase tracking-wider">
                               {formula.title}
                             </span>
-                            <code className="text-sm font-mono text-emerald-400 block">
+                            <code className="text-sm font-mono text-[#059669] block">
                               {formula.code}
                             </code>
                           </div>
@@ -738,15 +753,15 @@ export function LessonViewer({
               {/* Comparisons Table */}
               {lesson.summary.comparisons &&
                 (lesson.summary.comparisons as Comparison[]).length > 0 && (
-                  <div className="p-6 rounded-xl bg-white dark:bg-zinc-950 border border-[#E2E8F0] dark:border-zinc-800 space-y-4">
+                  <div className="p-6 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] space-y-4">
                     <h3 className="text-sm font-bold text-[#D97706] flex items-center gap-2">
                       <span className="text-base">⇄</span>
                       <span>المقارنات الهامة</span>
                     </h3>
                     <div className="overflow-x-auto">
-                      <table className="w-full text-xs sm:text-sm text-right font-content">
+                      <table className="w-full text-[13px] sm:text-sm text-right font-content">
                         <thead>
-                          <tr className="border-b border-[#E2E8F0] dark:border-zinc-800">
+                          <tr className="border-b border-[#E2E8F0] dark:border-[#334155]">
                             <th className="py-2 px-3 font-bold text-[#64748B]">وجه المقارنة</th>
                             <th className="py-2 px-3 font-bold text-[#4F46E5]">العنصر الأول</th>
                             <th className="py-2 px-3 font-bold text-[#059669]">العنصر الثاني</th>
@@ -755,10 +770,10 @@ export function LessonViewer({
                         <tbody>
                           {(lesson.summary.comparisons as Comparison[]).map(
                             (comp, idx) => (
-                              <tr key={idx} className="border-b border-[#E2E8F0]/50 dark:border-zinc-800/50 last:border-0">
-                                <td className="py-2.5 px-3 font-bold text-[#0F172A] dark:text-white">{comp.aspect}</td>
-                                <td className="py-2.5 px-3 text-[#64748B] dark:text-zinc-300">{comp.first}</td>
-                                <td className="py-2.5 px-3 text-[#64748B] dark:text-zinc-300">{comp.second}</td>
+                              <tr key={idx} className="border-b border-[#E2E8F0]/50 dark:border-[#334155]/50 last:border-0">
+                                <td className="py-3 px-3 font-bold text-[#0F172A] dark:text-white">{comp.aspect}</td>
+                                <td className="py-3 px-3 text-[#64748B] dark:text-[#F8FAFC]">{comp.first}</td>
+                                <td className="py-3 px-3 text-[#64748B] dark:text-[#F8FAFC]">{comp.second}</td>
                               </tr>
                             )
                           )}
@@ -778,8 +793,8 @@ export function LessonViewer({
                     </h3>
                     <ul className="space-y-2">
                       {lesson.summary.examTips.map((tip, idx) => (
-                        <li key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm font-medium text-[#0F172A] dark:text-zinc-200 font-content">
-                          <span className="text-[#D97706] shrink-0 mt-0.5">•</span>
+                        <li key={idx} className="flex items-start gap-3 text-[13px] sm:text-sm font-medium text-[#0F172A] dark:text-[#F8FAFC] font-content">
+                          <span className="text-[#D97706] shrink-0 mt-1">•</span>
                           <span>{tip}</span>
                         </li>
                       ))}
@@ -795,17 +810,17 @@ export function LessonViewer({
                       <XCircle className="w-4 h-4 text-[#DC2626]" weight="fill" />
                       <span>أخطاء شائعة يجب تجنبها</span>
                     </h3>
-                    <div className="space-y-2.5">
+                    <div className="space-y-3">
                       {(lesson.summary.commonMistakes as Mistake[]).map(
                         (mistake, idx) => (
-                          <div key={idx} className="p-3.5 rounded-lg bg-white dark:bg-zinc-950 border border-[#DC2626]/15 font-content">
+                          <div key={idx} className="p-4 rounded-lg bg-white dark:bg-[#0F172A] border border-[#DC2626]/15 font-content">
                             <div className="flex items-start gap-2">
-                              <span className="text-[#DC2626] font-bold text-xs shrink-0 mt-0.5">خطأ:</span>
-                              <span className="text-xs text-[#DC2626] line-through">{mistake.mistake}</span>
+                              <span className="text-[#DC2626] font-bold text-[13px] shrink-0 mt-1">خطأ:</span>
+                              <span className="text-[13px] text-[#DC2626] line-through">{mistake.mistake}</span>
                             </div>
-                            <div className="flex items-start gap-2 mt-1.5">
-                              <span className="text-[#059669] font-bold text-xs shrink-0 mt-0.5">صح:</span>
-                              <span className="text-xs text-[#059669] font-medium">{mistake.correction}</span>
+                            <div className="flex items-start gap-2 mt-2">
+                              <span className="text-[#059669] font-bold text-[13px] shrink-0 mt-1">صح:</span>
+                              <span className="text-[13px] text-[#059669] font-medium">{mistake.correction}</span>
                             </div>
                           </div>
                         )
@@ -816,7 +831,7 @@ export function LessonViewer({
 
               {/* Interactive Checklist */}
               {checklist.length > 0 && (
-                <div className="p-6 rounded-xl bg-white dark:bg-zinc-950 border border-[#E2E8F0] dark:border-zinc-800 space-y-4">
+                <div className="p-6 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] space-y-4">
                   <h3 className="text-sm font-bold text-[#059669] flex items-center gap-2">
                     <CheckCircle className="w-4 h-4" weight="bold" />
                     <span>قائمة مراجعة إتقان الدرس</span>
@@ -826,17 +841,17 @@ export function LessonViewer({
                       <button
                         key={idx}
                         onClick={() => toggleChecklistItem(idx)}
-                        className={`w-full p-3 rounded-lg border text-right flex items-center gap-3 transition-colors text-xs sm:text-sm font-medium font-content ${
+                        className={`w-full p-3 rounded-lg border text-right flex items-center gap-3 transition-colors text-[13px] sm:text-sm font-medium font-content ${
                           item.completed
-                            ? "bg-[#059669]/5 border-[#059669]/30 text-[#059669]"
-                            : "bg-[#F8FAFC] dark:bg-zinc-900 border-[#E2E8F0] dark:border-zinc-800 text-[#0F172A] dark:text-zinc-300 hover:border-[#059669]/50"
+                            ? "bg-[#059669]/10 border-[#059669]/30 text-[#059669]"
+                            : "bg-[#F8FAFC] dark:bg-[#1E293B] border-[#E2E8F0] dark:border-[#334155] text-[#0F172A] dark:text-[#F8FAFC] hover:border-[#059669]/50"
                         }`}
                       >
                         <div
                           className={`w-5 h-5 rounded border flex items-center justify-center shrink-0 transition-colors ${
                             item.completed
                               ? "bg-[#059669] border-[#059669] text-white"
-                              : "border-[#E2E8F0] dark:border-zinc-700"
+                              : "border-[#E2E8F0] dark:border-[#334155]"
                           }`}
                         >
                           {item.completed && <Check className="w-3 h-3" weight="bold" />}
@@ -851,7 +866,7 @@ export function LessonViewer({
               )}
             </>
           ) : (
-            <div className="p-8 text-center text-[#64748B] rounded-xl bg-[#F8FAFC] dark:bg-zinc-950 border border-[#E2E8F0] dark:border-zinc-800">
+            <div className="p-8 text-center text-[#64748B] rounded-xl bg-[#F8FAFC] dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]">
               الزتونة الذهبية قيد الإعداد...
             </div>
           )}
@@ -863,22 +878,22 @@ export function LessonViewer({
         <div className="space-y-6">
           {lesson.mindMap ? (
             lesson.mindMap.images && lesson.mindMap.images.length > 0 ? (
-              <div className="rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 shadow-2xs overflow-hidden space-y-4 p-4 sm:p-6">
+              <div className="rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]  overflow-hidden space-y-4 p-4 sm:p-6">
                 {/* Header & Image Selector Tabs */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 dark:border-zinc-800 pb-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E2E8F0] dark:border-[#334155] pb-4">
                   <div>
                     <h3 className="text-base sm:text-lg font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
-                      <ImageIcon className="w-5 h-5 text-[#4F46E5] dark:text-indigo-400" weight="bold" />
+                      <ImageIcon className="w-5 h-5 text-[#4F46E5] dark:text-[#6366F1]" weight="bold" />
                       <span>{lesson.mindMap.title || "الخرائط الذهنية للدرس"}</span>
                     </h3>
-                    <p className="text-xs text-[#475569] dark:text-zinc-400 mt-1">
+                    <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8] mt-1">
                       خرائط مرئية عالية الدقة لتثبيت الروابط والمفاهيم بين أجزاء الدرس
                     </p>
                   </div>
 
                   {/* Image Selector Pills (if multiple images) */}
                   {lesson.mindMap.images.length > 1 && (
-                    <div className="flex items-center gap-1.5 p-1 bg-slate-100 dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800 overflow-x-auto">
+                    <div className="flex items-center gap-2 p-1 bg-[#F8FAFC] dark:bg-[#1E293B] rounded-xl border border-[#E2E8F0] dark:border-[#334155] overflow-x-auto">
                       {lesson.mindMap.images.map((_, idx) => (
                         <button
                           key={idx}
@@ -887,10 +902,10 @@ export function LessonViewer({
                             setSelectedImageIndex(idx);
                             setImageZoom(1);
                           }}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all shrink-0 ${
+                          className={`px-3 py-2 rounded-lg text-[13px] font-bold transition-all shrink-0 ${
                             selectedImageIndex === idx
-                              ? "bg-[#4F46E5] text-white shadow-2xs"
-                              : "text-slate-600 dark:text-zinc-400 hover:text-[#0F172A] dark:hover:text-white"
+                              ? "bg-[#4F46E5] text-white "
+                              : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
                           }`}
                         >
                           خريطة {idx + 1}
@@ -901,24 +916,24 @@ export function LessonViewer({
                 </div>
 
                 {/* Toolbar */}
-                <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-zinc-900/60 border border-slate-200 dark:border-zinc-800 flex flex-wrap items-center justify-between gap-2 text-xs">
+                <div className="p-3 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/60 border border-[#E2E8F0] dark:border-[#334155] flex flex-wrap items-center justify-between gap-2 text-[13px]">
                   {/* Zoom Controls */}
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-2">
                     <button
                       type="button"
                       onClick={() => setImageZoom((z) => Math.max(0.5, Math.round((z - 0.25) * 100) / 100))}
-                      className="w-8 h-8 rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex items-center justify-center text-slate-700 dark:text-zinc-300 hover:border-slate-300 shadow-2xs"
+                      className="w-11 h-11 rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B] flex items-center justify-center text-[#0F172A] dark:text-[#F8FAFC] hover:border-[#E2E8F0] "
                       title="تصغير"
                     >
                       <MagnifyingGlassMinus className="w-4 h-4" weight="bold" />
                     </button>
-                    <span className="font-mono font-bold text-xs px-2 min-w-[3.5rem] text-center text-[#0F172A] dark:text-white" dir="ltr">
+                    <span className="font-mono font-bold text-[13px] px-2 min-w-[3.5rem] text-center text-[#0F172A] dark:text-white" dir="ltr">
                       {Math.round(imageZoom * 100)}%
                     </span>
                     <button
                       type="button"
                       onClick={() => setImageZoom((z) => Math.min(3, Math.round((z + 0.25) * 100) / 100))}
-                      className="w-8 h-8 rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex items-center justify-center text-slate-700 dark:text-zinc-300 hover:border-slate-300 shadow-2xs"
+                      className="w-11 h-11 rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B] flex items-center justify-center text-[#0F172A] dark:text-[#F8FAFC] hover:border-[#E2E8F0] "
                       title="تكبير"
                     >
                       <MagnifyingGlassPlus className="w-4 h-4" weight="bold" />
@@ -926,7 +941,7 @@ export function LessonViewer({
                     <button
                       type="button"
                       onClick={() => setImageZoom(1)}
-                      className="h-8 px-2.5 rounded-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-[11px] font-bold text-slate-700 dark:text-zinc-300 hover:border-slate-300 flex items-center gap-1 shadow-2xs"
+                      className="h-11 px-3 rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B] text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC] hover:border-[#E2E8F0] flex items-center gap-1 "
                       title="إعادة ضبط الحجم"
                     >
                       <ArrowsCounterClockwise className="w-3.5 h-3.5" weight="bold" />
@@ -939,7 +954,7 @@ export function LessonViewer({
                     <button
                       type="button"
                       onClick={() => setIsFullscreenImage(true)}
-                      className="h-8 px-3 rounded-lg bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[11px] font-bold flex items-center gap-1.5 shadow-2xs transition-colors interactive-tap"
+                      className="h-11 px-3 rounded-lg bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[13px] font-bold flex items-center gap-2  transition-colors interactive-tap"
                     >
                       <ArrowsOut className="w-3.5 h-3.5" weight="bold" />
                       <span>عرض ملء الشاشة</span>
@@ -948,7 +963,7 @@ export function LessonViewer({
                 </div>
 
                 {/* Main Image Container */}
-                <div className="relative rounded-xl border border-slate-200 dark:border-zinc-800 bg-[#0F172A]/5 dark:bg-black/40 min-h-[420px] max-h-[700px] overflow-auto flex items-center justify-center p-4">
+                <div className="relative rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#0F172A]/5 dark:bg-black/40 min-h-[420px] max-h-[700px] overflow-auto flex items-center justify-center p-4">
                   <img
                     src={lesson.mindMap.images[selectedImageIndex]}
                     alt={`${lesson.mindMap.title} - خريطة ${selectedImageIndex + 1}`}
@@ -976,8 +991,8 @@ export function LessonViewer({
                         }}
                         className={`relative w-24 h-16 rounded-lg overflow-hidden border-2 transition-all shrink-0 ${
                           selectedImageIndex === idx
-                            ? "border-[#4F46E5] shadow-sm scale-105"
-                            : "border-slate-200 dark:border-zinc-800 opacity-60 hover:opacity-100"
+                            ? "border-[#4F46E5] shadow-sm "
+                            : "border-[#E2E8F0] dark:border-[#334155] opacity-60 hover:opacity-100"
                         }`}
                       >
                         <img
@@ -993,28 +1008,28 @@ export function LessonViewer({
               </div>
             ) : (
               /* Fallback: Interactive Outline or Tree for lessons with textual nodes */
-              <div className="rounded-xl bg-white dark:bg-zinc-950 border border-[#E2E8F0] dark:border-zinc-800 overflow-hidden">
+              <div className="rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] overflow-hidden">
                 {/* Toolbar */}
-                <div className="p-3 border-b border-[#E2E8F0] dark:border-zinc-800 flex items-center justify-between gap-2">
+                <div className="p-3 border-b border-[#E2E8F0] dark:border-[#334155] flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => setZoomLevel(Math.max(0.5, zoomLevel - 0.1))}
-                      className="w-8 h-8 rounded-lg border border-[#E2E8F0] dark:border-zinc-800 flex items-center justify-center text-[#64748B] hover:bg-[#F8FAFC] dark:hover:bg-zinc-800 transition-colors"
+                      className="w-11 h-11 rounded-lg border border-[#E2E8F0] dark:border-[#334155] flex items-center justify-center text-[#64748B] hover:bg-[#F8FAFC] dark:hover:bg-[#334155] transition-colors"
                     >
                       <span className="text-sm font-bold">−</span>
                     </button>
-                    <span className="text-xs font-bold text-[#64748B] min-w-[3rem] text-center">
+                    <span className="text-[13px] font-bold text-[#64748B] min-w-[3rem] text-center">
                       {Math.round(zoomLevel * 100)}%
                     </span>
                     <button
                       onClick={() => setZoomLevel(Math.min(2, zoomLevel + 0.1))}
-                      className="w-8 h-8 rounded-lg border border-[#E2E8F0] dark:border-zinc-800 flex items-center justify-center text-[#64748B] hover:bg-[#F8FAFC] dark:hover:bg-zinc-800 transition-colors"
+                      className="w-11 h-11 rounded-lg border border-[#E2E8F0] dark:border-[#334155] flex items-center justify-center text-[#64748B] hover:bg-[#F8FAFC] dark:hover:bg-[#334155] transition-colors"
                     >
                       <span className="text-sm font-bold">+</span>
                     </button>
                     <button
                       onClick={() => setZoomLevel(1)}
-                      className="h-8 px-3 rounded-lg border border-[#E2E8F0] dark:border-zinc-800 text-xs font-bold text-[#64748B] hover:bg-[#F8FAFC] dark:hover:bg-zinc-800 transition-colors"
+                      className="h-11 px-3 rounded-lg border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-bold text-[#64748B] hover:bg-[#F8FAFC] dark:hover:bg-[#334155] transition-colors"
                     >
                       إعادة ضبط
                     </button>
@@ -1022,10 +1037,10 @@ export function LessonViewer({
 
                   <button
                     onClick={() => setIsOutlineMode(!isOutlineMode)}
-                    className={`h-8 px-3 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-colors ${
+                    className={`h-11 px-3 rounded-lg text-[13px] font-bold flex items-center gap-2 transition-colors ${
                       isOutlineMode
                         ? "bg-[#4F46E5] text-white"
-                        : "border border-[#E2E8F0] dark:border-zinc-800 text-[#64748B] hover:bg-[#F8FAFC] dark:hover:bg-zinc-800"
+                        : "border border-[#E2E8F0] dark:border-[#334155] text-[#64748B] hover:bg-[#F8FAFC] dark:hover:bg-[#334155]"
                     }`}
                   >
                     <span>{isOutlineMode ? "عرض الخريطة" : "عرض نصي"}</span>
@@ -1056,25 +1071,25 @@ export function LessonViewer({
 
                               {l1Children.length > 0 && (
                                 <>
-                                  <div className="w-0.5 h-6 bg-[#E2E8F0] dark:bg-zinc-800" />
+                                  <div className="w-0.5 h-6 bg-[#E2E8F0] dark:bg-[#334155]" />
                                   <div className="flex flex-wrap justify-center gap-4">
                                     {l1Children.map((l1) => (
                                       <div key={l1.id} className="flex flex-col items-center gap-3">
                                         <div
                                           onClick={() => setSelectedMindNode(selectedMindNode === l1.id ? null : l1.id)}
-                                          className="px-4 py-2.5 rounded-lg bg-[#059669] text-white text-xs font-bold cursor-pointer hover:bg-[#047857] transition-colors text-center min-w-[120px]"
+                                          className="px-4 py-3 rounded-lg bg-[#059669] text-white text-[13px] font-bold cursor-pointer hover:bg-[#047857] transition-colors text-center min-w-[120px]"
                                         >
                                           {l1.label}
                                         </div>
 
                                         {l2Children.length > 0 && (
                                           <>
-                                            <div className="w-0.5 h-4 bg-[#E2E8F0] dark:bg-zinc-800" />
+                                            <div className="w-0.5 h-4 bg-[#E2E8F0] dark:bg-[#334155]" />
                                             <div className="w-full space-y-2">
                                               {l2Children.map((l2) => (
                                                 <div
                                                   key={l2.id}
-                                                  className="p-2.5 rounded-lg bg-white dark:bg-zinc-900 border border-[#E2E8F0] dark:border-zinc-800 text-center text-xs font-medium text-[#0F172A] dark:text-zinc-200"
+                                                  className="p-3 rounded-lg bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-center text-[13px] font-medium text-[#0F172A] dark:text-[#F8FAFC]"
                                                 >
                                                   {l2.label}
                                                 </div>
@@ -1093,15 +1108,15 @@ export function LessonViewer({
                       </div>
                     </div>
                   ) : (
-                    <div className="p-6 rounded-xl bg-white dark:bg-zinc-950 border border-[#E2E8F0] dark:border-zinc-800 space-y-3">
+                    <div className="p-6 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] space-y-3">
                       {((lesson.mindMap?.nodes as MindNode[]) || []).map((n) => (
                         <div
                           key={n.id}
                           style={{ paddingRight: `${n.level * 24}px` }}
-                          className="flex items-start gap-2.5"
+                          className="flex items-start gap-3"
                         >
                           <div
-                            className={`w-2.5 h-2.5 rounded-full mt-1.5 shrink-0 ${
+                            className={`w-2.5 h-2.5 rounded-full mt-2 shrink-0 ${
                               n.level === 0
                                 ? "bg-[#4F46E5]"
                                 : n.level === 1
@@ -1111,7 +1126,7 @@ export function LessonViewer({
                           />
                           <div>
                             <h4
-                              className={`text-xs sm:text-sm font-bold ${
+                              className={`text-[13px] sm:text-sm font-bold ${
                                 n.level === 0
                                   ? "text-[#4F46E5] text-base"
                                   : "text-[#0F172A] dark:text-white"
@@ -1120,7 +1135,7 @@ export function LessonViewer({
                               {n.label}
                             </h4>
                             {n.description && (
-                              <p className="text-xs text-[#64748B] dark:text-zinc-400 mt-0.5 font-content">
+                              <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8] mt-1 font-content">
                                 {n.description}
                               </p>
                             )}
@@ -1133,19 +1148,19 @@ export function LessonViewer({
               </div>
             )
           ) : (
-            <div className="p-8 text-center text-[#64748B] rounded-xl bg-[#F8FAFC] dark:bg-zinc-950 border border-[#E2E8F0] dark:border-zinc-800">
+            <div className="p-8 text-center text-[#64748B] rounded-xl bg-[#F8FAFC] dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]">
               خريطة المفاهيم قيد الإعداد...
             </div>
           )}
 
           {/* Fullscreen Lightbox Modal */}
           {isFullscreenImage && lesson.mindMap?.images && lesson.mindMap.images.length > 0 && (
-            <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex flex-col p-4 sm:p-6 text-white animate-in fade-in duration-200">
+            <div className="fixed inset-0 z-50 bg-black/90  flex flex-col p-4 sm:p-6 text-white animate-in fade-in duration-200">
               <div className="flex items-center justify-between pb-3 border-b border-white/10">
                 <div className="flex items-center gap-3">
                   <span className="text-sm font-bold">{lesson.mindMap.title || "الخريطة الذهنية"}</span>
                   {lesson.mindMap.images.length > 1 && (
-                    <span className="text-xs text-white/60">
+                    <span className="text-[13px] text-white/60">
                       (خريطة {selectedImageIndex + 1} من {lesson.mindMap.images.length})
                     </span>
                   )}
@@ -1155,7 +1170,7 @@ export function LessonViewer({
                   <button
                     type="button"
                     onClick={() => setIsFullscreenImage(false)}
-                    className="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+                    className="w-11 h-11 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
                   >
                     <X className="w-5 h-5" weight="bold" />
                   </button>
@@ -1166,7 +1181,7 @@ export function LessonViewer({
                 <img
                   src={lesson.mindMap.images[selectedImageIndex]}
                   alt={lesson.mindMap.title}
-                  className="max-w-full max-h-full object-contain rounded-lg shadow-2xl select-none"
+                  className="max-w-full max-h-full object-contain rounded-lg shadow-sm select-none"
                   onContextMenu={(e) => e.preventDefault()}
                   draggable={false}
                 />
@@ -1179,18 +1194,18 @@ export function LessonViewer({
       {/* TAB 4: CHECKPOINT QUESTIONS (الأسئلة والتدريب) */}
       {activeTab === "questions" && (
         <div className="space-y-6">
-          <div className="p-5 rounded-xl bg-white dark:bg-zinc-950 border border-[#E2E8F0] dark:border-zinc-800 flex items-center justify-between">
+          <div className="p-5 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] flex items-center justify-between">
             <div>
               <h3 className="text-base font-bold text-[#0F172A] dark:text-white">
                 أسئلة التدريب والتحقق من الفهم
               </h3>
-              <p className="text-xs text-[#64748B] dark:text-zinc-400 font-content">
+              <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8] font-content">
                 اختر الإجابة لتظهر لك النتيجة والشرح التفصيلي فوراً
               </p>
             </div>
             <Link
               href={`/exams/builder?subjectId=${lesson.unit.subject.id}&unitId=${lesson.unit.id}`}
-              className="h-9 px-4 rounded-lg bg-[#4F46E5] hover:bg-[#4338CA] text-white text-xs font-bold flex items-center gap-1.5 transition-colors"
+              className="h-11 px-4 rounded-lg bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[13px] font-bold flex items-center gap-2 transition-colors"
             >
               <span>امتحان شامل</span>
               <ArrowLeft className="w-3.5 h-3.5" weight="bold" />
@@ -1204,13 +1219,13 @@ export function LessonViewer({
               return (
                 <div
                   key={question.id}
-                  className="p-6 rounded-xl bg-white dark:bg-zinc-950 border border-[#E2E8F0] dark:border-zinc-800 space-y-4"
+                  className="p-6 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] space-y-4"
                 >
-                  <div className="flex items-center justify-between gap-2 border-b border-[#E2E8F0] dark:border-zinc-800 pb-3">
-                    <span className="text-xs font-bold text-[#4F46E5]">
+                  <div className="flex items-center justify-between gap-2 border-b border-[#E2E8F0] dark:border-[#334155] pb-3">
+                    <span className="text-[13px] font-bold text-[#4F46E5]">
                       السؤال رقم {qIndex + 1}
                     </span>
-                    <span className="px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-[#F8FAFC] dark:bg-zinc-900 text-[#64748B] dark:text-zinc-300">
+                    <span className="px-3 py-1 rounded-md text-[13px] font-bold bg-[#F8FAFC] dark:bg-[#1E293B] text-[#64748B] dark:text-[#F8FAFC]">
                       {question.difficulty === "EASY"
                         ? "سهل"
                         : question.difficulty === "MEDIUM"
@@ -1226,19 +1241,21 @@ export function LessonViewer({
                   />
 
                   {/* Options */}
-                  <div className="space-y-2.5">
+                  <div className="space-y-3">
                     {question.options.map((opt, optIdx) => {
                       const isSelected =
                         state?.selectedOptionId === opt.id;
                       const isRevealed = state?.revealed;
+                      const isOptionCorrect =
+                        state?.reveal?.correctOptionId === opt.id;
                       let btnStyle =
-                        "bg-[#F8FAFC] dark:bg-zinc-900 border-[#E2E8F0] dark:border-zinc-800 text-[#0F172A] dark:text-zinc-200 hover:border-[#4F46E5]/50";
+                        "bg-[#F8FAFC] dark:bg-[#1E293B] border-[#E2E8F0] dark:border-[#334155] text-[#0F172A] dark:text-[#F8FAFC] hover:border-[#4F46E5]/50";
 
                       if (isRevealed) {
-                        if (opt.isCorrect) {
+                        if (isOptionCorrect) {
                           btnStyle =
                             "bg-[#059669]/10 border-[#059669]/30 text-[#059669] font-bold";
-                        } else if (isSelected && !opt.isCorrect) {
+                        } else if (isSelected && !isOptionCorrect) {
                           btnStyle =
                             "bg-[#DC2626]/10 border-[#DC2626]/30 text-[#DC2626] font-bold";
                         }
@@ -1254,10 +1271,10 @@ export function LessonViewer({
                           onClick={() =>
                             handleSelectOption(question.id, opt.id)
                           }
-                          className={`w-full p-3.5 sm:p-4 rounded-xl border text-right text-xs sm:text-sm font-medium flex items-start sm:items-center justify-between gap-3 transition-colors font-content ${btnStyle}`}
+                          className={`w-full p-4 sm:p-4 rounded-xl border text-right text-[13px] sm:text-sm font-medium flex items-start sm:items-center justify-between gap-3 transition-colors font-content ${btnStyle}`}
                         >
                           <div className="flex items-start sm:items-center gap-3 min-w-0 flex-1">
-                            <span className="w-7 h-7 rounded-lg bg-slate-100 dark:bg-zinc-900 text-slate-600 dark:text-zinc-300 flex items-center justify-center text-xs font-mono font-bold shrink-0 mt-0.5 sm:mt-0 border border-slate-200/60 dark:border-zinc-800/60">
+                            <span className="w-7 h-7 rounded-lg bg-[#F8FAFC] dark:bg-[#1E293B] text-[#64748B] dark:text-[#F8FAFC] flex items-center justify-center text-[13px] font-mono font-bold shrink-0 mt-1 sm:mt-0 border border-[#E2E8F0]/60 dark:border-[#334155]/60">
                               {arabicLetters[optIdx] || opt.order}
                             </span>
                             <div className="min-w-0 flex-1 leading-relaxed">
@@ -1267,13 +1284,13 @@ export function LessonViewer({
 
                           {isRevealed && (
                             <div className="shrink-0">
-                              {opt.isCorrect ? (
-                                <span className="text-[#059669] text-xs font-bold flex items-center gap-1">
+                              {isOptionCorrect ? (
+                                <span className="text-[#059669] text-[13px] font-bold flex items-center gap-1">
                                   <Check className="w-4 h-4" weight="bold" />
                                   <span>صح! برافو</span>
                                 </span>
                               ) : isSelected ? (
-                                <span className="text-[#DC2626] text-xs font-bold">
+                                <span className="text-[#DC2626] text-[13px] font-bold">
                                   مش صحيحة
                                 </span>
                               ) : null}
@@ -1285,39 +1302,44 @@ export function LessonViewer({
                   </div>
 
                   {/* Detailed Explanation Reveal */}
-                  {state?.revealed && question.explanation && (
-                    <div className="p-4 rounded-xl bg-indigo-50/50 dark:bg-indigo-950/40 border border-indigo-200/60 dark:border-indigo-800/60 space-y-2 mt-3">
-                      <div className="flex items-center gap-2 text-xs font-bold text-[#4F46E5] dark:text-indigo-300">
+                  {state?.revealed && state.reveal?.explanation && (
+                    <div className="p-4 rounded-xl bg-[#4F46E5]/10 dark:bg-[#1E293B] border border-[#E2E8F0]/60 dark:border-[#6366F1]/60 space-y-2 mt-3">
+                      <div className="flex items-center gap-2 text-[13px] font-bold text-[#4F46E5] dark:text-[#6366F1]">
                         <Lightbulb className="w-4 h-4" weight="fill" />
                         <span>
-                          الفكرة الأساسية: {question.explanation.concept}
+                          الفكرة الأساسية: {state.reveal.explanation.concept}
                         </span>
                       </div>
-                      <p className="text-xs text-[#0F172A] dark:text-zinc-200 leading-relaxed font-content">
-                        {question.explanation.correctReason}
+                      <p className="text-[13px] text-[#0F172A] dark:text-[#F8FAFC] leading-relaxed font-content">
+                        {state.reveal.explanation.correctReason}
                       </p>
 
                       {/* Per-option explanations if available */}
-                      <div className="pt-2 border-t border-indigo-200/40 dark:border-indigo-800/40 space-y-1.5">
-                        <span className="text-[11px] font-bold text-[#64748B] dark:text-zinc-400 block">
+                      <div className="pt-2 border-t border-[#E2E8F0]/40 dark:border-[#6366F1]/40 space-y-2">
+                        <span className="text-[13px] font-bold text-[#64748B] dark:text-[#94A3B8] block">
                           ليه ده صح وده غلط؟
                         </span>
-                        {question.options.map((opt) => (
-                          <div
-                            key={opt.id}
-                            className="text-[11px] text-[#64748B] dark:text-zinc-400 flex items-start gap-1.5 font-content"
-                          >
-                            <span className="font-bold shrink-0">
-                              • <BidiStatement as="span" text={opt.text} />:
-                            </span>
-                            <span>
-                              {opt.explanation ||
-                                (opt.isCorrect
-                                  ? "ده الخيار الدقيق والمظبوط"
-                                  : "مش مظبوط في الحالة دي")}
-                            </span>
-                          </div>
-                        ))}
+                        {question.options.map((opt) => {
+                          const revealedOpt = state.reveal?.options?.find(
+                            (o) => o.id === opt.id
+                          );
+                          return (
+                            <div
+                              key={opt.id}
+                              className="text-[13px] text-[#64748B] dark:text-[#94A3B8] flex items-start gap-2 font-content"
+                            >
+                              <span className="font-bold shrink-0">
+                                • <BidiStatement as="span" text={opt.text} />:
+                              </span>
+                              <span>
+                                {revealedOpt?.explanation ||
+                                  (revealedOpt?.isCorrect
+                                    ? "ده الخيار الدقيق والمظبوط"
+                                    : "مش مظبوط في الحالة دي")}
+                              </span>
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
                   )}
@@ -1329,15 +1351,15 @@ export function LessonViewer({
       )}
 
       {/* Sibling Lessons Navigation Footer */}
-      <div className="p-5 rounded-xl bg-white dark:bg-zinc-950 border border-[#E2E8F0] dark:border-zinc-800 flex items-center justify-between gap-4 mt-8">
+      <div className="p-5 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] flex items-center justify-between gap-4 mt-8">
         {prevLesson ? (
           <Link
             href={`/lessons/${prevLesson.id}`}
-            className="flex items-center gap-2 text-xs sm:text-sm font-bold text-[#64748B] dark:text-zinc-400 hover:text-[#4F46E5] transition-colors"
+            className="flex items-center gap-2 text-[13px] sm:text-sm font-bold text-[#64748B] dark:text-[#94A3B8] hover:text-[#4F46E5] transition-colors"
           >
             <CaretRight className="w-4 h-4" weight="bold" />
             <div className="text-right">
-              <span className="block text-[10px] text-[#64748B] dark:text-zinc-500">
+              <span className="block text-[13px] text-[#64748B] dark:text-[#94A3B8]">
                 الدرس السابق
               </span>
               <span className="truncate max-w-[150px] sm:max-w-xs block">
@@ -1352,10 +1374,10 @@ export function LessonViewer({
         {nextLesson ? (
           <Link
             href={`/lessons/${nextLesson.id}`}
-            className="flex items-center gap-2 text-xs sm:text-sm font-bold text-[#4F46E5] hover:text-[#4338CA] transition-colors"
+            className="flex items-center gap-2 text-[13px] sm:text-sm font-bold text-[#4F46E5] hover:text-[#4338CA] transition-colors"
           >
             <div className="text-left">
-              <span className="block text-[10px] text-[#4F46E5]/70">
+              <span className="block text-[13px] text-[#4F46E5]/70">
                 الدرس التالي
               </span>
               <span className="truncate max-w-[150px] sm:max-w-xs block">
@@ -1367,7 +1389,7 @@ export function LessonViewer({
         ) : (
           <Link
             href={`/subjects/${lesson.unit.subject.id}`}
-            className="h-10 px-4 rounded-lg bg-[#4F46E5] hover:bg-[#4338CA] text-white text-xs font-bold flex items-center gap-1.5 transition-colors"
+            className="h-11 px-4 rounded-lg bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[13px] font-bold flex items-center gap-2 transition-colors"
           >
             <span>تم إنهاء الوحدة! عودة للمادة</span>
             <ArrowLeft className="w-3.5 h-3.5" weight="bold" />

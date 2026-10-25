@@ -29,14 +29,14 @@ const steps = [
 
 export function HowItWorks() {
   return (
-    <section id="how-it-works" className="py-16 sm:py-24 bg-[#F8FAFC] dark:bg-[#09090B]">
+    <section id="how-it-works" className="py-16 sm:py-24 bg-[#F8FAFC] dark:bg-[#0F172A]">
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center max-w-2xl mx-auto mb-12 space-y-4">
           <h2 className="text-[24px] sm:text-[32px] font-bold text-[#0F172A] dark:text-white leading-tight">
             إزاي تذاكر بالخلاصة؟
           </h2>
-          <p className="text-base text-[#64748B] dark:text-zinc-400 font-content leading-relaxed">
+          <p className="text-base text-[#64748B] dark:text-[#94A3B8] font-content leading-relaxed">
             ثلاث خطوات بسيطة تحول مذاكرتك من حفظ عشوائي لفهم حقيقي.
           </p>
         </div>
@@ -44,7 +44,7 @@ export function HowItWorks() {
         {/* Steps */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
           {/* Connector Line (Desktop) */}
-          <div className="hidden md:block absolute top-12 right-[16.67%] left-[16.67%] h-px bg-[#E2E8F0] dark:bg-zinc-800" />
+          <div className="hidden md:block absolute top-12 right-[16.67%] left-[16.67%] h-px bg-[#E2E8F0] dark:bg-[#334155]" />
 
           {steps.map((step, index) => {
             const Icon = step.icon;
@@ -60,12 +60,12 @@ export function HowItWorks() {
                 {/* Step Number & Icon */}
                 <div className="relative z-10">
                   <div
-                    className="w-20 h-20 rounded-xl flex items-center justify-center border border-[#E2E8F0] dark:border-zinc-800 bg-white dark:bg-zinc-900"
+                    className="w-20 h-20 rounded-xl flex items-center justify-center border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B]"
                   >
-                    <Icon className="w-8 h-8" weight="bold" style={{ color: step.color }} />
+                    <Icon className="w-11 h-11" weight="bold" style={{ color: step.color }} />
                   </div>
                   <span
-                    className="absolute -top-3 -right-3 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white"
+                    className="absolute -top-3 -right-3 w-7 h-7 rounded-full flex items-center justify-center text-[13px] font-bold text-white"
                     style={{ backgroundColor: step.color }}
                   >
                     {step.number}
@@ -77,7 +77,7 @@ export function HowItWorks() {
                   <h3 className="text-lg font-bold text-[#0F172A] dark:text-white">
                     {step.title}
                   </h3>
-                  <p className="text-sm text-[#64748B] dark:text-zinc-400 font-content leading-relaxed">
+                  <p className="text-sm text-[#64748B] dark:text-[#94A3B8] font-content leading-relaxed">
                     {step.description}
                   </p>
                 </div>

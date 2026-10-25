@@ -1,22 +1,29 @@
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { getCurriculumScope, isSubjectInScope, subjectScopeWhere } from "@/lib/curriculum";
+import { calculateStreak } from "@/lib/date";
 import { StudentShell } from "@/components/layout/StudentShell";
 import { DashboardClient } from "@/components/dashboard/DashboardClient";
 
 export default async function DashboardPage() {
   const user = await getCurrentUser();
 
+  if (!user) {
+    redirect("/login?callbackUrl=/dashboard");
+  }
+
   // Redirect to setup if user hasn't completed onboarding
-  if (user && (!user.systemId || !user.gradeId)) {
+  if (!user.systemId || !user.gradeId) {
     redirect("/setup");
   }
 
-  const userId = user?.id;
+  const userId = user.id;
+  const scope = getCurriculumScope(user);
 
-  // 1. Fetch all published subjects with units and lessons
+  // 1. Fetch published subjects that belong to the student's curriculum
   const subjects = await prisma.subject.findMany({
-    where: { isPublished: true },
+    where: { isPublished: true, ...subjectScopeWhere(scope) },
     orderBy: { order: "asc" },
     include: {
       units: {
@@ -32,39 +39,67 @@ export default async function DashboardPage() {
   });
 
   // 2. Calculate real progress & counts
-  const [completedLessonsCount, unresolvedMistakesCount, recentAttempts, userProgress] =
-    await Promise.all([
-      userId
-        ? prisma.studentProgress.count({
-            where: { userId, isCompleted: true },
-          })
-        : 0,
-      userId
-        ? prisma.mistakeReview.count({
-            where: { userId, isResolved: false },
-          })
-        : 0,
-      userId
-        ? prisma.examAttempt.findMany({
-            where: { userId, isCompleted: true },
-            take: 3,
-            orderBy: { completedAt: "desc" },
-            select: {
-              id: true,
-              title: true,
-              percentage: true,
-              totalQuestions: true,
-              completedAt: true,
-            },
-          })
-        : [],
-      userId
-        ? prisma.studentProgress.findMany({
-            where: { userId, isCompleted: true },
-            select: { lessonId: true },
-          })
-        : [],
-    ]);
+  const [
+    completedLessonsCount,
+    unresolvedMistakesCount,
+    recentAttempts,
+    userProgress,
+    examStats,
+    challengeDays,
+  ] = await Promise.all([
+    userId
+      ? prisma.studentProgress.count({
+          where: { userId, isCompleted: true },
+        })
+      : 0,
+    userId
+      ? prisma.mistakeReview.count({
+          where: { userId, isResolved: false },
+        })
+      : 0,
+    userId
+      ? prisma.examAttempt.findMany({
+          where: { userId, isCompleted: true },
+          take: 3,
+          orderBy: { completedAt: "desc" },
+          select: {
+            id: true,
+            title: true,
+            percentage: true,
+            totalQuestions: true,
+            completedAt: true,
+          },
+        })
+      : [],
+    userId
+      ? prisma.studentProgress.findMany({
+          where: { userId, isCompleted: true },
+          select: { lessonId: true },
+        })
+      : [],
+    userId
+      ? prisma.examAttempt.aggregate({
+          where: { userId, isCompleted: true },
+          _count: { _all: true },
+          _avg: { percentage: true },
+        })
+      : { _count: { _all: 0 }, _avg: { percentage: null } },
+    userId
+      ? prisma.dailyChallenge.findMany({
+          where: { userId, completedAt: { not: null } },
+          select: { day: true },
+          orderBy: { day: "desc" },
+          take: 90,
+        })
+      : [],
+  ]);
+
+  const completedAttemptsCount = examStats._count._all;
+  const averageScore =
+    examStats._avg.percentage !== null
+      ? Math.round(examStats._avg.percentage)
+      : null;
+  const streakDays = calculateStreak(challengeDays.map((c) => c.day));
 
   const completedLessonIds = new Set(userProgress.map((p) => p.lessonId));
 
@@ -91,7 +126,10 @@ export default async function DashboardPage() {
   const [firstLesson, dailyQuestion] = await Promise.all([
     !lastActiveProgress
       ? prisma.lesson.findFirst({
-          where: { isPublished: true },
+          where: {
+            isPublished: true,
+            unit: { isPublished: true, subject: { is: subjectScopeWhere(scope) } },
+          },
           include: {
             unit: {
               include: {
@@ -103,18 +141,32 @@ export default async function DashboardPage() {
         })
       : null,
     prisma.question.findFirst({
-      where: { status: "PUBLISHED", type: "MCQ" },
-      include: {
+      where: {
+        status: "PUBLISHED",
+        type: "MCQ",
+        ...(scope?.gradeId ? { subject: { is: subjectScopeWhere(scope) } } : {}),
+      },
+      select: {
+        id: true,
+        statement: true,
+        type: true,
+        difficulty: true,
         subject: { select: { id: true, name: true } },
         unit: { select: { id: true, title: true } },
-        options: { orderBy: { order: "asc" } },
-        explanation: true,
+        options: {
+          select: { id: true, text: true, order: true },
+          orderBy: { order: "asc" },
+        },
       },
       orderBy: { createdAt: "desc" },
     }),
   ]);
 
-  const activeLesson = lastActiveProgress?.lesson || firstLesson;
+  const activeLesson =
+    (lastActiveProgress?.lesson &&
+    isSubjectInScope(scope, lastActiveProgress.lesson.unit.subject)
+      ? lastActiveProgress.lesson
+      : null) || firstLesson;
 
   const continueLessonData = activeLesson
     ? {
@@ -159,7 +211,9 @@ export default async function DashboardPage() {
       <DashboardClient
         userName={user?.name}
         completedLessonsCount={completedLessonsCount}
-        recentAttemptsCount={recentAttempts.length}
+        recentAttemptsCount={completedAttemptsCount}
+        averageScore={averageScore}
+        streakDays={streakDays}
         unresolvedMistakesCount={unresolvedMistakesCount}
         subjects={subjectsForClient}
         continueLesson={continueLessonData}

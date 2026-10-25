@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { Role } from "@prisma/client";
+import { Role, Prisma } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
 export interface UserFilterParams {
@@ -18,7 +18,7 @@ export class UserService {
   static async getUsers(params: UserFilterParams = {}) {
     const { role, search, systemId, gradeId, page = 1, limit = 20 } = params;
 
-    const where: any = {};
+    const where: Prisma.UserWhereInput = {};
     if (role && role !== "ALL") where.role = role;
     if (systemId && systemId !== "all") where.systemId = systemId;
     if (gradeId && gradeId !== "all") where.gradeId = gradeId;
@@ -103,10 +103,14 @@ export class UserService {
 
     if (!name?.trim()) throw new Error("اسم المستخدم مطلوب");
     if (!phone?.trim()) throw new Error("رقم الهاتف مطلوب");
-    if (!password || password.length < 6) throw new Error("كلمة المرور يجب أن لا تقل عن 6 أحرف");
+    if (!password || password.length < 8) throw new Error("كلمة المرور يجب أن لا تقل عن 8 أحرف");
 
-    if (role === Role.SUPER_ADMIN && actorRole !== Role.SUPER_ADMIN) {
-      throw new Error("لا يمكنك تعيين رتبة مشرف عام أعلى");
+    // Only a SUPER_ADMIN may create administrative accounts.
+    if (
+      (role === Role.SUPER_ADMIN || role === Role.ADMIN) &&
+      actorRole !== Role.SUPER_ADMIN
+    ) {
+      throw new Error("فقط المشرف العام يمكنه إنشاء حسابات المسؤولين");
     }
 
     const cleanPhone = phone.trim();
@@ -120,7 +124,7 @@ export class UserService {
       if (existingEmail) throw new Error("البريد الإلكتروني مسجل بالفعل لمستخدم آخر");
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 12);
 
     return prisma.user.create({
       data: {
@@ -152,7 +156,8 @@ export class UserService {
       systemId?: string | null;
       gradeId?: string | null;
     },
-    actorRole: string
+    actorRole: string,
+    actorUserId?: string
   ) {
     if (actorRole !== Role.SUPER_ADMIN && actorRole !== Role.ADMIN) {
       throw new Error("غير مصرح لك بالوصول");
@@ -165,8 +170,16 @@ export class UserService {
       throw new Error("لا يمكن تعديل صلاحيات المشرف العام الأعلى");
     }
 
-    if (data.role === Role.SUPER_ADMIN && actorRole !== Role.SUPER_ADMIN) {
-      throw new Error("فقط المشرف العام يمكنه ترقية مستخدمين إلى رتبة مشرف عام");
+    if (data.role !== undefined) {
+      if (id === actorUserId) {
+        throw new Error("لا يمكنك تغيير رتبتك بنفسك");
+      }
+      if (
+        (data.role === Role.SUPER_ADMIN || data.role === Role.ADMIN) &&
+        actorRole !== Role.SUPER_ADMIN
+      ) {
+        throw new Error("فقط المشرف العام يمكنه منح رتبة مسؤول");
+      }
     }
 
     if (data.phone !== undefined && data.phone.trim()) {
@@ -185,7 +198,7 @@ export class UserService {
       if (existingEmail) throw new Error("البريد الإلكتروني مسجل بالفعل لمستخدم آخر");
     }
 
-    return prisma.user.update({
+    const updated = await prisma.user.update({
       where: { id },
       data: {
         ...(data.name !== undefined ? { name: data.name.trim() } : {}),
@@ -200,26 +213,60 @@ export class UserService {
         grade: { select: { id: true, name: true } },
       },
     });
+
+    // A role change must not keep old privileges alive in existing sessions.
+    if (data.role !== undefined && data.role !== targetUser.role) {
+      await prisma.session.deleteMany({ where: { userId: id } });
+    }
+
+    return updated;
   }
 
   /**
    * Update user role with authorization hierarchy checks
    */
-  static async updateUserRole(targetUserId: string, newRole: Role, actorRole: string) {
+  static async updateUserRole(
+    targetUserId: string,
+    newRole: Role,
+    actorRole: string,
+    actorUserId?: string
+  ) {
     if (actorRole !== Role.SUPER_ADMIN && actorRole !== Role.ADMIN) {
       throw new Error("غير مصرح لك بتعديل الرتب");
     }
 
-    // Only SUPER_ADMIN can assign or modify SUPER_ADMIN or ADMIN roles
-    if ((newRole === Role.SUPER_ADMIN || newRole === Role.ADMIN) && actorRole !== Role.SUPER_ADMIN) {
-      throw new Error("فقط المشرف العام يمكنه ترقية المستخدمين إلى رتبة مسؤول");
+    if (actorUserId && targetUserId === actorUserId) {
+      throw new Error("لا يمكنك تغيير رتبتك بنفسك");
     }
 
-    return prisma.user.update({
+    const target = await prisma.user.findUnique({
+      where: { id: targetUserId },
+      select: { role: true },
+    });
+    if (!target) throw new Error("المستخدم غير موجود");
+
+    if (
+      (newRole === Role.SUPER_ADMIN || newRole === Role.ADMIN) &&
+      actorRole !== Role.SUPER_ADMIN
+    ) {
+      throw new Error("فقط المشرف العام يمكنه منح رتبة مسؤول");
+    }
+
+    if (target.role === Role.SUPER_ADMIN && actorRole !== Role.SUPER_ADMIN) {
+      throw new Error("لا يمكن تعديل صلاحيات المشرف العام الأعلى");
+    }
+
+    const updated = await prisma.user.update({
       where: { id: targetUserId },
       data: { role: newRole },
       select: { id: true, name: true, role: true },
     });
+
+    if (target.role !== newRole) {
+      await prisma.session.deleteMany({ where: { userId: targetUserId } });
+    }
+
+    return updated;
   }
 
   /**
@@ -338,7 +385,32 @@ export class UserService {
       throw new Error("رقم الهاتف أو البريد الإلكتروني مسجل بالفعل");
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // Validate the academic selection and derive the system from the grade so
+    // the two can never disagree.
+    let resolvedSystemId = systemId || null;
+    if (gradeId) {
+      const grade = await prisma.grade.findUnique({
+        where: { id: gradeId },
+        select: { systemId: true, system: { select: { isActive: true } } },
+      });
+      if (!grade || !grade.system.isActive) {
+        throw new Error("الصف الدراسي غير متاح");
+      }
+      if (systemId && grade.systemId !== systemId) {
+        throw new Error("الصف لا ينتمي إلى النظام التعليمي المحدد");
+      }
+      resolvedSystemId = grade.systemId;
+    } else if (systemId) {
+      const system = await prisma.educationalSystem.findUnique({
+        where: { id: systemId },
+        select: { isActive: true },
+      });
+      if (!system || !system.isActive) {
+        throw new Error("النظام التعليمي غير متاح");
+      }
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 12);
 
     return prisma.user.create({
       data: {
@@ -346,7 +418,7 @@ export class UserService {
         phone: cleanPhone,
         email: cleanEmail,
         password: hashedPassword,
-        systemId: systemId || null,
+        systemId: resolvedSystemId,
         gradeId: gradeId || null,
         role: Role.STUDENT,
       },

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser, isStaff } from "@/lib/auth";
+import { QuestionType, Difficulty } from "@prisma/client";
 import { QuestionService } from "@/services/question.service";
 
 export async function GET(req: Request) {
@@ -13,16 +14,18 @@ export async function GET(req: Request) {
     const subjectId = searchParams.get("subjectId") || undefined;
     const unitId = searchParams.get("unitId") || undefined;
     const lessonId = searchParams.get("lessonId") || undefined;
-    const type = (searchParams.get("type") as any) || undefined;
-    const difficulty = (searchParams.get("difficulty") as any) || undefined;
+    const rawType = searchParams.get("type");
+    const rawDifficulty = searchParams.get("difficulty");
+    const type = rawType && rawType !== "all" ? (rawType as QuestionType) : undefined;
+    const difficulty = rawDifficulty && rawDifficulty !== "all" ? (rawDifficulty as Difficulty) : undefined;
     const search = searchParams.get("search") || undefined;
 
     const { questions, pagination } = await QuestionService.getQuestions({
       subjectId: subjectId !== "all" ? subjectId : undefined,
       unitId: unitId !== "all" ? unitId : undefined,
       lessonId: lessonId !== "all" ? lessonId : undefined,
-      type: type !== "all" ? type : undefined,
-      difficulty: difficulty !== "all" ? difficulty : undefined,
+      type,
+      difficulty,
       search,
       limit: 100,
     });
@@ -86,10 +89,10 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json({ success: true, question });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Failed to create question:", error);
     return NextResponse.json(
-      { error: error?.message || "تعذر إضافة السؤال" },
+      { error: error instanceof Error ? error.message : "تعذر إضافة السؤال" },
       { status: 500 }
     );
   }

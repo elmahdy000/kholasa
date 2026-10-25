@@ -172,17 +172,17 @@ export default async function AdminDashboardPage() {
     <AdminShell user={user}>
       <div className="space-y-6">
         {/* 1. Vercel Command Center Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-zinc-200 dark:border-zinc-800">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-[#E2E8F0] dark:border-[#334155]">
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
+              <h1 className="text-xl font-bold tracking-tight text-[#0F172A] dark:text-[#F8FAFC]">
                 لوحة القيادة الإدارية والأكاديمية
               </h1>
-              <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400">
+              <span className="px-2 py-1 rounded text-[13px] font-mono bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[#64748B] dark:text-[#94A3B8]">
                 v2.4
               </span>
             </div>
-            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+            <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8] mt-1">
               إدارة مركزية كاملة للمناهج، الامتحانات، بنك الأسئلة، والتحصيل الأكاديمي
             </p>
           </div>
@@ -191,21 +191,21 @@ export default async function AdminDashboardPage() {
           <div className="flex flex-wrap items-center gap-2">
             <Link
               href="/admin/exams"
-              className="h-8 px-3 rounded-lg bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:hover:bg-white text-white dark:text-zinc-900 text-xs font-semibold flex items-center gap-1.5 transition-all shadow-xs"
+              className="h-11 px-3 rounded-lg bg-[#334155] hover:bg-[#334155] dark:bg-[#F8FAFC] dark:hover:bg-white text-white dark:text-[#1E293B] text-[13px] font-semibold flex items-center gap-2 transition-all "
             >
               <Plus className="w-3.5 h-3.5" />
               <span>إنشاء امتحان</span>
             </Link>
             <Link
               href="/admin/media"
-              className="h-8 px-3 rounded-lg border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-900 text-zinc-700 dark:text-zinc-300 text-xs font-medium flex items-center gap-1.5 transition-colors"
+              className="h-11 px-3 rounded-lg border border-[#E2E8F0] dark:border-[#334155] hover:bg-[#F8FAFC] dark:hover:bg-[#1E293B] text-[#0F172A] dark:text-[#F8FAFC] text-[13px] font-medium flex items-center gap-2 transition-colors"
             >
               <HardDrive className="w-3.5 h-3.5" />
               <span>رفع وسائط</span>
             </Link>
             <Link
               href="/admin/questions/import"
-              className="h-8 px-3 rounded-lg border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-900 text-zinc-700 dark:text-zinc-300 text-xs font-medium flex items-center gap-1.5 transition-colors"
+              className="h-11 px-3 rounded-lg border border-[#E2E8F0] dark:border-[#334155] hover:bg-[#F8FAFC] dark:hover:bg-[#1E293B] text-[#0F172A] dark:text-[#F8FAFC] text-[13px] font-medium flex items-center gap-2 transition-colors"
             >
               <Upload className="w-3.5 h-3.5" />
               <span>استيراد أسئلة</span>
@@ -215,105 +215,105 @@ export default async function AdminDashboardPage() {
 
         {/* 2. 6 Geist-Style Minimalist Metric Cards */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-          <div className="p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-xs flex flex-col justify-between">
+          <div className="p-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A]  flex flex-col justify-between">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-mono uppercase tracking-wider text-zinc-400">
+              <span className="text-[13px] font-mono uppercase tracking-wider text-[#64748B]">
                 الطلاب النشطون
               </span>
-              <Users className="w-3.5 h-3.5 text-zinc-400" />
+              <Users className="w-3.5 h-3.5 text-[#64748B]" />
             </div>
             <div className="mt-2">
-              <span className="text-2xl font-mono font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
+              <span className="text-2xl font-mono font-bold tracking-tight text-[#0F172A] dark:text-[#F8FAFC]">
                 {studentsCount}
               </span>
             </div>
-            <span className="text-[10px] text-emerald-500 font-mono mt-2 flex items-center gap-1">
+            <span className="text-[13px] text-[#059669] font-mono mt-2 flex items-center gap-1">
               <TrendingUp className="w-3 h-3" />
               <span>حسابات نشطة</span>
             </span>
           </div>
 
-          <div className="p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-xs flex flex-col justify-between">
+          <div className="p-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A]  flex flex-col justify-between">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-mono uppercase tracking-wider text-zinc-400">
+              <span className="text-[13px] font-mono uppercase tracking-wider text-[#64748B]">
                 المواد الدراسية
               </span>
-              <BookOpen className="w-3.5 h-3.5 text-zinc-400" />
+              <BookOpen className="w-3.5 h-3.5 text-[#64748B]" />
             </div>
             <div className="mt-2">
-              <span className="text-2xl font-mono font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
+              <span className="text-2xl font-mono font-bold tracking-tight text-[#0F172A] dark:text-[#F8FAFC]">
                 {subjectsCount}
               </span>
             </div>
-            <span className="text-[10px] text-zinc-400 font-mono mt-2">
+            <span className="text-[13px] text-[#64748B] font-mono mt-2">
               في {unitsCount} وحدة تعليمية
             </span>
           </div>
 
-          <div className="p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-xs flex flex-col justify-between">
+          <div className="p-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A]  flex flex-col justify-between">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-mono uppercase tracking-wider text-zinc-400">
+              <span className="text-[13px] font-mono uppercase tracking-wider text-[#64748B]">
                 الدروس المنشورة
               </span>
-              <Layers className="w-3.5 h-3.5 text-zinc-400" />
+              <Layers className="w-3.5 h-3.5 text-[#64748B]" />
             </div>
             <div className="mt-2">
-              <span className="text-2xl font-mono font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
+              <span className="text-2xl font-mono font-bold tracking-tight text-[#0F172A] dark:text-[#F8FAFC]">
                 {lessonsCount}
               </span>
             </div>
-            <span className="text-[10px] text-zinc-400 font-mono mt-2">
+            <span className="text-[13px] text-[#64748B] font-mono mt-2">
               بودكاست وفيديو وخرائط
             </span>
           </div>
 
-          <div className="p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-xs flex flex-col justify-between">
+          <div className="p-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A]  flex flex-col justify-between">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-mono uppercase tracking-wider text-zinc-400">
+              <span className="text-[13px] font-mono uppercase tracking-wider text-[#64748B]">
                 بنك الأسئلة
               </span>
-              <HelpCircle className="w-3.5 h-3.5 text-zinc-400" />
+              <HelpCircle className="w-3.5 h-3.5 text-[#64748B]" />
             </div>
             <div className="mt-2">
-              <span className="text-2xl font-mono font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
+              <span className="text-2xl font-mono font-bold tracking-tight text-[#0F172A] dark:text-[#F8FAFC]">
                 {questionsCount}
               </span>
             </div>
-            <span className="text-[10px] text-zinc-400 font-mono mt-2">
+            <span className="text-[13px] text-[#64748B] font-mono mt-2">
               مع التفسير والمفاهيم
             </span>
           </div>
 
-          <div className="p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-xs flex flex-col justify-between">
+          <div className="p-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A]  flex flex-col justify-between">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-mono uppercase tracking-wider text-zinc-400">
+              <span className="text-[13px] font-mono uppercase tracking-wider text-[#64748B]">
                 الامتحانات
               </span>
-              <Award className="w-3.5 h-3.5 text-zinc-400" />
+              <Award className="w-3.5 h-3.5 text-[#64748B]" />
             </div>
             <div className="mt-2">
-              <span className="text-2xl font-mono font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
+              <span className="text-2xl font-mono font-bold tracking-tight text-[#0F172A] dark:text-[#F8FAFC]">
                 {examsCount}
               </span>
             </div>
-            <span className="text-[10px] text-zinc-400 font-mono mt-2">
+            <span className="text-[13px] text-[#64748B] font-mono mt-2">
               رسمية وتدريبية
             </span>
           </div>
 
-          <div className="p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-xs flex flex-col justify-between">
+          <div className="p-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A]  flex flex-col justify-between">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-mono uppercase tracking-wider text-zinc-400">
+              <span className="text-[13px] font-mono uppercase tracking-wider text-[#64748B]">
                 متوسط التحصيل
               </span>
-              <Trophy className="w-3.5 h-3.5 text-zinc-400" />
+              <Trophy className="w-3.5 h-3.5 text-[#64748B]" />
             </div>
             <div className="mt-2">
-              <span className="text-2xl font-mono font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
+              <span className="text-2xl font-mono font-bold tracking-tight text-[#0F172A] dark:text-[#F8FAFC]">
                 {avgScore}%
               </span>
             </div>
-            <span className="text-[10px] text-zinc-400 font-mono mt-2">
+            <span className="text-[13px] text-[#64748B] font-mono mt-2">
               من {attemptsCount} محاولة
             </span>
           </div>
@@ -322,10 +322,10 @@ export default async function AdminDashboardPage() {
         {/* 3. Core Administrative Services Matrix (All 9 Modules) */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <h2 className="text-xs font-mono uppercase tracking-wider text-zinc-400">
+            <h2 className="text-[13px] font-mono uppercase tracking-wider text-[#64748B]">
               الخدمات والعمليات الإدارية المتكاملة
             </h2>
-            <span className="text-[11px] font-mono text-zinc-500">
+            <span className="text-[13px] font-mono text-[#64748B]">
               9 خدمات نشطة
             </span>
           </div>
@@ -337,23 +337,23 @@ export default async function AdminDashboardPage() {
                 <Link
                   key={idx}
                   href={srv.href}
-                  className="group p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 hover:border-zinc-400 dark:hover:border-zinc-700 transition-colors shadow-xs flex flex-col justify-between space-y-3"
+                  className="group p-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] hover:border-[#E2E8F0] dark:hover:border-[#4F46E5]/60 transition-colors  flex flex-col justify-between space-y-3"
                 >
                   <div className="flex items-center justify-between">
-                    <div className="w-8 h-8 rounded-lg bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex items-center justify-center text-zinc-700 dark:text-zinc-300 group-hover:scale-105 transition-transform">
+                    <div className="w-11 h-11 rounded-lg bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] flex items-center justify-center text-[#0F172A] dark:text-[#F8FAFC] group- transition-transform">
                       <Icon className="w-4 h-4" />
                     </div>
-                    <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400">
+                    <span className="px-2 py-1 rounded text-[13px] font-mono bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[#64748B] dark:text-[#94A3B8]">
                       {srv.stat}
                     </span>
                   </div>
 
                   <div>
-                    <h3 className="text-xs font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-indigo-500 dark:group-hover:text-indigo-400 transition-colors flex items-center justify-between">
+                    <h3 className="text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC] group-hover:text-[#4F46E5] dark:group-hover:text-[#6366F1] transition-colors flex items-center justify-between">
                       <span>{srv.title}</span>
                       <ArrowUpRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" />
                     </h3>
-                    <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-1 leading-relaxed line-clamp-2">
+                    <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8] mt-1 leading-relaxed line-clamp-2">
                       {srv.desc}
                     </p>
                   </div>
@@ -366,15 +366,15 @@ export default async function AdminDashboardPage() {
         {/* 4. Two-Column Live Stream: Realtime Submissions + Subject Progress */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Realtime Submissions */}
-          <div className="p-5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 space-y-4 shadow-xs">
-            <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-900 pb-3">
-              <h3 className="text-xs font-mono uppercase tracking-wider text-zinc-400 flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-zinc-400" />
+          <div className="p-5 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] space-y-4 ">
+            <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#1E293B] pb-3">
+              <h3 className="text-[13px] font-mono uppercase tracking-wider text-[#64748B] flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-[#64748B]" />
                 <span>أحدث محاولات الطلاب المكتملة</span>
               </h3>
               <Link
                 href="/admin/attempts"
-                className="text-xs text-zinc-500 hover:text-zinc-900 dark:hover:text-white flex items-center gap-1 font-medium"
+                className="text-[13px] text-[#64748B] hover:text-[#0F172A] dark:hover:text-white flex items-center gap-1 font-medium"
               >
                 <span>عرض الكل</span>
                 <ChevronLeft className="w-3.5 h-3.5" />
@@ -382,40 +382,40 @@ export default async function AdminDashboardPage() {
             </div>
 
             {recentAttempts.length === 0 ? (
-              <p className="text-xs text-zinc-400 py-6 text-center">
+              <p className="text-[13px] text-[#64748B] py-6 text-center">
                 لا توجد محاولات مكتملة مسجلة بعد.
               </p>
             ) : (
-              <div className="divide-y divide-zinc-100 dark:divide-zinc-900">
+              <div className="divide-y divide-[#E2E8F0] dark:divide-[#1E293B]">
                 {recentAttempts.map((attempt) => (
                   <div
                     key={attempt.id}
-                    className="py-2.5 flex items-center justify-between text-xs"
+                    className="py-3 flex items-center justify-between text-[13px]"
                   >
                     <div>
-                      <span className="font-bold text-zinc-900 dark:text-zinc-100 block">
+                      <span className="font-bold text-[#0F172A] dark:text-[#F8FAFC] block">
                         {attempt.user?.name || "طالب"}
                       </span>
-                      <span className="text-[10px] text-zinc-400 block font-mono">
+                      <span className="text-[13px] text-[#64748B] block font-mono">
                         {attempt.exam?.title || "اختبار"}
                       </span>
                     </div>
 
                     <div className="flex items-center gap-3">
                       <span
-                        className={`font-mono font-bold text-xs ${
+                        className={`font-mono font-bold text-[13px] ${
                           (attempt.percentage || 0) >= 85
-                            ? "text-emerald-500"
+                            ? "text-[#059669]"
                             : (attempt.percentage || 0) >= 50
-                            ? "text-amber-500"
-                            : "text-red-500"
+                            ? "text-[#D97706]"
+                            : "text-[#DC2626]"
                         }`}
                       >
                         {attempt.percentage}%
                       </span>
                       <Link
                         href="/admin/attempts"
-                        className="text-[11px] text-zinc-400 hover:text-zinc-200"
+                        className="text-[13px] text-[#64748B] hover:text-[#64748B]"
                       >
                         مراجعة
                       </Link>
@@ -427,15 +427,15 @@ export default async function AdminDashboardPage() {
           </div>
 
           {/* Curriculum & Subject Saturation */}
-          <div className="p-5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 space-y-4 shadow-xs">
-            <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-900 pb-3">
-              <h3 className="text-xs font-mono uppercase tracking-wider text-zinc-400 flex items-center gap-2">
-                <BookOpen className="w-4 h-4 text-zinc-400" />
+          <div className="p-5 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] space-y-4 ">
+            <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#1E293B] pb-3">
+              <h3 className="text-[13px] font-mono uppercase tracking-wider text-[#64748B] flex items-center gap-2">
+                <BookOpen className="w-4 h-4 text-[#64748B]" />
                 <span>حالة المناهج وتغطية المواد الدراسية</span>
               </h3>
               <Link
                 href="/admin/curriculum"
-                className="text-xs text-zinc-500 hover:text-zinc-900 dark:hover:text-white flex items-center gap-1 font-medium"
+                className="text-[13px] text-[#64748B] hover:text-[#0F172A] dark:hover:text-white flex items-center gap-1 font-medium"
               >
                 <span>المناهج</span>
                 <ChevronLeft className="w-3.5 h-3.5" />
@@ -451,19 +451,19 @@ export default async function AdminDashboardPage() {
                 return (
                   <div
                     key={sub.id}
-                    className="p-3 rounded-lg border border-zinc-100 dark:border-zinc-900 bg-zinc-50/50 dark:bg-zinc-900/30 flex items-center justify-between text-xs"
+                    className="p-3 rounded-lg border border-[#E2E8F0] dark:border-[#1E293B] bg-[#F8FAFC]/50 dark:bg-[#1E293B]/30 flex items-center justify-between text-[13px]"
                   >
-                    <div className="flex items-center gap-2.5">
+                    <div className="flex items-center gap-3">
                       <span
                         className="w-2.5 h-2.5 rounded-full"
                         style={{ backgroundColor: sub.color || "#4F46E5" }}
                       />
-                      <span className="font-bold text-zinc-900 dark:text-zinc-100">
+                      <span className="font-bold text-[#0F172A] dark:text-[#F8FAFC]">
                         {sub.name}
                       </span>
                     </div>
 
-                    <div className="flex items-center gap-3 font-mono text-[11px] text-zinc-400">
+                    <div className="flex items-center gap-3 font-mono text-[13px] text-[#64748B]">
                       <span>{sub.units.length} وحدات</span>
                       <span>·</span>
                       <span>{subLessons} درس</span>
@@ -480,10 +480,10 @@ export default async function AdminDashboardPage() {
         </div>
 
         {/* 5. Vercel-Style Infrastructure Telemetry Bar */}
-        <div className="p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs font-mono text-zinc-500">
+        <div className="p-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#0F172A] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-[13px] font-mono text-[#64748B]">
           <div className="flex items-center gap-3">
-            <span className="flex items-center gap-1.5 text-emerald-500 font-semibold">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+            <span className="flex items-center gap-2 text-[#059669] font-semibold">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#059669]" />
               <span>PostgreSQL Cluster Operational</span>
             </span>
             <span>·</span>
@@ -495,13 +495,13 @@ export default async function AdminDashboardPage() {
           <div className="flex items-center gap-4">
             <Link
               href="/admin/analytics"
-              className="hover:text-zinc-900 dark:hover:text-zinc-200 transition-colors"
+              className="hover:text-[#0F172A] dark:hover:text-[#F8FAFC] transition-colors"
             >
               عرض سجل التدقيق
             </Link>
             <Link
               href="/admin/structure"
-              className="hover:text-zinc-900 dark:hover:text-zinc-200 transition-colors"
+              className="hover:text-[#0F172A] dark:hover:text-[#F8FAFC] transition-colors"
             >
               إدارة الهيكل الأكاديمي
             </Link>

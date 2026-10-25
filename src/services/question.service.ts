@@ -1,5 +1,23 @@
 import { prisma } from "@/lib/prisma";
-import { QuestionType, Difficulty, PublishStatus } from "@prisma/client";
+import { QuestionType, Difficulty, PublishStatus, Prisma } from "@prisma/client";
+
+export interface ParsedQuestionImportItem {
+  statement: string;
+  subjectId: string;
+  unitId?: string | null;
+  lessonId?: string | null;
+  type?: QuestionType;
+  difficulty?: Difficulty;
+  options?: {
+    text: string;
+    isCorrect: boolean;
+    explanation?: string | null;
+  }[];
+  concept?: string | null;
+  correctReason?: string | null;
+  modelAnswer?: string | null;
+  points?: number;
+}
 
 export interface QuestionFilterParams {
   subjectId?: string;
@@ -34,7 +52,7 @@ export interface QuestionCreateInput {
   };
   rubric?: {
     modelAnswer: string;
-    criteria?: any[];
+    criteria?: Prisma.InputJsonValue;
     maxScore?: number;
   };
 }
@@ -60,7 +78,7 @@ export interface QuestionUpdateInput {
   };
   rubric?: {
     modelAnswer: string;
-    criteria?: any[];
+    criteria?: Prisma.InputJsonValue;
     maxScore?: number;
   };
 }
@@ -82,7 +100,7 @@ export class QuestionService {
       limit = 20,
     } = params;
 
-    const where: any = {};
+    const where: Prisma.QuestionWhereInput = {};
 
     if (subjectId) where.subjectId = subjectId;
     if (unitId) where.unitId = unitId;
@@ -312,7 +330,7 @@ export class QuestionService {
    * Fetch statistical breakdown of question bank
    */
   static async getQuestionStats(subjectId?: string) {
-    const where: any = {};
+    const where: Prisma.QuestionWhereInput = {};
     if (subjectId) where.subjectId = subjectId;
 
     const [total, mcqCount, essayCount, trueFalseCount, easyCount, mediumCount, hardCount] =
@@ -344,7 +362,7 @@ export class QuestionService {
   /**
    * Bulk import questions in an atomic database transaction
    */
-  static async bulkCreateQuestions(questions: any[]) {
+  static async bulkCreateQuestions(questions: ParsedQuestionImportItem[]) {
     if (!Array.isArray(questions) || questions.length === 0) {
       throw new Error("لم يتم تقديم أي أسئلة صالحة للاستيراد");
     }
@@ -363,7 +381,7 @@ export class QuestionService {
             subjectId: q.subjectId,
             unitId: q.unitId || null,
             options: {
-              create: (q.options || []).map((opt: any, idx: number) => ({
+              create: (q.options || []).map((opt, idx: number) => ({
                 text: opt.text.trim(),
                 isCorrect: Boolean(opt.isCorrect),
                 order: idx + 1,

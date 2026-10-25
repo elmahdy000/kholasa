@@ -1,146 +1,181 @@
+import { createHash, randomBytes, randomInt, timingSafeEqual } from "crypto";
 import { prisma } from "@/lib/prisma";
-import bcrypt from "bcryptjs";
+import { hashPassword } from "@/lib/auth";
+import { AppError, badRequest } from "@/lib/http";
+import { rateLimit } from "@/lib/rate-limit";
+import { sendOtp as deliverOtp } from "@/lib/otp-delivery";
+import type { OtpType } from "@/lib/validation/auth";
+
+const OTP_EXPIRATION_MS = 10 * 60 * 1000;
+const RESET_EXPIRATION_MS = 15 * 60 * 1000;
+const MAX_VERIFY_ATTEMPTS = 5;
+const SEND_COOLDOWN_MS = 60 * 1000;
+const SEND_HOURLY_LIMIT = 5;
+
+const GENERIC_SEND_MESSAGE = "إذا كان الحساب مسجلاً، فقد تم إرسال رمز التحقق";
+
+const normalize = (identifier: string) => identifier.trim().toLowerCase();
+// Identifiers are namespaced per purpose so one flow can never touch another's tokens.
+const otpKey = (type: OtpType, id: string) => `otp:${type}:${id}`;
+const resetKey = (id: string) => `reset:${id}`;
+
+function digest(namespace: string, id: string, secret: string) {
+  const pepper = process.env.OTP_PEPPER ?? "";
+  return createHash("sha256").update(`${pepper}|${namespace}|${id}|${secret}`).digest("hex");
+}
+
+function safeEqualHex(a: string, b: string) {
+  const ba = Buffer.from(a, "hex");
+  const bb = Buffer.from(b, "hex");
+  return ba.length === bb.length && timingSafeEqual(ba, bb);
+}
+
+export interface SendOtpResult {
+  success: boolean;
+  expiresAt: Date;
+  message: string;
+  devCode?: string;
+}
 
 export class OtpService {
-  private static OTP_EXPIRATION_MINUTES = 10;
-
   /**
-   * Generate and store a secure 6-digit OTP code for password reset or phone/email verification
+   * Generate, store (hashed) and deliver a 6-digit OTP.
+   * For PASSWORD_RESET the response is identical whether or not the account exists.
    */
-  static async sendOtp(identifier: string, type: "PASSWORD_RESET" | "VERIFICATION" = "PASSWORD_RESET") {
-    const cleanIdentifier = identifier.trim().toLowerCase();
+  static async sendOtp(identifier: string, type: OtpType = "PASSWORD_RESET"): Promise<SendOtpResult> {
+    const id = normalize(identifier);
 
-    // If password reset, ensure user exists
+    // Applied before any DB lookup so it cannot reveal account existence.
+    rateLimit(`otp-cooldown:${type}:${id}`, 1, SEND_COOLDOWN_MS);
+    rateLimit(`otp-hourly:${type}:${id}`, SEND_HOURLY_LIMIT, 60 * 60 * 1000);
+
+    const expiresAt = new Date(Date.now() + OTP_EXPIRATION_MS);
+    const base = { success: true, expiresAt, message: GENERIC_SEND_MESSAGE };
+
     if (type === "PASSWORD_RESET") {
       const user = await prisma.user.findFirst({
-        where: {
-          OR: [{ email: cleanIdentifier }, { phone: cleanIdentifier }],
-        },
+        where: { OR: [{ email: id }, { phone: id }] },
+        select: { id: true },
       });
-
-      if (!user) {
-        throw new Error("لا يوجد حساب مسجل بهذا البريد الإلكتروني أو رقم الهاتف");
-      }
+      if (!user) return base;
     }
 
-    // Generate 6-digit code
-    const code = Math.floor(100000 + Math.random() * 900000).toString();
-    const expires = new Date(Date.now() + this.OTP_EXPIRATION_MINUTES * 60 * 1000);
+    const code = randomInt(100000, 1000000).toString();
+    const namespace = otpKey(type, id);
 
-    // Remove any previously pending tokens for this identifier
-    await prisma.verificationToken.deleteMany({
-      where: { identifier: cleanIdentifier },
-    });
+    await prisma.$transaction([
+      prisma.verificationToken.deleteMany({ where: { identifier: namespace } }),
+      prisma.verificationToken.create({
+        data: {
+          identifier: namespace,
+          token: digest("otp", namespace, code),
+          expires: expiresAt,
+        },
+      }),
+    ]);
 
-    // Save token
-    await prisma.verificationToken.create({
-      data: {
-        identifier: cleanIdentifier,
-        token: code,
-        expires,
-      },
-    });
+    try {
+      await deliverOtp(id, code, type);
+    } catch (err) {
+      await prisma.verificationToken.deleteMany({ where: { identifier: namespace } });
+      throw err;
+    }
 
-    // In development/test mode, return code in response; in production this dispatches SMS/Email
-    const isDev = process.env.NODE_ENV !== "production";
-    console.log(`[OTP SERVICE] Generated OTP for ${cleanIdentifier}: ${code} (Expires: ${expires})`);
-
-    return {
-      success: true,
-      expiresAt: expires,
-      message: "تم إرسال رمز التحقق بنجاح",
-      ...(isDev && { devCode: code }),
-    };
+    const echo = process.env.OTP_DEV_ECHO === "true" || process.env.NODE_ENV !== "production";
+    return { ...base, ...(echo ? { devCode: code } : {}) };
   }
 
   /**
-   * Verify provided OTP code
+   * Verify a code. PASSWORD_RESET additionally returns a single-use resetToken.
    */
-  static async verifyOtp(identifier: string, token: string) {
-    const cleanIdentifier = identifier.trim().toLowerCase();
-    const cleanToken = token.trim();
+  static async verifyOtp(identifier: string, token: string, type: OtpType = "PASSWORD_RESET") {
+    const id = normalize(identifier);
+    const namespace = otpKey(type, id);
+    const invalid = () => badRequest("رمز التحقق غير صحيح أو منتهي الصلاحية");
 
-    const record = await prisma.verificationToken.findFirst({
-      where: {
-        identifier: cleanIdentifier,
-        token: cleanToken,
-      },
-    });
-
-    if (!record) {
-      throw new Error("رمز التحقق غير صحيح أو غير متطابق");
-    }
+    const record = await prisma.verificationToken.findFirst({ where: { identifier: namespace } });
+    if (!record) throw invalid();
 
     if (new Date() > record.expires) {
-      await prisma.verificationToken.deleteMany({ where: { identifier: cleanIdentifier } });
-      throw new Error("عذراً، انتهت صلاحية رمز التحقق. يرجى طلب رمز جديد");
+      await prisma.verificationToken.deleteMany({ where: { identifier: namespace } });
+      throw invalid();
     }
 
-    // Delete the one-time code to prevent reuse
-    await prisma.verificationToken.delete({
-      where: { token: cleanToken },
-    });
+    // Count the attempt before comparing so parallel guesses are still limited.
+    const updated = await prisma.verificationToken.update({
+      where: { token: record.token },
+      data: { attempts: { increment: 1 } },
+    }).catch(() => null);
+    if (!updated) throw invalid();
 
-    // Issue a short-lived reset authorization token (valid for 15 minutes)
-    const resetToken = `reset_${Date.now()}_${Math.random().toString(36).substring(2, 10)}`;
-    const resetExpires = new Date(Date.now() + 15 * 60 * 1000);
+    if (updated.attempts > MAX_VERIFY_ATTEMPTS) {
+      await prisma.verificationToken.deleteMany({ where: { identifier: namespace } });
+      throw invalid();
+    }
 
-    await prisma.verificationToken.create({
-      data: {
-        identifier: `auth_reset_${cleanIdentifier}`,
-        token: resetToken,
-        expires: resetExpires,
-      },
-    });
+    const supplied = digest("otp", namespace, token.trim());
+    if (!safeEqualHex(supplied, record.token)) {
+      if (updated.attempts >= MAX_VERIFY_ATTEMPTS) {
+        await prisma.verificationToken.deleteMany({ where: { identifier: namespace } });
+      }
+      throw invalid();
+    }
 
-    return {
-      verified: true,
-      resetToken,
-    };
+    // Single use: only the request that deletes the row succeeds.
+    const claimed = await prisma.verificationToken.deleteMany({ where: { token: record.token } });
+    if (claimed.count === 0) throw invalid();
+
+    if (type !== "PASSWORD_RESET") return { verified: true };
+
+    const resetToken = randomBytes(32).toString("base64url");
+    const rKey = resetKey(id);
+    await prisma.$transaction([
+      prisma.verificationToken.deleteMany({ where: { identifier: rKey } }),
+      prisma.verificationToken.create({
+        data: {
+          identifier: rKey,
+          token: digest("reset", rKey, resetToken),
+          expires: new Date(Date.now() + RESET_EXPIRATION_MS),
+        },
+      }),
+    ]);
+
+    return { verified: true, resetToken };
   }
 
   /**
-   * Reset user password using verified reset token
+   * Reset password with a verified single-use reset token. Revokes all sessions.
+   * `newPassword` must already satisfy passwordSchema (validated in the route).
    */
   static async resetPassword(identifier: string, resetToken: string, newPassword: string) {
-    const cleanIdentifier = identifier.trim().toLowerCase();
+    const id = normalize(identifier);
+    const rKey = resetKey(id);
+    const invalid = () =>
+      badRequest("جلسة إعادة التعيين منتهية الصلاحية أو غير صالحة. يرجى البدء من جديد");
 
-    if (newPassword.length < 6) {
-      throw new Error("يجب ألا تقل كلمة المرور عن 6 أحرف");
+    const hashedToken = digest("reset", rKey, resetToken);
+    const record = await prisma.verificationToken.findUnique({ where: { token: hashedToken } });
+    if (!record || record.identifier !== rKey) throw invalid();
+    if (new Date() > record.expires) {
+      await prisma.verificationToken.deleteMany({ where: { identifier: rKey } });
+      throw invalid();
     }
 
-    // Verify reset token
-    const tokenRecord = await prisma.verificationToken.findFirst({
-      where: {
-        identifier: `auth_reset_${cleanIdentifier}`,
-        token: resetToken,
-      },
+    const user = await prisma.user.findFirst({
+      where: { OR: [{ email: id }, { phone: id }] },
+      select: { id: true },
     });
+    if (!user) throw invalid();
 
-    if (!tokenRecord || new Date() > tokenRecord.expires) {
-      throw new Error("جلسة إعادة التعيين منتهية الصلاحية أو غير صالحة. يرجى البدء من جديد");
-    }
+    const hashedPassword = await hashPassword(newPassword);
 
-    // Hash new password
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-
-    // Update user password
-    const user = await prisma.user.updateMany({
-      where: {
-        OR: [{ email: cleanIdentifier }, { phone: cleanIdentifier }],
-      },
-      data: {
-        password: hashedPassword,
-      },
-    });
-
-    if (user.count === 0) {
-      throw new Error("تعذر العثور على الحساب لتحديث كلمة المرور");
-    }
-
-    // Delete token
-    await prisma.verificationToken.deleteMany({
-      where: { identifier: `auth_reset_${cleanIdentifier}` },
+    await prisma.$transaction(async (tx) => {
+      // Claim the token first so concurrent requests can't reuse it.
+      const claimed = await tx.verificationToken.deleteMany({ where: { token: hashedToken } });
+      if (claimed.count === 0) throw new AppError(400, "جلسة إعادة التعيين غير صالحة");
+      await tx.user.update({ where: { id: user.id }, data: { password: hashedPassword } });
+      await tx.session.deleteMany({ where: { userId: user.id } });
+      await tx.verificationToken.deleteMany({ where: { identifier: rKey } });
     });
 
     return {

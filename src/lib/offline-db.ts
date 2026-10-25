@@ -35,8 +35,8 @@ export interface OfflineLessonData {
   videoUrl?: string | null;
   audioUrl?: string | null;
   objectives: string[];
-  summary: any;
-  mindMap: any;
+  summary: Record<string, unknown> | null;
+  mindMap: Record<string, unknown> | null;
   downloadedAt: string;
 }
 

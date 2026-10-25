@@ -1,4 +1,8 @@
 import { prisma } from "@/lib/prisma";
+import {
+  CurriculumScope,
+  subjectScopeWhere,
+} from "@/lib/curriculum";
 
 export interface SearchResultItem {
   type: "LESSON" | "SUBJECT" | "QUESTION";
@@ -12,16 +16,25 @@ export class SearchService {
   /**
    * Search across lessons, subjects, and questions with unified formatting
    */
-  static async globalSearch(query: string): Promise<SearchResultItem[]> {
+  static async globalSearch(
+    query: string,
+    scope: CurriculumScope | null = null
+  ): Promise<SearchResultItem[]> {
     const q = query.trim();
     if (!q || q.length < 2) {
       return [];
     }
 
+    const subjectFilter = subjectScopeWhere(scope);
+    const hasScope = Boolean(scope?.gradeId);
+
     const [lessons, subjects, questions] = await Promise.all([
       prisma.lesson.findMany({
         where: {
           isPublished: true,
+          ...(hasScope
+            ? { unit: { subject: { is: subjectFilter } } }
+            : {}),
           OR: [
             { title: { contains: q, mode: "insensitive" } },
             {
@@ -43,6 +56,7 @@ export class SearchService {
       prisma.subject.findMany({
         where: {
           isPublished: true,
+          ...subjectFilter,
           OR: [
             { name: { contains: q, mode: "insensitive" } },
             { description: { contains: q, mode: "insensitive" } },
@@ -53,6 +67,7 @@ export class SearchService {
       prisma.question.findMany({
         where: {
           status: "PUBLISHED",
+          ...(hasScope ? { subject: { is: subjectFilter } } : {}),
           OR: [
             { statement: { contains: q, mode: "insensitive" } },
             {

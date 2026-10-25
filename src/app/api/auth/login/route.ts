@@ -2,51 +2,28 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { UserService } from "@/services";
 import { verifyPassword, createSession } from "@/lib/auth";
+import { jsonError, parseJson, unauthorized } from "@/lib/http";
+import { getClientIp, rateLimit, withRetryAfter } from "@/lib/rate-limit";
 
 const loginSchema = z.object({
-  identifier: z.string().min(3, "يرجى إدخال رقم الهاتف أو البريد الإلكتروني"),
-  password: z.string().min(1, "يرجى إدخال كلمة المرور"),
+  identifier: z.string().min(3, "يرجى إدخال رقم الهاتف أو البريد الإلكتروني").max(254),
+  password: z.string().min(1, "يرجى إدخال كلمة المرور").max(200),
 });
+
+const INVALID = "بيانات الدخول غير صحيحة، يرجى التأكد من الرقم أو كلمة المرور";
 
 export async function POST(req: Request) {
   try {
-    let body;
-    try {
-      body = await req.json();
-    } catch {
-      return NextResponse.json(
-        { error: "صيغة البيانات المرسلة غير صالحة" },
-        { status: 400 }
-      );
-    }
-
-    const result = loginSchema.safeParse(body);
-
-    if (!result.success) {
-      return NextResponse.json(
-        { error: result.error.issues[0]?.message || "بيانات غير صالحة" },
-        { status: 400 }
-      );
-    }
-
-    const { identifier, password } = result.data;
+    rateLimit(`login:ip:${getClientIp(req)}`, 5, 60 * 1000);
+    const { identifier, password } = await parseJson(req, loginSchema);
+    rateLimit(`login:id:${identifier.trim().toLowerCase()}`, 10, 15 * 60 * 1000);
 
     const user = await UserService.findByIdentifier(identifier);
 
-    if (!user || !user.password) {
-      return NextResponse.json(
-        { error: "بيانات الدخول غير صحيحة، يرجى التأكد من الرقم أو كلمة المرور" },
-        { status: 401 }
-      );
-    }
+    if (!user || !user.password) throw unauthorized(INVALID);
 
     const isValid = await verifyPassword(password, user.password);
-    if (!isValid) {
-      return NextResponse.json(
-        { error: "بيانات الدخول غير صحيحة، يرجى التأكد من الرقم أو كلمة المرور" },
-        { status: 401 }
-      );
-    }
+    if (!isValid) throw unauthorized(INVALID);
 
     await createSession(user.id);
 
@@ -63,11 +40,6 @@ export async function POST(req: Request) {
       },
     });
   } catch (error) {
-    console.error("Login error:", error);
-    return NextResponse.json(
-      { error: "حدث خطأ غير متوقع أثناء تسجيل الدخول" },
-      { status: 500 }
-    );
+    return withRetryAfter(jsonError(error), error);
   }
 }
-

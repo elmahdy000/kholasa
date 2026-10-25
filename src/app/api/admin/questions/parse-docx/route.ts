@@ -17,12 +17,19 @@ export async function POST(req: Request) {
       const textFallback = formData.get("text") as string | null;
 
       if (file && file.size > 0) {
-        // Validate file extension
+        // Validate file type and size
         const fileName = file.name.toLowerCase();
-        if (!fileName.endsWith(".docx") && !fileName.endsWith(".doc")) {
+        if (!fileName.endsWith(".docx")) {
           return NextResponse.json(
             { error: "يرجى رفع ملف وورد بصيغة .docx" },
             { status: 400 }
+          );
+        }
+
+        if (file.size > 10 * 1024 * 1024) {
+          return NextResponse.json(
+            { error: "حجم الملف كبير جداً (الحد الأقصى 10 ميجابايت)" },
+            { status: 413 }
           );
         }
 
@@ -48,7 +55,7 @@ export async function POST(req: Request) {
             rawText: text,
             stats,
           });
-        } catch (docxErr: any) {
+        } catch (docxErr) {
           console.error("DOCX parsing error:", docxErr);
           return NextResponse.json(
             {
@@ -110,7 +117,7 @@ export async function POST(req: Request) {
       { error: "طريقة إرسال غير صالحة" },
       { status: 400 }
     );
-  } catch (error: any) {
+  } catch (error) {
     console.error("Parse docx API route error:", error);
     return NextResponse.json(
       { error: "حدث خطأ أثناء معالجة الملف" },

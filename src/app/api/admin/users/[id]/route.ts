@@ -16,11 +16,16 @@ export async function PATCH(req: Request, { params }: RouteParams) {
     const { id } = await params;
     const body = await req.json().catch(() => ({}));
 
-    const updated = await UserService.updateUser(id, body, currentUser.role);
+    const updated = await UserService.updateUser(
+      id,
+      body,
+      currentUser.role,
+      currentUser.id
+    );
     return NextResponse.json({ success: true, user: updated });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Failed to update user:", error);
-    const msg = error?.message || "";
+    const msg = error instanceof Error ? error.message : "";
     const isConflict = msg.includes("مسجل بالفعل");
     const isForbidden = msg.includes("غير مصرح");
     const isNotFound = msg.includes("غير موجود");
@@ -42,12 +47,13 @@ export async function DELETE(req: Request, { params }: RouteParams) {
     await UserService.deleteUser(id, currentUser.role, currentUser.id);
 
     return NextResponse.json({ success: true, message: "تم حذف المستخدم بنجاح" });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Failed to delete user:", error);
-    const isForbidden = error.message?.includes("غير مصرح") || error.message?.includes("المشرف العام");
-    const isBadRequest = error.message?.includes("حسابك الشخصي") || error.message?.includes("غير موجود");
+    const msg = error instanceof Error ? error.message : "";
+    const isForbidden = msg.includes("غير مصرح") || msg.includes("المشرف العام");
+    const isBadRequest = msg.includes("حسابك الشخصي") || msg.includes("غير موجود");
     return NextResponse.json(
-      { error: error.message || "تعذر حذف المستخدم" },
+      { error: msg || "تعذر حذف المستخدم" },
       { status: isForbidden ? 403 : isBadRequest ? 400 : 500 }
     );
   }

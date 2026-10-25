@@ -41,27 +41,31 @@ enum ExamMode {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  phone         String?   @unique
-  password      String?
-  role          Role      @default(STUDENT)
-  avatar        String?
-  gradeId       String?
-  systemId      String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id        String   @id @default(cuid())
+  name      String?
+  email     String?  @unique
+  phone     String?  @unique
+  password  String?
+  role      Role     @default(STUDENT)
+  avatar    String?
+  gradeId   String?
+  systemId  String?
+  trackId   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  grade         Grade?              @relation(fields: [gradeId], references: [id])
-  system        EducationalSystem?  @relation(fields: [systemId], references: [id])
-  accounts      Account[]
-  sessions      Session[]
-  progress      StudentProgress[]
-  attempts      ExamAttempt[]
-  mistakes      MistakeReview[]
-  bookmarks     Bookmark[]
-  auditLogs     AuditLog[]
+  grade           Grade?             @relation(fields: [gradeId], references: [id])
+  system          EducationalSystem? @relation(fields: [systemId], references: [id])
+  track           AcademicTrack?     @relation(fields: [trackId], references: [id], onDelete: SetNull)
+  accounts        Account[]
+  sessions        Session[]
+  progress        StudentProgress[]
+  attempts        ExamAttempt[]
+  mistakes        MistakeReview[]
+  bookmarks       Bookmark[]
+  auditLogs       AuditLog[]
+  createdExams    Exam[]             @relation("ExamCreator")
+  dailyChallenges DailyChallenge[]
 }
 
 model Account {
@@ -88,66 +92,74 @@ model Session {
   sessionToken String   @unique
   userId       String
   expires      DateTime
+  createdAt    DateTime @default(now())
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expires])
 }
 
 model VerificationToken {
   identifier String
   token      String   @unique
   expires    DateTime
+  attempts   Int      @default(0)
+  createdAt  DateTime @default(now())
 
   @@unique([identifier, token])
+  @@index([identifier])
 }
 
 model EducationalSystem {
-  id          String   @id @default(cuid())
+  id          String  @id @default(cuid())
   name        String
-  code        String   @unique
+  code        String  @unique
   description String?
-  isActive    Boolean  @default(true)
-  order       Int      @default(0)
+  isActive    Boolean @default(true)
+  order       Int     @default(0)
 
-  grades      Grade[]
-  subjects    Subject[]
-  users       User[]
+  grades   Grade[]
+  subjects Subject[]
+  users    User[]
 }
 
 model AcademicYear {
-  id        String   @id @default(cuid())
-  name      String
-  code      String   @unique
-  isActive  Boolean  @default(true)
+  id       String  @id @default(cuid())
+  name     String
+  code     String  @unique
+  isActive Boolean @default(true)
 }
 
 model Grade {
-  id        String   @id @default(cuid())
-  name      String
-  code      String
-  systemId  String
-  order     Int      @default(0)
+  id       String @id @default(cuid())
+  name     String
+  code     String
+  systemId String
+  order    Int    @default(0)
 
-  system    EducationalSystem @relation(fields: [systemId], references: [id], onDelete: Cascade)
-  tracks    AcademicTrack[]
-  subjects  Subject[]
-  users     User[]
+  system   EducationalSystem @relation(fields: [systemId], references: [id], onDelete: Cascade)
+  tracks   AcademicTrack[]
+  subjects Subject[]
+  users    User[]
 
   @@unique([systemId, code])
 }
 
 model AcademicTrack {
-  id       String    @id @default(cuid())
-  name     String
-  code     String
-  gradeId  String
+  id      String @id @default(cuid())
+  name    String
+  code    String
+  gradeId String
 
   grade    Grade     @relation(fields: [gradeId], references: [id], onDelete: Cascade)
   subjects Subject[]
+  users    User[]
 
   @@unique([gradeId, code])
 }
 
 model Subject {
-  id          String         @id @default(cuid())
+  id          String  @id @default(cuid())
   name        String
   code        String
   icon        String?
@@ -156,59 +168,65 @@ model Subject {
   systemId    String
   gradeId     String
   trackId     String?
-  order       Int            @default(0)
-  isPublished Boolean        @default(true)
+  order       Int     @default(0)
+  isPublished Boolean @default(true)
 
-  system      EducationalSystem @relation(fields: [systemId], references: [id], onDelete: Cascade)
-  grade       Grade             @relation(fields: [gradeId], references: [id], onDelete: Cascade)
-  track       AcademicTrack?    @relation(fields: [trackId], references: [id], onDelete: SetNull)
-  units       Unit[]
-  questions   Question[]
-  exams       Exam[]
+  system    EducationalSystem @relation(fields: [systemId], references: [id], onDelete: Cascade)
+  grade     Grade             @relation(fields: [gradeId], references: [id], onDelete: Cascade)
+  track     AcademicTrack?    @relation(fields: [trackId], references: [id], onDelete: SetNull)
+  units     Unit[]
+  questions Question[]
+  exams     Exam[]
 
   @@unique([gradeId, code])
+  @@index([systemId, gradeId])
 }
 
 model Unit {
-  id          String    @id @default(cuid())
+  id          String  @id @default(cuid())
   title       String
-  order       Int       @default(0)
+  order       Int     @default(0)
   description String?
   subjectId   String
-  isPublished Boolean   @default(true)
+  isPublished Boolean @default(true)
 
-  subject     Subject   @relation(fields: [subjectId], references: [id], onDelete: Cascade)
-  lessons     Lesson[]
-  questions   Question[]
+  subject   Subject    @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  lessons   Lesson[]
+  questions Question[]
+
+  @@index([subjectId, order])
 }
 
 model Lesson {
-  id              String            @id @default(cuid())
+  id              String  @id @default(cuid())
   title           String
-  order           Int               @default(0)
+  order           Int     @default(0)
   unitId          String
-  durationMinutes Int               @default(15)
-  isPublished     Boolean           @default(true)
-  viewsCount      Int               @default(0)
+  durationMinutes Int     @default(15)
+  isPublished     Boolean @default(true)
+  viewsCount      Int     @default(0)
 
-  unit            Unit              @relation(fields: [unitId], references: [id], onDelete: Cascade)
-  content         LessonContent?
-  summary         LessonSummary?
-  mindMap         MindMap?
-  sections        LessonSection[]
-  questions       QuestionLesson[]
-  progress        StudentProgress[]
+  unit      Unit              @relation(fields: [unitId], references: [id], onDelete: Cascade)
+  content   LessonContent?
+  summary   LessonSummary?
+  mindMap   MindMap?
+  sections  LessonSection[]
+  questions QuestionLesson[]
+  progress  StudentProgress[]
+  bookmarks Bookmark[]
+
+  @@index([unitId, order])
 }
 
 model LessonSection {
-  id             String    @id @default(cuid())
-  lessonId       String
-  title          String
-  anchorId       String
-  order          Int       @default(0)
+  id       String @id @default(cuid())
+  lessonId String
+  title    String
+  anchorId String
+  order    Int    @default(0)
 
-  lesson         Lesson    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
-  explanations   QuestionExplanation[]
+  lesson       Lesson                @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  explanations QuestionExplanation[]
 
   @@unique([lessonId, anchorId])
 }
@@ -221,7 +239,7 @@ model LessonContent {
   audioUrl   String?
   objectives String[] @default([])
 
-  lesson     Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
 }
 
 model LessonSummary {
@@ -235,7 +253,7 @@ model LessonSummary {
   commonMistakes Json   @default("[]")
   checklist      Json   @default("[]")
 
-  lesson         Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
 }
 
 model MindMap {
@@ -247,19 +265,19 @@ model MindMap {
   nodes       Json     @default("[]")
   edges       Json     @default("[]")
 
-  lesson      Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
 }
 
 model Question {
-  id          String        @id @default(cuid())
-  statement   String        @db.Text
-  type        QuestionType  @default(MCQ)
-  difficulty  Difficulty    @default(MEDIUM)
-  status      PublishStatus @default(PUBLISHED)
-  subjectId   String
-  unitId      String?
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  id         String        @id @default(cuid())
+  statement  String        @db.Text
+  type       QuestionType  @default(MCQ)
+  difficulty Difficulty    @default(MEDIUM)
+  status     PublishStatus @default(PUBLISHED)
+  subjectId  String
+  unitId     String?
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
 
   subject        Subject              @relation(fields: [subjectId], references: [id], onDelete: Cascade)
   unit           Unit?                @relation(fields: [unitId], references: [id], onDelete: SetNull)
@@ -270,146 +288,189 @@ model Question {
   examQuestions  ExamQuestion[]
   studentAnswers StudentAnswer[]
   mistakes       MistakeReview[]
+  bookmarks      Bookmark[]
+
+  @@index([subjectId, status, type, difficulty])
+  @@index([unitId])
 }
 
 model QuestionOption {
-  id          String    @id @default(cuid())
+  id          String  @id @default(cuid())
   questionId  String
   text        String
-  isCorrect   Boolean   @default(false)
-  order       Int       @default(0)
-  explanation String?   @db.Text
+  isCorrect   Boolean @default(false)
+  order       Int     @default(0)
+  explanation String? @db.Text
 
-  question    Question  @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@index([questionId])
 }
 
 model QuestionLesson {
-  id         String   @id @default(cuid())
+  id         String @id @default(cuid())
   questionId String
   lessonId   String
 
-  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
-  lesson     Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  lesson   Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
 
   @@unique([questionId, lessonId])
+  @@index([lessonId])
 }
 
 model QuestionExplanation {
-  id              String         @id @default(cuid())
-  questionId      String         @unique
-  concept         String
-  correctReason   String         @db.Text
-  sectionId       String?
+  id            String  @id @default(cuid())
+  questionId    String  @unique
+  concept       String
+  correctReason String  @db.Text
+  sectionId     String?
 
-  question        Question       @relation(fields: [questionId], references: [id], onDelete: Cascade)
-  section         LessonSection? @relation(fields: [sectionId], references: [id], onDelete: SetNull)
+  question Question       @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  section  LessonSection? @relation(fields: [sectionId], references: [id], onDelete: SetNull)
 }
 
 model EssayRubric {
-  id          String   @id @default(cuid())
-  questionId  String   @unique
-  modelAnswer String   @db.Text
-  criteria    Json     @default("[]")
-  maxScore    Int      @default(10)
+  id          String @id @default(cuid())
+  questionId  String @unique
+  modelAnswer String @db.Text
+  criteria    Json   @default("[]")
+  maxScore    Int    @default(10)
 
-  question    Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
 }
 
 model Exam {
-  id              String         @id @default(cuid())
+  id              String   @id @default(cuid())
   title           String
   description     String?
   subjectId       String
-  durationMinutes Int            @default(30)
-  isPractice      Boolean        @default(false)
-  createdAt       DateTime       @default(now())
+  durationMinutes Int      @default(30)
+  isPractice      Boolean  @default(false)
+  /// true for student-generated custom exams (builder / mistakes / daily). Hidden from the admin list.
+  isCustom        Boolean  @default(false)
+  createdById     String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @default(now()) @updatedAt
 
-  subject         Subject        @relation(fields: [subjectId], references: [id], onDelete: Cascade)
-  questions       ExamQuestion[]
-  attempts        ExamAttempt[]
+  subject   Subject        @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  createdBy User?          @relation("ExamCreator", fields: [createdById], references: [id], onDelete: SetNull)
+  questions ExamQuestion[]
+  attempts  ExamAttempt[]
+
+  @@index([subjectId])
+  @@index([isCustom, createdById])
 }
 
 model ExamQuestion {
-  id         String   @id @default(cuid())
+  id         String @id @default(cuid())
   examId     String
   questionId String
-  order      Int      @default(0)
+  order      Int    @default(0)
 
-  exam       Exam     @relation(fields: [examId], references: [id], onDelete: Cascade)
-  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  exam     Exam     @relation(fields: [examId], references: [id], onDelete: Cascade)
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
 
   @@unique([examId, questionId])
 }
 
 model ExamAttempt {
-  id               String          @id @default(cuid())
+  id               String    @id @default(cuid())
   userId           String
   examId           String?
   title            String
-  mode             ExamMode        @default(PRACTICE)
-  totalQuestions   Int             @default(0)
-  score            Float           @default(0)
-  percentage       Float           @default(0)
-  timeSpentSeconds Int             @default(0)
-  isCompleted      Boolean         @default(false)
-  startedAt        DateTime        @default(now())
+  mode             ExamMode  @default(PRACTICE)
+  totalQuestions   Int       @default(0)
+  score            Float     @default(0)
+  percentage       Float     @default(0)
+  timeSpentSeconds Int       @default(0)
+  isCompleted      Boolean   @default(false)
+  startedAt        DateTime  @default(now())
   completedAt      DateTime?
 
-  user             User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  exam             Exam?           @relation(fields: [examId], references: [id], onDelete: SetNull)
-  answers          StudentAnswer[]
+  user    User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exam    Exam?           @relation(fields: [examId], references: [id], onDelete: SetNull)
+  answers StudentAnswer[]
+
+  @@index([userId, isCompleted, completedAt])
+  @@index([examId])
 }
 
 model StudentAnswer {
-  id               String      @id @default(cuid())
+  id               String   @id @default(cuid())
   attemptId        String
   questionId       String
   selectedOptionId String?
-  essayText        String?     @db.Text
+  essayText        String?  @db.Text
   isCorrect        Boolean?
   score            Float?
-  timeSpentSeconds Int         @default(0)
+  timeSpentSeconds Int      @default(0)
 
-  attempt          ExamAttempt @relation(fields: [attemptId], references: [id], onDelete: Cascade)
-  question         Question    @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  attempt  ExamAttempt @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  question Question    @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@unique([attemptId, questionId])
+  @@index([questionId])
 }
 
 model StudentProgress {
-  id              String    @id @default(cuid())
+  id              String   @id @default(cuid())
   userId          String
   lessonId        String
-  isCompleted     Boolean   @default(false)
-  progressPercent Int       @default(0)
-  lastAccessedAt  DateTime  @default(now())
+  isCompleted     Boolean  @default(false)
+  progressPercent Int      @default(0)
+  lastAccessedAt  DateTime @default(now())
 
-  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  lesson          Lesson    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
 
   @@unique([userId, lessonId])
 }
 
 model MistakeReview {
-  id            String    @id @default(cuid())
+  id            String   @id @default(cuid())
   userId        String
   questionId    String
-  wrongCount    Int       @default(1)
-  isResolved    Boolean   @default(false)
-  lastAttemptAt DateTime  @default(now())
+  wrongCount    Int      @default(1)
+  isResolved    Boolean  @default(false)
+  lastAttemptAt DateTime @default(now())
 
-  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  question      Question  @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
 
   @@unique([userId, questionId])
+  @@index([userId, isResolved])
 }
 
+/// Exactly one of lessonId / questionId is set (enforced in BookmarkService).
 model Bookmark {
-  id         String    @id @default(cuid())
+  id         String   @id @default(cuid())
   userId     String
   lessonId   String?
   questionId String?
-  createdAt  DateTime  @default(now())
+  createdAt  DateTime @default(now())
 
-  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson   Lesson?   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  question Question? @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, lessonId])
+  @@unique([userId, questionId])
+}
+
+/// Server-issued daily check-in question set; one per user per calendar day (Africa/Cairo).
+model DailyChallenge {
+  id          String    @id @default(cuid())
+  userId      String
+  day         String // YYYY-MM-DD
+  questionIds String[]
+  attemptId   String?
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, day])
 }
 
 model AuditLog {
@@ -421,5 +482,8 @@ model AuditLog {
   details    Json?
   createdAt  DateTime @default(now())
 
-  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
+  @@index([resource, resourceId])
 }

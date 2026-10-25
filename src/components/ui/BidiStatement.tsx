@@ -53,7 +53,7 @@ export function BidiStatement({
         <code
           dir="ltr"
           className={cn(
-            "inline-block font-mono font-bold bg-slate-100 dark:bg-zinc-900 text-indigo-700 dark:text-indigo-300 px-2 py-0.5 rounded-md border border-slate-200 dark:border-zinc-800 text-xs sm:text-sm whitespace-nowrap mx-0.5 align-baseline shadow-2xs",
+            "inline-block font-mono font-bold bg-[#F8FAFC] dark:bg-[#1E293B] text-[#4F46E5] dark:text-[#6366F1] px-2 py-1 rounded-md border border-[#E2E8F0] dark:border-[#334155] text-[13px] sm:text-sm whitespace-nowrap mx-1 align-baseline ",
             className
           )}
           style={{ unicodeBidi: "isolate" }}
@@ -66,7 +66,7 @@ export function BidiStatement({
     return (
       <Component
         dir="ltr"
-        className={cn("leading-relaxed", className)}
+        className={cn("leading-relaxed break-words", className)}
         style={{ unicodeBidi: "isolate" }}
       >
         {cleanText}
@@ -79,7 +79,7 @@ export function BidiStatement({
 
   return (
     <Component
-      className={cn("leading-relaxed font-content", className)}
+      className={cn("leading-relaxed font-content break-words", className)}
       style={{ unicodeBidi: "isolate" }}
       dir="auto"
     >
@@ -93,7 +93,7 @@ export function BidiStatement({
             <code
               key={index}
               dir="ltr"
-              className="inline-block font-mono font-bold bg-slate-100 dark:bg-zinc-900 text-indigo-700 dark:text-indigo-300 px-2 py-0.5 rounded-md border border-slate-200 dark:border-zinc-800 text-xs sm:text-sm whitespace-nowrap mx-1 align-baseline shadow-2xs"
+              className="inline-block font-mono font-bold bg-[#F8FAFC] dark:bg-[#1E293B] text-[#4F46E5] dark:text-[#6366F1] px-2 py-1 rounded-md border border-[#E2E8F0] dark:border-[#334155] text-[13px] sm:text-sm whitespace-nowrap mx-1 align-baseline "
               style={{ unicodeBidi: "isolate" }}
             >
               {rawCode}
@@ -112,7 +112,7 @@ export function BidiStatement({
             <bdi
               key={index}
               dir="ltr"
-              className="inline-block font-sans font-bold text-indigo-600 dark:text-indigo-400 mx-1"
+              className="inline-block font-sans font-bold text-[#4F46E5] dark:text-[#6366F1] mx-1"
               style={{ unicodeBidi: "isolate" }}
             >
               {token}
@@ -136,7 +136,7 @@ export function BidiStatement({
             <code
               key={index}
               dir="ltr"
-              className="inline-block font-mono font-bold bg-slate-100 dark:bg-zinc-900 text-indigo-700 dark:text-indigo-300 px-2 py-0.5 rounded-md border border-slate-200 dark:border-zinc-800 text-xs sm:text-sm whitespace-nowrap mx-1 align-baseline shadow-2xs"
+              className="inline-block font-mono font-bold bg-[#F8FAFC] dark:bg-[#1E293B] text-[#4F46E5] dark:text-[#6366F1] px-2 py-1 rounded-md border border-[#E2E8F0] dark:border-[#334155] text-[13px] sm:text-sm whitespace-nowrap mx-1 align-baseline "
               style={{ unicodeBidi: "isolate" }}
             >
               {token.trim()}

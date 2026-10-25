@@ -1,4 +1,6 @@
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
+import { badRequest, notFound } from "@/lib/http";
 
 export interface LessonCreateInput {
   unitId: string;
@@ -33,8 +35,8 @@ export interface LessonUpdateInput {
     title?: string;
     description?: string | null;
     images?: string[];
-    nodes?: any;
-    edges?: any;
+    nodes?: unknown;
+    edges?: unknown;
   };
   summary?: {
     keyConcepts?: string[];
@@ -63,6 +65,37 @@ export class CurriculumService {
           },
         },
         _count: { select: { subjects: true, users: true } },
+      },
+    });
+  }
+
+  /**
+   * Fetch active educational systems for public display (registration / setup)
+   */
+  static async getPublicSystems() {
+    return prisma.educationalSystem.findMany({
+      where: { isActive: true },
+      orderBy: { order: "asc" },
+      select: {
+        id: true,
+        name: true,
+        code: true,
+        description: true,
+        grades: {
+          orderBy: { order: "asc" },
+          select: {
+            id: true,
+            name: true,
+            code: true,
+            tracks: {
+              select: {
+                id: true,
+                name: true,
+                code: true,
+              },
+            },
+          },
+        },
       },
     });
   }
@@ -101,7 +134,7 @@ export class CurriculumService {
    * Fetch subjects filtered by system and/or grade
    */
   static async getSubjects(filter: { systemId?: string; gradeId?: string }) {
-    const where: any = {};
+    const where: Prisma.SubjectWhereInput = {};
     if (filter.systemId) where.systemId = filter.systemId;
     if (filter.gradeId) where.gradeId = filter.gradeId;
 
@@ -210,7 +243,7 @@ export class CurriculumService {
       select: { id: true },
     });
     if (!unitExists) {
-      throw new Error("الوحدة المحددة غير موجودة");
+      throw notFound("الوحدة المحددة غير موجودة");
     }
 
     let lessonOrder = data.order;
@@ -269,8 +302,12 @@ export class CurriculumService {
   /**
    * List lessons for a unit or search
    */
-  static async getLessonsList(params: { unitId?: string; search?: string } = {}) {
-    const where: any = {};
+  static async getLessonsList(
+    params: { unitId?: string; search?: string; page?: number; limit?: number } = {}
+  ) {
+    const limit = Math.min(Math.max(params.limit ?? 50, 1), 100);
+    const page = Math.max(params.page ?? 1, 1);
+    const where: Prisma.LessonWhereInput = {};
     if (params.unitId && params.unitId !== "all") where.unitId = params.unitId;
     if (params.search?.trim()) {
       where.title = { contains: params.search.trim(), mode: "insensitive" };
@@ -279,6 +316,8 @@ export class CurriculumService {
     return prisma.lesson.findMany({
       where,
       orderBy: { order: "asc" },
+      skip: (page - 1) * limit,
+      take: limit,
       include: {
         unit: {
           include: {
@@ -346,15 +385,15 @@ export class CurriculumService {
           title: mm?.title?.trim() || `خريطة: ${data.title || updatedLesson.title}`,
           description: mm?.description?.trim() || null,
           images: Array.isArray(mmImages) ? mmImages : [],
-          nodes: mm?.nodes || [],
-          edges: mm?.edges || [],
+          nodes: (mm?.nodes !== undefined ? mm.nodes : []) as Prisma.InputJsonValue,
+          edges: (mm?.edges !== undefined ? mm.edges : []) as Prisma.InputJsonValue,
         },
         update: {
           title: mm?.title !== undefined ? mm.title.trim() : undefined,
           description: mm?.description !== undefined ? (mm.description?.trim() || null) : undefined,
           images: mmImages !== undefined ? (Array.isArray(mmImages) ? mmImages : []) : undefined,
-          nodes: mm?.nodes !== undefined ? mm.nodes : undefined,
-          edges: mm?.edges !== undefined ? mm.edges : undefined,
+          nodes: mm?.nodes !== undefined ? (mm.nodes as Prisma.InputJsonValue) : undefined,
+          edges: mm?.edges !== undefined ? (mm.edges as Prisma.InputJsonValue) : undefined,
         },
       });
     }
@@ -427,20 +466,20 @@ export class CurriculumService {
   static async toggleEntityPublish(entity: "subject" | "unit" | "lesson", id: string, isPublished: boolean) {
     if (entity === "subject") {
       const exists = await prisma.subject.findUnique({ where: { id }, select: { id: true } });
-      if (!exists) throw new Error("المادة غير موجودة");
+      if (!exists) throw notFound("المادة غير موجودة");
       return prisma.subject.update({ where: { id }, data: { isPublished: Boolean(isPublished) } });
     }
     if (entity === "unit") {
       const exists = await prisma.unit.findUnique({ where: { id }, select: { id: true } });
-      if (!exists) throw new Error("الوحدة غير موجودة");
+      if (!exists) throw notFound("الوحدة غير موجودة");
       return prisma.unit.update({ where: { id }, data: { isPublished: Boolean(isPublished) } });
     }
     if (entity === "lesson") {
       const exists = await prisma.lesson.findUnique({ where: { id }, select: { id: true } });
-      if (!exists) throw new Error("الدرس غير موجود");
+      if (!exists) throw notFound("الدرس غير موجود");
       return prisma.lesson.update({ where: { id }, data: { isPublished: Boolean(isPublished) } });
     }
-    throw new Error("نوع الكيان غير صالح للتعديل");
+    throw badRequest("نوع الكيان غير صالح للتعديل");
   }
 
   /**
@@ -484,7 +523,7 @@ export class CurriculumService {
   }) {
     const existing = await prisma.educationalSystem.findUnique({ where: { code: data.code } });
     if (existing) {
-      throw new Error("هذا الرمز مستخدم بالفعل لنظام آخر");
+      throw badRequest("هذا الرمز مستخدم بالفعل لنظام آخر");
     }
 
     return prisma.educationalSystem.create({
@@ -538,7 +577,7 @@ export class CurriculumService {
       select: { id: true },
     });
     if (!system) {
-      throw new Error("النظام التعليمي المحدد غير موجود");
+      throw notFound("النظام التعليمي المحدد غير موجود");
     }
 
     return prisma.grade.create({
@@ -592,8 +631,8 @@ export class CurriculumService {
       prisma.educationalSystem.findUnique({ where: { id: data.systemId }, select: { id: true } }),
       prisma.grade.findUnique({ where: { id: data.gradeId }, select: { id: true } }),
     ]);
-    if (!system) throw new Error("النظام التعليمي المحدد غير موجود");
-    if (!grade) throw new Error("الصف الدراسي المحدد غير موجود");
+    if (!system) throw notFound("النظام التعليمي المحدد غير موجود");
+    if (!grade) throw notFound("الصف الدراسي المحدد غير موجود");
 
     return prisma.subject.create({
       data: {
@@ -644,13 +683,16 @@ export class CurriculumService {
   /**
    * Units Management
    */
-  static async getUnits(subjectId?: string) {
-    const where: any = {};
+  static async getUnits(subjectId?: string, page = 1, limit = 50) {
+    const take = Math.min(Math.max(limit, 1), 100);
+    const where: Prisma.UnitWhereInput = {};
     if (subjectId) where.subjectId = subjectId;
 
     return prisma.unit.findMany({
       where,
       orderBy: { order: "asc" },
+      skip: (Math.max(page, 1) - 1) * take,
+      take,
       include: {
         lessons: { orderBy: { order: "asc" } },
         _count: { select: { questions: true } },
@@ -670,7 +712,7 @@ export class CurriculumService {
       select: { id: true },
     });
     if (!subject) {
-      throw new Error("المادة المحددة غير موجودة");
+      throw notFound("المادة المحددة غير موجودة");
     }
 
     let unitOrder = data.order;

@@ -1,10 +1,31 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import { randomBytes } from "node:crypto";
+import nextEnv from "@next/env";
+
+// Load .env/.env.local the same way Next.js does (does not override real env vars).
+nextEnv.loadEnvConfig(process.cwd());
 
 const prisma = new PrismaClient();
 
 async function main() {
   console.log("🌱 Starting El Kholasa Database Seeding...");
+
+  // حماية: لا تمسح قاعدة البيانات أبدًا في الإنتاج بدون موافقة صريحة
+  if (process.env.NODE_ENV === "production" && process.env.SEED_ALLOW_PRODUCTION !== "true") {
+    throw new Error(
+      "Refusing to seed in production. Set SEED_ALLOW_PRODUCTION=true only if you really mean it."
+    );
+  }
+
+  // التحقق من كلمة مرور الأدمن *قبل* أي حذف أو تعديل للبيانات
+  const adminPassword = process.env.SEED_ADMIN_PASSWORD;
+  if (!adminPassword || adminPassword.length < 8) {
+    throw new Error(
+      "SEED_ADMIN_PASSWORD is required and must be at least 8 characters. " +
+        "Set it in .env before running the seed."
+    );
+  }
 
   // 1. Clear existing data in reverse order of foreign keys
   await prisma.auditLog.deleteMany();
@@ -120,14 +141,20 @@ async function main() {
   });
 
   // 6. Users (Admin + Student)
-  const passwordHash = await bcrypt.hash("12345678", 10);
+  // لا تُستخدم كلمات مرور ثابتة أبدًا: تُقرأ من البيئة ويُرفض التشغيل بدونها.
+  // حساب الطالب التجريبي: كلمة مروره من البيئة، وإلا تُولَّد عشوائيًا (غير قابلة للاستخدام).
+  const studentPassword =
+    process.env.SEED_STUDENT_PASSWORD || randomBytes(24).toString("base64url");
+
+  const adminPasswordHash = await bcrypt.hash(adminPassword, 12);
+  const studentPasswordHash = await bcrypt.hash(studentPassword, 12);
 
   const adminUser = await prisma.user.create({
     data: {
       name: "د. محمود المهدي (المشرف العام)",
       email: "admin@kholasa.app",
       phone: "01000000000",
-      password: passwordHash,
+      password: adminPasswordHash,
       role: "ADMIN",
     },
   });
@@ -137,7 +164,7 @@ async function main() {
       name: "أحمد محمد علي",
       email: "student@kholasa.app",
       phone: "01111111111",
-      password: passwordHash,
+      password: studentPasswordHash,
       role: "STUDENT",
       systemId: thanaweya.id,
       gradeId: g11.id,
@@ -145,6 +172,11 @@ async function main() {
   });
 
   console.log(`👤 Created users: Admin (${adminUser.email}) and Student (${studentUser.email})`);
+  if (!process.env.SEED_STUDENT_PASSWORD) {
+    console.log(
+      "ℹ️  Demo student password was generated randomly. Set SEED_STUDENT_PASSWORD to choose your own."
+    );
+  }
 
   // 7. Core Subject 1: أساسيات C++ والتفكير البرمجي
   const subCpp = await prisma.subject.create({

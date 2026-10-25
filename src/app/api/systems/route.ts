@@ -1,15 +1,13 @@
 import { NextResponse } from "next/server";
+import { jsonError } from "@/lib/http";
 import { CurriculumService } from "@/services/curriculum.service";
 
+// Public (used by register/setup before login): active systems only, non-sensitive fields.
 export async function GET() {
   try {
-    const systems = await CurriculumService.getSystems(true);
+    const systems = await CurriculumService.getPublicSystems();
     return NextResponse.json({ systems });
   } catch (error) {
-    console.error("Failed to fetch systems:", error);
-    return NextResponse.json(
-      { error: "تعذر تحميل الأنظمة التعليمية" },
-      { status: 500 }
-    );
+    return jsonError(error);
   }
 }

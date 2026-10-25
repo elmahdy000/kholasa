@@ -41,11 +41,33 @@ async function runServicesAudit() {
   if (!studentUser) throw new Error("No student user found in database");
   const studentDashboard = await StudentService.getStudentDashboard(studentUser.id);
   if (typeof studentDashboard.stats.totalAttempts !== "number") throw new Error("StudentService: dashboard stats missing");
-  console.log(`   ✅ Student Dashboard: ${studentDashboard.user.name}, Total Attempts: ${studentDashboard.stats.totalAttempts}, Avg: ${studentDashboard.stats.averageScore}%`);
+
+  // Verify toggleBookmark & getBookmarks
+  const sampleLessonForBm = await prisma.lesson.findFirst({ where: { isPublished: true } });
+  if (sampleLessonForBm) {
+    // Ensure clean initial state
+    await prisma.bookmark.deleteMany({ where: { userId: studentUser.id, lessonId: sampleLessonForBm.id } });
+    const bm1 = await StudentService.toggleBookmark(studentUser.id, { lessonId: sampleLessonForBm.id });
+    if (!bm1.bookmarked) throw new Error("Bookmark toggle should have created bookmark");
+    const bmList = await StudentService.getBookmarks(studentUser.id, 1, 10);
+    if (!bmList.some((b) => b.lessonId === sampleLessonForBm.id)) throw new Error("Bookmark not found in getBookmarks");
+    const bm2 = await StudentService.toggleBookmark(studentUser.id, { lessonId: sampleLessonForBm.id });
+    if (bm2.bookmarked) throw new Error("Bookmark toggle should have removed bookmark");
+  }
+
+  console.log(`   ✅ Student Dashboard & Bookmarks verified: ${studentDashboard.user.name}, Total Attempts: ${studentDashboard.stats.totalAttempts}, Avg: ${studentDashboard.stats.averageScore}%`);
 
   // 4. DailyCheckinService (DEC-011 verification)
   console.log("4️⃣ Auditing DailyCheckinService (DEC-011 compliance)...");
-  const checkin = await DailyCheckinService.getDailyCheckinQuestions(studentUser.gradeId);
+  await prisma.dailyChallenge.deleteMany({ where: { userId: studentUser.id } });
+  const checkin = await DailyCheckinService.getDailyCheckinQuestions(
+    studentUser.id,
+    {
+      systemId: studentUser.systemId,
+      gradeId: studentUser.gradeId,
+      trackId: studentUser.trackId,
+    }
+  );
   if (!Array.isArray(checkin.questions) || checkin.questions.length === 0) {
     throw new Error("DailyCheckinService: getDailyCheckinQuestions failed");
   }
@@ -125,10 +147,10 @@ async function runServicesAudit() {
 
   // 11. MediaService
   console.log("1️⃣1️⃣ Auditing MediaService...");
-  MediaService.validate(1024, "image/png", "images");
+  MediaService.validate(1024, "image/png", "test.png");
   let caughtTooLarge = false;
   try {
-    MediaService.validate(60 * 1024 * 1024, "image/png", "images");
+    MediaService.validate(60 * 1024 * 1024, "image/png", "test.png");
   } catch {
     caughtTooLarge = true;
   }
@@ -137,7 +159,7 @@ async function runServicesAudit() {
 
   // 12. OtpService
   console.log("1️⃣2️⃣ Auditing OtpService...");
-  const otpRes = await OtpService.sendOtp(studentUser.email || "student@test.com", "VERIFICATION");
+  const otpRes = await OtpService.sendOtp(studentUser.email || "student@test.com", "PASSWORD_RESET");
   if (!otpRes.devCode) throw new Error("OtpService: devCode not generated");
   const verifyRes = await OtpService.verifyOtp(studentUser.email || "student@test.com", otpRes.devCode);
   if (!verifyRes.verified || !verifyRes.resetToken) throw new Error("OtpService: verification failed");

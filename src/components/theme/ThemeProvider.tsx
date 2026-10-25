@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState, useTransition } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 
 type Theme = "dark" | "light" | "system";
 
@@ -19,11 +19,9 @@ const THEME_STORAGE_KEY = "kholasa_theme";
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<Theme>("system");
   const [resolvedTheme, setResolvedTheme] = useState<"dark" | "light">("dark");
-  const [mounted, setMounted] = useState(false);
-  const [, startTransition] = useTransition();
 
   // Helper to apply theme to document
-  const applyTheme = (isDark: boolean, currentTheme: Theme) => {
+  const applyTheme = (isDark: boolean, _currentTheme?: Theme) => {
     if (typeof document === "undefined") return;
     const root = document.documentElement;
     if (isDark) {
@@ -35,7 +33,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       root.setAttribute("data-theme", "light");
       root.style.colorScheme = "light";
     }
-    setResolvedTheme(isDark ? "dark" : "light");
   };
 
   useEffect(() => {
@@ -43,24 +40,28 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     let saved: Theme = "system";
     try {
       saved = (localStorage.getItem(THEME_STORAGE_KEY) as Theme) || "system";
-    } catch (_) {}
-    setThemeState(saved);
+    } catch {}
 
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
     const systemIsDark = mediaQuery.matches;
     const isDark = saved === "dark" || (saved === "system" && systemIsDark);
 
     applyTheme(isDark, saved);
-    setMounted(true);
+
+    const timer = setTimeout(() => {
+      setThemeState(saved);
+      setResolvedTheme(isDark ? "dark" : "light");
+    }, 0);
 
     // Listen for system changes when in 'system' mode
     const handleSystemChange = (e: MediaQueryListEvent) => {
       let currentSaved: Theme = "system";
       try {
         currentSaved = (localStorage.getItem(THEME_STORAGE_KEY) as Theme) || "system";
-      } catch (_) {}
+      } catch {}
       if (currentSaved === "system") {
         applyTheme(e.matches, "system");
+        setResolvedTheme(e.matches ? "dark" : "light");
       }
     };
 
@@ -72,6 +73,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         const newIsDark =
           newTheme === "dark" || (newTheme === "system" && mediaQuery.matches);
         applyTheme(newIsDark, newTheme);
+        setResolvedTheme(newIsDark ? "dark" : "light");
       }
     };
 
@@ -79,6 +81,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     window.addEventListener("storage", handleStorageChange);
 
     return () => {
+      clearTimeout(timer);
       mediaQuery.removeEventListener("change", handleSystemChange);
       window.removeEventListener("storage", handleStorageChange);
     };
@@ -88,12 +91,13 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     setThemeState(newTheme);
     try {
       localStorage.setItem(THEME_STORAGE_KEY, newTheme);
-    } catch (_) {}
+    } catch {}
 
     const mediaQuery = typeof window !== "undefined" ? window.matchMedia("(prefers-color-scheme: dark)") : null;
     const isDark =
       newTheme === "dark" || (newTheme === "system" && !!mediaQuery?.matches);
     applyTheme(isDark, newTheme);
+    setResolvedTheme(isDark ? "dark" : "light");
   };
 
   const toggleTheme = () => {

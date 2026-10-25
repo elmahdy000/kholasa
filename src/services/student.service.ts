@@ -1,4 +1,6 @@
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
+import { badRequest, conflict, notFound } from "@/lib/http";
 
 export class StudentService {
   /**
@@ -13,7 +15,7 @@ export class StudentService {
       },
     });
 
-    if (!user) throw new Error("المستخدم غير موجود");
+    if (!user) throw notFound("المستخدم غير موجود");
 
     // Fetch student subjects based on grade
     const subjects = user.gradeId
@@ -147,7 +149,7 @@ export class StudentService {
     });
 
     if (!lesson) {
-      throw new Error("الدرس المطلوب غير موجود");
+      throw notFound("الدرس المطلوب غير موجود");
     }
 
     return prisma.studentProgress.upsert({
@@ -181,100 +183,186 @@ export class StudentService {
   }
 
   /**
-   * Toggle bookmark for a lesson or a question
+   * Toggle bookmark for exactly one of lessonId / questionId.
+   * Target must exist and be published; uses the (userId, lessonId) and
+   * (userId, questionId) unique keys so duplicates are impossible.
    */
   static async toggleBookmark(userId: string, target: { lessonId?: string; questionId?: string }) {
-    if (!target.lessonId && !target.questionId) {
-      throw new Error("يجب تحديد درس أو سؤال لحفظه");
+    const { lessonId, questionId } = target;
+    if ((lessonId ? 1 : 0) + (questionId ? 1 : 0) !== 1) {
+      throw badRequest("يجب تحديد درس واحد أو سؤال واحد فقط");
     }
 
-    if (target.lessonId) {
-      const lesson = await prisma.lesson.findUnique({
-        where: { id: target.lessonId },
+    if (lessonId) {
+      const lesson = await prisma.lesson.findFirst({
+        where: { id: lessonId, isPublished: true, unit: { isPublished: true, subject: { isPublished: true } } },
         select: { id: true },
       });
-      if (!lesson) {
-        throw new Error("الدرس المطلوب غير موجود");
+      if (!lesson) throw notFound("الدرس المطلوب غير موجود");
+
+      const existing = await prisma.bookmark.findFirst({
+        where: { userId, lessonId },
+        select: { id: true },
+      });
+      if (existing) {
+        await prisma.bookmark.delete({ where: { id: existing.id } });
+        return { bookmarked: false };
+      }
+      try {
+        await prisma.bookmark.create({
+          data: { userId, lessonId },
+        });
+        return { bookmarked: true };
+      } catch (err) {
+        if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") {
+          return { bookmarked: true };
+        }
+        throw err;
       }
     }
 
-    if (target.questionId) {
-      const question = await prisma.question.findUnique({
-        where: { id: target.questionId },
-        select: { id: true },
-      });
-      if (!question) {
-        throw new Error("السؤال المطلوب غير موجود");
-      }
-    }
+    const question = await prisma.question.findFirst({
+      where: { id: questionId!, status: "PUBLISHED" },
+      select: { id: true },
+    });
+    if (!question) throw notFound("السؤال المطلوب غير موجود");
 
     const existing = await prisma.bookmark.findFirst({
-      where: {
-        userId,
-        lessonId: target.lessonId || null,
-        questionId: target.questionId || null,
-      },
+      where: { userId, questionId: questionId! },
+      select: { id: true },
     });
-
     if (existing) {
       await prisma.bookmark.delete({ where: { id: existing.id } });
       return { bookmarked: false };
     }
-
-    await prisma.bookmark.create({
-      data: {
-        userId,
-        lessonId: target.lessonId || null,
-        questionId: target.questionId || null,
-      },
-    });
-
-    return { bookmarked: true };
+    try {
+      await prisma.bookmark.create({
+        data: { userId, questionId: questionId! },
+      });
+      return { bookmarked: true };
+    } catch (err) {
+      if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") {
+        return { bookmarked: true };
+      }
+      throw err;
+    }
   }
 
   /**
-   * Fetch all student bookmarks with lesson/question details
+   * Fetch student bookmarks (paginated: default 50, max 100) with details
    */
-  static async getBookmarks(userId: string) {
-    const bookmarks = await prisma.bookmark.findMany({
+  static async getBookmarks(userId: string, page = 1, limit = 50) {
+    const take = Math.min(Math.max(limit, 1), 100);
+    return prisma.bookmark.findMany({
       where: { userId },
       orderBy: { createdAt: "desc" },
-    });
-
-    const lessonIds = bookmarks.map((b) => b.lessonId).filter(Boolean) as string[];
-    const questionIds = bookmarks.map((b) => b.questionId).filter(Boolean) as string[];
-
-    const [lessons, questions] = await Promise.all([
-      lessonIds.length > 0
-        ? prisma.lesson.findMany({
-            where: { id: { in: lessonIds } },
-            select: {
-              id: true,
-              title: true,
-              unit: {
-                select: {
-                  title: true,
-                  subject: { select: { name: true, color: true } },
-                },
+      skip: (Math.max(page, 1) - 1) * take,
+      take,
+      include: {
+        lesson: {
+          select: {
+            id: true,
+            title: true,
+            unit: {
+              select: {
+                title: true,
+                subject: { select: { name: true, color: true } },
               },
             },
-          })
-        : [],
-      questionIds.length > 0
-        ? prisma.question.findMany({
-            where: { id: { in: questionIds } },
-            select: { id: true, statement: true, type: true, difficulty: true },
-          })
-        : [],
-    ]);
+          },
+        },
+        question: {
+          select: { id: true, statement: true, type: true, difficulty: true },
+        },
+      },
+    });
+  }
 
-    const lessonMap = new Map(lessons.map((l) => [l.id, l]));
-    const questionMap = new Map(questions.map((q) => [q.id, q]));
+  /**
+   * Update the student's own profile. systemId / gradeId / trackId must exist
+   * and belong together (grade in system, track in grade).
+   */
+  static async updateProfile(
+    userId: string,
+    data: {
+      name?: string;
+      phone?: string | null;
+      systemId?: string | null;
+      gradeId?: string | null;
+      trackId?: string | null;
+    }
+  ) {
+    const current = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { systemId: true, gradeId: true, trackId: true },
+    });
+    if (!current) throw notFound("المستخدم غير موجود");
 
-    return bookmarks.map((b) => ({
-      ...b,
-      lesson: b.lessonId ? lessonMap.get(b.lessonId) || null : null,
-      question: b.questionId ? questionMap.get(b.questionId) || null : null,
-    }));
+    const gradeChanged = data.gradeId !== undefined || data.systemId !== undefined;
+    let systemId = data.systemId !== undefined ? data.systemId : current.systemId;
+    const gradeId = data.gradeId !== undefined ? data.gradeId : current.gradeId;
+    // Changing grade invalidates a previously stored track unless one is sent.
+    const trackId =
+      data.trackId !== undefined ? data.trackId : gradeChanged ? null : current.trackId;
+
+    if (gradeId) {
+      const grade = await prisma.grade.findUnique({
+        where: { id: gradeId },
+        select: { systemId: true, system: { select: { isActive: true } } },
+      });
+      if (!grade) throw badRequest("الصف الدراسي غير موجود");
+      if (data.systemId && grade.systemId !== data.systemId) {
+        throw badRequest("الصف لا ينتمي إلى النظام التعليمي المحدد");
+      }
+      // Derive the system from the grade so the two can never disagree.
+      systemId = grade.systemId;
+    } else if (systemId) {
+      const system = await prisma.educationalSystem.findUnique({
+        where: { id: systemId },
+        select: { id: true },
+      });
+      if (!system) throw badRequest("النظام التعليمي غير موجود");
+    }
+
+    if (trackId) {
+      if (!gradeId) throw badRequest("يجب تحديد الصف قبل المسار");
+      const track = await prisma.academicTrack.findUnique({
+        where: { id: trackId },
+        select: { gradeId: true },
+      });
+      if (!track || track.gradeId !== gradeId) {
+        throw badRequest("المسار لا ينتمي إلى الصف المحدد");
+      }
+    }
+
+    const phone = data.phone === undefined ? undefined : data.phone?.trim() || null;
+    if (phone) {
+      const taken = await prisma.user.findFirst({
+        where: { phone, NOT: { id: userId } },
+        select: { id: true },
+      });
+      if (taken) throw conflict("رقم الهاتف مسجل بالفعل لمستخدم آخر");
+    }
+
+    return prisma.user.update({
+      where: { id: userId },
+      data: {
+        name: data.name?.trim(),
+        phone,
+        systemId: data.systemId !== undefined || gradeId ? (systemId ?? null) : undefined,
+        gradeId: data.gradeId !== undefined ? data.gradeId : undefined,
+        trackId: trackId ?? null,
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        gradeId: true,
+        systemId: true,
+        trackId: true,
+        avatar: true,
+      },
+    });
   }
 }

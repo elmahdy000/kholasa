@@ -54,17 +54,17 @@ export function ExamResultActions({
       <button
         type="button"
         onClick={handleShare}
-        className="h-9 px-3.5 rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:bg-slate-50 dark:hover:bg-zinc-800 text-xs font-bold text-[#0F172A] dark:text-white flex items-center gap-1.5 transition-colors interactive-tap shadow-2xs"
+        className="h-11 px-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B] hover:bg-[#F8FAFC] dark:hover:bg-[#334155] text-[13px] font-bold text-[#0F172A] dark:text-white flex items-center gap-2 transition-colors interactive-tap "
         title="مشاركة النتيجة أو نسخ الرابط"
       >
         {copied ? (
           <>
-            <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-            <span className="text-emerald-600 dark:text-emerald-400">تم نسخ الرابط!</span>
+            <Check className="w-3.5 h-3.5 text-[#059669] dark:text-[#34D399]" />
+            <span className="text-[#059669] dark:text-[#34D399]">تم نسخ الرابط!</span>
           </>
         ) : (
           <>
-            <Share2 className="w-3.5 h-3.5 text-indigo-500" />
+            <Share2 className="w-3.5 h-3.5 text-[#4F46E5]" />
             <span>مشاركة النتيجة</span>
           </>
         )}
@@ -73,10 +73,10 @@ export function ExamResultActions({
       <button
         type="button"
         onClick={handlePrint}
-        className="h-9 px-3.5 rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:bg-slate-50 dark:hover:bg-zinc-800 text-xs font-bold text-[#0F172A] dark:text-white flex items-center gap-1.5 transition-colors interactive-tap shadow-2xs"
+        className="h-11 px-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B] hover:bg-[#F8FAFC] dark:hover:bg-[#334155] text-[13px] font-bold text-[#0F172A] dark:text-white flex items-center gap-2 transition-colors interactive-tap "
         title="طباعة التقرير أو حفظ كـ PDF"
       >
-        <Printer className="w-3.5 h-3.5 text-slate-500" />
+        <Printer className="w-3.5 h-3.5 text-[#64748B]" />
         <span className="hidden sm:inline">طباعة / حفظ PDF</span>
       </button>
     </div>

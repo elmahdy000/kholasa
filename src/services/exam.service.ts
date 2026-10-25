@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
-import { QuestionType, Difficulty } from "@prisma/client";
+import { QuestionType, Difficulty, Prisma } from "@prisma/client";
+import { getCurriculumScope, isSubjectInScope } from "@/lib/curriculum";
 
 export interface CustomExamCreateInput {
   subjectId?: string;
@@ -27,7 +28,7 @@ export class ExamService {
    * Fetch official and past exams
    */
   static async getExams(subjectId?: string) {
-    const where: any = {};
+    const where: Prisma.ExamWhereInput = { isCustom: false };
     if (subjectId) where.subjectId = subjectId;
 
     return prisma.exam.findMany({
@@ -90,7 +91,11 @@ export class ExamService {
 
     if (Array.isArray(questionIds) && questionIds.length > 0) {
       const explicitQuestions = await prisma.question.findMany({
-        where: { id: { in: questionIds } },
+        where: {
+          id: { in: questionIds },
+          status: "PUBLISHED",
+          ...(targetSubjectId ? { subjectId: targetSubjectId } : {}),
+        },
         select: { id: true, subjectId: true },
       });
 
@@ -108,7 +113,7 @@ export class ExamService {
       }
 
       // 1. Build question query filter
-      const questionWhere: any = {
+      const questionWhere: Prisma.QuestionWhereInput = {
         subjectId: targetSubjectId,
         status: "PUBLISHED",
       };
@@ -142,11 +147,32 @@ export class ExamService {
       throw new Error("تعذر تحديد المادة الدراسية للامتحان");
     }
 
-    // 4. Create Exam record
-    const subject = await prisma.subject.findUnique({
-      where: { id: targetSubjectId },
-      select: { name: true },
-    });
+    // 4. Validate the subject belongs to the student's curriculum
+    const [subject, student] = await Promise.all([
+      prisma.subject.findUnique({
+        where: { id: targetSubjectId },
+        select: {
+          id: true,
+          name: true,
+          isPublished: true,
+          gradeId: true,
+          systemId: true,
+          trackId: true,
+        },
+      }),
+      prisma.user.findUnique({
+        where: { id: userId },
+        select: { role: true, gradeId: true, systemId: true, trackId: true },
+      }),
+    ]);
+
+    if (!subject || !subject.isPublished) {
+      throw new Error("المادة غير متاحة لإنشاء امتحان");
+    }
+
+    if (!isSubjectInScope(getCurriculumScope(student), subject)) {
+      throw new Error("هذه المادة ليست ضمن صفك الدراسي");
+    }
 
     const isPractice = mode === "PRACTICE";
     const examTitle =
@@ -159,6 +185,8 @@ export class ExamService {
         subjectId: targetSubjectId,
         durationMinutes: Number(durationMinutes),
         isPractice,
+        isCustom: true,
+        createdById: userId,
         questions: {
           create: selected.map((q, idx) => ({
             questionId: q.id,
@@ -298,6 +326,11 @@ export class ExamService {
       throw new Error("محاولة الامتحان غير صالحة أو غير مصرح بها");
     }
 
+    // منع إعادة تسليم محاولة مكتملة (حماية نزاهة الدرجات)
+    if (attempt.isCompleted) {
+      throw new Error("تم تسليم هذه المحاولة مسبقاً، لا يمكن إعادة تسليمها أو تعديل إجاباتها");
+    }
+
     // Collect all exam questions (from exam.questions, or fallback to attempt.answers questions)
     const examQuestions = attempt.exam?.questions?.length
       ? attempt.exam.questions.map((eq) => eq.question)
@@ -306,7 +339,15 @@ export class ExamService {
     let objectiveQuestionsCount = 0;
     let correctCount = 0;
     const mistakesToRecord: string[] = [];
-    const studentAnswersToCreate: any[] = [];
+    const studentAnswersToCreate: {
+      attemptId: string;
+      questionId: string;
+      selectedOptionId: string | null;
+      essayText: string | null;
+      isCorrect: boolean | null;
+      score: number | null;
+      timeSpentSeconds: number;
+    }[] = [];
 
     const answersInput = submission?.answers;
 
@@ -354,11 +395,12 @@ export class ExamService {
       const percentage =
         objectiveQuestionsCount > 0
           ? Math.round((correctCount / objectiveQuestionsCount) * 1000) / 10
-          : 100;
+          : 0;
 
       const updatedAttempt = await prisma.$transaction(async (tx) => {
-        const updated = await tx.examAttempt.update({
-          where: { id: attemptId },
+        // قيد ذري: لا يكتمل التسليم إلا إذا كانت المحاولة غير مكتملة وقت التنفيذ
+        const claim = await tx.examAttempt.updateMany({
+          where: { id: attemptId, userId, isCompleted: false },
           data: {
             score: correctCount,
             percentage,
@@ -366,6 +408,14 @@ export class ExamService {
             isCompleted: true,
             completedAt: new Date(),
           },
+        });
+
+        if (claim.count === 0) {
+          throw new Error("تم تسليم هذه المحاولة مسبقاً، لا يمكن إعادة تسليمها أو تعديل إجاباتها");
+        }
+
+        const updated = await tx.examAttempt.findUniqueOrThrow({
+          where: { id: attemptId },
         });
 
         // Remove previous answers if any to prevent duplicates
@@ -429,10 +479,10 @@ export class ExamService {
       const percentage =
         objectiveQuestionsCount > 0
           ? Math.round((correctCount / objectiveQuestionsCount) * 1000) / 10
-          : 100;
+          : 0;
 
-      const updatedAttempt = await prisma.examAttempt.update({
-        where: { id: attemptId },
+      const completed = await prisma.examAttempt.updateMany({
+        where: { id: attemptId, userId, isCompleted: false },
         data: {
           score: correctCount,
           percentage,
@@ -440,6 +490,14 @@ export class ExamService {
           isCompleted: true,
           completedAt: new Date(),
         },
+      });
+
+      if (completed.count === 0) {
+        throw new Error("تم تسليم هذه المحاولة مسبقاً، لا يمكن إعادة تسليمها أو تعديل إجاباتها");
+      }
+
+      const updatedAttempt = await prisma.examAttempt.findUniqueOrThrow({
+        where: { id: attemptId },
       });
 
       for (const questionId of mistakesToRecord) {
@@ -630,7 +688,7 @@ export class ExamService {
    * List exams with analytics summary for Admin dashboard
    */
   static async getAdminExamsList(subjectId?: string) {
-    const where: any = {};
+    const where: Prisma.ExamWhereInput = {};
     if (subjectId && subjectId !== "all") {
       where.subjectId = subjectId;
     }
@@ -716,7 +774,7 @@ export class ExamService {
       });
     }
 
-    const where: any = {};
+    const where: Prisma.ExamAttemptWhereInput = {};
     if (examId) where.examId = examId;
     if (userId) where.userId = userId;
     if (search) {
@@ -801,7 +859,7 @@ export class ExamService {
     const { subjectId, unitId, lessonIds, type, difficulty } = params;
     if (!subjectId) return 0;
 
-    const where: any = {
+    const where: Prisma.QuestionWhereInput = {
       status: "PUBLISHED",
       subjectId,
     };
@@ -819,11 +877,11 @@ export class ExamService {
     }
 
     if (type && type !== "ALL" && type !== "MIXED") {
-      where.type = type;
+      where.type = type as QuestionType;
     }
 
     if (difficulty && difficulty !== "ALL") {
-      where.difficulty = difficulty;
+      where.difficulty = difficulty as Difficulty;
     }
 
     return prisma.question.count({ where });

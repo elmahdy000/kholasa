@@ -1,54 +1,48 @@
 import { NextResponse } from "next/server";
+import { z } from "zod";
 import { getCurrentUser, isStaff, canManageCurriculum } from "@/lib/auth";
-import { CurriculumService } from "@/services";
+import { forbidden, jsonError, parseJson } from "@/lib/http";
+import { CurriculumService } from "@/services/curriculum.service";
+import { AnalyticsService } from "@/services/analytics.service";
 
-// GET: List units by subjectId
+const createSchema = z.object({
+  subjectId: z.string().min(1),
+  title: z.string().trim().min(1).max(200),
+  description: z.string().max(2000).nullable().optional(),
+  order: z.coerce.number().int().min(0).max(100000).optional(),
+  isPublished: z.boolean().optional(),
+});
+
+// GET: List units by subjectId (paginated, default 50, max 100)
 export async function GET(req: Request) {
   try {
     const user = await getCurrentUser();
-    if (!user || !isStaff(user.role)) {
-      return NextResponse.json({ error: "غير مصرح لك بالوصول" }, { status: 403 });
-    }
+    if (!user || !isStaff(user.role)) throw forbidden("غير مصرح لك بالوصول");
 
     const { searchParams } = new URL(req.url);
     const subjectId = searchParams.get("subjectId") || undefined;
+    const page = Number(searchParams.get("page")) || 1;
+    const limit = Number(searchParams.get("limit")) || 50;
 
-    const units = await CurriculumService.getUnits(subjectId);
+    const units = await CurriculumService.getUnits(subjectId, page, limit);
     return NextResponse.json({ units });
   } catch (error) {
-    console.error("Failed to fetch units:", error);
-    return NextResponse.json({ error: "تعذر تحميل قائمة الوحدات" }, { status: 500 });
+    return jsonError(error);
   }
 }
 
 export async function POST(req: Request) {
   try {
     const user = await getCurrentUser();
-    if (!user || !canManageCurriculum(user.role)) {
-      return NextResponse.json({ error: "غير مصرح لك بالوصول" }, { status: 403 });
-    }
+    if (!user || !canManageCurriculum(user.role)) throw forbidden("غير مصرح لك بالوصول");
 
-    const body = await req.json().catch(() => ({}));
-    const { subjectId, title, description, order, isPublished } = body;
-
-    if (!subjectId || !title?.trim()) {
-      return NextResponse.json({ error: "يرجى تحديد المادة وعنوان الوحدة" }, { status: 400 });
-    }
-
-    const unit = await CurriculumService.createUnit({
-      subjectId,
-      title,
-      description,
-      order,
-      isPublished,
+    const body = await parseJson(req, createSchema);
+    const unit = await CurriculumService.createUnit(body);
+    await AnalyticsService.logAuditAction(user.id, "CREATE", "unit", unit.id, {
+      title: unit.title,
     });
-
     return NextResponse.json({ success: true, unit });
-  } catch (error: any) {
-    console.error("Failed to create unit:", error);
-    return NextResponse.json(
-      { error: error?.message || "تعذر إنشاء الوحدة" },
-      { status: 500 }
-    );
+  } catch (error) {
+    return jsonError(error);
   }
 }

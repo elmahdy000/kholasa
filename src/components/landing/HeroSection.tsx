@@ -5,16 +5,11 @@ import Link from "next/link";
 import {
   Sparkles,
   ArrowLeft,
-  BookOpen,
-  Brain,
   Zap,
   CheckCircle2,
   Flame,
-  Award,
-  RotateCcw,
   Lightbulb,
   Check,
-  X,
 } from "lucide-react";
 
 export function HeroSection() {
@@ -36,85 +31,85 @@ export function HeroSection() {
   ];
 
   return (
-    <section className="relative overflow-hidden pt-12 pb-20 sm:pt-20 sm:pb-28 bg-[#F8FAFC] dark:bg-[#09090B] bg-grid-pattern">
+    <section className="relative overflow-hidden pt-12 pb-20 sm:pt-20 sm:pb-28 bg-[#F8FAFC] dark:bg-[#0F172A] bg-grid-pattern">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="grid lg:grid-cols-12 gap-12 lg:gap-8 items-center">
           {/* Left / Main Text Column (7 cols) */}
           <div className="lg:col-span-7 text-right space-y-6 sm:space-y-8">
             {/* Top Pill Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 shadow-2xs">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-xs font-bold text-[#4F46E5] dark:text-indigo-400">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] ">
+              <span className="w-2 h-2 rounded-full bg-[#059669] animate-pulse" />
+              <span className="text-[13px] font-bold text-[#4F46E5] dark:text-[#6366F1]">
                 المنصة التعليمية الشاملة لطلاب الثانوية العامة 2026
               </span>
             </div>
 
             {/* Massive Bold Headline */}
-            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-[#0F172A] dark:text-white leading-[1.25] tracking-tight">
+            <h1 className="text-2xl sm:text-3xl sm:text-4xl lg:text-4xl font-bold text-[#0F172A] dark:text-white leading-[1.25] tracking-tight">
               افهم المنهج من الجذور..{" "}
               <br className="hidden sm:inline" />
               وراجع{" "}
-              <span className="text-[#D97706] dark:text-amber-400">
+              <span className="text-[#D97706] dark:text-[#FBBF24]">
                 بالزتونة الذهبية
               </span>
             </h1>
 
             {/* Subtitle */}
-            <p className="text-sm sm:text-base lg:text-lg text-[#475569] dark:text-[#94A3B8] leading-relaxed max-w-xl font-medium">
+            <p className="text-sm sm:text-base lg:text-lg text-[#64748B] dark:text-[#94A3B8] leading-relaxed max-w-xl font-medium">
               شروحات مفككة خطوة بخطوة، كبسولات "الزتونة" المركزة للمراجعة في دقائق، خرائط ذهنية للعلاقات، وبنك أسئلة متكيف يفسر سبب كل اختيار مع ركن خاص بأخطائك لضمان الدرجة النهائية.
             </p>
 
             {/* CTAs */}
-            <div className="flex flex-wrap items-center gap-3.5 pt-2">
+            <div className="flex flex-wrap items-center gap-4 pt-2">
               <Link
                 href="/register"
-                className="h-12 px-8 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-sm font-bold flex items-center gap-2.5 shadow-sm transition-colors active:scale-95"
+                className="h-12 px-8 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-sm font-bold flex items-center gap-3 shadow-sm transition-colors active:opacity-80"
               >
-                <Sparkles className="w-4 h-4 text-amber-300" />
+                <Sparkles className="w-4 h-4 text-[#D97706]" />
                 <span>ابدأ مذاكرتك مجانًا</span>
                 <ArrowLeft className="w-4 h-4 mr-1" />
               </Link>
 
               <Link
                 href="/exams/builder"
-                className="h-12 px-6 rounded-xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 text-[#0F172A] dark:text-white text-sm font-bold flex items-center gap-2 hover:border-[#4F46E5] shadow-2xs transition-all active:scale-95"
+                className="h-12 px-6 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] text-[#0F172A] dark:text-white text-sm font-bold flex items-center gap-2 hover:border-[#4F46E5]  transition-all active:opacity-80"
               >
-                <Zap className="w-4 h-4 text-amber-500 fill-amber-500" />
+                <Zap className="w-4 h-4 text-[#D97706] fill-[#D97706]" />
                 <span>جرّب بنك الأسئلة</span>
               </Link>
             </div>
 
-            {/* Live Trust Metrics Strip */}
-            <div className="pt-6 border-t border-slate-200 dark:border-zinc-800 grid grid-cols-2 sm:grid-cols-4 gap-4">
-              <div className="space-y-0.5">
-                <span className="text-xl sm:text-2xl font-black text-[#0F172A] dark:text-white block">
-                  +15,000
+            {/* Trust Strip */}
+            <div className="pt-6 border-t border-[#E2E8F0] dark:border-[#334155] grid grid-cols-2 sm:grid-cols-4 gap-4">
+              <div className="space-y-1">
+                <span className="text-sm font-bold text-[#0F172A] dark:text-white block">
+                  شرح لكل سؤال
                 </span>
-                <span className="text-[11px] text-slate-500 dark:text-zinc-400 font-bold block">
-                  سؤال بتفسير شامل
-                </span>
-              </div>
-              <div className="space-y-0.5">
-                <span className="text-xl sm:text-2xl font-black text-[#0F172A] dark:text-white block">
-                  98%
-                </span>
-                <span className="text-[11px] text-slate-500 dark:text-zinc-400 font-bold block">
-                  نسبة استيعاب المفاهيم
+                <span className="text-[13px] text-[#64748B] dark:text-[#94A3B8] font-bold block">
+                  تفسير كامل لكل إجابة
                 </span>
               </div>
-              <div className="space-y-0.5">
-                <span className="text-xl sm:text-2xl font-black text-[#D97706] dark:text-amber-400 block">
-                  دفعة 2026
+              <div className="space-y-1">
+                <span className="text-sm font-bold text-[#0F172A] dark:text-white block">
+                  راجع غلطاتك
                 </span>
-                <span className="text-[11px] text-slate-500 dark:text-zinc-400 font-bold block">
-                  مناهج معتمدة بالكامل
+                <span className="text-[13px] text-[#64748B] dark:text-[#94A3B8] font-bold block">
+                  أخطاؤك محفوظة في ركن «غلطاتي»
                 </span>
               </div>
-              <div className="space-y-0.5">
-                <span className="text-xl sm:text-2xl font-black text-emerald-600 dark:text-emerald-400 block">
+              <div className="space-y-1">
+                <span className="text-xl sm:text-2xl font-bold text-[#D97706] dark:text-[#FBBF24] block">
+                  مناهج شاملة
+                </span>
+                <span className="text-[13px] text-[#64748B] dark:text-[#94A3B8] font-bold block">
+                  تغطي المسارات الدراسية
+                </span>
+              </div>
+              <div className="space-y-1">
+                <span className="text-xl sm:text-2xl font-bold text-[#059669] dark:text-[#34D399] block">
                   PWA
                 </span>
-                <span className="text-[11px] text-slate-500 dark:text-zinc-400 font-bold block">
+                <span className="text-[13px] text-[#64748B] dark:text-[#94A3B8] font-bold block">
                   يعمل أوفلاين على الهاتف
                 </span>
               </div>
@@ -124,50 +119,50 @@ export function HeroSection() {
           {/* Right Product Preview Mockup (5 cols) */}
           <div className="lg:col-span-5 relative">
             {/* Floating Achievement 1 (Top Left) */}
-            <div className="absolute -top-4 -left-4 sm:-left-6 z-20 px-3.5 py-2 rounded-xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 shadow-md flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-950/40 text-amber-600 flex items-center justify-center font-bold">
-                <Flame className="w-4 h-4 fill-amber-500" />
+            <div className="absolute -top-4 -left-4 sm:-left-6 z-20 px-4 py-2 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] shadow-sm flex items-center gap-2">
+              <div className="w-11 h-11 rounded-lg bg-[#D97706]/10 dark:bg-[#1E293B] text-[#D97706] flex items-center justify-center font-bold">
+                <Flame className="w-4 h-4 fill-[#D97706]" />
               </div>
               <div>
-                <span className="text-xs font-bold text-[#0F172A] dark:text-white block">
-                  5 أيام متواصلة
+                <span className="text-[13px] font-bold text-[#0F172A] dark:text-white block">
+                  تحدي يومي
                 </span>
-                <span className="text-[10px] text-amber-600 dark:text-amber-400 font-bold flex items-center gap-1">
-                  <Zap className="w-3 h-3 fill-amber-500 text-amber-500" />
-                  <span>450 XP مكتسبة</span>
+                <span className="text-[13px] text-[#D97706] dark:text-[#FBBF24] font-bold flex items-center gap-1">
+                  <Zap className="w-3 h-3 fill-[#D97706] text-[#D97706]" />
+                  <span>سؤال جديد كل يوم</span>
                 </span>
               </div>
             </div>
 
             {/* Floating Achievement 2 (Bottom Right) */}
-            <div className="absolute -bottom-4 -right-4 sm:-right-6 z-20 px-3.5 py-2 rounded-xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 shadow-md flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 flex items-center justify-center font-bold">
+            <div className="absolute -bottom-4 -right-4 sm:-right-6 z-20 px-4 py-2 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] shadow-sm flex items-center gap-2">
+              <div className="w-11 h-11 rounded-lg bg-[#059669]/10 dark:bg-[#1E293B] text-[#059669] flex items-center justify-center font-bold">
                 <CheckCircle2 className="w-4 h-4" />
               </div>
               <div>
-                <span className="text-xs font-bold text-[#0F172A] dark:text-white block">
-                  ركن غلطاتي: 100%
+                <span className="text-[13px] font-bold text-[#0F172A] dark:text-white block">
+                  ركن غلطاتي
                 </span>
-                <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold block">
-                  تم علاج كافة الأخطاء
+                <span className="text-[13px] text-[#059669] dark:text-[#34D399] font-bold block">
+                  مراجعة مستمرة للأخطاء
                 </span>
               </div>
             </div>
 
             {/* Main Interactive Preview Card */}
-            <div className="p-6 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 shadow-xl relative overflow-hidden space-y-4 text-right">
+            <div className="p-6 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] shadow-sm relative overflow-hidden space-y-4 text-right">
               {/* Card Header */}
-              <div className="flex items-center justify-between border-b border-slate-100 dark:border-zinc-800 pb-3">
+              <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#334155] pb-3">
                 <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-rose-500" />
-                  <span className="w-2.5 h-2.5 rounded-full bg-amber-500" />
-                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#DC2626]" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#D97706]" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#059669]" />
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="px-2.5 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/40 text-[#4F46E5] dark:text-indigo-400 text-[10px] font-bold">
+                  <span className="px-3 py-1 rounded-md bg-[#4F46E5]/10 dark:bg-[#1E293B] text-[#4F46E5] dark:text-[#6366F1] text-[13px] font-bold">
                     الفيزياء • قوانين نيوتن
                   </span>
-                  <span className="text-[10px] text-slate-400 font-bold">
+                  <span className="text-[13px] text-[#94A3B8] font-bold">
                     معاينة حية
                   </span>
                 </div>
@@ -175,10 +170,10 @@ export function HeroSection() {
 
               {/* Question Statement */}
               <div className="space-y-1">
-                <span className="text-[10px] font-bold text-[#D97706] dark:text-amber-400 block">
+                <span className="text-[13px] font-bold text-[#D97706] dark:text-[#FBBF24] block">
                   سؤال تطبيقي من الامتحان الوزاري:
                 </span>
-                <h4 className="text-sm sm:text-base font-black text-[#0F172A] dark:text-white leading-relaxed">
+                <h4 className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-white leading-relaxed">
                   إذا زادت القوة المؤثرة على جسم كتلته ثابتة إلى الضعف، فإن العجلة التي يتحرك بها...
                 </h4>
               </div>
@@ -188,17 +183,17 @@ export function HeroSection() {
                 {demoOptions.map((opt) => {
                   const isSelected = demoSelected === opt.id;
                   let style =
-                    "bg-slate-50 dark:bg-zinc-900 border-slate-200 dark:border-zinc-800 hover:border-[#4F46E5]";
+                    "bg-[#F8FAFC] dark:bg-[#1E293B] border-[#E2E8F0] dark:border-[#334155] hover:border-[#4F46E5]";
 
                   if (demoSelected !== null) {
                     if (opt.isCorrect) {
                       style =
-                        "bg-emerald-50 dark:bg-emerald-950/40 border-emerald-600 text-emerald-900 dark:text-emerald-200 font-black";
+                        "bg-[#059669]/10 dark:bg-[#1E293B] border-[#059669] text-[#059669] dark:text-[#34D399] font-bold";
                     } else if (isSelected && !opt.isCorrect) {
                       style =
-                        "bg-rose-50 dark:bg-rose-950/40 border-rose-600 text-rose-900 dark:text-rose-200 font-bold";
+                        "bg-[#DC2626]/10 dark:bg-[#1E293B] border-[#DC2626] text-[#DC2626] dark:text-[#F87171] font-bold";
                     } else {
-                      style = "opacity-50 bg-slate-50 dark:bg-zinc-900 border-slate-200";
+                      style = "opacity-50 bg-[#F8FAFC] dark:bg-[#1E293B] border-[#E2E8F0]";
                     }
                   }
 
@@ -207,19 +202,19 @@ export function HeroSection() {
                       key={opt.id}
                       type="button"
                       onClick={() => setDemoSelected(opt.id)}
-                      className={`w-full p-3 rounded-xl border text-xs text-right transition-all flex flex-col space-y-1.5 ${style}`}
+                      className={`w-full p-3 rounded-xl border text-[13px] text-right transition-all flex flex-col space-y-2 ${style}`}
                     >
                       <div className="flex items-center justify-between w-full">
                         <span className="font-bold">{opt.text}</span>
                         {demoSelected !== null && opt.isCorrect && (
-                          <span className="text-[10px] bg-emerald-600 text-white px-2 py-0.5 rounded-full font-bold flex items-center gap-1">
+                          <span className="text-[13px] bg-[#059669] text-white px-2 py-1 rounded-full font-bold flex items-center gap-1">
                             <Check className="w-3 h-3" />
                             <span>صحيح</span>
                           </span>
                         )}
                       </div>
                       {demoSelected !== null && isSelected && (
-                        <p className="text-[11px] leading-relaxed pt-1 border-t border-slate-200/60 dark:border-zinc-800">
+                        <p className="text-[13px] leading-relaxed pt-1 border-t border-[#E2E8F0]/60 dark:border-[#334155]">
                           {opt.explanation}
                         </p>
                       )}
@@ -230,13 +225,13 @@ export function HeroSection() {
 
               {/* Micro Tip */}
               {demoSelected === null ? (
-                <p className="text-[11px] text-center text-slate-400 font-medium pt-1">
+                <p className="text-[13px] text-center text-[#94A3B8] font-medium pt-1">
                   اختر أحد البديلين لمعاينة التفسير العلمي الفوري.
                 </p>
               ) : (
-                <div className="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/40 flex items-start gap-2 text-xs">
-                  <Lightbulb className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-                  <span className="text-[11px] text-amber-900 dark:text-amber-200 font-bold leading-relaxed">
+                <div className="p-3 rounded-xl bg-[#D97706]/10 dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#FBBF24]/40 flex items-start gap-2 text-[13px]">
+                  <Lightbulb className="w-4 h-4 text-[#D97706] shrink-0 mt-1" />
+                  <span className="text-[13px] text-[#D97706] dark:text-[#FBBF24] font-bold leading-relaxed">
                     سر الزتونة: كل سؤال في الخلاصة يحتوي على تعليل لماذا الإجابة صحيحة ولماذا باقي الخيارات خاطئة.
                   </span>
                 </div>

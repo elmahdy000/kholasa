@@ -16,6 +16,7 @@ import {
   GraduationCap,
 } from "@phosphor-icons/react";
 import { DailyChallengeCard } from "./DailyChallengeCard";
+import { formatArabicDays } from "@/lib/utils";
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 14 },
@@ -73,6 +74,8 @@ interface DashboardClientProps {
   userName?: string | null;
   completedLessonsCount: number;
   recentAttemptsCount: number;
+  averageScore?: number | null;
+  streakDays?: number;
   unresolvedMistakesCount: number;
   subjects: SubjectItem[];
   continueLesson?: ContinueLessonItem | null;
@@ -84,6 +87,8 @@ export function DashboardClient({
   userName,
   completedLessonsCount,
   recentAttemptsCount,
+  averageScore = null,
+  streakDays = 0,
   unresolvedMistakesCount,
   subjects,
   continueLesson,
@@ -110,16 +115,16 @@ export function DashboardClient({
       color: "#DC2626",
       value: unresolvedMistakesCount,
       label: "أخطاء للمراجعة",
-      textColor: "text-rose-600 dark:text-rose-400",
+      textColor: "text-[#DC2626] dark:text-[#F87171]",
       subtext: "تحتاج تركيز",
     },
     {
       icon: Trophy,
       color: "#D97706",
-      value: "100%",
+      value: averageScore !== null ? `${averageScore}%` : "—",
       label: "معدل الاستيعاب",
-      textColor: "text-amber-600 dark:text-amber-400",
-      subtext: "مستوى الأداء العام",
+      textColor: "text-[#D97706] dark:text-[#FBBF24]",
+      subtext: "متوسط نتائج اختباراتك",
     },
   ];
 
@@ -130,7 +135,7 @@ export function DashboardClient({
       href: "/subjects",
       icon: BookOpen,
       badge: `${subjects.length} مواد`,
-      color: "text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/40 border-indigo-200/60 dark:border-indigo-900/40",
+      color: "text-[#4F46E5] dark:text-[#6366F1] bg-[#4F46E5]/10 dark:bg-[#1E293B] border-[#E2E8F0]/60 dark:border-[#6366F1]/40",
     },
     {
       title: "اختبار سريع 5 دقائق",
@@ -138,7 +143,7 @@ export function DashboardClient({
       href: "/exams/builder",
       icon: Lightning,
       badge: "فوري",
-      color: "text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200/60 dark:border-emerald-900/40",
+      color: "text-[#059669] dark:text-[#34D399] bg-[#059669]/10 dark:bg-[#1E293B] border-[#E2E8F0]/60 dark:border-[#34D399]/40",
     },
     {
       title: "الزتونة الذهبية",
@@ -146,7 +151,7 @@ export function DashboardClient({
       href: "/subjects",
       icon: Sparkle,
       badge: "شامل",
-      color: "text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 border-amber-200/60 dark:border-amber-900/40",
+      color: "text-[#D97706] dark:text-[#FBBF24] bg-[#D97706]/10 dark:bg-[#1E293B] border-[#E2E8F0]/60 dark:border-[#FBBF24]/40",
     },
     {
       title: "ركن غلطاتي",
@@ -154,8 +159,8 @@ export function DashboardClient({
       href: "/mistakes",
       icon: ArrowCounterClockwise,
       badge: `${unresolvedMistakesCount} أخطاء`,
-      badgeColor: unresolvedMistakesCount > 0 ? "bg-rose-500 text-white" : undefined,
-      color: "text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/40 border-rose-200/60 dark:border-rose-900/40",
+      badgeColor: unresolvedMistakesCount > 0 ? "bg-[#DC2626] text-white" : undefined,
+      color: "text-[#DC2626] dark:text-[#F87171] bg-[#DC2626]/10 dark:bg-[#1E293B] border-[#E2E8F0]/60 dark:border-[#F87171]/40",
     },
     {
       title: "لوحة الشرف",
@@ -163,7 +168,7 @@ export function DashboardClient({
       href: "/leaderboard",
       icon: Trophy,
       badge: "تنافسي",
-      color: "text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/40 border-purple-200/60 dark:border-purple-900/40",
+      color: "text-[#4F46E5] dark:text-[#6366F1] bg-[#4F46E5]/10 dark:bg-[#1E293B] border-[#E2E8F0]/60 dark:border-[#6366F1]/40",
     },
   ];
 
@@ -174,50 +179,52 @@ export function DashboardClient({
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.25 }}
-        className="rounded-2xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 sm:p-7 relative overflow-hidden shadow-2xs"
+        className="rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] p-6 sm:p-7 relative overflow-hidden "
       >
         <div className="absolute inset-0 bg-grid-pattern opacity-30 pointer-events-none" />
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5">
-          <div className="space-y-2.5">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 text-xs font-bold text-zinc-700 dark:text-zinc-300">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span>دفعة 2026 • خطتك الدراسية مستمرة بنشاط</span>
-              <span className="inline-flex items-center gap-1 font-mono text-[11px] text-amber-600 dark:text-amber-400 border-r border-zinc-300 dark:border-zinc-700 pr-2 mr-1">
-                <Fire className="w-3.5 h-3.5 fill-current" />
-                <span>5 أيام</span>
-              </span>
+          <div className="space-y-3">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0]/80 dark:border-[#334155] text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC]">
+              <span className="w-2 h-2 rounded-full bg-[#059669] animate-pulse" />
+              <span>منصة الخلاصة • مسارك الدراسي</span>
+              {streakDays > 0 && (
+                <span className="inline-flex items-center gap-1 font-mono text-[13px] text-[#D97706] dark:text-[#FBBF24] border-r border-[#E2E8F0] dark:border-[#334155] pr-2 mr-1">
+                  <Fire className="w-3.5 h-3.5 fill-current" />
+                  <span>{formatArabicDays(streakDays)}</span>
+                </span>
+              )}
             </div>
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-zinc-900 dark:text-zinc-100 leading-tight">
-              أهلاً بك، {userName || "طالبنا العزيز"} 👋
+            <h1 className="text-2xl sm:text-2xl sm:text-3xl lg:text-4xl font-bold text-[#0F172A] dark:text-[#F8FAFC] leading-tight">
+              أهلاً بك، {userName || "طالبنا العزيز"}
             </h1>
-            <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 font-medium max-w-lg leading-relaxed">
+            <p className="text-[13px] sm:text-sm text-[#64748B] dark:text-[#94A3B8] font-medium max-w-lg leading-relaxed">
               افهم المفاهيم خطوة بخطوة بالخلاصة المركزة، واختبر استيعابك فوراً.
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2.5">
+          <div className="flex flex-wrap items-center gap-3">
             <button
               type="button"
               onClick={() => {
                 window.dispatchEvent(new CustomEvent("kholasa_open_entrance_exam"));
               }}
-              className="h-10 px-4 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/60 text-amber-800 dark:text-amber-200 text-xs font-bold flex items-center gap-2 hover:bg-amber-100 dark:hover:bg-amber-900/50 transition-all shadow-2xs active:scale-95"
+              className="h-11 px-4 rounded-xl bg-[#D97706]/10 dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#FBBF24]/60 text-[#D97706] dark:text-[#FBBF24] text-[13px] font-bold flex items-center gap-2 hover:bg-[#D97706]/10 dark:hover:bg-[#1E293B] transition-all  active:opacity-80"
             >
-              <Fire className="w-3.5 h-3.5 text-amber-500" weight="fill" />
+              <Fire className="w-3.5 h-3.5 text-[#D97706]" weight="fill" />
               <span>تحدي الدخول اليومي</span>
             </button>
             <Link
               href="/exams/builder"
-              className="h-10 px-5 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-xs font-bold flex items-center gap-2 transition-all shadow-sm active:scale-95"
+              className="h-11 px-5 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[13px] font-bold flex items-center gap-2 transition-all shadow-sm active:opacity-80"
             >
-              <Lightning className="w-3.5 h-3.5 text-amber-300" weight="fill" />
+              <Lightning className="w-3.5 h-3.5 text-[#D97706]" weight="fill" />
               <span>اختبار مخصص 5 دقائق</span>
             </Link>
             <Link
               href="/mistakes"
-              className="h-10 px-4 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 text-xs font-bold flex items-center gap-2 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all shadow-2xs active:scale-95"
+              className="h-11 px-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[#0F172A] dark:text-[#F8FAFC] text-[13px] font-bold flex items-center gap-2 hover:border-[#4F46E5]/40 dark:hover:border-[#4F46E5]/60 transition-all  active:opacity-80"
             >
-              <ArrowCounterClockwise className="w-3.5 h-3.5 text-rose-500" weight="bold" />
+              <ArrowCounterClockwise className="w-3.5 h-3.5 text-[#DC2626]" weight="bold" />
               <span>ركن غلطاتي ({unresolvedMistakesCount})</span>
             </Link>
           </div>
@@ -230,32 +237,32 @@ export function DashboardClient({
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.25, delay: 0.05 }}
-          className="rounded-2xl p-5 sm:p-6 bg-gradient-to-r from-indigo-500/[0.04] to-purple-500/[0.02] dark:from-indigo-500/[0.08] dark:to-transparent bg-white dark:bg-zinc-950 border-2 border-indigo-500/20 dark:border-indigo-500/30 shadow-2xs"
+          className="rounded-xl p-5 sm:p-6 bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] "
         >
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="flex items-start gap-4">
-              <div className="w-12 h-12 rounded-2xl bg-[#4F46E5] text-white flex items-center justify-center shrink-0 shadow-sm mt-0.5">
-                <Play className="w-5 h-5 fill-current ml-0.5" />
+              <div className="w-12 h-12 rounded-xl bg-[#4F46E5] text-white flex items-center justify-center shrink-0 shadow-sm mt-1">
+                <Play className="w-5 h-5 fill-current ml-1" />
               </div>
-              <div className="space-y-1.5">
+              <div className="space-y-2">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-[11px] font-bold text-[#4F46E5] dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/60 px-2.5 py-0.5 rounded-md border border-indigo-200/50 dark:border-indigo-900/50">
+                  <span className="text-[13px] font-bold text-[#4F46E5] dark:text-[#6366F1] bg-[#4F46E5]/10 dark:bg-[#1E293B] px-3 py-1 rounded-md border border-[#E2E8F0]/50 dark:border-[#6366F1]/50">
                     واصل من حيث توقفت
                   </span>
-                  <span className="text-xs font-bold text-zinc-500 dark:text-zinc-400">
+                  <span className="text-[13px] font-bold text-[#64748B] dark:text-[#94A3B8]">
                     {continueLesson.unit.subject.name} • {continueLesson.unit.title}
                   </span>
                 </div>
-                <h2 className="text-base sm:text-xl font-black text-zinc-900 dark:text-zinc-100">
+                <h2 className="text-base sm:text-xl font-bold text-[#0F172A] dark:text-[#F8FAFC]">
                   {continueLesson.title}
                 </h2>
-                <div className="flex items-center gap-3 text-xs text-zinc-500 dark:text-zinc-400">
-                  <span className="flex items-center gap-1 font-mono text-[11px]">
+                <div className="flex items-center gap-3 text-[13px] text-[#64748B] dark:text-[#94A3B8]">
+                  <span className="flex items-center gap-1 font-mono text-[13px]">
                     <Clock className="w-3.5 h-3.5" />
                     <span>{continueLesson.durationMinutes} دقيقة</span>
                   </span>
                   <span>•</span>
-                  <span className="text-amber-600 dark:text-amber-400 font-bold flex items-center gap-1">
+                  <span className="text-[#D97706] dark:text-[#FBBF24] font-bold flex items-center gap-1">
                     <Sparkle className="w-3.5 h-3.5" />
                     <span>الزتونة جاهزة للمراجعة</span>
                   </span>
@@ -265,7 +272,7 @@ export function DashboardClient({
 
             <Link
               href={`/lessons/${continueLesson.id}`}
-              className="h-11 px-6 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-xs font-bold flex items-center justify-center gap-2 shadow-sm transition-all shrink-0 active:scale-95"
+              className="h-11 px-6 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[13px] font-bold flex items-center justify-center gap-2 shadow-sm transition-all shrink-0 active:opacity-80"
             >
               <span>استكمال المذاكرة الآن</span>
               <ArrowLeft className="w-3.5 h-3.5" weight="bold" />
@@ -277,10 +284,10 @@ export function DashboardClient({
       {/* 3. Step 2 in Flow: Quick Action Hub (5 Clear Commands) */}
       <section className="space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm sm:text-base font-bold text-zinc-900 dark:text-zinc-100">
+          <h2 className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-[#F8FAFC]">
             محطات الوصول السريع
           </h2>
-          <span className="text-xs text-zinc-500 dark:text-zinc-400 font-medium">
+          <span className="text-[13px] text-[#64748B] dark:text-[#94A3B8] font-medium">
             كل أدواتك في متناول يدك
           </span>
         </div>
@@ -292,19 +299,19 @@ export function DashboardClient({
               <Link
                 key={i}
                 href={action.href}
-                className="group p-4 rounded-xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 shadow-2xs transition-all flex flex-col justify-between space-y-3 text-right hover:-translate-y-0.5"
+                className="group p-4 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] hover:border-[#4F46E5]/40 dark:hover:border-[#4F46E5]/60  transition-all flex flex-col justify-between space-y-3 text-right "
               >
                 <div className="flex items-center justify-between">
                   <div
-                    className={`w-9 h-9 rounded-xl flex items-center justify-center border ${action.color}`}
+                    className={`w-11 h-11 rounded-xl flex items-center justify-center border ${action.color}`}
                   >
                     <Icon className="w-4.5 h-4.5" weight="bold" />
                   </div>
                   {action.badge && (
                     <span
-                      className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                      className={`text-[13px] font-bold px-2 py-1 rounded-full ${
                         action.badgeColor ||
-                        "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300"
+                        "bg-[#F8FAFC] dark:bg-[#334155] text-[#64748B] dark:text-[#F8FAFC]"
                       }`}
                     >
                       {action.badge}
@@ -312,10 +319,10 @@ export function DashboardClient({
                   )}
                 </div>
                 <div>
-                  <h3 className="text-xs sm:text-sm font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-[#4F46E5] dark:group-hover:text-indigo-400 transition-colors">
+                  <h3 className="text-[13px] sm:text-sm font-bold text-[#0F172A] dark:text-[#F8FAFC] group-hover:text-[#4F46E5] dark:group-hover:text-[#6366F1] transition-colors">
                     {action.title}
                   </h3>
-                  <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">
+                  <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8] mt-1">
                     {action.desc}
                   </p>
                 </div>
@@ -337,20 +344,20 @@ export function DashboardClient({
         variants={staggerContainer}
         initial="hidden"
         animate="visible"
-        className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4"
+        className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-4"
       >
         {stats.map((stat, i) => (
           <motion.div
             key={i}
             variants={fadeInUp}
-            className="p-5 rounded-2xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 shadow-2xs hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors flex flex-col justify-between space-y-3"
+            className="p-5 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]  hover:border-[#4F46E5]/40 dark:hover:border-[#4F46E5]/60 transition-colors flex flex-col justify-between space-y-3"
           >
             <div className="flex items-center justify-between">
-              <span className="text-xs text-zinc-600 dark:text-zinc-400 font-bold block">
+              <span className="text-[13px] text-[#64748B] dark:text-[#94A3B8] font-bold block">
                 {stat.label}
               </span>
               <div
-                className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+                className="w-11 h-11 rounded-lg flex items-center justify-center shrink-0"
                 style={{ backgroundColor: `${stat.color}15`, color: stat.color }}
               >
                 <stat.icon className="w-4 h-4" weight="bold" />
@@ -358,13 +365,13 @@ export function DashboardClient({
             </div>
             <div>
               <span
-                className={`text-2xl sm:text-3xl font-black block tracking-tight ${
-                  stat.textColor || "text-zinc-900 dark:text-zinc-100"
+                className={`text-2xl sm:text-2xl sm:text-3xl font-bold block tracking-tight ${
+                  stat.textColor || "text-[#0F172A] dark:text-[#F8FAFC]"
                 }`}
               >
                 {stat.value}
               </span>
-              <span className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5 block">
+              <span className="text-[13px] text-[#64748B] dark:text-[#94A3B8] mt-1 block">
                 {stat.subtext}
               </span>
             </div>
@@ -376,16 +383,16 @@ export function DashboardClient({
       <section className="space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <h2 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-zinc-100">
+            <h2 className="text-base sm:text-lg font-bold text-[#0F172A] dark:text-[#F8FAFC]">
               المواد الدراسية المقررة
             </h2>
-            <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">
+            <span className="px-2 py-1 rounded-full text-[13px] font-mono font-bold bg-[#F8FAFC] dark:bg-[#334155] text-[#64748B] dark:text-[#94A3B8]">
               {subjects.length} مواد
             </span>
           </div>
           <Link
             href="/subjects"
-            className="text-xs font-bold text-[#4F46E5] dark:text-indigo-400 hover:underline flex items-center gap-1"
+            className="text-[13px] font-bold text-[#4F46E5] dark:text-[#6366F1] hover:underline flex items-center gap-1"
           >
             <span>عرض كل المواد</span>
             <ArrowLeft className="w-3.5 h-3.5" weight="bold" />
@@ -405,26 +412,26 @@ export function DashboardClient({
 
             return (
               <motion.div key={subj.id} variants={fadeInUp}>
-                <div className="group p-5 rounded-2xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 shadow-2xs transition-all flex flex-col justify-between space-y-4 h-full">
+                <div className="group p-5 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] hover:border-[#4F46E5]/40 dark:hover:border-[#4F46E5]/60  transition-all flex flex-col justify-between space-y-4 h-full">
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
                       <div
-                        className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-base shadow-2xs"
+                        className="w-11 h-11 rounded-xl flex items-center justify-center text-white font-bold text-base "
                         style={{ backgroundColor: subj.color || "#4F46E5" }}
                       >
                         {subj.name[0]}
                       </div>
-                      <span className="text-[11px] font-mono font-bold text-zinc-500 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-900 px-2.5 py-0.5 rounded-md border border-zinc-200/60 dark:border-zinc-800">
+                      <span className="text-[13px] font-mono font-bold text-[#64748B] dark:text-[#94A3B8] bg-[#F8FAFC] dark:bg-[#1E293B] px-3 py-1 rounded-md border border-[#E2E8F0]/60 dark:border-[#334155]">
                         {subj.unitsCount} وحدات
                       </span>
                     </div>
 
                     <div>
-                      <h3 className="text-sm sm:text-base font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-[#4F46E5] dark:group-hover:text-indigo-400 transition-colors">
+                      <h3 className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-[#F8FAFC] group-hover:text-[#4F46E5] dark:group-hover:text-[#6366F1] transition-colors">
                         {subj.name}
                       </h3>
                       {subj.description && (
-                        <p className="text-xs text-zinc-600 dark:text-zinc-400 line-clamp-2 mt-1 leading-relaxed">
+                        <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8] line-clamp-2 mt-1 leading-relaxed">
                           {subj.description}
                         </p>
                       )}
@@ -432,17 +439,17 @@ export function DashboardClient({
 
                     {/* Progress Bar */}
                     <div className="space-y-1 pt-1">
-                      <div className="flex items-center justify-between text-[11px] text-zinc-500 dark:text-zinc-400 font-mono">
+                      <div className="flex items-center justify-between text-[13px] text-[#64748B] dark:text-[#94A3B8] font-mono">
                         <span>
                           {completed} من {subj.totalLessons} دروس مكتملة
                         </span>
-                        <span className="font-bold text-zinc-700 dark:text-zinc-300">
+                        <span className="font-bold text-[#0F172A] dark:text-[#F8FAFC]">
                           {progress}%
                         </span>
                       </div>
-                      <div className="w-full h-1.5 rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
+                      <div className="w-full h-1.5 rounded-full bg-[#F8FAFC] dark:bg-[#334155] overflow-hidden">
                         <div
-                          className="h-full rounded-full bg-[#4F46E5] dark:bg-indigo-500 transition-all duration-500"
+                          className="h-full rounded-full bg-[#4F46E5] dark:bg-[#6366F1] transition-all duration-500"
                           style={{ width: `${progress}%` }}
                         />
                       </div>
@@ -450,18 +457,18 @@ export function DashboardClient({
                   </div>
 
                   {/* Actions Bar */}
-                  <div className="pt-3 border-t border-zinc-100 dark:border-zinc-800/80 flex items-center justify-between text-xs">
+                  <div className="pt-3 border-t border-[#E2E8F0] dark:border-[#334155]/80 flex items-center justify-between text-[13px]">
                     <Link
                       href={`/exams/builder?subjectId=${subj.id}`}
-                      className="text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 flex items-center gap-1 font-medium"
+                      className="text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-[#F8FAFC] flex items-center gap-1 font-medium"
                     >
-                      <Lightning className="w-3.5 h-3.5 text-amber-500" weight="fill" />
+                      <Lightning className="w-3.5 h-3.5 text-[#D97706]" weight="fill" />
                       <span>اختبار سريع</span>
                     </Link>
 
                     <Link
                       href={`/subjects/${subj.id}`}
-                      className="text-[#4F46E5] dark:text-indigo-400 font-bold flex items-center gap-1 group-hover:-translate-x-1 transition-transform"
+                      className="text-[#4F46E5] dark:text-[#6366F1] font-bold flex items-center gap-1"
                     >
                       <span>فتح المادة</span>
                       <ArrowLeft className="w-3.5 h-3.5" weight="bold" />
@@ -478,12 +485,12 @@ export function DashboardClient({
       {recentExams.length > 0 && (
         <section className="space-y-3">
           <div className="flex items-center justify-between">
-            <h2 className="text-sm sm:text-base font-bold text-zinc-900 dark:text-zinc-100">
+            <h2 className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-[#F8FAFC]">
               آخر نتائج الاختبارات
             </h2>
             <Link
               href="/exams/builder"
-              className="text-xs font-bold text-[#4F46E5] dark:text-indigo-400 hover:underline"
+              className="text-[13px] font-bold text-[#4F46E5] dark:text-[#6366F1] hover:underline"
             >
               ابدأ اختباراً جديداً
             </Link>
@@ -494,24 +501,24 @@ export function DashboardClient({
               <Link
                 key={exam.id}
                 href={`/exams/${exam.id}/results`}
-                className="p-4 rounded-xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 shadow-2xs transition-colors flex items-center justify-between"
+                className="p-4 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] hover:border-[#4F46E5]/40 dark:hover:border-[#4F46E5]/60  transition-colors flex items-center justify-between"
               >
                 <div>
-                  <h3 className="text-xs font-bold text-zinc-900 dark:text-zinc-100 line-clamp-1">
+                  <h3 className="text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC] line-clamp-1">
                     {exam.title}
                   </h3>
-                  <span className="text-[11px] text-zinc-500 dark:text-zinc-400">
+                  <span className="text-[13px] text-[#64748B] dark:text-[#94A3B8]">
                     {exam.totalQuestions} أسئلة
                   </span>
                 </div>
                 <div className="text-left">
                   <span
-                    className={`text-sm font-black font-mono ${
+                    className={`text-sm font-bold font-mono ${
                       exam.percentage >= 80
-                        ? "text-emerald-600 dark:text-emerald-400"
+                        ? "text-[#059669] dark:text-[#34D399]"
                         : exam.percentage >= 50
-                        ? "text-amber-600 dark:text-amber-400"
-                        : "text-rose-600 dark:text-rose-400"
+                        ? "text-[#D97706] dark:text-[#FBBF24]"
+                        : "text-[#DC2626] dark:text-[#F87171]"
                     }`}
                   >
                     {exam.percentage}%

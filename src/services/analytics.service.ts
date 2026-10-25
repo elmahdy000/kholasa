@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { Role, QuestionType, Difficulty } from "@prisma/client";
+import { Role, QuestionType, Difficulty, Prisma } from "@prisma/client";
 
 export class AnalyticsService {
   /**
@@ -144,7 +144,7 @@ export class AnalyticsService {
     action: string,
     resource: string,
     resourceId?: string | null,
-    details?: any
+    details?: Prisma.InputJsonValue | Record<string, unknown> | null
   ) {
     try {
       return await prisma.auditLog.create({
@@ -153,7 +153,7 @@ export class AnalyticsService {
           action,
           resource,
           resourceId: resourceId || null,
-          details: details || null,
+          details: details ? (details as Prisma.InputJsonValue) : Prisma.DbNull,
         },
       });
     } catch (err) {

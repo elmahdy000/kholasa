@@ -1,31 +1,32 @@
 import { NextResponse } from "next/server";
+import { z } from "zod";
 import { getCurrentUser } from "@/lib/auth";
-import { UserService } from "@/services/user.service";
+import { jsonError, parseJson, unauthorized } from "@/lib/http";
+import { StudentService } from "@/services/student.service";
+
+// Egyptian mobile: 01[0125] + 8 digits, optional +20 / 0020 prefix.
+const egyptianPhone = z
+  .string()
+  .trim()
+  .regex(/^(?:\+20|0020|0)?1[0125]\d{8}$/, "رقم الهاتف غير صالح");
+
+const schema = z.object({
+  name: z.string().trim().min(2).max(80).optional(),
+  phone: z.union([egyptianPhone, z.literal(""), z.null()]).optional(),
+  systemId: z.string().min(1).nullable().optional(),
+  gradeId: z.string().min(1).nullable().optional(),
+  trackId: z.string().min(1).nullable().optional(),
+});
 
 export async function POST(req: Request) {
   try {
     const user = await getCurrentUser();
-    if (!user) {
-      return NextResponse.json({ error: "غير مصرح" }, { status: 401 });
-    }
+    if (!user) throw unauthorized("غير مصرح");
 
-    const body = await req.json().catch(() => ({}));
-    const { name, phone, systemId, gradeId } = body;
-
-    const updated = await UserService.updateStudentProfile(user.id, {
-      name,
-      phone,
-      systemId,
-      gradeId,
-    });
-
+    const body = await parseJson(req, schema);
+    const updated = await StudentService.updateProfile(user.id, body);
     return NextResponse.json({ success: true, user: updated });
-  } catch (error: any) {
-    console.error("Failed to update profile:", error);
-    const msg = error?.message || "";
-    return NextResponse.json(
-      { error: msg || "تعذر تحديث البيانات الشخصية" },
-      { status: msg ? 400 : 500 }
-    );
+  } catch (error) {
+    return jsonError(error);
   }
 }

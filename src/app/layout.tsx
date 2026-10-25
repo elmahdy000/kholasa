@@ -1,13 +1,6 @@
 import type { Metadata, Viewport } from "next";
-import { Cairo, IBM_Plex_Sans_Arabic } from "next/font/google";
+import { IBM_Plex_Sans_Arabic } from "next/font/google";
 import "./globals.css";
-
-const cairo = Cairo({
-  subsets: ["arabic", "latin"],
-  weight: ["400", "500", "600", "700", "800", "900"],
-  variable: "--font-cairo",
-  display: "swap",
-});
 
 const ibmPlexArabic = IBM_Plex_Sans_Arabic({
   subsets: ["arabic", "latin"],
@@ -51,13 +44,13 @@ export default function RootLayout({
     <html
       lang="ar"
       dir="rtl"
-      className={`${cairo.variable} ${ibmPlexArabic.variable}`}
+      className={`${ibmPlexArabic.variable}`}
       suppressHydrationWarning
       data-scroll-behavior="smooth"
     >
       <body
         suppressHydrationWarning
-        className="min-h-screen font-sans bg-[#F8FAFC] dark:bg-[#09090B] text-[#0F172A] dark:text-[#F4F4F5] antialiased selection:bg-[#4F46E5]/20 dark:selection:bg-indigo-500/30 selection:text-[#4F46E5] dark:selection:text-indigo-200"
+        className="min-h-screen font-sans bg-[#FFFFFF] dark:bg-[#0F172A] text-[#0F172A] dark:text-[#F8FAFC] antialiased selection:bg-[#4F46E5]/15 dark:selection:bg-[#4F46E5]/20 selection:text-[#4F46E5] dark:selection:text-[#4F46E5]"
       >
         <Script
           id="theme-initializer"

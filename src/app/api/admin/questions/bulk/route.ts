@@ -25,10 +25,10 @@ export async function POST(req: Request) {
       success: true,
       importedCount,
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Bulk import failed:", error);
     return NextResponse.json(
-      { error: error?.message || "حدث خطأ أثناء استيراد الأسئلة" },
+      { error: error instanceof Error ? error.message : "حدث خطأ أثناء استيراد الأسئلة" },
       { status: 500 }
     );
   }

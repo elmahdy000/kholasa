@@ -13,6 +13,7 @@ export default async function AdminExamsPage() {
 
   const [exams, subjects] = await Promise.all([
     prisma.exam.findMany({
+      where: { isCustom: false },
       orderBy: { createdAt: "desc" },
       include: {
         subject: { select: { id: true, name: true, color: true } },
@@ -56,11 +57,11 @@ export default async function AdminExamsPage() {
   return (
     <AdminShell user={user}>
       <div className="space-y-6 text-right font-sans">
-        <div className="border-b border-slate-200 dark:border-zinc-800 pb-4">
-          <h1 className="text-xl sm:text-2xl font-black text-[#0F172A] dark:text-white">
+        <div className="border-b border-[#E2E8F0] dark:border-[#334155] pb-4">
+          <h1 className="text-xl sm:text-2xl font-bold text-[#0F172A] dark:text-white">
             إدارة الامتحانات والاختبارات الرسمية
           </h1>
-          <p className="text-xs sm:text-sm text-[#64748B] dark:text-[#94A3B8] mt-1 font-medium">
+          <p className="text-[13px] sm:text-sm text-[#64748B] dark:text-[#94A3B8] mt-1 font-medium">
             إنشاء وجدولة الامتحانات، التحكم في النشر، ومتابعة متوسط تحصيل الطلاب لكل اختبار
           </p>
         </div>

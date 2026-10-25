@@ -63,10 +63,10 @@ export async function PATCH(req: Request) {
     );
 
     return NextResponse.json({ success: true, updatedAttempt });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Failed to update student grade:", error);
     return NextResponse.json(
-      { error: error?.message || "تعذر تحديث الدرجة" },
+      { error: error instanceof Error ? error.message : "تعذر تحديث الدرجة" },
       { status: 500 }
     );
   }

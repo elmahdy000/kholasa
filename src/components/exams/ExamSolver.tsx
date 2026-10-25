@@ -1,16 +1,13 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import {
   Clock,
   Flag,
-  BookmarkSimple,
   CaretRight,
   CaretLeft,
   CheckCircle,
-  WarningCircle,
   Question,
   Sparkle,
   Lightbulb,
@@ -24,7 +21,6 @@ import { BidiStatement } from "@/components/ui/BidiStatement";
 interface QuestionOption {
   id: string;
   text: string;
-  isCorrect: boolean;
   order: number;
   explanation?: string | null;
 }
@@ -36,10 +32,22 @@ interface QuestionExplanation {
   sectionId?: string | null;
 }
 
-interface EssayRubric {
-  modelAnswer: string;
-  criteria: any;
-  maxScore: number;
+interface RevealedOption {
+  id: string;
+  text?: string;
+  isCorrect?: boolean;
+  explanation?: string | null;
+}
+
+interface RevealedAnswer {
+  isCorrect?: boolean;
+  correctOptionId?: string;
+  isEssay?: boolean;
+  explanation?: QuestionExplanation | null;
+  options?: RevealedOption[];
+  modelAnswer?: string | null;
+  criteria?: unknown;
+  maxScore?: number;
 }
 
 interface Question {
@@ -48,8 +56,6 @@ interface Question {
   type: string;
   difficulty: string;
   options: QuestionOption[];
-  explanation?: QuestionExplanation | null;
-  rubric?: EssayRubric | null;
 }
 
 interface ExamSolverProps {
@@ -99,8 +105,16 @@ export function ExamSolver({
   const [totalTimeSpent, setTotalTimeSpent] = useState<number>(0);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isRevealing, setIsRevealing] = useState(false);
+  const [revealed, setRevealed] = useState<Record<string, RevealedAnswer>>({});
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const executeSubmitRef = useRef<() => void>(() => {});
+
+  const handleAutoSubmit = () => {
+    alert("الوقت خلص! هنسلّم إجاباتك دلوقتي تلقائياً.");
+    executeSubmitRef.current();
+  };
 
   // Timer countdown
   useEffect(() => {
@@ -121,13 +135,9 @@ export function ExamSolver({
     };
   }, []);
 
-  const handleAutoSubmit = () => {
-    alert("الوقت خلص! هنسلّم إجاباتك دلوقتي تلقائياً.");
-    executeSubmit();
-  };
-
   const currentQ = questions[currentIndex];
   const currentAnswer = answers[currentQ?.id] || {};
+  const revealedAnswer = currentQ ? revealed[currentQ.id] : undefined;
   const isFlagged = flaggedQuestions[currentQ?.id] || false;
 
   const handleSelectOption = (optionId: string) => {
@@ -150,14 +160,42 @@ export function ExamSolver({
     }));
   };
 
-  const handleRevealPractice = () => {
-    setAnswers((prev) => ({
-      ...prev,
-      [currentQ.id]: {
-        ...prev[currentQ.id],
-        practiceRevealed: true,
-      },
-    }));
+  const handleRevealPractice = async () => {
+    if (!currentQ) return;
+    setIsRevealing(true);
+    try {
+      const res = await fetch(`/api/questions/${currentQ.id}/answer`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          selectedOptionId: currentAnswer.selectedOptionId,
+          essayText: currentAnswer.essayText,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "تعذر عرض الإجابة");
+      }
+
+      setRevealed((prev) => ({ ...prev, [currentQ.id]: data }));
+      setAnswers((prev) => ({
+        ...prev,
+        [currentQ.id]: {
+          ...prev[currentQ.id],
+          practiceRevealed: true,
+        },
+      }));
+    } catch (err) {
+      console.error(err);
+      alert(
+        err instanceof Error
+          ? err.message
+          : "تعذر عرض الإجابة، تأكد من الاتصال وجرب مرة أخرى."
+      );
+    } finally {
+      setIsRevealing(false);
+    }
   };
 
   const toggleFlag = () => {
@@ -167,7 +205,7 @@ export function ExamSolver({
     }));
   };
 
-  const executeSubmit = async () => {
+  const executeSubmit = useCallback(async () => {
     setIsSubmitting(true);
     try {
       const res = await fetch(`/api/exams/${exam.id}/submit`, {
@@ -192,7 +230,11 @@ export function ExamSolver({
     } finally {
       setIsSubmitting(false);
     }
-  };
+  }, [exam.id, attemptId, answers, totalTimeSpent, router]);
+
+  useEffect(() => {
+    executeSubmitRef.current = executeSubmit;
+  }, [executeSubmit]);
 
   // Stats for modal
   const answeredCount = Object.values(answers).filter(
@@ -208,9 +250,9 @@ export function ExamSolver({
   return (
     <div className="max-w-4xl mx-auto space-y-6 text-right font-ui pb-12">
       {/* Top Header Bar */}
-      <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="p-4 sm:p-5 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]  flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <span className="text-[11px] font-bold text-[#4F46E5] block">
+          <span className="text-[13px] font-bold text-[#4F46E5] block">
             {exam.subject.name} •{" "}
             {initialMode === "PRACTICE" ? "وضع التدريب (شرح فوري)" : "وضع الامتحان (وقت حقيقي)"}
           </span>
@@ -224,10 +266,10 @@ export function ExamSolver({
         <div className="flex items-center gap-3 self-start sm:self-center">
           {/* Timer Display */}
           <div
-            className={`px-3.5 py-1.5 rounded-xl border flex items-center gap-2 text-xs font-mono font-bold ${
+            className={`px-4 py-2 rounded-xl border flex items-center gap-2 text-[13px] font-mono font-bold ${
               isUrgent
-                ? "bg-rose-50 dark:bg-rose-950/40 border-rose-300 dark:border-rose-800 text-rose-600 animate-pulse"
-                : "bg-slate-50 dark:bg-zinc-900 border-slate-200 dark:border-zinc-800 text-[#0F172A] dark:text-white"
+                ? "bg-[#DC2626]/10 dark:bg-[#1E293B] border-[#E2E8F0] dark:border-[#F87171] text-[#DC2626] animate-pulse"
+                : "bg-[#F8FAFC] dark:bg-[#1E293B] border-[#E2E8F0] dark:border-[#334155] text-[#0F172A] dark:text-white"
             }`}
           >
             <Clock className="w-4 h-4 text-[#4F46E5]" weight="bold" />
@@ -239,7 +281,7 @@ export function ExamSolver({
           {/* Submit Button */}
           <button
             onClick={() => setShowConfirmModal(true)}
-            className="h-9.5 px-4 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-xs flex items-center gap-1.5 transition-all active:scale-95 shadow-2xs"
+            className="h-11 px-4 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-[13px] flex items-center gap-2 transition-all active:opacity-80 "
           >
             <PaperPlaneTilt className="w-3.5 h-3.5" weight="bold" />
             <span>تسليم الامتحان</span>
@@ -248,7 +290,7 @@ export function ExamSolver({
       </div>
 
       {/* Question Navigator Carousel / Dots */}
-      <div className="p-3.5 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 shadow-2xs overflow-x-auto scrollbar-none">
+      <div className="p-4 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]  overflow-x-auto scrollbar-none">
         <div className="flex items-center gap-2 min-w-max">
           {questions.map((q, idx) => {
             const hasAnswer =
@@ -257,23 +299,23 @@ export function ExamSolver({
             const isActive = idx === currentIndex;
 
             let dotStyle =
-              "bg-slate-50 dark:bg-zinc-900 border-slate-200 dark:border-zinc-800 text-slate-500 hover:border-slate-300";
+              "bg-[#F8FAFC] dark:bg-[#1E293B] border-[#E2E8F0] dark:border-[#334155] text-[#64748B] hover:border-[#E2E8F0]";
             if (isActive) {
               dotStyle =
-                "bg-indigo-50/70 dark:bg-indigo-950/40 border-2 border-[#4F46E5] text-[#4F46E5] dark:text-indigo-300 font-bold shadow-2xs";
+                "bg-[#4F46E5]/10 dark:bg-[#1E293B] border-2 border-[#4F46E5] text-[#4F46E5] dark:text-[#6366F1] font-bold ";
             } else if (flagged) {
               dotStyle =
-                "bg-amber-50 dark:bg-amber-950/40 border-amber-300 dark:border-amber-800 text-amber-600 font-bold";
+                "bg-[#D97706]/10 dark:bg-[#1E293B] border-[#E2E8F0] dark:border-[#FBBF24] text-[#D97706] font-bold";
             } else if (hasAnswer) {
               dotStyle =
-                "bg-emerald-50 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-800 text-emerald-600 font-bold";
+                "bg-[#059669]/10 dark:bg-[#1E293B] border-[#E2E8F0] dark:border-[#34D399] text-[#059669] font-bold";
             }
 
             return (
               <button
                 key={q.id}
                 onClick={() => setCurrentIndex(idx)}
-                className={`w-9 h-9 rounded-xl border text-xs font-mono flex items-center justify-center transition-all ${dotStyle}`}
+                className={`w-11 h-11 rounded-xl border text-[13px] font-mono flex items-center justify-center transition-all ${dotStyle}`}
               >
                 {idx + 1}
               </button>
@@ -284,14 +326,14 @@ export function ExamSolver({
 
       {/* Main Question Card */}
       {currentQ && (
-        <div className="p-6 sm:p-8 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 shadow-2xs space-y-6">
+        <div className="p-6 sm:p-8 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]  space-y-6">
           {/* Question Header & Badges */}
-          <div className="flex items-center justify-between border-b border-slate-100 dark:border-zinc-800 pb-4">
+          <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#334155] pb-4">
             <div className="flex items-center gap-2">
-              <span className="px-3 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 text-[#4F46E5] dark:text-indigo-300 text-xs font-bold border border-indigo-200/50 dark:border-indigo-800/50">
+              <span className="px-3 py-1 rounded-lg bg-[#4F46E5]/10 dark:bg-[#1E293B] text-[#4F46E5] dark:text-[#6366F1] text-[13px] font-bold border border-[#E2E8F0]/50 dark:border-[#6366F1]/50">
                 السؤال {currentIndex + 1} من {totalQuestions}
               </span>
-              <span className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-zinc-900 text-slate-600 dark:text-zinc-300 text-[11px] font-bold border border-slate-200/50 dark:border-zinc-800/50">
+              <span className="px-3 py-1 rounded-lg bg-[#F8FAFC] dark:bg-[#1E293B] text-[#64748B] dark:text-[#F8FAFC] text-[13px] font-bold border border-[#E2E8F0]/50 dark:border-[#334155]/50">
                 {currentQ.difficulty === "EASY"
                   ? "سهل"
                   : currentQ.difficulty === "MEDIUM"
@@ -302,10 +344,10 @@ export function ExamSolver({
 
             <button
               onClick={toggleFlag}
-              className={`px-3 py-1.5 rounded-lg border text-xs font-bold flex items-center gap-1.5 transition-colors ${
+              className={`px-3 py-2 rounded-lg border text-[13px] font-bold flex items-center gap-2 transition-colors ${
                 isFlagged
-                  ? "bg-amber-50 dark:bg-amber-950/40 border-amber-300 text-amber-600"
-                  : "border-slate-200 dark:border-zinc-800 text-slate-500 hover:text-[#0F172A] dark:hover:text-white"
+                  ? "bg-[#D97706]/10 dark:bg-[#1E293B] border-[#E2E8F0] text-[#D97706]"
+                  : "border-[#E2E8F0] dark:border-[#334155] text-[#64748B] hover:text-[#0F172A] dark:hover:text-white"
               }`}
             >
               <Flag className={`w-3.5 h-3.5 ${isFlagged ? "fill-current" : ""}`} weight={isFlagged ? "fill" : "bold"} />
@@ -327,22 +369,24 @@ export function ExamSolver({
                 const isSelected = currentAnswer.selectedOptionId === opt.id;
                 const isRevealed =
                   initialMode === "PRACTICE" && currentAnswer.practiceRevealed;
+                const isOptionCorrect =
+                  revealedAnswer?.options?.find((o) => o.id === opt.id)?.isCorrect === true;
 
                 let cardStyle =
-                  "bg-white dark:bg-zinc-900/80 border-slate-200 dark:border-zinc-800/80 text-[#0F172A] dark:text-zinc-100 hover:border-indigo-400 dark:hover:border-zinc-600";
+                  "bg-white dark:bg-[#1E293B]/80 border-[#E2E8F0] dark:border-[#334155]/80 text-[#0F172A] dark:text-[#F8FAFC] hover:border-[#4F46E5] dark:hover:border-[#64748B]";
 
                 if (isSelected) {
                   cardStyle =
-                    "bg-indigo-50/70 dark:bg-indigo-950/50 border-2 border-[#4F46E5] dark:border-indigo-400 text-[#0F172A] dark:text-white shadow-2xs font-bold";
+                    "bg-[#4F46E5]/10 dark:bg-[#1E293B] border-2 border-[#4F46E5] dark:border-[#6366F1] text-[#0F172A] dark:text-white  font-bold";
                 }
 
                 if (isRevealed) {
-                  if (opt.isCorrect) {
+                  if (isOptionCorrect) {
                     cardStyle =
-                      "bg-emerald-50 dark:bg-emerald-950/40 border-2 border-emerald-600 text-emerald-900 dark:text-emerald-200 font-bold";
-                  } else if (isSelected && !opt.isCorrect) {
+                      "bg-[#059669]/10 dark:bg-[#1E293B] border-2 border-[#059669] text-[#059669] dark:text-[#34D399] font-bold";
+                  } else if (isSelected && !isOptionCorrect) {
                     cardStyle =
-                      "bg-rose-50 dark:bg-rose-950/40 border-2 border-rose-600 text-rose-900 dark:text-rose-200 font-bold";
+                      "bg-[#DC2626]/10 dark:bg-[#1E293B] border-2 border-[#DC2626] text-[#DC2626] dark:text-[#F87171] font-bold";
                   }
                 }
 
@@ -353,14 +397,14 @@ export function ExamSolver({
                     key={opt.id}
                     type="button"
                     onClick={() => handleSelectOption(opt.id)}
-                    className={`w-full p-3.5 sm:p-4 rounded-xl border text-right text-xs sm:text-sm font-medium flex items-start sm:items-center justify-between gap-3 transition-colors ${cardStyle}`}
+                    className={`w-full p-4 sm:p-4 rounded-xl border text-right text-[13px] sm:text-sm font-medium flex items-start sm:items-center justify-between gap-3 transition-colors ${cardStyle}`}
                   >
                     <div className="flex items-start sm:items-center gap-3 min-w-0 flex-1">
                       <div
-                        className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-mono font-bold shrink-0 mt-0.5 sm:mt-0 ${
+                        className={`w-7 h-7 rounded-lg flex items-center justify-center text-[13px] font-mono font-bold shrink-0 mt-1 sm:mt-0 ${
                           isSelected
-                            ? "bg-[#4F46E5] dark:bg-indigo-500 text-white"
-                            : "bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-300 border border-slate-200/60 dark:border-zinc-700/60"
+                            ? "bg-[#4F46E5] dark:bg-[#6366F1] text-white"
+                            : "bg-[#F8FAFC] dark:bg-[#334155] text-[#64748B] dark:text-[#F8FAFC] border border-[#E2E8F0]/60 dark:border-[#334155]"
                         }`}
                       >
                         {arabicLetters[optIdx] || opt.order}
@@ -372,13 +416,13 @@ export function ExamSolver({
 
                     {isRevealed && (
                       <div className="shrink-0">
-                        {opt.isCorrect ? (
-                          <span className="text-emerald-600 dark:text-emerald-400 text-xs font-bold flex items-center gap-1">
+                        {isOptionCorrect ? (
+                          <span className="text-[#059669] dark:text-[#34D399] text-[13px] font-bold flex items-center gap-1">
                             <Check className="w-4 h-4" weight="bold" />
                             <span>صح! برافو</span>
                           </span>
                         ) : isSelected ? (
-                          <span className="text-rose-600 dark:text-rose-400 text-xs font-bold">
+                          <span className="text-[#DC2626] dark:text-[#F87171] text-[13px] font-bold">
                             مش صحيحة
                           </span>
                         ) : null}
@@ -393,7 +437,7 @@ export function ExamSolver({
           {/* Essay Question Area */}
           {currentQ.type === "ESSAY" && (
             <div className="space-y-4">
-              <label className="block text-xs font-bold text-[#64748B] dark:text-zinc-400">
+              <label className="block text-[13px] font-bold text-[#64748B] dark:text-[#94A3B8]">
                 اكتب إجابتك هنا بالتفصيل:
               </label>
               <textarea
@@ -401,17 +445,17 @@ export function ExamSolver({
                 onChange={(e) => handleEssayChange(e.target.value)}
                 placeholder="اكتب خطوات الحل وشرحك هنا بالتفصيل..."
                 rows={5}
-                className="w-full p-4 rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#4F46E5] text-[#0F172A] dark:text-white font-content shadow-2xs"
+                className="w-full p-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#4F46E5] text-[#0F172A] dark:text-white font-content "
               />
 
-              {initialMode === "PRACTICE" && currentAnswer.practiceRevealed && currentQ.rubric && (
-                <div className="p-5 rounded-xl bg-indigo-50/50 dark:bg-indigo-950/40 border border-indigo-200/60 dark:border-indigo-800/60 space-y-3">
-                  <h4 className="text-xs font-bold text-[#4F46E5] dark:text-indigo-300 flex items-center gap-1.5">
+              {initialMode === "PRACTICE" && currentAnswer.practiceRevealed && revealedAnswer?.modelAnswer && (
+                <div className="p-5 rounded-xl bg-[#4F46E5]/10 dark:bg-[#1E293B] border border-[#E2E8F0]/60 dark:border-[#6366F1]/60 space-y-3">
+                  <h4 className="text-[13px] font-bold text-[#4F46E5] dark:text-[#6366F1] flex items-center gap-2">
                     <Sparkle className="w-4 h-4" weight="fill" />
                     <span>نموذج الإجابة ومعايير التقييم</span>
                   </h4>
-                  <p className="text-xs text-[#0F172A] dark:text-zinc-200 leading-relaxed font-bold font-content">
-                    {currentQ.rubric.modelAnswer}
+                  <p className="text-[13px] text-[#0F172A] dark:text-[#F8FAFC] leading-relaxed font-bold font-content">
+                    {revealedAnswer.modelAnswer}
                   </p>
                 </div>
               )}
@@ -424,44 +468,56 @@ export function ExamSolver({
               {!currentAnswer.practiceRevealed ? (
                 <button
                   onClick={handleRevealPractice}
-                  disabled={!currentAnswer.selectedOptionId && !currentAnswer.essayText}
-                  className="h-10 px-5 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white font-bold text-xs flex items-center gap-2 transition-all shadow-2xs active:scale-95 disabled:opacity-40"
+                  disabled={
+                    isRevealing ||
+                    (!currentAnswer.selectedOptionId && !currentAnswer.essayText)
+                  }
+                  className="h-11 px-5 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white font-bold text-[13px] flex items-center gap-2 transition-all  active:opacity-80 disabled:opacity-40"
                 >
                   <Lightbulb className="w-4 h-4" weight="fill" />
-                  <span>شوف إجابتك صح ولا غلط واعرف التفسير</span>
+                  <span>
+                    {isRevealing
+                      ? "بنراجع إجابتك..."
+                      : "شوف إجابتك صح ولا غلط واعرف التفسير"}
+                  </span>
                 </button>
               ) : (
-                currentQ.explanation && (
-                  <div className="p-5 rounded-xl bg-indigo-50/50 dark:bg-indigo-950/40 border border-indigo-200/60 dark:border-indigo-800/60 space-y-3">
-                    <div className="flex items-center gap-2 text-xs font-bold text-[#4F46E5] dark:text-indigo-300">
+                revealedAnswer?.explanation && (
+                  <div className="p-5 rounded-xl bg-[#4F46E5]/10 dark:bg-[#1E293B] border border-[#E2E8F0]/60 dark:border-[#6366F1]/60 space-y-3">
+                    <div className="flex items-center gap-2 text-[13px] font-bold text-[#4F46E5] dark:text-[#6366F1]">
                       <Lightbulb className="w-4 h-4" weight="fill" />
-                      <span>الفكرة الأساسية: {currentQ.explanation.concept}</span>
+                      <span>الفكرة الأساسية: {revealedAnswer.explanation.concept}</span>
                     </div>
-                    <p className="text-xs text-[#0F172A] dark:text-zinc-200 leading-relaxed font-bold font-content">
-                      {currentQ.explanation.correctReason}
+                    <p className="text-[13px] text-[#0F172A] dark:text-[#F8FAFC] leading-relaxed font-bold font-content">
+                      {revealedAnswer.explanation.correctReason}
                     </p>
 
                     {/* Per-option breakdown */}
-                    <div className="pt-2 border-t border-indigo-200/40 dark:border-indigo-800/40 space-y-1.5">
-                      <span className="text-[11px] font-bold text-[#64748B] dark:text-zinc-400 block">
+                    <div className="pt-2 border-t border-[#E2E8F0]/40 dark:border-[#6366F1]/40 space-y-2">
+                      <span className="text-[13px] font-bold text-[#64748B] dark:text-[#94A3B8] block">
                         ليه ده صح وده غلط؟
                       </span>
-                      {currentQ.options.map((opt) => (
-                        <div
-                          key={opt.id}
-                          className="text-[11px] text-[#64748B] dark:text-zinc-400 flex items-start gap-1.5 font-content"
-                        >
-                          <span className="font-bold shrink-0">
-                            • <BidiStatement as="span" text={opt.text} />:
-                          </span>
-                          <span>
-                            {opt.explanation ||
-                              (opt.isCorrect
-                                ? "ده الخيار الدقيق والمظبوط"
-                                : "مش مظبوط في الحالة دي")}
-                          </span>
-                        </div>
-                      ))}
+                      {currentQ.options.map((opt) => {
+                        const revealedOpt = revealedAnswer.options?.find(
+                          (o) => o.id === opt.id
+                        );
+                        return (
+                          <div
+                            key={opt.id}
+                            className="text-[13px] text-[#64748B] dark:text-[#94A3B8] flex items-start gap-2 font-content"
+                          >
+                            <span className="font-bold shrink-0">
+                              • <BidiStatement as="span" text={opt.text} />:
+                            </span>
+                            <span>
+                              {revealedOpt?.explanation ||
+                                (revealedOpt?.isCorrect
+                                  ? "ده الخيار الدقيق والمظبوط"
+                                  : "مش مظبوط في الحالة دي")}
+                            </span>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 )
@@ -470,11 +526,11 @@ export function ExamSolver({
           )}
 
           {/* Question Navigation Controls */}
-          <div className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-3 pt-4 border-t border-slate-100 dark:border-zinc-800">
+          <div className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-3 pt-4 border-t border-[#E2E8F0] dark:border-[#334155]">
             <button
               onClick={() => setCurrentIndex((idx) => Math.max(0, idx - 1))}
               disabled={currentIndex === 0}
-              className="h-10 px-4 rounded-xl border border-slate-200 dark:border-zinc-800 text-xs font-bold text-[#0F172A] dark:text-white flex items-center gap-1.5 hover:bg-slate-50 dark:hover:bg-zinc-800 disabled:opacity-40 transition-colors shadow-2xs"
+              className="h-11 px-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-bold text-[#0F172A] dark:text-white flex items-center gap-2 hover:bg-[#F8FAFC] dark:hover:bg-[#334155] disabled:opacity-40 transition-colors "
             >
               <CaretRight className="w-4 h-4" weight="bold" />
               <span>السؤال اللي قبله</span>
@@ -483,7 +539,7 @@ export function ExamSolver({
             {currentIndex < totalQuestions - 1 ? (
               <button
                 onClick={() => setCurrentIndex((idx) => idx + 1)}
-                className="h-10 px-5 sm:px-6 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-xs font-bold flex items-center gap-1.5 transition-colors shadow-2xs active:scale-95"
+                className="h-11 px-5 sm:px-6 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[13px] font-bold flex items-center gap-2 transition-colors  active:opacity-80"
               >
                 <span>السؤال اللي بعده</span>
                 <CaretLeft className="w-4 h-4" weight="bold" />
@@ -491,7 +547,7 @@ export function ExamSolver({
             ) : (
               <button
                 onClick={() => setShowConfirmModal(true)}
-                className="h-10 px-5 sm:px-6 rounded-xl bg-[#059669] hover:bg-[#047857] text-white text-xs font-bold flex items-center gap-1.5 transition-colors shadow-2xs active:scale-95"
+                className="h-11 px-5 sm:px-6 rounded-xl bg-[#059669] hover:bg-[#047857] text-white text-[13px] font-bold flex items-center gap-2 transition-colors  active:opacity-80"
               >
                 <span>خلصت؟ سلّم الامتحان</span>
                 <PaperPlaneTilt className="w-3.5 h-3.5" weight="bold" />
@@ -504,46 +560,46 @@ export function ExamSolver({
       {/* Confirmation Modal */}
       {showConfirmModal && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-          <div className="w-full max-w-md bg-white dark:bg-zinc-950 rounded-2xl p-6 sm:p-8 space-y-5 text-right border border-zinc-200 dark:border-zinc-800 shadow-2xl">
-            <div className="w-12 h-12 rounded-xl bg-[#4F46E5]/10 dark:bg-indigo-950/40 text-[#4F46E5] dark:text-indigo-400 flex items-center justify-center mx-auto">
+          <div className="w-full max-w-md bg-white dark:bg-[#0F172A] rounded-xl p-6 sm:p-8 space-y-5 text-right border border-[#E2E8F0] dark:border-[#334155] shadow-sm">
+            <div className="w-12 h-12 rounded-xl bg-[#4F46E5]/10 dark:bg-[#1E293B] text-[#4F46E5] dark:text-[#6366F1] flex items-center justify-center mx-auto">
               <CheckCircle className="w-6 h-6" weight="fill" />
             </div>
 
             <div className="text-center space-y-2">
-              <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
+              <h3 className="text-lg font-bold text-[#0F172A] dark:text-[#F8FAFC]">
                 متأكد إنك خلصت وعاوز تسلّم؟
               </h3>
-              <p className="text-xs text-zinc-600 dark:text-zinc-400 font-content">
+              <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8] font-content">
                 أول ما تسلّم هنحسب درجتك ونوريك تقرير مفصل بكل إجاباتك ونقط ضعفك.
               </p>
             </div>
 
-            <div className="p-4 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex items-center justify-around text-center">
+            <div className="p-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] flex items-center justify-around text-center">
               <div>
-                <span className="block text-base font-bold text-emerald-600 dark:text-emerald-400">
+                <span className="block text-base font-bold text-[#059669] dark:text-[#34D399]">
                   {answeredCount}
                 </span>
-                <span className="text-[11px] font-bold text-zinc-500 dark:text-zinc-400">
+                <span className="text-[13px] font-bold text-[#64748B] dark:text-[#94A3B8]">
                   حليتهم خلاص
                 </span>
               </div>
-              <div className="w-px h-8 bg-zinc-200 dark:bg-zinc-800" />
+              <div className="w-px h-11 bg-[#E2E8F0] dark:bg-[#334155]" />
               <div>
                 <span
                   className={`block text-base font-bold ${
-                    unansweredCount > 0 ? "text-[#D97706] dark:text-amber-400" : "text-zinc-500 dark:text-zinc-400"
+                    unansweredCount > 0 ? "text-[#D97706] dark:text-[#FBBF24]" : "text-[#64748B] dark:text-[#94A3B8]"
                   }`}
                 >
                   {unansweredCount}
                 </span>
-                <span className="text-[11px] font-bold text-zinc-500 dark:text-zinc-400">
+                <span className="text-[13px] font-bold text-[#64748B] dark:text-[#94A3B8]">
                   لسه ما حلتهمش
                 </span>
               </div>
             </div>
 
             {unansweredCount > 0 && (
-              <div className="p-3 rounded-lg bg-[#D97706]/10 border border-[#D97706]/20 text-xs font-bold text-[#D97706] flex items-center gap-2">
+              <div className="p-3 rounded-lg bg-[#D97706]/10 border border-[#D97706]/20 text-[13px] font-bold text-[#D97706] flex items-center gap-2">
                 <Warning className="w-4 h-4 shrink-0" weight="fill" />
                 <span>خلّي بالك! لسه في أسئلة ما جاوبتهاش.</span>
               </div>
@@ -554,7 +610,7 @@ export function ExamSolver({
                 type="button"
                 disabled={isSubmitting}
                 onClick={executeSubmit}
-                className="flex-1 h-11 rounded-lg bg-[#059669] hover:bg-[#047857] text-white font-bold text-xs flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
+                className="flex-1 h-11 rounded-lg bg-[#059669] hover:bg-[#047857] text-white font-bold text-[13px] flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
               >
                 {isSubmitting ? (
                   <>
@@ -569,7 +625,7 @@ export function ExamSolver({
                 type="button"
                 disabled={isSubmitting}
                 onClick={() => setShowConfirmModal(false)}
-                className="flex-1 h-11 rounded-lg border border-[#E2E8F0] dark:border-zinc-800 text-[#0F172A] dark:text-white font-bold text-xs hover:bg-[#F8FAFC] dark:hover:bg-zinc-800 transition-colors"
+                className="flex-1 h-11 rounded-lg border border-[#E2E8F0] dark:border-[#334155] text-[#0F172A] dark:text-white font-bold text-[13px] hover:bg-[#F8FAFC] dark:hover:bg-[#334155] transition-colors"
               >
                 لا، هرجع أكمل حل
               </button>

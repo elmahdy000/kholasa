@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { Role } from "@prisma/client";
 import { getCurrentUser, canManageUsers } from "@/lib/auth";
 import { UserService } from "@/services/user.service";
 
@@ -12,7 +13,7 @@ export async function GET(req: Request) {
 
     const { searchParams } = new URL(req.url);
     const search = searchParams.get("search") || undefined;
-    const role = (searchParams.get("role") as any) || undefined;
+    const role = (searchParams.get("role") as Role) || undefined;
     const systemId = searchParams.get("systemId") || undefined;
     const gradeId = searchParams.get("gradeId") || undefined;
 
@@ -46,10 +47,10 @@ export async function POST(req: Request) {
     const newUser = await UserService.createUser(body, currentUser.role);
 
     return NextResponse.json({ success: true, user: newUser });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Failed to create user:", error);
     return NextResponse.json(
-      { error: error.message || "تعذر إضافة المستخدم" },
+      { error: error instanceof Error ? error.message : "تعذر إضافة المستخدم" },
       { status: 400 }
     );
   }

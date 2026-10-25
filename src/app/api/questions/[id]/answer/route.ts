@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
+import { jsonError } from "@/lib/http";
+import { rateLimit, withRetryAfter } from "@/lib/rate-limit";
 import { QuestionService } from "@/services/question.service";
 import { MistakeService } from "@/services/mistake.service";
 
@@ -8,9 +10,16 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const user = await getCurrentUser();
+    if (!user) {
+      return NextResponse.json({ error: "غير مصرح" }, { status: 401 });
+    }
+
+    rateLimit(`answer:user:${user.id}`, 120, 60 * 1000);
+
     const { id: questionId } = await params;
     const body = await req.json().catch(() => ({}));
-    const { selectedOptionId, essayText } = body;
+    const { selectedOptionId } = body;
 
     const question = await QuestionService.getQuestionById(questionId);
 
@@ -21,8 +30,6 @@ export async function POST(
       );
     }
 
-    const user = await getCurrentUser();
-
     // Check MCQ or TRUE_FALSE
     if (question.type === "MCQ" || question.type === "TRUE_FALSE") {
       const selectedOption = question.options.find(
@@ -31,13 +38,10 @@ export async function POST(
       const isCorrect = selectedOption?.isCorrect ?? false;
       const correctOption = question.options.find((o) => o.isCorrect);
 
-      // If user is authenticated, update MistakeReview via MistakeService
-      if (user) {
-        if (!isCorrect) {
-          await MistakeService.recordMistake(user.id, questionId);
-        } else {
-          await MistakeService.resolveMistake(user.id, questionId);
-        }
+      if (!isCorrect) {
+        await MistakeService.recordMistake(user.id, questionId);
+      } else {
+        await MistakeService.resolveMistake(user.id, questionId);
       }
 
       return NextResponse.json({
@@ -62,10 +66,6 @@ export async function POST(
       explanation: question.explanation,
     });
   } catch (error) {
-    console.error("Failed to check answer:", error);
-    return NextResponse.json(
-      { error: "تعذر فحص الإجابة" },
-      { status: 500 }
-    );
+    return withRetryAfter(jsonError(error), error);
   }
 }

@@ -1,7 +1,7 @@
 import Link from "next/link";
-import Image from "next/image";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { examScopeWhere, getCurriculumScope } from "@/lib/curriculum";
 import { StudentShell } from "@/components/layout/StudentShell";
 import { BidiStatement } from "@/components/ui/BidiStatement";
 import {
@@ -16,9 +16,11 @@ import {
 
 export default async function ExamsHubPage() {
   const user = await getCurrentUser();
+  const scope = getCurriculumScope(user);
 
-  // Fetch available ready-made exams
+  // Fetch available ready-made exams for the student's curriculum
   const exams = await prisma.exam.findMany({
+    where: examScopeWhere(scope),
     take: 6,
     orderBy: { createdAt: "desc" },
     include: {
@@ -40,62 +42,50 @@ export default async function ExamsHubPage() {
     <StudentShell user={user}>
       <div className="space-y-7 text-right font-sans">
         {/* Compact & Refined Hero Section */}
-        <div className="relative overflow-hidden rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 p-5 sm:p-6 lg:p-7 shadow-2xs">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="relative overflow-hidden rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] p-5 sm:p-6 lg:p-7 ">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-center gap-6">
             {/* Text & Actions */}
-            <div className="space-y-3 max-w-xl">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/50 text-[#4F46E5] dark:text-indigo-400 text-xs font-bold border border-indigo-200/60 dark:border-indigo-800/60">
+            <div className="space-y-3 max-w-3xl md:mx-auto md:text-center">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#4F46E5]/10 dark:bg-[#1E293B] text-[#4F46E5] dark:text-[#6366F1] text-[13px] font-bold border border-[#E2E8F0]/60 dark:border-[#6366F1]/60">
                 <Sparkles className="w-3.5 h-3.5" />
                 <span>امتحانات وتدريبات متفصلة ليك</span>
               </div>
 
-              <h1 className="text-xl sm:text-2xl font-black text-[#0F172A] dark:text-white leading-snug">
+              <h1 className="text-xl sm:text-2xl font-bold text-[#0F172A] dark:text-white leading-snug">
                 قيس مستواك وظبّط نقط ضعفك عشان تقفّل المادة
               </h1>
 
-              <p className="text-xs sm:text-sm text-[#475569] dark:text-zinc-300 leading-relaxed font-medium">
+              <p className="text-[13px] sm:text-sm text-[#64748B] dark:text-[#F8FAFC] leading-relaxed font-medium">
                 اتدرب براحتك مع شرح وتفسير لكل خطوة، أو جرب امتحان بوقت حقيقي يعيشك جو الامتحان النهائي بالظبط.
               </p>
 
               {/* Compact Value Points */}
-              <div className="flex flex-wrap items-center gap-4 pt-1 text-[11px] sm:text-xs font-semibold text-slate-500 dark:text-zinc-400">
-                <span className="flex items-center gap-1.5">
-                  <Clock className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
+              <div className="flex flex-wrap items-center gap-4 pt-1 text-[13px] sm:text-[13px] font-semibold text-[#64748B] dark:text-[#94A3B8] md:justify-center">
+                <span className="flex items-center gap-2">
+                  <Clock className="w-3.5 h-3.5 text-[#4F46E5] shrink-0" />
                   <span>مؤقت زي الامتحان بالظبط</span>
                 </span>
-                <span className="flex items-center gap-1.5">
-                  <Zap className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                <span className="flex items-center gap-2">
+                  <Zap className="w-3.5 h-3.5 text-[#D97706] shrink-0" />
                   <span>شرح فوري لكل سؤال</span>
                 </span>
-                <span className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                <span className="flex items-center gap-2">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-[#059669] shrink-0" />
                   <span>بيعرفك نقط ضعفك فين</span>
                 </span>
               </div>
 
               {/* CTA Button */}
-              <div className="pt-2">
+              <div className="pt-2 md:flex md:justify-center">
                 <Link
                   href="/exams/builder"
-                  className="h-10 px-5 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-xs sm:text-sm font-bold inline-flex items-center gap-2 shadow-2xs transition-all active:scale-95 group"
+                  className="h-11 px-5 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[13px] sm:text-sm font-bold inline-flex items-center gap-2  transition-all active:opacity-80 group"
                 >
                   <SlidersHorizontal className="w-3.5 h-3.5" />
                   <span>فصّل امتحان على مزاجك دلوقتي</span>
-                  <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-1" />
+                  <ArrowLeft className="w-3.5 h-3.5" />
                 </Link>
               </div>
-            </div>
-
-            {/* Compact 3D Illustration */}
-            <div className="relative w-36 h-36 sm:w-44 sm:h-44 md:w-48 md:h-48 rounded-2xl overflow-hidden border border-slate-200 dark:border-zinc-800 shadow-md shrink-0 self-center">
-              <Image
-                src="/images/exams-hero.jpg"
-                alt="امتحانات وتدريبات متفصلة ليك"
-                fill
-                priority
-                className="object-cover transition-transform duration-500 hover:scale-105"
-                sizes="(max-width: 768px) 176px, 192px"
-              />
             </div>
           </div>
         </div>
@@ -103,13 +93,13 @@ export default async function ExamsHubPage() {
         {/* Ready-made Exams Section */}
         <div className="space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <h2 className="text-base sm:text-lg font-black text-[#14243D] dark:text-white flex items-center gap-2">
+            <h2 className="text-base sm:text-lg font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
               <Zap className="w-5 h-5 text-[#4F46E5]" />
               <span>امتحانات شاملة وجاهزة تحلها فوراً</span>
             </h2>
             <Link
               href="/exams/builder"
-              className="text-xs font-bold text-[#4F46E5] dark:text-indigo-400 hover:underline"
+              className="text-[13px] font-bold text-[#4F46E5] dark:text-[#6366F1] hover:underline"
             >
               عاوز تختار أسئلة معينة؟ فصّل من هنا ←
             </Link>
@@ -130,37 +120,37 @@ export default async function ExamsHubPage() {
               return (
                 <div
                   key={exam.id}
-                  className="p-5 rounded-2xl bg-white dark:bg-zinc-950/50 border border-slate-200 dark:border-zinc-800 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between gap-4"
+                  className="p-5 rounded-xl bg-white dark:bg-[#0F172A]/50 border border-[#E2E8F0] dark:border-[#334155]  hover:shadow-sm transition-all flex flex-col justify-between gap-4"
                 >
                   <div>
-                    <div className="flex items-center justify-between gap-2 mb-2.5">
-                      <span className="px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 text-[#4F46E5] dark:text-indigo-300 text-[11px] font-black border border-indigo-200/50 dark:border-indigo-800/50">
+                    <div className="flex items-center justify-between gap-2 mb-3">
+                      <span className="px-3 py-1 rounded-lg bg-[#4F46E5]/10 dark:bg-[#1E293B] text-[#4F46E5] dark:text-[#6366F1] text-[13px] font-bold border border-[#E2E8F0]/50 dark:border-[#6366F1]/50">
                         <BidiStatement as="span" text={exam.subject.name} />
                       </span>
-                      <span className="flex items-center gap-1 text-[11px] font-bold text-[#64748B] dark:text-[#94A3B8]">
-                        <Clock className="w-3.5 h-3.5 text-indigo-500" />
+                      <span className="flex items-center gap-1 text-[13px] font-bold text-[#64748B] dark:text-[#94A3B8]">
+                        <Clock className="w-3.5 h-3.5 text-[#4F46E5]" />
                         <span>{exam.durationMinutes} دقيقة</span>
                       </span>
                     </div>
 
-                    <h3 className="text-sm sm:text-base font-black text-[#14243D] dark:text-white leading-snug">
+                    <h3 className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-white leading-snug">
                       <BidiStatement as="span" text={exam.title} />
                     </h3>
 
                     {exam.description && (
-                      <p className="text-xs text-[#64748B] dark:text-[#94A3B8] mt-1.5 line-clamp-2 leading-relaxed">
+                      <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8] mt-2 line-clamp-2 leading-relaxed">
                         <BidiStatement as="span" text={exam.description} />
                       </p>
                     )}
                   </div>
 
-                  <div className="pt-3 border-t border-slate-100 dark:border-zinc-800 flex items-center justify-between">
-                    <span className="text-xs font-bold text-slate-500 dark:text-zinc-400">
+                  <div className="pt-3 border-t border-[#E2E8F0] dark:border-[#334155] flex items-center justify-between">
+                    <span className="text-[13px] font-bold text-[#64748B] dark:text-[#94A3B8]">
                       {qText}
                     </span>
                     <Link
                       href={`/exams/${exam.id}`}
-                      className="h-9 px-4 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-xs font-bold flex items-center gap-1.5 transition-colors shadow-2xs active:scale-95"
+                      className="h-11 px-4 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[13px] font-bold flex items-center gap-2 transition-colors  active:opacity-80"
                     >
                       <span>يلا نحل</span>
                       <ArrowLeft className="w-3.5 h-3.5" />
@@ -175,21 +165,21 @@ export default async function ExamsHubPage() {
         {/* Recent Attempts History */}
         {recentAttempts.length > 0 && (
           <div className="space-y-4 pt-2">
-            <h2 className="text-base sm:text-lg font-black text-[#14243D] dark:text-white flex items-center gap-2">
-              <History className="w-5 h-5 text-indigo-500" />
+            <h2 className="text-base sm:text-lg font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
+              <History className="w-5 h-5 text-[#4F46E5]" />
               <span>امتحاناتك اللي حلتها قبل كدة</span>
             </h2>
 
-            <div className="rounded-2xl bg-white dark:bg-zinc-950/50 border border-slate-200 dark:border-zinc-800 divide-y divide-slate-100 dark:divide-zinc-800 overflow-hidden shadow-2xs">
+            <div className="rounded-xl bg-white dark:bg-[#0F172A]/50 border border-[#E2E8F0] dark:border-[#334155] divide-y divide-[#E2E8F0] dark:divide-[#334155] overflow-hidden ">
               {recentAttempts.map((attempt) => {
                 const isGood = attempt.percentage >= 70;
                 const isPass = attempt.percentage >= 50;
 
                 const scoreColor = isGood
-                  ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-900/50"
+                  ? "bg-[#059669]/10 dark:bg-[#1E293B] text-[#059669] dark:text-[#34D399] border-[#E2E8F0] dark:border-[#34D399]/50"
                   : isPass
-                  ? "bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-900/50"
-                  : "bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-900/50";
+                  ? "bg-[#D97706]/10 dark:bg-[#1E293B] text-[#D97706] dark:text-[#FBBF24] border-[#E2E8F0] dark:border-[#FBBF24]/50"
+                  : "bg-[#DC2626]/10 dark:bg-[#1E293B] text-[#DC2626] dark:text-[#F87171] border-[#E2E8F0] dark:border-[#F87171]/50";
 
                 const dateStr = new Date(attempt.startedAt).toLocaleDateString("ar-EG", {
                   year: "numeric",
@@ -200,19 +190,19 @@ export default async function ExamsHubPage() {
                 return (
                   <div
                     key={attempt.id}
-                    className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-slate-50/70 dark:hover:bg-zinc-800/40 transition-colors"
+                    className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-[#F8FAFC] dark:hover:bg-[#334155]/40 transition-colors"
                   >
-                    <div className="flex items-start sm:items-center gap-3.5 min-w-0 flex-1">
+                    <div className="flex items-start sm:items-center gap-4 min-w-0 flex-1">
                       <div
-                        className={`w-11 h-11 rounded-xl flex items-center justify-center font-mono font-bold text-xs sm:text-sm shrink-0 border ${scoreColor}`}
+                        className={`w-11 h-11 rounded-xl flex items-center justify-center font-mono font-bold text-[13px] sm:text-sm shrink-0 border ${scoreColor}`}
                       >
                         {Math.round(attempt.percentage)}%
                       </div>
                       <div className="min-w-0 flex-1">
-                        <h4 className="text-xs sm:text-sm font-black text-[#14243D] dark:text-white leading-normal">
+                        <h4 className="text-[13px] sm:text-sm font-bold text-[#0F172A] dark:text-white leading-normal">
                           <BidiStatement as="span" text={attempt.title} />
                         </h4>
-                        <div className="flex flex-wrap items-center gap-2 text-[11px] sm:text-xs text-[#64748B] dark:text-[#94A3B8] font-bold mt-1">
+                        <div className="flex flex-wrap items-center gap-2 text-[13px] sm:text-[13px] text-[#64748B] dark:text-[#94A3B8] font-bold mt-1">
                           <span>
                             {attempt.score === attempt.totalQuestions && attempt.totalQuestions > 0
                               ? `قفلته! جبت ${attempt.score} من ${attempt.totalQuestions}`
@@ -226,7 +216,7 @@ export default async function ExamsHubPage() {
 
                     <Link
                       href={`/exams/${attempt.examId}/results?attemptId=${attempt.id}`}
-                      className="h-9 px-4 rounded-xl border border-slate-200 dark:border-zinc-800 hover:border-indigo-400 hover:text-indigo-600 dark:hover:border-indigo-500 dark:hover:text-indigo-400 text-xs font-bold text-[#14243D] dark:text-white flex items-center justify-center gap-1.5 transition-colors shrink-0 self-stretch sm:self-center"
+                      className="h-11 px-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] hover:border-[#4F46E5] hover:text-[#4F46E5] dark:hover:border-[#6366F1] dark:hover:text-[#6366F1] text-[13px] font-bold text-[#0F172A] dark:text-white flex items-center justify-center gap-2 transition-colors shrink-0 self-stretch sm:self-center"
                     >
                       <span>راجع إجاباتك</span>
                       <ArrowLeft className="w-3.5 h-3.5" />

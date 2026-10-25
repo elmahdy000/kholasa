@@ -296,20 +296,20 @@ export function StructureManagerClient({
   return (
     <div className="space-y-6">
       {/* Header with Action */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-zinc-200 dark:border-zinc-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#E2E8F0] dark:border-[#334155]">
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
-            <Layers className="w-5 h-5 text-zinc-700 dark:text-zinc-300" />
+          <h1 className="text-xl font-bold tracking-tight text-[#0F172A] dark:text-[#F8FAFC] flex items-center gap-2">
+            <Layers className="w-5 h-5 text-[#0F172A] dark:text-[#F8FAFC]" />
             <span>الهيكل الأكاديمي والأنظمة والصفوف</span>
           </h1>
-          <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+          <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8] mt-1">
             إدارة الأنظمة التعليمية (عام، لغات، أزهر)، الصفوف الدراسية، وتوزيع المواد
           </p>
         </div>
 
         <button
           onClick={() => setSystemModal({ isOpen: true, mode: "create" })}
-          className="h-8.5 px-3.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:hover:bg-white text-white dark:text-zinc-900 text-xs font-semibold flex items-center gap-2 transition-all shadow-xs cursor-pointer"
+          className="h-11 px-4 rounded-lg bg-[#334155] hover:bg-[#334155] dark:bg-[#F8FAFC] dark:hover:bg-white text-white dark:text-[#1E293B] text-[13px] font-semibold flex items-center gap-2 transition-all  cursor-pointer"
         >
           <Plus className="w-3.5 h-3.5" />
           <span>إضافة نظام تعليمي جديد</span>
@@ -317,21 +317,21 @@ export function StructureManagerClient({
       </div>
 
       {/* Systems Segmented Tabs (Vercel Style) */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-zinc-100 dark:border-zinc-900">
+      <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-[#E2E8F0] dark:border-[#1E293B]">
         {systems.map((system) => {
           const isSelected = system.id === selectedSystemId;
           return (
             <button
               key={system.id}
               onClick={() => setSelectedSystemId(system.id)}
-              className={`px-3.5 py-1.5 rounded-lg text-xs font-medium flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
+              className={`px-4 py-2 rounded-lg text-[13px] font-medium flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
                 isSelected
-                  ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 font-semibold shadow-xs"
-                  : "bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white"
+                  ? "bg-[#334155] text-white dark:bg-[#F8FAFC] dark:text-[#1E293B] font-semibold "
+                  : "bg-[#F8FAFC] dark:bg-[#1E293B] text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
               }`}
             >
               <span>{system.name}</span>
-              <span className="text-[10px] font-mono opacity-60">
+              <span className="text-[13px] font-mono opacity-60">
                 ({system.grades.length} صفوف)
               </span>
             </button>
@@ -341,28 +341,28 @@ export function StructureManagerClient({
 
       {/* Selected System Content Card */}
       {activeSystem ? (
-        <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-5 space-y-6 shadow-xs">
+        <div className="rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] p-5 space-y-6 ">
           {/* System Info Banner */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-lg bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200/80 dark:border-zinc-800/80">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-lg bg-[#F8FAFC] dark:bg-[#1E293B]/50 border border-[#E2E8F0]/80 dark:border-[#334155]/80">
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-base font-bold text-zinc-900 dark:text-zinc-100">
+                <h2 className="text-base font-bold text-[#0F172A] dark:text-[#F8FAFC]">
                   {activeSystem.name}
                 </h2>
-                <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-zinc-200 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300">
+                <span className="px-2 py-1 rounded text-[13px] font-mono bg-[#E2E8F0] dark:bg-[#334155] text-[#0F172A] dark:text-[#F8FAFC]">
                   {activeSystem.code}
                 </span>
                 {activeSystem.isActive ? (
-                  <span className="px-2 py-0.5 rounded text-[10px] bg-emerald-500/10 text-emerald-500 font-semibold">
+                  <span className="px-2 py-1 rounded text-[13px] bg-[#059669]/10 text-[#059669] font-semibold">
                     مفعل
                   </span>
                 ) : (
-                  <span className="px-2 py-0.5 rounded text-[10px] bg-zinc-500/10 text-zinc-400">
+                  <span className="px-2 py-1 rounded text-[13px] bg-[#64748B] text-[#64748B]">
                     معطل
                   </span>
                 )}
               </div>
-              <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+              <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8] mt-1">
                 {activeSystem.description || "لا يوجد وصف مدخل لهذا النظام"}
               </p>
             </div>
@@ -372,14 +372,14 @@ export function StructureManagerClient({
                 onClick={() =>
                   setSystemModal({ isOpen: true, mode: "edit", system: activeSystem })
                 }
-                className="h-8 px-2.5 rounded-md border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-xs font-medium text-zinc-700 dark:text-zinc-300 flex items-center gap-1.5 transition-colors cursor-pointer"
+                className="h-11 px-3 rounded-md border border-[#E2E8F0] dark:border-[#334155] hover:bg-[#F8FAFC] dark:hover:bg-[#334155] text-[13px] font-medium text-[#0F172A] dark:text-[#F8FAFC] flex items-center gap-2 transition-colors cursor-pointer"
               >
                 <Edit2 className="w-3.5 h-3.5" />
                 <span>تعديل النظام</span>
               </button>
               <button
                 onClick={() => handleDeleteSystem(activeSystem.id)}
-                className="h-8 px-2.5 rounded-md border border-red-200 dark:border-red-900/50 hover:bg-red-50 dark:hover:bg-red-950/30 text-xs font-medium text-red-600 dark:text-red-400 flex items-center gap-1.5 transition-colors cursor-pointer"
+                className="h-11 px-3 rounded-md border border-[#E2E8F0] dark:border-[#F87171]/50 hover:bg-[#DC2626]/10 dark:hover:bg-[#1E293B] text-[13px] font-medium text-[#DC2626] dark:text-[#F87171] flex items-center gap-2 transition-colors cursor-pointer"
               >
                 <Trash2 className="w-3.5 h-3.5" />
                 <span>حذف</span>
@@ -388,7 +388,7 @@ export function StructureManagerClient({
                 onClick={() =>
                   setGradeModal({ isOpen: true, systemId: activeSystem.id })
                 }
-                className="h-8 px-3 rounded-md bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:hover:bg-white text-white dark:text-zinc-900 text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
+                className="h-11 px-3 rounded-md bg-[#334155] hover:bg-[#334155] dark:bg-[#F8FAFC] dark:hover:bg-white text-white dark:text-[#1E293B] text-[13px] font-semibold flex items-center gap-2 transition-all cursor-pointer"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>إضافة صف دراسي</span>
@@ -398,21 +398,21 @@ export function StructureManagerClient({
 
           {/* Grades and Subjects Grid */}
           <div className="space-y-6">
-            <h3 className="text-xs font-mono uppercase tracking-wider text-zinc-400">
+            <h3 className="text-[13px] font-mono uppercase tracking-wider text-[#64748B]">
               الصفوف الدراسية والمواد التابعة ({activeSystem.grades.length})
             </h3>
 
             {activeSystem.grades.length === 0 ? (
-              <div className="p-8 text-center border border-dashed border-zinc-200 dark:border-zinc-800 rounded-lg">
-                <FolderTree className="w-8 h-8 text-zinc-400 mx-auto mb-2 opacity-50" />
-                <p className="text-xs text-zinc-500">
+              <div className="p-8 text-center border border-dashed border-[#E2E8F0] dark:border-[#334155] rounded-lg">
+                <FolderTree className="w-11 h-11 text-[#64748B] mx-auto mb-2 opacity-50" />
+                <p className="text-[13px] text-[#64748B]">
                   لا توجد صفوف دراسية مسجلة في هذا النظام حالياً
                 </p>
                 <button
                   onClick={() =>
                     setGradeModal({ isOpen: true, systemId: activeSystem.id })
                   }
-                  className="mt-3 text-xs text-indigo-500 font-semibold hover:underline"
+                  className="mt-3 text-[13px] text-[#4F46E5] font-semibold hover:underline"
                 >
                   + إضافة الصف الأول الآن
                 </button>
@@ -422,15 +422,15 @@ export function StructureManagerClient({
                 {activeSystem.grades.map((grade) => (
                   <div
                     key={grade.id}
-                    className="rounded-lg border border-zinc-200 dark:border-zinc-800/80 bg-zinc-50/50 dark:bg-zinc-900/20 p-4 space-y-3"
+                    className="rounded-lg border border-[#E2E8F0] dark:border-[#334155]/80 bg-[#F8FAFC]/50 dark:bg-[#1E293B]/20 p-4 space-y-3"
                   >
                     {/* Grade Header */}
-                    <div className="flex items-center justify-between border-b border-zinc-200/60 dark:border-zinc-800/60 pb-2">
+                    <div className="flex items-center justify-between border-b border-[#E2E8F0]/60 dark:border-[#334155]/60 pb-2">
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-sm text-zinc-900 dark:text-zinc-100">
+                        <span className="font-bold text-sm text-[#0F172A] dark:text-[#F8FAFC]">
                           {grade.name}
                         </span>
-                        <span className="text-[10px] font-mono text-zinc-400 px-1.5 py-0.5 rounded bg-zinc-200/50 dark:bg-zinc-800">
+                        <span className="text-[13px] font-mono text-[#64748B] px-2 py-1 rounded bg-[#E2E8F0] dark:bg-[#334155]">
                           {grade.code}
                         </span>
                       </div>
@@ -444,7 +444,7 @@ export function StructureManagerClient({
                               gradeId: grade.id,
                             })
                           }
-                          className="h-7 px-2.5 rounded text-xs font-semibold bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 hover:opacity-90 flex items-center gap-1 transition-opacity cursor-pointer"
+                          className="h-7 px-3 rounded text-[13px] font-semibold bg-[#334155] dark:bg-[#F8FAFC] text-white dark:text-[#1E293B] hover:opacity-90 flex items-center gap-1 transition-opacity cursor-pointer"
                         >
                           <Plus className="w-3 h-3" />
                           <span>إضافة مادة</span>
@@ -457,13 +457,13 @@ export function StructureManagerClient({
                               grade,
                             })
                           }
-                          className="p-1 rounded text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
+                          className="p-1 rounded text-[#64748B] hover:text-[#64748B] dark:hover:text-[#F8FAFC]"
                         >
                           <Edit2 className="w-3.5 h-3.5" />
                         </button>
                         <button
                           onClick={() => handleDeleteGrade(grade.id)}
-                          className="p-1 rounded text-zinc-400 hover:text-red-500"
+                          className="p-1 rounded text-[#64748B] hover:text-[#DC2626]"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -471,11 +471,11 @@ export function StructureManagerClient({
                     </div>
 
                     {/* Subjects Row */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 pt-1">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 pt-1">
                       {grade.subjects.map((sub) => (
                         <div
                           key={sub.id}
-                          className="p-3 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/80 hover:border-zinc-400 dark:hover:border-zinc-700 transition-colors flex flex-col justify-between space-y-2"
+                          className="p-3 rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B]/80 hover:border-[#E2E8F0] dark:hover:border-[#4F46E5]/60 transition-colors flex flex-col justify-between space-y-2"
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
@@ -483,16 +483,16 @@ export function StructureManagerClient({
                                 className="w-2.5 h-2.5 rounded-full shrink-0"
                                 style={{ backgroundColor: sub.color || "#4F46E5" }}
                               />
-                              <span className="font-bold text-xs text-zinc-900 dark:text-zinc-100">
+                              <span className="font-bold text-[13px] text-[#0F172A] dark:text-[#F8FAFC]">
                                 {sub.name}
                               </span>
                             </div>
-                            <span className="text-[10px] font-mono text-zinc-400">
+                            <span className="text-[13px] font-mono text-[#64748B]">
                               {sub.code}
                             </span>
                           </div>
 
-                          <div className="flex items-center justify-between text-[11px] text-zinc-500 pt-1 border-t border-zinc-100 dark:border-zinc-800">
+                          <div className="flex items-center justify-between text-[13px] text-[#64748B] pt-1 border-t border-[#E2E8F0] dark:border-[#334155]">
                             <span className="font-mono">
                               {sub._count?.units || 0} وحدات · {sub._count?.exams || 0} امتحانات
                             </span>
@@ -506,13 +506,13 @@ export function StructureManagerClient({
                                     subject: sub,
                                   })
                                 }
-                                className="p-1 rounded text-zinc-400 hover:text-zinc-200"
+                                className="p-1 rounded text-[#64748B] hover:text-[#64748B]"
                               >
                                 <Edit2 className="w-3 h-3" />
                               </button>
                               <button
                                 onClick={() => handleDeleteSubject(sub.id)}
-                                className="p-1 rounded text-zinc-400 hover:text-red-400"
+                                className="p-1 rounded text-[#64748B] hover:text-[#DC2626]"
                               >
                                 <Trash2 className="w-3 h-3" />
                               </button>
@@ -522,7 +522,7 @@ export function StructureManagerClient({
                       ))}
 
                       {grade.subjects.length === 0 && (
-                        <div className="col-span-full py-4 text-center text-xs text-zinc-400 border border-dashed border-zinc-200 dark:border-zinc-800 rounded">
+                        <div className="col-span-full py-4 text-center text-[13px] text-[#64748B] border border-dashed border-[#E2E8F0] dark:border-[#334155] rounded">
                           لا توجد مواد دراسية مضافة لهذا الصف بعد.
                         </div>
                       )}
@@ -537,31 +537,31 @@ export function StructureManagerClient({
 
       {/* System Modal */}
       {systemModal.isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-          <div className="w-full max-w-md rounded-xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-5 space-y-4 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 pb-3">
-              <h3 className="font-bold text-sm text-zinc-900 dark:text-zinc-100">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 ">
+          <div className="w-full max-w-md rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] p-5 space-y-4 shadow-sm">
+            <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#334155] pb-3">
+              <h3 className="font-bold text-sm text-[#0F172A] dark:text-[#F8FAFC]">
                 {systemModal.mode === "create"
                   ? "إضافة نظام تعليمي جديد"
                   : "تعديل النظام التعليمي"}
               </h3>
               <button
                 onClick={() => setSystemModal({ isOpen: false, mode: "create" })}
-                className="p-1 rounded text-zinc-400 hover:text-zinc-200"
+                className="p-1 rounded text-[#64748B] hover:text-[#64748B]"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             {errorMsg && (
-              <div className="p-2.5 rounded bg-red-500/10 border border-red-500/20 text-red-500 text-xs">
+              <div className="p-3 rounded bg-[#DC2626]/10 border border-[#DC2626]/20 text-[#DC2626] text-[13px]">
                 {errorMsg}
               </div>
             )}
 
             <form onSubmit={handleSaveSystem} className="space-y-3">
               <div>
-                <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">
+                <label className="text-[13px] font-medium text-[#0F172A] dark:text-[#F8FAFC] block mb-1">
                   اسم النظام التعليمي
                 </label>
                 <input
@@ -570,12 +570,12 @@ export function StructureManagerClient({
                   required
                   defaultValue={systemModal.system?.name || ""}
                   placeholder="مثال: الثانوية العامة المصرية"
-                  className="w-full h-9 px-3 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent text-xs text-zinc-900 dark:text-zinc-100 outline-none"
+                  className="w-full h-11 px-3 rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-transparent text-[13px] text-[#0F172A] dark:text-[#F8FAFC] outline-none"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">
+                <label className="text-[13px] font-medium text-[#0F172A] dark:text-[#F8FAFC] block mb-1">
                   رمز النظام (Code)
                 </label>
                 <input
@@ -584,12 +584,12 @@ export function StructureManagerClient({
                   required
                   defaultValue={systemModal.system?.code || ""}
                   placeholder="مثال: EGY_GEN_SEC"
-                  className="w-full h-9 px-3 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent text-xs text-zinc-900 dark:text-zinc-100 font-mono outline-none"
+                  className="w-full h-11 px-3 rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-transparent text-[13px] text-[#0F172A] dark:text-[#F8FAFC] font-mono outline-none"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">
+                <label className="text-[13px] font-medium text-[#0F172A] dark:text-[#F8FAFC] block mb-1">
                   الوصف
                 </label>
                 <textarea
@@ -597,7 +597,7 @@ export function StructureManagerClient({
                   rows={2}
                   defaultValue={systemModal.system?.description || ""}
                   placeholder="وصف مختصر للنظام والمسارات التابعة له..."
-                  className="w-full p-2.5 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent text-xs text-zinc-900 dark:text-zinc-100 outline-none resize-none"
+                  className="w-full p-3 rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-transparent text-[13px] text-[#0F172A] dark:text-[#F8FAFC] outline-none resize-none"
                 />
               </div>
 
@@ -607,28 +607,28 @@ export function StructureManagerClient({
                   name="isActive"
                   id="sysActive"
                   defaultChecked={systemModal.system?.isActive ?? true}
-                  className="rounded border-zinc-700 text-indigo-600 focus:ring-0"
+                  className="rounded border-[#94A3B8] text-[#4F46E5] focus:ring-0"
                 />
                 <label
                   htmlFor="sysActive"
-                  className="text-xs font-medium text-zinc-700 dark:text-zinc-300"
+                  className="text-[13px] font-medium text-[#0F172A] dark:text-[#F8FAFC]"
                 >
                   النظام مفعل ومتاح للطلاب
                 </label>
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-zinc-200 dark:border-zinc-800">
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-[#E2E8F0] dark:border-[#334155]">
                 <button
                   type="button"
                   onClick={() => setSystemModal({ isOpen: false, mode: "create" })}
-                  className="h-8 px-3 rounded-md border border-zinc-300 dark:border-zinc-700 text-xs font-medium text-zinc-600 dark:text-zinc-400"
+                  className="h-11 px-3 rounded-md border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-medium text-[#64748B] dark:text-[#94A3B8]"
                 >
                   إلغاء
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="h-8 px-4 rounded-md bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-xs font-semibold hover:opacity-90 transition-opacity"
+                  className="h-11 px-4 rounded-md bg-[#334155] dark:bg-[#F8FAFC] text-white dark:text-[#1E293B] text-[13px] font-semibold hover:opacity-90 transition-opacity"
                 >
                   {loading ? "جاري الحفظ..." : "حفظ النظام"}
                 </button>
@@ -640,15 +640,15 @@ export function StructureManagerClient({
 
       {/* Grade Modal */}
       {gradeModal.isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-          <div className="w-full max-w-sm rounded-xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-5 space-y-4 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 pb-3">
-              <h3 className="font-bold text-sm text-zinc-900 dark:text-zinc-100">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 ">
+          <div className="w-full max-w-sm rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] p-5 space-y-4 shadow-sm">
+            <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#334155] pb-3">
+              <h3 className="font-bold text-sm text-[#0F172A] dark:text-[#F8FAFC]">
                 {gradeModal.grade ? "تعديل الصف الدراسي" : "إضافة صف دراسي جديد"}
               </h3>
               <button
                 onClick={() => setGradeModal({ isOpen: false, systemId: "" })}
-                className="p-1 rounded text-zinc-400 hover:text-zinc-200"
+                className="p-1 rounded text-[#64748B] hover:text-[#64748B]"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -656,7 +656,7 @@ export function StructureManagerClient({
 
             <form onSubmit={handleSaveGrade} className="space-y-3">
               <div>
-                <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">
+                <label className="text-[13px] font-medium text-[#0F172A] dark:text-[#F8FAFC] block mb-1">
                   اسم الصف
                 </label>
                 <input
@@ -665,12 +665,12 @@ export function StructureManagerClient({
                   required
                   defaultValue={gradeModal.grade?.name || ""}
                   placeholder="مثال: الصف الثالث الثانوي"
-                  className="w-full h-9 px-3 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent text-xs text-zinc-900 dark:text-zinc-100 outline-none"
+                  className="w-full h-11 px-3 rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-transparent text-[13px] text-[#0F172A] dark:text-[#F8FAFC] outline-none"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">
+                <label className="text-[13px] font-medium text-[#0F172A] dark:text-[#F8FAFC] block mb-1">
                   رمز الصف (Code)
                 </label>
                 <input
@@ -679,22 +679,22 @@ export function StructureManagerClient({
                   required
                   defaultValue={gradeModal.grade?.code || ""}
                   placeholder="مثال: G12"
-                  className="w-full h-9 px-3 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent text-xs text-zinc-900 dark:text-zinc-100 font-mono outline-none"
+                  className="w-full h-11 px-3 rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-transparent text-[13px] text-[#0F172A] dark:text-[#F8FAFC] font-mono outline-none"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-zinc-200 dark:border-zinc-800">
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-[#E2E8F0] dark:border-[#334155]">
                 <button
                   type="button"
                   onClick={() => setGradeModal({ isOpen: false, systemId: "" })}
-                  className="h-8 px-3 rounded-md border border-zinc-300 dark:border-zinc-700 text-xs font-medium text-zinc-600 dark:text-zinc-400"
+                  className="h-11 px-3 rounded-md border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-medium text-[#64748B] dark:text-[#94A3B8]"
                 >
                   إلغاء
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="h-8 px-4 rounded-md bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-xs font-semibold hover:opacity-90 transition-opacity"
+                  className="h-11 px-4 rounded-md bg-[#334155] dark:bg-[#F8FAFC] text-white dark:text-[#1E293B] text-[13px] font-semibold hover:opacity-90 transition-opacity"
                 >
                   {loading ? "جاري الحفظ..." : "حفظ الصف"}
                 </button>
@@ -706,17 +706,17 @@ export function StructureManagerClient({
 
       {/* Subject Modal */}
       {subjectModal.isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-          <div className="w-full max-w-sm rounded-xl bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-5 space-y-4 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-zinc-200 dark:border-zinc-800 pb-3">
-              <h3 className="font-bold text-sm text-zinc-900 dark:text-zinc-100">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 ">
+          <div className="w-full max-w-sm rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] p-5 space-y-4 shadow-sm">
+            <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#334155] pb-3">
+              <h3 className="font-bold text-sm text-[#0F172A] dark:text-[#F8FAFC]">
                 {subjectModal.subject ? "تعديل المادة الدراسية" : "إضافة مادة دراسية جديدة"}
               </h3>
               <button
                 onClick={() =>
                   setSubjectModal({ isOpen: false, systemId: "", gradeId: "" })
                 }
-                className="p-1 rounded text-zinc-400 hover:text-zinc-200"
+                className="p-1 rounded text-[#64748B] hover:text-[#64748B]"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -724,7 +724,7 @@ export function StructureManagerClient({
 
             <form onSubmit={handleSaveSubject} className="space-y-3">
               <div>
-                <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">
+                <label className="text-[13px] font-medium text-[#0F172A] dark:text-[#F8FAFC] block mb-1">
                   اسم المادة
                 </label>
                 <input
@@ -733,12 +733,12 @@ export function StructureManagerClient({
                   required
                   defaultValue={subjectModal.subject?.name || ""}
                   placeholder="مثال: الفيزياء الحديثة"
-                  className="w-full h-9 px-3 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent text-xs text-zinc-900 dark:text-zinc-100 outline-none"
+                  className="w-full h-11 px-3 rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-transparent text-[13px] text-[#0F172A] dark:text-[#F8FAFC] outline-none"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">
+                <label className="text-[13px] font-medium text-[#0F172A] dark:text-[#F8FAFC] block mb-1">
                   رمز المادة (Code)
                 </label>
                 <input
@@ -747,12 +747,12 @@ export function StructureManagerClient({
                   required
                   defaultValue={subjectModal.subject?.code || ""}
                   placeholder="مثال: PHYS_G12"
-                  className="w-full h-9 px-3 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent text-xs text-zinc-900 dark:text-zinc-100 font-mono outline-none"
+                  className="w-full h-11 px-3 rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-transparent text-[13px] text-[#0F172A] dark:text-[#F8FAFC] font-mono outline-none"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300 block mb-1">
+                <label className="text-[13px] font-medium text-[#0F172A] dark:text-[#F8FAFC] block mb-1">
                   لون الهوية للمادة
                 </label>
                 <div className="flex items-center gap-2">
@@ -760,9 +760,9 @@ export function StructureManagerClient({
                     type="color"
                     name="color"
                     defaultValue={subjectModal.subject?.color || "#4F46E5"}
-                    className="w-8 h-8 rounded border border-zinc-300 dark:border-zinc-700 p-0.5 cursor-pointer bg-transparent"
+                    className="w-11 h-11 rounded border border-[#E2E8F0] dark:border-[#334155] p-1 cursor-pointer bg-transparent"
                   />
-                  <span className="text-[11px] font-mono text-zinc-500">
+                  <span className="text-[13px] font-mono text-[#64748B]">
                     رمز اللون المستخدم في الواجهة
                   </span>
                 </div>
@@ -774,30 +774,30 @@ export function StructureManagerClient({
                   name="isPublished"
                   id="subPublished"
                   defaultChecked={subjectModal.subject?.isPublished ?? true}
-                  className="rounded border-zinc-700 text-indigo-600 focus:ring-0"
+                  className="rounded border-[#94A3B8] text-[#4F46E5] focus:ring-0"
                 />
                 <label
                   htmlFor="subPublished"
-                  className="text-xs font-medium text-zinc-700 dark:text-zinc-300"
+                  className="text-[13px] font-medium text-[#0F172A] dark:text-[#F8FAFC]"
                 >
                   نشر المادة وإتاحتها للطلاب
                 </label>
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-zinc-200 dark:border-zinc-800">
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-[#E2E8F0] dark:border-[#334155]">
                 <button
                   type="button"
                   onClick={() =>
                     setSubjectModal({ isOpen: false, systemId: "", gradeId: "" })
                   }
-                  className="h-8 px-3 rounded-md border border-zinc-300 dark:border-zinc-700 text-xs font-medium text-zinc-600 dark:text-zinc-400"
+                  className="h-11 px-3 rounded-md border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-medium text-[#64748B] dark:text-[#94A3B8]"
                 >
                   إلغاء
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="h-8 px-4 rounded-md bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-xs font-semibold hover:opacity-90 transition-opacity"
+                  className="h-11 px-4 rounded-md bg-[#334155] dark:bg-[#F8FAFC] text-white dark:text-[#1E293B] text-[13px] font-semibold hover:opacity-90 transition-opacity"
                 >
                   {loading ? "جاري الحفظ..." : "حفظ المادة"}
                 </button>

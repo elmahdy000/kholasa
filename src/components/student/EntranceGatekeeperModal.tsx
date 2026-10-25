@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Sparkles,
   CheckCircle2,
@@ -9,7 +9,6 @@ import {
   ArrowLeft,
   ArrowRight,
   BookOpen,
-  GraduationCap,
   Trophy,
   Loader2,
   Lock,
@@ -17,7 +16,6 @@ import {
   Lightbulb,
   Check,
   X,
-  RotateCcw,
 } from "lucide-react";
 import { BidiStatement } from "@/components/ui/BidiStatement";
 
@@ -44,7 +42,7 @@ interface ReviewedQuestion {
   difficulty: string;
   subjectName: string;
   unitTitle?: string | null;
-  isCorrect: boolean;
+  isCorrect: boolean | null;
   selectedAnswer: string;
   correctAnswer: string;
   concept?: string | null;
@@ -55,9 +53,9 @@ interface ReviewedQuestion {
 interface ExamResult {
   score: number;
   totalQuestions: number;
+  totalObjective?: number;
   percentage: number;
   wrongCount: number;
-  unlockToken: string;
   reviewedQuestions: ReviewedQuestion[];
 }
 
@@ -83,67 +81,25 @@ export function EntranceGatekeeperModal({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [examResult, setExamResult] = useState<ExamResult | null>(null);
   const [timeSpent, setTimeSpent] = useState(0);
+  const [alreadyCompleted, setAlreadyCompleted] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
 
-  // Check if student has already unlocked the platform today
-  useEffect(() => {
-    // If user is admin or teacher, do not force gatekeeper exam
-    if (userRole && userRole !== "STUDENT") {
-      setIsOpen(false);
-      setIsLoading(false);
-      return;
-    }
-
-    const todayDate = new Date().toISOString().slice(0, 10);
-    const storageKey = `kholasa_entrance_unlocked_${userId || "guest"}_${todayDate}`;
-    const isUnlocked = localStorage.getItem(storageKey);
-
-    if (isUnlocked) {
-      setIsOpen(false);
-      setIsLoading(false);
-      return;
-    }
-
-    // Otherwise, fetch entrance questions
-    fetchQuestions();
-  }, [userRole, userId]);
-
-  // Support voluntarily opening the exam from dashboard
-  useEffect(() => {
-    const handleReopen = () => {
-      setExamResult(null);
-      setCurrentStep(0);
-      setAnswers({});
-      setTimeSpent(0);
-      fetchQuestions();
-    };
-    window.addEventListener("kholasa_open_entrance_exam", handleReopen);
-    return () => window.removeEventListener("kholasa_open_entrance_exam", handleReopen);
-  }, []);
-
-  const isAlreadyUnlocked = () => {
-    if (typeof window === "undefined") return false;
-    const todayDate = new Date().toISOString().slice(0, 10);
-    const storageKey = `kholasa_entrance_unlocked_${userId || "guest"}_${todayDate}`;
-    return Boolean(localStorage.getItem(storageKey));
-  };
-
-  // Timer for time spent
-  useEffect(() => {
-    if (!isOpen || examResult) return;
-    const interval = setInterval(() => {
-      setTimeSpent((prev) => prev + 1);
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [isOpen, examResult]);
-
-  const fetchQuestions = async () => {
-    setIsLoading(true);
+  const fetchQuestions = async (manual = false) => {
+    if (manual) setIsLoading(true);
     try {
       const res = await fetch("/api/student/daily-checkin");
       if (res.ok) {
         const data = await res.json();
-        if (data.questions && data.questions.length > 0) {
+        if (data.completed) {
+          // Already submitted today (server-verified). The initial mount stays
+          // silent; the dashboard button can still open a completion notice.
+          setQuestions(Array.isArray(data.questions) ? data.questions : []);
+          setAlreadyCompleted(manual);
+          setIsOpen(manual);
+        } else if (data.questions && data.questions.length > 0) {
           setQuestions(data.questions);
+          setAlreadyCompleted(false);
           setIsOpen(true);
         } else {
           // No questions available, do not block student
@@ -158,6 +114,54 @@ export function EntranceGatekeeperModal({
       setIsLoading(false);
     }
   };
+
+  // Ask the server whether today's challenge is still pending.
+  useEffect(() => {
+    // If user is admin or teacher, do not force gatekeeper exam
+    if (userRole && userRole !== "STUDENT") {
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      fetchQuestions();
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [userRole, userId]);
+
+  // Support voluntarily opening the exam from dashboard
+  useEffect(() => {
+    const handleReopen = () => {
+      setExamResult(null);
+      setCurrentStep(0);
+      setAnswers({});
+      setTimeSpent(0);
+      setSubmitError(null);
+      setAlreadyCompleted(false);
+      fetchQuestions(true);
+    };
+    window.addEventListener("kholasa_open_entrance_exam", handleReopen);
+    return () => window.removeEventListener("kholasa_open_entrance_exam", handleReopen);
+  }, []);
+
+  // Keep the gated dialog focused and prevent the page behind it from scrolling.
+  useEffect(() => {
+    if (!isOpen) return;
+    dialogRef.current?.focus();
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [isOpen, alreadyCompleted, examResult]);
+
+  // Timer for time spent
+  useEffect(() => {
+    if (!isOpen || examResult) return;
+    const interval = setInterval(() => {
+      setTimeSpent((prev) => prev + 1);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [isOpen, examResult]);
 
   const handleSelectOption = (questionId: string, optionId: string) => {
     setAnswers((prev) => ({
@@ -181,6 +185,7 @@ export function EntranceGatekeeperModal({
 
   const handleSubmitExam = async () => {
     setIsSubmitting(true);
+    setSubmitError(null);
     try {
       const payloadAnswers = questions.map((q) => ({
         questionId: q.id,
@@ -197,94 +202,161 @@ export function EntranceGatekeeperModal({
         }),
       });
 
+      const data = await res.json().catch(() => null);
       if (!res.ok) {
-        throw new Error("فشل تسليم الاختبار");
+        throw new Error(data?.error || "فشل تسليم الاختبار");
       }
 
-      const data: ExamResult = await res.json();
-      setExamResult(data);
+      setExamResult(data as ExamResult);
     } catch (err) {
-      console.error(err);
-      alert("حدث خطأ أثناء تصحيح الاختبار، يرجى المحاولة مرة أخرى.");
+      setSubmitError(
+        err instanceof Error && err.message
+          ? err.message
+          : "حدث خطأ أثناء تصحيح الاختبار، يرجى المحاولة مرة أخرى."
+      );
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleUnlockAndEnter = () => {
-    const todayDate = new Date().toISOString().slice(0, 10);
-    const storageKey = `kholasa_entrance_unlocked_${userId || "guest"}_${todayDate}`;
-    localStorage.setItem(storageKey, "true");
     setIsOpen(false);
+    setAlreadyCompleted(false);
+    setSubmitError(null);
   };
 
-  if (!isOpen || isLoading || questions.length === 0) {
+  if (!isOpen || isLoading) {
+    return null;
+  }
+
+  if (alreadyCompleted) {
+    return (
+      <div className="fixed inset-0 z-50 overflow-y-auto bg-[#F8FAFC] dark:bg-[#0F172A] flex items-center justify-center p-3 sm:p-5 font-sans animate-in fade-in duration-300">
+        <div
+          ref={dialogRef}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="daily-gate-complete-title"
+          tabIndex={-1}
+          className="w-full max-w-lg bg-white dark:bg-[#1E293B] rounded-2xl border border-[#E2E8F0] dark:border-[#334155] shadow-sm overflow-hidden flex flex-col text-right focus:outline-none"
+        >
+          <div className="p-5 sm:p-6 bg-[#0F172A] space-y-3">
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 rounded-xl bg-[#059669]/10 text-[#34D399] flex items-center justify-center shrink-0">
+                <CheckCircle2 className="w-5 h-5" />
+              </div>
+              <div>
+                <span className="text-[13px] font-bold text-[#34D399]">
+                  بوابة الدخول اليومية
+                </span>
+                <h2
+                  id="daily-gate-complete-title"
+                  className="text-lg font-bold text-[#F8FAFC]"
+                >
+                  أنجزت تحدي اليوم
+                </h2>
+              </div>
+            </div>
+          </div>
+
+          <div className="p-5 sm:p-6 space-y-3">
+            <p className="text-sm font-bold text-[#0F172A] dark:text-[#F8FAFC] leading-relaxed">
+              لقد أكملت تحدي الدخول اليومي بنجاح، وتم فتح المنصة لك لهذا اليوم.
+            </p>
+            <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8] leading-relaxed">
+              يمكنك الآن متابعة المذاكرة والدروس من حيث توقفت، وسيتجدد التحدي غداً.
+            </p>
+          </div>
+
+          <div className="p-4 sm:p-5 bg-[#F8FAFC] dark:bg-[#1E293B] border-t border-[#E2E8F0] dark:border-[#334155]">
+            <button
+              type="button"
+              onClick={handleUnlockAndEnter}
+              className="w-full h-11 px-6 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[13px] font-bold flex items-center justify-center gap-2 transition-colors active:opacity-80"
+            >
+              <Unlock className="w-4 h-4" />
+              <span>العودة للمنصة</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (questions.length === 0) {
     return null;
   }
 
   const currentQ = questions[currentStep];
+  if (!currentQ) {
+    return null;
+  }
   const isLastQuestion = currentStep === questions.length - 1;
   const answeredCount = Object.keys(answers).length;
+  const objectiveTotal = examResult
+    ? examResult.totalObjective ?? examResult.totalQuestions
+    : 0;
+  const objectiveLabel =
+    objectiveTotal === 1 ? "سؤال موضوعي واحد" : `${objectiveTotal} أسئلة موضوعية`;
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 font-sans animate-in fade-in duration-300">
-      <div className="w-full max-w-2xl bg-white dark:bg-[#111A2B] rounded-3xl border border-slate-200/90 dark:border-zinc-800 shadow-2xl overflow-hidden flex flex-col text-right">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-[#F8FAFC] dark:bg-[#0F172A] flex items-center justify-center p-3 sm:p-5 font-sans animate-in fade-in duration-300">
+      <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="daily-gate-title"
+        aria-describedby="daily-gate-desc"
+        tabIndex={-1}
+        className="w-full max-w-2xl bg-white dark:bg-[#1E293B] rounded-2xl border border-[#E2E8F0]/90 dark:border-[#334155] shadow-sm overflow-hidden flex flex-col text-right focus:outline-none"
+      >
         {/* Modal Top Header */}
-        <div className="p-5 sm:p-6 bg-gradient-to-r from-indigo-900 via-indigo-800 to-[#14243D] text-white space-y-3 relative overflow-hidden">
-          <div className="absolute -left-6 -top-6 w-28 h-28 bg-indigo-500/20 rounded-full blur-2xl pointer-events-none" />
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <div className="w-10 h-10 rounded-2xl bg-amber-400/20 text-amber-300 flex items-center justify-center shadow-xs">
+        <div className="p-5 sm:p-6 bg-[#0F172A] text-white space-y-3 relative overflow-hidden">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 rounded-xl bg-[#D97706]/10 text-[#D97706] flex items-center justify-center ">
                 <Sparkles className="w-5 h-5" />
               </div>
               <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-200">
-                  Daily Entrance Gatekeeper
+                <span className="text-[13px] font-bold uppercase tracking-wider text-[#FBBF24]">
+                  بوابة الدخول اليومية
                 </span>
-                <h2 className="text-base sm:text-lg font-black text-white flex items-center gap-2">
+                <h2
+                  id="daily-gate-title"
+                  className="text-base sm:text-lg font-bold text-[#F8FAFC] flex items-center gap-2"
+                >
                   <span>تحدي الدخول اليومي للمنصة</span>
-                  <span className="text-xs font-normal text-amber-300">⚡</span>
                 </h2>
               </div>
             </div>
 
             <div className="flex items-center gap-2">
-              <div className="px-3 py-1 rounded-full bg-white/10 backdrop-blur-xs text-xs font-bold text-indigo-100 flex items-center gap-1.5 border border-white/10">
-                <Lock className="w-3.5 h-3.5 text-amber-300" />
-                <span>{isAlreadyUnlocked() ? "تحدي تنشيط إضافي" : "أجب لتفتح المنصة"}</span>
+              <div className="px-3 py-1 rounded-full bg-[#1E293B] text-[13px] font-bold text-[#F8FAFC] flex items-center gap-2 border border-[#334155]">
+                <Lock className="w-3.5 h-3.5 text-[#D97706]" />
+                <span>أجب لتفتح المنصة</span>
               </div>
-              {isAlreadyUnlocked() && (
-                <button
-                  type="button"
-                  onClick={() => setIsOpen(false)}
-                  className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors"
-                  title="إغلاق النافذة"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              )}
             </div>
           </div>
 
-          <p className="text-xs text-indigo-200/90 leading-relaxed">
-            اختبار مدته 3 دقائق ينشط ذاكرتك بأهم الأفكار المتنوعة، ويتيح لك المنصة
+          <p id="daily-gate-desc" className="text-[13px] text-[#94A3B8] leading-relaxed">
+            اختبار قصير ينشط ذاكرتك بأهم الأفكار المتنوعة، ويتيح لك المنصة
             فور الانتهاء مع تحليل كامل لأخطائك.
           </p>
 
           {/* Stepper Progress Bar (Only during exam phase) */}
           {!examResult && (
-            <div className="pt-2 space-y-1.5">
-              <div className="flex items-center justify-between text-[11px] font-bold text-indigo-200">
+            <div className="pt-2 space-y-2">
+              <div className="flex flex-wrap items-center justify-between gap-2 text-[13px] font-bold text-[#F8FAFC]">
                 <span>
                   السؤال {currentStep + 1} من {questions.length}
                 </span>
-                <span>
+                <span className="text-[#94A3B8]">
                   تمت إجابة {answeredCount} من {questions.length}
                 </span>
               </div>
-              <div className="w-full h-2 rounded-full bg-black/20 overflow-hidden">
+              <div className="w-full h-2 rounded-full bg-[#334155] overflow-hidden">
                 <div
-                  className="h-full bg-gradient-to-r from-amber-400 to-emerald-400 rounded-full transition-all duration-300"
+                  className="h-full bg-[#4F46E5] rounded-full transition-all duration-300"
                   style={{
                     width: `${((currentStep + 1) / questions.length) * 100}%`,
                   }}
@@ -296,23 +368,32 @@ export function EntranceGatekeeperModal({
 
         {/* Modal Body */}
         <div className="p-5 sm:p-7 space-y-6 flex-1 overflow-y-auto max-h-[65vh]">
+          {submitError && (
+            <div
+              role="alert"
+              className="p-3 rounded-lg bg-[#DC2626]/10 border border-[#DC2626]/30 text-[#DC2626] dark:text-[#F87171] text-[13px] font-bold flex items-start gap-2"
+            >
+              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+              <span>{submitError}</span>
+            </div>
+          )}
           {/* Phase 1: Taking Exam */}
           {!examResult ? (
             <div className="space-y-5">
               {/* Question Category & Badges */}
-              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 dark:border-zinc-800 pb-3">
+              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#E2E8F0] dark:border-[#334155] pb-3">
                 <div className="flex items-center gap-2">
-                  <span className="px-2.5 py-0.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-[#4F46E5] text-xs font-black">
+                  <span className="px-3 py-1 rounded-lg bg-[#4F46E5]/10 dark:bg-[#1E293B] text-[#4F46E5] text-[13px] font-bold">
                     {currentQ.subjectName}
                   </span>
                   {currentQ.unitTitle && (
-                    <span className="px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-zinc-900 text-slate-500 text-[11px] font-bold">
+                    <span className="px-2 py-1 rounded-lg bg-[#F8FAFC] dark:bg-[#1E293B] text-[#64748B] text-[13px] font-bold">
                       {currentQ.unitTitle}
                     </span>
                   )}
                 </div>
 
-                <span className="text-[11px] font-bold px-2 py-0.5 rounded-md bg-amber-50 dark:bg-amber-950/40 text-amber-600">
+                <span className="text-[13px] font-bold px-2 py-1 rounded-md bg-[#D97706]/10 dark:bg-[#1E293B] text-[#D97706]">
                   {currentQ.type === "MCQ"
                     ? "اختيار من متعدد"
                     : currentQ.type === "TRUE_FALSE"
@@ -326,14 +407,14 @@ export function EntranceGatekeeperModal({
                 <BidiStatement
                   as="h3"
                   text={currentQ.statement}
-                  className="text-sm sm:text-base font-black text-[#14243D] dark:text-white leading-relaxed"
+                  className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-white leading-relaxed"
                 />
               </div>
 
               {/* Options Section */}
               {/* MCQ Options */}
               {currentQ.type === "MCQ" && (
-                <div className="space-y-2.5 pt-1">
+                <div className="space-y-3 pt-1">
                   {currentQ.options.map((opt, oIdx) => {
                     const isSelected =
                       answers[currentQ.id]?.selectedOptionId === opt.id;
@@ -343,19 +424,20 @@ export function EntranceGatekeeperModal({
                       <button
                         key={opt.id}
                         type="button"
+                        aria-pressed={isSelected}
                         onClick={() => handleSelectOption(currentQ.id, opt.id)}
-                        className={`w-full p-3 sm:p-3.5 rounded-2xl border text-right transition-all flex items-center justify-between gap-3 ${
+                        className={`w-full p-3 sm:p-4 rounded-xl border text-right transition-all flex items-center justify-between gap-3 ${
                           isSelected
-                            ? "bg-indigo-50/80 dark:bg-indigo-950/50 border-[#4F46E5] text-[#14243D] dark:text-white shadow-xs"
-                            : "bg-slate-50/60 dark:bg-zinc-900/60 hover:bg-slate-100 dark:hover:bg-zinc-800 border-slate-200 dark:border-zinc-800 text-slate-700 dark:text-zinc-200"
+                            ? "bg-[#4F46E5]/10 dark:bg-[#1E293B] border-[#4F46E5] text-[#0F172A] dark:text-white "
+                            : "bg-[#F8FAFC] dark:bg-[#1E293B]/60 hover:bg-[#F8FAFC] dark:hover:bg-[#334155] border-[#E2E8F0] dark:border-[#334155] text-[#0F172A] dark:text-[#F8FAFC]"
                         }`}
                       >
                         <div className="flex items-center gap-3">
                           <span
-                            className={`w-6 h-6 rounded-lg text-xs font-black flex items-center justify-center shrink-0 ${
+                            className={`w-6 h-6 rounded-lg text-[13px] font-bold flex items-center justify-center shrink-0 ${
                               isSelected
                                 ? "bg-[#4F46E5] text-white"
-                                : "bg-slate-200 dark:bg-zinc-800 text-slate-600 dark:text-zinc-400"
+                                : "bg-[#E2E8F0] dark:bg-[#334155] text-[#64748B] dark:text-[#94A3B8]"
                             }`}
                           >
                             {letters[oIdx] || oIdx + 1}
@@ -363,7 +445,7 @@ export function EntranceGatekeeperModal({
                           <BidiStatement
                             as="span"
                             text={opt.text}
-                            className="text-xs sm:text-sm font-bold"
+                            className="text-[13px] sm:text-sm font-bold"
                           />
                         </div>
 
@@ -371,7 +453,7 @@ export function EntranceGatekeeperModal({
                           className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 ${
                             isSelected
                               ? "border-[#4F46E5] bg-[#4F46E5] text-white"
-                              : "border-slate-300 dark:border-zinc-700 text-transparent"
+                              : "border-[#E2E8F0] dark:border-[#334155] text-transparent"
                           }`}
                         >
                           <Check className="w-3 h-3" />
@@ -385,7 +467,7 @@ export function EntranceGatekeeperModal({
               {/* TRUE_FALSE Options */}
               {currentQ.type === "TRUE_FALSE" && (
                 <div className="space-y-3 pt-2">
-                  <span className="text-xs text-slate-500 dark:text-zinc-400 block font-bold">
+                  <span className="text-[13px] text-[#64748B] dark:text-[#94A3B8] block font-bold">
                     حدد صحة العبارة:
                   </span>
                   <div className="grid grid-cols-2 gap-3">
@@ -399,13 +481,14 @@ export function EntranceGatekeeperModal({
                         <button
                           key={opt.id}
                           type="button"
+                          aria-pressed={isSelected}
                           onClick={() => handleSelectOption(currentQ.id, opt.id)}
-                          className={`p-4 rounded-2xl border text-xs sm:text-sm font-black flex items-center justify-center gap-2 transition-all ${
+                          className={`p-4 rounded-xl border text-[13px] sm:text-sm font-bold flex items-center justify-center gap-2 transition-all ${
                             isSelected
                               ? isTrue
-                                ? "bg-emerald-500 text-white border-emerald-500 shadow-md shadow-emerald-500/20"
-                                : "bg-rose-500 text-white border-rose-500 shadow-md shadow-rose-500/20"
-                              : "bg-slate-50 dark:bg-zinc-900 border-slate-200 dark:border-zinc-800 text-slate-700 dark:text-zinc-300 hover:border-slate-300"
+                                ? "bg-[#059669] text-white border-[#059669] shadow-sm"
+                                : "bg-[#DC2626] text-white border-[#DC2626] shadow-sm"
+                              : "bg-[#F8FAFC] dark:bg-[#1E293B] border-[#E2E8F0] dark:border-[#334155] text-[#0F172A] dark:text-[#F8FAFC] hover:border-[#E2E8F0]"
                           }`}
                         >
                           {isTrue ? (
@@ -424,7 +507,7 @@ export function EntranceGatekeeperModal({
               {/* ESSAY Input */}
               {currentQ.type === "ESSAY" && (
                 <div className="space-y-2 pt-1">
-                  <label className="text-xs text-slate-500 dark:text-zinc-400 block font-bold">
+                  <label className="text-[13px] text-[#64748B] dark:text-[#94A3B8] block font-bold">
                     اكتب إجابتك أو الفكرة الرئيسية باختصار:
                   </label>
                   <textarea
@@ -434,7 +517,7 @@ export function EntranceGatekeeperModal({
                       handleEssayChange(currentQ.id, e.target.value)
                     }
                     placeholder="اكتب هنا ما تتذكره من مفاهيم أو تعليلات... وسنعرض لك نموذج الإجابة والمفهوم لمقارنته فور التسليم."
-                    className="w-full p-3 rounded-2xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-900 text-xs font-bold text-[#14243D] dark:text-white focus:outline-none focus:border-[#4F46E5] leading-relaxed"
+                    className="w-full p-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#4F46E5] leading-relaxed"
                   />
                 </div>
               )}
@@ -444,41 +527,42 @@ export function EntranceGatekeeperModal({
             <div className="space-y-6 animate-in fade-in duration-300">
               {/* Score Header Card */}
               <div
-                className={`p-6 rounded-3xl text-center space-y-3 border ${
+                className={`p-6 rounded-xl text-center space-y-3 border ${
                   examResult.percentage >= 70
-                    ? "bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800/60"
-                    : "bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800/60"
+                    ? "bg-[#059669]/10 dark:bg-[#1E293B] border-[#E2E8F0] dark:border-[#34D399]/60"
+                    : "bg-[#D97706]/10 dark:bg-[#1E293B] border-[#E2E8F0] dark:border-[#FBBF24]/60"
                 }`}
               >
-                <div className="w-14 h-14 rounded-2xl bg-white dark:bg-zinc-900 shadow-md flex items-center justify-center mx-auto text-emerald-600">
+                <div className="w-14 h-14 rounded-xl bg-white dark:bg-[#1E293B] shadow-sm flex items-center justify-center mx-auto text-[#059669]">
                   {examResult.percentage === 100 ? (
-                    <Trophy className="w-8 h-8 text-amber-500" />
+                    <Trophy className="w-11 h-11 text-[#D97706]" />
                   ) : examResult.percentage >= 70 ? (
-                    <CheckCircle2 className="w-8 h-8 text-emerald-500" />
+                    <CheckCircle2 className="w-11 h-11 text-[#059669]" />
                   ) : (
-                    <AlertCircle className="w-8 h-8 text-amber-500" />
+                    <AlertCircle className="w-11 h-11 text-[#D97706]" />
                   )}
                 </div>
 
                 <div>
-                  <h3 className="text-lg sm:text-xl font-black text-[#14243D] dark:text-white">
+                  <h3 className="text-lg sm:text-xl font-bold text-[#0F172A] dark:text-white">
                     {examResult.percentage === 100
-                      ? "نتيجة أسطورية! إجابات مثالية بدون أي خطأ 🏆"
+                      ? "أداء ممتاز! أجبت على كل الأسئلة الموضوعية بشكل صحيح"
                       : examResult.percentage >= 70
-                      ? "أداء متميز! أحسنت الاستذكار 👏"
-                      : "محاولة جيدة! راجع أخطاءك الآن لترسخ في ذهنك 💡"}
+                      ? "أداء متميز! أحسنت الاستذكار"
+                      : "محاولة جيدة! راجع أخطاءك الآن لترسخ في ذهنك"}
                   </h3>
-                  <p className="text-xs text-slate-500 dark:text-zinc-400 mt-1">
-                    نتيجتك: {examResult.score} من أصل {examResult.totalQuestions}{" "}
-                    سؤال ({examResult.percentage}%)
+                  <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8] mt-1">
+                    {objectiveTotal > 0
+                      ? `نتيجتك: ${examResult.score} من أصل ${objectiveLabel} (${examResult.percentage}%)`
+                      : "تم تسليم إجاباتك المقالية، راجع النموذج أدناه."}
                   </p>
                 </div>
 
                 {examResult.wrongCount > 0 && (
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-100 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 text-xs font-bold">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#DC2626]/10 dark:bg-[#1E293B] text-[#DC2626] dark:text-[#F87171] text-[13px] font-bold">
                     <span>
-                      لديك {examResult.wrongCount} أسئلة بحاجة لمراجعة وتم حفظها
-                      في "غلطاتي"
+                      عدد الأسئلة التي تحتاج مراجعة: {examResult.wrongCount} — تم حفظها
+                      في ركن «غلطاتي»
                     </span>
                   </div>
                 )}
@@ -486,12 +570,12 @@ export function EntranceGatekeeperModal({
 
               {/* Questions Breakdown List */}
               <div className="space-y-4">
-                <div className="flex items-center justify-between border-b border-slate-100 dark:border-zinc-800 pb-2">
-                  <h4 className="text-xs font-black text-[#14243D] dark:text-white flex items-center gap-1.5">
+                <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#334155] pb-2">
+                  <h4 className="text-[13px] font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
                     <BookOpen className="w-4 h-4 text-[#4F46E5]" />
                     <span>تفاصيل إجاباتك وتحليل كل سؤال:</span>
                   </h4>
-                  <span className="text-[11px] text-slate-400 font-bold">
+                  <span className="text-[13px] text-[#94A3B8] font-bold">
                     {examResult.reviewedQuestions.length} أسئلة
                   </span>
                 </div>
@@ -499,32 +583,39 @@ export function EntranceGatekeeperModal({
                 {examResult.reviewedQuestions.map((q, idx) => (
                   <div
                     key={q.id}
-                    className={`p-4 rounded-2xl border transition-all space-y-3 ${
-                      q.isCorrect
-                        ? "bg-white dark:bg-[#111A2B] border-slate-200 dark:border-zinc-800"
-                        : "bg-rose-50/40 dark:bg-rose-950/20 border-rose-200 dark:border-rose-900/60"
+                    className={`p-4 rounded-xl border transition-all space-y-3 ${
+                      q.isCorrect === true
+                        ? "bg-white dark:bg-[#1E293B] border-[#E2E8F0] dark:border-[#334155]"
+                        : q.isCorrect === false
+                        ? "bg-[#DC2626]/10 dark:bg-[#1E293B] border-[#E2E8F0] dark:border-[#F87171]/60"
+                        : "bg-[#D97706]/10 dark:bg-[#1E293B] border-[#E2E8F0] dark:border-[#FBBF24]/60"
                     }`}
                   >
                     {/* Question Header & Status */}
                     <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center gap-2">
-                        <span className="text-xs font-black text-slate-400">
+                        <span className="text-[13px] font-bold text-[#94A3B8]">
                           #{idx + 1}
                         </span>
-                        <span className="text-[11px] font-bold text-slate-500">
+                        <span className="text-[13px] font-bold text-[#64748B]">
                           {q.subjectName}
                         </span>
                       </div>
 
-                      {q.isCorrect ? (
-                        <span className="inline-flex items-center gap-1 text-[11px] font-black text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 px-2.5 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800">
+                      {q.isCorrect === true ? (
+                        <span className="inline-flex items-center gap-1 text-[13px] font-bold text-[#059669] dark:text-[#34D399] bg-[#059669]/10 dark:bg-[#1E293B] px-3 py-1 rounded-full border border-[#E2E8F0] dark:border-[#34D399]">
                           <CheckCircle2 className="w-3 h-3" />
                           <span>إجابة صحيحة</span>
                         </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1 text-[11px] font-black text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/50 px-2.5 py-0.5 rounded-full border border-rose-200 dark:border-rose-800">
+                      ) : q.isCorrect === false ? (
+                        <span className="inline-flex items-center gap-1 text-[13px] font-bold text-[#DC2626] dark:text-[#F87171] bg-[#DC2626]/10 dark:bg-[#1E293B] px-3 py-1 rounded-full border border-[#E2E8F0] dark:border-[#F87171]">
                           <XCircle className="w-3 h-3" />
                           <span>إجابة خاطئة</span>
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 text-[13px] font-bold text-[#D97706] dark:text-[#FBBF24] bg-[#D97706]/10 dark:bg-[#1E293B] px-3 py-1 rounded-full border border-[#E2E8F0] dark:border-[#FBBF24]">
+                          <AlertCircle className="w-3 h-3" />
+                          <span>سؤال مقالي — راجع النموذج</span>
                         </span>
                       )}
                     </div>
@@ -533,28 +624,30 @@ export function EntranceGatekeeperModal({
                     <BidiStatement
                       as="p"
                       text={q.statement}
-                      className="text-xs sm:text-sm font-black text-[#14243D] dark:text-white leading-relaxed"
+                      className="text-[13px] sm:text-sm font-bold text-[#0F172A] dark:text-white leading-relaxed"
                     />
 
                     {/* Answers Comparison */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs pt-1">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[13px] pt-1">
                       {/* What Student Answered */}
                       <div
-                        className={`p-2.5 rounded-xl border ${
-                          q.isCorrect
-                            ? "bg-emerald-50/50 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-800 text-emerald-900 dark:text-emerald-200"
-                            : "bg-rose-50 dark:bg-rose-950/40 border-rose-200 dark:border-rose-800 text-rose-900 dark:text-rose-200"
+                        className={`p-3 rounded-xl border ${
+                          q.isCorrect === true
+                            ? "bg-[#059669]/10 dark:bg-[#1E293B] border-[#E2E8F0] dark:border-[#34D399] text-[#059669] dark:text-[#34D399]"
+                            : q.isCorrect === false
+                            ? "bg-[#DC2626]/10 dark:bg-[#1E293B] border-[#E2E8F0] dark:border-[#F87171] text-[#DC2626] dark:text-[#F87171]"
+                            : "bg-[#D97706]/10 dark:bg-[#1E293B] border-[#E2E8F0] dark:border-[#FBBF24] text-[#D97706] dark:text-[#FBBF24]"
                         }`}
                       >
-                        <span className="text-[10px] font-bold block text-slate-400 mb-0.5">
-                          إجابتك التي اخترتها:
+                        <span className="text-[13px] font-bold block text-[#94A3B8] mb-1">
+                          إجابتك:
                         </span>
                         <span className="font-bold">{q.selectedAnswer}</span>
                       </div>
 
                       {/* Correct Answer */}
-                      <div className="p-2.5 rounded-xl border bg-emerald-50 dark:bg-emerald-950/30 border-emerald-300 dark:border-emerald-800 text-emerald-900 dark:text-emerald-100">
-                        <span className="text-[10px] font-bold block text-emerald-600 dark:text-emerald-400 mb-0.5">
+                      <div className="p-3 rounded-xl border bg-[#059669]/10 dark:bg-[#1E293B] border-[#E2E8F0] dark:border-[#34D399] text-[#059669] dark:text-[#34D399]">
+                        <span className="text-[13px] font-bold block text-[#059669] dark:text-[#34D399] mb-1">
                           الإجابة النموذجية الصحيحة:
                         </span>
                         <span className="font-bold">{q.correctAnswer}</span>
@@ -563,19 +656,19 @@ export function EntranceGatekeeperModal({
 
                     {/* Concept & Educational Explanation */}
                     {(q.concept || q.correctReason) && (
-                      <div className="p-3 rounded-xl bg-slate-50 dark:bg-zinc-900/80 border border-slate-200/80 dark:border-zinc-800 space-y-1 text-xs">
-                        <div className="flex items-center gap-1.5 text-[#4F46E5] font-black text-[11px]">
+                      <div className="p-3 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/80 border border-[#E2E8F0]/80 dark:border-[#334155] space-y-1 text-[13px]">
+                        <div className="flex items-center gap-2 text-[#4F46E5] font-bold text-[13px]">
                           <Lightbulb className="w-3.5 h-3.5" />
                           <span>التفسير التعليمي والمفهوم:</span>
                         </div>
                         {q.concept && (
-                          <div className="text-slate-600 dark:text-zinc-300">
+                          <div className="text-[#64748B] dark:text-[#F8FAFC]">
                             <span className="font-bold">المفهوم: </span>
                             {q.concept}
                           </div>
                         )}
                         {q.correctReason && (
-                          <p className="text-slate-500 dark:text-zinc-400 leading-relaxed text-[11px]">
+                          <p className="text-[#64748B] dark:text-[#94A3B8] leading-relaxed text-[13px]">
                             {q.correctReason}
                           </p>
                         )}
@@ -589,7 +682,7 @@ export function EntranceGatekeeperModal({
         </div>
 
         {/* Modal Footer Controls */}
-        <div className="p-4 sm:p-5 bg-slate-50 dark:bg-zinc-900 border-t border-slate-100 dark:border-zinc-800 flex items-center justify-between gap-3">
+        <div className="p-4 sm:p-5 bg-[#F8FAFC] dark:bg-[#1E293B] border-t border-[#E2E8F0] dark:border-[#334155] flex items-center justify-between gap-3">
           {!examResult ? (
             <>
               {/* Previous Button */}
@@ -597,7 +690,7 @@ export function EntranceGatekeeperModal({
                 type="button"
                 onClick={() => setCurrentStep((prev) => Math.max(0, prev - 1))}
                 disabled={currentStep === 0}
-                className="h-10 px-4 rounded-xl border border-slate-200 dark:border-zinc-800 text-xs font-bold text-slate-600 dark:text-zinc-300 hover:bg-white dark:hover:bg-zinc-800 disabled:opacity-30 transition-all flex items-center gap-1.5"
+                className="h-11 px-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-bold text-[#64748B] dark:text-[#F8FAFC] hover:bg-white dark:hover:bg-[#334155] disabled:opacity-30 transition-all flex items-center gap-2"
               >
                 <ArrowRight className="w-3.5 h-3.5" />
                 <span>السابق</span>
@@ -612,7 +705,7 @@ export function EntranceGatekeeperModal({
                       Math.min(questions.length - 1, prev + 1)
                     )
                   }
-                  className="h-10 px-6 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-xs font-black shadow-md shadow-[#4F46E5]/25 flex items-center gap-1.5 transition-all"
+                  className="h-11 px-6 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[13px] font-bold shadow-sm flex items-center gap-2 transition-all"
                 >
                   <span>السؤال التالي</span>
                   <ArrowLeft className="w-3.5 h-3.5" />
@@ -622,7 +715,7 @@ export function EntranceGatekeeperModal({
                   type="button"
                   onClick={handleSubmitExam}
                   disabled={isSubmitting}
-                  className="h-10 px-6 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-600 text-white text-xs font-black shadow-md shadow-emerald-600/30 flex items-center gap-2 transition-all"
+                  className="h-11 px-6 rounded-xl bg-[#059669] hover:bg-[#047857] text-white text-[13px] font-bold flex items-center gap-2 transition-colors"
                 >
                   {isSubmitting ? (
                     <>
@@ -641,13 +734,13 @@ export function EntranceGatekeeperModal({
           ) : (
             /* Button after viewing mistakes: Unlocks platform and enters */
             <div className="w-full flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <span className="text-xs text-slate-500 dark:text-zinc-400">
-                🎉 تم فتح المنصة بنجاح لك لهذا اليوم
+              <span className="text-[13px] text-[#64748B] dark:text-[#94A3B8]">
+                تم فتح المنصة لك لهذا اليوم
               </span>
               <button
                 type="button"
                 onClick={handleUnlockAndEnter}
-                className="h-11 px-8 rounded-2xl bg-gradient-to-r from-[#4F46E5] to-[#4338CA] hover:from-[#4338CA] hover:to-[#3730A3] text-white text-xs sm:text-sm font-black shadow-xl shadow-[#4F46E5]/30 flex items-center justify-center gap-2 transition-all transform active:scale-95"
+                className="w-full sm:w-auto h-11 px-8 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[13px] sm:text-sm font-bold flex items-center justify-center gap-2 transition-colors active:opacity-80"
               >
                 <Unlock className="w-4 h-4" />
                 <span>دخول المنصة الآن والمتابعة للمذاكرة</span>

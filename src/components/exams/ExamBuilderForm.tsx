@@ -61,7 +61,7 @@ export function ExamBuilderForm({
     initialLessonId ? "lessons" : initialUnitId ? "unit" : "subject"
   );
   const [selectedUnitId, setSelectedUnitId] = useState<string>(
-    initialUnitId || ""
+    initialUnitId || (subjects[0]?.units?.[0]?.id ?? "")
   );
   const [selectedLessonIds, setSelectedLessonIds] = useState<string[]>(
     initialLessonId ? [initialLessonId] : []
@@ -93,14 +93,8 @@ export function ExamBuilderForm({
   // Active Subject & Units
   const currentSubject = subjects.find((s) => s.id === selectedSubjectId);
   const currentUnits = currentSubject?.units || [];
-  const activeUnit = currentUnits.find((u) => u.id === selectedUnitId);
-
-  // Auto-select first unit if none selected
-  useEffect(() => {
-    if (currentUnits.length > 0 && !selectedUnitId) {
-      setSelectedUnitId(currentUnits[0].id);
-    }
-  }, [currentUnits, selectedUnitId]);
+  const effectiveUnitId = selectedUnitId || (currentUnits[0]?.id ?? "");
+  const activeUnit = currentUnits.find((u) => u.id === effectiveUnitId);
 
   // Live Query matching questions count from DB
   useEffect(() => {
@@ -117,8 +111,8 @@ export function ExamBuilderForm({
         const params = new URLSearchParams();
         params.set("subjectId", selectedSubjectId);
 
-        if (scopeType === "unit" && selectedUnitId) {
-          params.set("unitId", selectedUnitId);
+        if (scopeType === "unit" && effectiveUnitId) {
+          params.set("unitId", effectiveUnitId);
         } else if (scopeType === "lessons" && selectedLessonIds.length > 0) {
           params.set("lessonIds", selectedLessonIds.join(","));
         }
@@ -145,7 +139,7 @@ export function ExamBuilderForm({
   }, [
     selectedSubjectId,
     scopeType,
-    selectedUnitId,
+    effectiveUnitId,
     selectedLessonIds,
     questionType,
     difficulty,
@@ -186,7 +180,7 @@ export function ExamBuilderForm({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           subjectId: selectedSubjectId,
-          unitId: scopeType === "unit" ? selectedUnitId : undefined,
+          unitId: scopeType === "unit" ? effectiveUnitId : undefined,
           lessonIds: scopeType === "lessons" ? selectedLessonIds : undefined,
           type: questionType,
           difficulty,
@@ -250,32 +244,32 @@ export function ExamBuilderForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-6 pb-12">
       {error && (
-        <div className="p-4 rounded-xl bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/40 flex items-start gap-3">
-          <AlertCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
-          <p className="text-xs sm:text-sm font-bold text-red-700 dark:text-red-300">
+        <div className="p-4 rounded-xl bg-[#DC2626]/10 dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#F87171]/40 flex items-start gap-3">
+          <AlertCircle className="w-5 h-5 text-[#DC2626] shrink-0 mt-1" />
+          <p className="text-[13px] sm:text-sm font-bold text-[#DC2626] dark:text-[#F87171]">
             {error}
           </p>
         </div>
       )}
 
       {/* 1. المادة الدراسية */}
-      <section className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 shadow-2xs space-y-4">
+      <section className="p-5 sm:p-6 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]  space-y-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 text-[#4F46E5] dark:text-indigo-400 flex items-center justify-center font-bold">
+          <div className="flex items-center gap-3">
+            <div className="w-11 h-11 rounded-lg bg-[#4F46E5]/10 dark:bg-[#1E293B] text-[#4F46E5] dark:text-[#6366F1] flex items-center justify-center font-bold">
               <BookOpen className="w-4 h-4" />
             </div>
             <div>
               <h2 className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-white">
                 1. المادة الدراسية
               </h2>
-              <p className="text-[11px] text-[#475569] dark:text-zinc-400">
+              <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8]">
                 اختار المادة اللي عاوز تتمرن عليها وتراجعها
               </p>
             </div>
           </div>
           {currentSubject && (
-            <span className="text-xs font-bold text-[#4F46E5] dark:text-indigo-400">
+            <span className="text-[13px] font-bold text-[#4F46E5] dark:text-[#6366F1]">
               {currentSubject.name}
             </span>
           )}
@@ -293,22 +287,22 @@ export function ExamBuilderForm({
                   setSelectedUnitId(s.units[0]?.id || "");
                   setSelectedLessonIds([]);
                 }}
-                className={`p-3.5 rounded-xl border text-right transition-colors flex items-center justify-between gap-3 ${
+                className={`p-4 rounded-xl border text-right transition-colors flex items-center justify-between gap-3 ${
                   isSelected
-                    ? "bg-indigo-50/70 dark:bg-indigo-950/50 border-2 border-[#4F46E5] dark:border-indigo-400 text-[#0F172A] dark:text-white shadow-2xs"
-                    : "bg-white dark:bg-zinc-900/80 border-slate-200 dark:border-zinc-800/80 text-[#0F172A] dark:text-zinc-100 hover:border-slate-400 dark:hover:border-zinc-600"
+                    ? "bg-[#4F46E5]/10 dark:bg-[#1E293B] border-2 border-[#4F46E5] dark:border-[#6366F1] text-[#0F172A] dark:text-white "
+                    : "bg-white dark:bg-[#1E293B]/80 border-[#E2E8F0] dark:border-[#334155]/80 text-[#0F172A] dark:text-[#F8FAFC] hover:border-[#E2E8F0] dark:hover:border-[#64748B]"
                 }`}
               >
-                <div className="flex items-center gap-2.5 truncate">
+                <div className="flex items-center gap-3 truncate">
                   <div
                     className="w-3 h-3 rounded-full shrink-0"
                     style={{ backgroundColor: s.color || "#4F46E5" }}
                   />
                   <div className="truncate">
-                    <span className="text-xs sm:text-sm font-bold block truncate">
+                    <span className="text-[13px] sm:text-sm font-bold block truncate">
                       {s.name}
                     </span>
-                    <span className="text-[10px] text-[#475569] dark:text-zinc-400 block">
+                    <span className="text-[13px] text-[#64748B] dark:text-[#94A3B8] block">
                       {s.units.length} وحدات دراسية
                     </span>
                   </div>
@@ -317,8 +311,8 @@ export function ExamBuilderForm({
                 <div
                   className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 transition-colors ${
                     isSelected
-                      ? "bg-[#4F46E5] dark:bg-indigo-500 border-[#4F46E5] dark:border-indigo-500 text-white"
-                      : "border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-900"
+                      ? "bg-[#4F46E5] dark:bg-[#6366F1] border-[#4F46E5] dark:border-[#6366F1] text-white"
+                      : "border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B]"
                   }`}
                 >
                   {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
@@ -330,17 +324,17 @@ export function ExamBuilderForm({
       </section>
 
       {/* 2. الوحدة والدروس */}
-      <section className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 shadow-2xs space-y-4">
+      <section className="p-5 sm:p-6 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]  space-y-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 text-[#4F46E5] dark:text-indigo-400 flex items-center justify-center font-bold">
+          <div className="flex items-center gap-3">
+            <div className="w-11 h-11 rounded-lg bg-[#4F46E5]/10 dark:bg-[#1E293B] text-[#4F46E5] dark:text-[#6366F1] flex items-center justify-center font-bold">
               <Layers className="w-4 h-4" />
             </div>
             <div>
               <h2 className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-white">
                 2. الوحدة والدروس
               </h2>
-              <p className="text-[11px] text-[#475569] dark:text-zinc-400">
+              <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8]">
                 حدد لو عاوز امتحان شامل على المادة كلها أو وحدة أو دروس معينة
               </p>
             </div>
@@ -348,20 +342,20 @@ export function ExamBuilderForm({
         </div>
 
         {/* Scope Type Selector Tabs */}
-        <div className="flex items-center gap-1.5 p-1 bg-slate-100 dark:bg-zinc-900 rounded-xl border border-slate-200 dark:border-zinc-800">
-          {[
+        <div className="flex items-center gap-2 p-1 bg-[#F8FAFC] dark:bg-[#1E293B] rounded-xl border border-[#E2E8F0] dark:border-[#334155]">
+          {([
             { id: "subject", label: "كامل المادة" },
             { id: "unit", label: "وحدة محددة" },
             { id: "lessons", label: "دروس مخصصة" },
-          ].map((scope) => (
+          ] as const).map((scope) => (
             <button
               key={scope.id}
               type="button"
-              onClick={() => setScopeType(scope.id as any)}
-              className={`flex-1 py-2 px-3 rounded-lg text-xs font-bold transition-colors ${
+              onClick={() => setScopeType(scope.id)}
+              className={`flex-1 py-2 px-3 rounded-lg text-[13px] font-bold transition-colors ${
                 scopeType === scope.id
-                  ? "bg-white dark:bg-zinc-900 text-[#0F172A] dark:text-white shadow-2xs"
-                  : "text-[#475569] dark:text-zinc-400 hover:text-[#0F172A]"
+                  ? "bg-white dark:bg-[#1E293B] text-[#0F172A] dark:text-white "
+                  : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A]"
               }`}
             >
               {scope.label}
@@ -372,12 +366,12 @@ export function ExamBuilderForm({
         {/* Scope = Unit */}
         {scopeType === "unit" && (
           <div className="pt-1 space-y-2">
-            <label className="text-xs font-bold text-[#0F172A] dark:text-zinc-200 block">
+            <label className="text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC] block">
               اختر الوحدة الدراسية:
             </label>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {currentUnits.map((u) => {
-                const isSelected = selectedUnitId === u.id;
+                const isSelected = effectiveUnitId === u.id;
                 return (
                   <button
                     key={u.id}
@@ -385,23 +379,23 @@ export function ExamBuilderForm({
                     onClick={() => setSelectedUnitId(u.id)}
                     className={`p-3 rounded-xl border text-right transition-colors flex items-center justify-between gap-3 ${
                       isSelected
-                        ? "bg-indigo-50/70 dark:bg-indigo-950/50 border-2 border-[#4F46E5] dark:border-indigo-400 text-[#0F172A] dark:text-white shadow-2xs"
-                        : "bg-white dark:bg-zinc-900/80 border-slate-200 dark:border-zinc-800/80 text-[#0F172A] dark:text-zinc-100 hover:border-slate-400 dark:hover:border-zinc-600"
+                        ? "bg-[#4F46E5]/10 dark:bg-[#1E293B] border-2 border-[#4F46E5] dark:border-[#6366F1] text-[#0F172A] dark:text-white "
+                        : "bg-white dark:bg-[#1E293B]/80 border-[#E2E8F0] dark:border-[#334155]/80 text-[#0F172A] dark:text-[#F8FAFC] hover:border-[#E2E8F0] dark:hover:border-[#64748B]"
                     }`}
                   >
                     <div className="truncate">
-                      <span className="text-xs font-bold block truncate">
+                      <span className="text-[13px] font-bold block truncate">
                         {u.title}
                       </span>
-                      <span className="text-[10px] text-[#475569] dark:text-zinc-400 block">
+                      <span className="text-[13px] text-[#64748B] dark:text-[#94A3B8] block">
                         {u.lessons.length} دروس
                       </span>
                     </div>
                     <div
                       className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ${
                         isSelected
-                          ? "bg-[#4F46E5] dark:bg-indigo-500 border-[#4F46E5] dark:border-indigo-500 text-white"
-                          : "border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-900"
+                          ? "bg-[#4F46E5] dark:bg-[#6366F1] border-[#4F46E5] dark:border-[#6366F1] text-white"
+                          : "border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B]"
                       }`}
                     >
                       {isSelected && <Check className="w-2.5 h-2.5 stroke-[3]" />}
@@ -416,28 +410,28 @@ export function ExamBuilderForm({
         {/* Scope = Lessons */}
         {scopeType === "lessons" && (
           <div className="pt-1 space-y-3">
-            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 dark:border-zinc-800 pb-2.5">
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#E2E8F0] dark:border-[#334155] pb-3">
               <div className="flex items-center gap-2">
-                <span className="text-xs font-bold text-[#0F172A] dark:text-zinc-200">
+                <span className="text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC]">
                   حدد الدروس المستهدفة
                 </span>
-                <span className="text-[11px] text-[#4F46E5] dark:text-indigo-400 font-bold bg-indigo-50 dark:bg-indigo-950/40 px-2 py-0.5 rounded">
+                <span className="text-[13px] text-[#4F46E5] dark:text-[#6366F1] font-bold bg-[#4F46E5]/10 dark:bg-[#1E293B] px-2 py-1 rounded">
                   ({selectedLessonIds.length} دروس مختارة)
                 </span>
               </div>
-              <div className="flex items-center gap-2 text-xs">
+              <div className="flex items-center gap-2 text-[13px]">
                 <button
                   type="button"
                   onClick={selectAllLessonsInActiveUnit}
-                  className="text-xs font-bold text-[#4F46E5] dark:text-indigo-400 hover:underline"
+                  className="text-[13px] font-bold text-[#4F46E5] dark:text-[#6366F1] hover:underline"
                 >
                   تحديد دروس الوحدة الحالية
                 </button>
-                <span className="text-slate-300">•</span>
+                <span className="text-[#94A3B8]">•</span>
                 <button
                   type="button"
                   onClick={clearLessonsSelection}
-                  className="text-xs text-[#475569] dark:text-zinc-400 hover:underline"
+                  className="text-[13px] text-[#64748B] dark:text-[#94A3B8] hover:underline"
                 >
                   إلغاء التحديد
                 </button>
@@ -453,26 +447,26 @@ export function ExamBuilderForm({
                       key={lesson.id}
                       type="button"
                       onClick={() => toggleLesson(lesson.id)}
-                      className={`p-2.5 rounded-xl border text-right transition-colors flex items-start sm:items-center gap-3 ${
+                      className={`p-3 rounded-xl border text-right transition-colors flex items-start sm:items-center gap-3 ${
                         isChecked
-                          ? "bg-indigo-50/70 dark:bg-indigo-950/40 border-2 border-[#4F46E5] text-[#0F172A] dark:text-white"
-                          : "bg-white dark:bg-zinc-900 border-slate-200 dark:border-zinc-800 text-[#0F172A] dark:text-zinc-200 hover:border-slate-300"
+                          ? "bg-[#4F46E5]/10 dark:bg-[#1E293B] border-2 border-[#4F46E5] text-[#0F172A] dark:text-white"
+                          : "bg-white dark:bg-[#1E293B] border-[#E2E8F0] dark:border-[#334155] text-[#0F172A] dark:text-[#F8FAFC] hover:border-[#E2E8F0]"
                       }`}
                     >
                       <div
-                        className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 mt-0.5 sm:mt-0 transition-colors ${
+                        className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 mt-1 sm:mt-0 transition-colors ${
                           isChecked
                             ? "bg-[#4F46E5] border-[#4F46E5] text-white"
-                            : "border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-900"
+                            : "border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B]"
                         }`}
                       >
                         {isChecked && <Check className="w-3 h-3 stroke-[3]" />}
                       </div>
                       <div className="truncate">
-                        <span className="text-xs font-bold block truncate">
+                        <span className="text-[13px] font-bold block truncate">
                           {lesson.title}
                         </span>
-                        <span className="text-[10px] text-[#475569] dark:text-zinc-400 block truncate">
+                        <span className="text-[13px] text-[#64748B] dark:text-[#94A3B8] block truncate">
                           {u.title}
                         </span>
                       </div>
@@ -488,46 +482,46 @@ export function ExamBuilderForm({
       {/* Grid: 3. نوع الأسئلة & 4. مستوى الصعوبة */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* 3. نوع الأسئلة */}
-        <section className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 shadow-2xs space-y-4 flex flex-col justify-between">
+        <section className="p-5 sm:p-6 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]  space-y-4 flex flex-col justify-between">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 text-[#4F46E5] dark:text-indigo-400 flex items-center justify-center font-bold">
+              <div className="w-7 h-7 rounded-lg bg-[#4F46E5]/10 dark:bg-[#1E293B] text-[#4F46E5] dark:text-[#6366F1] flex items-center justify-center font-bold">
                 <HelpCircle className="w-4 h-4" />
               </div>
               <h2 className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-white">
                 3. نوع الأسئلة
               </h2>
             </div>
-            <p className="text-[11px] text-[#475569] dark:text-zinc-400 pr-9">
+            <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8] pr-9">
               اختار شكل ونمط الأسئلة اللي تحب تتدرب عليها
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
-            {[
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+            {([
               { id: "MCQ", label: "اختيار من متعدد" },
               { id: "TRUE_FALSE", label: "صح أم خطأ" },
               { id: "ESSAY", label: "أسئلة مقالية" },
               { id: "ALL", label: "مختلط (كل الأنواع)" },
-            ].map((t) => {
+            ] as const).map((t) => {
               const isSelected = questionType === t.id;
               return (
                 <button
                   key={t.id}
                   type="button"
-                  onClick={() => setQuestionType(t.id as any)}
-                  className={`h-12 px-3.5 rounded-xl border text-right transition-colors flex items-center justify-between gap-2 ${
+                  onClick={() => setQuestionType(t.id)}
+                  className={`h-12 px-4 rounded-xl border text-right transition-colors flex items-center justify-between gap-2 ${
                     isSelected
-                      ? "bg-indigo-50/70 dark:bg-indigo-950/50 border-2 border-[#4F46E5] dark:border-indigo-400 text-[#0F172A] dark:text-white shadow-2xs font-bold"
-                      : "bg-white dark:bg-zinc-900/80 border-slate-200 dark:border-zinc-800/80 text-[#0F172A] dark:text-zinc-100 hover:border-slate-400 dark:hover:border-zinc-600 font-medium"
+                      ? "bg-[#4F46E5]/10 dark:bg-[#1E293B] border-2 border-[#4F46E5] dark:border-[#6366F1] text-[#0F172A] dark:text-white  font-bold"
+                      : "bg-white dark:bg-[#1E293B]/80 border-[#E2E8F0] dark:border-[#334155]/80 text-[#0F172A] dark:text-[#F8FAFC] hover:border-[#E2E8F0] dark:hover:border-[#64748B] font-medium"
                   }`}
                 >
-                  <span className="text-xs truncate">{t.label}</span>
+                  <span className="text-[13px] truncate">{t.label}</span>
                   <div
                     className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ${
                       isSelected
-                        ? "bg-[#4F46E5] dark:bg-indigo-500 border-[#4F46E5] dark:border-indigo-500 text-white"
-                        : "border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-900"
+                        ? "bg-[#4F46E5] dark:bg-[#6366F1] border-[#4F46E5] dark:border-[#6366F1] text-white"
+                        : "border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B]"
                     }`}
                   >
                     {isSelected && <Check className="w-2.5 h-2.5 stroke-[3]" />}
@@ -539,46 +533,46 @@ export function ExamBuilderForm({
         </section>
 
         {/* 4. مستوى الصعوبة */}
-        <section className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 shadow-2xs space-y-4 flex flex-col justify-between">
+        <section className="p-5 sm:p-6 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]  space-y-4 flex flex-col justify-between">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 text-[#4F46E5] dark:text-indigo-400 flex items-center justify-center font-bold">
+              <div className="w-7 h-7 rounded-lg bg-[#4F46E5]/10 dark:bg-[#1E293B] text-[#4F46E5] dark:text-[#6366F1] flex items-center justify-center font-bold">
                 <Sparkles className="w-4 h-4" />
               </div>
               <h2 className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-white">
                 4. مستوى الصعوبة
               </h2>
             </div>
-            <p className="text-[11px] text-[#475569] dark:text-zinc-400 pr-9">
+            <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8] pr-9">
               اختار مستوى الصعوبة اللي يناسب مستواك ومرحلتك
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
-            {[
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+            {([
               { id: "ALL", label: "جميع المستويات" },
               { id: "EASY", label: "سهل (تأسيسي)" },
               { id: "MEDIUM", label: "متوسط (تطبيق)" },
               { id: "HARD", label: "متقدم (تحليل)" },
-            ].map((d) => {
+            ] as const).map((d) => {
               const isSelected = difficulty === d.id;
               return (
                 <button
                   key={d.id}
                   type="button"
-                  onClick={() => setDifficulty(d.id as any)}
-                  className={`h-12 px-3.5 rounded-xl border text-right transition-colors flex items-center justify-between gap-2 ${
+                  onClick={() => setDifficulty(d.id)}
+                  className={`h-12 px-4 rounded-xl border text-right transition-colors flex items-center justify-between gap-2 ${
                     isSelected
-                      ? "bg-indigo-50/70 dark:bg-indigo-950/50 border-2 border-[#4F46E5] dark:border-indigo-400 text-[#0F172A] dark:text-white shadow-2xs font-bold"
-                      : "bg-white dark:bg-zinc-900/80 border-slate-200 dark:border-zinc-800/80 text-[#0F172A] dark:text-zinc-100 hover:border-slate-400 dark:hover:border-zinc-600 font-medium"
+                      ? "bg-[#4F46E5]/10 dark:bg-[#1E293B] border-2 border-[#4F46E5] dark:border-[#6366F1] text-[#0F172A] dark:text-white  font-bold"
+                      : "bg-white dark:bg-[#1E293B]/80 border-[#E2E8F0] dark:border-[#334155]/80 text-[#0F172A] dark:text-[#F8FAFC] hover:border-[#E2E8F0] dark:hover:border-[#64748B] font-medium"
                   }`}
                 >
-                  <span className="text-xs truncate">{d.label}</span>
+                  <span className="text-[13px] truncate">{d.label}</span>
                   <div
                     className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ${
                       isSelected
-                        ? "bg-[#4F46E5] dark:bg-indigo-500 border-[#4F46E5] dark:border-indigo-500 text-white"
-                        : "border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-900"
+                        ? "bg-[#4F46E5] dark:bg-[#6366F1] border-[#4F46E5] dark:border-[#6366F1] text-white"
+                        : "border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B]"
                     }`}
                   >
                     {isSelected && <Check className="w-2.5 h-2.5 stroke-[3]" />}
@@ -593,11 +587,11 @@ export function ExamBuilderForm({
       {/* Grid: 5. عدد الأسئلة & 6. نظام الاختبار */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* 5. عدد الأسئلة */}
-        <section className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 shadow-2xs space-y-4 flex flex-col justify-between">
+        <section className="p-5 sm:p-6 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]  space-y-4 flex flex-col justify-between">
           <div className="space-y-1">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 text-[#4F46E5] dark:text-indigo-400 flex items-center justify-center font-bold">
+                <div className="w-7 h-7 rounded-lg bg-[#4F46E5]/10 dark:bg-[#1E293B] text-[#4F46E5] dark:text-[#6366F1] flex items-center justify-center font-bold">
                   <GraduationCap className="w-4 h-4" />
                 </div>
                 <h2 className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-white">
@@ -605,20 +599,20 @@ export function ExamBuilderForm({
                 </h2>
               </div>
               {/* Live Count Status */}
-              <div className="flex items-center gap-1.5 text-xs">
+              <div className="flex items-center gap-2 text-[13px]">
                 {isCounting ? (
-                  <span className="text-[11px] text-slate-400 flex items-center gap-1">
+                  <span className="text-[13px] text-[#94A3B8] flex items-center gap-1">
                     <Loader2 className="w-3 h-3 animate-spin" />
                     <span>جارٍ الفحص...</span>
                   </span>
                 ) : (
-                  <span className="text-[11px] font-bold text-[#475569] dark:text-zinc-300 bg-slate-100 dark:bg-zinc-900 px-2 py-0.5 rounded-md">
+                  <span className="text-[13px] font-bold text-[#64748B] dark:text-[#F8FAFC] bg-[#F8FAFC] dark:bg-[#1E293B] px-2 py-1 rounded-md">
                     المتاح: {availableCount ?? 0} سؤال
                   </span>
                 )}
               </div>
             </div>
-            <p className="text-[11px] text-[#475569] dark:text-zinc-400 pr-9">
+            <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8] pr-9">
               حدد عدد الأسئلة اللي ناوي تحلها دلوقتي
             </p>
           </div>
@@ -634,12 +628,12 @@ export function ExamBuilderForm({
                     onClick={() => setQuestionCount(num)}
                     className={`h-12 rounded-xl border text-center transition-colors flex flex-col items-center justify-center ${
                       isSelected
-                        ? "bg-indigo-50/70 dark:bg-indigo-950/50 border-2 border-[#4F46E5] dark:border-indigo-400 text-[#4F46E5] dark:text-indigo-300 font-bold shadow-2xs"
-                        : "bg-white dark:bg-zinc-900/80 border-slate-200 dark:border-zinc-800/80 text-[#0F172A] dark:text-zinc-100 hover:border-slate-400 dark:hover:border-zinc-600 font-medium"
+                        ? "bg-[#4F46E5]/10 dark:bg-[#1E293B] border-2 border-[#4F46E5] dark:border-[#6366F1] text-[#4F46E5] dark:text-[#6366F1] font-bold "
+                        : "bg-white dark:bg-[#1E293B]/80 border-[#E2E8F0] dark:border-[#334155]/80 text-[#0F172A] dark:text-[#F8FAFC] hover:border-[#E2E8F0] dark:hover:border-[#64748B] font-medium"
                     }`}
                   >
                     <span className="text-sm font-bold">{num}</span>
-                    <span className="text-[10px] text-slate-500 dark:text-zinc-400 -mt-0.5">أسئلة</span>
+                    <span className="text-[13px] text-[#64748B] dark:text-[#94A3B8] -mt-1">أسئلة</span>
                   </button>
                 );
               })}
@@ -647,8 +641,8 @@ export function ExamBuilderForm({
 
             {/* Availability Notice */}
             {availableCount !== null && availableCount < questionCount && availableCount > 0 && (
-              <div className="p-2.5 rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/40 flex items-start gap-2 text-[11px] text-amber-800 dark:text-amber-300 font-medium leading-relaxed">
-                <Info className="w-3.5 h-3.5 text-amber-600 shrink-0 mt-0.5" />
+              <div className="p-3 rounded-lg bg-[#D97706]/10 dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#FBBF24]/40 flex items-start gap-2 text-[13px] text-[#D97706] dark:text-[#FBBF24] font-medium leading-relaxed">
+                <Info className="w-3.5 h-3.5 text-[#D97706] shrink-0 mt-1" />
                 <span>
                   موجود في بنك الأسئلة {availableCount} أسئلة بس تطابق اختياراتك، هنعملك الامتحان بـ {availableCount} أسئلة.
                 </span>
@@ -658,45 +652,45 @@ export function ExamBuilderForm({
         </section>
 
         {/* 6. نظام الاختبار */}
-        <section className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 shadow-2xs space-y-4 flex flex-col justify-between">
+        <section className="p-5 sm:p-6 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]  space-y-4 flex flex-col justify-between">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 text-[#4F46E5] dark:text-indigo-400 flex items-center justify-center font-bold">
+              <div className="w-7 h-7 rounded-lg bg-[#4F46E5]/10 dark:bg-[#1E293B] text-[#4F46E5] dark:text-[#6366F1] flex items-center justify-center font-bold">
                 <Zap className="w-4 h-4" />
               </div>
               <h2 className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-white">
                 6. نظام الاختبار
               </h2>
             </div>
-            <p className="text-[11px] text-[#475569] dark:text-zinc-400 pr-9">
+            <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8] pr-9">
               اختار تدريب بشرح فوري ولا محاكاة امتحان حقيقي بوقت
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
             {/* وضع التدريب */}
             <button
               type="button"
               onClick={() => setMode("PRACTICE")}
-              className={`p-3.5 rounded-xl border text-right transition-colors flex flex-col justify-between min-h-[82px] ${
+              className={`p-4 rounded-xl border text-right transition-colors flex flex-col justify-between min-h-[82px] ${
                 mode === "PRACTICE"
-                  ? "bg-indigo-50/70 dark:bg-indigo-950/50 border-2 border-[#4F46E5] dark:border-indigo-400 text-[#0F172A] dark:text-white shadow-2xs"
-                  : "bg-white dark:bg-zinc-900/80 border-slate-200 dark:border-zinc-800/80 text-[#0F172A] dark:text-zinc-100 hover:border-slate-400 dark:hover:border-zinc-600"
+                  ? "bg-[#4F46E5]/10 dark:bg-[#1E293B] border-2 border-[#4F46E5] dark:border-[#6366F1] text-[#0F172A] dark:text-white "
+                  : "bg-white dark:bg-[#1E293B]/80 border-[#E2E8F0] dark:border-[#334155]/80 text-[#0F172A] dark:text-[#F8FAFC] hover:border-[#E2E8F0] dark:hover:border-[#64748B]"
               }`}
             >
               <div className="flex items-center justify-between w-full">
-                <span className="text-xs font-bold">وضع التدريب</span>
+                <span className="text-[13px] font-bold">وضع التدريب</span>
                 <div
                   className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ${
                     mode === "PRACTICE"
-                      ? "bg-[#4F46E5] dark:bg-indigo-500 border-[#4F46E5] dark:border-indigo-500 text-white"
-                      : "border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-900"
+                      ? "bg-[#4F46E5] dark:bg-[#6366F1] border-[#4F46E5] dark:border-[#6366F1] text-white"
+                      : "border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B]"
                   }`}
                 >
                   {mode === "PRACTICE" && <Check className="w-2.5 h-2.5 stroke-[3]" />}
                 </div>
               </div>
-              <span className="text-[11px] text-[#475569] dark:text-zinc-400 leading-snug">
+              <span className="text-[13px] text-[#64748B] dark:text-[#94A3B8] leading-snug">
                 تصحيح وتفسير فوري بعد كل سؤال
               </span>
             </button>
@@ -705,25 +699,25 @@ export function ExamBuilderForm({
             <button
               type="button"
               onClick={() => setMode("EXAM")}
-              className={`p-3.5 rounded-xl border text-right transition-colors flex flex-col justify-between min-h-[82px] ${
+              className={`p-4 rounded-xl border text-right transition-colors flex flex-col justify-between min-h-[82px] ${
                 mode === "EXAM"
-                  ? "bg-indigo-50/70 dark:bg-indigo-950/50 border-2 border-[#4F46E5] dark:border-indigo-400 text-[#0F172A] dark:text-white shadow-2xs"
-                  : "bg-white dark:bg-zinc-900/80 border-slate-200 dark:border-zinc-800/80 text-[#0F172A] dark:text-zinc-100 hover:border-slate-400 dark:hover:border-zinc-600"
+                  ? "bg-[#4F46E5]/10 dark:bg-[#1E293B] border-2 border-[#4F46E5] dark:border-[#6366F1] text-[#0F172A] dark:text-white "
+                  : "bg-white dark:bg-[#1E293B]/80 border-[#E2E8F0] dark:border-[#334155]/80 text-[#0F172A] dark:text-[#F8FAFC] hover:border-[#E2E8F0] dark:hover:border-[#64748B]"
               }`}
             >
               <div className="flex items-center justify-between w-full">
-                <span className="text-xs font-bold">وضع الامتحان</span>
+                <span className="text-[13px] font-bold">وضع الامتحان</span>
                 <div
                   className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ${
                     mode === "EXAM"
-                      ? "bg-[#4F46E5] dark:bg-indigo-500 border-[#4F46E5] dark:border-indigo-500 text-white"
-                      : "border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-900"
+                      ? "bg-[#4F46E5] dark:bg-[#6366F1] border-[#4F46E5] dark:border-[#6366F1] text-white"
+                      : "border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B]"
                   }`}
                 >
                   {mode === "EXAM" && <Check className="w-2.5 h-2.5 stroke-[3]" />}
                 </div>
               </div>
-              <span className="text-[11px] text-[#475569] dark:text-zinc-400 leading-snug">
+              <span className="text-[13px] text-[#64748B] dark:text-[#94A3B8] leading-snug">
                 الدرجة والتفسير الكامل بعد ما تسلّم
               </span>
             </button>
@@ -731,21 +725,21 @@ export function ExamBuilderForm({
 
           {/* Exam duration if Exam mode */}
           {mode === "EXAM" && (
-            <div className="pt-2 border-t border-slate-100 dark:border-zinc-800 flex items-center justify-between gap-2 text-xs">
-              <span className="text-slate-600 dark:text-zinc-400 flex items-center gap-1 font-medium">
-                <Clock className="w-3.5 h-3.5 text-indigo-500" />
+            <div className="pt-2 border-t border-[#E2E8F0] dark:border-[#334155] flex items-center justify-between gap-2 text-[13px]">
+              <span className="text-[#64748B] dark:text-[#94A3B8] flex items-center gap-1 font-medium">
+                <Clock className="w-3.5 h-3.5 text-[#4F46E5]" />
                 <span>المدة الزمنية:</span>
               </span>
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-2">
                 {[15, 20, 30, 45].map((mins) => (
                   <button
                     key={mins}
                     type="button"
                     onClick={() => setDurationMinutes(mins)}
-                    className={`px-2.5 py-1 rounded-md text-[11px] font-bold border transition-colors ${
+                    className={`px-3 py-1 rounded-md text-[13px] font-bold border transition-colors ${
                       durationMinutes === mins
                         ? "bg-[#4F46E5] text-white border-[#4F46E5]"
-                        : "bg-white dark:bg-zinc-900 border-slate-200 dark:border-zinc-800 text-slate-700 dark:text-zinc-300"
+                        : "bg-white dark:bg-[#1E293B] border-[#E2E8F0] dark:border-[#334155] text-[#0F172A] dark:text-[#F8FAFC]"
                     }`}
                   >
                     {mins} د
@@ -758,55 +752,55 @@ export function ExamBuilderForm({
       </div>
 
       {/* 7. ملخص إعدادات الاختبار وإجراء البدء */}
-      <section className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 shadow-sm space-y-5">
-        <div className="space-y-1 border-b border-slate-100 dark:border-zinc-800 pb-3">
+      <section className="p-5 sm:p-6 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] shadow-sm space-y-5">
+        <div className="space-y-1 border-b border-[#E2E8F0] dark:border-[#334155] pb-3">
           <h3 className="text-sm font-bold text-[#0F172A] dark:text-white">
             ملخص إعدادات الاختبار
           </h3>
-          <p className="text-[11px] text-[#475569] dark:text-zinc-400">
+          <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8]">
             نظرة سريعة على اختياراتك قبل ما تبدأ الحل
           </p>
         </div>
 
         {/* Badges Summary Strip */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 text-xs">
-          <div className="p-2.5 rounded-xl bg-[#F8FAFC] dark:bg-zinc-900 border border-slate-200/80 dark:border-zinc-800 space-y-0.5">
-            <span className="text-[10px] text-[#475569] dark:text-zinc-400 block">المادة</span>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 text-[13px]">
+          <div className="p-3 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0]/80 dark:border-[#334155] space-y-1">
+            <span className="text-[13px] text-[#64748B] dark:text-[#94A3B8] block">المادة</span>
             <span className="font-bold text-[#0F172A] dark:text-white block truncate">
               {currentSubject?.name || "غير محدد"}
             </span>
           </div>
 
-          <div className="p-2.5 rounded-xl bg-[#F8FAFC] dark:bg-zinc-900 border border-slate-200/80 dark:border-zinc-800 space-y-0.5">
-            <span className="text-[10px] text-[#475569] dark:text-zinc-400 block">الدروس / النطاق</span>
+          <div className="p-3 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0]/80 dark:border-[#334155] space-y-1">
+            <span className="text-[13px] text-[#64748B] dark:text-[#94A3B8] block">الدروس / النطاق</span>
             <span className="font-bold text-[#0F172A] dark:text-white block truncate">
               {scopeLabel}
             </span>
           </div>
 
-          <div className="p-2.5 rounded-xl bg-[#F8FAFC] dark:bg-zinc-900 border border-slate-200/80 dark:border-zinc-800 space-y-0.5">
-            <span className="text-[10px] text-[#475569] dark:text-zinc-400 block">نوع الأسئلة</span>
+          <div className="p-3 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0]/80 dark:border-[#334155] space-y-1">
+            <span className="text-[13px] text-[#64748B] dark:text-[#94A3B8] block">نوع الأسئلة</span>
             <span className="font-bold text-[#0F172A] dark:text-white block truncate">
               {questionTypeLabel}
             </span>
           </div>
 
-          <div className="p-2.5 rounded-xl bg-[#F8FAFC] dark:bg-zinc-900 border border-slate-200/80 dark:border-zinc-800 space-y-0.5">
-            <span className="text-[10px] text-[#475569] dark:text-zinc-400 block">الصعوبة</span>
+          <div className="p-3 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0]/80 dark:border-[#334155] space-y-1">
+            <span className="text-[13px] text-[#64748B] dark:text-[#94A3B8] block">الصعوبة</span>
             <span className="font-bold text-[#0F172A] dark:text-white block truncate">
               {difficultyLabel}
             </span>
           </div>
 
-          <div className="p-2.5 rounded-xl bg-[#F8FAFC] dark:bg-zinc-900 border border-slate-200/80 dark:border-zinc-800 space-y-0.5">
-            <span className="text-[10px] text-[#475569] dark:text-zinc-400 block">عدد الأسئلة</span>
-            <span className="font-bold text-[#4F46E5] dark:text-indigo-400 block truncate">
+          <div className="p-3 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0]/80 dark:border-[#334155] space-y-1">
+            <span className="text-[13px] text-[#64748B] dark:text-[#94A3B8] block">عدد الأسئلة</span>
+            <span className="font-bold text-[#4F46E5] dark:text-[#6366F1] block truncate">
               {effectiveCount} أسئلة
             </span>
           </div>
 
-          <div className="p-2.5 rounded-xl bg-[#F8FAFC] dark:bg-zinc-900 border border-slate-200/80 dark:border-zinc-800 space-y-0.5">
-            <span className="text-[10px] text-[#475569] dark:text-zinc-400 block">نظام الاختبار</span>
+          <div className="p-3 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0]/80 dark:border-[#334155] space-y-1">
+            <span className="text-[13px] text-[#64748B] dark:text-[#94A3B8] block">نظام الاختبار</span>
             <span className="font-bold text-[#0F172A] dark:text-white block truncate">
               {mode === "PRACTICE" ? "وضع التدريب" : `امتحان (${durationMinutes}د)`}
             </span>
@@ -815,9 +809,9 @@ export function ExamBuilderForm({
 
         {/* Submit Actions */}
         <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="text-xs text-[#475569] dark:text-zinc-400">
+          <div className="text-[13px] text-[#64748B] dark:text-[#94A3B8]">
             {availableCount === 0 ? (
-              <span className="text-rose-600 dark:text-rose-400 font-bold flex items-center gap-1.5">
+              <span className="text-[#DC2626] dark:text-[#F87171] font-bold flex items-center gap-2">
                 <AlertCircle className="w-4 h-4 shrink-0" />
                 <span>مفيش أسئلة مطابقة لاختياراتك الحالية، وسّع نطاق التحديد عشان يفتح زرار البدء.</span>
               </span>
@@ -831,7 +825,7 @@ export function ExamBuilderForm({
           <button
             type="submit"
             disabled={isSubmitting || (availableCount !== null && availableCount === 0)}
-            className="w-full sm:w-auto h-12 px-8 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] dark:bg-indigo-600 dark:hover:bg-indigo-500 text-white font-bold text-sm shadow-2xs flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
+            className="w-full sm:w-auto h-12 px-8 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] dark:bg-[#6366F1] dark:hover:bg-[#6366F1] text-white font-bold text-sm  flex items-center justify-center gap-2 transition-all active:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
           >
             {isSubmitting ? (
               <>

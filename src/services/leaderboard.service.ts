@@ -1,4 +1,6 @@
 import { prisma } from "@/lib/prisma";
+import { calculateStreak } from "@/lib/date";
+import { CurriculumScope } from "@/lib/curriculum";
 import { Role } from "@prisma/client";
 
 export interface LeaderboardEntry {
@@ -16,78 +18,24 @@ export interface LeaderboardEntry {
 
 export class LeaderboardService {
   /**
-   * Benchmark peer students for healthy competition
-   */
-  private static BENCHMARK_PEERS: LeaderboardEntry[] = [
-    {
-      id: "peer_1",
-      name: "أحمد حسام الشناوي",
-      systemName: "الثانوية العامة",
-      gradeName: "الصف الثالث الثانوي",
-      completedLessons: 18,
-      completedExams: 14,
-      xp: 1250,
-      streak: 12,
-      isCurrentUser: false,
-      role: "STUDENT",
-    },
-    {
-      id: "peer_2",
-      name: "سارة محمد إبراهيم",
-      systemName: "البكالوريا المصرية",
-      gradeName: "الصف الثاني الثانوي",
-      completedLessons: 16,
-      completedExams: 11,
-      xp: 1040,
-      streak: 9,
-      isCurrentUser: false,
-      role: "STUDENT",
-    },
-    {
-      id: "peer_3",
-      name: "عمر خالد الفقي",
-      systemName: "الثانوية العامة",
-      gradeName: "الصف الثالث الثانوي",
-      completedLessons: 14,
-      completedExams: 9,
-      xp: 910,
-      streak: 7,
-      isCurrentUser: false,
-      role: "STUDENT",
-    },
-    {
-      id: "peer_4",
-      name: "نوران طارق يوسف",
-      systemName: "الثانوية العامة",
-      gradeName: "الصف الثاني الثانوي",
-      completedLessons: 10,
-      completedExams: 7,
-      xp: 720,
-      streak: 6,
-      isCurrentUser: false,
-      role: "STUDENT",
-    },
-    {
-      id: "peer_5",
-      name: "كريم ممدوح الصاوي",
-      systemName: "البكالوريا المصرية",
-      gradeName: "الصف الأول الثانوي",
-      completedLessons: 8,
-      completedExams: 5,
-      xp: 580,
-      streak: 4,
-      isCurrentUser: false,
-      role: "STUDENT",
-    },
-  ];
-
-  /**
    * Fetch leaderboard rankings with real student metrics
    */
-  static async getLeaderboard(currentUserId?: string, limit = 20): Promise<LeaderboardEntry[]> {
+  static async getLeaderboard(
+    currentUserId?: string,
+    limit = 20,
+    scope: CurriculumScope | null = null
+  ): Promise<LeaderboardEntry[]> {
+    const scopeWhere =
+      scope?.gradeId
+        ? {
+            gradeId: scope.gradeId,
+            ...(scope.systemId ? { systemId: scope.systemId } : {}),
+          }
+        : {};
+
     // Fetch up to 100 students to properly compute and rank by XP
     const realUsers = await prisma.user.findMany({
-      where: { role: Role.STUDENT },
+      where: { role: Role.STUDENT, ...scopeWhere },
       take: Math.max(limit * 3, 100),
       include: {
         system: true,
@@ -130,7 +78,6 @@ export class LeaderboardService {
       const completedExams = u.attempts.length;
       const totalScore = u.attempts.reduce((sum, a) => sum + (a.score || 0), 0);
       const xp = completedLessons * 30 + completedExams * 50 + totalScore * 10;
-      const streak = Math.min(14, Math.max(1, completedExams + Math.floor(completedLessons / 2)));
 
       return {
         id: u.id,
@@ -140,28 +87,41 @@ export class LeaderboardService {
         completedLessons,
         completedExams,
         xp,
-        streak,
+        streak: 0,
         isCurrentUser: currentUserId === u.id,
         role: u.role,
       };
     });
 
-    // Merge real students with benchmark peers if real students count is low
-    let combined = [...mappedReal];
-    for (const peer of this.BENCHMARK_PEERS) {
-      if (!combined.some((c) => c.name === peer.name)) {
-        combined.push(peer);
+    // Sort descending by XP
+    mappedReal.sort((a, b) => b.xp - a.xp);
+
+    const topSlice = mappedReal.slice(0, limit);
+    if (currentUserId && !topSlice.some((u) => u.id === currentUserId)) {
+      const currentUserEntry = mappedReal.find((u) => u.id === currentUserId);
+      if (currentUserEntry) {
+        topSlice.push(currentUserEntry);
       }
     }
 
-    // Sort descending by XP
-    combined.sort((a, b) => b.xp - a.xp);
+    // Real streaks: consecutive completed daily check-ins (no fabricated values).
+    const userIds = topSlice.map((u) => u.id);
+    if (userIds.length > 0) {
+      const challenges = await prisma.dailyChallenge.findMany({
+        where: { userId: { in: userIds }, completedAt: { not: null } },
+        select: { userId: true, day: true },
+        orderBy: { day: "desc" },
+      });
 
-    const topSlice = combined.slice(0, limit);
-    if (currentUserId && !topSlice.some((u) => u.id === currentUserId)) {
-      const currentUserEntry = combined.find((u) => u.id === currentUserId);
-      if (currentUserEntry) {
-        topSlice.push(currentUserEntry);
+      const daysByUser = new Map<string, string[]>();
+      for (const challenge of challenges) {
+        const days = daysByUser.get(challenge.userId) ?? [];
+        days.push(challenge.day);
+        daysByUser.set(challenge.userId, days);
+      }
+
+      for (const entry of topSlice) {
+        entry.streak = calculateStreak(daysByUser.get(entry.id) ?? []);
       }
     }
 

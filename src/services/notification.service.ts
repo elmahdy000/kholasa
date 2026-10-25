@@ -34,7 +34,7 @@ export class NotificationService {
         id: `daily_${startOfToday.toISOString().slice(0, 10)}`,
         type: "DAILY_EXAM",
         title: "الامتحان اليومي بانتظارك!",
-        message: "ابدأ يومك باختبار مدته 5 دقائق لقياس جاهزيتك وتثبيت شعلة التزامك اليومي.",
+        message: "ابدأ يومك بتحدي سريع لقياس جاهزيتك وتثبيت شعلة التزامك اليومي.",
         link: "/dashboard",
         createdAt: new Date(),
         isUrgent: true,
@@ -92,9 +92,9 @@ export class NotificationService {
   static getDailyExamPushPayload() {
     return {
       title: "منصة الخلاصة | افهمها صح.. هتفضل معاك",
-      body: "حان موعد امتحان الدخول اليومي (5 دقائق). ثبّت معلوماتك واستمر في الصدارة!",
-      icon: "/icons/icon-192x192.png",
-      badge: "/icons/icon-72x72.png",
+      body: "حان موعد تحدي الدخول اليومي. ثبّت معلوماتك واستمر في الصدارة!",
+      icon: "/icon-192.png",
+      badge: "/icon-192.png",
       url: "/dashboard",
       tag: "daily-gatekeeper-exam",
     };

@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { getCurriculumScope, isSubjectInScope } from "@/lib/curriculum";
 import { StudentShell } from "@/components/layout/StudentShell";
 import { LessonViewer } from "@/components/lessons/LessonViewer";
 
@@ -12,8 +13,12 @@ export default async function LessonPage({ params }: LessonPageProps) {
   const { id } = await params;
   const user = await getCurrentUser();
 
-  const lesson = await prisma.lesson.findUnique({
-    where: { id },
+  const lesson = await prisma.lesson.findFirst({
+    where: {
+      id,
+      isPublished: true,
+      unit: { isPublished: true, subject: { isPublished: true } },
+    },
     include: {
       unit: {
         include: {
@@ -32,14 +37,17 @@ export default async function LessonPage({ params }: LessonPageProps) {
         where: {
           question: { status: "PUBLISHED" },
         },
-        include: {
+        select: {
           question: {
-            include: {
+            select: {
+              id: true,
+              statement: true,
+              type: true,
+              difficulty: true,
               options: {
+                select: { id: true, text: true, order: true },
                 orderBy: { order: "asc" },
               },
-              explanation: true,
-              rubric: true,
             },
           },
         },
@@ -53,6 +61,11 @@ export default async function LessonPage({ params }: LessonPageProps) {
   });
 
   if (!lesson) {
+    notFound();
+  }
+
+  // Students may only open lessons from their own curriculum.
+  if (!isSubjectInScope(getCurriculumScope(user), lesson.unit.subject)) {
     notFound();
   }
 

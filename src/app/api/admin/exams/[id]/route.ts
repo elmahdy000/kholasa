@@ -46,10 +46,10 @@ export async function PATCH(req: Request, { params }: RouteParams) {
     });
 
     return NextResponse.json({ success: true, exam: updated });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Failed to update exam:", error);
     return NextResponse.json(
-      { error: error?.message || "تعذر تحديث بيانات الامتحان" },
+      { error: error instanceof Error ? error.message : "تعذر تحديث بيانات الامتحان" },
       { status: 500 }
     );
   }
@@ -66,10 +66,10 @@ export async function DELETE(req: Request, { params }: RouteParams) {
     await ExamService.deleteExam(id);
 
     return NextResponse.json({ success: true });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Failed to delete exam:", error);
     return NextResponse.json(
-      { error: error?.message || "تعذر حذف الامتحان" },
+      { error: error instanceof Error ? error.message : "تعذر حذف الامتحان" },
       { status: 500 }
     );
   }

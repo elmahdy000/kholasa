@@ -1,11 +1,12 @@
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 
 export class MistakeService {
   /**
    * Fetch unresolved mistakes for a student with subject/unit filtering
    */
   static async getStudentMistakes(userId: string, subjectId?: string) {
-    const where: any = {
+    const where: Prisma.MistakeReviewWhereInput = {
       userId,
       isResolved: false,
     };
@@ -89,6 +90,8 @@ export class MistakeService {
         subjectId: primarySubjectId,
         durationMinutes: Math.max(10, selectedMistakes.length * 2),
         isPractice: true,
+        isCustom: true,
+        createdById: userId,
         questions: {
           create: selectedMistakes.map((m, idx) => ({
             questionId: m.questionId,

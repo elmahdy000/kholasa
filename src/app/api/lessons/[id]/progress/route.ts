@@ -1,6 +1,13 @@
 import { NextResponse } from "next/server";
+import { z } from "zod";
 import { getCurrentUser } from "@/lib/auth";
+import { jsonError, parseJson, unauthorized } from "@/lib/http";
 import { StudentService } from "@/services/student.service";
+
+const updateProgressSchema = z.object({
+  progressPercent: z.number().min(0).max(100).optional(),
+  isCompleted: z.boolean().optional(),
+});
 
 export async function GET(
   req: Request,
@@ -8,19 +15,13 @@ export async function GET(
 ) {
   try {
     const user = await getCurrentUser();
-    if (!user) {
-      return NextResponse.json({ error: "غير مصرح" }, { status: 401 });
-    }
+    if (!user) throw unauthorized("غير مصرح");
 
     const { id: lessonId } = await params;
     const progress = await StudentService.getLessonProgress(user.id, lessonId);
     return NextResponse.json({ success: true, progress });
-  } catch (error: any) {
-    console.error("Failed to fetch lesson progress:", error);
-    return NextResponse.json(
-      { error: "تعذر جلب تقدم الدرس" },
-      { status: 500 }
-    );
+  } catch (error) {
+    return jsonError(error);
   }
 }
 
@@ -30,28 +31,19 @@ export async function POST(
 ) {
   try {
     const user = await getCurrentUser();
-    if (!user) {
-      return NextResponse.json({ error: "غير مصرح" }, { status: 401 });
-    }
+    if (!user) throw unauthorized("غير مصرح");
 
     const { id: lessonId } = await params;
-    const body = await req.json().catch(() => ({}));
-    const { progressPercent, isCompleted } = body;
+    const body = await parseJson(req, updateProgressSchema);
 
     const progress = await StudentService.updateLessonProgress(
       user.id,
       lessonId,
-      { progressPercent, isCompleted }
+      body
     );
 
     return NextResponse.json({ success: true, progress });
-  } catch (error: any) {
-    console.error("Failed to update lesson progress:", error);
-    const isNotFound = error?.message?.includes("غير موجود");
-    return NextResponse.json(
-      { error: error?.message || "تعذر تحديث تقدم الدرس" },
-      { status: isNotFound ? 404 : 500 }
-    );
+  } catch (error) {
+    return jsonError(error);
   }
 }
-

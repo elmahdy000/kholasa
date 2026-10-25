@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
+import { AppError, jsonError } from "@/lib/http";
+import { rateLimit, withRetryAfter } from "@/lib/rate-limit";
 import { ExamService } from "@/services";
 
 export async function POST(
@@ -11,6 +13,8 @@ export async function POST(
     if (!user) {
       return NextResponse.json({ error: "غير مصرح" }, { status: 401 });
     }
+
+    rateLimit(`exam:submit:${user.id}`, 20, 60 * 1000);
 
     await params; // consume params
     const body = await req.json().catch(() => ({}));
@@ -32,13 +36,23 @@ export async function POST(
       totalQuestions: result.totalQuestions,
       attemptId,
     });
-  } catch (error: any) {
+  } catch (error) {
+    if (error instanceof AppError) {
+      return withRetryAfter(jsonError(error), error);
+    }
     console.error("Failed to submit exam:", error);
-    const msg = error?.message || "";
-    const isClientError = msg.includes("غير موجودة") || msg.includes("مسبقاً") || msg.includes("غير مصرح");
+    const msg = error instanceof Error ? error.message : "";
+    const isAlreadySubmitted = msg.includes("مسبقاً");
+    const isClientError =
+      isAlreadySubmitted || msg.includes("غير موجودة") || msg.includes("غير مصرح");
+
     return NextResponse.json(
-      { error: msg || "تعذر تسليم الامتحان" },
-      { status: isClientError ? 400 : 500 }
+      {
+        error: isClientError
+          ? msg
+          : "تعذر تسليم الامتحان، حاول مرة أخرى",
+      },
+      { status: isAlreadySubmitted ? 409 : isClientError ? 400 : 500 }
     );
   }
 }
