@@ -58,7 +58,7 @@ export function LandingInteractiveClient() {
       {/* 1. Interactive Platform Feature Showcase */}
       <section className="space-y-8">
         <div className="text-center max-w-2xl mx-auto space-y-3">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#4F46E5]/10 dark:bg-[#1E293B] border border-[#4F46E5]/20 text-[#4F46E5] dark:text-[#6366F1] text-[13px] font-bold">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#800020]/10 dark:bg-[#1E293B] border border-[#800020]/20 text-[#800020] dark:text-[#FB7185] text-[13px] font-bold">
             <Sparkles className="w-3.5 h-3.5" />
             <span>معاينة حية للمنصة</span>
           </div>
@@ -76,11 +76,11 @@ export function LandingInteractiveClient() {
             onClick={() => setActiveTab("zatona")}
             className={`h-11 px-4 rounded-lg text-[13px] font-bold transition-all flex items-center gap-2 interactive-tap ${
               activeTab === "zatona"
-                ? "bg-white dark:bg-[#0F172A] text-[#4F46E5] dark:text-[#6366F1] "
+                ? "bg-white dark:bg-[#0F172A] text-[#800020] dark:text-[#FB7185] "
                 : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
             }`}
           >
-            <BookOpen className="w-4 h-4 text-[#4F46E5]" />
+            <BookOpen className="w-4 h-4 text-[#800020]" />
             <span>الزتونة الذهبية</span>
           </button>
 
@@ -88,7 +88,7 @@ export function LandingInteractiveClient() {
             onClick={() => setActiveTab("questions")}
             className={`h-11 px-4 rounded-lg text-[13px] font-bold transition-all flex items-center gap-2 interactive-tap ${
               activeTab === "questions"
-                ? "bg-white dark:bg-[#0F172A] text-[#4F46E5] dark:text-[#6366F1] "
+                ? "bg-white dark:bg-[#0F172A] text-[#800020] dark:text-[#FB7185] "
                 : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
             }`}
           >
@@ -112,11 +112,11 @@ export function LandingInteractiveClient() {
             onClick={() => setActiveTab("mindmap")}
             className={`h-11 px-4 rounded-lg text-[13px] font-bold transition-all flex items-center gap-2 interactive-tap ${
               activeTab === "mindmap"
-                ? "bg-white dark:bg-[#0F172A] text-[#4F46E5] dark:text-[#6366F1] "
+                ? "bg-white dark:bg-[#0F172A] text-[#800020] dark:text-[#FB7185] "
                 : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
             }`}
           >
-            <Brain className="w-4 h-4 text-[#4F46E5]" />
+            <Brain className="w-4 h-4 text-[#800020]" />
             <span>الخرائط الذهنية</span>
           </button>
         </div>
@@ -126,7 +126,7 @@ export function LandingInteractiveClient() {
           <div className="max-w-4xl mx-auto p-6 sm:p-8 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]  space-y-6 animate-in fade-in duration-300">
             <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#334155] pb-4">
               <div>
-                <span className="text-[13px] font-bold text-[#4F46E5] dark:text-[#6366F1] block font-mono">
+                <span className="text-[13px] font-bold text-[#800020] dark:text-[#FB7185] block font-mono">
                   عينة حقيقية من ملخص الزتونة • الأحياء
                 </span>
                 <h3 className="text-lg font-bold text-[#0F172A] dark:text-white">
@@ -140,8 +140,8 @@ export function LandingInteractiveClient() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="p-4 rounded-xl bg-[#4F46E5]/10 dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#6366F1]/40 space-y-2">
-                <span className="text-[13px] font-bold text-[#4F46E5] dark:text-[#6366F1] block">
+              <div className="p-4 rounded-xl bg-[#800020]/10 dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#E11D48]/40 space-y-2">
+                <span className="text-[13px] font-bold text-[#800020] dark:text-[#FB7185] block">
                   المفهوم الجوهري (Concept):
                 </span>
                 <p className="text-[13px] text-[#0F172A] dark:text-[#F8FAFC] leading-relaxed">
@@ -182,7 +182,7 @@ export function LandingInteractiveClient() {
         {activeTab === "questions" && (
           <div className="max-w-4xl mx-auto p-6 sm:p-8 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]  space-y-6 animate-in fade-in duration-300">
             <div className="space-y-1">
-              <span className="text-[13px] font-bold text-[#4F46E5] dark:text-[#6366F1] block font-mono">
+              <span className="text-[13px] font-bold text-[#800020] dark:text-[#FB7185] block font-mono">
                 سؤال تفاعلي من بنك الأسئلة الذكي
               </span>
               <h3 className="text-base sm:text-lg font-bold text-[#0F172A] dark:text-white leading-relaxed">
@@ -230,7 +230,7 @@ export function LandingInteractiveClient() {
                       "bg-[#DC2626]/10 dark:bg-[#1E293B] border-[#DC2626] font-bold";
                   }
                 } else if (isSelected) {
-                  cardStyle = "bg-[#4F46E5]/10 dark:bg-[#1E293B] border-[#4F46E5] text-[#4F46E5] dark:text-[#6366F1] font-bold";
+                  cardStyle = "bg-[#800020]/10 dark:bg-[#1E293B] border-[#800020] text-[#800020] dark:text-[#FB7185] font-bold";
                 }
 
                 return (
@@ -312,7 +312,7 @@ export function LandingInteractiveClient() {
                 ما التوزيع الإلكتروني لأيون الحديد الثلاثي Fe³⁺ في مركب FeCl₃؟
               </p>
               <div className="p-3 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] text-[#0F172A] dark:text-[#F8FAFC] leading-relaxed">
-                <span className="font-bold text-[#4F46E5] dark:text-[#6366F1]">
+                <span className="font-bold text-[#800020] dark:text-[#FB7185]">
                   التحليل العلاجي:{" "}
                 </span>
                 يفقد الحديد إلكتروني المستوى الفرعي 4s أولاً ثم إلكتروناً واحداً من المستوى 3d ليصبح [Ar] 3d⁵ (نصف ممتلئ وأكثر استقراراً).
@@ -320,7 +320,7 @@ export function LandingInteractiveClient() {
               <div className="flex items-center justify-end">
                 <button
                   type="button"
-                  className="h-11 px-4 rounded-lg bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[13px] font-bold transition-colors interactive-tap flex items-center gap-2"
+                  className="h-11 px-4 rounded-lg bg-[#800020] hover:bg-[#66001A] text-white text-[13px] font-bold transition-colors interactive-tap flex items-center gap-2"
                 >
                   <Check className="w-3.5 h-3.5" />
                   <span>إعادة المحاولة وحذف الخطأ</span>
@@ -334,7 +334,7 @@ export function LandingInteractiveClient() {
         {activeTab === "mindmap" && (
           <div className="max-w-4xl mx-auto p-6 sm:p-8 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]  space-y-6 animate-in fade-in duration-300 text-center">
             <div className="space-y-1">
-              <span className="text-[13px] font-bold text-[#4F46E5] dark:text-[#6366F1] block font-mono">
+              <span className="text-[13px] font-bold text-[#800020] dark:text-[#FB7185] block font-mono">
                 العلاقات المفاهيمية البصرية
               </span>
               <h3 className="text-lg font-bold text-[#0F172A] dark:text-white">
@@ -343,14 +343,14 @@ export function LandingInteractiveClient() {
             </div>
 
             <div className="p-6 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/60 border border-[#E2E8F0] dark:border-[#334155] flex flex-col md:flex-row items-center justify-around gap-4">
-              <div className="p-4 rounded-xl bg-[#4F46E5] text-white font-bold text-[13px] ">
+              <div className="p-4 rounded-xl bg-[#800020] text-white font-bold text-[13px] ">
                 المفهوم الأساسي
                 <br />
-                <span className="text-[13px] text-[#4F46E5] font-normal">
+                <span className="text-[13px] text-[#800020] font-normal">
                   (مثال: القوانين الأساسية)
                 </span>
               </div>
-              <div className="text-[#4F46E5] font-bold text-lg rotate-90 md:rotate-0">
+              <div className="text-[#800020] font-bold text-lg rotate-90 md:rotate-0">
                 ↔
               </div>
               <div className="p-4 rounded-xl bg-[#0F172A] dark:bg-[#1E293B] text-white font-bold text-[13px] border border-[#94A3B8] ">
@@ -393,7 +393,7 @@ export function LandingInteractiveClient() {
           <div className="grid grid-cols-3 p-4 bg-[#F8FAFC] dark:bg-[#1E293B] font-bold text-[13px] sm:text-sm text-[#0F172A] dark:text-white border-b border-[#E2E8F0] dark:border-[#334155] text-center">
             <div>المعيار</div>
             <div className="text-[#DC2626] font-bold">الطرق التقليدية</div>
-            <div className="text-[#4F46E5] dark:text-[#6366F1] font-bold">منصة الخلاصة</div>
+            <div className="text-[#800020] dark:text-[#FB7185] font-bold">منصة الخلاصة</div>
           </div>
 
           <div className="divide-y divide-[#E2E8F0] dark:divide-[#334155] text-[13px] sm:text-sm">
@@ -447,7 +447,7 @@ export function LandingInteractiveClient() {
       {/* 3. How it works */}
       <section className="space-y-8">
         <div className="text-center max-w-2xl mx-auto space-y-2">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#4F46E5]/10 dark:bg-[#1E293B] text-[#4F46E5] dark:text-[#6366F1] text-[13px] font-bold border border-[#E2E8F0] dark:border-[#6366F1]">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] text-[13px] font-bold border border-[#E2E8F0] dark:border-[#E11D48]">
             <Sparkles className="w-4 h-4" />
             <span>منهجية واضحة</span>
           </div>
@@ -458,7 +458,7 @@ export function LandingInteractiveClient() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-5xl mx-auto">
           <div className="p-6 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] space-y-3">
-            <div className="w-11 h-11 rounded-lg bg-[#4F46E5]/10 dark:bg-[#1E293B] text-[#4F46E5] dark:text-[#6366F1] flex items-center justify-center">
+            <div className="w-11 h-11 rounded-lg bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] flex items-center justify-center">
               <Brain className="w-5 h-5" />
             </div>
             <h3 className="text-sm font-bold text-[#0F172A] dark:text-white">
@@ -518,12 +518,12 @@ export function LandingInteractiveClient() {
                 <button
                   type="button"
                   onClick={() => setOpenFaqIndex(isOpen ? null : idx)}
-                  className="w-full p-4 sm:p-5 flex items-center justify-between gap-3 text-right text-[13px] sm:text-sm font-bold text-[#0F172A] dark:text-white hover:text-[#4F46E5] dark:hover:text-[#6366F1] transition-colors"
+                  className="w-full p-4 sm:p-5 flex items-center justify-between gap-3 text-right text-[13px] sm:text-sm font-bold text-[#0F172A] dark:text-white hover:text-[#800020] dark:hover:text-[#FB7185] transition-colors"
                 >
                   <span>{faq.q}</span>
                   <ChevronDown
                     className={`w-4 h-4 text-[#94A3B8] transition-transform ${
-                      isOpen ? "rotate-180 text-[#4F46E5] dark:text-[#6366F1]" : ""
+                      isOpen ? "rotate-180 text-[#800020] dark:text-[#FB7185]" : ""
                     }`}
                   />
                 </button>

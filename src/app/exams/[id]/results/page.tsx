@@ -128,8 +128,8 @@ export default async function ExamResultsPage({
   } else if (percentage < 90) {
     gradeBadge = {
       label: "أداء عالي جداً وفاضل تكة وتقفّل",
-      bgClass: "bg-[#4F46E5]/10 dark:bg-[#1E293B] text-[#4F46E5] dark:text-[#6366F1] border-[#E2E8F0] dark:border-[#6366F1]",
-      textColor: "text-[#4F46E5] dark:text-[#6366F1]",
+      bgClass: "bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] border-[#E2E8F0] dark:border-[#E11D48]",
+      textColor: "text-[#800020] dark:text-[#FB7185]",
     };
   }
 
@@ -138,7 +138,7 @@ export default async function ExamResultsPage({
       <div className="max-w-4xl mx-auto space-y-6 text-right font-sans pb-28">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-[13px] font-medium text-[#64748B] dark:text-[#94A3B8]">
-          <Link href="/exams" className="hover:text-[#4F46E5] transition-colors">
+          <Link href="/exams" className="hover:text-[#800020] transition-colors">
             الامتحانات
           </Link>
           <span>/</span>
@@ -169,7 +169,7 @@ export default async function ExamResultsPage({
             <div className="flex flex-wrap items-center gap-3 pt-2">
               <Link
                 href="/mistakes"
-                className="h-11 px-4 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[13px] font-bold flex items-center gap-2  transition-colors interactive-tap"
+                className="h-11 px-4 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] font-bold flex items-center gap-2  transition-colors interactive-tap"
               >
                 <AlertTriangle className="w-3.5 h-3.5 text-[#D97706]" />
                 <span>راجع أخطاءك في "غلطاتي"</span>
@@ -251,7 +251,7 @@ export default async function ExamResultsPage({
           </div>
 
           <div className="p-4 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]  text-right">
-            <div className="w-11 h-11 rounded-lg bg-[#4F46E5]/10 dark:bg-[#1E293B] text-[#4F46E5] dark:text-[#6366F1] flex items-center justify-center mb-2">
+            <div className="w-11 h-11 rounded-lg bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] flex items-center justify-center mb-2">
               <Clock className="w-4 h-4" />
             </div>
             <span className="text-xl font-bold font-mono text-[#0F172A] dark:text-white block" dir="ltr">
@@ -266,7 +266,7 @@ export default async function ExamResultsPage({
         {/* Detailed Question Review */}
         <div className="space-y-4">
           <h2 className="text-base sm:text-lg font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
-            <BookOpen className="w-4 h-4 text-[#4F46E5] dark:text-[#6366F1]" />
+            <BookOpen className="w-4 h-4 text-[#800020] dark:text-[#FB7185]" />
             <span>مراجعة تفصيلية لجميع الأسئلة والتفسيرات</span>
           </h2>
 
@@ -281,7 +281,7 @@ export default async function ExamResultsPage({
                   key={ans.id}
                   className={`p-5 sm:p-6 rounded-xl border  space-y-4 bg-white dark:bg-[#0F172A] ${
                     q.type === "ESSAY"
-                      ? "border-[#E2E8F0] dark:border-[#6366F1]/50"
+                      ? "border-[#E2E8F0] dark:border-[#E11D48]/50"
                       : isCorrect
                       ? "border-[#E2E8F0] dark:border-[#334155]"
                       : "border-[#E2E8F0] dark:border-[#F87171]/40"
@@ -290,11 +290,11 @@ export default async function ExamResultsPage({
                   {/* Status header */}
                   <div className="flex items-center justify-between gap-2 border-b border-[#E2E8F0] dark:border-[#334155] pb-3">
                     <div className="flex items-center gap-2">
-                      <span className="text-[13px] font-mono font-bold text-[#4F46E5] dark:text-[#6366F1]">
+                      <span className="text-[13px] font-mono font-bold text-[#800020] dark:text-[#FB7185]">
                         سؤال {idx + 1}
                       </span>
                       {q.type === "ESSAY" ? (
-                        <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-[13px] font-bold bg-[#4F46E5]/10 dark:bg-[#1E293B] text-[#4F46E5] dark:text-[#6366F1] border border-[#E2E8F0] dark:border-[#6366F1]">
+                        <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-[13px] font-bold bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] border border-[#E2E8F0] dark:border-[#E11D48]">
                           <BookOpen className="w-3 h-3" />
                           <span>سؤال مقالي • قارن إجابتك بالنموذج المثالي</span>
                         </span>
@@ -324,7 +324,7 @@ export default async function ExamResultsPage({
                     {relatedLesson && (
                       <Link
                         href={`/lessons/${relatedLesson.id}`}
-                        className="text-[13px] font-bold text-[#4F46E5] dark:text-[#6366F1] hover:underline flex items-center gap-1"
+                        className="text-[13px] font-bold text-[#800020] dark:text-[#FB7185] hover:underline flex items-center gap-1"
                       >
                         <span>شرح الدرس: <BidiStatement as="span" text={relatedLesson.title} /></span>
                         <ArrowLeft className="w-3 h-3" />
@@ -343,8 +343,8 @@ export default async function ExamResultsPage({
                   {q.type === "ESSAY" ? (
                     <div className="space-y-3 pt-1">
                       {/* Notice banner */}
-                      <div className="p-3 rounded-xl bg-[#4F46E5]/10 dark:bg-[#1E293B] border border-[#E2E8F0]/60 dark:border-[#6366F1]/40 text-[13px] text-[#4F46E5] dark:text-[#6366F1] flex items-start gap-2">
-                        <Sparkles className="w-4 h-4 text-[#4F46E5] dark:text-[#6366F1] shrink-0 mt-1" />
+                      <div className="p-3 rounded-xl bg-[#800020]/10 dark:bg-[#1E293B] border border-[#E2E8F0]/60 dark:border-[#E11D48]/40 text-[13px] text-[#800020] dark:text-[#FB7185] flex items-start gap-2">
+                        <Sparkles className="w-4 h-4 text-[#800020] dark:text-[#FB7185] shrink-0 mt-1" />
                         <span>الأسئلة المقالية لا يتم تقييمها آلياً؛ قارن إجابتك المكتوبة بنموذج الإجابة الرسمي من بنك الأسئلة أدناه لتحديد مدى تغطيتك للنقاط المطلوبة.</span>
                       </div>
 
@@ -420,8 +420,8 @@ export default async function ExamResultsPage({
 
                   {/* Explanation card */}
                   {q.explanation && (
-                    <div className="p-4 rounded-xl bg-[#4F46E5]/10 dark:bg-[#1E293B] border border-[#4F46E5]/20 space-y-2">
-                      <div className="flex items-center gap-2 text-[13px] font-bold text-[#4F46E5] dark:text-[#6366F1]">
+                    <div className="p-4 rounded-xl bg-[#800020]/10 dark:bg-[#1E293B] border border-[#800020]/20 space-y-2">
+                      <div className="flex items-center gap-2 text-[13px] font-bold text-[#800020] dark:text-[#FB7185]">
                         <Lightbulb className="w-4 h-4" />
                         <span>
                           الفكرة الأساسية: {q.explanation.concept}

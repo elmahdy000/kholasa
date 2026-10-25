@@ -256,7 +256,7 @@ export function ExamBuilderForm({
       <section className="p-5 sm:p-6 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]  space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-lg bg-[#4F46E5]/10 dark:bg-[#1E293B] text-[#4F46E5] dark:text-[#6366F1] flex items-center justify-center font-bold">
+            <div className="w-11 h-11 rounded-lg bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] flex items-center justify-center font-bold">
               <BookOpen className="w-4 h-4" />
             </div>
             <div>
@@ -269,7 +269,7 @@ export function ExamBuilderForm({
             </div>
           </div>
           {currentSubject && (
-            <span className="text-[13px] font-bold text-[#4F46E5] dark:text-[#6366F1]">
+            <span className="text-[13px] font-bold text-[#800020] dark:text-[#FB7185]">
               {currentSubject.name}
             </span>
           )}
@@ -289,14 +289,14 @@ export function ExamBuilderForm({
                 }}
                 className={`p-4 rounded-xl border text-right transition-colors flex items-center justify-between gap-3 ${
                   isSelected
-                    ? "bg-[#4F46E5]/10 dark:bg-[#1E293B] border-2 border-[#4F46E5] dark:border-[#6366F1] text-[#0F172A] dark:text-white "
+                    ? "bg-[#800020]/10 dark:bg-[#1E293B] border-2 border-[#800020] dark:border-[#E11D48] text-[#0F172A] dark:text-white "
                     : "bg-white dark:bg-[#1E293B]/80 border-[#E2E8F0] dark:border-[#334155]/80 text-[#0F172A] dark:text-[#F8FAFC] hover:border-[#E2E8F0] dark:hover:border-[#64748B]"
                 }`}
               >
                 <div className="flex items-center gap-3 truncate">
                   <div
                     className="w-3 h-3 rounded-full shrink-0"
-                    style={{ backgroundColor: s.color || "#4F46E5" }}
+                    style={{ backgroundColor: s.color || "#800020" }}
                   />
                   <div className="truncate">
                     <span className="text-[13px] sm:text-sm font-bold block truncate">
@@ -311,7 +311,7 @@ export function ExamBuilderForm({
                 <div
                   className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 transition-colors ${
                     isSelected
-                      ? "bg-[#4F46E5] dark:bg-[#6366F1] border-[#4F46E5] dark:border-[#6366F1] text-white"
+                      ? "bg-[#800020] dark:bg-[#E11D48] border-[#800020] dark:border-[#E11D48] text-white"
                       : "border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B]"
                   }`}
                 >
@@ -327,7 +327,7 @@ export function ExamBuilderForm({
       <section className="p-5 sm:p-6 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]  space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-lg bg-[#4F46E5]/10 dark:bg-[#1E293B] text-[#4F46E5] dark:text-[#6366F1] flex items-center justify-center font-bold">
+            <div className="w-11 h-11 rounded-lg bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] flex items-center justify-center font-bold">
               <Layers className="w-4 h-4" />
             </div>
             <div>
@@ -379,7 +379,7 @@ export function ExamBuilderForm({
                     onClick={() => setSelectedUnitId(u.id)}
                     className={`p-3 rounded-xl border text-right transition-colors flex items-center justify-between gap-3 ${
                       isSelected
-                        ? "bg-[#4F46E5]/10 dark:bg-[#1E293B] border-2 border-[#4F46E5] dark:border-[#6366F1] text-[#0F172A] dark:text-white "
+                        ? "bg-[#800020]/10 dark:bg-[#1E293B] border-2 border-[#800020] dark:border-[#E11D48] text-[#0F172A] dark:text-white "
                         : "bg-white dark:bg-[#1E293B]/80 border-[#E2E8F0] dark:border-[#334155]/80 text-[#0F172A] dark:text-[#F8FAFC] hover:border-[#E2E8F0] dark:hover:border-[#64748B]"
                     }`}
                   >
@@ -394,7 +394,7 @@ export function ExamBuilderForm({
                     <div
                       className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ${
                         isSelected
-                          ? "bg-[#4F46E5] dark:bg-[#6366F1] border-[#4F46E5] dark:border-[#6366F1] text-white"
+                          ? "bg-[#800020] dark:bg-[#E11D48] border-[#800020] dark:border-[#E11D48] text-white"
                           : "border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B]"
                       }`}
                     >
@@ -415,7 +415,7 @@ export function ExamBuilderForm({
                 <span className="text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC]">
                   حدد الدروس المستهدفة
                 </span>
-                <span className="text-[13px] text-[#4F46E5] dark:text-[#6366F1] font-bold bg-[#4F46E5]/10 dark:bg-[#1E293B] px-2 py-1 rounded">
+                <span className="text-[13px] text-[#800020] dark:text-[#FB7185] font-bold bg-[#800020]/10 dark:bg-[#1E293B] px-2 py-1 rounded">
                   ({selectedLessonIds.length} دروس مختارة)
                 </span>
               </div>
@@ -423,7 +423,7 @@ export function ExamBuilderForm({
                 <button
                   type="button"
                   onClick={selectAllLessonsInActiveUnit}
-                  className="text-[13px] font-bold text-[#4F46E5] dark:text-[#6366F1] hover:underline"
+                  className="text-[13px] font-bold text-[#800020] dark:text-[#FB7185] hover:underline"
                 >
                   تحديد دروس الوحدة الحالية
                 </button>
@@ -449,14 +449,14 @@ export function ExamBuilderForm({
                       onClick={() => toggleLesson(lesson.id)}
                       className={`p-3 rounded-xl border text-right transition-colors flex items-start sm:items-center gap-3 ${
                         isChecked
-                          ? "bg-[#4F46E5]/10 dark:bg-[#1E293B] border-2 border-[#4F46E5] text-[#0F172A] dark:text-white"
+                          ? "bg-[#800020]/10 dark:bg-[#1E293B] border-2 border-[#800020] text-[#0F172A] dark:text-white"
                           : "bg-white dark:bg-[#1E293B] border-[#E2E8F0] dark:border-[#334155] text-[#0F172A] dark:text-[#F8FAFC] hover:border-[#E2E8F0]"
                       }`}
                     >
                       <div
                         className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 mt-1 sm:mt-0 transition-colors ${
                           isChecked
-                            ? "bg-[#4F46E5] border-[#4F46E5] text-white"
+                            ? "bg-[#800020] border-[#800020] text-white"
                             : "border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B]"
                         }`}
                       >
@@ -485,7 +485,7 @@ export function ExamBuilderForm({
         <section className="p-5 sm:p-6 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]  space-y-4 flex flex-col justify-between">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg bg-[#4F46E5]/10 dark:bg-[#1E293B] text-[#4F46E5] dark:text-[#6366F1] flex items-center justify-center font-bold">
+              <div className="w-7 h-7 rounded-lg bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] flex items-center justify-center font-bold">
                 <HelpCircle className="w-4 h-4" />
               </div>
               <h2 className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-white">
@@ -512,7 +512,7 @@ export function ExamBuilderForm({
                   onClick={() => setQuestionType(t.id)}
                   className={`h-12 px-4 rounded-xl border text-right transition-colors flex items-center justify-between gap-2 ${
                     isSelected
-                      ? "bg-[#4F46E5]/10 dark:bg-[#1E293B] border-2 border-[#4F46E5] dark:border-[#6366F1] text-[#0F172A] dark:text-white  font-bold"
+                      ? "bg-[#800020]/10 dark:bg-[#1E293B] border-2 border-[#800020] dark:border-[#E11D48] text-[#0F172A] dark:text-white  font-bold"
                       : "bg-white dark:bg-[#1E293B]/80 border-[#E2E8F0] dark:border-[#334155]/80 text-[#0F172A] dark:text-[#F8FAFC] hover:border-[#E2E8F0] dark:hover:border-[#64748B] font-medium"
                   }`}
                 >
@@ -520,7 +520,7 @@ export function ExamBuilderForm({
                   <div
                     className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ${
                       isSelected
-                        ? "bg-[#4F46E5] dark:bg-[#6366F1] border-[#4F46E5] dark:border-[#6366F1] text-white"
+                        ? "bg-[#800020] dark:bg-[#E11D48] border-[#800020] dark:border-[#E11D48] text-white"
                         : "border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B]"
                     }`}
                   >
@@ -536,7 +536,7 @@ export function ExamBuilderForm({
         <section className="p-5 sm:p-6 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]  space-y-4 flex flex-col justify-between">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg bg-[#4F46E5]/10 dark:bg-[#1E293B] text-[#4F46E5] dark:text-[#6366F1] flex items-center justify-center font-bold">
+              <div className="w-7 h-7 rounded-lg bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] flex items-center justify-center font-bold">
                 <Sparkles className="w-4 h-4" />
               </div>
               <h2 className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-white">
@@ -563,7 +563,7 @@ export function ExamBuilderForm({
                   onClick={() => setDifficulty(d.id)}
                   className={`h-12 px-4 rounded-xl border text-right transition-colors flex items-center justify-between gap-2 ${
                     isSelected
-                      ? "bg-[#4F46E5]/10 dark:bg-[#1E293B] border-2 border-[#4F46E5] dark:border-[#6366F1] text-[#0F172A] dark:text-white  font-bold"
+                      ? "bg-[#800020]/10 dark:bg-[#1E293B] border-2 border-[#800020] dark:border-[#E11D48] text-[#0F172A] dark:text-white  font-bold"
                       : "bg-white dark:bg-[#1E293B]/80 border-[#E2E8F0] dark:border-[#334155]/80 text-[#0F172A] dark:text-[#F8FAFC] hover:border-[#E2E8F0] dark:hover:border-[#64748B] font-medium"
                   }`}
                 >
@@ -571,7 +571,7 @@ export function ExamBuilderForm({
                   <div
                     className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ${
                       isSelected
-                        ? "bg-[#4F46E5] dark:bg-[#6366F1] border-[#4F46E5] dark:border-[#6366F1] text-white"
+                        ? "bg-[#800020] dark:bg-[#E11D48] border-[#800020] dark:border-[#E11D48] text-white"
                         : "border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B]"
                     }`}
                   >
@@ -591,7 +591,7 @@ export function ExamBuilderForm({
           <div className="space-y-1">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-lg bg-[#4F46E5]/10 dark:bg-[#1E293B] text-[#4F46E5] dark:text-[#6366F1] flex items-center justify-center font-bold">
+                <div className="w-7 h-7 rounded-lg bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] flex items-center justify-center font-bold">
                   <GraduationCap className="w-4 h-4" />
                 </div>
                 <h2 className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-white">
@@ -628,7 +628,7 @@ export function ExamBuilderForm({
                     onClick={() => setQuestionCount(num)}
                     className={`h-12 rounded-xl border text-center transition-colors flex flex-col items-center justify-center ${
                       isSelected
-                        ? "bg-[#4F46E5]/10 dark:bg-[#1E293B] border-2 border-[#4F46E5] dark:border-[#6366F1] text-[#4F46E5] dark:text-[#6366F1] font-bold "
+                        ? "bg-[#800020]/10 dark:bg-[#1E293B] border-2 border-[#800020] dark:border-[#E11D48] text-[#800020] dark:text-[#FB7185] font-bold "
                         : "bg-white dark:bg-[#1E293B]/80 border-[#E2E8F0] dark:border-[#334155]/80 text-[#0F172A] dark:text-[#F8FAFC] hover:border-[#E2E8F0] dark:hover:border-[#64748B] font-medium"
                     }`}
                   >
@@ -655,7 +655,7 @@ export function ExamBuilderForm({
         <section className="p-5 sm:p-6 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]  space-y-4 flex flex-col justify-between">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg bg-[#4F46E5]/10 dark:bg-[#1E293B] text-[#4F46E5] dark:text-[#6366F1] flex items-center justify-center font-bold">
+              <div className="w-7 h-7 rounded-lg bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] flex items-center justify-center font-bold">
                 <Zap className="w-4 h-4" />
               </div>
               <h2 className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-white">
@@ -674,7 +674,7 @@ export function ExamBuilderForm({
               onClick={() => setMode("PRACTICE")}
               className={`p-4 rounded-xl border text-right transition-colors flex flex-col justify-between min-h-[82px] ${
                 mode === "PRACTICE"
-                  ? "bg-[#4F46E5]/10 dark:bg-[#1E293B] border-2 border-[#4F46E5] dark:border-[#6366F1] text-[#0F172A] dark:text-white "
+                  ? "bg-[#800020]/10 dark:bg-[#1E293B] border-2 border-[#800020] dark:border-[#E11D48] text-[#0F172A] dark:text-white "
                   : "bg-white dark:bg-[#1E293B]/80 border-[#E2E8F0] dark:border-[#334155]/80 text-[#0F172A] dark:text-[#F8FAFC] hover:border-[#E2E8F0] dark:hover:border-[#64748B]"
               }`}
             >
@@ -683,7 +683,7 @@ export function ExamBuilderForm({
                 <div
                   className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ${
                     mode === "PRACTICE"
-                      ? "bg-[#4F46E5] dark:bg-[#6366F1] border-[#4F46E5] dark:border-[#6366F1] text-white"
+                      ? "bg-[#800020] dark:bg-[#E11D48] border-[#800020] dark:border-[#E11D48] text-white"
                       : "border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B]"
                   }`}
                 >
@@ -701,7 +701,7 @@ export function ExamBuilderForm({
               onClick={() => setMode("EXAM")}
               className={`p-4 rounded-xl border text-right transition-colors flex flex-col justify-between min-h-[82px] ${
                 mode === "EXAM"
-                  ? "bg-[#4F46E5]/10 dark:bg-[#1E293B] border-2 border-[#4F46E5] dark:border-[#6366F1] text-[#0F172A] dark:text-white "
+                  ? "bg-[#800020]/10 dark:bg-[#1E293B] border-2 border-[#800020] dark:border-[#E11D48] text-[#0F172A] dark:text-white "
                   : "bg-white dark:bg-[#1E293B]/80 border-[#E2E8F0] dark:border-[#334155]/80 text-[#0F172A] dark:text-[#F8FAFC] hover:border-[#E2E8F0] dark:hover:border-[#64748B]"
               }`}
             >
@@ -710,7 +710,7 @@ export function ExamBuilderForm({
                 <div
                   className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ${
                     mode === "EXAM"
-                      ? "bg-[#4F46E5] dark:bg-[#6366F1] border-[#4F46E5] dark:border-[#6366F1] text-white"
+                      ? "bg-[#800020] dark:bg-[#E11D48] border-[#800020] dark:border-[#E11D48] text-white"
                       : "border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B]"
                   }`}
                 >
@@ -727,7 +727,7 @@ export function ExamBuilderForm({
           {mode === "EXAM" && (
             <div className="pt-2 border-t border-[#E2E8F0] dark:border-[#334155] flex items-center justify-between gap-2 text-[13px]">
               <span className="text-[#64748B] dark:text-[#94A3B8] flex items-center gap-1 font-medium">
-                <Clock className="w-3.5 h-3.5 text-[#4F46E5]" />
+                <Clock className="w-3.5 h-3.5 text-[#800020]" />
                 <span>المدة الزمنية:</span>
               </span>
               <div className="flex items-center gap-2">
@@ -738,7 +738,7 @@ export function ExamBuilderForm({
                     onClick={() => setDurationMinutes(mins)}
                     className={`px-3 py-1 rounded-md text-[13px] font-bold border transition-colors ${
                       durationMinutes === mins
-                        ? "bg-[#4F46E5] text-white border-[#4F46E5]"
+                        ? "bg-[#800020] text-white border-[#800020]"
                         : "bg-white dark:bg-[#1E293B] border-[#E2E8F0] dark:border-[#334155] text-[#0F172A] dark:text-[#F8FAFC]"
                     }`}
                   >
@@ -794,7 +794,7 @@ export function ExamBuilderForm({
 
           <div className="p-3 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0]/80 dark:border-[#334155] space-y-1">
             <span className="text-[13px] text-[#64748B] dark:text-[#94A3B8] block">عدد الأسئلة</span>
-            <span className="font-bold text-[#4F46E5] dark:text-[#6366F1] block truncate">
+            <span className="font-bold text-[#800020] dark:text-[#FB7185] block truncate">
               {effectiveCount} أسئلة
             </span>
           </div>
@@ -825,7 +825,7 @@ export function ExamBuilderForm({
           <button
             type="submit"
             disabled={isSubmitting || (availableCount !== null && availableCount === 0)}
-            className="w-full sm:w-auto h-12 px-8 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] dark:bg-[#6366F1] dark:hover:bg-[#6366F1] text-white font-bold text-sm  flex items-center justify-center gap-2 transition-all active:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
+            className="w-full sm:w-auto h-12 px-8 rounded-xl bg-[#800020] hover:bg-[#66001A] dark:bg-[#E11D48] dark:hover:bg-[#BE123C] text-white font-bold text-sm  flex items-center justify-center gap-2 transition-all active:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
           >
             {isSubmitting ? (
               <>

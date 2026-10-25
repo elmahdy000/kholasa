@@ -296,7 +296,7 @@ export function AttemptsManagerClient({
                             <span
                               className="w-1.5 h-1.5 rounded-full"
                               style={{
-                                backgroundColor: att.exam.subject.color || "#4F46E5",
+                                backgroundColor: att.exam.subject.color || "#800020",
                               }}
                             />
                             <span>{att.exam.subject.name}</span>
@@ -308,7 +308,7 @@ export function AttemptsManagerClient({
                     {/* Mode */}
                     <td className="py-4 px-4 font-mono">
                       {att.mode === "EXAM" ? (
-                        <span className="px-2 py-1 rounded text-[13px] font-semibold bg-[#4F46E5]/10 text-[#4F46E5] border border-[#4F46E5]/20">
+                        <span className="px-2 py-1 rounded text-[13px] font-semibold bg-[#800020]/10 text-[#800020] border border-[#800020]/20">
                           امتحان رسمي
                         </span>
                       ) : (
@@ -488,8 +488,8 @@ export function AttemptsManagerClient({
 
                           {/* Model Answer from rubric */}
                           {q.rubric && (
-                            <div className="p-3 rounded bg-[#4F46E5]/10 dark:bg-[#1E293B] border border-[#E2E8F0]/50 dark:border-[#6366F1]/40 text-[13px]">
-                              <span className="text-[13px] font-mono text-[#4F46E5] block mb-1">
+                            <div className="p-3 rounded bg-[#800020]/10 dark:bg-[#1E293B] border border-[#E2E8F0]/50 dark:border-[#E11D48]/40 text-[13px]">
+                              <span className="text-[13px] font-mono text-[#800020] block mb-1">
                                 الإجابة النموذجية (معيار التصحيح):
                               </span>
                               <p className="text-[#0F172A] dark:text-[#F8FAFC]">

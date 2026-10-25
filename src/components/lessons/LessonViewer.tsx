@@ -347,14 +347,14 @@ export function LessonViewer({
           <div className="flex items-center gap-2 text-[13px] font-medium text-[#64748B] dark:text-[#94A3B8] mb-2 flex-wrap">
             <Link
               href="/subjects"
-              className="hover:text-[#4F46E5] transition-colors"
+              className="hover:text-[#800020] transition-colors"
             >
               المواد
             </Link>
             <span>/</span>
             <Link
               href={`/subjects/${lesson.unit.subject.id}`}
-              className="hover:text-[#4F46E5] transition-colors"
+              className="hover:text-[#800020] transition-colors"
             >
               {lesson.unit.subject.name}
             </Link>
@@ -370,7 +370,7 @@ export function LessonViewer({
 
           <div className="flex items-center gap-3 text-[13px] text-[#64748B] dark:text-[#94A3B8] font-medium mt-2">
             <span className="flex items-center gap-2">
-              <Clock className="w-3.5 h-3.5 text-[#4F46E5]" weight="bold" />
+              <Clock className="w-3.5 h-3.5 text-[#800020]" weight="bold" />
               <span>مدة الدرس: {lesson.durationMinutes} دقيقة</span>
             </span>
             <span>•</span>
@@ -421,7 +421,7 @@ export function LessonViewer({
         <div className="flex items-center gap-3 w-full sm:w-auto">
           <button
             onClick={() => setIsPlayingAudio(!isPlayingAudio)}
-            className="w-11 h-11 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white flex items-center justify-center transition-transform active:opacity-80 shrink-0 "
+            className="w-11 h-11 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white flex items-center justify-center transition-transform active:opacity-80 shrink-0 "
           >
             {isPlayingAudio ? (
               <Pause className="w-4 h-4 fill-current" weight="fill" />
@@ -446,7 +446,7 @@ export function LessonViewer({
         <div className="flex items-center gap-3 w-full sm:w-64">
           <div className="flex-1 h-1.5 rounded-full bg-[#F8FAFC] dark:bg-[#1E293B] overflow-hidden">
             <div
-              className="h-full bg-[#4F46E5] transition-all duration-300"
+              className="h-full bg-[#800020] transition-all duration-300"
               style={{ width: `${audioProgress}%` }}
             />
           </div>
@@ -505,7 +505,7 @@ export function LessonViewer({
                   : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white font-medium"
               }`}
             >
-              <Icon className={`w-3.5 h-3.5 ${isSelected ? "text-[#4F46E5]" : ""}`} weight={isSelected ? "fill" : "bold"} />
+              <Icon className={`w-3.5 h-3.5 ${isSelected ? "text-[#800020]" : ""}`} weight={isSelected ? "fill" : "bold"} />
               <span>{tab.label}</span>
               {tab.badge && (
                 <span className="px-2 py-0.2 rounded text-[13px] font-bold bg-[#D97706] text-white">
@@ -552,7 +552,7 @@ export function LessonViewer({
           {lesson.content?.objectives &&
             lesson.content.objectives.length > 0 && (
               <div className="p-5 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]">
-                <h3 className="text-[13px] font-bold uppercase text-[#4F46E5] mb-3 flex items-center gap-2">
+                <h3 className="text-[13px] font-bold uppercase text-[#800020] mb-3 flex items-center gap-2">
                   <Lightbulb className="w-4 h-4" weight="fill" />
                   <span>الأهداف التعليمية ومخرجات التعلم</span>
                 </h3>
@@ -562,7 +562,7 @@ export function LessonViewer({
                       key={i}
                       className="flex items-start gap-3 text-[13px] sm:text-sm font-medium text-[#0F172A] dark:text-[#F8FAFC] font-content"
                     >
-                      <div className="w-4 h-4 rounded bg-[#4F46E5]/10 text-[#4F46E5] flex items-center justify-center shrink-0 mt-1 text-[13px] font-bold">
+                      <div className="w-4 h-4 rounded bg-[#800020]/10 text-[#800020] flex items-center justify-center shrink-0 mt-1 text-[13px] font-bold">
                         {i + 1}
                       </div>
                       <span>{obj}</span>
@@ -591,7 +591,7 @@ export function LessonViewer({
                     return (
                       <h3
                         key={index}
-                        className="text-base sm:text-lg font-bold text-[#4F46E5] pt-2"
+                        className="text-base sm:text-lg font-bold text-[#800020] pt-2"
                       >
                         {paragraph.replace("### ", "")}
                       </h3>
@@ -669,7 +669,7 @@ export function LessonViewer({
               {lesson.summary.keyConcepts &&
                 lesson.summary.keyConcepts.length > 0 && (
                   <div className="p-6 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] space-y-4">
-                    <h3 className="text-sm font-bold text-[#4F46E5] flex items-center gap-2">
+                    <h3 className="text-sm font-bold text-[#800020] flex items-center gap-2">
                       <Lightbulb className="w-4 h-4" weight="fill" />
                       <span>أهم المفاهيم الأساسية</span>
                     </h3>
@@ -678,9 +678,9 @@ export function LessonViewer({
                         (concept, idx) => (
                           <div
                             key={idx}
-                            className="p-4 rounded-lg bg-[#4F46E5]/5 border border-[#4F46E5]/15 text-[13px] sm:text-sm font-medium text-[#0F172A] dark:text-[#F8FAFC] flex items-start gap-3 font-content"
+                            className="p-4 rounded-lg bg-[#800020]/5 border border-[#800020]/15 text-[13px] sm:text-sm font-medium text-[#0F172A] dark:text-[#F8FAFC] flex items-start gap-3 font-content"
                           >
-                            <span className="w-5 h-5 rounded bg-[#4F46E5] text-white flex items-center justify-center text-[13px] shrink-0 font-bold">
+                            <span className="w-5 h-5 rounded bg-[#800020] text-white flex items-center justify-center text-[13px] shrink-0 font-bold">
                               {idx + 1}
                             </span>
                             <span>{concept}</span>
@@ -726,7 +726,7 @@ export function LessonViewer({
               {lesson.summary.formulas &&
                 (lesson.summary.formulas as Formula[]).length > 0 && (
                   <div className="p-6 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] space-y-4">
-                    <h3 className="text-sm font-bold text-[#4F46E5] flex items-center gap-2">
+                    <h3 className="text-sm font-bold text-[#800020] flex items-center gap-2">
                       <span className="font-mono text-base">#</span>
                       <span>القوانين والمعادلات الأساسية</span>
                     </h3>
@@ -763,7 +763,7 @@ export function LessonViewer({
                         <thead>
                           <tr className="border-b border-[#E2E8F0] dark:border-[#334155]">
                             <th className="py-2 px-3 font-bold text-[#64748B]">وجه المقارنة</th>
-                            <th className="py-2 px-3 font-bold text-[#4F46E5]">العنصر الأول</th>
+                            <th className="py-2 px-3 font-bold text-[#800020]">العنصر الأول</th>
                             <th className="py-2 px-3 font-bold text-[#059669]">العنصر الثاني</th>
                           </tr>
                         </thead>
@@ -883,7 +883,7 @@ export function LessonViewer({
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E2E8F0] dark:border-[#334155] pb-4">
                   <div>
                     <h3 className="text-base sm:text-lg font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
-                      <ImageIcon className="w-5 h-5 text-[#4F46E5] dark:text-[#6366F1]" weight="bold" />
+                      <ImageIcon className="w-5 h-5 text-[#800020] dark:text-[#FB7185]" weight="bold" />
                       <span>{lesson.mindMap.title || "الخرائط الذهنية للدرس"}</span>
                     </h3>
                     <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8] mt-1">
@@ -904,7 +904,7 @@ export function LessonViewer({
                           }}
                           className={`px-3 py-2 rounded-lg text-[13px] font-bold transition-all shrink-0 ${
                             selectedImageIndex === idx
-                              ? "bg-[#4F46E5] text-white "
+                              ? "bg-[#800020] text-white "
                               : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
                           }`}
                         >
@@ -954,7 +954,7 @@ export function LessonViewer({
                     <button
                       type="button"
                       onClick={() => setIsFullscreenImage(true)}
-                      className="h-11 px-3 rounded-lg bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[13px] font-bold flex items-center gap-2  transition-colors interactive-tap"
+                      className="h-11 px-3 rounded-lg bg-[#800020] hover:bg-[#66001A] text-white text-[13px] font-bold flex items-center gap-2  transition-colors interactive-tap"
                     >
                       <ArrowsOut className="w-3.5 h-3.5" weight="bold" />
                       <span>عرض ملء الشاشة</span>
@@ -991,7 +991,7 @@ export function LessonViewer({
                         }}
                         className={`relative w-24 h-16 rounded-lg overflow-hidden border-2 transition-all shrink-0 ${
                           selectedImageIndex === idx
-                            ? "border-[#4F46E5] shadow-sm "
+                            ? "border-[#800020] shadow-sm "
                             : "border-[#E2E8F0] dark:border-[#334155] opacity-60 hover:opacity-100"
                         }`}
                       >
@@ -1039,7 +1039,7 @@ export function LessonViewer({
                     onClick={() => setIsOutlineMode(!isOutlineMode)}
                     className={`h-11 px-3 rounded-lg text-[13px] font-bold flex items-center gap-2 transition-colors ${
                       isOutlineMode
-                        ? "bg-[#4F46E5] text-white"
+                        ? "bg-[#800020] text-white"
                         : "border border-[#E2E8F0] dark:border-[#334155] text-[#64748B] hover:bg-[#F8FAFC] dark:hover:bg-[#334155]"
                     }`}
                   >
@@ -1064,7 +1064,7 @@ export function LessonViewer({
                             <div key={root.id} className="flex flex-col items-center gap-4 w-full">
                               <div
                                 onClick={() => setSelectedMindNode(selectedMindNode === root.id ? null : root.id)}
-                                className="px-6 py-3 rounded-lg bg-[#4F46E5] text-white text-sm font-bold cursor-pointer hover:bg-[#4338CA] transition-colors shadow-sm"
+                                className="px-6 py-3 rounded-lg bg-[#800020] text-white text-sm font-bold cursor-pointer hover:bg-[#66001A] transition-colors shadow-sm"
                               >
                                 {root.label}
                               </div>
@@ -1118,7 +1118,7 @@ export function LessonViewer({
                           <div
                             className={`w-2.5 h-2.5 rounded-full mt-2 shrink-0 ${
                               n.level === 0
-                                ? "bg-[#4F46E5]"
+                                ? "bg-[#800020]"
                                 : n.level === 1
                                 ? "bg-[#059669]"
                                 : "bg-[#D97706]"
@@ -1128,7 +1128,7 @@ export function LessonViewer({
                             <h4
                               className={`text-[13px] sm:text-sm font-bold ${
                                 n.level === 0
-                                  ? "text-[#4F46E5] text-base"
+                                  ? "text-[#800020] text-base"
                                   : "text-[#0F172A] dark:text-white"
                               }`}
                             >
@@ -1205,7 +1205,7 @@ export function LessonViewer({
             </div>
             <Link
               href={`/exams/builder?subjectId=${lesson.unit.subject.id}&unitId=${lesson.unit.id}`}
-              className="h-11 px-4 rounded-lg bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[13px] font-bold flex items-center gap-2 transition-colors"
+              className="h-11 px-4 rounded-lg bg-[#800020] hover:bg-[#66001A] text-white text-[13px] font-bold flex items-center gap-2 transition-colors"
             >
               <span>امتحان شامل</span>
               <ArrowLeft className="w-3.5 h-3.5" weight="bold" />
@@ -1222,7 +1222,7 @@ export function LessonViewer({
                   className="p-6 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] space-y-4"
                 >
                   <div className="flex items-center justify-between gap-2 border-b border-[#E2E8F0] dark:border-[#334155] pb-3">
-                    <span className="text-[13px] font-bold text-[#4F46E5]">
+                    <span className="text-[13px] font-bold text-[#800020]">
                       السؤال رقم {qIndex + 1}
                     </span>
                     <span className="px-3 py-1 rounded-md text-[13px] font-bold bg-[#F8FAFC] dark:bg-[#1E293B] text-[#64748B] dark:text-[#F8FAFC]">
@@ -1249,7 +1249,7 @@ export function LessonViewer({
                       const isOptionCorrect =
                         state?.reveal?.correctOptionId === opt.id;
                       let btnStyle =
-                        "bg-[#F8FAFC] dark:bg-[#1E293B] border-[#E2E8F0] dark:border-[#334155] text-[#0F172A] dark:text-[#F8FAFC] hover:border-[#4F46E5]/50";
+                        "bg-[#F8FAFC] dark:bg-[#1E293B] border-[#E2E8F0] dark:border-[#334155] text-[#0F172A] dark:text-[#F8FAFC] hover:border-[#800020]/50";
 
                       if (isRevealed) {
                         if (isOptionCorrect) {
@@ -1303,8 +1303,8 @@ export function LessonViewer({
 
                   {/* Detailed Explanation Reveal */}
                   {state?.revealed && state.reveal?.explanation && (
-                    <div className="p-4 rounded-xl bg-[#4F46E5]/10 dark:bg-[#1E293B] border border-[#E2E8F0]/60 dark:border-[#6366F1]/60 space-y-2 mt-3">
-                      <div className="flex items-center gap-2 text-[13px] font-bold text-[#4F46E5] dark:text-[#6366F1]">
+                    <div className="p-4 rounded-xl bg-[#800020]/10 dark:bg-[#1E293B] border border-[#E2E8F0]/60 dark:border-[#E11D48]/60 space-y-2 mt-3">
+                      <div className="flex items-center gap-2 text-[13px] font-bold text-[#800020] dark:text-[#FB7185]">
                         <Lightbulb className="w-4 h-4" weight="fill" />
                         <span>
                           الفكرة الأساسية: {state.reveal.explanation.concept}
@@ -1315,7 +1315,7 @@ export function LessonViewer({
                       </p>
 
                       {/* Per-option explanations if available */}
-                      <div className="pt-2 border-t border-[#E2E8F0]/40 dark:border-[#6366F1]/40 space-y-2">
+                      <div className="pt-2 border-t border-[#E2E8F0]/40 dark:border-[#E11D48]/40 space-y-2">
                         <span className="text-[13px] font-bold text-[#64748B] dark:text-[#94A3B8] block">
                           ليه ده صح وده غلط؟
                         </span>
@@ -1355,7 +1355,7 @@ export function LessonViewer({
         {prevLesson ? (
           <Link
             href={`/lessons/${prevLesson.id}`}
-            className="flex items-center gap-2 text-[13px] sm:text-sm font-bold text-[#64748B] dark:text-[#94A3B8] hover:text-[#4F46E5] transition-colors"
+            className="flex items-center gap-2 text-[13px] sm:text-sm font-bold text-[#64748B] dark:text-[#94A3B8] hover:text-[#800020] transition-colors"
           >
             <CaretRight className="w-4 h-4" weight="bold" />
             <div className="text-right">
@@ -1374,10 +1374,10 @@ export function LessonViewer({
         {nextLesson ? (
           <Link
             href={`/lessons/${nextLesson.id}`}
-            className="flex items-center gap-2 text-[13px] sm:text-sm font-bold text-[#4F46E5] hover:text-[#4338CA] transition-colors"
+            className="flex items-center gap-2 text-[13px] sm:text-sm font-bold text-[#800020] hover:text-[#66001A] transition-colors"
           >
             <div className="text-left">
-              <span className="block text-[13px] text-[#4F46E5]/70">
+              <span className="block text-[13px] text-[#800020]/70">
                 الدرس التالي
               </span>
               <span className="truncate max-w-[150px] sm:max-w-xs block">
@@ -1389,7 +1389,7 @@ export function LessonViewer({
         ) : (
           <Link
             href={`/subjects/${lesson.unit.subject.id}`}
-            className="h-11 px-4 rounded-lg bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[13px] font-bold flex items-center gap-2 transition-colors"
+            className="h-11 px-4 rounded-lg bg-[#800020] hover:bg-[#66001A] text-white text-[13px] font-bold flex items-center gap-2 transition-colors"
           >
             <span>تم إنهاء الوحدة! عودة للمادة</span>
             <ArrowLeft className="w-3.5 h-3.5" weight="bold" />

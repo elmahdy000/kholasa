@@ -639,7 +639,7 @@ export class CurriculumService {
         name: data.name.trim(),
         code: data.code.trim(),
         icon: data.icon || null,
-        color: data.color || "#4F46E5",
+        color: data.color || "#800020",
         description: data.description?.trim() || null,
         systemId: data.systemId,
         gradeId: data.gradeId,

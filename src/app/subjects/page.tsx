@@ -70,13 +70,13 @@ export default async function SubjectsPage() {
               <Link
                 key={subj.id}
                 href={`/subjects/${subj.id}`}
-                className="group p-6 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]  hover:border-[#4F46E5]/40 dark:hover:border-[#4F46E5]/60 transition-all flex flex-col justify-between space-y-5"
+                className="group p-6 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]  hover:border-[#800020]/40 dark:hover:border-[#E11D48]/60 transition-all flex flex-col justify-between space-y-5"
               >
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div
                       className="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold text-xl "
-                      style={{ backgroundColor: subj.color || "#4F46E5" }}
+                      style={{ backgroundColor: subj.color || "#800020" }}
                     >
                       {subj.name[0]}
                     </div>
@@ -86,7 +86,7 @@ export default async function SubjectsPage() {
                   </div>
 
                   <div>
-                    <h2 className="text-base sm:text-lg font-bold text-[#0F172A] dark:text-[#F8FAFC] group-hover:text-[#4F46E5] dark:group-hover:text-[#6366F1] transition-colors">
+                    <h2 className="text-base sm:text-lg font-bold text-[#0F172A] dark:text-[#F8FAFC] group-hover:text-[#800020] dark:group-hover:text-[#FB7185] transition-colors">
                       {subj.name}
                     </h2>
                     <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8] font-medium leading-relaxed mt-2 line-clamp-3">
@@ -99,7 +99,7 @@ export default async function SubjectsPage() {
                   <span className="text-[#64748B] dark:text-[#94A3B8] font-mono text-[13px]">
                     {totalLessons} درس وملخص
                   </span>
-                  <span className="text-[#4F46E5] dark:text-[#6366F1] flex items-center gap-1 font-bold">
+                  <span className="text-[#800020] dark:text-[#FB7185] flex items-center gap-1 font-bold">
                     <span>فتح المادة</span>
                     <ArrowLeft className="w-3.5 h-3.5" />
                   </span>

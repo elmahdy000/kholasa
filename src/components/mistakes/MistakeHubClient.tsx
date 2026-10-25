@@ -202,14 +202,14 @@ export function MistakeHubClient({
 
         <div className="p-5 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]  flex items-center justify-between">
           <div>
-            <span className="text-2xl sm:text-2xl sm:text-3xl font-bold text-[#4F46E5] dark:text-[#6366F1] block tracking-tight">
+            <span className="text-2xl sm:text-2xl sm:text-3xl font-bold text-[#800020] dark:text-[#FB7185] block tracking-tight">
               {masteryPercentage !== null ? `${masteryPercentage}%` : "—"}
             </span>
             <span className="text-[13px] font-bold text-[#64748B] dark:text-[#94A3B8]">
               نسبة التمكّن والتثبيت
             </span>
           </div>
-          <div className="w-11 h-11 rounded-xl bg-[#4F46E5]/10 dark:bg-[#1E293B] text-[#4F46E5] dark:text-[#6366F1] flex items-center justify-center">
+          <div className="w-11 h-11 rounded-xl bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] flex items-center justify-center">
             <Trophy className="w-5 h-5" />
           </div>
         </div>
@@ -220,7 +220,7 @@ export function MistakeHubClient({
         <div className="p-4 sm:p-5 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-[#4F46E5] animate-ping" />
+              <span className="w-2 h-2 rounded-full bg-[#800020] animate-ping" />
               <h3 className="text-sm font-bold text-[#0F172A] dark:text-white">
                 عاوز تتدرب عليهم في امتحان عملي مجمع؟
               </h3>
@@ -234,7 +234,7 @@ export function MistakeHubClient({
             type="button"
             onClick={handleGenerateExamFromMistakes}
             disabled={isGeneratingExam}
-            className="h-11 px-5 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[13px] font-bold flex items-center justify-center gap-2  transition-all active:opacity-80 disabled:opacity-50 interactive-tap shrink-0"
+            className="h-11 px-5 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] font-bold flex items-center justify-center gap-2  transition-all active:opacity-80 disabled:opacity-50 interactive-tap shrink-0"
           >
             {isGeneratingExam ? (
               <>
@@ -293,7 +293,7 @@ export function MistakeHubClient({
           <select
             value={selectedSubjectId}
             onChange={(e) => setSelectedSubjectId(e.target.value)}
-            className="h-11 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#4F46E5]"
+            className="h-11 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#800020]"
           >
             <option value="all">جميع المواد</option>
             {subjects.map((s) => (
@@ -325,7 +325,7 @@ export function MistakeHubClient({
                 {/* Header */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#E2E8F0] dark:border-[#334155] pb-4">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="px-3 py-1 rounded-lg bg-[#4F46E5]/10 dark:bg-[#1E293B] text-[#4F46E5] dark:text-[#6366F1] text-[13px] font-bold border border-[#E2E8F0]/50 dark:border-[#6366F1]/50">
+                    <span className="px-3 py-1 rounded-lg bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] text-[13px] font-bold border border-[#E2E8F0]/50 dark:border-[#E11D48]/50">
                       <BidiStatement as="span" text={q.subject.name} />
                     </span>
                     {mistake.wrongCount > 1 && (
@@ -344,9 +344,9 @@ export function MistakeHubClient({
                   {relatedLesson && (
                     <Link
                       href={`/lessons/${relatedLesson.id}`}
-                      className="inline-flex items-center gap-2 text-[13px] font-semibold text-[#4F46E5] dark:text-[#6366F1] hover:text-[#4F46E5] dark:hover:text-[#6366F1] transition-colors shrink min-w-0 max-w-full sm:max-w-md group"
+                      className="inline-flex items-center gap-2 text-[13px] font-semibold text-[#800020] dark:text-[#FB7185] hover:text-[#800020] dark:hover:text-[#FB7185] transition-colors shrink min-w-0 max-w-full sm:max-w-md group"
                     >
-                      <BookOpen className="w-3.5 h-3.5 shrink-0 text-[#4F46E5]" />
+                      <BookOpen className="w-3.5 h-3.5 shrink-0 text-[#800020]" />
                       <span className="line-clamp-2 break-words">
                         شرح الدرس: <BidiStatement as="span" text={relatedLesson.title} />
                       </span>
@@ -451,7 +451,7 @@ export function MistakeHubClient({
           </p>
           <Link
             href="/exams"
-            className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[13px] font-bold transition-all active:opacity-80 "
+            className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] font-bold transition-all active:opacity-80 "
           >
             <span>انتقل إلى الامتحانات</span>
             <ArrowLeft className="w-3.5 h-3.5" />

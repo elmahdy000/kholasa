@@ -174,7 +174,7 @@ export function AnalyticsManagerClient({ data }: AnalyticsManagerClientProps) {
               ({overview.examsCount} امتحانات)
             </span>
           </div>
-          <span className="text-[13px] text-[#4F46E5] font-mono mt-2">
+          <span className="text-[13px] text-[#800020] font-mono mt-2">
             {questionTypes.mcq} اختيار من متعدد · {questionTypes.essay} مقالي
           </span>
         </div>
@@ -249,12 +249,12 @@ export function AnalyticsManagerClient({ data }: AnalyticsManagerClientProps) {
           <div className="space-y-3">
             <div>
               <div className="flex items-center justify-between text-[13px] font-semibold mb-1">
-                <span className="text-[#4F46E5]">مستوى بسيط / تمهيدي (Easy)</span>
+                <span className="text-[#800020]">مستوى بسيط / تمهيدي (Easy)</span>
                 <span className="font-mono">{difficultyDistribution.easy} ({easyPercent}%)</span>
               </div>
               <div className="h-2 rounded-full bg-[#F8FAFC] dark:bg-[#1E293B] overflow-hidden">
                 <div
-                  className="h-full bg-[#4F46E5] rounded-full"
+                  className="h-full bg-[#800020] rounded-full"
                   style={{ width: `${easyPercent}%` }}
                 />
               </div>
@@ -262,12 +262,12 @@ export function AnalyticsManagerClient({ data }: AnalyticsManagerClientProps) {
 
             <div>
               <div className="flex items-center justify-between text-[13px] font-semibold mb-1">
-                <span className="text-[#4F46E5]">مستوى متوسط / تطبيقي (Medium)</span>
+                <span className="text-[#800020]">مستوى متوسط / تطبيقي (Medium)</span>
                 <span className="font-mono">{difficultyDistribution.medium} ({medPercent}%)</span>
               </div>
               <div className="h-2 rounded-full bg-[#F8FAFC] dark:bg-[#1E293B] overflow-hidden">
                 <div
-                  className="h-full bg-[#4F46E5] rounded-full"
+                  className="h-full bg-[#800020] rounded-full"
                   style={{ width: `${medPercent}%` }}
                 />
               </div>

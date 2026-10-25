@@ -25,30 +25,30 @@ export function InteractiveDemo() {
   );
 
   return (
-    <section id="demo" className="py-20 sm:py-28 bg-[#F8FAFC] dark:bg-[#0F172A] border-y border-[#E2E8F0] dark:border-[#334155]">
+    <section id="demo" className="py-20 sm:py-28 bg-white dark:bg-[#0F172A] border-y border-[#F0E6E8] dark:border-[#334155]">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-10 text-right">
         {/* Header */}
         <div className="text-center max-w-2xl mx-auto space-y-3">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#4F46E5]/10 dark:bg-[#1E293B] border border-[#E2E8F0]/60 dark:border-[#6366F1] text-[#4F46E5] dark:text-[#6366F1] text-[13px] font-bold">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#800020]/10 dark:bg-[#1E293B] border border-[#800020]/20 dark:border-[#E11D48] text-[#800020] dark:text-[#FB7185] text-[13px] font-bold">
             <Zap className="w-3.5 h-3.5 text-[#D97706] fill-[#D97706]" />
             <span>معاينة حية للمنصة</span>
           </div>
-          <h2 className="text-2xl sm:text-4xl font-bold text-[#0F172A] dark:text-white leading-tight">
+          <h2 className="text-2xl sm:text-4xl font-bold text-[#1A0A10] dark:text-white leading-tight">
             استكشف تجربة الخلاصة الآن
           </h2>
-          <p className="text-[13px] sm:text-sm text-[#64748B] dark:text-[#94A3B8] font-medium leading-relaxed">
+          <p className="text-[13px] sm:text-sm text-[#735C63] dark:text-[#94A3B8] font-medium leading-relaxed">
             اضغط على التبويبات بالأسفل لتشاهد كيف تتحول المواد إلى كبسولات سهلة الفهم وأسئلة تفاعلية
           </p>
         </div>
 
         {/* Cohesive Tab Switcher */}
-        <div className="flex flex-wrap items-center justify-center gap-2 max-w-2xl mx-auto p-2 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] ">
+        <div className="flex flex-wrap items-center justify-center gap-2 max-w-2xl mx-auto p-2 rounded-xl bg-[#FAF7F8] dark:bg-[#0F172A] border border-[#F0E6E8] dark:border-[#334155] shadow-xs">
           <button
             onClick={() => setActiveTab("zatona")}
-            className={`h-11 px-5 rounded-xl text-[13px] font-bold transition-colors flex items-center gap-2 ${
+            className={`h-11 px-5 rounded-xl text-[13px] font-bold transition-all flex items-center gap-2 cursor-pointer ${
               activeTab === "zatona"
-                ? "bg-[#4F46E5] text-white "
-                : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white hover:bg-[#F8FAFC] dark:hover:bg-[#334155]"
+                ? "bg-[#800020] text-white shadow-sm"
+                : "text-[#735C63] dark:text-[#94A3B8] hover:text-[#1A0A10] dark:hover:text-white hover:bg-white dark:hover:bg-[#334155]"
             }`}
           >
             <Sparkles className="w-3.5 h-3.5 text-[#D97706] fill-current" />
@@ -57,10 +57,10 @@ export function InteractiveDemo() {
 
           <button
             onClick={() => setActiveTab("questions")}
-            className={`h-11 px-5 rounded-xl text-[13px] font-bold transition-colors flex items-center gap-2 ${
+            className={`h-11 px-5 rounded-xl text-[13px] font-bold transition-all flex items-center gap-2 cursor-pointer ${
               activeTab === "questions"
-                ? "bg-[#4F46E5] text-white "
-                : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white hover:bg-[#F8FAFC] dark:hover:bg-[#334155]"
+                ? "bg-[#800020] text-white shadow-sm"
+                : "text-[#735C63] dark:text-[#94A3B8] hover:text-[#1A0A10] dark:hover:text-white hover:bg-white dark:hover:bg-[#334155]"
             }`}
           >
             <Zap className="w-3.5 h-3.5" />
@@ -69,10 +69,10 @@ export function InteractiveDemo() {
 
           <button
             onClick={() => setActiveTab("mistakes")}
-            className={`h-11 px-5 rounded-xl text-[13px] font-bold transition-colors flex items-center gap-2 ${
+            className={`h-11 px-5 rounded-xl text-[13px] font-bold transition-all flex items-center gap-2 cursor-pointer ${
               activeTab === "mistakes"
-                ? "bg-[#4F46E5] text-white "
-                : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white hover:bg-[#F8FAFC] dark:hover:bg-[#334155]"
+                ? "bg-[#800020] text-white shadow-sm"
+                : "text-[#735C63] dark:text-[#94A3B8] hover:text-[#1A0A10] dark:hover:text-white hover:bg-white dark:hover:bg-[#334155]"
             }`}
           >
             <RotateCcw className="w-3.5 h-3.5" />
@@ -81,10 +81,10 @@ export function InteractiveDemo() {
 
           <button
             onClick={() => setActiveTab("mindmap")}
-            className={`h-11 px-5 rounded-xl text-[13px] font-bold transition-colors flex items-center gap-2 ${
+            className={`h-11 px-5 rounded-xl text-[13px] font-bold transition-all flex items-center gap-2 cursor-pointer ${
               activeTab === "mindmap"
-                ? "bg-[#4F46E5] text-white "
-                : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white hover:bg-[#F8FAFC] dark:hover:bg-[#334155]"
+                ? "bg-[#800020] text-white shadow-sm"
+                : "text-[#735C63] dark:text-[#94A3B8] hover:text-[#1A0A10] dark:hover:text-white hover:bg-white dark:hover:bg-[#334155]"
             }`}
           >
             <Brain className="w-3.5 h-3.5" />
@@ -94,48 +94,48 @@ export function InteractiveDemo() {
 
         {/* Tab 1: الزتونة الذهبية */}
         {activeTab === "zatona" && (
-          <div className="max-w-4xl mx-auto p-6 sm:p-8 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] shadow-sm space-y-6 animate-in fade-in duration-200">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#E2E8F0] dark:border-[#334155] pb-4">
+          <div className="max-w-4xl mx-auto p-6 sm:p-8 rounded-xl bg-white dark:bg-[#0F172A] border border-[#F0E6E8] dark:border-[#334155] shadow-sm space-y-6 animate-in fade-in duration-200">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#F0E6E8] dark:border-[#334155] pb-4">
               <div>
-                <span className="text-[13px] font-bold text-[#4F46E5] dark:text-[#6366F1] block">
+                <span className="text-[13px] font-bold text-[#800020] dark:text-[#FB7185] block">
                   عينة حية من كبسولة الزتونة • الأحياء
                 </span>
-                <h3 className="text-lg sm:text-xl font-bold text-[#0F172A] dark:text-white">
+                <h3 className="text-lg sm:text-xl font-bold text-[#1A0A10] dark:text-white">
                   الدعامة والحركة في الكائنات الحية
                 </h3>
               </div>
-              <span className="text-[13px] font-bold bg-[#D97706]/10 dark:bg-[#1E293B] text-[#D97706] dark:text-[#FBBF24] px-3 py-2 rounded-full border border-[#E2E8F0] dark:border-[#FBBF24]/50 shrink-0 flex items-center gap-2">
+              <span className="text-[13px] font-bold bg-[#D97706]/10 dark:bg-[#1E293B] text-[#D97706] dark:text-[#FBBF24] px-3 py-2 rounded-full border border-[#F0E6E8] dark:border-[#FBBF24]/50 shrink-0 flex items-center gap-2">
                 <Clock className="w-3.5 h-3.5" />
                 <span>مدة القراءة: 3 دقائق</span>
               </span>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="p-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/60 border border-[#E2E8F0] dark:border-[#334155] space-y-2">
-                <span className="text-[13px] font-bold text-[#4F46E5] dark:text-[#6366F1] block">
+              <div className="p-4 rounded-xl bg-[#FAF7F8] dark:bg-[#1E293B]/60 border border-[#F0E6E8] dark:border-[#334155] space-y-2">
+                <span className="text-[13px] font-bold text-[#800020] dark:text-[#FB7185] block">
                   المفهوم الجوهري (Concept):
                 </span>
-                <p className="text-[13px] text-[#0F172A] dark:text-[#F8FAFC] leading-relaxed font-medium">
+                <p className="text-[13px] text-[#1A0A10] dark:text-[#F8FAFC] leading-relaxed font-medium">
                   الدعامة الفسيولوجية دعامة مؤقتة تتناول الخلية ككل وتعتمد على الخاصية الأسموزية وامتلاء الفجوة العصارية، بينما الدعامة التركيبية دائمة وتعتمد على ترسيب مواد كيميائية صلبة (السيليلوز والليجنين والكيوتين والسيوبرين).
                 </p>
               </div>
 
-              <div className="p-4 rounded-xl bg-[#D97706]/10 dark:bg-[#1E293B] border border-[#E2E8F0]/80 dark:border-[#FBBF24]/40 space-y-2">
+              <div className="p-4 rounded-xl bg-[#D97706]/10 dark:bg-[#1E293B] border border-[#F0E6E8] dark:border-[#FBBF24]/40 space-y-2">
                 <span className="text-[13px] font-bold text-[#D97706] dark:text-[#FBBF24] flex items-center gap-2">
                   <AlertTriangle className="w-3.5 h-3.5 text-[#D97706]" />
                   <span>نقطة امتحانية هامة ومكررة:</span>
                 </span>
-                <p className="text-[13px] text-[#0F172A] dark:text-[#F8FAFC] leading-relaxed font-medium">
+                <p className="text-[13px] text-[#1A0A10] dark:text-[#F8FAFC] leading-relaxed font-medium">
                   عملية النتح في منتصف النهار تفقد النبات الدعامة الفسيولوجية جزئياً فيذبل مؤقتاً، وتستعاد بمجرد الري وامتصاص الماء ليلاً.
                 </p>
               </div>
             </div>
 
-            <div className="p-4 rounded-xl bg-[#059669]/10 dark:bg-[#1E293B] border border-[#E2E8F0]/60 dark:border-[#34D399]/40 space-y-2">
+            <div className="p-4 rounded-xl bg-[#059669]/10 dark:bg-[#1E293B] border border-[#F0E6E8] dark:border-[#34D399]/40 space-y-2">
               <span className="text-[13px] font-bold text-[#059669] dark:text-[#34D399] block">
                 قائمة التحقق قبل الامتحان:
               </span>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[13px] text-[#0F172A] dark:text-[#F8FAFC] font-medium">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[13px] text-[#1A0A10] dark:text-[#F8FAFC] font-medium">
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-[#059669] shrink-0" />
                   <span>التمييز الدقيق بين النسيج الكولنشيمي والإسكلرنشيمي</span>
@@ -153,7 +153,7 @@ export function InteractiveDemo() {
         {activeTab === "questions" && (
           <div className="max-w-4xl mx-auto p-6 sm:p-8 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] shadow-sm space-y-6 animate-in fade-in duration-200">
             <div className="space-y-1">
-              <span className="text-[13px] font-bold text-[#4F46E5] dark:text-[#6366F1] block">
+              <span className="text-[13px] font-bold text-[#800020] dark:text-[#FB7185] block">
                 سؤال تطبيقي من بنك الأسئلة
               </span>
               <h3 className="text-base sm:text-lg font-bold text-[#0F172A] dark:text-white leading-relaxed">
@@ -190,7 +190,7 @@ export function InteractiveDemo() {
               ].map((opt) => {
                 const isSelected = selectedDemoOption === opt.id;
                 let cardStyle =
-                  "bg-[#F8FAFC] dark:bg-[#1E293B] border-[#E2E8F0] dark:border-[#334155] hover:border-[#4F46E5]";
+                  "bg-[#F8FAFC] dark:bg-[#1E293B] border-[#E2E8F0] dark:border-[#334155] hover:border-[#800020]";
 
                 if (selectedDemoOption !== null) {
                   if (opt.isCorrect) {
@@ -278,7 +278,7 @@ export function InteractiveDemo() {
                 ما التوزيع الإلكتروني لأيون الحديد الثلاثي Fe³⁺ في مركب FeCl₃؟
               </p>
               <div className="p-4 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] text-[#0F172A] dark:text-[#F8FAFC] leading-relaxed font-medium">
-                <span className="font-bold text-[#4F46E5] dark:text-[#6366F1]">
+                <span className="font-bold text-[#800020] dark:text-[#FB7185]">
                   التحليل العلاجي:{" "}
                 </span>
                 يفقد الحديد إلكتروني المستوى الفرعي 4s أولاً ثم إلكتروناً واحداً من المستوى 3d ليصبح [Ar] 3d⁵ (نصف ممتلئ وأكثر استقراراً كيميائياً).
@@ -286,7 +286,7 @@ export function InteractiveDemo() {
               <div className="flex items-center justify-end">
                 <Link
                   href="/mistakes"
-                  className="h-11 px-4 rounded-xl bg-[#4F46E5] text-white text-[13px] font-bold hover:bg-[#4338CA] flex items-center gap-2 transition-colors "
+                  className="h-11 px-4 rounded-xl bg-[#800020] text-white text-[13px] font-bold hover:bg-[#66001A] flex items-center gap-2 transition-colors "
                 >
                   <span>افتح ركن غلطاتي الكامل</span>
                   <ArrowLeft className="w-3.5 h-3.5" />
@@ -300,7 +300,7 @@ export function InteractiveDemo() {
         {activeTab === "mindmap" && (
           <div className="max-w-4xl mx-auto p-6 sm:p-8 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] shadow-sm space-y-6 animate-in fade-in duration-200 text-center">
             <div className="space-y-1">
-              <span className="text-[13px] font-bold text-[#4F46E5] dark:text-[#6366F1] block">
+              <span className="text-[13px] font-bold text-[#800020] dark:text-[#FB7185] block">
                 العلاقات المفاهيمية البصرية
               </span>
               <h3 className="text-lg sm:text-xl font-bold text-[#0F172A] dark:text-white">
@@ -309,7 +309,7 @@ export function InteractiveDemo() {
             </div>
 
             <div className="p-6 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/60 border border-[#E2E8F0] dark:border-[#334155] flex flex-col md:flex-row items-center justify-around gap-4">
-              <div className="p-4 rounded-xl bg-white dark:bg-[#1E293B] border-2 border-[#4F46E5] text-[#4F46E5] dark:text-[#6366F1] font-bold text-[13px] ">
+              <div className="p-4 rounded-xl bg-white dark:bg-[#1E293B] border-2 border-[#800020] text-[#800020] dark:text-[#FB7185] font-bold text-[13px] ">
                 المفهوم الأساسي
                 <br />
                 <span className="text-[13px] text-[#64748B] font-normal">

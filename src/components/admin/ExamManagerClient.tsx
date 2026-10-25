@@ -194,7 +194,7 @@ export function ExamManagerClient({
               placeholder="ابحث عن امتحان أو مادة..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full h-11 pr-9 pl-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold text-[#0F172A] dark:text-white placeholder:text-[#94A3B8] focus:outline-none focus:border-[#4F46E5]"
+              className="w-full h-11 pr-9 pl-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold text-[#0F172A] dark:text-white placeholder:text-[#94A3B8] focus:outline-none focus:border-[#800020]"
             />
           </div>
 
@@ -227,7 +227,7 @@ export function ExamManagerClient({
         {/* Create Exam CTA */}
         <button
           onClick={() => setIsCreateOpen(true)}
-          className="h-11 px-5 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[13px] font-bold flex items-center justify-center gap-2 shadow-sm transition-colors active:opacity-80 shrink-0"
+          className="h-11 px-5 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] font-bold flex items-center justify-center gap-2 shadow-sm transition-colors active:opacity-80 shrink-0"
         >
           <Plus className="w-4 h-4" />
           <span>إنشاء امتحان رسمي جديد</span>
@@ -262,7 +262,7 @@ export function ExamManagerClient({
                 <div className="flex items-center justify-between gap-2">
                   <span
                     className="px-3 py-1 rounded-lg text-[13px] font-bold text-white"
-                    style={{ backgroundColor: exam.subject.color || "#4F46E5" }}
+                    style={{ backgroundColor: exam.subject.color || "#800020" }}
                   >
                     {exam.subject.name}
                   </span>
@@ -271,7 +271,7 @@ export function ExamManagerClient({
                     className={`px-3 py-1 rounded-md text-[13px] font-bold ${
                       !exam.isPractice
                         ? "bg-[#DC2626]/10 dark:bg-[#1E293B] text-[#DC2626] border border-[#E2E8F0]/40"
-                        : "bg-[#4F46E5]/10 dark:bg-[#1E293B] text-[#4F46E5] border border-[#E2E8F0]/40"
+                        : "bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] border border-[#E2E8F0]/40"
                     }`}
                   >
                     {!exam.isPractice ? "امتحان تقييمي بمؤقت" : "تدريب تكيفي فوري"}
@@ -330,14 +330,14 @@ export function ExamManagerClient({
                   target="_blank"
                   className="h-11 px-3 rounded-lg bg-[#F8FAFC] hover:bg-[#E2E8F0] dark:bg-[#1E293B] dark:hover:bg-[#1E293B] text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC] flex items-center gap-2 transition-colors"
                 >
-                  <ExternalLink className="w-3 h-3 text-[#4F46E5]" />
+                  <ExternalLink className="w-3 h-3 text-[#800020]" />
                   <span>معاينة كطالب</span>
                 </Link>
 
                 <div className="flex items-center gap-1">
                   <button
                     onClick={() => handleTogglePractice(exam.id, exam.isPractice)}
-                    className="h-11 px-3 rounded-lg border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-bold text-[#64748B] dark:text-[#94A3B8] hover:text-[#4F46E5]"
+                    className="h-11 px-3 rounded-lg border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-bold text-[#64748B] dark:text-[#94A3B8] hover:text-[#800020]"
                     title="التبديل بين وضع الامتحان والتدريب"
                   >
                     تبديل الوضع
@@ -362,7 +362,7 @@ export function ExamManagerClient({
           <div className="w-full max-w-xl bg-white dark:bg-[#0F172A] rounded-2xl p-6 sm:p-8 space-y-5 text-right shadow-sm border border-[#E2E8F0] dark:border-[#334155]">
             <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#334155] pb-4">
               <h3 className="text-base font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
-                <Award className="w-5 h-5 text-[#4F46E5]" />
+                <Award className="w-5 h-5 text-[#800020]" />
                 <span>إنشاء امتحان رسمي جديد</span>
               </h3>
               <button
@@ -482,7 +482,7 @@ export function ExamManagerClient({
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="h-11 px-6 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[13px] font-bold flex items-center gap-2 disabled:opacity-50"
+                  className="h-11 px-6 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] font-bold flex items-center gap-2 disabled:opacity-50"
                 >
                   {isSubmitting ? "جاري الإنشاء..." : "حفظ وإنشاء الامتحان"}
                 </button>

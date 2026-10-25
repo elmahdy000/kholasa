@@ -504,14 +504,14 @@ export function QuestionWordImporter({
           <div>
             <Link
               href="/admin/questions"
-              className="inline-flex items-center gap-2 text-[13px] font-bold text-[#64748B] hover:text-[#4F46E5] mb-2 transition-colors"
+              className="inline-flex items-center gap-2 text-[13px] font-bold text-[#64748B] hover:text-[#800020] mb-2 transition-colors"
             >
               <ArrowRight className="w-3.5 h-3.5" />
               <span>العودة لبنك الأسئلة</span>
             </Link>
             <h1 className="text-xl sm:text-2xl font-bold text-[#0F172A] dark:text-white flex items-center gap-3">
               <span>استيراد الأسئلة الذكي من ملفات الوورد</span>
-              <span className="text-[13px] font-bold px-3 py-1 rounded-full bg-[#4F46E5]/10 dark:bg-[#1E293B] text-[#4F46E5] border border-[#E2E8F0]/50 dark:border-[#6366F1]/50">
+              <span className="text-[13px] font-bold px-3 py-1 rounded-full bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] border border-[#E2E8F0]/50 dark:border-[#E11D48]/50">
                 Word (.docx)
               </span>
             </h1>
@@ -524,9 +524,9 @@ export function QuestionWordImporter({
           <button
             onClick={handleDownloadSample}
             type="button"
-            className="h-11 px-4 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-bold text-[#0F172A] dark:text-white hover:border-[#4F46E5] flex items-center gap-2  transition-all shrink-0"
+            className="h-11 px-4 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-bold text-[#0F172A] dark:text-white hover:border-[#800020] flex items-center gap-2  transition-all shrink-0"
           >
-            <Download className="w-4 h-4 text-[#4F46E5]" />
+            <Download className="w-4 h-4 text-[#800020]" />
             <span>تحميل نموذج الأسئلة الاسترشادي</span>
           </button>
         </div>
@@ -565,7 +565,7 @@ export function QuestionWordImporter({
           <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
             <Link
               href="/admin/questions"
-              className="h-11 px-6 rounded-xl bg-[#4F46E5] text-white text-[13px] font-bold flex items-center gap-2 shadow-sm hover:bg-[#4338CA] transition-all"
+              className="h-11 px-6 rounded-xl bg-[#800020] text-white text-[13px] font-bold flex items-center gap-2 shadow-sm hover:bg-[#66001A] transition-all"
             >
               <span>الانتقال لبنك الأسئلة</span>
               <ArrowRight className="w-4 h-4 rotate-180" />
@@ -590,7 +590,7 @@ export function QuestionWordImporter({
           <div className="p-5 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0]/90 dark:border-[#334155]/90  space-y-4">
             <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#334155]/80 pb-3">
               <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-lg bg-[#4F46E5]/10 dark:bg-[#1E293B] text-[#4F46E5] flex items-center justify-center text-[13px] font-bold">
+                <div className="w-7 h-7 rounded-lg bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] flex items-center justify-center text-[13px] font-bold">
                   1
                 </div>
                 <h3 className="text-[13px] sm:text-sm font-bold text-[#0F172A] dark:text-white">
@@ -616,7 +616,7 @@ export function QuestionWordImporter({
                       setSelectedUnitId("");
                       setSelectedLessonId("");
                     }}
-                    className="w-full h-11 px-3 pr-8 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#4F46E5]"
+                    className="w-full h-11 px-3 pr-8 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#800020]"
                   >
                     {subjects.map((s) => (
                       <option key={s.id} value={s.id}>
@@ -640,7 +640,7 @@ export function QuestionWordImporter({
                       setSelectedUnitId(e.target.value);
                       setSelectedLessonId("");
                     }}
-                    className="w-full h-11 px-3 pr-8 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#4F46E5]"
+                    className="w-full h-11 px-3 pr-8 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#800020]"
                   >
                     <option value="">بدون وحدة (عام للمادة)</option>
                     {activeSubject?.units.map((u) => (
@@ -663,7 +663,7 @@ export function QuestionWordImporter({
                     value={selectedLessonId}
                     onChange={(e) => setSelectedLessonId(e.target.value)}
                     disabled={!selectedUnitId || !activeUnit?.lessons?.length}
-                    className="w-full h-11 px-3 pr-8 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold text-[#0F172A] dark:text-white disabled:opacity-50 focus:outline-none focus:border-[#4F46E5]"
+                    className="w-full h-11 px-3 pr-8 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold text-[#0F172A] dark:text-white disabled:opacity-50 focus:outline-none focus:border-[#800020]"
                   >
                     <option value="">بدون درس محدد (لكل الوحدة)</option>
                     {activeUnit?.lessons?.map((l) => (
@@ -682,7 +682,7 @@ export function QuestionWordImporter({
           <div className="p-5 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0]/90 dark:border-[#334155]/90  space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#E2E8F0] dark:border-[#334155]/80 pb-3">
               <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-lg bg-[#4F46E5]/10 dark:bg-[#1E293B] text-[#4F46E5] flex items-center justify-center text-[13px] font-bold">
+                <div className="w-7 h-7 rounded-lg bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] flex items-center justify-center text-[13px] font-bold">
                   2
                 </div>
                 <h3 className="text-[13px] sm:text-sm font-bold text-[#0F172A] dark:text-white">
@@ -697,11 +697,11 @@ export function QuestionWordImporter({
                   onClick={() => setInputMode("word")}
                   className={`px-3 py-2 rounded-lg text-[13px] font-bold transition-all flex items-center gap-2 ${
                     inputMode === "word"
-                      ? "bg-white dark:bg-[#334155] text-[#4F46E5] "
+                      ? "bg-white dark:bg-[#334155] text-[#800020] "
                       : "text-[#64748B] hover:text-[#0F172A] dark:hover:text-white"
                   }`}
                 >
-                  <Upload className="w-3.5 h-3.5 text-[#4F46E5]" />
+                  <Upload className="w-3.5 h-3.5 text-[#800020]" />
                   <span>ملف وورد (.docx)</span>
                 </button>
                 <button
@@ -709,11 +709,11 @@ export function QuestionWordImporter({
                   onClick={() => setInputMode("paste")}
                   className={`px-3 py-2 rounded-lg text-[13px] font-bold transition-all flex items-center gap-2 ${
                     inputMode === "paste"
-                      ? "bg-white dark:bg-[#334155] text-[#4F46E5] "
+                      ? "bg-white dark:bg-[#334155] text-[#800020] "
                       : "text-[#64748B] hover:text-[#0F172A] dark:hover:text-white"
                   }`}
                 >
-                  <FileText className="w-3.5 h-3.5 text-[#4F46E5]" />
+                  <FileText className="w-3.5 h-3.5 text-[#800020]" />
                   <span>لصق نص مباشر</span>
                 </button>
                 <button
@@ -721,7 +721,7 @@ export function QuestionWordImporter({
                   onClick={() => setInputMode("csv")}
                   className={`px-3 py-2 rounded-lg text-[13px] font-bold transition-all flex items-center gap-2 ${
                     inputMode === "csv"
-                      ? "bg-white dark:bg-[#334155] text-[#4F46E5] "
+                      ? "bg-white dark:bg-[#334155] text-[#800020] "
                       : "text-[#64748B] hover:text-[#0F172A] dark:hover:text-white"
                   }`}
                 >
@@ -741,7 +741,7 @@ export function QuestionWordImporter({
 
             {/* Word File Upload Zone */}
             {inputMode === "word" && (
-              <div className="border-2 border-dashed border-[#E2E8F0] dark:border-[#334155] hover:border-[#4F46E5] dark:hover:border-[#4F46E5] rounded-xl p-8 sm:p-10 text-center transition-all bg-[#F8FAFC] dark:bg-[#1E293B]/30">
+              <div className="border-2 border-dashed border-[#E2E8F0] dark:border-[#334155] hover:border-[#800020] dark:hover:border-[#E11D48] rounded-xl p-8 sm:p-10 text-center transition-all bg-[#F8FAFC] dark:bg-[#1E293B]/30">
                 <input
                   type="file"
                   id="word-file-input"
@@ -754,9 +754,9 @@ export function QuestionWordImporter({
                   htmlFor="word-file-input"
                   className="cursor-pointer flex flex-col items-center justify-center space-y-3"
                 >
-                  <div className="w-16 h-16 rounded-xl bg-[#4F46E5]/10 dark:bg-[#1E293B] text-[#4F46E5] dark:text-[#6366F1] flex items-center justify-center shadow-sm">
+                  <div className="w-16 h-16 rounded-xl bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] flex items-center justify-center shadow-sm">
                     {isParsing ? (
-                      <Loader2 className="w-11 h-11 animate-spin text-[#4F46E5]" />
+                      <Loader2 className="w-11 h-11 animate-spin text-[#800020]" />
                     ) : (
                       <Upload className="w-11 h-11" />
                     )}
@@ -786,13 +786,13 @@ export function QuestionWordImporter({
                   value={pastedText}
                   onChange={(e) => setPastedText(e.target.value)}
                   placeholder="انسخ نصوص الأسئلة من ملف الوورد والصقها هنا مباشرة...&#10;&#10;مثال:&#10;س1: ما هي عاصمة جمهورية مصر العربية؟&#10;أ) الإسكندرية&#10;ب) القاهرة*&#10;ج) الجيزة&#10;د) أسوان&#10;الإجابة: ب"
-                  className="w-full p-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-sans text-[#0F172A] dark:text-white leading-relaxed focus:outline-none focus:border-[#4F46E5]"
+                  className="w-full p-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-sans text-[#0F172A] dark:text-white leading-relaxed focus:outline-none focus:border-[#800020]"
                 />
                 <button
                   type="button"
                   onClick={handleDirectTextParse}
                   disabled={!pastedText.trim() || isParsing}
-                  className="h-11 px-5 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] disabled:opacity-50 text-white text-[13px] font-bold flex items-center gap-2 transition-all shadow-sm"
+                  className="h-11 px-5 rounded-xl bg-[#800020] hover:bg-[#66001A] disabled:opacity-50 text-white text-[13px] font-bold flex items-center gap-2 transition-all shadow-sm"
                 >
                   {isParsing ? (
                     <>
@@ -868,7 +868,7 @@ export function QuestionWordImporter({
                     <button
                       onClick={handleCommitQuestions}
                       disabled={readyToImportQuestions.length === 0 || isSubmitting}
-                      className="h-11 px-6 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] disabled:opacity-50 text-white text-[13px] font-bold flex items-center justify-center gap-2 shadow-sm transition-all"
+                      className="h-11 px-6 rounded-xl bg-[#800020] hover:bg-[#66001A] disabled:opacity-50 text-white text-[13px] font-bold flex items-center justify-center gap-2 shadow-sm transition-all"
                     >
                       {isSubmitting ? (
                         <>
@@ -921,7 +921,7 @@ export function QuestionWordImporter({
                     <button
                       type="button"
                       onClick={selectAll}
-                      className="text-[13px] font-bold text-[#4F46E5] hover:underline"
+                      className="text-[13px] font-bold text-[#800020] hover:underline"
                     >
                       تحديد الكل ({questions.length})
                     </button>
@@ -945,7 +945,7 @@ export function QuestionWordImporter({
                       placeholder="ابحث في نص السؤال أو الخيارات..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full h-11 pr-8 pl-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold text-[#0F172A] dark:text-white placeholder:text-[#94A3B8] focus:outline-none focus:border-[#4F46E5]"
+                      className="w-full h-11 pr-8 pl-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold text-[#0F172A] dark:text-white placeholder:text-[#94A3B8] focus:outline-none focus:border-[#800020]"
                     />
                   </div>
 
@@ -1010,7 +1010,7 @@ export function QuestionWordImporter({
                                 type="checkbox"
                                 checked={isSelected}
                                 onChange={() => toggleSelectQuestion(q.id)}
-                                className="w-4 h-4 rounded text-[#4F46E5] focus:ring-[#4F46E5] border-[#E2E8F0] dark:border-[#334155]"
+                                className="w-4 h-4 rounded text-[#800020] focus:ring-[#800020] border-[#E2E8F0] dark:border-[#334155]"
                               />
                               <span className="text-[13px] font-bold text-[#0F172A] dark:text-white">
                                 سؤال #{idx + 1}
@@ -1038,7 +1038,7 @@ export function QuestionWordImporter({
                                 }
                                 className={`px-2 py-1 rounded-md transition-all ${
                                   q.type === "MCQ"
-                                    ? "bg-white dark:bg-[#334155] text-[#4F46E5] font-bold "
+                                    ? "bg-white dark:bg-[#334155] text-[#800020] font-bold "
                                     : "text-[#64748B] hover:text-[#0F172A] dark:hover:text-white"
                                 }`}
                               >
@@ -1058,7 +1058,7 @@ export function QuestionWordImporter({
                                 }
                                 className={`px-2 py-1 rounded-md transition-all ${
                                   q.type === "TRUE_FALSE"
-                                    ? "bg-white dark:bg-[#334155] text-[#4F46E5] font-bold "
+                                    ? "bg-white dark:bg-[#334155] text-[#800020] font-bold "
                                     : "text-[#64748B] hover:text-[#0F172A] dark:hover:text-white"
                                 }`}
                               >
@@ -1074,7 +1074,7 @@ export function QuestionWordImporter({
                                 }
                                 className={`px-2 py-1 rounded-md transition-all ${
                                   q.type === "ESSAY"
-                                    ? "bg-white dark:bg-[#334155] text-[#4F46E5] font-bold "
+                                    ? "bg-white dark:bg-[#334155] text-[#800020] font-bold "
                                     : "text-[#64748B] hover:text-[#0F172A] dark:hover:text-white"
                                 }`}
                               >
@@ -1127,7 +1127,7 @@ export function QuestionWordImporter({
                                 }))
                               }
                               placeholder="أدخل نص السؤال هنا..."
-                              className="w-full p-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B]/50 text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#4F46E5] leading-relaxed"
+                              className="w-full p-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B]/50 text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#800020] leading-relaxed"
                             />
                           </div>
 
@@ -1150,7 +1150,7 @@ export function QuestionWordImporter({
                                       ],
                                     }))
                                   }
-                                  className="text-[13px] font-bold text-[#4F46E5] hover:underline flex items-center gap-1"
+                                  className="text-[13px] font-bold text-[#800020] hover:underline flex items-center gap-1"
                                 >
                                   <Plus className="w-3 h-3" />
                                   <span>إضافة خيار</span>
@@ -1313,7 +1313,7 @@ export function QuestionWordImporter({
                                   }))
                                 }
                                 placeholder="أدخل الإجابة النموذجية أو عناصر الإجابة المقالية..."
-                                className="w-full p-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B]/50 text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#4F46E5] leading-relaxed"
+                                className="w-full p-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B]/50 text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#800020] leading-relaxed"
                               />
                             </div>
                           )}
@@ -1374,7 +1374,7 @@ export function QuestionWordImporter({
               {/* Floating Bottom Commit Bar */}
               <div className="sticky bottom-4 z-20 p-4 rounded-xl bg-white/95 dark:bg-[#1E293B]/95  border border-[#E2E8F0]/90 dark:border-[#334155] shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <div className="w-11 h-11 rounded-xl bg-[#4F46E5]/10 dark:bg-[#1E293B] text-[#4F46E5] flex items-center justify-center">
+                  <div className="w-11 h-11 rounded-xl bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] flex items-center justify-center">
                     <Sparkles className="w-4 h-4" />
                   </div>
                   <div>
@@ -1392,7 +1392,7 @@ export function QuestionWordImporter({
                   <button
                     onClick={handleCommitQuestions}
                     disabled={readyToImportQuestions.length === 0 || isSubmitting}
-                    className="h-11 px-6 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] disabled:opacity-50 text-white text-[13px] font-bold flex items-center gap-2 shadow-sm transition-all"
+                    className="h-11 px-6 rounded-xl bg-[#800020] hover:bg-[#66001A] disabled:opacity-50 text-white text-[13px] font-bold flex items-center gap-2 shadow-sm transition-all"
                   >
                     {isSubmitting ? (
                       <>

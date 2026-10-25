@@ -6,8 +6,8 @@ const svg512 = `
 <svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#4F46E5" />
-      <stop offset="100%" stop-color="#312E81" />
+      <stop offset="0%" stop-color="#800020" />
+      <stop offset="100%" stop-color="#4D0013" />
     </linearGradient>
     <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#FCD34D" />
@@ -25,7 +25,7 @@ const svg512 = `
   <g transform="translate(106, 126)">
     <!-- Book Base / Pages -->
     <path d="M150 160 C100 130 30 135 0 150 L0 50 C30 35 100 30 150 60 C200 30 270 35 300 50 L300 150 C270 135 200 130 150 160 Z" fill="white" fill-opacity="0.95" />
-    <path d="M150 60 L150 160" stroke="#4F46E5" stroke-width="6" stroke-linecap="round" />
+    <path d="M150 60 L150 160" stroke="#800020" stroke-width="6" stroke-linecap="round" />
     
     <!-- Floating Sparkle / Star above book -->
     <path d="M150 -30 L160 5 L195 15 L160 25 L150 60 L140 25 L105 15 L140 5 Z" fill="url(#goldGrad)" />
@@ -37,7 +37,7 @@ const svg512 = `
   
   <!-- Arabic Brand Mark 'الخلاصة' -->
   <text x="256" y="380" font-family="system-ui, -apple-system, sans-serif" font-size="44" font-weight="900" fill="white" text-anchor="middle" letter-spacing="1">الخلاصة</text>
-  <text x="256" y="420" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="700" fill="#A5B4FC" text-anchor="middle" letter-spacing="4">EL KHOLASA</text>
+  <text x="256" y="420" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="700" fill="#F0C4CE" text-anchor="middle" letter-spacing="4">EL KHOLASA</text>
 </svg>
 `;
 

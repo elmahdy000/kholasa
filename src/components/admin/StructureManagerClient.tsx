@@ -412,7 +412,7 @@ export function StructureManagerClient({
                   onClick={() =>
                     setGradeModal({ isOpen: true, systemId: activeSystem.id })
                   }
-                  className="mt-3 text-[13px] text-[#4F46E5] font-semibold hover:underline"
+                  className="mt-3 text-[13px] text-[#800020] font-semibold hover:underline"
                 >
                   + إضافة الصف الأول الآن
                 </button>
@@ -475,13 +475,13 @@ export function StructureManagerClient({
                       {grade.subjects.map((sub) => (
                         <div
                           key={sub.id}
-                          className="p-3 rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B]/80 hover:border-[#E2E8F0] dark:hover:border-[#4F46E5]/60 transition-colors flex flex-col justify-between space-y-2"
+                          className="p-3 rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B]/80 hover:border-[#E2E8F0] dark:hover:border-[#E11D48]/60 transition-colors flex flex-col justify-between space-y-2"
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                               <span
                                 className="w-2.5 h-2.5 rounded-full shrink-0"
-                                style={{ backgroundColor: sub.color || "#4F46E5" }}
+                                style={{ backgroundColor: sub.color || "#800020" }}
                               />
                               <span className="font-bold text-[13px] text-[#0F172A] dark:text-[#F8FAFC]">
                                 {sub.name}
@@ -607,7 +607,7 @@ export function StructureManagerClient({
                   name="isActive"
                   id="sysActive"
                   defaultChecked={systemModal.system?.isActive ?? true}
-                  className="rounded border-[#94A3B8] text-[#4F46E5] focus:ring-0"
+                  className="rounded border-[#94A3B8] text-[#800020] focus:ring-0"
                 />
                 <label
                   htmlFor="sysActive"
@@ -759,7 +759,7 @@ export function StructureManagerClient({
                   <input
                     type="color"
                     name="color"
-                    defaultValue={subjectModal.subject?.color || "#4F46E5"}
+                    defaultValue={subjectModal.subject?.color || "#800020"}
                     className="w-11 h-11 rounded border border-[#E2E8F0] dark:border-[#334155] p-1 cursor-pointer bg-transparent"
                   />
                   <span className="text-[13px] font-mono text-[#64748B]">
@@ -774,7 +774,7 @@ export function StructureManagerClient({
                   name="isPublished"
                   id="subPublished"
                   defaultChecked={subjectModal.subject?.isPublished ?? true}
-                  className="rounded border-[#94A3B8] text-[#4F46E5] focus:ring-0"
+                  className="rounded border-[#94A3B8] text-[#800020] focus:ring-0"
                 />
                 <label
                   htmlFor="subPublished"

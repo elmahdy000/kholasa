@@ -3,27 +3,27 @@
 @custom-variant dark (&:where(.dark, .dark *, [data-theme="dark"], [data-theme="dark"] *));
 
 :root {
-  /* Brand Tokens — EL KHOLASA (Clean, Coherent, Premium Egyptian EdTech) */
+  /* Brand Tokens — EL KHOLASA (Pristine White & Regal Academic Burgundy) */
   --font-sans: var(--font-ibm-plex-arabic), system-ui, -apple-system, sans-serif;
   
   --background: #FFFFFF;
-  --foreground: #0F172A;
+  --foreground: #1A0A10;
   --card: #FFFFFF;
-  --card-foreground: #0F172A;
+  --card-foreground: #1A0A10;
   
-  /* Unified Signature Primary */
-  --primary: #4F46E5;
-  --primary-hover: #4338CA;
+  /* Unified Signature Primary — Regal Burgundy */
+  --primary: #800020;
+  --primary-hover: #66001A;
   --primary-foreground: #FFFFFF;
   
-  /* Dedicated Single Accent for "الزتونة" */
+  /* Dedicated Single Accent for "الزتونة" — Regal Academic Gold */
   --accent: #D97706;
   --accent-hover: #B45309;
   --accent-foreground: #FFFFFF;
   
-  /* Cohesive Navy & Neutrals */
-  --navy: #0F172A;
-  --navy-light: #1E293B;
+  /* Cohesive Velvet & Neutrals */
+  --navy: #1A0A10;
+  --navy-light: #2D141E;
   
   /* Functional Feedback States */
   --success: #059669;
@@ -32,12 +32,12 @@
   --destructive: #DC2626;
   --destructive-foreground: #FFFFFF;
   
-  --muted: #F8FAFC;
-  --muted-foreground: #64748B;
+  --muted: #FAF7F8;
+  --muted-foreground: #735C63;
   
-  --border: #E2E8F0;
-  --input: #E2E8F0;
-  --ring: #4F46E5;
+  --border: #F0E6E8;
+  --input: #F0E6E8;
+  --ring: #800020;
   
   --radius: 0.875rem;
 }
@@ -50,8 +50,8 @@
   --card: #1E293B;
   --card-foreground: #F8FAFC;
   
-  --primary: #6366F1;
-  --primary-hover: #4F46E5;
+  --primary: #E11D48;
+  --primary-hover: #BE123C;
   --primary-foreground: #FFFFFF;
   
   --accent: #FBBF24;
@@ -72,7 +72,7 @@
   
   --border: #334155;
   --input: #1E293B;
-  --ring: #6366F1;
+  --ring: #E11D48;
 }
 
 * {
@@ -108,7 +108,7 @@ h1, h2, h3, h4, h5, h6 {
 /* Solid surfaces only: no glassmorphism, blur or gradients. */
 .glass-panel {
   background: #FFFFFF;
-  border: 1px solid #E2E8F0;
+  border: 1px solid #F0E6E8;
 }
 
 .dark .glass-panel {
@@ -118,7 +118,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .glass-card {
   background: #FFFFFF;
-  border: 1px solid #E2E8F0;
+  border: 1px solid #F0E6E8;
 }
 
 .dark .glass-card {
@@ -137,12 +137,12 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #E2E8F0;
+  background: #EAD9DC;
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94A3B8;
+  background: #800020;
 }
 
 .dark ::-webkit-scrollbar-thumb {
@@ -194,7 +194,7 @@ a[role="button"].rounded-xl {
 @media print {
   body {
     background: #FFFFFF !important;
-    color: #0F172A !important;
+    color: #1A0A10 !important;
     font-size: 12pt !important;
   }
 
@@ -229,6 +229,6 @@ a[role="button"].rounded-xl {
   }
 
   .border {
-    border-color: #E2E8F0 !important;
+    border-color: #F0E6E8 !important;
   }
 }

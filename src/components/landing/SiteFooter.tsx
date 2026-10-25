@@ -8,14 +8,14 @@ export function SiteFooter() {
           {/* Brand Column */}
           <div className="space-y-4">
             <Link href="/" className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-lg bg-[#4F46E5] flex items-center justify-center text-white font-bold text-base">
+              <div className="w-11 h-11 rounded-lg bg-[#800020] flex items-center justify-center text-white font-bold text-base">
                 خ
               </div>
               <div>
                 <span className="font-bold text-base text-white leading-tight block">
                   الخلاصة
                 </span>
-                <span className="text-[13px] text-[#6366F1] font-medium block -mt-1">
+                <span className="text-[13px] text-[#FB7185] font-medium block -mt-1">
                   EL KHOLASA
                 </span>
               </div>

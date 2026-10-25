@@ -97,7 +97,7 @@ export default async function SubjectDetailPage({ params }: SubjectDetailPagePro
           <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="space-y-3">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0]/80 dark:border-[#334155] text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC]">
-                <Layers className="w-3.5 h-3.5 text-[#4F46E5]" />
+                <Layers className="w-3.5 h-3.5 text-[#800020]" />
                 <span>منهج معتمد • {subject.units.length} وحدات • {totalLessons} درس</span>
               </div>
               <h1 className="text-2xl sm:text-4xl font-bold text-[#0F172A] dark:text-[#F8FAFC] tracking-tight">
@@ -113,7 +113,7 @@ export default async function SubjectDetailPage({ params }: SubjectDetailPagePro
               <div className="pt-2 flex items-center gap-3">
                 <div className="w-36 h-2 rounded-full bg-[#F8FAFC] dark:bg-[#334155] overflow-hidden">
                   <div
-                    className="h-full rounded-full bg-[#4F46E5] dark:bg-[#6366F1] transition-all duration-500"
+                    className="h-full rounded-full bg-[#800020] dark:bg-[#E11D48] transition-all duration-500"
                     style={{ width: `${subjectProgress}%` }}
                   />
                 </div>
@@ -125,7 +125,7 @@ export default async function SubjectDetailPage({ params }: SubjectDetailPagePro
 
             <Link
               href={`/exams/builder?subjectId=${subject.id}`}
-              className="h-11 px-6 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[13px] font-bold flex items-center justify-center gap-2  transition-all shrink-0 active:opacity-80"
+              className="h-11 px-6 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] font-bold flex items-center justify-center gap-2  transition-all shrink-0 active:opacity-80"
             >
               <Zap className="w-3.5 h-3.5 text-[#D97706] fill-[#D97706]" />
               <span>اختبار شامل على المادة</span>
@@ -159,7 +159,7 @@ export default async function SubjectDetailPage({ params }: SubjectDetailPagePro
                   <div className="p-4 sm:p-5 bg-[#F8FAFC]/80 dark:bg-[#1E293B]/40 border-b border-[#E2E8F0] dark:border-[#334155] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
-                        <span className="text-[13px] font-mono font-bold text-[#4F46E5] dark:text-[#6366F1]">
+                        <span className="text-[13px] font-mono font-bold text-[#800020] dark:text-[#FB7185]">
                           الوحدة {index + 1}
                         </span>
                         <span className="text-[13px] text-[#64748B]">•</span>
@@ -201,7 +201,7 @@ export default async function SubjectDetailPage({ params }: SubjectDetailPagePro
                               className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 mt-1 ${
                                 isLessonCompleted
                                   ? "bg-[#059669]/10 dark:bg-[#1E293B] text-[#059669] dark:text-[#34D399]"
-                                  : "bg-[#4F46E5]/10 dark:bg-[#1E293B] text-[#4F46E5] dark:text-[#6366F1]"
+                                  : "bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185]"
                               }`}
                             >
                               {isLessonCompleted ? (
@@ -241,7 +241,7 @@ export default async function SubjectDetailPage({ params }: SubjectDetailPagePro
                             className={`h-11 px-4 rounded-xl text-[13px] font-bold flex items-center justify-center gap-2 transition-all shrink-0 active:opacity-80 ${
                               isLessonCompleted
                                 ? "bg-[#F8FAFC] dark:bg-[#1E293B] hover:bg-[#E2E8F0] dark:hover:bg-[#334155] text-[#0F172A] dark:text-[#F8FAFC] border border-[#E2E8F0] dark:border-[#334155]"
-                                : "bg-[#4F46E5] hover:bg-[#4338CA] text-white "
+                                : "bg-[#800020] hover:bg-[#66001A] text-white "
                             }`}
                           >
                             <span>{isLessonCompleted ? "مراجعة الدرس" : "ابدأ المذاكرة"}</span>

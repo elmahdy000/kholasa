@@ -285,7 +285,7 @@ export function BulkImportClient({ subjects }: BulkImportClientProps) {
         <div>
           <Link
             href="/admin/questions"
-            className="inline-flex items-center gap-2 text-[13px] font-bold text-[#64748B] hover:text-[#4F46E5] mb-2 transition-colors"
+            className="inline-flex items-center gap-2 text-[13px] font-bold text-[#64748B] hover:text-[#800020] mb-2 transition-colors"
           >
             <ArrowRight className="w-3.5 h-3.5" />
             <span>العودة لبنك الأسئلة</span>
@@ -301,9 +301,9 @@ export function BulkImportClient({ subjects }: BulkImportClientProps) {
         {/* Download Sample Button */}
         <button
           onClick={handleDownloadSample}
-          className="h-11 px-4 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-bold text-[#0F172A] dark:text-white hover:border-[#4F46E5] flex items-center gap-2 shadow-sm transition-all"
+          className="h-11 px-4 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-bold text-[#0F172A] dark:text-white hover:border-[#800020] flex items-center gap-2 shadow-sm transition-all"
         >
-          <Download className="w-4 h-4 text-[#4F46E5]" />
+          <Download className="w-4 h-4 text-[#800020]" />
           <span>تحميل قالب CSV الاسترشادي</span>
         </button>
       </div>
@@ -323,7 +323,7 @@ export function BulkImportClient({ subjects }: BulkImportClientProps) {
           <div className="pt-2 flex items-center justify-center gap-3">
             <Link
               href="/admin/questions"
-              className="h-11 px-6 rounded-xl bg-[#4F46E5] text-white text-[13px] font-bold flex items-center gap-2 shadow-sm hover:bg-[#4338CA] transition-all"
+              className="h-11 px-6 rounded-xl bg-[#800020] text-white text-[13px] font-bold flex items-center gap-2 shadow-sm hover:bg-[#66001A] transition-all"
             >
               <span>الانتقال لبنك الأسئلة</span>
               <ArrowRight className="w-4 h-4 rotate-180" />
@@ -401,7 +401,7 @@ export function BulkImportClient({ subjects }: BulkImportClientProps) {
                   onClick={() => setActiveTab("file")}
                   className={`px-3 py-2 rounded-lg text-[13px] font-bold transition-all ${
                     activeTab === "file"
-                      ? "bg-white dark:bg-[#334155] text-[#4F46E5] "
+                      ? "bg-white dark:bg-[#334155] text-[#800020] "
                       : "text-[#64748B] hover:text-[#0F172A] dark:hover:text-white"
                   }`}
                 >
@@ -413,7 +413,7 @@ export function BulkImportClient({ subjects }: BulkImportClientProps) {
                   onClick={() => setActiveTab("paste")}
                   className={`px-3 py-2 rounded-lg text-[13px] font-bold transition-all ${
                     activeTab === "paste"
-                      ? "bg-white dark:bg-[#334155] text-[#4F46E5] "
+                      ? "bg-white dark:bg-[#334155] text-[#800020] "
                       : "text-[#64748B] hover:text-[#0F172A] dark:hover:text-white"
                   }`}
                 >
@@ -424,7 +424,7 @@ export function BulkImportClient({ subjects }: BulkImportClientProps) {
             </div>
 
             {activeTab === "file" ? (
-              <div className="border-2 border-dashed border-[#E2E8F0] dark:border-[#334155] hover:border-[#4F46E5] rounded-xl p-8 text-center transition-colors">
+              <div className="border-2 border-dashed border-[#E2E8F0] dark:border-[#334155] hover:border-[#800020] rounded-xl p-8 text-center transition-colors">
                 <input
                   type="file"
                   id="csv-file-input"
@@ -436,7 +436,7 @@ export function BulkImportClient({ subjects }: BulkImportClientProps) {
                   htmlFor="csv-file-input"
                   className="cursor-pointer flex flex-col items-center justify-center space-y-3"
                 >
-                  <div className="w-14 h-14 rounded-xl bg-[#4F46E5]/10 text-[#4F46E5] flex items-center justify-center">
+                  <div className="w-14 h-14 rounded-xl bg-[#800020]/10 text-[#800020] flex items-center justify-center">
                     <FileSpreadsheet className="w-7 h-7" />
                   </div>
                   <div>
@@ -456,7 +456,7 @@ export function BulkImportClient({ subjects }: BulkImportClientProps) {
                   value={pastedText}
                   onChange={(e) => setPastedText(e.target.value)}
                   placeholder="الصق أسطر CSV هنا متضمنة الرأس (Header)..."
-                  className="w-full p-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-mono text-[#0F172A] dark:text-white focus:outline-none focus:border-[#4F46E5]"
+                  className="w-full p-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-mono text-[#0F172A] dark:text-white focus:outline-none focus:border-[#800020]"
                 />
                 <button
                   type="button"
@@ -493,7 +493,7 @@ export function BulkImportClient({ subjects }: BulkImportClientProps) {
                 <button
                   onClick={handleCommitImport}
                   disabled={validQuestions.length === 0 || isSubmitting}
-                  className="h-11 px-6 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] disabled:opacity-50 text-white text-[13px] font-bold flex items-center justify-center gap-2 shadow-sm transition-all"
+                  className="h-11 px-6 rounded-xl bg-[#800020] hover:bg-[#66001A] disabled:opacity-50 text-white text-[13px] font-bold flex items-center justify-center gap-2 shadow-sm transition-all"
                 >
                   {isSubmitting ? (
                     <>
@@ -533,7 +533,7 @@ export function BulkImportClient({ subjects }: BulkImportClientProps) {
                           <span className="text-[13px] font-bold px-2 py-1 rounded-md bg-[#F8FAFC] dark:bg-[#1E293B] text-[#64748B] dark:text-[#F8FAFC]">
                             سؤال #{idx + 1}
                           </span>
-                          <span className="text-[13px] font-bold px-2 py-1 rounded-md bg-[#4F46E5]/10 dark:bg-[#1E293B] text-[#4F46E5]">
+                          <span className="text-[13px] font-bold px-2 py-1 rounded-md bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020]">
                             {q.type === "MCQ"
                               ? "اختيار من متعدد"
                               : q.type === "TRUE_FALSE"
@@ -579,7 +579,7 @@ export function BulkImportClient({ subjects }: BulkImportClientProps) {
 
                         {q.concept && (
                           <div className="pt-2 text-[13px] text-[#64748B] dark:text-[#94A3B8]">
-                            <span className="font-bold text-[#4F46E5]">
+                            <span className="font-bold text-[#800020]">
                               المفهوم:{" "}
                             </span>
                             {q.concept} • {q.correctReason}

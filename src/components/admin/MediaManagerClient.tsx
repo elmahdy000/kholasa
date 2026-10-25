@@ -195,12 +195,12 @@ export function MediaManagerClient({ initialFiles }: MediaManagerClientProps) {
         }}
         className={`p-8 border border-dashed rounded-xl text-center cursor-pointer transition-all group ${
           dragActive
-            ? "border-[#4F46E5] bg-[#4F46E5] dark:bg-[#1E293B] scale-[1.01]"
-            : "border-[#E2E8F0] dark:border-[#334155] hover:border-[#E2E8F0] dark:hover:border-[#4F46E5]/60 bg-[#F8FAFC]/50 dark:bg-[#0F172A]/40"
+            ? "border-[#800020] bg-[#800020] dark:bg-[#1E293B] scale-[1.01]"
+            : "border-[#E2E8F0] dark:border-[#334155] hover:border-[#E2E8F0] dark:hover:border-[#E11D48]/60 bg-[#F8FAFC]/50 dark:bg-[#0F172A]/40"
         }`}
       >
         <div className="w-11 h-11 rounded-full bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[#64748B] dark:text-[#94A3B8] flex items-center justify-center mx-auto mb-3 group- transition-transform">
-          <Upload className="w-5 h-5 text-[#4F46E5]" />
+          <Upload className="w-5 h-5 text-[#800020]" />
         </div>
         <h3 className="text-[13px] font-semibold text-[#0F172A] dark:text-[#F8FAFC]">
           انقر هنا لرفع ملف أو اسحبه وأفلته مباشرة
@@ -280,15 +280,15 @@ export function MediaManagerClient({ initialFiles }: MediaManagerClientProps) {
             return (
               <div
                 key={file.name}
-                className="rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] p-4 flex flex-col justify-between space-y-3 hover:border-[#E2E8F0] dark:hover:border-[#4F46E5]/60 transition-colors "
+                className="rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] p-4 flex flex-col justify-between space-y-3 hover:border-[#E2E8F0] dark:hover:border-[#E11D48]/60 transition-colors "
               >
                 <div className="flex items-start justify-between gap-3">
                   <div
                     onClick={() => openPreview(file)}
                     className="flex items-center gap-3 min-w-0 cursor-pointer group/title"
                   >
-                    <div className="w-11 h-11 rounded-lg bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] flex items-center justify-center shrink-0 text-[#64748B] dark:text-[#94A3B8] group-hover/title:border-[#4F46E5] transition-colors">
-                      {file.type === "audio" && <Music className="w-5 h-5 text-[#4F46E5]" />}
+                    <div className="w-11 h-11 rounded-lg bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] flex items-center justify-center shrink-0 text-[#64748B] dark:text-[#94A3B8] group-hover/title:border-[#800020] transition-colors">
+                      {file.type === "audio" && <Music className="w-5 h-5 text-[#800020]" />}
                       {file.type === "image" && <ImageIcon className="w-5 h-5 text-[#059669]" />}
                       {file.type === "document" && <FileText className="w-5 h-5 text-[#D97706]" />}
                       {file.type === "video" && <Video className="w-5 h-5 text-[#DC2626]" />}
@@ -296,7 +296,7 @@ export function MediaManagerClient({ initialFiles }: MediaManagerClientProps) {
                     </div>
                     <div className="min-w-0">
                       <span
-                        className="text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC] block truncate group-hover/title:text-[#4F46E5] dark:group-hover/title:text-[#4F46E5] transition-colors"
+                        className="text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC] block truncate group-hover/title:text-[#800020] dark:group-hover/title:text-[#800020] transition-colors"
                         title={file.name}
                       >
                         {file.name}
@@ -316,7 +316,7 @@ export function MediaManagerClient({ initialFiles }: MediaManagerClientProps) {
                 {file.type === "audio" && (
                   <button
                     onClick={() => toggleAudio(file.url)}
-                    className="w-full h-11 px-3 rounded-lg bg-[#4F46E5]/10 dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#6366F1]/60 text-[#4F46E5] dark:text-[#6366F1] text-[13px] font-semibold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity cursor-pointer"
+                    className="w-full h-11 px-3 rounded-lg bg-[#800020]/10 dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#E11D48]/60 text-[#800020] dark:text-[#FB7185] text-[13px] font-semibold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity cursor-pointer"
                   >
                     {isAudioPlaying ? (
                       <>
@@ -384,7 +384,7 @@ export function MediaManagerClient({ initialFiles }: MediaManagerClientProps) {
                       className="h-7 px-3 rounded-md bg-[#F8FAFC] hover:bg-[#E2E8F0] dark:bg-[#1E293B] dark:hover:bg-[#334155] text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC] flex items-center gap-2 transition-colors cursor-pointer"
                       title="معاينة كاملة"
                     >
-                      <Eye className="w-3 h-3 text-[#4F46E5]" />
+                      <Eye className="w-3 h-3 text-[#800020]" />
                       <span>معاينة</span>
                     </button>
 
@@ -454,7 +454,7 @@ export function MediaManagerClient({ initialFiles }: MediaManagerClientProps) {
             <div className="p-4 px-5 bg-[#F8FAFC] dark:bg-[#1E293B]/60 border-b border-[#E2E8F0] dark:border-[#334155] flex items-center justify-between gap-3">
               <div className="flex items-center gap-3 min-w-0">
                 <div className="w-11 h-11 rounded-xl bg-[#F8FAFC] dark:bg-[#334155] flex items-center justify-center shrink-0">
-                  {previewFile.type === "audio" && <Music className="w-5 h-5 text-[#4F46E5]" />}
+                  {previewFile.type === "audio" && <Music className="w-5 h-5 text-[#800020]" />}
                   {previewFile.type === "image" && <ImageIcon className="w-5 h-5 text-[#059669]" />}
                   {previewFile.type === "document" && <FileText className="w-5 h-5 text-[#D97706]" />}
                   {previewFile.type === "video" && <Video className="w-5 h-5 text-[#DC2626]" />}
@@ -579,7 +579,7 @@ export function MediaManagerClient({ initialFiles }: MediaManagerClientProps) {
                       <a
                         href={previewFile.url}
                         download={previewFile.name}
-                        className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#4F46E5] text-white text-[13px] font-bold"
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#800020] text-white text-[13px] font-bold"
                       >
                         <Download className="w-4 h-4" />
                         <span>تحميل المستند الآن</span>
@@ -605,7 +605,7 @@ export function MediaManagerClient({ initialFiles }: MediaManagerClientProps) {
               {previewFile.type === "audio" && (
                 <div className="w-full max-w-lg p-6 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] space-y-6 shadow-sm">
                   <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 rounded-xl bg-[#4F46E5]/10 text-[#4F46E5] dark:text-[#6366F1] flex items-center justify-center shrink-0">
+                    <div className="w-14 h-14 rounded-xl bg-[#800020]/10 text-[#800020] dark:text-[#FB7185] flex items-center justify-center shrink-0">
                       <Music className="w-7 h-7" />
                     </div>
                     <div className="min-w-0">
@@ -656,7 +656,7 @@ export function MediaManagerClient({ initialFiles }: MediaManagerClientProps) {
                 href={previewFile.url}
                 target="_blank"
                 rel="noreferrer"
-                className="text-[#4F46E5] dark:text-[#6366F1] font-bold hover:underline flex items-center gap-1"
+                className="text-[#800020] dark:text-[#FB7185] font-bold hover:underline flex items-center gap-1"
               >
                 <span>فتح في نافذة كاملة</span>
                 <ExternalLink className="w-3 h-3" />

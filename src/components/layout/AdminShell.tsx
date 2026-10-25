@@ -93,7 +93,7 @@ export function AdminShell({ children, user }: AdminShellProps) {
           href: "/admin/structure",
           icon: Layers,
           badge: "جديد",
-          badgeColor: "bg-[#4F46E5]/10 text-[#4F46E5] border-[#4F46E5]/20",
+          badgeColor: "bg-[#800020]/10 text-[#800020] border-[#800020]/20",
           allowedRoles: ["ADMIN", "SUPER_ADMIN"],
         },
         {
@@ -137,7 +137,7 @@ export function AdminShell({ children, user }: AdminShellProps) {
           href: "/admin/attempts",
           icon: CheckCircle2,
           badge: "تصحيح",
-          badgeColor: "bg-[#4F46E5]/10 text-[#4F46E5] border-[#4F46E5]/20",
+          badgeColor: "bg-[#800020]/10 text-[#800020] border-[#800020]/20",
           allowedRoles: ["TEACHER", "ADMIN", "SUPER_ADMIN"],
         },
       ],
@@ -452,10 +452,10 @@ export function AdminShell({ children, user }: AdminShellProps) {
           {!isCollapsed ? (
             <Link
               href="/dashboard"
-              className="w-full h-11 px-3 rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B] text-[#0F172A] dark:text-[#F8FAFC] hover:text-[#0F172A] dark:hover:text-white hover:border-[#4F46E5]/40 dark:hover:border-[#4F46E5]/60 text-[13px] font-semibold flex items-center justify-between transition-colors "
+              className="w-full h-11 px-3 rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B] text-[#0F172A] dark:text-[#F8FAFC] hover:text-[#0F172A] dark:hover:text-white hover:border-[#800020]/40 dark:hover:border-[#E11D48]/60 text-[13px] font-semibold flex items-center justify-between transition-colors "
             >
               <div className="flex items-center gap-2">
-                <Compass className="w-3.5 h-3.5 text-[#4F46E5]" />
+                <Compass className="w-3.5 h-3.5 text-[#800020]" />
                 <span>معاينة تطبيق الطالب</span>
               </div>
               <ExternalLink className="w-3 h-3 text-[#64748B]" />
@@ -463,7 +463,7 @@ export function AdminShell({ children, user }: AdminShellProps) {
           ) : (
             <Link
               href="/dashboard"
-              className="w-full h-11 rounded-lg flex items-center justify-center text-[#64748B] hover:text-[#4F46E5] transition-colors"
+              className="w-full h-11 rounded-lg flex items-center justify-center text-[#64748B] hover:text-[#800020] transition-colors"
               title="معاينة تطبيق الطالب"
             >
               <Compass className="w-4 h-4" />

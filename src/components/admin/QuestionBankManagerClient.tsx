@@ -309,7 +309,7 @@ export function QuestionBankManagerClient({
               placeholder="ابحث في نص السؤال أو المفهوم..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full h-11 pr-9 pl-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold text-[#0F172A] dark:text-white placeholder:text-[#94A3B8] focus:outline-none focus:border-[#4F46E5]"
+              className="w-full h-11 pr-9 pl-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold text-[#0F172A] dark:text-white placeholder:text-[#94A3B8] focus:outline-none focus:border-[#800020]"
             />
           </div>
 
@@ -353,9 +353,9 @@ export function QuestionBankManagerClient({
         <div className="flex flex-wrap items-center gap-2 shrink-0">
           <button
             onClick={() => setIsWordImportOpen(true)}
-            className="h-11 px-4 rounded-xl bg-[#4F46E5]/10 dark:bg-[#1E293B] hover:bg-[#4F46E5]/10 dark:hover:bg-[#1E293B] text-[#4F46E5] dark:text-[#6366F1] text-[13px] font-bold flex items-center justify-center gap-2 border border-[#E2E8F0] dark:border-[#6366F1] transition-colors "
+            className="h-11 px-4 rounded-xl bg-[#800020]/10 dark:bg-[#1E293B] hover:bg-[#800020]/10 dark:hover:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] text-[13px] font-bold flex items-center justify-center gap-2 border border-[#E2E8F0] dark:border-[#E11D48] transition-colors "
           >
-            <FileText className="w-4 h-4 text-[#4F46E5] dark:text-[#6366F1]" />
+            <FileText className="w-4 h-4 text-[#800020] dark:text-[#FB7185]" />
             <span>استيراد ملف وورد (.docx)</span>
           </button>
 
@@ -363,13 +363,13 @@ export function QuestionBankManagerClient({
             href="/admin/questions/import"
             className="h-11 px-4 rounded-xl bg-[#F8FAFC] hover:bg-[#E2E8F0] dark:bg-[#1E293B] dark:hover:bg-[#1E293B] text-[#0F172A] dark:text-white text-[13px] font-bold flex items-center justify-center gap-2 transition-colors"
           >
-            <Upload className="w-4 h-4 text-[#4F46E5]" />
+            <Upload className="w-4 h-4 text-[#800020]" />
             <span>استيراد شامل / CSV</span>
           </Link>
 
           <button
             onClick={() => setIsCreateOpen(true)}
-            className="h-11 px-5 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[13px] font-bold flex items-center justify-center gap-2 shadow-sm transition-colors active:opacity-80"
+            className="h-11 px-5 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] font-bold flex items-center justify-center gap-2 shadow-sm transition-colors active:opacity-80"
           >
             <Plus className="w-4 h-4" />
             <span>إضافة سؤال جديد</span>
@@ -392,10 +392,10 @@ export function QuestionBankManagerClient({
             {/* Top Bar with Badges and Edit/Delete Actions */}
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#E2E8F0] dark:border-[#334155]/80 pb-3">
               <div className="flex flex-wrap items-center gap-2">
-                <span className="text-[13px] font-bold text-[#4F46E5]">
+                <span className="text-[13px] font-bold text-[#800020]">
                   #{idx + 1}
                 </span>
-                <span className="px-3 py-1 rounded-lg bg-[#4F46E5]/10 dark:bg-[#1E293B] text-[#4F46E5] dark:text-[#6366F1] text-[13px] font-bold">
+                <span className="px-3 py-1 rounded-lg bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] text-[13px] font-bold">
                   {q.subject.name}
                 </span>
                 {q.unit && (
@@ -404,7 +404,7 @@ export function QuestionBankManagerClient({
                   </span>
                 )}
                 {q.lessons && q.lessons.length > 0 && q.lessons[0].lesson && (
-                  <span className="px-3 py-1 rounded-lg bg-[#4F46E5]/10 dark:bg-[#1E293B] text-[#4F46E5] dark:text-[#6366F1] text-[13px] font-bold border border-[#E2E8F0]/50 dark:border-[#6366F1]/50">
+                  <span className="px-3 py-1 rounded-lg bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] text-[13px] font-bold border border-[#E2E8F0]/50 dark:border-[#E11D48]/50">
                     درس: {q.lessons[0].lesson.title}
                   </span>
                 )}
@@ -438,7 +438,7 @@ export function QuestionBankManagerClient({
                   onClick={() => openEditModal(q)}
                   className="h-11 px-3 rounded-lg bg-[#F8FAFC] hover:bg-[#E2E8F0] dark:bg-[#1E293B] dark:hover:bg-[#1E293B] text-[#0F172A] dark:text-[#F8FAFC] text-[13px] font-bold flex items-center gap-2 transition-colors"
                 >
-                  <Edit2 className="w-3.5 h-3.5 text-[#4F46E5]" />
+                  <Edit2 className="w-3.5 h-3.5 text-[#800020]" />
                   <span>تعديل</span>
                 </button>
                 <button
@@ -482,8 +482,8 @@ export function QuestionBankManagerClient({
 
             {/* Rubric for Essay */}
             {q.type === "ESSAY" && q.rubric && (
-              <div className="p-4 rounded-xl bg-[#4F46E5]/10 dark:bg-[#1E293B] border border-[#E2E8F0]/50 text-[13px] space-y-1">
-                <span className="font-bold text-[#4F46E5] block">
+              <div className="p-4 rounded-xl bg-[#800020]/10 dark:bg-[#1E293B] border border-[#E2E8F0]/50 text-[13px] space-y-1">
+                <span className="font-bold text-[#800020] block">
                   نموذج الإجابة الاسترشادي (Rubric):
                 </span>
                 <p className="font-medium text-[13px] leading-relaxed text-[#0F172A] dark:text-[#F8FAFC]">
@@ -495,7 +495,7 @@ export function QuestionBankManagerClient({
             {/* Explanation Preview */}
             {q.explanation && (
               <div className="p-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/60 border border-[#E2E8F0]/60 dark:border-[#334155]/60 text-[13px] text-[#0F172A] dark:text-[#F8FAFC] space-y-1">
-                <span className="font-bold text-[#4F46E5] dark:text-[#6366F1] block">
+                <span className="font-bold text-[#800020] dark:text-[#FB7185] block">
                   المفهوم الأساسي: {q.explanation.concept}
                 </span>
                 <p className="font-medium text-[13px] leading-relaxed text-[#64748B] dark:text-[#94A3B8]">
@@ -513,7 +513,7 @@ export function QuestionBankManagerClient({
           <div className="w-full max-w-2xl bg-white dark:bg-[#0F172A] rounded-2xl p-6 sm:p-8 space-y-5 text-right shadow-sm border border-[#E2E8F0] dark:border-[#334155] max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#334155] pb-4">
               <h3 className="text-base font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
-                <HelpCircle className="w-5 h-5 text-[#4F46E5]" />
+                <HelpCircle className="w-5 h-5 text-[#800020]" />
                 <span>إضافة سؤال جديد لبنك الأسئلة</span>
               </h3>
               <button
@@ -777,7 +777,7 @@ export function QuestionBankManagerClient({
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="h-11 px-6 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[13px] font-bold disabled:opacity-50"
+                  className="h-11 px-6 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] font-bold disabled:opacity-50"
                 >
                   {isSubmitting ? "جاري الإضافة..." : "حفظ السؤال"}
                 </button>
@@ -793,7 +793,7 @@ export function QuestionBankManagerClient({
           <div className="w-full max-w-2xl bg-white dark:bg-[#0F172A] rounded-2xl p-6 sm:p-8 space-y-5 text-right shadow-sm border border-[#E2E8F0] dark:border-[#334155] max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#334155] pb-4">
               <h3 className="text-base font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
-                <Edit2 className="w-5 h-5 text-[#4F46E5]" />
+                <Edit2 className="w-5 h-5 text-[#800020]" />
                 <span>تعديل بيانات السؤال</span>
               </h3>
               <button
@@ -1015,7 +1015,7 @@ export function QuestionBankManagerClient({
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="h-11 px-6 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[13px] font-bold disabled:opacity-50"
+                  className="h-11 px-6 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] font-bold disabled:opacity-50"
                 >
                   {isSubmitting ? "جاري الحفظ..." : "تحديث السؤال"}
                 </button>
@@ -1031,7 +1031,7 @@ export function QuestionBankManagerClient({
           <div className="bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] rounded-2xl w-full max-w-4xl max-h-[92vh] overflow-y-auto p-5 sm:p-7 space-y-5 shadow-sm relative">
             <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#334155] pb-3">
               <div className="flex items-center gap-3">
-                <div className="w-11 h-11 rounded-xl bg-[#4F46E5]/10 dark:bg-[#1E293B] text-[#4F46E5] dark:text-[#6366F1] flex items-center justify-center ">
+                <div className="w-11 h-11 rounded-xl bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] flex items-center justify-center ">
                   <FileText className="w-5 h-5" />
                 </div>
                 <div>

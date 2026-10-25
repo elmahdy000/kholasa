@@ -10,7 +10,7 @@ const ibmPlexArabic = IBM_Plex_Sans_Arabic({
 });
 
 export const viewport: Viewport = {
-  themeColor: "#4F46E5",
+  themeColor: "#800020",
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
@@ -50,7 +50,7 @@ export default function RootLayout({
     >
       <body
         suppressHydrationWarning
-        className="min-h-screen font-sans bg-[#FFFFFF] dark:bg-[#0F172A] text-[#0F172A] dark:text-[#F8FAFC] antialiased selection:bg-[#4F46E5]/15 dark:selection:bg-[#4F46E5]/20 selection:text-[#4F46E5] dark:selection:text-[#4F46E5]"
+        className="min-h-screen font-sans bg-[#FFFFFF] dark:bg-[#0F172A] text-[#1A0A10] dark:text-[#F8FAFC] antialiased selection:bg-[#800020]/15 dark:selection:bg-[#E11D48]/20 selection:text-[#800020] dark:selection:text-[#FB7185]"
       >
         <Script
           id="theme-initializer"

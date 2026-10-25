@@ -337,7 +337,7 @@ export default async function AdminDashboardPage() {
                 <Link
                   key={idx}
                   href={srv.href}
-                  className="group p-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] hover:border-[#E2E8F0] dark:hover:border-[#4F46E5]/60 transition-colors  flex flex-col justify-between space-y-3"
+                  className="group p-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] hover:border-[#E2E8F0] dark:hover:border-[#E11D48]/60 transition-colors  flex flex-col justify-between space-y-3"
                 >
                   <div className="flex items-center justify-between">
                     <div className="w-11 h-11 rounded-lg bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] flex items-center justify-center text-[#0F172A] dark:text-[#F8FAFC] group- transition-transform">
@@ -349,7 +349,7 @@ export default async function AdminDashboardPage() {
                   </div>
 
                   <div>
-                    <h3 className="text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC] group-hover:text-[#4F46E5] dark:group-hover:text-[#6366F1] transition-colors flex items-center justify-between">
+                    <h3 className="text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC] group-hover:text-[#800020] dark:group-hover:text-[#FB7185] transition-colors flex items-center justify-between">
                       <span>{srv.title}</span>
                       <ArrowUpRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" />
                     </h3>
@@ -456,7 +456,7 @@ export default async function AdminDashboardPage() {
                     <div className="flex items-center gap-3">
                       <span
                         className="w-2.5 h-2.5 rounded-full"
-                        style={{ backgroundColor: sub.color || "#4F46E5" }}
+                        style={{ backgroundColor: sub.color || "#800020" }}
                       />
                       <span className="font-bold text-[#0F172A] dark:text-[#F8FAFC]">
                         {sub.name}

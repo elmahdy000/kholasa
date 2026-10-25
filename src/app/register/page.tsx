@@ -144,14 +144,14 @@ export default function RegisterPage() {
             href="/"
             className="flex items-center gap-3 group transition-transform active:opacity-80 mb-3"
           >
-            <div className="w-11 h-11 rounded-xl bg-[#4F46E5] flex items-center justify-center text-white  group-hover:bg-[#4338CA] transition-colors">
+            <div className="w-11 h-11 rounded-xl bg-[#800020] flex items-center justify-center text-white  group-hover:bg-[#66001A] transition-colors">
               <Sparkles className="w-5 h-5" />
             </div>
             <div className="text-right">
               <span className="text-xl font-bold tracking-tight text-[#0F172A] dark:text-white block">
                 الخُلاصة
               </span>
-              <span className="text-[13px] font-mono font-medium text-[#4F46E5] dark:text-[#6366F1] block tracking-wider">
+              <span className="text-[13px] font-mono font-medium text-[#800020] dark:text-[#FB7185] block tracking-wider">
                 EL KHOLASA
               </span>
             </div>
@@ -192,7 +192,7 @@ export default function RegisterPage() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="محمد أحمد"
-                  className="w-full h-11 pr-11 pl-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B]/50 text-[#0F172A] dark:text-white placeholder:text-[#94A3B8] text-[13px] sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#4F46E5] transition-all"
+                  className="w-full h-11 pr-11 pl-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B]/50 text-[#0F172A] dark:text-white placeholder:text-[#94A3B8] text-[13px] sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#800020] transition-all"
                 />
                 <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#94A3B8] pointer-events-none">
                   <User className="w-4 h-4" />
@@ -216,7 +216,7 @@ export default function RegisterPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="student@example.com"
-                    className="w-full h-11 pr-10 pl-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B]/50 text-[#0F172A] dark:text-white placeholder:text-[#94A3B8] text-[13px] focus:outline-none focus:ring-2 focus:ring-[#4F46E5] transition-all"
+                    className="w-full h-11 pr-10 pl-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B]/50 text-[#0F172A] dark:text-white placeholder:text-[#94A3B8] text-[13px] focus:outline-none focus:ring-2 focus:ring-[#800020] transition-all"
                     dir="ltr"
                   />
                   <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[#94A3B8] pointer-events-none">
@@ -239,7 +239,7 @@ export default function RegisterPage() {
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="01012345678"
-                    className="w-full h-11 pr-10 pl-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B]/50 text-[#0F172A] dark:text-white placeholder:text-[#94A3B8] text-[13px] focus:outline-none focus:ring-2 focus:ring-[#4F46E5] transition-all"
+                    className="w-full h-11 pr-10 pl-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B]/50 text-[#0F172A] dark:text-white placeholder:text-[#94A3B8] text-[13px] focus:outline-none focus:ring-2 focus:ring-[#800020] transition-all"
                     dir="ltr"
                   />
                   <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[#94A3B8] pointer-events-none">
@@ -251,7 +251,7 @@ export default function RegisterPage() {
 
             {/* Academic System & Grade */}
             <div className="p-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/50 border border-[#E2E8F0] dark:border-[#334155] space-y-3">
-              <div className="flex items-center gap-2 text-[13px] font-bold text-[#4F46E5] dark:text-[#6366F1]">
+              <div className="flex items-center gap-2 text-[13px] font-bold text-[#800020] dark:text-[#FB7185]">
                 <GraduationCap className="w-4 h-4" />
                 <span>المسار والصف الدراسي</span>
               </div>
@@ -265,7 +265,7 @@ export default function RegisterPage() {
                     value={selectedSystemId}
                     onChange={(e) => handleSystemChange(e.target.value)}
                     disabled={isFetchingSystems}
-                    className="w-full h-11 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#4F46E5]"
+                    className="w-full h-11 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#800020]"
                   >
                     {systems.map((s) => (
                       <option key={s.id} value={s.id}>
@@ -283,7 +283,7 @@ export default function RegisterPage() {
                     value={selectedGradeId}
                     onChange={(e) => setSelectedGradeId(e.target.value)}
                     disabled={isFetchingSystems || currentGrades.length === 0}
-                    className="w-full h-11 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#4F46E5]"
+                    className="w-full h-11 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#800020]"
                   >
                     {currentGrades.map((g) => (
                       <option key={g.id} value={g.id}>
@@ -312,7 +312,7 @@ export default function RegisterPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full h-11 pr-10 pl-10 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B]/50 text-[#0F172A] dark:text-white placeholder:text-[#94A3B8] text-[13px] focus:outline-none focus:ring-2 focus:ring-[#4F46E5] transition-all"
+                    className="w-full h-11 pr-10 pl-10 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B]/50 text-[#0F172A] dark:text-white placeholder:text-[#94A3B8] text-[13px] focus:outline-none focus:ring-2 focus:ring-[#800020] transition-all"
                     dir="ltr"
                   />
                   <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[#94A3B8] pointer-events-none">
@@ -347,7 +347,7 @@ export default function RegisterPage() {
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full h-11 pr-10 pl-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B]/50 text-[#0F172A] dark:text-white placeholder:text-[#94A3B8] text-[13px] focus:outline-none focus:ring-2 focus:ring-[#4F46E5] transition-all"
+                    className="w-full h-11 pr-10 pl-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B]/50 text-[#0F172A] dark:text-white placeholder:text-[#94A3B8] text-[13px] focus:outline-none focus:ring-2 focus:ring-[#800020] transition-all"
                     dir="ltr"
                   />
                   <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[#94A3B8] pointer-events-none">
@@ -360,7 +360,7 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full h-11 mt-4 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white font-bold text-[13px] sm:text-sm  flex items-center justify-center gap-2 transition-colors disabled:opacity-50 interactive-tap"
+              className="w-full h-11 mt-4 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white font-bold text-[13px] sm:text-sm  flex items-center justify-center gap-2 transition-colors disabled:opacity-50 interactive-tap"
             >
               {isLoading ? (
                 <>
@@ -381,7 +381,7 @@ export default function RegisterPage() {
             <span>لديك حساب بالفعل؟ </span>
             <Link
               href="/login"
-              className="font-bold text-[#4F46E5] dark:text-[#6366F1] hover:underline"
+              className="font-bold text-[#800020] dark:text-[#FB7185] hover:underline"
             >
               سجّل الدخول الآن
             </Link>

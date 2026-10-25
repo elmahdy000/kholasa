@@ -422,7 +422,7 @@ export function LessonEditorModal({
           <div className="flex items-center gap-3">
             <div
               className="w-11 h-11 rounded-xl flex items-center justify-center text-white shrink-0 shadow-sm"
-              style={{ backgroundColor: unitInfo.subjectColor || "#4F46E5" }}
+              style={{ backgroundColor: unitInfo.subjectColor || "#800020" }}
             >
               <BookOpen className="w-5 h-5" />
             </div>
@@ -452,7 +452,7 @@ export function LessonEditorModal({
             <button
               onClick={handleSave}
               disabled={isSaving || isLoading}
-              className="h-11 sm:h-11 px-4 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[13px] font-bold flex items-center gap-2 shadow-sm transition-transform active:opacity-80 disabled:opacity-50"
+              className="h-11 sm:h-11 px-4 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] font-bold flex items-center gap-2 shadow-sm transition-transform active:opacity-80 disabled:opacity-50"
             >
               {isSaving ? (
                 <>
@@ -514,7 +514,7 @@ export function LessonEditorModal({
                 onClick={() => setActiveTab(tab.id)}
                 className={`pb-3 px-3 text-[13px] font-bold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap ${
                   isSelected
-                    ? "border-[#4F46E5] text-[#4F46E5]"
+                    ? "border-[#800020] text-[#800020]"
                     : "border-transparent text-[#64748B] hover:text-[#0F172A] dark:hover:text-[#F8FAFC]"
                 }`}
               >
@@ -529,7 +529,7 @@ export function LessonEditorModal({
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
           {isLoading ? (
             <div className="py-20 flex flex-col items-center justify-center gap-3">
-              <div className="w-11 h-11 border-3 border-[#4F46E5]/30 border-t-[#4F46E5] rounded-full animate-spin" />
+              <div className="w-11 h-11 border-3 border-[#800020]/30 border-t-[#800020] rounded-full animate-spin" />
               <span className="text-[13px] font-bold text-[#94A3B8]">
                 جارٍ تحميل بيانات الدرس...
               </span>
@@ -550,7 +550,7 @@ export function LessonEditorModal({
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
                         placeholder="مثال: الخلية الحية ووظائف العضيات"
-                        className="w-full h-11 px-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#4F46E5]"
+                        className="w-full h-11 px-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#800020]"
                       />
                     </div>
 
@@ -565,7 +565,7 @@ export function LessonEditorModal({
                         onChange={(e) =>
                           setDurationMinutes(Number(e.target.value))
                         }
-                        className="w-full h-11 px-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#4F46E5]"
+                        className="w-full h-11 px-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#800020]"
                       />
                     </div>
                   </div>
@@ -579,7 +579,7 @@ export function LessonEditorModal({
                         type="number"
                         value={order}
                         onChange={(e) => setOrder(Number(e.target.value))}
-                        className="w-full h-11 px-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#4F46E5]"
+                        className="w-full h-11 px-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#800020]"
                       />
                     </div>
 
@@ -619,7 +619,7 @@ export function LessonEditorModal({
                   <div className="p-4 sm:p-5 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/60 border border-[#E2E8F0] dark:border-[#334155] space-y-3">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                       <div className="flex items-center gap-2 text-[13px] font-bold text-[#0F172A] dark:text-white">
-                        <Video className="w-4 h-4 text-[#4F46E5]" />
+                        <Video className="w-4 h-4 text-[#800020]" />
                         <span>فيديو الدرس (YouTube / Vimeo / MP4 مباشر)</span>
                       </div>
                       <div>
@@ -636,7 +636,7 @@ export function LessonEditorModal({
                           type="button"
                           onClick={() => videoInputRef.current?.click()}
                           disabled={uploadingMedia === "video"}
-                          className="h-7 px-3 rounded-lg bg-[#4F46E5]/10 hover:bg-[#4F46E5]/10 dark:bg-[#1E293B] text-[#4F46E5] dark:text-[#6366F1] text-[13px] font-bold flex items-center gap-2 transition-colors cursor-pointer disabled:opacity-50"
+                          className="h-7 px-3 rounded-lg bg-[#800020]/10 hover:bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] text-[13px] font-bold flex items-center gap-2 transition-colors cursor-pointer disabled:opacity-50"
                         >
                           {uploadingMedia === "video" ? (
                             <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -653,7 +653,7 @@ export function LessonEditorModal({
                       value={videoUrl}
                       onChange={(e) => setVideoUrl(e.target.value)}
                       placeholder="https://www.youtube.com/watch?v=... أو /uploads/video.mp4"
-                      className="w-full h-11 px-4 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-mono text-[#0F172A] dark:text-white focus:outline-none focus:border-[#4F46E5]"
+                      className="w-full h-11 px-4 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-mono text-[#0F172A] dark:text-white focus:outline-none focus:border-[#800020]"
                       dir="ltr"
                     />
 
@@ -719,7 +719,7 @@ export function LessonEditorModal({
                       value={audioUrl}
                       onChange={(e) => setAudioUrl(e.target.value)}
                       placeholder="https://example.com/audio/lesson-summary.mp3 أو /uploads/podcast.mp3"
-                      className="w-full h-11 px-4 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-mono text-[#0F172A] dark:text-white focus:outline-none focus:border-[#4F46E5]"
+                      className="w-full h-11 px-4 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-mono text-[#0F172A] dark:text-white focus:outline-none focus:border-[#800020]"
                       dir="ltr"
                     />
 
@@ -753,7 +753,7 @@ export function LessonEditorModal({
                         value={mindMapTitle}
                         onChange={(e) => setMindMapTitle(e.target.value)}
                         placeholder="مثال: خريطة مفاهيم الوراثة والجينات"
-                        className="w-full h-11 px-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#4F46E5]"
+                        className="w-full h-11 px-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#800020]"
                       />
                     </div>
 
@@ -766,15 +766,15 @@ export function LessonEditorModal({
                         value={mindMapDescription}
                         onChange={(e) => setMindMapDescription(e.target.value)}
                         placeholder="مثال: ركّز على الفروق في الجزء الأيمن قبل الامتحان"
-                        className="w-full h-11 px-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#4F46E5]"
+                        className="w-full h-11 px-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#800020]"
                       />
                     </div>
                   </div>
 
                   {/* Add New Image Input */}
-                  <div className="p-4 sm:p-5 rounded-xl bg-[#4F46E5]/10 dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#6366F1]/40 space-y-3">
+                  <div className="p-4 sm:p-5 rounded-xl bg-[#800020]/10 dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#E11D48]/40 space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="text-[13px] font-bold text-[#4F46E5] dark:text-[#6366F1] flex items-center gap-2">
+                      <span className="text-[13px] font-bold text-[#800020] dark:text-[#FB7185] flex items-center gap-2">
                         <ImageIcon className="w-4 h-4" />
                         <span>إضافة صورة خريطة ذهنية جديدة (MindMap Image URL)</span>
                       </span>
@@ -789,7 +789,7 @@ export function LessonEditorModal({
                         value={newImageUrl}
                         onChange={(e) => setNewImageUrl(e.target.value)}
                         placeholder="https://images.unsplash.com/... أو رابط مباشر للصورة"
-                        className="flex-1 h-11 px-4 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-mono text-[#0F172A] dark:text-white focus:outline-none focus:border-[#4F46E5]"
+                        className="flex-1 h-11 px-4 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-mono text-[#0F172A] dark:text-white focus:outline-none focus:border-[#800020]"
                         dir="ltr"
                         onKeyDown={(e) => {
                           if (e.key === "Enter") {
@@ -802,7 +802,7 @@ export function LessonEditorModal({
                         type="button"
                         onClick={handleAddImage}
                         disabled={!newImageUrl.trim()}
-                        className="h-11 px-4 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[13px] font-bold flex items-center gap-2 shrink-0 transition-transform active:opacity-80 disabled:opacity-50"
+                        className="h-11 px-4 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] font-bold flex items-center gap-2 shrink-0 transition-transform active:opacity-80 disabled:opacity-50"
                       >
                         <Plus className="w-4 h-4" />
                         <span>إضافة بالرابط</span>
@@ -900,7 +900,7 @@ export function LessonEditorModal({
                                   type="button"
                                   onClick={() => handleMoveImage(idx, "up")}
                                   disabled={idx === 0}
-                                  className="p-1 rounded-md text-[#94A3B8] hover:text-[#4F46E5] disabled:opacity-30 transition-colors"
+                                  className="p-1 rounded-md text-[#94A3B8] hover:text-[#800020] disabled:opacity-30 transition-colors"
                                   title="تقديم الترتيب"
                                 >
                                   <ArrowUp className="w-3.5 h-3.5" />
@@ -909,7 +909,7 @@ export function LessonEditorModal({
                                   type="button"
                                   onClick={() => handleMoveImage(idx, "down")}
                                   disabled={idx === mindMapImages.length - 1}
-                                  className="p-1 rounded-md text-[#94A3B8] hover:text-[#4F46E5] disabled:opacity-30 transition-colors"
+                                  className="p-1 rounded-md text-[#94A3B8] hover:text-[#800020] disabled:opacity-30 transition-colors"
                                   title="تأخير الترتيب"
                                 >
                                   <ArrowDown className="w-3.5 h-3.5" />
@@ -939,7 +939,7 @@ export function LessonEditorModal({
                   <div className="p-4 sm:p-5 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/60 border border-[#E2E8F0] dark:border-[#334155] space-y-3">
                     <div className="flex items-center justify-between">
                       <label className="text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC] flex items-center gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-[#4F46E5]" />
+                        <CheckCircle2 className="w-4 h-4 text-[#800020]" />
                         <span>الأهداف التعليمية ومخرجات التعلم ({objectives.length})</span>
                       </label>
                       <span className="text-[13px] text-[#94A3B8]">
@@ -953,7 +953,7 @@ export function LessonEditorModal({
                         value={newObjective}
                         onChange={(e) => setNewObjective(e.target.value)}
                         placeholder="مثال: التمييز بين الانقسام الميتوزي والميوزي بدقة"
-                        className="flex-1 h-11 px-4 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#4F46E5]"
+                        className="flex-1 h-11 px-4 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#800020]"
                         onKeyDown={(e) => {
                           if (e.key === "Enter") {
                             e.preventDefault();
@@ -965,7 +965,7 @@ export function LessonEditorModal({
                         type="button"
                         onClick={handleAddObjective}
                         disabled={!newObjective.trim()}
-                        className="h-11 px-4 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[13px] font-bold flex items-center gap-2 shrink-0 transition-transform active:opacity-80 disabled:opacity-50"
+                        className="h-11 px-4 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] font-bold flex items-center gap-2 shrink-0 transition-transform active:opacity-80 disabled:opacity-50"
                       >
                         <Plus className="w-4 h-4" />
                         <span>إضافة هدف</span>
@@ -980,7 +980,7 @@ export function LessonEditorModal({
                             className="p-3 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] flex items-center justify-between gap-3 text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC]"
                           >
                             <div className="flex items-center gap-3">
-                              <span className="w-5 h-5 rounded-lg bg-[#4F46E5]/10 text-[#4F46E5] text-[13px] flex items-center justify-center font-bold">
+                              <span className="w-5 h-5 rounded-lg bg-[#800020]/10 text-[#800020] text-[13px] flex items-center justify-center font-bold">
                                 {i + 1}
                               </span>
                               <span>{obj}</span>
@@ -1014,7 +1014,7 @@ export function LessonEditorModal({
                       value={bodyText}
                       onChange={(e) => setBodyText(e.target.value)}
                       placeholder="اكتب أو الصق شرح الدرس هنا..."
-                      className="w-full p-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] sm:text-sm font-sans leading-relaxed text-[#0F172A] dark:text-white focus:outline-none focus:border-[#4F46E5]"
+                      className="w-full p-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] sm:text-sm font-sans leading-relaxed text-[#0F172A] dark:text-white focus:outline-none focus:border-[#800020]"
                     />
                   </div>
                 </div>
@@ -1036,7 +1036,7 @@ export function LessonEditorModal({
                         value={newConcept}
                         onChange={(e) => setNewConcept(e.target.value)}
                         placeholder="أضف مفهوماً جوهرياً..."
-                        className="flex-1 h-11 px-4 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#4F46E5]"
+                        className="flex-1 h-11 px-4 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#800020]"
                         onKeyDown={(e) => {
                           if (e.key === "Enter") {
                             e.preventDefault();
@@ -1048,7 +1048,7 @@ export function LessonEditorModal({
                         type="button"
                         onClick={handleAddKeyConcept}
                         disabled={!newConcept.trim()}
-                        className="h-11 px-4 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[13px] font-bold flex items-center gap-2 shrink-0 transition-transform active:opacity-80 disabled:opacity-50"
+                        className="h-11 px-4 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] font-bold flex items-center gap-2 shrink-0 transition-transform active:opacity-80 disabled:opacity-50"
                       >
                         <Plus className="w-4 h-4" />
                         <span>إضافة</span>
@@ -1089,7 +1089,7 @@ export function LessonEditorModal({
                         value={newExamTip}
                         onChange={(e) => setNewExamTip(e.target.value)}
                         placeholder="مثال: ركّز على كلمة (فقط) في صيغة السؤال فإنها تنفي..."
-                        className="flex-1 h-11 px-4 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#4F46E5]"
+                        className="flex-1 h-11 px-4 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#800020]"
                         onKeyDown={(e) => {
                           if (e.key === "Enter") {
                             e.preventDefault();
@@ -1101,7 +1101,7 @@ export function LessonEditorModal({
                         type="button"
                         onClick={handleAddExamTip}
                         disabled={!newExamTip.trim()}
-                        className="h-11 px-4 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[13px] font-bold flex items-center gap-2 shrink-0 transition-transform active:opacity-80 disabled:opacity-50"
+                        className="h-11 px-4 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] font-bold flex items-center gap-2 shrink-0 transition-transform active:opacity-80 disabled:opacity-50"
                       >
                         <Plus className="w-4 h-4" />
                         <span>إضافة</span>
@@ -1246,7 +1246,7 @@ export function LessonEditorModal({
               type="button"
               onClick={handleSave}
               disabled={isSaving || isLoading}
-              className="h-11 px-5 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[13px] font-bold flex items-center gap-2 shadow-sm transition-transform active:opacity-80 disabled:opacity-50"
+              className="h-11 px-5 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] font-bold flex items-center gap-2 shadow-sm transition-transform active:opacity-80 disabled:opacity-50"
             >
               <Save className="w-4 h-4" />
               <span>حفظ كافة التعديلات</span>

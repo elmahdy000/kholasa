@@ -48,7 +48,7 @@ export default function GlobalError({ error, retry }: { error: unknown; retry: (
               padding: "0 20px",
               borderRadius: 12,
               border: 0,
-              background: "#4F46E5",
+              background: "#800020",
               color: "#fff",
               fontWeight: 700,
               fontSize: 14,

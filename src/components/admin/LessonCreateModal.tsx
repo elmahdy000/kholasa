@@ -109,7 +109,7 @@ export function LessonCreateModal({
         {/* Header */}
         <div className="p-5 bg-[#F8FAFC] dark:bg-[#1E293B]/60 border-b border-[#E2E8F0] dark:border-[#334155] flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-xl bg-[#4F46E5]/10 text-[#4F46E5] flex items-center justify-center font-bold">
+            <div className="w-11 h-11 rounded-xl bg-[#800020]/10 text-[#800020] flex items-center justify-center font-bold">
               <BookOpen className="w-4 h-4" />
             </div>
             <div>
@@ -150,7 +150,7 @@ export function LessonCreateModal({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="مثال: النظرية الخلوية والميكروسكوبات"
-              className="w-full h-11 px-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#4F46E5]"
+              className="w-full h-11 px-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#800020]"
             />
           </div>
 
@@ -164,7 +164,7 @@ export function LessonCreateModal({
                 min="1"
                 value={durationMinutes}
                 onChange={(e) => setDurationMinutes(Number(e.target.value))}
-                className="w-full h-11 px-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#4F46E5]"
+                className="w-full h-11 px-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#800020]"
               />
             </div>
 
@@ -189,7 +189,7 @@ export function LessonCreateModal({
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <label className="text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC] flex items-center gap-2">
-                <Video className="w-3.5 h-3.5 text-[#4F46E5]" />
+                <Video className="w-3.5 h-3.5 text-[#800020]" />
                 <span>رابط فيديو الدرس (YouTube أو MP4)</span>
               </label>
               <div>
@@ -206,7 +206,7 @@ export function LessonCreateModal({
                   type="button"
                   onClick={() => videoInputRef.current?.click()}
                   disabled={uploadingMedia === "video"}
-                  className="text-[13px] font-bold text-[#4F46E5] hover:underline flex items-center gap-1 cursor-pointer disabled:opacity-50"
+                  className="text-[13px] font-bold text-[#800020] hover:underline flex items-center gap-1 cursor-pointer disabled:opacity-50"
                 >
                   {uploadingMedia === "video" ? (
                     <Loader2 className="w-3 h-3 animate-spin" />
@@ -222,7 +222,7 @@ export function LessonCreateModal({
               value={videoUrl}
               onChange={(e) => setVideoUrl(e.target.value)}
               placeholder="https://www.youtube.com/watch?v=... أو /uploads/video.mp4"
-              className="w-full h-11 px-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-mono text-[#0F172A] dark:text-white focus:outline-none focus:border-[#4F46E5]"
+              className="w-full h-11 px-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-mono text-[#0F172A] dark:text-white focus:outline-none focus:border-[#800020]"
               dir="ltr"
             />
           </div>
@@ -263,7 +263,7 @@ export function LessonCreateModal({
               value={audioUrl}
               onChange={(e) => setAudioUrl(e.target.value)}
               placeholder="https://example.com/audio/lesson.mp3 أو /uploads/audio.mp3"
-              className="w-full h-11 px-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-mono text-[#0F172A] dark:text-white focus:outline-none focus:border-[#4F46E5]"
+              className="w-full h-11 px-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-mono text-[#0F172A] dark:text-white focus:outline-none focus:border-[#800020]"
               dir="ltr"
             />
           </div>
@@ -280,7 +280,7 @@ export function LessonCreateModal({
             <button
               type="submit"
               disabled={isSubmitting}
-              className="h-11 px-4 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[13px] font-bold flex items-center gap-2 transition-transform active:opacity-80 disabled:opacity-50"
+              className="h-11 px-4 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] font-bold flex items-center gap-2 transition-transform active:opacity-80 disabled:opacity-50"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>إنشاء الدرس الآن</span>

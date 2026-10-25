@@ -7,7 +7,7 @@ const steps = [
   {
     number: "01",
     icon: BookOpen,
-    color: "#4F46E5",
+    color: "#800020",
     title: "اختار مادتك ودرسك",
     description: "تصفح المواد والوحدات بسهولة، واختار الدرس اللي عايز تفهمه أو تراجع عليه.",
   },
@@ -96,7 +96,7 @@ export function HowItWorks() {
         >
           <Link
             href="/register"
-            className="inline-flex items-center gap-2 h-12 px-8 rounded-lg bg-[#4F46E5] hover:bg-[#4338CA] text-white text-sm font-bold transition-colors"
+            className="inline-flex items-center gap-2 h-12 px-8 rounded-lg bg-[#800020] hover:bg-[#66001A] text-white text-sm font-bold transition-colors"
           >
             <span>ابدأ رحلتك التعليمية</span>
             <ArrowLeft className="w-4 h-4" weight="bold" />

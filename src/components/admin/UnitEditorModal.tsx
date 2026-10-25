@@ -163,7 +163,7 @@ export function UnitEditorModal({
         {/* Header */}
         <div className="p-5 bg-[#F8FAFC] dark:bg-[#1E293B]/60 border-b border-[#E2E8F0] dark:border-[#334155] flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-xl bg-[#4F46E5]/10 text-[#4F46E5] flex items-center justify-center font-bold">
+            <div className="w-11 h-11 rounded-xl bg-[#800020]/10 text-[#800020] flex items-center justify-center font-bold">
               <Layers className="w-4 h-4" />
             </div>
             <div>
@@ -204,7 +204,7 @@ export function UnitEditorModal({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="مثال: الوحدة الأولى: التركيب والوظيفة في الكائنات الحية"
-              className="w-full h-11 px-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#4F46E5]"
+              className="w-full h-11 px-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#800020]"
             />
           </div>
 
@@ -217,7 +217,7 @@ export function UnitEditorModal({
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="وصف مختصر لأهداف ومواضيع الوحدة..."
-              className="w-full p-3 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-medium text-[#0F172A] dark:text-white focus:outline-none focus:border-[#4F46E5]"
+              className="w-full p-3 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-medium text-[#0F172A] dark:text-white focus:outline-none focus:border-[#800020]"
             />
           </div>
 
@@ -230,7 +230,7 @@ export function UnitEditorModal({
                 type="number"
                 value={order}
                 onChange={(e) => setOrder(Number(e.target.value))}
-                className="w-full h-11 px-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#4F46E5]"
+                className="w-full h-11 px-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#800020]"
               />
             </div>
 
@@ -300,7 +300,7 @@ export function UnitEditorModal({
               <button
                 type="submit"
                 disabled={isSaving}
-                className="h-11 px-4 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[13px] font-bold flex items-center gap-2 transition-transform active:opacity-80 disabled:opacity-50"
+                className="h-11 px-4 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] font-bold flex items-center gap-2 transition-transform active:opacity-80 disabled:opacity-50"
               >
                 <Save className="w-3.5 h-3.5" />
                 <span>{mode === "create" ? "إنشاء الوحدة" : "حفظ التعديلات"}</span>

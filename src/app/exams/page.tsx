@@ -46,7 +46,7 @@ export default async function ExamsHubPage() {
           <div className="flex flex-col md:flex-row md:items-center md:justify-center gap-6">
             {/* Text & Actions */}
             <div className="space-y-3 max-w-3xl md:mx-auto md:text-center">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#4F46E5]/10 dark:bg-[#1E293B] text-[#4F46E5] dark:text-[#6366F1] text-[13px] font-bold border border-[#E2E8F0]/60 dark:border-[#6366F1]/60">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] text-[13px] font-bold border border-[#E2E8F0]/60 dark:border-[#E11D48]/60">
                 <Sparkles className="w-3.5 h-3.5" />
                 <span>امتحانات وتدريبات متفصلة ليك</span>
               </div>
@@ -62,7 +62,7 @@ export default async function ExamsHubPage() {
               {/* Compact Value Points */}
               <div className="flex flex-wrap items-center gap-4 pt-1 text-[13px] sm:text-[13px] font-semibold text-[#64748B] dark:text-[#94A3B8] md:justify-center">
                 <span className="flex items-center gap-2">
-                  <Clock className="w-3.5 h-3.5 text-[#4F46E5] shrink-0" />
+                  <Clock className="w-3.5 h-3.5 text-[#800020] shrink-0" />
                   <span>مؤقت زي الامتحان بالظبط</span>
                 </span>
                 <span className="flex items-center gap-2">
@@ -79,7 +79,7 @@ export default async function ExamsHubPage() {
               <div className="pt-2 md:flex md:justify-center">
                 <Link
                   href="/exams/builder"
-                  className="h-11 px-5 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[13px] sm:text-sm font-bold inline-flex items-center gap-2  transition-all active:opacity-80 group"
+                  className="h-11 px-5 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] sm:text-sm font-bold inline-flex items-center gap-2  transition-all active:opacity-80 group"
                 >
                   <SlidersHorizontal className="w-3.5 h-3.5" />
                   <span>فصّل امتحان على مزاجك دلوقتي</span>
@@ -94,12 +94,12 @@ export default async function ExamsHubPage() {
         <div className="space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h2 className="text-base sm:text-lg font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
-              <Zap className="w-5 h-5 text-[#4F46E5]" />
+              <Zap className="w-5 h-5 text-[#800020]" />
               <span>امتحانات شاملة وجاهزة تحلها فوراً</span>
             </h2>
             <Link
               href="/exams/builder"
-              className="text-[13px] font-bold text-[#4F46E5] dark:text-[#6366F1] hover:underline"
+              className="text-[13px] font-bold text-[#800020] dark:text-[#FB7185] hover:underline"
             >
               عاوز تختار أسئلة معينة؟ فصّل من هنا ←
             </Link>
@@ -124,11 +124,11 @@ export default async function ExamsHubPage() {
                 >
                   <div>
                     <div className="flex items-center justify-between gap-2 mb-3">
-                      <span className="px-3 py-1 rounded-lg bg-[#4F46E5]/10 dark:bg-[#1E293B] text-[#4F46E5] dark:text-[#6366F1] text-[13px] font-bold border border-[#E2E8F0]/50 dark:border-[#6366F1]/50">
+                      <span className="px-3 py-1 rounded-lg bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] text-[13px] font-bold border border-[#E2E8F0]/50 dark:border-[#E11D48]/50">
                         <BidiStatement as="span" text={exam.subject.name} />
                       </span>
                       <span className="flex items-center gap-1 text-[13px] font-bold text-[#64748B] dark:text-[#94A3B8]">
-                        <Clock className="w-3.5 h-3.5 text-[#4F46E5]" />
+                        <Clock className="w-3.5 h-3.5 text-[#800020]" />
                         <span>{exam.durationMinutes} دقيقة</span>
                       </span>
                     </div>
@@ -150,7 +150,7 @@ export default async function ExamsHubPage() {
                     </span>
                     <Link
                       href={`/exams/${exam.id}`}
-                      className="h-11 px-4 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[13px] font-bold flex items-center gap-2 transition-colors  active:opacity-80"
+                      className="h-11 px-4 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] font-bold flex items-center gap-2 transition-colors  active:opacity-80"
                     >
                       <span>يلا نحل</span>
                       <ArrowLeft className="w-3.5 h-3.5" />
@@ -166,7 +166,7 @@ export default async function ExamsHubPage() {
         {recentAttempts.length > 0 && (
           <div className="space-y-4 pt-2">
             <h2 className="text-base sm:text-lg font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
-              <History className="w-5 h-5 text-[#4F46E5]" />
+              <History className="w-5 h-5 text-[#800020]" />
               <span>امتحاناتك اللي حلتها قبل كدة</span>
             </h2>
 
@@ -216,7 +216,7 @@ export default async function ExamsHubPage() {
 
                     <Link
                       href={`/exams/${attempt.examId}/results?attemptId=${attempt.id}`}
-                      className="h-11 px-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] hover:border-[#4F46E5] hover:text-[#4F46E5] dark:hover:border-[#6366F1] dark:hover:text-[#6366F1] text-[13px] font-bold text-[#0F172A] dark:text-white flex items-center justify-center gap-2 transition-colors shrink-0 self-stretch sm:self-center"
+                      className="h-11 px-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] hover:border-[#800020] hover:text-[#800020] dark:hover:border-[#E11D48] dark:hover:text-[#FB7185] text-[13px] font-bold text-[#0F172A] dark:text-white flex items-center justify-center gap-2 transition-colors shrink-0 self-stretch sm:self-center"
                     >
                       <span>راجع إجاباتك</span>
                       <ArrowLeft className="w-3.5 h-3.5" />

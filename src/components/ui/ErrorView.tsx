@@ -45,7 +45,7 @@ export function ErrorView({
           <button
             type="button"
             onClick={onRetry}
-            className="flex-1 h-11 px-4 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-sm font-bold flex items-center justify-center gap-2 transition-colors"
+            className="flex-1 h-11 px-4 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-sm font-bold flex items-center justify-center gap-2 transition-colors"
           >
             <ArrowClockwise className="w-4 h-4" weight="bold" aria-hidden="true" />
             <span>حاول مرة أخرى</span>

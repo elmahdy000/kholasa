@@ -43,7 +43,7 @@ export default async function ExamBuilderPage({
       <div className="max-w-[1050px] mx-auto space-y-6 text-right font-sans">
         <div className="border-b border-[#E2E8F0] dark:border-[#334155] pb-5">
           <div className="flex items-center gap-2 mb-2">
-            <span className="text-[13px] font-bold text-[#4F46E5] dark:text-[#6366F1] bg-[#4F46E5]/10 dark:bg-[#1E293B] px-3 py-1 rounded-md border border-[#E2E8F0]/60 dark:border-[#6366F1]">
+            <span className="text-[13px] font-bold text-[#800020] dark:text-[#FB7185] bg-[#800020]/10 dark:bg-[#1E293B] px-3 py-1 rounded-md border border-[#E2E8F0]/60 dark:border-[#E11D48]">
               فصّل امتحانك على مزاجك
             </span>
             <span className="text-[13px] text-[#94A3B8] font-medium">• إعداد مخصص</span>

@@ -16,14 +16,14 @@ export function FeaturesBento() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-12 text-right">
         {/* Section Header */}
         <div className="text-center max-w-2xl mx-auto space-y-3">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#4F46E5]/10 dark:bg-[#1E293B] border border-[#E2E8F0]/60 dark:border-[#6366F1] text-[#4F46E5] dark:text-[#6366F1] text-[13px] font-bold">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#800020]/10 dark:bg-[#1E293B] border border-[#800020]/20 dark:border-[#E11D48] text-[#800020] dark:text-[#FB7185] text-[13px] font-bold">
             <Sparkles className="w-3.5 h-3.5 text-[#D97706]" />
             <span>منهجية الخلاصة المعتمدة</span>
           </div>
-          <h2 className="text-2xl sm:text-4xl font-bold text-[#0F172A] dark:text-white leading-tight">
+          <h2 className="text-2xl sm:text-4xl font-bold text-[#1A0A10] dark:text-white leading-tight">
             منظومة تعلم متكاملة.. صُممت لتضمن تفوقك
           </h2>
-          <p className="text-[13px] sm:text-sm text-[#64748B] dark:text-[#94A3B8] font-medium leading-relaxed">
+          <p className="text-[13px] sm:text-sm text-[#735C63] dark:text-[#94A3B8] font-medium leading-relaxed">
             وداعاً للحفظ التلقيني وتراكم المذكرات غير المفهومة. كل درس يتم تفكيكه علمياً إلى ركائز متكاملة.
           </p>
         </div>
@@ -31,20 +31,20 @@ export function FeaturesBento() {
         {/* Bento Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {/* Bento Card 1: الشرح التفاعلي (Span 2 cols on md) */}
-          <div className="md:col-span-2 p-7 sm:p-8 rounded-xl bg-[#F8FAFC] dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]  hover:border-[#4F46E5]/40 transition-colors flex flex-col justify-between space-y-6">
+          <div className="md:col-span-2 p-7 sm:p-8 rounded-xl bg-[#FAF7F8] dark:bg-[#0F172A] border border-[#F0E6E8] dark:border-[#334155] hover:border-[#800020]/40 transition-colors flex flex-col justify-between space-y-6 shadow-xs">
             <div className="space-y-4">
-              <div className="w-11 h-11 rounded-xl bg-[#4F46E5]/10 dark:bg-[#1E293B] text-[#4F46E5] dark:text-[#6366F1] flex items-center justify-center font-bold">
+              <div className="w-11 h-11 rounded-xl bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] flex items-center justify-center font-bold">
                 <BookOpen className="w-5 h-5" />
               </div>
-              <h3 className="text-xl sm:text-2xl font-bold text-[#0F172A] dark:text-white">
+              <h3 className="text-xl sm:text-2xl font-bold text-[#1A0A10] dark:text-white">
                 1. الشرح التفاعلي المفكك خطوة بخطوة
               </h3>
-              <p className="text-[13px] sm:text-sm text-[#64748B] dark:text-[#94A3B8] leading-relaxed max-w-xl font-medium">
+              <p className="text-[13px] sm:text-sm text-[#735C63] dark:text-[#94A3B8] leading-relaxed max-w-xl font-medium">
                 تفكيك المفاهيم المعقدة إلى خطوات بسيطة مع إبراز التعريفات الهامة، الجداول المقارنة، والمسائل المحلولة بالتفصيل لتفهم الأساس الرياضي والعلمي بدلاً من مجرد الحفظ.
               </p>
             </div>
 
-            <div className="pt-4 border-t border-[#E2E8F0] dark:border-[#334155] flex items-center justify-between text-[13px] font-bold text-[#4F46E5] dark:text-[#6366F1]">
+            <div className="pt-4 border-t border-[#F0E6E8] dark:border-[#334155] flex items-center justify-between text-[13px] font-bold text-[#800020] dark:text-[#FB7185]">
               <span>مصحوب ببودكاست صوتي لكل درس (بودكاست الخلاصة)</span>
               <Link href="/subjects" className="flex items-center gap-1 hover:underline">
                 <span>تصفح المواد</span>
@@ -54,18 +54,18 @@ export function FeaturesBento() {
           </div>
 
           {/* Bento Card 2: الزتونة الذهبية (Signature Feature) */}
-          <div className="p-7 sm:p-8 rounded-xl bg-[#D97706]/10 dark:bg-[#0F172A] border-2 border-[#E2E8F0] dark:border-[#FBBF24]/60  hover:border-[#D97706] transition-colors flex flex-col justify-between space-y-6">
+          <div className="p-7 sm:p-8 rounded-xl bg-[#D97706]/10 dark:bg-[#0F172A] border-2 border-[#F0E6E8] dark:border-[#FBBF24]/60 hover:border-[#D97706] transition-colors flex flex-col justify-between space-y-6 shadow-xs">
             <div className="space-y-4">
-              <div className="w-11 h-11 rounded-xl bg-[#D97706] text-white flex items-center justify-center font-bold ">
+              <div className="w-11 h-11 rounded-xl bg-[#D97706] text-white flex items-center justify-center font-bold">
                 <Sparkles className="w-5 h-5 fill-current" />
               </div>
               <div className="inline-block px-3 py-1 rounded-md bg-[#D97706]/10 dark:bg-[#1E293B] text-[#D97706] dark:text-[#FBBF24] text-[13px] font-bold">
                 كبسولة المراجعة السريعة
               </div>
-              <h3 className="text-xl font-bold text-[#0F172A] dark:text-white">
+              <h3 className="text-xl font-bold text-[#1A0A10] dark:text-white">
                 2. الزتونة الذهبية
               </h3>
-              <p className="text-[13px] sm:text-sm text-[#64748B] dark:text-[#94A3B8] leading-relaxed font-medium">
+              <p className="text-[13px] sm:text-sm text-[#735C63] dark:text-[#94A3B8] leading-relaxed font-medium">
                 كبسولة مركزة في صفحة واحدة لا تزيد عن 3 دقائق قراءة، تجمع أهم القوانين، تكات واضعي الامتحانات، وقائمة تحقق قبل النوم.
               </p>
             </div>
@@ -78,45 +78,45 @@ export function FeaturesBento() {
           </div>
 
           {/* Bento Card 3: بنك الأسئلة المتكيف */}
-          <div className="p-7 rounded-xl bg-[#F8FAFC] dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]  hover:border-[#4F46E5]/40 transition-colors flex flex-col justify-between space-y-4">
+          <div className="p-7 rounded-xl bg-[#FAF7F8] dark:bg-[#0F172A] border border-[#F0E6E8] dark:border-[#334155] hover:border-[#800020]/40 transition-colors flex flex-col justify-between space-y-4 shadow-xs">
             <div className="space-y-3">
-              <div className="w-11 h-11 rounded-xl bg-[#4F46E5]/10 dark:bg-[#1E293B] text-[#4F46E5] dark:text-[#6366F1] flex items-center justify-center font-bold">
+              <div className="w-11 h-11 rounded-xl bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] flex items-center justify-center font-bold">
                 <Zap className="w-5 h-5" />
               </div>
-              <h3 className="text-lg font-bold text-[#0F172A] dark:text-white">
+              <h3 className="text-lg font-bold text-[#1A0A10] dark:text-white">
                 3. بنك الأسئلة المتكيف
               </h3>
-              <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8] leading-relaxed font-medium">
+              <p className="text-[13px] text-[#735C63] dark:text-[#94A3B8] leading-relaxed font-medium">
                 أنشئ اختبارات مخصصة بضغطة زر حسب الدرس أو الوحدة، مع تحليل فوري يوضح لماذا كل اختيار صح ولماذا الباقي خطأ.
               </p>
             </div>
           </div>
 
           {/* Bento Card 4: ركن غلطاتي */}
-          <div className="p-7 rounded-xl bg-[#F8FAFC] dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]  hover:border-[#4F46E5]/40 transition-colors flex flex-col justify-between space-y-4">
+          <div className="p-7 rounded-xl bg-[#FAF7F8] dark:bg-[#0F172A] border border-[#F0E6E8] dark:border-[#334155] hover:border-[#800020]/40 transition-colors flex flex-col justify-between space-y-4 shadow-xs">
             <div className="space-y-3">
-              <div className="w-11 h-11 rounded-xl bg-[#4F46E5]/10 dark:bg-[#1E293B] text-[#4F46E5] dark:text-[#6366F1] flex items-center justify-center font-bold">
+              <div className="w-11 h-11 rounded-xl bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] flex items-center justify-center font-bold">
                 <RotateCcw className="w-5 h-5" />
               </div>
-              <h3 className="text-lg font-bold text-[#0F172A] dark:text-white">
+              <h3 className="text-lg font-bold text-[#1A0A10] dark:text-white">
                 4. ركن «غلطاتي» التراكمي
               </h3>
-              <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8] leading-relaxed font-medium">
+              <p className="text-[13px] text-[#735C63] dark:text-[#94A3B8] leading-relaxed font-medium">
                 أي سؤال تخطئ فيه يحفظ فوراً في دفترك الخاص، ويعيد النظام اختبارك فيه لاحقاً حتى تتقنه وتصل نسبة استيعابك إلى 100%.
               </p>
             </div>
           </div>
 
           {/* Bento Card 5: الخرائط الذهنية & PWA */}
-          <div className="p-7 rounded-xl bg-[#F8FAFC] dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]  hover:border-[#4F46E5]/40 transition-colors flex flex-col justify-between space-y-4">
+          <div className="p-7 rounded-xl bg-[#FAF7F8] dark:bg-[#0F172A] border border-[#F0E6E8] dark:border-[#334155] hover:border-[#800020]/40 transition-colors flex flex-col justify-between space-y-4 shadow-xs">
             <div className="space-y-3">
-              <div className="w-11 h-11 rounded-xl bg-[#4F46E5]/10 dark:bg-[#1E293B] text-[#4F46E5] dark:text-[#6366F1] flex items-center justify-center font-bold">
+              <div className="w-11 h-11 rounded-xl bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] flex items-center justify-center font-bold">
                 <Brain className="w-5 h-5" />
               </div>
-              <h3 className="text-lg font-bold text-[#0F172A] dark:text-white">
+              <h3 className="text-lg font-bold text-[#1A0A10] dark:text-white">
                 5. خرائط ذهنية + وضع أوفلاين
               </h3>
-              <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8] leading-relaxed font-medium">
+              <p className="text-[13px] text-[#735C63] dark:text-[#94A3B8] leading-relaxed font-medium">
                 خرائط مرئية للعلاقات بين المفاهيم، مع دعم كامل للعمل بدون إنترنت كـ PWA على الهاتف لتذاكر في أي وقت بدون مشتتات.
               </p>
             </div>

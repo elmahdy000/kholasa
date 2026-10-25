@@ -69,14 +69,14 @@ export default function LoginPage() {
             href="/"
             className="flex items-center gap-3 group transition-transform active:opacity-80 mb-3"
           >
-            <div className="w-11 h-11 rounded-xl bg-[#4F46E5] flex items-center justify-center text-white  group-hover:bg-[#4338CA] transition-colors">
+            <div className="w-11 h-11 rounded-xl bg-[#800020] flex items-center justify-center text-white  group-hover:bg-[#66001A] transition-colors">
               <Sparkles className="w-5 h-5" />
             </div>
             <div className="text-right">
               <span className="text-xl font-bold tracking-tight text-[#0F172A] dark:text-white block">
                 الخُلاصة
               </span>
-              <span className="text-[13px] font-mono font-medium text-[#4F46E5] dark:text-[#6366F1] block tracking-wider">
+              <span className="text-[13px] font-mono font-medium text-[#800020] dark:text-[#FB7185] block tracking-wider">
                 EL KHOLASA
               </span>
             </div>
@@ -116,7 +116,7 @@ export default function LoginPage() {
                   value={identifier}
                   onChange={(e) => setIdentifier(e.target.value)}
                   placeholder="student@kholasa.app أو 01012345678"
-                  className="w-full h-11 pr-11 pl-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B]/50 text-[#0F172A] dark:text-white placeholder:text-[#94A3B8] text-[13px] sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#4F46E5] focus:border-transparent transition-all"
+                  className="w-full h-11 pr-11 pl-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B]/50 text-[#0F172A] dark:text-white placeholder:text-[#94A3B8] text-[13px] sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#800020] focus:border-transparent transition-all"
                   dir="ltr"
                 />
                 <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#94A3B8] pointer-events-none">
@@ -135,7 +135,7 @@ export default function LoginPage() {
                 </label>
                 <Link
                   href="/forgot-password"
-                  className="text-[13px] font-bold text-[#4F46E5] dark:text-[#6366F1] hover:underline"
+                  className="text-[13px] font-bold text-[#800020] dark:text-[#FB7185] hover:underline"
                 >
                   نسيت كلمة المرور؟
                 </Link>
@@ -148,7 +148,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full h-11 pr-11 pl-11 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B]/50 text-[#0F172A] dark:text-white placeholder:text-[#94A3B8] text-[13px] sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#4F46E5] focus:border-transparent transition-all"
+                  className="w-full h-11 pr-11 pl-11 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B]/50 text-[#0F172A] dark:text-white placeholder:text-[#94A3B8] text-[13px] sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#800020] focus:border-transparent transition-all"
                   dir="ltr"
                 />
                 <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#94A3B8] pointer-events-none">
@@ -171,7 +171,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full h-11 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white font-bold text-[13px] sm:text-sm  flex items-center justify-center gap-2 transition-colors disabled:opacity-50 interactive-tap"
+              className="w-full h-11 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white font-bold text-[13px] sm:text-sm  flex items-center justify-center gap-2 transition-colors disabled:opacity-50 interactive-tap"
             >
               {isLoading ? (
                 <>
@@ -189,7 +189,7 @@ export default function LoginPage() {
             <span>ليس لديك حساب بعد؟ </span>
             <Link
               href="/register"
-              className="font-bold text-[#4F46E5] dark:text-[#6366F1] hover:underline"
+              className="font-bold text-[#800020] dark:text-[#FB7185] hover:underline"
             >
               سجّل حسابك الآن مجاناً
             </Link>

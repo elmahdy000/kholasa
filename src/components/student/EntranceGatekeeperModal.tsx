@@ -272,7 +272,7 @@ export function EntranceGatekeeperModal({
             <button
               type="button"
               onClick={handleUnlockAndEnter}
-              className="w-full h-11 px-6 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[13px] font-bold flex items-center justify-center gap-2 transition-colors active:opacity-80"
+              className="w-full h-11 px-6 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] font-bold flex items-center justify-center gap-2 transition-colors active:opacity-80"
             >
               <Unlock className="w-4 h-4" />
               <span>العودة للمنصة</span>
@@ -356,7 +356,7 @@ export function EntranceGatekeeperModal({
               </div>
               <div className="w-full h-2 rounded-full bg-[#334155] overflow-hidden">
                 <div
-                  className="h-full bg-[#4F46E5] rounded-full transition-all duration-300"
+                  className="h-full bg-[#800020] rounded-full transition-all duration-300"
                   style={{
                     width: `${((currentStep + 1) / questions.length) * 100}%`,
                   }}
@@ -383,7 +383,7 @@ export function EntranceGatekeeperModal({
               {/* Question Category & Badges */}
               <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#E2E8F0] dark:border-[#334155] pb-3">
                 <div className="flex items-center gap-2">
-                  <span className="px-3 py-1 rounded-lg bg-[#4F46E5]/10 dark:bg-[#1E293B] text-[#4F46E5] text-[13px] font-bold">
+                  <span className="px-3 py-1 rounded-lg bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] text-[13px] font-bold">
                     {currentQ.subjectName}
                   </span>
                   {currentQ.unitTitle && (
@@ -428,7 +428,7 @@ export function EntranceGatekeeperModal({
                         onClick={() => handleSelectOption(currentQ.id, opt.id)}
                         className={`w-full p-3 sm:p-4 rounded-xl border text-right transition-all flex items-center justify-between gap-3 ${
                           isSelected
-                            ? "bg-[#4F46E5]/10 dark:bg-[#1E293B] border-[#4F46E5] text-[#0F172A] dark:text-white "
+                            ? "bg-[#800020]/10 dark:bg-[#1E293B] border-[#800020] text-[#0F172A] dark:text-white "
                             : "bg-[#F8FAFC] dark:bg-[#1E293B]/60 hover:bg-[#F8FAFC] dark:hover:bg-[#334155] border-[#E2E8F0] dark:border-[#334155] text-[#0F172A] dark:text-[#F8FAFC]"
                         }`}
                       >
@@ -436,7 +436,7 @@ export function EntranceGatekeeperModal({
                           <span
                             className={`w-6 h-6 rounded-lg text-[13px] font-bold flex items-center justify-center shrink-0 ${
                               isSelected
-                                ? "bg-[#4F46E5] text-white"
+                                ? "bg-[#800020] text-white"
                                 : "bg-[#E2E8F0] dark:bg-[#334155] text-[#64748B] dark:text-[#94A3B8]"
                             }`}
                           >
@@ -452,7 +452,7 @@ export function EntranceGatekeeperModal({
                         <div
                           className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 ${
                             isSelected
-                              ? "border-[#4F46E5] bg-[#4F46E5] text-white"
+                              ? "border-[#800020] bg-[#800020] text-white"
                               : "border-[#E2E8F0] dark:border-[#334155] text-transparent"
                           }`}
                         >
@@ -517,7 +517,7 @@ export function EntranceGatekeeperModal({
                       handleEssayChange(currentQ.id, e.target.value)
                     }
                     placeholder="اكتب هنا ما تتذكره من مفاهيم أو تعليلات... وسنعرض لك نموذج الإجابة والمفهوم لمقارنته فور التسليم."
-                    className="w-full p-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#4F46E5] leading-relaxed"
+                    className="w-full p-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#800020] leading-relaxed"
                   />
                 </div>
               )}
@@ -572,7 +572,7 @@ export function EntranceGatekeeperModal({
               <div className="space-y-4">
                 <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#334155] pb-2">
                   <h4 className="text-[13px] font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
-                    <BookOpen className="w-4 h-4 text-[#4F46E5]" />
+                    <BookOpen className="w-4 h-4 text-[#800020]" />
                     <span>تفاصيل إجاباتك وتحليل كل سؤال:</span>
                   </h4>
                   <span className="text-[13px] text-[#94A3B8] font-bold">
@@ -657,7 +657,7 @@ export function EntranceGatekeeperModal({
                     {/* Concept & Educational Explanation */}
                     {(q.concept || q.correctReason) && (
                       <div className="p-3 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/80 border border-[#E2E8F0]/80 dark:border-[#334155] space-y-1 text-[13px]">
-                        <div className="flex items-center gap-2 text-[#4F46E5] font-bold text-[13px]">
+                        <div className="flex items-center gap-2 text-[#800020] font-bold text-[13px]">
                           <Lightbulb className="w-3.5 h-3.5" />
                           <span>التفسير التعليمي والمفهوم:</span>
                         </div>
@@ -705,7 +705,7 @@ export function EntranceGatekeeperModal({
                       Math.min(questions.length - 1, prev + 1)
                     )
                   }
-                  className="h-11 px-6 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[13px] font-bold shadow-sm flex items-center gap-2 transition-all"
+                  className="h-11 px-6 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] font-bold shadow-sm flex items-center gap-2 transition-all"
                 >
                   <span>السؤال التالي</span>
                   <ArrowLeft className="w-3.5 h-3.5" />
@@ -740,7 +740,7 @@ export function EntranceGatekeeperModal({
               <button
                 type="button"
                 onClick={handleUnlockAndEnter}
-                className="w-full sm:w-auto h-11 px-8 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[13px] sm:text-sm font-bold flex items-center justify-center gap-2 transition-colors active:opacity-80"
+                className="w-full sm:w-auto h-11 px-8 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] sm:text-sm font-bold flex items-center justify-center gap-2 transition-colors active:opacity-80"
               >
                 <Unlock className="w-4 h-4" />
                 <span>دخول المنصة الآن والمتابعة للمذاكرة</span>

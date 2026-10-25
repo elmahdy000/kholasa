@@ -285,7 +285,7 @@ export function CurriculumManagerClient({
       {systems.map((system) => (
         <div key={system.id} className="space-y-4">
           <div className="flex items-center gap-2">
-            <span className="w-3 h-3 rounded-full bg-[#4F46E5]" />
+            <span className="w-3 h-3 rounded-full bg-[#800020]" />
             <h2 className="text-base sm:text-lg font-bold text-[#0F172A] dark:text-white">
               {system.name}
             </h2>
@@ -302,7 +302,7 @@ export function CurriculumManagerClient({
                   <div className="flex items-center gap-3">
                     <div
                       className="w-4 h-4 rounded-full shrink-0"
-                      style={{ backgroundColor: subject.color || "#4F46E5" }}
+                      style={{ backgroundColor: subject.color || "#800020" }}
                     />
                     <div>
                       <h3 className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-white">
@@ -329,7 +329,7 @@ export function CurriculumManagerClient({
                           subjectName: subject.name,
                         })
                       }
-                      className="h-11 px-3 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[13px] font-bold flex items-center gap-2  transition-transform active:opacity-80"
+                      className="h-11 px-3 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] font-bold flex items-center gap-2  transition-transform active:opacity-80"
                     >
                       <Plus className="w-3.5 h-3.5" />
                       <span>إضافة وحدة</span>
@@ -382,7 +382,7 @@ export function CurriculumManagerClient({
                             <div className="flex items-center gap-2">
                               <button
                                 onClick={() => toggleExpand(unit.id)}
-                                className="flex items-center gap-2 text-right font-bold text-[13px] sm:text-sm text-[#0F172A] dark:text-white hover:text-[#4F46E5] transition-colors"
+                                className="flex items-center gap-2 text-right font-bold text-[13px] sm:text-sm text-[#0F172A] dark:text-white hover:text-[#800020] transition-colors"
                               >
                                 <ChevronDown
                                   className={`w-4 h-4 text-[#94A3B8] transition-transform ${
@@ -405,7 +405,7 @@ export function CurriculumManagerClient({
                                     initialUnit: unit,
                                   })
                                 }
-                                className="p-1 rounded-md text-[#94A3B8] hover:text-[#4F46E5] hover:bg-[#F8FAFC] dark:hover:bg-[#334155] transition-colors"
+                                className="p-1 rounded-md text-[#94A3B8] hover:text-[#800020] hover:bg-[#F8FAFC] dark:hover:bg-[#334155] transition-colors"
                                 title="تعديل بيانات الوحدة"
                               >
                                 <Edit className="w-3.5 h-3.5" />
@@ -421,7 +421,7 @@ export function CurriculumManagerClient({
                                     subjectName: subject.name,
                                   })
                                 }
-                                className="h-7 px-3 rounded-lg bg-[#4F46E5]/10 dark:bg-[#1E293B] hover:bg-[#4F46E5]/10 text-[#4F46E5] dark:text-[#6366F1] text-[13px] font-bold flex items-center gap-1 transition-colors"
+                                className="h-7 px-3 rounded-lg bg-[#800020]/10 dark:bg-[#1E293B] hover:bg-[#800020]/10 text-[#800020] dark:text-[#FB7185] text-[13px] font-bold flex items-center gap-1 transition-colors"
                               >
                                 <Plus className="w-3 h-3" />
                                 <span>إضافة درس</span>
@@ -429,10 +429,10 @@ export function CurriculumManagerClient({
 
                               <Link
                                 href={`/admin/questions/import?subjectId=${subject.id}&unitId=${unit.id}`}
-                                className="h-7 px-3 rounded-lg bg-[#4F46E5]/10 dark:bg-[#1E293B] hover:bg-[#4F46E5]/10 text-[#4F46E5] dark:text-[#6366F1] text-[13px] font-bold flex items-center gap-1 transition-colors border border-[#E2E8F0]/50 dark:border-[#6366F1]/50"
+                                className="h-7 px-3 rounded-lg bg-[#800020]/10 dark:bg-[#1E293B] hover:bg-[#800020]/10 text-[#800020] dark:text-[#FB7185] text-[13px] font-bold flex items-center gap-1 transition-colors border border-[#E2E8F0]/50 dark:border-[#E11D48]/50"
                                 title="استيراد أو إضافة أسئلة وورد لهذه الوحدة"
                               >
-                                <FileText className="w-3 h-3 text-[#4F46E5] dark:text-[#6366F1]" />
+                                <FileText className="w-3 h-3 text-[#800020] dark:text-[#FB7185]" />
                                 <span>أسئلة الوحدة</span>
                               </Link>
 
@@ -472,7 +472,7 @@ export function CurriculumManagerClient({
                                         subjectName: subject.name,
                                       })
                                     }
-                                    className="h-11 px-3 rounded-lg bg-[#4F46E5] text-white text-[13px] font-bold inline-flex items-center gap-2"
+                                    className="h-11 px-3 rounded-lg bg-[#800020] text-white text-[13px] font-bold inline-flex items-center gap-2"
                                   >
                                     <Plus className="w-3.5 h-3.5" />
                                     <span>إضافة أول درس بالوحدة</span>
@@ -482,10 +482,10 @@ export function CurriculumManagerClient({
                                 unit.lessons.map((lesson) => (
                                   <div
                                     key={lesson.id}
-                                    className="p-3 sm:p-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/60 border border-[#E2E8F0]/80 dark:border-[#334155] flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:border-[#4F46E5]/40 dark:hover:border-[#4F46E5]/60 transition-colors"
+                                    className="p-3 sm:p-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/60 border border-[#E2E8F0]/80 dark:border-[#334155] flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:border-[#800020]/40 dark:hover:border-[#E11D48]/60 transition-colors"
                                   >
                                     <div className="flex items-center gap-3">
-                                      <div className="w-11 h-11 rounded-xl bg-[#4F46E5]/10 text-[#4F46E5] flex items-center justify-center shrink-0">
+                                      <div className="w-11 h-11 rounded-xl bg-[#800020]/10 text-[#800020] flex items-center justify-center shrink-0">
                                         <Play className="w-3.5 h-3.5 fill-current ml-1" />
                                       </div>
                                       <div>
@@ -511,7 +511,7 @@ export function CurriculumManagerClient({
                                         onClick={() =>
                                           setEditingLessonId(lesson.id)
                                         }
-                                        className="h-7 px-3 rounded-lg bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[13px] font-bold flex items-center gap-1  transition-transform active:opacity-80"
+                                        className="h-7 px-3 rounded-lg bg-[#800020] hover:bg-[#66001A] text-white text-[13px] font-bold flex items-center gap-1  transition-transform active:opacity-80"
                                       >
                                         <Settings2 className="w-3 h-3" />
                                         <span>إدارة المحتوى والوسائط</span>
@@ -519,10 +519,10 @@ export function CurriculumManagerClient({
 
                                       <Link
                                         href={`/admin/questions/import?subjectId=${subject.id}&unitId=${unit.id}&lessonId=${lesson.id}`}
-                                        className="h-7 px-3 rounded-lg bg-[#4F46E5]/10 hover:bg-[#4F46E5]/10 dark:bg-[#1E293B] dark:hover:bg-[#1E293B] text-[#4F46E5] dark:text-[#6366F1] text-[13px] font-bold flex items-center gap-1 transition-colors border border-[#E2E8F0]/50 dark:border-[#6366F1]/50"
+                                        className="h-7 px-3 rounded-lg bg-[#800020]/10 hover:bg-[#800020]/10 dark:bg-[#1E293B] dark:hover:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] text-[13px] font-bold flex items-center gap-1 transition-colors border border-[#E2E8F0]/50 dark:border-[#E11D48]/50"
                                         title="استيراد أو ربط أسئلة وورد بهذا الدرس"
                                       >
-                                        <FileText className="w-3 h-3 text-[#4F46E5] dark:text-[#6366F1]" />
+                                        <FileText className="w-3 h-3 text-[#800020] dark:text-[#FB7185]" />
                                         <span>أسئلة الدرس</span>
                                       </Link>
 

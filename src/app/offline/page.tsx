@@ -11,7 +11,7 @@ export default function OfflinePage() {
       {/* Top Header */}
       <header className="max-w-xl mx-auto w-full pt-4 flex items-center justify-between relative z-10">
         <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-lg bg-[#4F46E5] flex items-center justify-center text-white font-bold text-sm ">
+          <div className="w-11 h-11 rounded-lg bg-[#800020] flex items-center justify-center text-white font-bold text-sm ">
             خ
           </div>
           <span className="font-bold text-sm text-[#0F172A] dark:text-white">
@@ -42,7 +42,7 @@ export default function OfflinePage() {
 
         {/* Study Advice Box */}
         <div className="w-full p-4 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] text-right space-y-2 ">
-          <div className="flex items-center gap-2 text-[13px] font-bold text-[#4F46E5] dark:text-[#6366F1]">
+          <div className="flex items-center gap-2 text-[13px] font-bold text-[#800020] dark:text-[#FB7185]">
             <Sparkles className="w-4 h-4" />
             <span>نصيحة المذاكرة أوفلاين:</span>
           </div>
@@ -55,7 +55,7 @@ export default function OfflinePage() {
         <div className="flex flex-col sm:flex-row items-center gap-3 w-full">
           <button
             onClick={() => window.location.reload()}
-            className="w-full sm:flex-1 h-11 px-4 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[13px] font-bold flex items-center justify-center gap-2  transition-colors interactive-tap"
+            className="w-full sm:flex-1 h-11 px-4 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] font-bold flex items-center justify-center gap-2  transition-colors interactive-tap"
           >
             <RefreshCw className="w-3.5 h-3.5" />
             <span>إعادة المحاولة الآن</span>

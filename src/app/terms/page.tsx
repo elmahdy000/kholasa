@@ -69,7 +69,7 @@ export default function TermsPage() {
                     key={item}
                     className="text-sm text-[#64748B] dark:text-[#94A3B8] leading-relaxed flex gap-2"
                   >
-                    <span aria-hidden="true" className="text-[#4F46E5]">
+                    <span aria-hidden="true" className="text-[#800020]">
                       •
                     </span>
                     <span>{item}</span>

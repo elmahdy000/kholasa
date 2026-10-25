@@ -191,7 +191,7 @@ export function ProfileView({
       {/* Profile Header Card */}
       <div className="p-6 sm:p-7 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]  flex flex-col sm:flex-row sm:items-center justify-between gap-6">
         <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-xl bg-[#4F46E5] text-white flex items-center justify-center text-xl font-bold  shrink-0">
+          <div className="w-14 h-14 rounded-xl bg-[#800020] text-white flex items-center justify-center text-xl font-bold  shrink-0">
             {user.name.charAt(0)}
           </div>
           <div>
@@ -233,13 +233,13 @@ export function ProfileView({
       <div className="p-6 sm:p-7 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]  space-y-4">
         <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#334155] pb-3">
           <h2 className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
-            <GraduationCap className="w-5 h-5 text-[#4F46E5] dark:text-[#6366F1]" />
+            <GraduationCap className="w-5 h-5 text-[#800020] dark:text-[#FB7185]" />
             <span>المسار التعليمي والصف الدراسي</span>
           </h2>
           {!isEditingAcademic && (
             <button
               onClick={() => setIsEditingAcademic(true)}
-              className="text-[13px] font-bold text-[#4F46E5] dark:text-[#6366F1] hover:underline flex items-center gap-1"
+              className="text-[13px] font-bold text-[#800020] dark:text-[#FB7185] hover:underline flex items-center gap-1"
             >
               <Edit2 className="w-3.5 h-3.5" />
               <span>تعديل</span>
@@ -277,7 +277,7 @@ export function ProfileView({
                 <select
                   value={selectedSystemId}
                   onChange={(e) => handleSystemChange(e.target.value)}
-                  className="w-full h-11 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#4F46E5]"
+                  className="w-full h-11 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#800020]"
                 >
                   {systems.map((s) => (
                     <option key={s.id} value={s.id}>
@@ -294,7 +294,7 @@ export function ProfileView({
                 <select
                   value={selectedGradeId}
                   onChange={(e) => setSelectedGradeId(e.target.value)}
-                  className="w-full h-11 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#4F46E5]"
+                  className="w-full h-11 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#800020]"
                 >
                   {currentGrades.map((g) => (
                     <option key={g.id} value={g.id}>
@@ -309,7 +309,7 @@ export function ProfileView({
               <button
                 onClick={handleSaveAcademic}
                 disabled={isSaving}
-                className="h-11 px-4 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[13px] font-bold flex items-center gap-2  interactive-tap"
+                className="h-11 px-4 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] font-bold flex items-center gap-2  interactive-tap"
               >
                 {isSaving && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                 <span>حفظ التعديلات</span>
@@ -328,7 +328,7 @@ export function ProfileView({
       {/* Password Change Card */}
       <div className="p-6 sm:p-7 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]  space-y-4">
         <div className="flex items-center gap-2 border-b border-[#E2E8F0] dark:border-[#334155] pb-3">
-          <KeyRound className="w-5 h-5 text-[#4F46E5] dark:text-[#6366F1]" />
+          <KeyRound className="w-5 h-5 text-[#800020] dark:text-[#FB7185]" />
           <h2 className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-white">
             تغيير كلمة المرور
           </h2>
@@ -355,7 +355,7 @@ export function ProfileView({
                     current: e.target.value,
                   }))
                 }
-                className="w-full h-11 px-3 rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#4F46E5]"
+                className="w-full h-11 px-3 rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#800020]"
               />
             </div>
 
@@ -379,7 +379,7 @@ export function ProfileView({
                     next: e.target.value,
                   }))
                 }
-                className="w-full h-11 px-3 rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#4F46E5]"
+                className="w-full h-11 px-3 rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#800020]"
               />
             </div>
 
@@ -403,7 +403,7 @@ export function ProfileView({
                     confirm: e.target.value,
                   }))
                 }
-                className="w-full h-11 px-3 rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#4F46E5]"
+                className="w-full h-11 px-3 rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#800020]"
               />
             </div>
           </div>
@@ -425,7 +425,7 @@ export function ProfileView({
             <button
               type="submit"
               disabled={isChangingPassword}
-              className="h-11 px-5 rounded-lg bg-[#4F46E5] hover:bg-[#4338CA] disabled:opacity-50 text-white text-sm font-bold flex items-center gap-2 transition-colors"
+              className="h-11 px-5 rounded-lg bg-[#800020] hover:bg-[#66001A] disabled:opacity-50 text-white text-sm font-bold flex items-center gap-2 transition-colors"
             >
               {isChangingPassword && (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -442,7 +442,7 @@ export function ProfileView({
       {/* 4 Statistics Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <div className="p-4 sm:p-5 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]  text-right">
-          <div className="w-11 h-11 rounded-lg bg-[#4F46E5]/10 dark:bg-[#1E293B] text-[#4F46E5] dark:text-[#6366F1] flex items-center justify-center mb-3">
+          <div className="w-11 h-11 rounded-lg bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] flex items-center justify-center mb-3">
             <BookOpen className="w-4 h-4" />
           </div>
           <span className="text-xl sm:text-2xl font-bold font-mono text-[#0F172A] dark:text-white block">
@@ -454,7 +454,7 @@ export function ProfileView({
         </div>
 
         <div className="p-4 sm:p-5 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]  text-right">
-          <div className="w-11 h-11 rounded-lg bg-[#4F46E5]/10 dark:bg-[#1E293B] text-[#4F46E5] dark:text-[#6366F1] flex items-center justify-center mb-3">
+          <div className="w-11 h-11 rounded-lg bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] flex items-center justify-center mb-3">
             <Trophy className="w-4 h-4" />
           </div>
           <span className="text-xl sm:text-2xl font-bold font-mono text-[#0F172A] dark:text-white block">
@@ -516,7 +516,7 @@ export function ProfileView({
                   </div>
                   <Link
                     href={`/lessons/${b.lesson.id}`}
-                    className="h-11 px-3 rounded-lg bg-[#4F46E5]/10 dark:bg-[#1E293B] hover:bg-[#4F46E5]/10 dark:hover:bg-[#1E293B] text-[#4F46E5] dark:text-[#6366F1] text-[13px] font-bold flex items-center gap-1 transition-colors interactive-tap"
+                    className="h-11 px-3 rounded-lg bg-[#800020]/10 dark:bg-[#1E293B] hover:bg-[#800020]/10 dark:hover:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] text-[13px] font-bold flex items-center gap-1 transition-colors interactive-tap"
                   >
                     <span>فتح الدرس</span>
                     <ArrowLeft className="w-3 h-3" />

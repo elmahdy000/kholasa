@@ -35,7 +35,7 @@ export default async function SetupPage() {
       <div className="w-full max-w-2xl space-y-8 relative z-10">
         {/* Header */}
         <div className="text-center space-y-3">
-          <div className="w-12 h-12 rounded-xl bg-[#4F46E5] flex items-center justify-center text-white  mx-auto text-xl font-bold">
+          <div className="w-12 h-12 rounded-xl bg-[#800020] flex items-center justify-center text-white  mx-auto text-xl font-bold">
             خ
           </div>
           <h1 className="text-2xl sm:text-2xl sm:text-3xl font-bold tracking-tight text-[#0F172A] dark:text-white">

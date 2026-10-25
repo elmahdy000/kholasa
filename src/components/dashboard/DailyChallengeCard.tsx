@@ -127,7 +127,7 @@ export function DailyChallengeCard({ question }: DailyChallengeCardProps) {
             const isSelected = selectedOptionId === opt.id;
             const isOptCorrect = revealed?.correctOptionId === opt.id;
             let btnStyle =
-              "bg-[#F8FAFC] dark:bg-[#1E293B]/80 border-[#E2E8F0] dark:border-[#334155] text-[#0F172A] dark:text-[#F8FAFC] hover:border-[#4F46E5] dark:hover:border-[#4F46E5]/60 hover:bg-white dark:hover:bg-[#1E293B]";
+              "bg-[#F8FAFC] dark:bg-[#1E293B]/80 border-[#E2E8F0] dark:border-[#334155] text-[#0F172A] dark:text-[#F8FAFC] hover:border-[#800020] dark:hover:border-[#E11D48]/60 hover:bg-white dark:hover:bg-[#1E293B]";
 
             if (isAnswered) {
               if (isOptCorrect) {
@@ -142,7 +142,7 @@ export function DailyChallengeCard({ question }: DailyChallengeCardProps) {
               }
             } else if (isSelected) {
               btnStyle =
-                "bg-[#4F46E5]/10 dark:bg-[#1E293B] border-2 border-[#4F46E5] dark:border-[#6366F1] text-[#0F172A] dark:text-white  font-bold";
+                "bg-[#800020]/10 dark:bg-[#1E293B] border-2 border-[#800020] dark:border-[#E11D48] text-[#0F172A] dark:text-white  font-bold";
             }
 
             const arabicLetters = ["أ", "ب", "ج", "د", "هـ"];
@@ -159,7 +159,7 @@ export function DailyChallengeCard({ question }: DailyChallengeCardProps) {
                   <span
                     className={`w-6 h-6 rounded-lg flex items-center justify-center text-[13px] font-mono font-bold shrink-0 mt-1 sm:mt-0 transition-colors ${
                       isSelected
-                        ? "bg-[#4F46E5] dark:bg-[#6366F1] text-white "
+                        ? "bg-[#800020] dark:bg-[#E11D48] text-white "
                         : "bg-[#E2E8F0] dark:bg-[#334155] text-[#0F172A] dark:text-[#F8FAFC]"
                     }`}
                   >
@@ -187,7 +187,7 @@ export function DailyChallengeCard({ question }: DailyChallengeCardProps) {
             <button
               onClick={handleSubmit}
               disabled={!selectedOptionId || isSubmitting}
-              className="w-full sm:w-auto h-11 px-8 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] dark:bg-[#6366F1] dark:hover:bg-[#6366F1] disabled:opacity-40 text-white text-[13px] font-bold flex items-center justify-center gap-2 transition-all  active:opacity-80"
+              className="w-full sm:w-auto h-11 px-8 rounded-xl bg-[#800020] hover:bg-[#66001A] dark:bg-[#E11D48] dark:hover:bg-[#BE123C] disabled:opacity-40 text-white text-[13px] font-bold flex items-center justify-center gap-2 transition-all  active:opacity-80"
             >
               <Sparkle className="w-4 h-4" weight="bold" />
               <span>{isSubmitting ? "بنراجع إجابتك..." : "أكّد إجابتك"}</span>
@@ -232,7 +232,7 @@ export function DailyChallengeCard({ question }: DailyChallengeCardProps) {
               </span>
               <Link
                 href="/exams/builder"
-                className="text-[13px] font-bold text-[#4F46E5] hover:underline flex items-center gap-1"
+                className="text-[13px] font-bold text-[#800020] hover:underline flex items-center gap-1"
               >
                 <span>تدرب على مزيد من الأسئلة في بنك الاختبارات</span>
                 <ArrowLeft className="w-3.5 h-3.5" weight="bold" />

@@ -213,8 +213,8 @@ export function UserManagerClient({
           </span>
         </div>
         <div className="p-4 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0]/80 dark:border-[#334155]/80 ">
-          <span className="text-[13px] font-bold text-[#4F46E5]">الطلاب المسجلون</span>
-          <span className="text-2xl font-bold text-[#4F46E5] dark:text-[#6366F1] block mt-1">
+          <span className="text-[13px] font-bold text-[#800020]">الطلاب المسجلون</span>
+          <span className="text-2xl font-bold text-[#800020] dark:text-[#FB7185] block mt-1">
             {studentsCount}
           </span>
         </div>
@@ -243,7 +243,7 @@ export function UserManagerClient({
               placeholder="ابحث بالاسم، رقم الهاتف، أو البريد..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full h-11 pr-9 pl-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold text-[#0F172A] dark:text-white placeholder:text-[#94A3B8] focus:outline-none focus:border-[#4F46E5]"
+              className="w-full h-11 pr-9 pl-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold text-[#0F172A] dark:text-white placeholder:text-[#94A3B8] focus:outline-none focus:border-[#800020]"
             />
           </div>
 
@@ -285,7 +285,7 @@ export function UserManagerClient({
               setIsCreateOpen(true);
               setCreateError(null);
             }}
-            className="h-11 px-4 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[13px] font-bold flex items-center gap-2  cursor-pointer transition-colors"
+            className="h-11 px-4 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] font-bold flex items-center gap-2  cursor-pointer transition-colors"
           >
             <Plus className="w-4 h-4" />
             <span>إضافة مستخدم أو مشرف</span>
@@ -319,7 +319,7 @@ export function UserManagerClient({
                     {/* User info */}
                     <td className="p-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-11 h-11 rounded-xl bg-[#4F46E5] text-white flex items-center justify-center font-bold text-[13px] shrink-0">
+                        <div className="w-11 h-11 rounded-xl bg-[#800020] text-white flex items-center justify-center font-bold text-[13px] shrink-0">
                           {(u.name || "م").charAt(0)}
                         </div>
                         <div>
@@ -359,12 +359,12 @@ export function UserManagerClient({
                       <span
                         className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-[13px] font-bold ${
                           u.role === "SUPER_ADMIN"
-                            ? "bg-[#4F46E5]/10 text-[#4F46E5] border border-[#4F46E5]/20"
+                            ? "bg-[#800020]/10 text-[#800020] border border-[#800020]/20"
                             : u.role === "ADMIN"
                             ? "bg-[#D97706]/10 text-[#D97706] border border-[#D97706]/20"
                             : u.role === "TEACHER"
-                            ? "bg-[#4F46E5]/10 text-[#4F46E5] border border-[#4F46E5]/20"
-                            : "bg-[#4F46E5]/10 text-[#4F46E5] border border-[#4F46E5]/20"
+                            ? "bg-[#800020]/10 text-[#800020] border border-[#800020]/20"
+                            : "bg-[#800020]/10 text-[#800020] border border-[#800020]/20"
                         }`}
                       >
                         {u.role === "SUPER_ADMIN"
@@ -399,7 +399,7 @@ export function UserManagerClient({
                             setSelectedUser(u);
                             setNewRole(u.role);
                           }}
-                          className="h-11 px-3 rounded-lg bg-[#F8FAFC] hover:bg-[#E2E8F0] dark:bg-[#1E293B] dark:hover:bg-[#1E293B] text-[13px] font-bold text-[#4F46E5] dark:text-[#6366F1] flex items-center gap-1 transition-colors"
+                          className="h-11 px-3 rounded-lg bg-[#F8FAFC] hover:bg-[#E2E8F0] dark:bg-[#1E293B] dark:hover:bg-[#1E293B] text-[13px] font-bold text-[#800020] dark:text-[#FB7185] flex items-center gap-1 transition-colors"
                           title="تعديل الرتبة"
                         >
                           <Shield className="w-3.5 h-3.5" />
@@ -430,7 +430,7 @@ export function UserManagerClient({
           <div className="w-full max-w-md bg-white dark:bg-[#0F172A] rounded-2xl p-6 space-y-5 text-right shadow-sm border border-[#E2E8F0] dark:border-[#334155]">
             <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#334155] pb-3">
               <h3 className="text-base font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
-                <Shield className="w-5 h-5 text-[#4F46E5]" />
+                <Shield className="w-5 h-5 text-[#800020]" />
                 <span>تعديل رتبة وصلاحيات المستخدم</span>
               </h3>
               <button
@@ -488,7 +488,7 @@ export function UserManagerClient({
                 <button
                   type="submit"
                   disabled={isUpdating}
-                  className="h-11 px-6 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[13px] font-bold disabled:opacity-50"
+                  className="h-11 px-6 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] font-bold disabled:opacity-50"
                 >
                   {isUpdating ? "جاري الحفظ..." : "حفظ التعديل"}
                 </button>
@@ -504,7 +504,7 @@ export function UserManagerClient({
           <div className="w-full max-w-lg rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] p-6 space-y-4 shadow-sm max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-3 border-b border-[#E2E8F0] dark:border-[#334155]">
               <div className="flex items-center gap-2">
-                <div className="w-11 h-11 rounded-xl bg-[#4F46E5]/10 dark:bg-[#1E293B] text-[#4F46E5] flex items-center justify-center">
+                <div className="w-11 h-11 rounded-xl bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] flex items-center justify-center">
                   <Plus className="w-4 h-4" />
                 </div>
                 <h3 className="text-base font-bold text-[#0F172A] dark:text-white">
@@ -658,7 +658,7 @@ export function UserManagerClient({
                 <button
                   type="submit"
                   disabled={isCreating}
-                  className="h-11 px-6 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[13px] font-bold disabled:opacity-50"
+                  className="h-11 px-6 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] font-bold disabled:opacity-50"
                 >
                   {isCreating ? "جاري الإنشاء..." : "إنشاء المستخدم"}
                 </button>

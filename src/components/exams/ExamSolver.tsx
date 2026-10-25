@@ -252,7 +252,7 @@ export function ExamSolver({
       {/* Top Header Bar */}
       <div className="p-4 sm:p-5 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]  flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <span className="text-[13px] font-bold text-[#4F46E5] block">
+          <span className="text-[13px] font-bold text-[#800020] block">
             {exam.subject.name} •{" "}
             {initialMode === "PRACTICE" ? "وضع التدريب (شرح فوري)" : "وضع الامتحان (وقت حقيقي)"}
           </span>
@@ -272,7 +272,7 @@ export function ExamSolver({
                 : "bg-[#F8FAFC] dark:bg-[#1E293B] border-[#E2E8F0] dark:border-[#334155] text-[#0F172A] dark:text-white"
             }`}
           >
-            <Clock className="w-4 h-4 text-[#4F46E5]" weight="bold" />
+            <Clock className="w-4 h-4 text-[#800020]" weight="bold" />
             <span dir="ltr">
               {String(minutes).padStart(2, "0")}:{String(seconds).padStart(2, "0")}
             </span>
@@ -302,7 +302,7 @@ export function ExamSolver({
               "bg-[#F8FAFC] dark:bg-[#1E293B] border-[#E2E8F0] dark:border-[#334155] text-[#64748B] hover:border-[#E2E8F0]";
             if (isActive) {
               dotStyle =
-                "bg-[#4F46E5]/10 dark:bg-[#1E293B] border-2 border-[#4F46E5] text-[#4F46E5] dark:text-[#6366F1] font-bold ";
+                "bg-[#800020]/10 dark:bg-[#1E293B] border-2 border-[#800020] text-[#800020] dark:text-[#FB7185] font-bold ";
             } else if (flagged) {
               dotStyle =
                 "bg-[#D97706]/10 dark:bg-[#1E293B] border-[#E2E8F0] dark:border-[#FBBF24] text-[#D97706] font-bold";
@@ -330,7 +330,7 @@ export function ExamSolver({
           {/* Question Header & Badges */}
           <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#334155] pb-4">
             <div className="flex items-center gap-2">
-              <span className="px-3 py-1 rounded-lg bg-[#4F46E5]/10 dark:bg-[#1E293B] text-[#4F46E5] dark:text-[#6366F1] text-[13px] font-bold border border-[#E2E8F0]/50 dark:border-[#6366F1]/50">
+              <span className="px-3 py-1 rounded-lg bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] text-[13px] font-bold border border-[#E2E8F0]/50 dark:border-[#E11D48]/50">
                 السؤال {currentIndex + 1} من {totalQuestions}
               </span>
               <span className="px-3 py-1 rounded-lg bg-[#F8FAFC] dark:bg-[#1E293B] text-[#64748B] dark:text-[#F8FAFC] text-[13px] font-bold border border-[#E2E8F0]/50 dark:border-[#334155]/50">
@@ -373,11 +373,11 @@ export function ExamSolver({
                   revealedAnswer?.options?.find((o) => o.id === opt.id)?.isCorrect === true;
 
                 let cardStyle =
-                  "bg-white dark:bg-[#1E293B]/80 border-[#E2E8F0] dark:border-[#334155]/80 text-[#0F172A] dark:text-[#F8FAFC] hover:border-[#4F46E5] dark:hover:border-[#64748B]";
+                  "bg-white dark:bg-[#1E293B]/80 border-[#E2E8F0] dark:border-[#334155]/80 text-[#0F172A] dark:text-[#F8FAFC] hover:border-[#800020] dark:hover:border-[#64748B]";
 
                 if (isSelected) {
                   cardStyle =
-                    "bg-[#4F46E5]/10 dark:bg-[#1E293B] border-2 border-[#4F46E5] dark:border-[#6366F1] text-[#0F172A] dark:text-white  font-bold";
+                    "bg-[#800020]/10 dark:bg-[#1E293B] border-2 border-[#800020] dark:border-[#E11D48] text-[#0F172A] dark:text-white  font-bold";
                 }
 
                 if (isRevealed) {
@@ -403,7 +403,7 @@ export function ExamSolver({
                       <div
                         className={`w-7 h-7 rounded-lg flex items-center justify-center text-[13px] font-mono font-bold shrink-0 mt-1 sm:mt-0 ${
                           isSelected
-                            ? "bg-[#4F46E5] dark:bg-[#6366F1] text-white"
+                            ? "bg-[#800020] dark:bg-[#E11D48] text-white"
                             : "bg-[#F8FAFC] dark:bg-[#334155] text-[#64748B] dark:text-[#F8FAFC] border border-[#E2E8F0]/60 dark:border-[#334155]"
                         }`}
                       >
@@ -445,12 +445,12 @@ export function ExamSolver({
                 onChange={(e) => handleEssayChange(e.target.value)}
                 placeholder="اكتب خطوات الحل وشرحك هنا بالتفصيل..."
                 rows={5}
-                className="w-full p-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#4F46E5] text-[#0F172A] dark:text-white font-content "
+                className="w-full p-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#800020] text-[#0F172A] dark:text-white font-content "
               />
 
               {initialMode === "PRACTICE" && currentAnswer.practiceRevealed && revealedAnswer?.modelAnswer && (
-                <div className="p-5 rounded-xl bg-[#4F46E5]/10 dark:bg-[#1E293B] border border-[#E2E8F0]/60 dark:border-[#6366F1]/60 space-y-3">
-                  <h4 className="text-[13px] font-bold text-[#4F46E5] dark:text-[#6366F1] flex items-center gap-2">
+                <div className="p-5 rounded-xl bg-[#800020]/10 dark:bg-[#1E293B] border border-[#E2E8F0]/60 dark:border-[#E11D48]/60 space-y-3">
+                  <h4 className="text-[13px] font-bold text-[#800020] dark:text-[#FB7185] flex items-center gap-2">
                     <Sparkle className="w-4 h-4" weight="fill" />
                     <span>نموذج الإجابة ومعايير التقييم</span>
                   </h4>
@@ -472,7 +472,7 @@ export function ExamSolver({
                     isRevealing ||
                     (!currentAnswer.selectedOptionId && !currentAnswer.essayText)
                   }
-                  className="h-11 px-5 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white font-bold text-[13px] flex items-center gap-2 transition-all  active:opacity-80 disabled:opacity-40"
+                  className="h-11 px-5 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white font-bold text-[13px] flex items-center gap-2 transition-all  active:opacity-80 disabled:opacity-40"
                 >
                   <Lightbulb className="w-4 h-4" weight="fill" />
                   <span>
@@ -483,8 +483,8 @@ export function ExamSolver({
                 </button>
               ) : (
                 revealedAnswer?.explanation && (
-                  <div className="p-5 rounded-xl bg-[#4F46E5]/10 dark:bg-[#1E293B] border border-[#E2E8F0]/60 dark:border-[#6366F1]/60 space-y-3">
-                    <div className="flex items-center gap-2 text-[13px] font-bold text-[#4F46E5] dark:text-[#6366F1]">
+                  <div className="p-5 rounded-xl bg-[#800020]/10 dark:bg-[#1E293B] border border-[#E2E8F0]/60 dark:border-[#E11D48]/60 space-y-3">
+                    <div className="flex items-center gap-2 text-[13px] font-bold text-[#800020] dark:text-[#FB7185]">
                       <Lightbulb className="w-4 h-4" weight="fill" />
                       <span>الفكرة الأساسية: {revealedAnswer.explanation.concept}</span>
                     </div>
@@ -493,7 +493,7 @@ export function ExamSolver({
                     </p>
 
                     {/* Per-option breakdown */}
-                    <div className="pt-2 border-t border-[#E2E8F0]/40 dark:border-[#6366F1]/40 space-y-2">
+                    <div className="pt-2 border-t border-[#E2E8F0]/40 dark:border-[#E11D48]/40 space-y-2">
                       <span className="text-[13px] font-bold text-[#64748B] dark:text-[#94A3B8] block">
                         ليه ده صح وده غلط؟
                       </span>
@@ -539,7 +539,7 @@ export function ExamSolver({
             {currentIndex < totalQuestions - 1 ? (
               <button
                 onClick={() => setCurrentIndex((idx) => idx + 1)}
-                className="h-11 px-5 sm:px-6 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[13px] font-bold flex items-center gap-2 transition-colors  active:opacity-80"
+                className="h-11 px-5 sm:px-6 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] font-bold flex items-center gap-2 transition-colors  active:opacity-80"
               >
                 <span>السؤال اللي بعده</span>
                 <CaretLeft className="w-4 h-4" weight="bold" />
@@ -561,7 +561,7 @@ export function ExamSolver({
       {showConfirmModal && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
           <div className="w-full max-w-md bg-white dark:bg-[#0F172A] rounded-xl p-6 sm:p-8 space-y-5 text-right border border-[#E2E8F0] dark:border-[#334155] shadow-sm">
-            <div className="w-12 h-12 rounded-xl bg-[#4F46E5]/10 dark:bg-[#1E293B] text-[#4F46E5] dark:text-[#6366F1] flex items-center justify-center mx-auto">
+            <div className="w-12 h-12 rounded-xl bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] flex items-center justify-center mx-auto">
               <CheckCircle className="w-6 h-6" weight="fill" />
             </div>
 

@@ -36,7 +36,7 @@ export function ThemeToggle({ className = "", variant = "button" }: ThemeToggleP
           title="تغيير المظهر (داكن / فاتح / تلقائي)"
         >
           {resolvedTheme === "dark" ? (
-            <Moon className="w-3.5 h-3.5 text-[#4F46E5]" />
+            <Moon className="w-3.5 h-3.5 text-[#800020]" />
           ) : (
             <Sun className="w-3.5 h-3.5 text-[#D97706]" />
           )}
@@ -73,7 +73,7 @@ export function ThemeToggle({ className = "", variant = "button" }: ThemeToggleP
                   : "text-[#64748B] dark:text-[#94A3B8] hover:bg-[#F8FAFC] dark:hover:bg-[#1E293B]/50"
               }`}
             >
-              <Moon className="w-3.5 h-3.5 text-[#4F46E5]" />
+              <Moon className="w-3.5 h-3.5 text-[#800020]" />
               <span>داكن (Dark)</span>
             </button>
 
@@ -107,7 +107,7 @@ export function ThemeToggle({ className = "", variant = "button" }: ThemeToggleP
       {isDark ? (
         <Sun className="w-4 h-4 text-[#D97706]" />
       ) : (
-        <Moon className="w-4 h-4 text-[#4F46E5]" />
+        <Moon className="w-4 h-4 text-[#800020]" />
       )}
     </button>
   );

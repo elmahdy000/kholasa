@@ -92,7 +92,7 @@ export function SetupForm({ systems, userId }: SetupFormProps) {
               key={step}
               className={`flex items-center gap-2 px-3 py-2 rounded-lg text-[13px] font-bold transition-all ${
                 isActive
-                  ? "bg-[#4F46E5]/10 dark:bg-[#1E293B] text-[#4F46E5] dark:text-[#6366F1] border border-[#4F46E5]/30"
+                  ? "bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] border border-[#800020]/30"
                   : "bg-[#F8FAFC] dark:bg-[#1E293B] text-[#94A3B8] border border-transparent"
               }`}
             >
@@ -131,8 +131,8 @@ export function SetupForm({ systems, userId }: SetupFormProps) {
               }}
               className={`p-4 rounded-xl border text-right transition-all interactive-tap ${
                 systemId === sys.id
-                  ? "border-[#4F46E5] bg-[#4F46E5]/10 dark:bg-[#1E293B] text-[#4F46E5] dark:text-[#6366F1] "
-                  : "border-[#E2E8F0] dark:border-[#334155] hover:border-[#E2E8F0] dark:hover:border-[#4F46E5]/60 bg-white dark:bg-[#0F172A] text-[#0F172A] dark:text-white"
+                  ? "border-[#800020] bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] "
+                  : "border-[#E2E8F0] dark:border-[#334155] hover:border-[#E2E8F0] dark:hover:border-[#E11D48]/60 bg-white dark:bg-[#0F172A] text-[#0F172A] dark:text-white"
               }`}
             >
               <span className="text-[13px] sm:text-sm font-bold block">
@@ -159,8 +159,8 @@ export function SetupForm({ systems, userId }: SetupFormProps) {
                 }}
                 className={`p-4 rounded-xl border text-right transition-all interactive-tap ${
                   gradeId === grade.id
-                    ? "border-[#4F46E5] bg-[#4F46E5]/10 dark:bg-[#1E293B] text-[#4F46E5] dark:text-[#6366F1] "
-                    : "border-[#E2E8F0] dark:border-[#334155] hover:border-[#E2E8F0] dark:hover:border-[#4F46E5]/60 bg-white dark:bg-[#0F172A] text-[#0F172A] dark:text-white"
+                    ? "border-[#800020] bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] "
+                    : "border-[#E2E8F0] dark:border-[#334155] hover:border-[#E2E8F0] dark:hover:border-[#E11D48]/60 bg-white dark:bg-[#0F172A] text-[#0F172A] dark:text-white"
                 }`}
               >
                 <span className="text-[13px] sm:text-sm font-bold block">
@@ -185,8 +185,8 @@ export function SetupForm({ systems, userId }: SetupFormProps) {
                 onClick={() => setTrackId(track.id)}
                 className={`p-4 rounded-xl border text-right transition-all interactive-tap ${
                   trackId === track.id
-                    ? "border-[#4F46E5] bg-[#4F46E5]/10 dark:bg-[#1E293B] text-[#4F46E5] dark:text-[#6366F1] "
-                    : "border-[#E2E8F0] dark:border-[#334155] hover:border-[#E2E8F0] dark:hover:border-[#4F46E5]/60 bg-white dark:bg-[#0F172A] text-[#0F172A] dark:text-white"
+                    ? "border-[#800020] bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] "
+                    : "border-[#E2E8F0] dark:border-[#334155] hover:border-[#E2E8F0] dark:hover:border-[#E11D48]/60 bg-white dark:bg-[#0F172A] text-[#0F172A] dark:text-white"
                 }`}
               >
                 <span className="text-[13px] sm:text-sm font-bold block">
@@ -209,7 +209,7 @@ export function SetupForm({ systems, userId }: SetupFormProps) {
       <button
         onClick={handleSubmit}
         disabled={!canSubmit || isSubmitting}
-        className="w-full h-11 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white font-bold text-[13px] sm:text-sm  transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 interactive-tap"
+        className="w-full h-11 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white font-bold text-[13px] sm:text-sm  transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 interactive-tap"
       >
         {isSubmitting ? (
           <>
