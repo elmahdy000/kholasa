@@ -1,11 +1,11 @@
 import type { Metadata, Viewport } from "next";
-import { IBM_Plex_Sans_Arabic } from "next/font/google";
+import { Cairo } from "next/font/google";
 import "./globals.css";
 
-const ibmPlexArabic = IBM_Plex_Sans_Arabic({
+const cairo = Cairo({
   subsets: ["arabic", "latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-ibm-plex-arabic",
+  weight: ["300", "400", "500", "600", "700", "800", "900"],
+  variable: "--font-cairo",
   display: "swap",
 });
 
@@ -44,7 +44,7 @@ export default function RootLayout({
     <html
       lang="ar"
       dir="rtl"
-      className={`${ibmPlexArabic.variable}`}
+      className={`${cairo.variable}`}
       suppressHydrationWarning
       data-scroll-behavior="smooth"
     >

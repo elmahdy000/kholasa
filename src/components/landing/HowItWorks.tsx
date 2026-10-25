@@ -1,107 +1,99 @@
 "use client";
-import { motion } from "framer-motion";
-import { BookOpen, Sparkle, Lightning, ArrowLeft } from "@phosphor-icons/react";
+
 import Link from "next/link";
+import { BookOpen, Sparkles, Zap, ArrowLeft, CheckCircle2 } from "lucide-react";
 
 const steps = [
   {
-    number: "01",
+    stepNumber: "01",
     icon: BookOpen,
-    color: "#800020",
-    title: "اختار مادتك ودرسك",
-    description: "تصفح المواد والوحدات بسهولة، واختار الدرس اللي عايز تفهمه أو تراجع عليه.",
+    badgeText: "المرحلة الأولى",
+    title: "التفكيك والاستيعاب المفاهيمي",
+    description:
+      "تصفح الشرح المفكك خطوة بخطوة، واستمع لبودكاست الدرس المركز لتفهم القواعد والعلاقات العلمية قبل حفظها.",
   },
   {
-    number: "02",
-    icon: Sparkle,
-    color: "#D97706",
-    title: "افهم الشرح وراجع الزتونة",
-    description: "اقرا الشرح التفاعلي خطوة بخطوة، أو راجع الزتونة الذهبية المركزة في دقائق.",
+    stepNumber: "02",
+    icon: Sparkles,
+    badgeText: "المرحلة الثانية",
+    title: "التثبيت عبر كبسولة الزتونة",
+    description:
+      "راجع الملخص التنفيذي في 3 دقائق، وتعرف على أهم تكات واضعي الامتحانات الوزارية وقائمة التحقق قبل الحل.",
   },
   {
-    number: "03",
-    icon: Lightning,
-    color: "#059669",
-    title: "اختبر نفسك وافهم غلطاتك",
-    description: "حل أسئلة مخصصة وشوف تفسير كل إجابة صح أو غلط عشان ما تنساش المعلومة.",
+    stepNumber: "03",
+    icon: Zap,
+    badgeText: "المرحلة الثالثة",
+    title: "القياس والمعالجة التراكمية",
+    description:
+      "خض تجربة بنك الأسئلة المتكيف، وافهم تعليل كل خيار، واجعل النظام يعيد تدريبك تلقائياً على كل سؤال أخطأت فيه.",
   },
 ];
 
 export function HowItWorks() {
   return (
-    <section id="how-it-works" className="py-16 sm:py-24 bg-[#F8FAFC] dark:bg-[#0F172A]">
-      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="how-it-works" className="py-20 sm:py-28 bg-[#FAF7F8] dark:bg-[#0F172A] border-t border-[#F0E6E8] dark:border-[#334155]">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-14 text-right">
         {/* Section Header */}
-        <div className="text-center max-w-2xl mx-auto mb-12 space-y-4">
-          <h2 className="text-[24px] sm:text-[32px] font-bold text-[#0F172A] dark:text-white leading-tight">
-            إزاي تذاكر بالخلاصة؟
+        <div className="text-center max-w-2xl mx-auto space-y-3.5">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white dark:bg-[#1E293B] border border-[#F0E6E8] dark:border-[#334155] text-[#800020] dark:text-[#FB7185] text-xs font-semibold shadow-xs">
+            <span>منهجية الإتقان • 3 مراحل</span>
+          </div>
+          <h2 className="text-2xl sm:text-4xl font-extrabold text-[#1A0A10] dark:text-white leading-tight tracking-tight">
+            مسار التعلم النشط نحو الدرجة النهائية
           </h2>
-          <p className="text-base text-[#64748B] dark:text-[#94A3B8] font-content leading-relaxed">
-            ثلاث خطوات بسيطة تحول مذاكرتك من حفظ عشوائي لفهم حقيقي.
+          <p className="text-sm text-[#735C63] dark:text-[#94A3B8] font-normal leading-relaxed">
+            خارطة طريق أكاديمية واضحة تحول مذاكرتك اليومية من شتات المذكرات إلى إتقان مدروس وتراكمي.
           </p>
         </div>
 
-        {/* Steps */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
-          {/* Connector Line (Desktop) */}
-          <div className="hidden md:block absolute top-12 right-[16.67%] left-[16.67%] h-px bg-[#E2E8F0] dark:bg-[#334155]" />
-
-          {steps.map((step, index) => {
+        {/* 3 Steps Pipeline */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
+          {steps.map((step) => {
             const Icon = step.icon;
             return (
-              <motion.div
-                key={step.number}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-40px" }}
-                transition={{ duration: 0.3, delay: index * 0.1 }}
-                className="relative flex flex-col items-center text-center space-y-4"
+              <div
+                key={step.stepNumber}
+                className="p-7 rounded-2xl bg-white dark:bg-[#1E293B] border border-[#F0E6E8] dark:border-[#334155] hover:border-[#800020]/30 dark:hover:border-[#FB7185]/30 transition-all duration-200 flex flex-col justify-between space-y-5 shadow-xs"
               >
-                {/* Step Number & Icon */}
-                <div className="relative z-10">
-                  <div
-                    className="w-20 h-20 rounded-xl flex items-center justify-center border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B]"
-                  >
-                    <Icon className="w-11 h-11" weight="bold" style={{ color: step.color }} />
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="w-10 h-10 rounded-xl bg-[#FAF7F8] dark:bg-[#0F172A] border border-[#F0E6E8] dark:border-[#334155] text-[#800020] dark:text-[#FB7185] flex items-center justify-center">
+                      <Icon className="w-5 h-5" />
+                    </div>
+                    <span className="font-mono text-sm font-bold text-[#735C63] dark:text-[#94A3B8] px-2.5 py-1 rounded-md bg-[#FAF7F8] dark:bg-[#0F172A] border border-[#F0E6E8] dark:border-[#334155]">
+                      {step.stepNumber}
+                    </span>
                   </div>
-                  <span
-                    className="absolute -top-3 -right-3 w-7 h-7 rounded-full flex items-center justify-center text-[13px] font-bold text-white"
-                    style={{ backgroundColor: step.color }}
-                  >
-                    {step.number}
-                  </span>
-                </div>
 
-                {/* Content */}
-                <div className="space-y-2 max-w-xs">
-                  <h3 className="text-lg font-bold text-[#0F172A] dark:text-white">
-                    {step.title}
-                  </h3>
-                  <p className="text-sm text-[#64748B] dark:text-[#94A3B8] font-content leading-relaxed">
+                  <div className="space-y-1.5">
+                    <span className="text-xs font-semibold text-[#800020] dark:text-[#FB7185]">
+                      {step.badgeText}
+                    </span>
+                    <h3 className="text-lg font-bold text-[#1A0A10] dark:text-white">
+                      {step.title}
+                    </h3>
+                  </div>
+
+                  <p className="text-xs sm:text-sm text-[#735C63] dark:text-[#94A3B8] leading-relaxed font-normal">
                     {step.description}
                   </p>
                 </div>
-              </motion.div>
+              </div>
             );
           })}
         </div>
 
-        {/* CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.3, delay: 0.4 }}
-          className="mt-12 text-center"
-        >
+        {/* Bottom CTA */}
+        <div className="text-center pt-2">
           <Link
             href="/register"
-            className="inline-flex items-center gap-2 h-12 px-8 rounded-lg bg-[#800020] hover:bg-[#66001A] text-white text-sm font-bold transition-colors"
+            className="inline-flex items-center gap-2 h-12 px-8 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-sm font-bold transition-all shadow-sm hover:shadow-md active:scale-[0.99]"
           >
-            <span>ابدأ رحلتك التعليمية</span>
-            <ArrowLeft className="w-4 h-4" weight="bold" />
+            <span>ابدأ المذاكرة وفق المنهجية</span>
+            <ArrowLeft className="w-4 h-4" />
           </Link>
-        </motion.div>
+        </div>
       </div>
     </section>
   );

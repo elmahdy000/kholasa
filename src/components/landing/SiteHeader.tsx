@@ -104,17 +104,17 @@ export function SiteHeader() {
                 key={link.href}
                 href={link.href}
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="block px-3 py-3 rounded-xl text-[13px] font-bold text-[#0F172A] dark:text-white hover:bg-[#F8FAFC] dark:hover:bg-[#334155] transition-colors"
+                className="block px-3 py-3 rounded-xl text-[13px] font-bold text-[#1A0A10] dark:text-white hover:bg-[#FAF7F8] dark:hover:bg-[#334155] transition-colors"
               >
                 {link.label}
               </a>
             ))}
           </nav>
 
-          <div className="pt-3 border-t border-[#E2E8F0] dark:border-[#334155] grid grid-cols-2 gap-2">
+          <div className="pt-3 border-t border-[#F0E6E8] dark:border-[#334155] grid grid-cols-2 gap-2">
             <Link
               href="/login"
-              className="h-11 px-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-bold text-center flex items-center justify-center text-[#0F172A] dark:text-white hover:bg-[#F8FAFC] transition-colors"
+              className="h-11 px-4 rounded-xl border border-[#F0E6E8] dark:border-[#334155] text-[13px] font-bold text-center flex items-center justify-center text-[#1A0A10] dark:text-white hover:bg-[#FAF7F8] transition-colors"
             >
               تسجيل الدخول
             </Link>

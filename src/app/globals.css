@@ -4,7 +4,7 @@
 
 :root {
   /* Brand Tokens — EL KHOLASA (Pristine White & Regal Academic Burgundy) */
-  --font-sans: var(--font-ibm-plex-arabic), system-ui, -apple-system, sans-serif;
+  --font-sans: var(--font-cairo), system-ui, -apple-system, sans-serif;
   
   --background: #FFFFFF;
   --foreground: #1A0A10;
