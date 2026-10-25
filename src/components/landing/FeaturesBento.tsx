@@ -21,13 +21,13 @@ export function FeaturesBento() {
             كل أدوات مذاكرتك في مكان واحد
           </h2>
           <p className="text-base text-[#64748B] dark:text-[#94A3B8] font-normal leading-relaxed">
-            منظومة تعليمية متكاملة مصممة لطلاب الثانوية العامة، تفكك المنهج لنواتج تعلم وتضمن التفوق.
+            بدل ما تتشتت بين ملازم وفيديوهات طويلة ع الفاضي.. هنا هتلاقي كل حاجة تساعدك تفهم وتثبت المعلومة.
           </p>
         </div>
 
         {/* Structured Responsive Bento Grid (6 Features) */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* Feature 1: الشرح التفاعلي (Large featured card, spans 2 cols on lg) */}
+          {/* Feature 1: الشرح المفكك خطوة بخطوة */}
           <div className="lg:col-span-2 p-7 sm:p-8 rounded-2xl bg-white dark:bg-[#1E293B] border border-[#E8E9ED] dark:border-[#334155] hover:border-[#800020]/30 dark:hover:border-[#FB7185]/30 transition-colors flex flex-col justify-between space-y-6 shadow-xs">
             <div className="space-y-4">
               <div className="w-11 h-11 rounded-xl bg-[#F7F8FA] dark:bg-[#0F172A] border border-[#E8E9ED] dark:border-[#334155] text-[#800020] dark:text-[#FB7185] flex items-center justify-center">
@@ -35,16 +35,16 @@ export function FeaturesBento() {
               </div>
               <div className="space-y-2">
                 <h3 className="text-2xl font-bold text-[#12263F] dark:text-white">
-                  الشرح التفاعلي المفكك
+                  الشرح المفكك خطوة بخطوة
                 </h3>
                 <p className="text-base text-[#64748B] dark:text-[#94A3B8] leading-relaxed font-normal max-w-2xl">
-                  تفكيك المفاهيم المعقدة خطوة بخطوة مع إبراز الجداول المقارنة، القوانين الرياضية، والمسائل المحلولة بالتفصيل لتفهم الأساس العلمي قبل الحفظ.
+                  بندخل في عمق الدرس ونفكك القوانين والمسائل خطوة بخطوة، مع مقارنات وتطبيقات عملية عشان تفهم منين جت المعلومة بدل ما تحفظ وتنسى.
                 </p>
               </div>
             </div>
 
             <div className="pt-4 border-t border-[#E8E9ED] dark:border-[#334155] flex items-center justify-between text-xs font-semibold text-[#800020] dark:text-[#FB7185]">
-              <span>مصحوب بملخص صوتي (بودكاست الخلاصة) لكل درس</span>
+              <span>ومع كل درس بودكاست صوتي سريع تسمعه في طريقك</span>
               <Link href="/subjects" className="flex items-center gap-1 hover:underline">
                 <span>تصفح المواد</span>
                 <ArrowLeft className="w-3.5 h-3.5" />
@@ -63,17 +63,17 @@ export function FeaturesBento() {
                   الزتونة الذهبية
                 </h3>
                 <p className="text-sm text-[#64748B] dark:text-[#94A3B8] leading-relaxed font-normal">
-                  كبسولة مركزة في صفحة واحدة لا تتجاوز 3 دقائق قراءة، تجمع أهم القوانين، تكات واضعي الامتحانات، وقائمة تحقق سريعة.
+                  ملخص مركز في صفحة واحدة يخلص في ٣ دقايق.. فيه تكات واضعي الامتحانات، والقوانين كلها متجمعة بشكل يثبت في دماغك.
                 </p>
               </div>
             </div>
 
             <div className="pt-3 border-t border-[#E8E9ED] dark:border-[#334155] text-xs font-semibold text-[#D97706] dark:text-[#FBBF24]">
-              جاهزة للطباعة وحفظ الـ PDF بضغطة زر
+              جاهزة للطباعة وحفظ الـ PDF بضغطة واحدة
             </div>
           </div>
 
-          {/* Feature 3: بنك الأسئلة المتكيف */}
+          {/* Feature 3: بنك أسئلة ذكي */}
           <div className="p-7 rounded-2xl bg-white dark:bg-[#1E293B] border border-[#E8E9ED] dark:border-[#334155] hover:border-[#800020]/30 dark:hover:border-[#FB7185]/30 transition-colors flex flex-col justify-between space-y-4 shadow-xs">
             <div className="space-y-4">
               <div className="w-11 h-11 rounded-xl bg-[#F7F8FA] dark:bg-[#0F172A] border border-[#E8E9ED] dark:border-[#334155] text-[#800020] dark:text-[#FB7185] flex items-center justify-center">
@@ -81,17 +81,17 @@ export function FeaturesBento() {
               </div>
               <div className="space-y-2">
                 <h3 className="text-xl font-bold text-[#12263F] dark:text-white">
-                  بنك الأسئلة المتكيف
+                  بنك أسئلة متكيف
                 </h3>
                 <p className="text-sm text-[#64748B] dark:text-[#94A3B8] leading-relaxed font-normal">
-                  اختبارات مخصصة حسب الوحدة والدرس مع تحليل فوري يوضح تعليل كل خيار صحيح وسبب خطأ الخيارات الأخرى.
+                  حل امتحانات مخصصة على كل درس ووحدة، ومع كل اختيار بنقولك ليه ده صح وليه الباقي غلط بالتفصيل.
                 </p>
               </div>
             </div>
 
             <div className="pt-3 border-t border-[#E8E9ED] dark:border-[#334155]">
               <Link href="/exams/builder" className="text-xs font-semibold text-[#800020] dark:text-[#FB7185] flex items-center gap-1 hover:underline">
-                <span>تخصيص اختبار الآن</span>
+                <span>جرّب تعمل امتحان دلوقتي</span>
                 <ArrowLeft className="w-3.5 h-3.5" />
               </Link>
             </div>
@@ -108,14 +108,14 @@ export function FeaturesBento() {
                   ركن غلطاتي
                 </h3>
                 <p className="text-sm text-[#64748B] dark:text-[#94A3B8] leading-relaxed font-normal">
-                  أي سؤال تخطئ فيه يحفظ فوراً في دفترك الخاص، ويعيد النظام اختبارك فيه لاحقاً حتى تتقن ناتج التعلم بنسبة 100%.
+                  أي سؤال تغلط فيه بيتحفظ في كشكولك الخاص، والنظام يرجع يختبرك فيه تاني لحد ما تتأكد إنك فهمته وماتغلطش فيه في الامتحان.
                 </p>
               </div>
             </div>
 
             <div className="pt-3 border-t border-[#E8E9ED] dark:border-[#334155]">
               <Link href="/mistakes" className="text-xs font-semibold text-[#800020] dark:text-[#FB7185] flex items-center gap-1 hover:underline">
-                <span>استعراض سجل الأخطاء</span>
+                <span>شوف ركن غلطاتك</span>
                 <ArrowLeft className="w-3.5 h-3.5" />
               </Link>
             </div>
@@ -132,13 +132,13 @@ export function FeaturesBento() {
                   الخرائط الذهنية
                 </h3>
                 <p className="text-sm text-[#64748B] dark:text-[#94A3B8] leading-relaxed font-normal">
-                  خرائط بصرية للعلاقات المفهومية والروابط السببية بين الفصول، لتسترجع تفاصيل المنهج بالكامل في دقائق معدودة.
+                  اربط فصول المادة ببعض بصرياً، عشان تفتكر علاقات القوانين في عينيك في ثواني قبل ما تدخل اللجنة.
                 </p>
               </div>
             </div>
 
             <div className="pt-3 border-t border-[#E8E9ED] dark:border-[#334155] text-xs font-semibold text-[#64748B] dark:text-[#94A3B8]">
-              استذكار مرئي منظم قبل ليلة الامتحان
+              مراجعة بصرية سريعة قبل الامتحان
             </div>
           </div>
 
@@ -150,16 +150,16 @@ export function FeaturesBento() {
               </div>
               <div className="space-y-2">
                 <h3 className="text-xl font-bold text-[#12263F] dark:text-white">
-                  وضع أوفلاين (PWA)
+                  شغال من غير نت (PWA)
                 </h3>
                 <p className="text-sm text-[#64748B] dark:text-[#94A3B8] leading-relaxed font-normal">
-                  تثبيت مباشر وسريع على الهاتف أو الحاسوب، وتصفح ملخصات الزتونة والمراجعات بدون إنترنت لتذاكر بهدوء وبلا مشتتات.
+                  نزّل المنصة على موبايلك في ثواني، وذاكر ملخصاتك والزتونة في أي وقت ومن غير ما تشتتك إشعارات السوشيال ميديا.
                 </p>
               </div>
             </div>
 
             <div className="pt-3 border-t border-[#E8E9ED] dark:border-[#334155] text-xs font-semibold text-[#059669]">
-              تطبيق خفيف وسريع متوافق مع كافة الأنظمة
+              تطبيق خفيف وسريع على كل الأجهزة
             </div>
           </div>
         </div>

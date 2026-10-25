@@ -17,7 +17,7 @@ const subjects = [
     name: "الفيزياء",
     track: "علمي علوم وعلمي رياضة",
     icon: Atom,
-    description: "الكهربية، المغناطيسية، كيرشوف، والفيزياء الحديثة وقوانين بلانك.",
+    description: "الكهربية، كيرشوف، الدينامو، والفيزياء الحديثة وقوانين بلانك بأمثلة ومسائل واضحة.",
     unitsCount: "8 فصول",
     questionsCount: "+3,200 سؤال",
   },
@@ -26,7 +26,7 @@ const subjects = [
     name: "الكيمياء",
     track: "علمي علوم وعلمي رياضة",
     icon: FlaskConical,
-    description: "العناصر الانتقالية، التحليل الكيميائي، الاتزان، والكيمياء العضوية.",
+    description: "العناصر الانتقالية، التحليل الكيميائي، الاتزان، الباب الرابع، والعضوية من غير تعقيد.",
     unitsCount: "5 أبواب",
     questionsCount: "+2,800 سؤال",
   },
@@ -35,7 +35,7 @@ const subjects = [
     name: "الأحياء",
     track: "شعبة علمي علوم",
     icon: Dna,
-    description: "الدعامة والحركة، التنسيق الهرموني، التكاثر، والمناعة والـ DNA.",
+    description: "الدعامة والحركة، الهرمونات، التكاثر، والمناعة والـ DNA برسم وتوضيح مبسط.",
     unitsCount: "4 أبواب",
     questionsCount: "+2,500 سؤال",
   },
@@ -44,7 +44,7 @@ const subjects = [
     name: "الرياضيات البحتة والتطبيقية",
     track: "شعبة علمي رياضة",
     icon: Calculator,
-    description: "التفاضل والتكامل، الجبر والهندسة الفراغية، والاستاتيكا والديناميكا.",
+    description: "التفاضل والتكامل، الجبر والفراغية، والاستاتيكا والديناميكا بمسائل متدرجة لحد أفكار الامتحانات.",
     unitsCount: "4 فروع",
     questionsCount: "+3,500 سؤال",
   },
@@ -53,7 +53,7 @@ const subjects = [
     name: "اللغة العربية",
     track: "المسار المشترك (العام والأدبي)",
     icon: BookMarked,
-    description: "النحو والقواعد الإعرابية، البلاغة، الأدب، ونواتج القراءة المتحررة.",
+    description: "قواعد النحو وتطبيقاتها، البلاغة، الأدب، ونواتج القراءة المتحررة مع تدريب عملي.",
     unitsCount: "7 وحدات",
     questionsCount: "+2,400 سؤال",
   },
@@ -62,7 +62,7 @@ const subjects = [
     name: "الجيولوجيا وعلوم البيئة",
     track: "شعبة علمي علوم",
     icon: Mountain,
-    description: "مكونات الأرض، التراكيب الجيولوجية، المعادن، الصخور، والتوازن البيئي.",
+    description: "الصخور، المعادن، التراكيب الجيولوجية، وعلوم البيئة بأسهل طريقة تلخيص وتثبيت.",
     unitsCount: "5 أبواب",
     questionsCount: "+1,800 سؤال",
   },
@@ -76,10 +76,10 @@ export function SubjectsShowcase() {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-[#E8E9ED] dark:border-[#334155] pb-6">
           <div className="space-y-2 max-w-xl">
             <h2 className="text-3xl sm:text-4xl font-extrabold text-[#12263F] dark:text-white leading-tight tracking-tight">
-              المناهج الدراسية لشهادة الثانوية العامة 2026
+              مواد الثانوية العامة مشروحة ومترتبة صح
             </h2>
             <p className="text-base text-[#64748B] dark:text-[#94A3B8] font-normal leading-relaxed">
-              كل مادة مفككة إلى وحدات ودروس تفاعلية، مع كبسولة الزتونة وبنك أسئلة مصنف بحسب نواتج التعلم الوزارية.
+              كل مادة متقسمة لوحدات ودروس واضحة، مع زتونة سريعة لكل درس وبنك أسئلة متفصل على مواصفات الوزارة.
             </p>
           </div>
 
@@ -87,7 +87,7 @@ export function SubjectsShowcase() {
             href="/subjects"
             className="h-11 px-5 rounded-xl border border-[#E8E9ED] dark:border-[#334155] text-xs font-semibold text-[#12263F] dark:text-white flex items-center gap-2 hover:border-[#800020] hover:text-[#800020] dark:hover:border-[#FB7185] dark:hover:text-[#FB7185] transition-colors shrink-0 self-start md:self-auto shadow-xs"
           >
-            <span>استعراض جميع المواد والوحدات</span>
+            <span>تصفح كل المواد والوحدات</span>
             <ArrowLeft className="w-3.5 h-3.5" />
           </Link>
         </div>

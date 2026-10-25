@@ -56,7 +56,7 @@ export function HeroSection() {
 
             {/* Reassurance line below buttons */}
             <p className="text-xs text-[#64748B] dark:text-[#94A3B8] pt-1 font-medium">
-              تغطية كاملة للمنهج الوزاري الجديد • يعمل كتطبيق ويب تقدمي (PWA) • متاح على الهاتف بسهولة
+              تغطية كاملة لمنهج الثانوية العامة الجديد • شغال كتطبيق PWA من غير نت • على موبايلك في أي وقت
             </p>
           </div>
 
@@ -65,7 +65,7 @@ export function HeroSection() {
             <div className="relative rounded-2xl overflow-hidden border border-[#E8E9ED] dark:border-[#334155] bg-[#F7F8FA] dark:bg-[#1E293B] shadow-md">
               <Image
                 src="/hero-student.jpg"
-                alt="طالبة في الثانوية العامة تذاكر بتركيز وثقة عبر منصة الخلاصة الذكية"
+                alt="طالبة في الثانوية العامة بتذاكر بتركيز وثقة مع منصة الخلاصة"
                 width={800}
                 height={600}
                 priority
@@ -76,7 +76,7 @@ export function HeroSection() {
               <div className="absolute bottom-3.5 right-3.5 left-3.5 sm:left-auto sm:right-3.5 px-3.5 py-2 rounded-xl bg-white/95 dark:bg-[#0F172A]/95 backdrop-blur-md border border-[#E8E9ED] dark:border-[#334155] shadow-xs flex items-center gap-2.5 text-right">
                 <span className="w-2 h-2 rounded-full bg-[#059669] shrink-0" />
                 <span className="text-xs font-bold text-[#12263F] dark:text-white">
-                  بيئة استذكار ذكية • شروحات، زتونة، وبنك أسئلة
+                  مذاكرة هادية وذكية • شرح، زتونة، وبنك أسئلة
                 </span>
               </div>
             </div>

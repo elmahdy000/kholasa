@@ -8,21 +8,21 @@ const steps = [
     number: "01",
     title: "اختار مادتك ودرسك",
     description:
-      "تصفح المواد والوحدات بسهولة، واختار الدرس اللي عايز تفهمه أو تراجع عليه.",
+      "ادخل على المادة اللي عايز تذاكرها، واختار الدرس اللي محتاج تفهمه أو تراجع عليه بسرعة.",
     icon: BookOpen,
   },
   {
     number: "02",
     title: "افهم الشرح وراجع الزتونة",
     description:
-      "اقرا الشرح التفاعلي خطوة بخطوة، أو راجع الزتونة الذهبية المركزة في دقائق.",
+      "اقرا الشرح خطوة بخطوة، أو ادخل ع الزتونة واعرف تكات الامتحان والقوانين في ٣ دقايق.",
     icon: Sparkles,
   },
   {
     number: "03",
-    title: "اختبر نفسك وافهم غلطاتك",
+    title: "حل أسئلة وافهم غلطاتك",
     description:
-      "حل أسئلة مخصصة وشوف تفسير كل إجابة صح أو غلط عشان ما تنساش المعلومة.",
+      "حل كويز على الدرس، واعرف سبب كل اختيار، وأي سؤال تغلط فيه بيتسجل عشان تراجعه تاني.",
     icon: Zap,
   },
 ];
@@ -37,7 +37,7 @@ export function HowItWorks() {
             إزاي تذاكر بالخلاصة؟
           </h2>
           <p className="text-base text-[#64748B] dark:text-[#94A3B8] font-normal leading-relaxed">
-            ثلاث خطوات بسيطة تحول مذاكرتك من حفظ عشوائي لفهم حقيقي.
+            ٣ خطوات سهلة تحول مذاكرتك من حفظ وتسميع لفهم يثبت في دماغك ويدخلك الامتحان مرتاح.
           </p>
         </div>
 
@@ -85,7 +85,7 @@ export function HowItWorks() {
             href="/register"
             className="inline-flex items-center gap-2 h-11 px-7 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-sm font-bold transition-all shadow-xs active:scale-[0.99]"
           >
-            <span>ابدأ المذاكرة الآن</span>
+            <span>ابدأ المذاكرة بالطريقة دي</span>
             <ArrowLeft className="w-3.5 h-3.5" />
           </Link>
         </div>

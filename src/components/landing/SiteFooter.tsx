@@ -21,7 +21,7 @@ export function SiteFooter() {
               </div>
             </Link>
             <p className="text-sm text-[#94A3B8] leading-relaxed max-w-xs font-normal">
-              المنصة التعليمية الشاملة لطلاب الثانوية العامة والبكالوريا المصرية: شروحات مفككة، كبسولات الزتونة المركزة، وبنك أسئلة متكيف.
+              منصتك الذكية للثانوية العامة والبكالوريا.. افهمها صح هتفضل معاك، بشروحات مفككة وزتونة سريعة وبنك أسئلة ذكي.
             </p>
           </div>
 
@@ -36,10 +36,10 @@ export function SiteFooter() {
                 إزاي تذاكر؟
               </a>
               <a href="#demo" className="text-sm text-[#94A3B8] hover:text-white transition-colors">
-                كبسولة الزتونة
+                الزتونة المركزة
               </a>
               <Link href="/exams/builder" className="text-sm text-[#94A3B8] hover:text-white transition-colors">
-                بنك الأسئلة المتكيف
+                بنك الأسئلة الذكي
               </Link>
             </nav>
           </div>
@@ -49,16 +49,16 @@ export function SiteFooter() {
             <h4 className="text-sm font-bold text-white">المناهج والمسارات</h4>
             <nav className="flex flex-col gap-2.5">
               <Link href="/subjects" className="text-sm text-[#94A3B8] hover:text-white transition-colors">
-                تصفح المواد الدراسية
+                تصفح المواد والوحدات
               </Link>
               <Link href="/mistakes" className="text-sm text-[#94A3B8] hover:text-white transition-colors">
-                سجل معالجة الأخطاء
+                ركن غلطاتي
               </Link>
               <Link href="/leaderboard" className="text-sm text-[#94A3B8] hover:text-white transition-colors">
-                لوحة المتصدرين
+                لوحة الأوائل
               </Link>
               <Link href="/profile" className="text-sm text-[#94A3B8] hover:text-white transition-colors">
-                خطة المذاكرة الشخصية
+                حسابك ومتابعة مستواك
               </Link>
             </nav>
           </div>
@@ -74,7 +74,7 @@ export function SiteFooter() {
                 إنشاء حساب جديد
               </Link>
               <Link href="/admin" className="text-sm text-[#94A3B8] hover:text-white transition-colors">
-                بوابة الإدارة وهيئة التدريس
+                بوابة الإدارة
               </Link>
             </nav>
           </div>
@@ -83,7 +83,7 @@ export function SiteFooter() {
         {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#94A3B8]">
           <p>
-            © {new Date().getFullYear()} الخلاصة | EL KHOLASA. جميع الحقوق محفوظة لطلاب الثانوية العامة.
+            © {new Date().getFullYear()} الخلاصة | EL KHOLASA — معمولة لطلاب الثانوية العامة بكل حب عشان تذاكر بذكاء.
           </p>
           <div className="flex items-center gap-6">
             <Link href="/privacy" className="hover:text-white transition-colors">

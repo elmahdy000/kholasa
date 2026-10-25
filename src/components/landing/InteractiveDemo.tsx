@@ -12,7 +12,6 @@ import {
   ArrowLeft,
   Clock,
   AlertTriangle,
-  Layers,
 } from "lucide-react";
 
 export function InteractiveDemo() {
@@ -28,28 +27,28 @@ export function InteractiveDemo() {
       text: "أ) أوعية الخشب والألياف الإسكلرنشيمية",
       isCorrect: true,
       reason:
-        "صحيح! أوعية الخشب والألياف تفقد البروتوبلازم عند النضج وتترسب عليها مادة الليجنين الصلبة، فتصبح دعامتها تركيبية بحتة.",
+        "صح جداً! أوعية الخشب والألياف بتفقد البروتوبلازم أول ما تنضج وبيترسب عليها لجنين، فبتبقى دعامتها تركيبية وبس.",
     },
     {
       id: 1,
       text: "ب) الخلايا البارنشيمية لقشرة الساق",
       isCorrect: false,
       reason:
-        "خطأ: الخلايا البارنشيمية خلايا حية ذات جدر رقيقة تحتفظ بالفجوة العصارية وتكتسب دعامة فسيولوجية فقط.",
+        "غلط: الخلايا البارنشيمية خلايا حية ورقيقة وبتعتمد ع الفجوة العصارية والمية، يعني فسيولوجية بس.",
     },
     {
       id: 2,
       text: "ج) خلايا البشرة المغطاة بالكيوتين",
       isCorrect: false,
       reason:
-        "خطأ: خلايا البشرة خلايا حية تحتفظ بالبروتوبلازم ولديها دعامة فسيولوجية مع دعامة تركيبية جزئية.",
+        "غلط: خلايا البشرة حية وفيها فسيولوجية، والكيوتين اللي فوقيها بيزودها دعامة تركيبية.",
     },
     {
       id: 3,
       text: "د) الخلايا الكولنشيمية لأعناق الأوراق",
       isCorrect: false,
       reason:
-        "خطأ: الخلايا الكولنشيمية مغلظة الأركان بالسيليلوز لكنها خلايا حية تمتلك فجوة وبروتوبلازم.",
+        "غلط: الخلايا الكولنشيمية حية ومغلظة بالسيليلوز، ففيها دعامة فسيولوجية وتركيبية مع بعض.",
     },
   ];
 
@@ -59,10 +58,10 @@ export function InteractiveDemo() {
         {/* Section Header */}
         <div className="text-center max-w-2xl mx-auto space-y-3">
           <h2 className="text-3xl sm:text-4xl font-extrabold text-[#12263F] dark:text-white leading-tight tracking-tight">
-            جرّب الخلاصة بنفسك
+            جرّب الخلاصة بنفسك وشوف الفرق
           </h2>
           <p className="text-base text-[#64748B] dark:text-[#94A3B8] font-normal leading-relaxed">
-            استكشف كيف نحوّل المناهج الكبيرة إلى كبسولات ذهبية وأسئلة ذكية تفاعلية.
+            دوس على أي تبويب وشوف إزاي المنهج بيتحول لمعلومة سهلة وتثبت في دماغك.
           </p>
         </div>
 
@@ -129,7 +128,7 @@ export function InteractiveDemo() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#E8E9ED] dark:border-[#334155] pb-4">
               <div>
                 <span className="text-xs font-semibold text-[#800020] dark:text-[#FB7185] block">
-                  عينة حية من كبسولة الزتونة • الأحياء
+                  عينة حية من كبسولة الزتونة • مادة الأحياء
                 </span>
                 <h3 className="text-xl font-bold text-[#12263F] dark:text-white">
                   الدعامة في النبات (الفسيولوجية والتركيبية)
@@ -137,7 +136,7 @@ export function InteractiveDemo() {
               </div>
               <span className="text-xs font-semibold bg-[#F7F8FA] dark:bg-[#0F172A] text-[#64748B] dark:text-[#94A3B8] px-3 py-1.5 rounded-lg border border-[#E8E9ED] dark:border-[#334155] shrink-0 flex items-center gap-2">
                 <Clock className="w-4 h-4 text-[#D97706]" />
-                <span>مدة القراءة: 3 دقائق</span>
+                <span>زمن القراءة: ٣ دقائق</span>
               </span>
             </div>
 
@@ -145,10 +144,10 @@ export function InteractiveDemo() {
               {/* Concept Box */}
               <div className="p-5 rounded-xl bg-[#F7F8FA] dark:bg-[#0F172A] border border-[#E8E9ED] dark:border-[#334155] space-y-2">
                 <span className="text-xs font-bold text-[#800020] dark:text-[#FB7185] block">
-                  المفهوم الجوهري (Concept):
+                  الفكرة ببساطة:
                 </span>
                 <p className="text-sm text-[#12263F] dark:text-[#F8FAFC] leading-relaxed font-normal">
-                  الدعامة الفسيولوجية مؤقتة وتتناول الخلية ككل وتعتمد على الخاصية الأسموزية وامتلاء الفجوة العصارية، بينما الدعامة التركيبية دائمة وتعتمد على ترسيب مواد صلبة (السيليلوز والليجنين والكيوتين والسيوبرين).
+                  الدعامة الفسيولوجية مؤقتة وبتعتمد على المية وانتفاخ الخلية ككل، أما الدعامة التركيبية فدي ثابتة ودائمة عشان النبات بيرسب مواد صلبة تحميه (زي السيليلوز والليجنين والكيوتين والسيوبرين).
                 </p>
               </div>
 
@@ -156,10 +155,10 @@ export function InteractiveDemo() {
               <div className="p-5 rounded-xl bg-[#F7F8FA] dark:bg-[#0F172A] border border-[#D97706]/40 space-y-2">
                 <span className="text-xs font-bold text-[#D97706] dark:text-[#FBBF24] flex items-center gap-1.5">
                   <AlertTriangle className="w-4 h-4 text-[#D97706]" />
-                  <span>نقطة امتحانية هامة ومكررة:</span>
+                  <span>تكة امتحان مهمة وبتتكرر كتير:</span>
                 </span>
                 <p className="text-sm text-[#12263F] dark:text-[#F8FAFC] leading-relaxed font-normal">
-                  عملية النتح في منتصف النهار تفقد النبات الدعامة الفسيولوجية جزئياً فيذبل مؤقتاً، وتستعاد بمجرد الري وامتصاص الماء ليلاً، دون أي تأثر في الدعامة التركيبية.
+                  وقت الضهر مع النتح العالي، النبات بيفقد شوية من دعامته الفسيولوجية فبيدبل مؤقتاً، وبيرجع يصحصح بالليل أول ما يشرب، من غير ما دعامته التركيبية تتأثر بأي حاجة.
                 </p>
               </div>
             </div>
@@ -167,16 +166,16 @@ export function InteractiveDemo() {
             {/* Checklist */}
             <div className="p-5 rounded-xl bg-[#F7F8FA] dark:bg-[#0F172A] border border-[#E8E9ED] dark:border-[#334155] space-y-2">
               <span className="text-xs font-bold text-[#059669] dark:text-[#34D399] block">
-                قائمة التحقق قبل الامتحان:
+                تأكد إنك مظبط النقطتين دول قبل الامتحان:
               </span>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm text-[#12263F] dark:text-[#F8FAFC] font-medium pt-1">
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-[#059669] shrink-0" />
-                  <span>التمييز الدقيق بين النسيج الكولنشيمي والإسكلرنشيمي</span>
+                  <span>الفرق بين النسيج الكولنشيمي الحي والإسكلرنشيمي الصلب</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-[#059669] shrink-0" />
-                  <span>دور الكيوتين الخارجي في الحفاظ على الدعامة الفسيولوجية</span>
+                  <span>دور طبقة الكيوتين في الحفاظ على المية ومبيخليهاش تتبخر</span>
                 </div>
               </div>
             </div>
@@ -188,7 +187,7 @@ export function InteractiveDemo() {
           <div className="max-w-4xl mx-auto p-6 sm:p-8 rounded-2xl bg-white dark:bg-[#1E293B] border border-[#E8E9ED] dark:border-[#334155] shadow-xs space-y-6">
             <div className="space-y-1.5">
               <span className="text-xs font-semibold text-[#800020] dark:text-[#FB7185] block">
-                سؤال تطبيقي من بنك الأسئلة الوزاري
+                سؤال من امتحانات الوزارة السابقة
               </span>
               <h3 className="text-base sm:text-lg font-bold text-[#12263F] dark:text-white leading-relaxed">
                 أي التراكيب التالية تكتسب دعامة تركيبية فقط ولا تحتوي على بروتوبلازم عند النضج؟
@@ -254,15 +253,15 @@ export function InteractiveDemo() {
                   ركن المذاكرة الأكثر فاعلية
                 </span>
                 <h3 className="text-xl font-bold text-[#12263F] dark:text-white">
-                  دفتر أخطائي التفاعلي («غلطاتي»)
+                  كشكول أخطاءك الذكي («غلطاتي»)
                 </h3>
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-xs font-semibold text-[#800020] dark:text-[#FB7185] bg-[#800020]/10 px-3 py-1 rounded-full border border-[#800020]/20">
-                  سؤال قيد المراجعة
+                  سؤال محتاج تراجعه
                 </span>
                 <span className="text-xs font-semibold text-[#059669] dark:text-[#34D399] bg-[#059669]/10 px-3 py-1 rounded-full border border-[#059669]/20">
-                  92% معدل الإتقان
+                  ٩٢٪ معدل الإتقان
                 </span>
               </div>
             </div>
@@ -270,7 +269,7 @@ export function InteractiveDemo() {
             <div className="p-5 rounded-xl bg-[#F7F8FA] dark:bg-[#0F172A] border border-[#E8E9ED] dark:border-[#334155] space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-medium text-[#64748B]">
-                  سؤال أخطأت فيه في امتحان الكيمياء (العناصر الانتقالية)
+                  سؤال كنت غلطت فيه في امتحان الكيمياء (العناصر الانتقالية)
                 </span>
                 <span className="text-xs font-semibold text-[#800020] dark:text-[#FB7185]">
                   معاد جدولته
@@ -281,16 +280,16 @@ export function InteractiveDemo() {
               </p>
               <div className="p-3.5 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E8E9ED] dark:border-[#334155] text-xs text-[#12263F] dark:text-[#F8FAFC] leading-relaxed font-normal">
                 <span className="font-bold text-[#800020] dark:text-[#FB7185]">
-                  التحليل العلاجي:{" "}
+                  ليه الإجابة دي؟{" "}
                 </span>
-                يفقد الحديد إلكتروني المستوى الفرعي 4s أولاً ثم إلكتروناً واحداً من المستوى 3d ليصبح [Ar] 3d⁵ (نصف ممتلئ وأكثر استقراراً كيميائياً).
+                الحديد بيفقد أول اتنين إلكترون من المستوى 4s، وبعدين إلكترون كمان من 3d، فيبقى التوزيع [Ar] 3d⁵ (نصف ممتلئ وأكتر استقراراً كيميائياً).
               </div>
               <div className="flex items-center justify-end pt-1">
                 <Link
                   href="/mistakes"
                   className="h-10 px-4 rounded-xl bg-[#800020] text-white text-xs font-bold hover:bg-[#66001A] flex items-center gap-1.5 transition-colors shadow-xs"
                 >
-                  <span>افتح ركن غلطاتي الكامل</span>
+                  <span>افتح ركن غلطاتك كامل</span>
                   <ArrowLeft className="w-3.5 h-3.5" />
                 </Link>
               </div>
@@ -313,31 +312,31 @@ export function InteractiveDemo() {
             <div className="p-6 rounded-xl bg-[#F7F8FA] dark:bg-[#0F172A] border border-[#E8E9ED] dark:border-[#334155] grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="p-4 rounded-xl bg-white dark:bg-[#1E293B] border border-[#800020]/30 shadow-xs text-right space-y-1.5">
                 <span className="text-xs font-bold text-[#800020] dark:text-[#FB7185] block">
-                  1. المفهوم الأساسي
+                  1. الفكرة الأساسية
                 </span>
                 <h4 className="text-sm font-bold text-[#12263F] dark:text-white">
                   قوانين نيوتن ومحصلة القوى
                 </h4>
                 <p className="text-xs text-[#64748B] dark:text-[#94A3B8]">
-                  تحديد اتجاه الحركة والقوة المحصلة
+                  تحديد اتجاه الحركة والقوة المؤثرة
                 </p>
               </div>
 
               <div className="p-4 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E8E9ED] dark:border-[#334155] shadow-xs text-right space-y-1.5">
                 <span className="text-xs font-bold text-[#12263F] dark:text-white block">
-                  2. العلاقات الرياضية
+                  2. العلاقات البيانية
                 </span>
                 <h4 className="text-sm font-bold text-[#12263F] dark:text-white">
                   ميل المنحنيات البيانية
                 </h4>
                 <p className="text-xs text-[#64748B] dark:text-[#94A3B8]">
-                  ميل منحنى (a - F) يمثل مقلوب الكتلة 1/m
+                  ميل منحنى a-F بيساوي مقلوب الكتلة 1/m
                 </p>
               </div>
 
               <div className="p-4 rounded-xl bg-white dark:bg-[#1E293B] border border-[#D97706]/40 shadow-xs text-right space-y-1.5">
                 <span className="text-xs font-bold text-[#D97706] dark:text-[#FBBF24] block">
-                  3. تطبيقات الامتحان
+                  3. تكات الامتحان
                 </span>
                 <h4 className="text-sm font-bold text-[#12263F] dark:text-white">
                   حركة المصاعد والبكرات
@@ -349,7 +348,7 @@ export function InteractiveDemo() {
             </div>
 
             <p className="text-xs sm:text-sm text-[#64748B] dark:text-[#94A3B8] font-normal">
-              تساعدك الخريطة الذهنية على استحضار روابط المنهج في عقلك خلال دقائق قبل دخول الامتحان.
+              الخريطة الذهنية بتجمعلك روابط المنهج في عينيك في دقيقتين قبل ما تدخل لجنة الامتحان.
             </p>
           </div>
         )}
