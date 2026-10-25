@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { getCurriculumScope, subjectScopeWhere } from "@/lib/curriculum";
@@ -40,19 +41,28 @@ export default async function ExamBuilderPage({
 
   return (
     <StudentShell user={user}>
-      <div className="max-w-[1050px] mx-auto space-y-6 text-right font-sans">
-        <div className="border-b border-[#E2E8F0] dark:border-[#334155] pb-5">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="text-[13px] font-bold text-[#800020] dark:text-[#FB7185] bg-[#800020]/10 dark:bg-[#1E293B] px-3 py-1 rounded-md border border-[#E2E8F0]/60 dark:border-[#E11D48]">
-              فصّل امتحانك على مزاجك
-            </span>
-            <span className="text-[13px] text-[#94A3B8] font-medium">• إعداد مخصص</span>
+      <div className="max-w-[1240px] mx-auto space-y-5 text-right font-sans pb-16">
+        {/* Compact Breadcrumb & Header */}
+        <div className="pb-3 border-b border-[#E8E9ED]">
+          <div className="flex items-center gap-2 text-xs font-semibold text-[#64748B] mb-1">
+            <Link
+              href={user ? "/dashboard" : "/"}
+              className="hover:text-[#800020] transition-colors"
+            >
+              الرئيسية
+            </Link>
+            <span>/</span>
+            <Link href="/subjects" className="hover:text-[#800020] transition-colors">
+              المواد الدراسية
+            </Link>
+            <span>/</span>
+            <span className="text-[#12263F] font-bold">تجهيز امتحان</span>
           </div>
-          <h1 className="text-2xl sm:text-2xl sm:text-3xl font-bold text-[#0F172A] dark:text-white tracking-tight">
-            تجهيز امتحان مخصص
+          <h1 className="text-xl sm:text-2xl font-extrabold text-[#12263F] tracking-tight">
+            جهّز امتحانك
           </h1>
-          <p className="text-[13px] sm:text-sm text-[#64748B] dark:text-[#94A3B8] mt-1 font-medium leading-relaxed">
-            اختار المادة والدروس اللي عاوز تراجعها، ومستوى الصعوبة اللي يناسبك، وابدأ حل فوراً.
+          <p className="text-xs sm:text-sm text-[#64748B] mt-0.5 font-normal">
+            اختار اللي عايز تراجع عليه، وحدد مستوى التحدي، وابدأ اختبارك.
           </p>
         </div>
 
