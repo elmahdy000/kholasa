@@ -50,7 +50,7 @@ export default function RootLayout({
     >
       <body
         suppressHydrationWarning
-        className="min-h-screen font-sans bg-[#FFFFFF] dark:bg-[#0F172A] text-[#1A0A10] dark:text-[#F8FAFC] antialiased selection:bg-[#800020]/15 dark:selection:bg-[#E11D48]/20 selection:text-[#800020] dark:selection:text-[#FB7185]"
+        className="min-h-screen font-sans bg-[#FFFFFF] dark:bg-[#0F172A] text-[#12263F] dark:text-[#F8FAFC] antialiased selection:bg-[#800020]/15 dark:selection:bg-[#E11D48]/20 selection:text-[#800020] dark:selection:text-[#FB7185]"
       >
         <Script
           id="theme-initializer"

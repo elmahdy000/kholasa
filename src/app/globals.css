@@ -3,13 +3,13 @@
 @custom-variant dark (&:where(.dark, .dark *, [data-theme="dark"], [data-theme="dark"] *));
 
 :root {
-  /* Brand Tokens — EL KHOLASA (Pristine White & Regal Academic Burgundy) */
+  /* Brand Tokens — EL KHOLASA (Pristine White, Deep Navy & Academic Burgundy) */
   --font-sans: var(--font-cairo), system-ui, -apple-system, sans-serif;
   
   --background: #FFFFFF;
-  --foreground: #1A0A10;
+  --foreground: #12263F;
   --card: #FFFFFF;
-  --card-foreground: #1A0A10;
+  --card-foreground: #12263F;
   
   /* Unified Signature Primary — Regal Burgundy */
   --primary: #800020;
@@ -21,9 +21,9 @@
   --accent-hover: #B45309;
   --accent-foreground: #FFFFFF;
   
-  /* Cohesive Velvet & Neutrals */
-  --navy: #1A0A10;
-  --navy-light: #2D141E;
+  /* Deep Navy for headings and structural typography */
+  --navy: #12263F;
+  --navy-light: #1E3A5F;
   
   /* Functional Feedback States */
   --success: #059669;
@@ -32,14 +32,14 @@
   --destructive: #DC2626;
   --destructive-foreground: #FFFFFF;
   
-  --muted: #FAF7F8;
-  --muted-foreground: #735C63;
+  --muted: #F7F8FA;
+  --muted-foreground: #64748B;
   
-  --border: #F0E6E8;
-  --input: #F0E6E8;
+  --border: #E8E9ED;
+  --input: #E8E9ED;
   --ring: #800020;
   
-  --radius: 0.875rem;
+  --radius: 1rem;
 }
 
 .dark,
@@ -108,7 +108,7 @@ h1, h2, h3, h4, h5, h6 {
 /* Solid surfaces only: no glassmorphism, blur or gradients. */
 .glass-panel {
   background: #FFFFFF;
-  border: 1px solid #F0E6E8;
+  border: 1px solid #E8E9ED;
 }
 
 .dark .glass-panel {
@@ -118,7 +118,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .glass-card {
   background: #FFFFFF;
-  border: 1px solid #F0E6E8;
+  border: 1px solid #E8E9ED;
 }
 
 .dark .glass-card {
@@ -137,7 +137,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #EAD9DC;
+  background: #E8E9ED;
   border-radius: 9999px;
 }
 

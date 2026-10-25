@@ -9,7 +9,7 @@ import { SiteFooter } from "@/components/landing/SiteFooter";
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-white dark:bg-[#0F172A] text-[#1A0A10] dark:text-[#F8FAFC]">
+    <div className="min-h-screen bg-white dark:bg-[#0F172A] text-[#12263F] dark:text-[#F8FAFC]">
       <SiteHeader />
       <main>
         <HeroSection />
