@@ -4,9 +4,8 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import {
   BookOpen,
-  Lightning,
+  Target,
   ArrowCounterClockwise,
-  Sparkle,
   BookmarkSimple,
   ArrowLeft,
   Trophy,
@@ -105,7 +104,7 @@ export function DashboardClient({
       subtext: "مفاهيم مستوعبة",
     },
     {
-      icon: Lightning,
+      icon: Target,
       color: "#059669",
       value: recentAttemptsCount,
       label: "اختبارات منجزة",
@@ -142,7 +141,7 @@ export function DashboardClient({
       title: "اختبار سريع 5 دقائق",
       desc: "تحديد مستوى مخصص",
       href: "/exams/builder",
-      icon: Lightning,
+      icon: Target,
       badge: "فوري",
       color: "text-[#059669] dark:text-[#34D399] bg-[#059669]/10 dark:bg-[#1E293B] border-[#F0E6E8]/60 dark:border-[#34D399]/40",
     },
@@ -218,7 +217,7 @@ export function DashboardClient({
               href="/exams/builder"
               className="h-11 px-5 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] font-bold flex items-center gap-2 transition-all shadow-sm active:opacity-80"
             >
-              <Lightning className="w-3.5 h-3.5 text-[#D97706]" weight="fill" />
+              <Target className="w-3.5 h-3.5 text-[#D97706]" weight="fill" />
               <span>اختبار مخصص 5 دقائق</span>
             </Link>
             <Link
@@ -264,7 +263,7 @@ export function DashboardClient({
                   </span>
                   <span>•</span>
                   <span className="text-[#D97706] dark:text-[#FBBF24] font-bold flex items-center gap-1">
-                    <Sparkle className="w-3.5 h-3.5" />
+                    <BookmarkSimple className="w-3.5 h-3.5" />
                     <span>الزتونة جاهزة للمراجعة</span>
                   </span>
                 </div>
@@ -463,7 +462,7 @@ export function DashboardClient({
                       href={`/exams/builder?subjectId=${subj.id}`}
                       className="text-[#735C63] dark:text-[#94A3B8] hover:text-[#1A0A10] dark:hover:text-[#F8FAFC] flex items-center gap-1 font-medium"
                     >
-                      <Lightning className="w-3.5 h-3.5 text-[#D97706]" weight="fill" />
+                      <Target className="w-3.5 h-3.5 text-[#D97706]" weight="fill" />
                       <span>اختبار سريع</span>
                     </Link>
 

@@ -16,7 +16,7 @@ import {
   Edit2,
   Loader2,
   ArrowLeft,
-  Sparkles,
+  Target,
   BookOpen,
   KeyRound,
 } from "lucide-react";
@@ -467,7 +467,7 @@ export function ProfileView({
 
         <div className="p-4 sm:p-5 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]  text-right">
           <div className="w-11 h-11 rounded-lg bg-[#D97706]/10 dark:bg-[#1E293B] text-[#D97706] dark:text-[#FBBF24] flex items-center justify-center mb-3">
-            <Sparkles className="w-4 h-4" />
+            <Target className="w-4 h-4" />
           </div>
           <span className="text-xl sm:text-2xl font-bold font-mono text-[#D97706] dark:text-[#FBBF24] block">
             {stats.averageScore}%

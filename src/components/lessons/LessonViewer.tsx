@@ -4,7 +4,6 @@ import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import {
   BookOpen,
-  Sparkle,
   Graph,
   Question,
   BookmarkSimple,
@@ -652,7 +651,7 @@ export function LessonViewer({
               <div className="p-6 rounded-xl bg-[#D97706]/10 border border-[#D97706]/20 relative overflow-hidden flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 rounded-lg bg-[#D97706] text-white flex items-center justify-center shrink-0">
-                    <Sparkle className="w-6 h-6" weight="fill" />
+                    <Lightbulb className="w-6 h-6" weight="fill" />
                   </div>
                   <div>
                     <h3 className="text-lg font-bold text-[#0F172A] dark:text-white">

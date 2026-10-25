@@ -8,10 +8,10 @@ import {
   ArrowLeft,
   Clock,
   Play,
-  Zap,
+  Target,
   CheckCircle2,
   Layers,
-  Sparkles,
+  BookmarkCheck,
 } from "lucide-react";
 
 interface SubjectDetailPageProps {
@@ -127,7 +127,7 @@ export default async function SubjectDetailPage({ params }: SubjectDetailPagePro
               href={`/exams/builder?subjectId=${subject.id}`}
               className="h-11 px-6 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] font-bold flex items-center justify-center gap-2  transition-all shrink-0 active:opacity-80"
             >
-              <Zap className="w-3.5 h-3.5 text-[#D97706] fill-[#D97706]" />
+              <Target className="w-4 h-4 text-[#FDE047]" />
               <span>اختبار شامل على المادة</span>
             </Link>
           </div>
@@ -181,7 +181,7 @@ export default async function SubjectDetailPage({ params }: SubjectDetailPagePro
                       href={`/exams/builder?subjectId=${subject.id}&unitId=${unit.id}`}
                       className="h-11 px-4 rounded-lg bg-white dark:bg-[#1E293B] hover:bg-[#F8FAFC] dark:hover:bg-[#334155] text-[#0F172A] dark:text-[#F8FAFC] text-[13px] font-bold flex items-center justify-center gap-2 transition-all shrink-0 self-start sm:self-center border border-[#E2E8F0] dark:border-[#334155]"
                     >
-                      <Zap className="w-3.5 h-3.5 text-[#D97706] fill-[#D97706]" />
+                      <Target className="w-3.5 h-3.5 text-[#800020] dark:text-[#FB7185]" />
                       <span>امتحان الوحدة</span>
                     </Link>
                   </div>
@@ -228,7 +228,7 @@ export default async function SubjectDetailPage({ params }: SubjectDetailPagePro
                                 </span>
                                 {lesson.summary && (
                                   <span className="inline-flex items-center gap-1 text-[#D97706] dark:text-[#FBBF24] font-bold">
-                                    <Sparkles className="w-3 h-3" />
+                                    <BookmarkCheck className="w-3.5 h-3.5" />
                                     <span>الزتونة جاهزة</span>
                                   </span>
                                 )}

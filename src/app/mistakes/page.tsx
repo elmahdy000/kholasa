@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { StudentShell } from "@/components/layout/StudentShell";
 import { MistakeHubClient } from "@/components/mistakes/MistakeHubClient";
-import { AlertTriangle, Sparkles } from "lucide-react";
+import { AlertTriangle } from "lucide-react";
 
 export default async function MistakesPage() {
   const user = await getCurrentUser();

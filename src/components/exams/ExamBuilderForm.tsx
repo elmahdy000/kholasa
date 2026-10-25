@@ -6,9 +6,9 @@ import {
   BookOpen,
   Layers,
   HelpCircle,
-  Sparkles,
+  SlidersHorizontal,
   GraduationCap,
-  Zap,
+  Timer,
   Clock,
   ArrowLeft,
   AlertCircle,
@@ -537,7 +537,7 @@ export function ExamBuilderForm({
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <div className="w-7 h-7 rounded-lg bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] flex items-center justify-center font-bold">
-                <Sparkles className="w-4 h-4" />
+                <SlidersHorizontal className="w-4 h-4" />
               </div>
               <h2 className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-white">
                 4. مستوى الصعوبة
@@ -656,7 +656,7 @@ export function ExamBuilderForm({
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <div className="w-7 h-7 rounded-lg bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] flex items-center justify-center font-bold">
-                <Zap className="w-4 h-4" />
+                <Timer className="w-4 h-4" />
               </div>
               <h2 className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-white">
                 6. نظام الاختبار
