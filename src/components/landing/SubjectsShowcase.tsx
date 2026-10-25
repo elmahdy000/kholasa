@@ -103,8 +103,8 @@ export function SubjectsShowcase() {
               >
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <div className="w-11 h-11 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E8E9ED] dark:border-[#334155] text-[#800020] dark:text-[#FB7185] flex items-center justify-center">
-                      <Icon className="w-5 h-5" />
+                    <div className="w-12 h-12 rounded-xl bg-[#800020]/8 dark:bg-[#FB7185]/10 border border-[#800020]/15 dark:border-[#FB7185]/20 text-[#800020] dark:text-[#FB7185] flex items-center justify-center">
+                      <Icon className="w-5 h-5" strokeWidth={1.8} />
                     </div>
                     <span className="text-[11px] font-semibold text-[#64748B] dark:text-[#94A3B8] px-2.5 py-1 rounded-lg bg-white dark:bg-[#0F172A] border border-[#E8E9ED] dark:border-[#334155]">
                       {sub.track}

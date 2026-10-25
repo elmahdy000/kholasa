@@ -10,7 +10,7 @@ export function SiteHeader() {
 
   const navLinks = [
     { label: "المميزات", href: "/#features" },
-    { label: "الزتونة الذهبية", href: "/#demo" },
+    { label: "كبسولة الزتونة", href: "/#demo" },
     { label: "إزاي تذاكر؟", href: "/#how-it-works" },
     { label: "المواد الدراسية", href: "/subjects" },
     { label: "بنك الأسئلة", href: "/exams/builder" },

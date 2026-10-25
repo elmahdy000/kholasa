@@ -3,12 +3,12 @@
 import { useState } from "react";
 import Link from "next/link";
 import {
-  Sparkles,
+  BookmarkCheck,
   CheckCircle2,
   XCircle,
   RotateCcw,
-  Brain,
-  Zap,
+  Network,
+  CheckSquare,
   ArrowLeft,
   Clock,
   AlertTriangle,
@@ -77,8 +77,8 @@ export function InteractiveDemo() {
                   : "bg-white dark:bg-[#0F172A] border border-[#E8E9ED] dark:border-[#334155] text-[#64748B] dark:text-[#94A3B8] hover:text-[#12263F] dark:hover:text-white"
               }`}
             >
-              <Sparkles className="w-4 h-4 text-[#D97706]" />
-              <span>الزتونة الذهبية</span>
+              <BookmarkCheck className="w-4 h-4 text-[#D97706]" strokeWidth={1.8} />
+              <span>كبسولة الزتونة</span>
             </button>
 
             <button
@@ -90,7 +90,7 @@ export function InteractiveDemo() {
                   : "bg-white dark:bg-[#0F172A] border border-[#E8E9ED] dark:border-[#334155] text-[#64748B] dark:text-[#94A3B8] hover:text-[#12263F] dark:hover:text-white"
               }`}
             >
-              <Zap className="w-4 h-4" />
+              <CheckSquare className="w-4 h-4" strokeWidth={1.8} />
               <span>تفسير كل اختيار</span>
             </button>
 
@@ -103,8 +103,8 @@ export function InteractiveDemo() {
                   : "bg-white dark:bg-[#0F172A] border border-[#E8E9ED] dark:border-[#334155] text-[#64748B] dark:text-[#94A3B8] hover:text-[#12263F] dark:hover:text-white"
               }`}
             >
-              <RotateCcw className="w-4 h-4" />
-              <span>دفتر غلطاتي</span>
+              <RotateCcw className="w-4 h-4" strokeWidth={1.8} />
+              <span>كشكول غلطاتي</span>
             </button>
 
             <button
@@ -116,13 +116,13 @@ export function InteractiveDemo() {
                   : "bg-white dark:bg-[#0F172A] border border-[#E8E9ED] dark:border-[#334155] text-[#64748B] dark:text-[#94A3B8] hover:text-[#12263F] dark:hover:text-white"
               }`}
             >
-              <Brain className="w-4 h-4" />
+              <Network className="w-4 h-4" strokeWidth={1.8} />
               <span>الخرائط الذهنية</span>
             </button>
           </div>
         </div>
 
-        {/* Tab 1: الزتونة الذهبية */}
+        {/* Tab 1: كبسولة الزتونة */}
         {activeTab === "zatona" && (
           <div className="max-w-4xl mx-auto p-6 sm:p-8 rounded-2xl bg-white dark:bg-[#1E293B] border border-[#E8E9ED] dark:border-[#334155] shadow-xs space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#E8E9ED] dark:border-[#334155] pb-4">

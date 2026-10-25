@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { WifiOff, RefreshCw, BookOpen, Sparkles, ArrowRight } from "lucide-react";
+import { WifiOff, RefreshCw, BookOpen, BookmarkCheck, ArrowRight } from "lucide-react";
 
 export default function OfflinePage() {
   return (
@@ -43,11 +43,11 @@ export default function OfflinePage() {
         {/* Study Advice Box */}
         <div className="w-full p-4 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] text-right space-y-2 ">
           <div className="flex items-center gap-2 text-[13px] font-bold text-[#800020] dark:text-[#FB7185]">
-            <Sparkles className="w-4 h-4" />
+            <BookmarkCheck className="w-4 h-4" />
             <span>نصيحة المذاكرة أوفلاين:</span>
           </div>
           <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8] leading-relaxed">
-            استغل فترة انقطاع النت لمراجعة بطاقات المفاهيم الذهبية التي قرأتها اليوم بدون أي مشتتات أو إشعارات!
+            استغل فترة انقطاع النت لمراجعة بطاقات المفاهيم والزتونة اللي قرأتها النهاردة من غير أي مشتتات أو إشعارات!
           </p>
         </div>
 

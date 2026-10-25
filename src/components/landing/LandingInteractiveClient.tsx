@@ -37,7 +37,7 @@ export function LandingInteractiveClient() {
   const faqs = [
     {
       q: "ما هو الفرق بين تطبيق الخلاصة وأي منصة فيديوهات أخرى؟",
-      a: "الخلاصة ليست مجرد فيديوهات مسجلة تشاهدها بسلبية. نحن نركز على مصفوفة التعلم النشط: ملخص الزتونة المكثف لكل درس، خرائط العلاقات الذهنية، بنك أسئلة متكيف يفسر لماذا كل اختيار صح أو غلط، وركن أخطائي التلقائي الذي يضمن عدم تكرار الغلطة في الامتحان النهائي.",
+      a: "الخلاصة ليست مجرد فيديوهات مسجلة تشاهدها بسلبية. نحن نركز على مصفوفة التعلم النشط: ملخص الزتونة المكثف لكل درس، خرائط العلاقات الذهنية، بنك أسئلة متدرج وشامل يفسر لماذا كل اختيار صح أو غلط، وركن أخطائي التلقائي الذي يضمن عدم تكرار الغلطة في الامتحان النهائي.",
     },
     {
       q: "هل المنصة تغطي منهج الثانوية العامة أم البكالوريا المصرية فقط؟",
@@ -66,7 +66,7 @@ export function LandingInteractiveClient() {
             جرّب تجربة التعلم الذكي بنفسك
           </h2>
           <p className="text-[13px] sm:text-sm text-[#64748B] dark:text-[#94A3B8] font-medium leading-relaxed">
-            استكشف كيف نحوّل المناهج الكبيرة إلى كبسولات ذهبية وأسئلة ذكية تفاعلية
+            استكشف كيف نحوّل المناهج الكبيرة إلى كبسولات مركزة وأسئلة ذكية تفاعلية
           </p>
         </div>
 
@@ -81,7 +81,7 @@ export function LandingInteractiveClient() {
             }`}
           >
             <BookOpen className="w-4 h-4 text-[#800020]" />
-            <span>الزتونة الذهبية</span>
+            <span>كبسولة الزتونة</span>
           </button>
 
           <button
@@ -121,7 +121,7 @@ export function LandingInteractiveClient() {
           </button>
         </div>
 
-        {/* Tab 1: الزتونة الذهبية */}
+        {/* Tab 1: كبسولة الزتونة */}
         {activeTab === "zatona" && (
           <div className="max-w-4xl mx-auto p-6 sm:p-8 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]  space-y-6 animate-in fade-in duration-300">
             <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#334155] pb-4">

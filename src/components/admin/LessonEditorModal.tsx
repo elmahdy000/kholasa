@@ -11,6 +11,7 @@ import {
   Image as ImageIcon,
   BookOpen,
   Sparkles,
+  BookmarkCheck,
   Plus,
   ArrowUp,
   ArrowDown,
@@ -1026,8 +1027,8 @@ export function LessonEditorModal({
                   {/* Key Concepts */}
                   <div className="p-4 sm:p-5 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/60 border border-[#E2E8F0] dark:border-[#334155] space-y-3">
                     <label className="text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC] flex items-center gap-2">
-                      <Sparkles className="w-4 h-4 text-[#D97706]" />
-                      <span>المفاهيم والنقاط الجوهرية (الزتونة الذهبية)</span>
+                      <BookmarkCheck className="w-4 h-4 text-[#D97706]" />
+                      <span>المفاهيم والنقاط الجوهرية (كبسولة الزتونة)</span>
                     </label>
 
                     <div className="flex items-center gap-2">
@@ -1080,7 +1081,7 @@ export function LessonEditorModal({
                   <div className="p-4 sm:p-5 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/60 border border-[#E2E8F0] dark:border-[#334155] space-y-3">
                     <label className="text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC] flex items-center gap-2">
                       <Clock className="w-4 h-4 text-[#059669]" />
-                      <span>نصائح الامتحان الذهبية (Exam Tips)</span>
+                      <span>تكات الامتحان الهامة (Exam Tips)</span>
                     </label>
 
                     <div className="flex items-center gap-2">

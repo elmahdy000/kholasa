@@ -3,11 +3,11 @@
 import Link from "next/link";
 import {
   BookOpen,
-  Sparkles,
-  Zap,
+  BookmarkCheck,
+  Target,
   RotateCcw,
-  Brain,
-  WifiOff,
+  Network,
+  Smartphone,
   ArrowLeft,
 } from "lucide-react";
 
@@ -30,8 +30,8 @@ export function FeaturesBento() {
           {/* Feature 1: الشرح المفكك خطوة بخطوة */}
           <div className="lg:col-span-2 p-7 sm:p-8 rounded-2xl bg-white dark:bg-[#1E293B] border border-[#E8E9ED] dark:border-[#334155] hover:border-[#800020]/30 dark:hover:border-[#FB7185]/30 transition-colors flex flex-col justify-between space-y-6 shadow-xs">
             <div className="space-y-4">
-              <div className="w-11 h-11 rounded-xl bg-[#F7F8FA] dark:bg-[#0F172A] border border-[#E8E9ED] dark:border-[#334155] text-[#800020] dark:text-[#FB7185] flex items-center justify-center">
-                <BookOpen className="w-5 h-5" />
+              <div className="w-12 h-12 rounded-xl bg-[#800020]/8 dark:bg-[#FB7185]/10 border border-[#800020]/15 dark:border-[#FB7185]/20 text-[#800020] dark:text-[#FB7185] flex items-center justify-center">
+                <BookOpen className="w-5 h-5" strokeWidth={1.8} />
               </div>
               <div className="space-y-2">
                 <h3 className="text-2xl font-bold text-[#12263F] dark:text-white">
@@ -52,15 +52,15 @@ export function FeaturesBento() {
             </div>
           </div>
 
-          {/* Feature 2: الزتونة الذهبية */}
+          {/* Feature 2: كبسولة الزتونة */}
           <div className="p-7 rounded-2xl bg-white dark:bg-[#1E293B] border border-[#E8E9ED] dark:border-[#334155] hover:border-[#D97706]/40 transition-colors flex flex-col justify-between space-y-6 shadow-xs">
             <div className="space-y-4">
-              <div className="w-11 h-11 rounded-xl bg-[#F7F8FA] dark:bg-[#0F172A] border border-[#E8E9ED] dark:border-[#334155] text-[#D97706] flex items-center justify-center">
-                <Sparkles className="w-5 h-5" />
+              <div className="w-12 h-12 rounded-xl bg-[#D97706]/10 dark:bg-[#D97706]/15 border border-[#D97706]/20 text-[#D97706] dark:text-[#FBBF24] flex items-center justify-center">
+                <BookmarkCheck className="w-5 h-5" strokeWidth={1.8} />
               </div>
               <div className="space-y-2">
                 <h3 className="text-xl font-bold text-[#12263F] dark:text-white">
-                  الزتونة الذهبية
+                  كبسولة الزتونة
                 </h3>
                 <p className="text-sm text-[#64748B] dark:text-[#94A3B8] leading-relaxed font-normal">
                   ملخص مركز في صفحة واحدة يخلص في ٣ دقايق.. فيه تكات واضعي الامتحانات، والقوانين كلها متجمعة بشكل يثبت في دماغك.
@@ -73,18 +73,18 @@ export function FeaturesBento() {
             </div>
           </div>
 
-          {/* Feature 3: بنك أسئلة ذكي */}
+          {/* Feature 3: بنك تدريب متدرج */}
           <div className="p-7 rounded-2xl bg-white dark:bg-[#1E293B] border border-[#E8E9ED] dark:border-[#334155] hover:border-[#800020]/30 dark:hover:border-[#FB7185]/30 transition-colors flex flex-col justify-between space-y-4 shadow-xs">
             <div className="space-y-4">
-              <div className="w-11 h-11 rounded-xl bg-[#F7F8FA] dark:bg-[#0F172A] border border-[#E8E9ED] dark:border-[#334155] text-[#800020] dark:text-[#FB7185] flex items-center justify-center">
-                <Zap className="w-5 h-5" />
+              <div className="w-12 h-12 rounded-xl bg-[#800020]/8 dark:bg-[#FB7185]/10 border border-[#800020]/15 dark:border-[#FB7185]/20 text-[#800020] dark:text-[#FB7185] flex items-center justify-center">
+                <Target className="w-5 h-5" strokeWidth={1.8} />
               </div>
               <div className="space-y-2">
                 <h3 className="text-xl font-bold text-[#12263F] dark:text-white">
-                  بنك أسئلة متكيف
+                  بنك تدريب متدرج
                 </h3>
                 <p className="text-sm text-[#64748B] dark:text-[#94A3B8] leading-relaxed font-normal">
-                  حل امتحانات مخصصة على كل درس ووحدة، ومع كل اختيار بنقولك ليه ده صح وليه الباقي غلط بالتفصيل.
+                  حل امتحانات وتدريبات متدرجة من السهل للأصعب على كل درس، ومع كل اختيار بنقولك ليه ده صح وليه الباقي غلط بالتفصيل.
                 </p>
               </div>
             </div>
@@ -100,8 +100,8 @@ export function FeaturesBento() {
           {/* Feature 4: ركن غلطاتي */}
           <div className="p-7 rounded-2xl bg-white dark:bg-[#1E293B] border border-[#E8E9ED] dark:border-[#334155] hover:border-[#800020]/30 dark:hover:border-[#FB7185]/30 transition-colors flex flex-col justify-between space-y-4 shadow-xs">
             <div className="space-y-4">
-              <div className="w-11 h-11 rounded-xl bg-[#F7F8FA] dark:bg-[#0F172A] border border-[#E8E9ED] dark:border-[#334155] text-[#800020] dark:text-[#FB7185] flex items-center justify-center">
-                <RotateCcw className="w-5 h-5" />
+              <div className="w-12 h-12 rounded-xl bg-[#800020]/8 dark:bg-[#FB7185]/10 border border-[#800020]/15 dark:border-[#FB7185]/20 text-[#800020] dark:text-[#FB7185] flex items-center justify-center">
+                <RotateCcw className="w-5 h-5" strokeWidth={1.8} />
               </div>
               <div className="space-y-2">
                 <h3 className="text-xl font-bold text-[#12263F] dark:text-white">
@@ -124,8 +124,8 @@ export function FeaturesBento() {
           {/* Feature 5: الخرائط الذهنية */}
           <div className="p-7 rounded-2xl bg-white dark:bg-[#1E293B] border border-[#E8E9ED] dark:border-[#334155] hover:border-[#800020]/30 dark:hover:border-[#FB7185]/30 transition-colors flex flex-col justify-between space-y-4 shadow-xs">
             <div className="space-y-4">
-              <div className="w-11 h-11 rounded-xl bg-[#F7F8FA] dark:bg-[#0F172A] border border-[#E8E9ED] dark:border-[#334155] text-[#800020] dark:text-[#FB7185] flex items-center justify-center">
-                <Brain className="w-5 h-5" />
+              <div className="w-12 h-12 rounded-xl bg-[#800020]/8 dark:bg-[#FB7185]/10 border border-[#800020]/15 dark:border-[#FB7185]/20 text-[#800020] dark:text-[#FB7185] flex items-center justify-center">
+                <Network className="w-5 h-5" strokeWidth={1.8} />
               </div>
               <div className="space-y-2">
                 <h3 className="text-xl font-bold text-[#12263F] dark:text-white">
@@ -145,8 +145,8 @@ export function FeaturesBento() {
           {/* Feature 6: وضع أوفلاين (PWA) */}
           <div className="p-7 rounded-2xl bg-white dark:bg-[#1E293B] border border-[#E8E9ED] dark:border-[#334155] hover:border-[#800020]/30 dark:hover:border-[#FB7185]/30 transition-colors flex flex-col justify-between space-y-4 shadow-xs">
             <div className="space-y-4">
-              <div className="w-11 h-11 rounded-xl bg-[#F7F8FA] dark:bg-[#0F172A] border border-[#E8E9ED] dark:border-[#334155] text-[#800020] dark:text-[#FB7185] flex items-center justify-center">
-                <WifiOff className="w-5 h-5" />
+              <div className="w-12 h-12 rounded-xl bg-[#059669]/10 dark:bg-[#059669]/15 border border-[#059669]/20 text-[#059669] dark:text-[#34D399] flex items-center justify-center">
+                <Smartphone className="w-5 h-5" strokeWidth={1.8} />
               </div>
               <div className="space-y-2">
                 <h3 className="text-xl font-bold text-[#12263F] dark:text-white">

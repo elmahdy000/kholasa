@@ -489,7 +489,7 @@ export function LessonViewer({
       <div className="p-1 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/80 border border-[#E2E8F0]/80 dark:border-[#334155]/80 flex items-center gap-1 overflow-x-auto scrollbar-none">
         {[
           { id: "content", label: "الشرح والتفكيك", icon: BookOpen },
-          { id: "summary", label: "الزتونة الذهبية", icon: Sparkle, badge: "مركز" },
+          { id: "summary", label: "كبسولة الزتونة", icon: BookmarkSimple, badge: "مركز" },
           { id: "mindmap", label: "خريطة المفاهيم", icon: Graph },
           { id: "questions", label: `الأسئلة (${lesson.questions.length})`, icon: Question },
         ].map((tab) => {
@@ -656,7 +656,7 @@ export function LessonViewer({
                   </div>
                   <div>
                     <h3 className="text-lg font-bold text-[#0F172A] dark:text-white">
-                      الزتونة الذهبية — كبسولة الدرس المركزة
+                      كبسولة الزتونة — ملخص الدرس المركز
                     </h3>
                     <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8]">
                       كل ما تحتاجه للمراجعة السريعة قبل الامتحان في دقائق معدودة
@@ -867,7 +867,7 @@ export function LessonViewer({
             </>
           ) : (
             <div className="p-8 text-center text-[#64748B] rounded-xl bg-[#F8FAFC] dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]">
-              الزتونة الذهبية قيد الإعداد...
+              كبسولة الزتونة قيد الإعداد...
             </div>
           )}
         </div>

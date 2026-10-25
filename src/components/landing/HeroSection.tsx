@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowLeft, Zap, Sparkles } from "lucide-react";
+import { ArrowLeft, Target } from "lucide-react";
 
 export function HeroSection() {
   return (
@@ -30,7 +30,7 @@ export function HeroSection() {
 
             {/* 3) Supporting subheadline */}
             <p className="text-base sm:text-lg text-[#64748B] dark:text-[#94A3B8] leading-relaxed max-w-xl font-normal">
-              شرح مبسّط خطوة بخطوة، زتونة سريعة للمراجعة، أسئلة متكيفة، وتفسير ذكي لكل غلطة...
+              شرح مبسّط خطوة بخطوة، كبسولة زتونة سريعة للمراجعة، تدريب متدرج بيفهم مستواك، وتفسير ذكي لكل غلطة...
               <br className="hidden sm:inline" />
               كل اللي تحتاجه علشان تذاكر بفهم، تراجع بسرعة، وتدخل الامتحان وأنت واثق.
             </p>
@@ -49,7 +49,7 @@ export function HeroSection() {
                 href="/exams/builder"
                 className="h-12 px-6 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E8E9ED] dark:border-[#334155] text-[#12263F] dark:text-white text-sm font-semibold flex items-center gap-2 hover:border-[#800020] hover:text-[#800020] dark:hover:border-[#FB7185] dark:hover:text-[#FB7185] transition-colors active:scale-[0.99] shadow-xs"
               >
-                <Zap className="w-4 h-4 text-[#D97706]" />
+                <Target className="w-4 h-4 text-[#800020] dark:text-[#FB7185]" strokeWidth={2} />
                 <span>جرّب بنك الأسئلة</span>
               </Link>
             </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { BookOpen, Sparkles, Zap, ArrowLeft } from "lucide-react";
+import { BookOpen, BookmarkCheck, CheckSquare, ArrowLeft } from "lucide-react";
 
 const steps = [
   {
@@ -16,14 +16,14 @@ const steps = [
     title: "افهم الشرح وراجع الزتونة",
     description:
       "اقرا الشرح خطوة بخطوة، أو ادخل ع الزتونة واعرف تكات الامتحان والقوانين في ٣ دقايق.",
-    icon: Sparkles,
+    icon: BookmarkCheck,
   },
   {
     number: "03",
     title: "حل أسئلة وافهم غلطاتك",
     description:
       "حل كويز على الدرس، واعرف سبب كل اختيار، وأي سؤال تغلط فيه بيتسجل عشان تراجعه تاني.",
-    icon: Zap,
+    icon: CheckSquare,
   },
 ];
 
@@ -56,8 +56,8 @@ export function HowItWorks() {
                 >
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <div className="w-11 h-11 rounded-xl bg-[#F7F8FA] dark:bg-[#0F172A] border border-[#E8E9ED] dark:border-[#334155] text-[#800020] dark:text-[#FB7185] flex items-center justify-center">
-                        <Icon className="w-5 h-5" />
+                      <div className="w-12 h-12 rounded-xl bg-[#800020]/8 dark:bg-[#FB7185]/10 border border-[#800020]/15 dark:border-[#FB7185]/20 text-[#800020] dark:text-[#FB7185] flex items-center justify-center">
+                        <Icon className="w-5 h-5" strokeWidth={1.8} />
                       </div>
                       <span className="font-mono text-sm font-bold text-[#800020] dark:text-[#FB7185] px-2.5 py-1 rounded-lg bg-[#800020]/5 dark:bg-[#FB7185]/10 border border-[#800020]/15 dark:border-[#FB7185]/20">
                         {step.number}
