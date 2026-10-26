@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Download, X, Smartphone, Check } from "lucide-react";
+import { BrandLogo } from "@/components/ui/BrandLogo";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -79,9 +80,7 @@ export function PwaInstallBanner() {
       className="fixed bottom-20 md:bottom-6 start-4 end-4 md:start-auto md:end-6 md:w-96 z-50 animate-in fade-in slide-in-from-bottom-4 duration-300"
     >
       <div className="p-4 rounded-2xl bg-white dark:bg-[#10233A] border-2 border-[#800020]/20 dark:border-[#A30D36]/40 shadow-xl flex items-start gap-3.5 text-right font-sans">
-        <div className="w-10 h-10 rounded-xl bg-[#800020] dark:bg-[#A30D36] text-white flex items-center justify-center shrink-0 shadow-xs mt-0.5">
-          <Smartphone className="w-5 h-5" />
-        </div>
+        <BrandLogo variant="icon" size="sm" className="mt-0.5 shrink-0" />
 
         <div className="min-w-0 flex-1 space-y-1">
           <div className="flex items-center justify-between">

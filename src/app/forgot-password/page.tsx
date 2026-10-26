@@ -18,6 +18,8 @@ import {
   RefreshCw,
 } from "lucide-react";
 
+import { BrandLogo } from "@/components/ui/BrandLogo";
+
 type Step = "REQUEST_OTP" | "VERIFY_OTP" | "NEW_PASSWORD" | "SUCCESS";
 
 export default function ForgotPasswordPage() {
@@ -138,22 +140,14 @@ export default function ForgotPasswordPage() {
       <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10">
         {/* Brand Header */}
         <div className="flex flex-col items-center text-center mb-6">
-          <Link
+          <BrandLogo
             href="/"
-            className="flex items-center gap-3 group transition-transform active:opacity-80 mb-3"
-          >
-            <div className="w-11 h-11 rounded-xl bg-[#800020] flex items-center justify-center text-white font-bold text-lg group-hover:bg-[#66001A] transition-colors">
-              خ
-            </div>
-            <div className="text-right">
-              <span className="text-xl font-bold tracking-tight text-[#0F172A] dark:text-white block">
-                الخُلاصة
-              </span>
-              <span className="text-[13px] font-mono font-medium text-[#800020] dark:text-[#FB7185] block tracking-wider">
-                EL KHOLASA
-              </span>
-            </div>
-          </Link>
+            variant="combined"
+            size="lg"
+            priority
+            subtitleText="EL KHOLASA"
+            className="mb-4"
+          />
           <h2 className="text-xl sm:text-2xl font-bold text-[#0F172A] dark:text-white tracking-tight">
             استعادة كلمة المرور
           </h2>

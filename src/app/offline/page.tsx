@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { WifiOff, RefreshCw, BookOpen, BookmarkCheck, ArrowRight } from "lucide-react";
+import { BrandLogo } from "@/components/ui/BrandLogo";
 
 export default function OfflinePage() {
   return (
@@ -10,14 +11,12 @@ export default function OfflinePage() {
 
       {/* Top Header */}
       <header className="max-w-xl mx-auto w-full pt-4 flex items-center justify-between relative z-10">
-        <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-lg bg-[#800020] flex items-center justify-center text-white font-bold text-sm ">
-            خ
-          </div>
-          <span className="font-bold text-sm text-[#0F172A] dark:text-white">
-            الخلاصة | PWA
-          </span>
-        </div>
+        <BrandLogo
+          href="/"
+          variant="combined"
+          size="sm"
+          subtitleText="وضع عدم الاتصال (PWA)"
+        />
 
         <span className="px-3 py-1 rounded-full bg-[#D97706]/10 dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#FBBF24] text-[#D97706] dark:text-[#FBBF24] text-[13px] font-bold flex items-center gap-2">
           <WifiOff className="w-3.5 h-3.5" />

@@ -19,6 +19,7 @@ import { cn } from "@/lib/utils";
 import { EntranceGatekeeperModal } from "@/components/student/EntranceGatekeeperModal";
 import { SiteHeader } from "@/components/landing/SiteHeader";
 import { SiteFooter } from "@/components/landing/SiteFooter";
+import { BrandLogo } from "@/components/ui/BrandLogo";
 
 interface StudentShellProps {
   children: React.ReactNode;
@@ -123,19 +124,13 @@ export function StudentShell({ children, user }: StudentShellProps) {
       <header className="sticky top-0 z-40 w-full bg-white/95 dark:bg-[#081426]/95 backdrop-blur-md border-b border-[#E8E9ED] dark:border-[#22364F] transition-colors">
         <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 h-15 flex items-center justify-between gap-4">
           {/* Logo & Brand */}
-          <Link href="/dashboard" className="flex items-center gap-3 shrink-0 group">
-            <div className="w-10 h-10 rounded-xl bg-[#800020] dark:bg-[#A30D36] text-white flex items-center justify-center font-bold text-base group-hover:bg-[#66001A] dark:group-hover:bg-[#BD123F] transition-colors shadow-xs">
-              خ
-            </div>
-            <div>
-              <span className="font-bold text-sm text-[#12263F] dark:text-[#F5F7FB] leading-tight block">
-                الخلاصة
-              </span>
-              <span className="text-[11px] text-[#64748B] dark:text-[#94A3B8] font-mono block -mt-1 tracking-wider">
-                EL KHOLASA
-              </span>
-            </div>
-          </Link>
+          <BrandLogo
+            href="/dashboard"
+            variant="combined"
+            size="md"
+            priority
+            subtitleText="EL KHOLASA"
+          />
 
           {/* Desktop Nav Links (Vercel-style clean segmented tabs) */}
           <nav className="hidden md:flex items-center gap-1 bg-[#F7F8FA] dark:bg-[#0D1B2E] p-1 rounded-xl border border-[#E8E9ED] dark:border-[#22364F]">
@@ -216,19 +211,12 @@ export function StudentShell({ children, user }: StudentShellProps) {
       {/* Student Shell Footer */}
       <footer className="mt-auto border-t border-[#E8E9ED] dark:border-[#22364F] bg-[#F7F8FA] dark:bg-[#0D1B2E] py-8 text-right text-xs text-[#64748B] dark:text-[#94A3B8]">
         <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-7 h-7 rounded-lg bg-[#800020] dark:bg-[#A30D36] text-white flex items-center justify-center font-bold text-xs shadow-xs">
-              خ
-            </div>
-            <div className="text-right">
-              <span className="font-bold text-sm text-[#12263F] dark:text-[#F5F7FB] block leading-tight">
-                الخلاصة | EL KHOLASA
-              </span>
-              <span className="text-[11px] text-[#64748B] dark:text-[#94A3B8] font-medium block">
-                افهمها صح.. هتفضل معاك
-              </span>
-            </div>
-          </div>
+          <BrandLogo
+            href="/dashboard"
+            variant="combined"
+            size="sm"
+            subtitleText="EL KHOLASA — افهمها صح"
+          />
 
           <div className="flex flex-wrap items-center justify-center gap-5 font-medium">
             <Link href="/dashboard" className="hover:text-[#800020] dark:hover:text-[#A30D36] transition-colors">

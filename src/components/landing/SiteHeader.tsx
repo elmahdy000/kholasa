@@ -5,6 +5,8 @@ import Link from "next/link";
 import { ArrowLeft, Menu, X } from "lucide-react";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 
+import { BrandLogo } from "@/components/ui/BrandLogo";
+
 export function SiteHeader() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -20,19 +22,13 @@ export function SiteHeader() {
     <header className="sticky top-0 z-50 w-full bg-white/95 dark:bg-[#081426]/95 backdrop-blur-md border-b border-[#E8E9ED] dark:border-[#22364F] transition-colors">
       <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 h-[76px] flex items-center justify-between gap-4">
         {/* Brand Logo (Right-aligned in RTL) */}
-        <Link href="/" className="flex items-center gap-3 shrink-0 group">
-          <div className="w-10 h-10 rounded-xl bg-[#800020] dark:bg-[#A30D36] flex items-center justify-center text-white font-bold text-lg group-hover:bg-[#66001A] dark:group-hover:bg-[#BD123F] transition-colors shadow-xs">
-            خ
-          </div>
-          <div className="text-right">
-            <span className="font-extrabold text-xl text-[#12263F] dark:text-[#F5F7FB] leading-tight block tracking-tight">
-              الخلاصة
-            </span>
-            <span className="text-[12px] text-[#64748B] dark:text-[#94A3B8] font-medium block -mt-0.5">
-              افهمها صح.. هتفضل معاك
-            </span>
-          </div>
-        </Link>
+        <BrandLogo
+          href="/"
+          variant="combined"
+          size="md"
+          priority
+          subtitleText="افهمها صح.. هتفضل معاك"
+        />
 
         {/* Desktop Navigation Links */}
         <nav className="hidden lg:flex items-center gap-1.5">

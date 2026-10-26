@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BrandLogo } from "@/components/ui/BrandLogo";
 
 export function SiteFooter() {
   return (
@@ -7,19 +8,13 @@ export function SiteFooter() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-12 text-right">
           {/* Brand Column */}
           <div className="space-y-4">
-            <Link href="/" className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-[#800020] flex items-center justify-center text-white font-bold text-lg shadow-xs">
-                خ
-              </div>
-              <div>
-                <span className="font-bold text-lg text-white leading-tight block">
-                  الخلاصة
-                </span>
-                <span className="text-xs text-[#94A3B8] font-semibold block -mt-1 font-mono">
-                  EL KHOLASA
-                </span>
-              </div>
-            </Link>
+            <BrandLogo
+              href="/"
+              variant="combined"
+              size="md"
+              surfaceTheme="dark"
+              subtitleText="EL KHOLASA"
+            />
             <p className="text-sm text-[#94A3B8] leading-relaxed max-w-xs font-normal">
               منصتك الذكية للثانوية العامة والبكالوريا.. افهمها صح هتفضل معاك، بشروحات مفككة وزتونة سريعة وبنك أسئلة ذكي.
             </p>

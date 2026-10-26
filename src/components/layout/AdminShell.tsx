@@ -3,6 +3,7 @@
 import { ReactNode, useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { BrandLogo } from "@/components/ui/BrandLogo";
 import {
   LayoutDashboard,
   BookOpen,
@@ -251,14 +252,12 @@ export function AdminShell({ children, user }: AdminShellProps) {
          ========================================================================= */}
       <header className="md:hidden flex items-center justify-between px-4 h-14 bg-white dark:bg-[#0F172A] border-b border-[#E2E8F0] dark:border-[#334155] sticky top-0 z-40">
         <div className="flex items-center gap-3">
-          <div className="w-7 h-7 rounded-md bg-black dark:bg-white text-white dark:text-black flex items-center justify-center font-bold text-[13px]">
-            ▲
-          </div>
+          <BrandLogo variant="icon" size="xs" />
           <div>
             <span className="font-bold text-[13px] text-[#0F172A] dark:text-[#F8FAFC] block leading-tight">
               الخلاصة
             </span>
-            <span className="text-[13px] font-mono text-[#64748B] leading-none">
+            <span className="text-[11px] font-mono text-[#64748B] leading-none">
               لوحة الإدارة
             </span>
           </div>
@@ -306,10 +305,8 @@ export function AdminShell({ children, user }: AdminShellProps) {
               className="flex items-center gap-3 group min-w-0"
               title="لوحة الإدارة - منصة الخلاصة"
             >
-              {/* Minimalist Monogram Icon */}
-              <div className="w-11 h-11 rounded-xl bg-[#0F172A] dark:bg-white text-white dark:text-[#0F172A] flex items-center justify-center font-bold text-sm shadow-sm group- transition-transform shrink-0">
-                ▲
-              </div>
+              {/* Brand Emblem Icon */}
+              <BrandLogo variant="icon" size="sm" className="shrink-0" />
               {!isCollapsed && (
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">

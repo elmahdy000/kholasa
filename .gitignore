@@ -47,5 +47,6 @@ next-env.d.ts
 
 # agent runtime state
 .omc/
+scratch/
 
 

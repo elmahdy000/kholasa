@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowLeft, Target } from "lucide-react";
+import { BrandLogo } from "@/components/ui/BrandLogo";
 
 export function HeroSection() {
   return (
@@ -12,8 +13,8 @@ export function HeroSection() {
           {/* Right Column — Text & CTAs (7 cols on desktop) */}
           <div className="lg:col-span-7 text-right space-y-6 sm:space-y-7">
             {/* 1) Small top badge */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#F7F8FA] dark:bg-[#1E293B] border border-[#E8E9ED] dark:border-[#334155] text-xs font-semibold text-[#800020] dark:text-[#FB7185] shadow-xs">
-              <span className="w-2 h-2 rounded-full bg-[#800020] dark:bg-[#FB7185]" />
+            <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-[#F7F8FA] dark:bg-[#1E293B] border border-[#E8E9ED] dark:border-[#334155] text-xs font-semibold text-[#800020] dark:text-[#FB7185] shadow-xs">
+              <BrandLogo variant="icon" size="xs" glow={false} />
               <span>المنصة التعليمية الشاملة لطلاب الثانوية العامة 2026</span>
             </div>
 
@@ -71,6 +72,12 @@ export function HeroSection() {
                 priority
                 className="w-full h-auto object-cover aspect-4/3 transition-transform duration-500 hover:scale-[1.02]"
               />
+
+              {/* Official Platform Seal */}
+              <div className="absolute top-3.5 right-3.5 px-3 py-1.5 rounded-xl bg-white/95 dark:bg-[#081426]/95 backdrop-blur-md border border-[#E8E9ED]/80 dark:border-[#22364F]/80 shadow-md flex items-center gap-2">
+                <BrandLogo variant="icon" size="xs" />
+                <span className="text-[11px] font-bold text-[#12263F] dark:text-[#F5F7FB]">منصة الخلاصة التعليمية</span>
+              </div>
 
               {/* Minimal floating pill on image corner for credibility */}
               <div className="absolute bottom-3.5 right-3.5 left-3.5 sm:left-auto sm:right-3.5 px-3.5 py-2 rounded-xl bg-white/95 dark:bg-[#0F172A]/95 backdrop-blur-md border border-[#E8E9ED] dark:border-[#334155] shadow-xs flex items-center gap-2.5 text-right">
