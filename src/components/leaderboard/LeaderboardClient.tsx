@@ -6,10 +6,10 @@ import {
   Trophy,
   Medal,
   Flame,
-  Zap,
+  Award,
+  Target,
   BookOpen,
   ArrowLeft,
-  Sparkles,
   Crown,
   GraduationCap,
   Filter,
@@ -86,7 +86,7 @@ export function LeaderboardClient({
             href="/exams/builder"
             className="h-11 px-5 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white font-bold text-[13px] flex items-center gap-2 shadow-sm transition-colors shrink-0"
           >
-            <Zap className="w-4 h-4 fill-current text-[#D97706]" />
+            <Target className="w-4 h-4 text-[#D97706]" />
             <span>حل امتحان لزيادة ترتيبك</span>
           </Link>
         </div>
@@ -114,7 +114,7 @@ export function LeaderboardClient({
 
           <div className="flex items-center gap-3 text-[13px] font-bold">
             <div className="px-3 py-2 rounded-lg bg-[#800020]/10 dark:bg-[#1E293B] border border-[#800020]/20 text-[#800020] dark:text-[#FB7185] font-mono flex items-center gap-1">
-              <Zap className="w-3.5 h-3.5 fill-current" />
+              <Award className="w-3.5 h-3.5" />
               <span>{currentUser.xp} XP</span>
             </div>
             <div className="px-3 py-2 rounded-lg bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[#D97706] dark:text-[#FBBF24] flex items-center gap-1 font-mono">
@@ -201,7 +201,7 @@ export function LeaderboardClient({
               </p>
               <div className="pt-2 w-full flex items-center justify-around border-t border-[#E2E8F0] dark:border-[#334155] text-[13px] font-bold font-mono">
                 <span className="text-[#800020] flex items-center gap-1">
-                  <Zap className="w-3.5 h-3.5 fill-current" />
+                  <Award className="w-3.5 h-3.5" />
                   <span>{top3[1].xp} XP</span>
                 </span>
                 <span className="text-[#D97706] flex items-center gap-1">
@@ -233,7 +233,7 @@ export function LeaderboardClient({
               </p>
               <div className="pt-2 w-full flex items-center justify-around border-t border-[#E2E8F0]/50 dark:border-[#FBBF24]/40 text-[13px] font-bold">
                 <span className="text-[#800020] text-sm font-bold flex items-center gap-1">
-                  <Zap className="w-3.5 h-3.5 fill-current" />
+                  <Award className="w-3.5 h-3.5" />
                   <span>{top3[0].xp} XP</span>
                 </span>
                 <span className="text-[#D97706] flex items-center gap-1">
@@ -264,7 +264,7 @@ export function LeaderboardClient({
               </p>
               <div className="pt-2 w-full flex items-center justify-around border-t border-[#E2E8F0] dark:border-[#334155] text-[13px] font-bold">
                 <span className="text-[#800020] flex items-center gap-1">
-                  <Zap className="w-3.5 h-3.5 fill-current" />
+                  <Award className="w-3.5 h-3.5" />
                   <span>{top3[2].xp} XP</span>
                 </span>
                 <span className="text-[#D97706] flex items-center gap-1">
@@ -319,7 +319,7 @@ export function LeaderboardClient({
 
               <div className="flex items-center gap-4 text-[13px] font-bold">
                 <span className="text-[#800020] flex items-center gap-1">
-                  <Zap className="w-3.5 h-3.5 fill-current" />
+                  <Award className="w-3.5 h-3.5" />
                   <span>{user.xp} XP</span>
                 </span>
                 <span className="hidden sm:inline text-[#D97706] flex items-center gap-1">

@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
-  Sparkles,
   Lock,
   Mail,
   Phone,
@@ -144,8 +143,8 @@ export default function RegisterPage() {
             href="/"
             className="flex items-center gap-3 group transition-transform active:opacity-80 mb-3"
           >
-            <div className="w-11 h-11 rounded-xl bg-[#800020] flex items-center justify-center text-white  group-hover:bg-[#66001A] transition-colors">
-              <Sparkles className="w-5 h-5" />
+            <div className="w-11 h-11 rounded-xl bg-[#800020] flex items-center justify-center text-white font-bold text-lg group-hover:bg-[#66001A] transition-colors">
+              خ
             </div>
             <div className="text-right">
               <span className="text-xl font-bold tracking-tight text-[#0F172A] dark:text-white block">

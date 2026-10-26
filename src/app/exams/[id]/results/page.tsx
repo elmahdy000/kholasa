@@ -11,7 +11,7 @@ import {
   RotateCcw,
   BookOpen,
   ArrowLeft,
-  Sparkles,
+  BookmarkCheck,
   Lightbulb,
   AlertTriangle,
 } from "lucide-react";
@@ -344,7 +344,7 @@ export default async function ExamResultsPage({
                     <div className="space-y-3 pt-1">
                       {/* Notice banner */}
                       <div className="p-3 rounded-xl bg-[#800020]/10 dark:bg-[#1E293B] border border-[#E2E8F0]/60 dark:border-[#E11D48]/40 text-[13px] text-[#800020] dark:text-[#FB7185] flex items-start gap-2">
-                        <Sparkles className="w-4 h-4 text-[#800020] dark:text-[#FB7185] shrink-0 mt-1" />
+                        <BookmarkCheck className="w-4 h-4 text-[#800020] dark:text-[#FB7185] shrink-0 mt-1" />
                         <span>الأسئلة المقالية لا يتم تقييمها آلياً؛ قارن إجابتك المكتوبة بنموذج الإجابة الرسمي من بنك الأسئلة أدناه لتحديد مدى تغطيتك للنقاط المطلوبة.</span>
                       </div>
 

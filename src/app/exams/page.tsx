@@ -5,12 +5,12 @@ import { examScopeWhere, getCurriculumScope } from "@/lib/curriculum";
 import { StudentShell } from "@/components/layout/StudentShell";
 import { BidiStatement } from "@/components/ui/BidiStatement";
 import {
-  Zap,
+  Target,
   SlidersHorizontal,
   Clock,
   CheckCircle2,
   ArrowLeft,
-  Sparkles,
+  BookmarkCheck,
   History,
 } from "lucide-react";
 
@@ -47,7 +47,7 @@ export default async function ExamsHubPage() {
             {/* Text & Actions */}
             <div className="space-y-3 max-w-3xl md:mx-auto md:text-center">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] text-[13px] font-bold border border-[#E2E8F0]/60 dark:border-[#E11D48]/60">
-                <Sparkles className="w-3.5 h-3.5" />
+                <Target className="w-3.5 h-3.5" />
                 <span>امتحانات وتدريبات متفصلة ليك</span>
               </div>
 
@@ -66,7 +66,7 @@ export default async function ExamsHubPage() {
                   <span>مؤقت زي الامتحان بالظبط</span>
                 </span>
                 <span className="flex items-center gap-2">
-                  <Zap className="w-3.5 h-3.5 text-[#D97706] shrink-0" />
+                  <BookmarkCheck className="w-3.5 h-3.5 text-[#D97706] shrink-0" />
                   <span>شرح فوري لكل سؤال</span>
                 </span>
                 <span className="flex items-center gap-2">
@@ -94,7 +94,7 @@ export default async function ExamsHubPage() {
         <div className="space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h2 className="text-base sm:text-lg font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
-              <Zap className="w-5 h-5 text-[#800020]" />
+              <Target className="w-5 h-5 text-[#800020]" />
               <span>امتحانات شاملة وجاهزة تحلها فوراً</span>
             </h2>
             <Link

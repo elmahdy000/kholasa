@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import {
-  Sparkles,
+  Target,
   CheckCircle2,
   XCircle,
   AlertCircle,
@@ -315,7 +315,7 @@ export function EntranceGatekeeperModal({
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-3">
               <div className="w-11 h-11 rounded-xl bg-[#D97706]/10 text-[#D97706] flex items-center justify-center ">
-                <Sparkles className="w-5 h-5" />
+                <Target className="w-5 h-5" />
               </div>
               <div>
                 <span className="text-[13px] font-bold uppercase tracking-wider text-[#FBBF24]">

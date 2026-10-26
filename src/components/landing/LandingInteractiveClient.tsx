@@ -5,13 +5,14 @@ import Link from "next/link";
 import {
   BookOpen,
   Brain,
-  Zap,
+  BookmarkCheck,
+  Target,
+  Clock,
   RotateCcw,
   CheckCircle2,
   XCircle,
   HelpCircle,
   ChevronDown,
-  Sparkles,
   ArrowLeft,
   Flame,
   ShieldCheck,
@@ -59,7 +60,7 @@ export function LandingInteractiveClient() {
       <section className="space-y-8">
         <div className="text-center max-w-2xl mx-auto space-y-3">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#800020]/10 dark:bg-[#1E293B] border border-[#800020]/20 text-[#800020] dark:text-[#FB7185] text-[13px] font-bold">
-            <Sparkles className="w-3.5 h-3.5" />
+            <Target className="w-3.5 h-3.5" />
             <span>معاينة حية للمنصة</span>
           </div>
           <h2 className="text-2xl sm:text-4xl font-bold tracking-tight text-[#0F172A] dark:text-white">
@@ -92,7 +93,7 @@ export function LandingInteractiveClient() {
                 : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
             }`}
           >
-            <Zap className="w-4 h-4 text-[#D97706]" />
+            <BookmarkCheck className="w-4 h-4 text-[#D97706]" />
             <span>تفسير كل اختيار</span>
           </button>
 
@@ -134,7 +135,7 @@ export function LandingInteractiveClient() {
                 </h3>
               </div>
               <span className="text-[13px] font-bold bg-[#D97706]/10 dark:bg-[#1E293B] text-[#D97706] dark:text-[#FBBF24] px-3 py-1 rounded-full border border-[#E2E8F0] dark:border-[#FBBF24] flex items-center gap-2">
-                <Sparkles className="w-3.5 h-3.5" />
+                <Clock className="w-3.5 h-3.5" />
                 <span>ملخص مركز في 3 دقائق</span>
               </span>
             </div>
@@ -448,7 +449,7 @@ export function LandingInteractiveClient() {
       <section className="space-y-8">
         <div className="text-center max-w-2xl mx-auto space-y-2">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] text-[13px] font-bold border border-[#E2E8F0] dark:border-[#E11D48]">
-            <Sparkles className="w-4 h-4" />
+            <Target className="w-4 h-4" />
             <span>منهجية واضحة</span>
           </div>
           <h2 className="text-2xl sm:text-2xl sm:text-3xl font-bold tracking-tight text-[#0F172A] dark:text-white">
