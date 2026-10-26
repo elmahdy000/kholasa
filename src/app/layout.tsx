@@ -10,7 +10,10 @@ const cairo = Cairo({
 });
 
 export const viewport: Viewport = {
-  themeColor: "#800020",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#800020" },
+    { media: "(prefers-color-scheme: dark)", color: "#081426" },
+  ],
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
@@ -27,7 +30,14 @@ export const metadata: Metadata = {
     title: "الخلاصة",
   },
   icons: {
-    icon: "/favicon.ico",
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [
+      { url: "/apple-icon.png", sizes: "180x180", type: "image/png" },
+    ],
   },
 };
 

@@ -41,22 +41,76 @@ const svg512 = `
 </svg>
 `;
 
+// Full edge-to-edge background SVG for maskable icons (safe zone in central 80%)
+const svgMaskable = `
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradMask" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#800020" />
+      <stop offset="100%" stop-color="#4D0013" />
+    </linearGradient>
+    <linearGradient id="goldGradMask" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FCD34D" />
+      <stop offset="100%" stop-color="#F59E0B" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Edge-to-edge solid background for OS masking -->
+  <rect width="512" height="512" fill="url(#bgGradMask)"/>
+  
+  <!-- Scaled content inside 80% safe-zone (scale 0.78 centered) -->
+  <g transform="translate(56, 56) scale(0.78)">
+    <g transform="translate(106, 126)">
+      <path d="M150 160 C100 130 30 135 0 150 L0 50 C30 35 100 30 150 60 C200 30 270 35 300 50 L300 150 C270 135 200 130 150 160 Z" fill="white" fill-opacity="0.95" />
+      <path d="M150 60 L150 160" stroke="#800020" stroke-width="6" stroke-linecap="round" />
+      <path d="M150 -30 L160 5 L195 15 L160 25 L150 60 L140 25 L105 15 L140 5 Z" fill="url(#goldGradMask)" />
+      <circle cx="60" cy="5" r="7" fill="#FCD34D" fill-opacity="0.8" />
+      <circle cx="240" cy="15" r="5" fill="#FCD34D" fill-opacity="0.8" />
+    </g>
+    
+    <text x="256" y="380" font-family="system-ui, -apple-system, sans-serif" font-size="44" font-weight="900" fill="white" text-anchor="middle" letter-spacing="1">الخلاصة</text>
+    <text x="256" y="420" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="700" fill="#F0C4CE" text-anchor="middle" letter-spacing="4">EL KHOLASA</text>
+  </g>
+</svg>
+`;
+
 async function main() {
   const publicDir = path.join(__dirname, '..', 'public');
   
-  // 512x512
+  // Standard 512x512
   await sharp(Buffer.from(svg512))
     .resize(512, 512)
     .png()
     .toFile(path.join(publicDir, 'icon-512.png'));
   console.log('Generated icon-512.png');
 
-  // 192x192
+  // Standard 192x192
   await sharp(Buffer.from(svg512))
     .resize(192, 192)
     .png()
     .toFile(path.join(publicDir, 'icon-192.png'));
   console.log('Generated icon-192.png');
+
+  // Maskable 512x512
+  await sharp(Buffer.from(svgMaskable))
+    .resize(512, 512)
+    .png()
+    .toFile(path.join(publicDir, 'icon-maskable-512.png'));
+  console.log('Generated icon-maskable-512.png');
+
+  // Maskable 192x192
+  await sharp(Buffer.from(svgMaskable))
+    .resize(192, 192)
+    .png()
+    .toFile(path.join(publicDir, 'icon-maskable-192.png'));
+  console.log('Generated icon-maskable-192.png');
+
+  // Apple Touch Icon 180x180
+  await sharp(Buffer.from(svg512))
+    .resize(180, 180)
+    .png()
+    .toFile(path.join(publicDir, 'apple-icon.png'));
+  console.log('Generated apple-icon.png');
 }
 
 main().catch(console.error);
