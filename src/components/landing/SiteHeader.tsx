@@ -60,7 +60,7 @@ export function SiteHeader() {
 
           <Link
             href="/login"
-            className="h-10 px-4 rounded-xl text-sm font-semibold text-[#12263F] dark:text-white border border-[#E8E9ED] dark:border-[#334155] bg-white dark:bg-[#1E293B] hover:border-[#800020] hover:text-[#800020] dark:hover:border-[#FB7185] dark:hover:text-[#FB7185] transition-colors shadow-xs flex items-center justify-center"
+            className="h-10 px-4 rounded-xl text-sm font-semibold text-[#12263F] dark:text-white border border-[#E8E9ED] dark:border-[#334155] bg-white dark:bg-[#1E293B] hover:bg-[#F7F8FA] hover:border-[#800020] hover:text-[#800020] dark:hover:bg-[#334155] dark:hover:border-[#FB7185] dark:hover:text-white transition-colors shadow-xs flex items-center justify-center"
           >
             تسجيل الدخول
           </Link>
@@ -118,7 +118,7 @@ export function SiteHeader() {
             <Link
               href="/login"
               onClick={() => setIsMobileMenuOpen(false)}
-              className="h-10 rounded-xl border border-[#E8E9ED] dark:border-[#334155] text-sm font-semibold text-center flex items-center justify-center text-[#12263F] dark:text-white hover:bg-[#F7F8FA] transition-colors"
+              className="h-10 rounded-xl border border-[#E8E9ED] dark:border-[#334155] bg-white dark:bg-[#1E293B] text-sm font-semibold text-center flex items-center justify-center text-[#12263F] dark:text-white hover:bg-[#F7F8FA] hover:text-[#800020] hover:border-[#800020] dark:hover:bg-[#334155] dark:hover:text-white dark:hover:border-[#FB7185] active:scale-[0.99] transition-colors shadow-xs"
             >
               تسجيل الدخول
             </Link>
