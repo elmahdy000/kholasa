@@ -7,10 +7,6 @@ import { ExamService } from "@/services";
 export async function GET(req: Request) {
   try {
     const user = await getCurrentUser();
-    if (!user) {
-      return NextResponse.json({ error: "غير مصرح" }, { status: 401 });
-    }
-
     const { searchParams } = new URL(req.url);
     const subjectId = searchParams.get("subjectId") || undefined;
     const unitId = searchParams.get("unitId") || undefined;
@@ -22,11 +18,20 @@ export async function GET(req: Request) {
       return NextResponse.json({ count: 0 });
     }
 
-    // Never count questions from another grade/track.
-    const scope = getCurriculumScope(user);
+    // Never count questions from another grade/track for scoped students.
+    const scope = user ? getCurriculumScope(user) : null;
     if (scope) {
       const subject = await prisma.subject.findFirst({
         where: { id: subjectId, isPublished: true, ...subjectScopeWhere(scope) },
+        select: { id: true },
+      });
+      if (!subject) {
+        return NextResponse.json({ error: "المادة غير متاحة" }, { status: 404 });
+      }
+    } else {
+      // Unscoped / guest: verify subject is published
+      const subject = await prisma.subject.findFirst({
+        where: { id: subjectId, isPublished: true },
         select: { id: true },
       });
       if (!subject) {

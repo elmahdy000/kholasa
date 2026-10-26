@@ -41,7 +41,7 @@ export default async function ExamBuilderPage({
 
   return (
     <StudentShell user={user}>
-      <div className="max-w-[1240px] mx-auto space-y-5 text-right font-sans pb-16">
+      <div className="w-full max-w-[1240px] mx-auto space-y-5 text-right font-sans pb-16">
         {/* Compact Breadcrumb & Header */}
         <div className="pb-3 border-b border-[#E8E9ED] dark:border-[#22364F]">
           <div className="flex items-center gap-2 text-xs font-semibold text-[#64748B] dark:text-[#94A3B8] mb-1">
