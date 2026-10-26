@@ -43,25 +43,28 @@ export default async function ExamBuilderPage({
     <StudentShell user={user}>
       <div className="max-w-[1240px] mx-auto space-y-5 text-right font-sans pb-16">
         {/* Compact Breadcrumb & Header */}
-        <div className="pb-3 border-b border-[#E8E9ED]">
-          <div className="flex items-center gap-2 text-xs font-semibold text-[#64748B] mb-1">
+        <div className="pb-3 border-b border-[#E8E9ED] dark:border-[#22364F]">
+          <div className="flex items-center gap-2 text-xs font-semibold text-[#64748B] dark:text-[#94A3B8] mb-1">
             <Link
               href={user ? "/dashboard" : "/"}
-              className="hover:text-[#800020] transition-colors"
+              className="hover:text-[#800020] dark:hover:text-[#BD123F] transition-colors"
             >
               الرئيسية
             </Link>
-            <span>/</span>
-            <Link href="/subjects" className="hover:text-[#800020] transition-colors">
+            <span className="text-[#64748B]/60 dark:text-[#64748B]">/</span>
+            <Link
+              href="/subjects"
+              className="hover:text-[#800020] dark:hover:text-[#BD123F] transition-colors"
+            >
               المواد الدراسية
             </Link>
-            <span>/</span>
-            <span className="text-[#12263F] font-bold">تجهيز امتحان</span>
+            <span className="text-[#64748B]/60 dark:text-[#64748B]">/</span>
+            <span className="text-[#12263F] dark:text-[#F5F7FB] font-bold">تجهيز امتحان</span>
           </div>
-          <h1 className="text-xl sm:text-2xl font-extrabold text-[#12263F] tracking-tight">
+          <h1 className="text-xl sm:text-2xl font-extrabold text-[#12263F] dark:text-[#F5F7FB] tracking-tight">
             جهّز امتحانك
           </h1>
-          <p className="text-xs sm:text-sm text-[#64748B] mt-0.5 font-normal">
+          <p className="text-xs sm:text-sm text-[#64748B] dark:text-[#94A3B8] mt-0.5 font-normal">
             اختار اللي عايز تراجع عليه، وحدد مستوى التحدي، وابدأ اختبارك.
           </p>
         </div>
