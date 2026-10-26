@@ -186,6 +186,42 @@ a[role="button"].rounded-xl {
   border-radius: 0.5rem;
 }
 
+/* Zero Text Truncation System — AL-KHOLASA */
+.subject-title,
+.lesson-title,
+.unit-title,
+.selection-label {
+  white-space: normal;
+  text-overflow: clip;
+  overflow: visible;
+  overflow-wrap: break-word;
+  word-break: normal;
+  line-height: 1.65;
+}
+
+.subject-card {
+  height: auto;
+  min-width: 0;
+}
+
+.subject-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+@media (max-width: 1200px) {
+  .subject-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .subject-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 /* Safe area padding for notched mobile devices */
 @supports (padding-top: env(safe-area-inset-top)) {
   body {

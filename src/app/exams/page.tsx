@@ -138,7 +138,7 @@ export default async function ExamsHubPage() {
                     </h3>
 
                     {exam.description && (
-                      <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8] mt-2 line-clamp-2 leading-relaxed">
+                      <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8] mt-2 leading-relaxed break-words">
                         <BidiStatement as="span" text={exam.description} />
                       </p>
                     )}

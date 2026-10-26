@@ -159,7 +159,7 @@ export function SubjectsExplorer({ subjects }: SubjectsExplorerProps) {
               <Link
                 key={subj.id}
                 href={`/subjects/${subj.id}`}
-                className="group p-6 sm:p-7 rounded-2xl bg-white dark:bg-[#1E293B] border border-[#E8E9ED] dark:border-[#334155] hover:border-[#800020]/40 dark:hover:border-[#FB7185]/40 transition-all flex flex-col justify-between space-y-6 shadow-xs hover:shadow-sm"
+                className="group p-6 sm:p-7 rounded-2xl bg-white dark:bg-[#10233A] border border-[#E8E9ED] dark:border-[#22364F] hover:border-[#800020]/40 dark:hover:border-[#A30D36]/60 transition-all flex flex-col justify-between space-y-6 shadow-xs hover:shadow-sm h-auto min-w-0"
               >
                 <div className="space-y-4">
                   {/* Top Bar of Card */}
@@ -170,17 +170,17 @@ export function SubjectsExplorer({ subjects }: SubjectsExplorerProps) {
                     >
                       <Icon className="w-5 h-5" strokeWidth={1.8} />
                     </div>
-                    <span className="text-[11px] font-bold text-[#64748B] dark:text-[#94A3B8] bg-[#F7F8FA] dark:bg-[#0F172A] px-2.5 py-1 rounded-lg border border-[#E8E9ED] dark:border-[#334155]">
+                    <span className="text-[11px] font-bold text-[#64748B] dark:text-[#94A3B8] bg-[#F7F8FA] dark:bg-[#081426] px-2.5 py-1 rounded-lg border border-[#E8E9ED] dark:border-[#22364F]">
                       {badgeLabel}
                     </span>
                   </div>
 
                   {/* Title & Description */}
                   <div className="space-y-2">
-                    <h3 className="text-xl font-bold text-[#12263F] dark:text-white group-hover:text-[#800020] dark:group-hover:text-[#FB7185] transition-colors leading-snug">
-                      {subj.name}
+                    <h3 className="text-xl font-bold text-[#12263F] dark:text-[#F5F7FB] group-hover:text-[#800020] dark:group-hover:text-[#A30D36] transition-colors leading-snug break-words">
+                      <bdi>{subj.name}</bdi>
                     </h3>
-                    <p className="text-xs text-[#64748B] dark:text-[#94A3B8] leading-relaxed line-clamp-2 font-normal">
+                    <p className="text-xs text-[#64748B] dark:text-[#94A3B8] leading-relaxed font-normal break-words">
                       {subj.description ||
                         "شرح كامل لوحدات المنهج، كبسولة الزتونة المركزة، وبنك أسئلة متدرج."}
                     </p>
@@ -188,21 +188,21 @@ export function SubjectsExplorer({ subjects }: SubjectsExplorerProps) {
 
                   {/* Metadata Chips */}
                   <div className="flex flex-wrap items-center gap-2 pt-1 text-[11px] font-medium text-[#64748B] dark:text-[#94A3B8]">
-                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#F7F8FA] dark:bg-[#0F172A] border border-[#E8E9ED] dark:border-[#334155]">
-                      <Layers className="w-3.5 h-3.5 text-[#800020] dark:text-[#FB7185]" />
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#F7F8FA] dark:bg-[#081426] border border-[#E8E9ED] dark:border-[#22364F]">
+                      <Layers className="w-3.5 h-3.5 text-[#800020] dark:text-[#A30D36]" />
                       <span>{subj.unitsCount} وحدات وفصول</span>
                     </span>
-                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#F7F8FA] dark:bg-[#0F172A] border border-[#E8E9ED] dark:border-[#334155]">
-                      <BookmarkCheck className="w-3.5 h-3.5 text-[#D97706]" />
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#F7F8FA] dark:bg-[#081426] border border-[#E8E9ED] dark:border-[#22364F]">
+                      <BookmarkCheck className="w-3.5 h-3.5 text-[#D97706] dark:text-[#E59A18]" />
                       <span>{subj.lessonsCount} درس وكبسولة</span>
                     </span>
                   </div>
                 </div>
 
                 {/* Card Action Footer */}
-                <div className="pt-4 border-t border-[#E8E9ED] dark:border-[#334155] flex items-center justify-between text-xs font-bold text-[#800020] dark:text-[#FB7185]">
+                <div className="pt-4 border-t border-[#E8E9ED] dark:border-[#22364F] flex items-center justify-between text-xs font-bold text-[#800020] dark:text-[#A30D36]">
                   <span>تصفح المنهج والدروس</span>
-                  <div className="w-8 h-8 rounded-lg bg-[#800020]/8 dark:bg-[#FB7185]/10 flex items-center justify-center group-hover:bg-[#800020] group-hover:text-white transition-all">
+                  <div className="w-8 h-8 rounded-lg bg-[#800020]/8 dark:bg-[#A30D36]/20 flex items-center justify-center group-hover:bg-[#800020] group-hover:text-white transition-all">
                     <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" />
                   </div>
                 </div>
@@ -212,12 +212,12 @@ export function SubjectsExplorer({ subjects }: SubjectsExplorerProps) {
         </div>
       ) : (
         /* Empty State */
-        <div className="p-12 text-center rounded-2xl bg-white dark:bg-[#1E293B] border border-[#E8E9ED] dark:border-[#334155] space-y-4">
-          <div className="w-12 h-12 rounded-xl bg-[#F7F8FA] dark:bg-[#0F172A] border border-[#E8E9ED] dark:border-[#334155] text-[#64748B] dark:text-[#94A3B8] flex items-center justify-center mx-auto">
+        <div className="p-12 text-center rounded-2xl bg-white dark:bg-[#10233A] border border-[#E8E9ED] dark:border-[#22364F] space-y-4">
+          <div className="w-12 h-12 rounded-xl bg-[#F7F8FA] dark:bg-[#081426] border border-[#E8E9ED] dark:border-[#22364F] text-[#64748B] dark:text-[#94A3B8] flex items-center justify-center mx-auto">
             <Search className="w-6 h-6" />
           </div>
           <div className="space-y-1">
-            <h3 className="text-base font-bold text-[#12263F] dark:text-white">
+            <h3 className="text-base font-bold text-[#12263F] dark:text-[#F5F7FB]">
               لم نعثر على مواد مطابقة للبحث
             </h3>
             <p className="text-xs text-[#64748B] dark:text-[#94A3B8] max-w-sm mx-auto">
@@ -230,7 +230,7 @@ export function SubjectsExplorer({ subjects }: SubjectsExplorerProps) {
               setSearchQuery("");
               setSelectedFilter("ALL");
             }}
-            className="h-9 px-4 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-xs font-bold transition-all shadow-xs"
+            className="h-9 px-4 rounded-xl bg-[#800020] hover:bg-[#66001A] dark:bg-[#A30D36] dark:hover:bg-[#BD123F] text-white text-xs font-bold transition-all shadow-xs cursor-pointer"
           >
             عرض كل المواد
           </button>

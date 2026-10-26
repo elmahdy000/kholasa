@@ -285,7 +285,7 @@ export function StudentShell({ children, user }: StudentShellProps) {
                 </div>
                 <span
                   className={cn(
-                    "text-[13px] font-bold leading-tight tracking-tight text-center mt-1 truncate max-w-[64px]",
+                    "text-[11px] sm:text-xs font-bold leading-tight tracking-tight text-center mt-1 whitespace-nowrap",
                     isActive
                       ? "text-[#800020] dark:text-[#A30D36] font-bold"
                       : "text-[#735C63] dark:text-[#94A3B8] font-bold"
@@ -321,7 +321,7 @@ export function StudentShell({ children, user }: StudentShellProps) {
                   weight={isActive ? "fill" : "bold"}
                 />
               </div>
-              <span className="text-[13px] font-bold leading-tight tracking-tight text-center truncate max-w-[60px]">
+              <span className="text-[11px] sm:text-xs font-bold leading-tight tracking-tight text-center whitespace-nowrap">
                 {item.label}
               </span>
               {isActive && (

@@ -347,7 +347,7 @@ export function MistakeHubClient({
                       className="inline-flex items-center gap-2 text-[13px] font-semibold text-[#800020] dark:text-[#FB7185] hover:text-[#800020] dark:hover:text-[#FB7185] transition-colors shrink min-w-0 max-w-full sm:max-w-md group"
                     >
                       <BookOpen className="w-3.5 h-3.5 shrink-0 text-[#800020]" />
-                      <span className="line-clamp-2 break-words">
+                      <span className="break-words">
                         شرح الدرس: <BidiStatement as="span" text={relatedLesson.title} />
                       </span>
                       <ArrowLeft className="w-3 h-3 shrink-0" />

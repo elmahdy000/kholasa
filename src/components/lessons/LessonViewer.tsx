@@ -1356,13 +1356,13 @@ export function LessonViewer({
             href={`/lessons/${prevLesson.id}`}
             className="flex items-center gap-2 text-[13px] sm:text-sm font-bold text-[#64748B] dark:text-[#94A3B8] hover:text-[#800020] transition-colors"
           >
-            <CaretRight className="w-4 h-4" weight="bold" />
+            <CaretRight className="w-4 h-4 shrink-0" weight="bold" />
             <div className="text-right">
               <span className="block text-[13px] text-[#64748B] dark:text-[#94A3B8]">
                 الدرس السابق
               </span>
-              <span className="truncate max-w-[150px] sm:max-w-xs block">
-                {prevLesson.title}
+              <span className="block break-words max-w-xs leading-snug">
+                <bdi>{prevLesson.title}</bdi>
               </span>
             </div>
           </Link>
@@ -1379,11 +1379,11 @@ export function LessonViewer({
               <span className="block text-[13px] text-[#800020]/70">
                 الدرس التالي
               </span>
-              <span className="truncate max-w-[150px] sm:max-w-xs block">
-                {nextLesson.title}
+              <span className="block break-words max-w-xs leading-snug">
+                <bdi>{nextLesson.title}</bdi>
               </span>
             </div>
-            <CaretLeft className="w-4 h-4" weight="bold" />
+            <CaretLeft className="w-4 h-4 shrink-0" weight="bold" />
           </Link>
         ) : (
           <Link
