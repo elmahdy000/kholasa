@@ -119,29 +119,15 @@ export function StreakWidget({
   };
 
   return (
-    <div
-      style={{
-        background:
-          "linear-gradient(135deg, rgba(254, 243, 199, 0.4) 0%, rgba(255, 255, 255, 0.98) 50%, rgba(254, 243, 199, 0.3) 100%)",
-      }}
-      className="relative rounded-2xl border border-[#F59E0B]/40 dark:border-[#D97706]/40 p-5 sm:p-6 shadow-sm overflow-hidden text-right dark:bg-[#0F172A]"
-    >
-      {/* Background Decorative Glow */}
-      <div className="absolute -top-12 -left-12 w-48 h-48 bg-[#F59E0B]/15 rounded-full blur-2xl pointer-events-none" />
-
+    <div className="relative rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] p-5 sm:p-6 shadow-sm overflow-hidden text-right">
       {/* Main Content Layout */}
-      <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
         {/* Right Side: Flame Counter & Motivation */}
         <div className="flex items-start gap-4 sm:gap-5 min-w-0">
-          {/* Animated Flame Icon Container */}
+          {/* Solid Flame Icon Container (No Gradients) */}
           <div className="relative shrink-0 mt-0.5">
-            <div
-              style={{
-                background: "linear-gradient(135deg, #F59E0B 0%, #D97706 100%)",
-              }}
-              className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center shadow-lg shadow-[#F59E0B]/35 border border-[#F59E0B]/40"
-            >
-              <Fire className="w-8 h-8 sm:w-9 sm:h-9 text-white drop-shadow" weight="fill" />
+            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-[#D97706] text-white flex items-center justify-center shadow-sm">
+              <Fire className="w-8 h-8 sm:w-9 sm:h-9 text-white" weight="fill" />
             </div>
             {isTodayCompleted && (
               <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-[#059669] text-white flex items-center justify-center shadow-sm border-2 border-white dark:border-[#0F172A]">
@@ -152,16 +138,16 @@ export function StreakWidget({
 
           <div className="space-y-1.5 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-[11px] sm:text-[12px] font-bold text-[#D97706] dark:text-[#FBBF24] bg-[#D97706]/10 dark:bg-[#FBBF24]/15 px-2.5 py-0.5 rounded-full border border-[#D97706]/20">
+              <span className="text-[11px] sm:text-[12px] font-bold text-[#D97706] dark:text-[#FBBF24] bg-[#D97706]/10 dark:bg-[#1E293B] px-2.5 py-0.5 rounded-full border border-[#D97706]/20 dark:border-[#D97706]/30">
                 ويدجت التحدي اليومي والـ Streak
               </span>
               {isTodayCompleted ? (
-                <span className="text-[11px] sm:text-[12px] font-bold text-[#059669] dark:text-[#34D399] bg-[#059669]/10 dark:bg-[#059669]/20 px-2 py-0.5 rounded-full flex items-center gap-1">
+                <span className="text-[11px] sm:text-[12px] font-bold text-[#059669] dark:text-[#34D399] bg-[#059669]/10 dark:bg-[#1E293B] px-2 py-0.5 rounded-full flex items-center gap-1 border border-[#059669]/20">
                   <CheckCircle className="w-3.5 h-3.5" weight="fill" />
                   <span>حضور اليوم مسجّل</span>
                 </span>
               ) : (
-                <span className="text-[11px] sm:text-[12px] font-bold text-[#DC2626] dark:text-[#F87171] bg-[#DC2626]/10 px-2 py-0.5 rounded-full flex items-center gap-1 animate-pulse">
+                <span className="text-[11px] sm:text-[12px] font-bold text-[#DC2626] dark:text-[#F87171] bg-[#DC2626]/10 dark:bg-[#1E293B] px-2 py-0.5 rounded-full flex items-center gap-1 border border-[#DC2626]/20 animate-pulse">
                   <Lightning className="w-3.5 h-3.5" weight="fill" />
                   <span>تحدي اليوم متاح الآن</span>
                 </span>
@@ -186,7 +172,7 @@ export function StreakWidget({
         {/* Center/Left Side: 7-Day Week Calendar & Quick Action */}
         <div className="flex flex-col sm:flex-row lg:flex-col xl:flex-row items-stretch sm:items-center gap-4 shrink-0">
           {/* 7-Day Mini Calendar */}
-          <div className="bg-white/90 dark:bg-[#1E293B]/90 backdrop-blur-sm p-2.5 sm:p-3 rounded-xl border border-[#F0E6E8] dark:border-[#334155] flex items-center justify-between gap-1.5 sm:gap-2 shadow-sm">
+          <div className="bg-[#F8FAFC] dark:bg-[#1E293B] p-2.5 sm:p-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] flex items-center justify-between gap-1.5 sm:gap-2">
             {weekDays.map((day) => {
               const cleanDayLabel = day.dayName.replace(/^ال/, "");
               return (
@@ -194,10 +180,10 @@ export function StreakWidget({
                   key={day.dayKey}
                   className={`flex flex-col items-center justify-center min-w-[36px] sm:min-w-[42px] px-1 py-1.5 rounded-lg text-center transition-all ${
                     day.isCompleted
-                      ? "bg-[#D97706]/15 dark:bg-[#F59E0B]/20 text-[#D97706] dark:text-[#FBBF24] font-bold border border-[#D97706]/30"
+                      ? "bg-[#D97706]/15 dark:bg-[#D97706]/25 text-[#D97706] dark:text-[#FBBF24] font-bold border border-[#D97706]/30"
                       : day.isToday
-                      ? "bg-white dark:bg-[#334155] border-2 border-dashed border-[#D97706] text-[#D97706] dark:text-[#FBBF24] font-bold"
-                      : "bg-[#FAF7F8]/80 dark:bg-[#1E293B]/40 text-[#94A3B8]"
+                      ? "bg-white dark:bg-[#0F172A] border-2 border-dashed border-[#D97706] text-[#D97706] dark:text-[#FBBF24] font-bold"
+                      : "bg-white/60 dark:bg-[#0F172A]/40 text-[#94A3B8]"
                   }`}
                   title={`${day.dayName}: ${day.isCompleted ? "مكتمل" : day.isToday ? "اليوم" : "لم يكتمل"}`}
                 >
@@ -216,15 +202,12 @@ export function StreakWidget({
             })}
           </div>
 
-          {/* Action Buttons */}
+          {/* Action Buttons (Solid Clean Styling) */}
           <div className="flex items-center gap-2">
             {!isTodayCompleted ? (
               <>
                 <button
                   type="button"
-                  style={{
-                    background: "linear-gradient(135deg, #D97706 0%, #B45309 100%)",
-                  }}
                   onClick={() => {
                     if (onOpenDailyChallenge) {
                       onOpenDailyChallenge();
@@ -237,7 +220,7 @@ export function StreakWidget({
                       }
                     }
                   }}
-                  className="flex-1 sm:flex-initial h-11 px-4 sm:px-5 rounded-xl text-white text-[13px] font-bold flex items-center justify-center gap-2 shadow-md shadow-[#D97706]/20 hover:opacity-95 transition-all interactive-tap"
+                  className="flex-1 sm:flex-initial h-11 px-4 sm:px-5 rounded-xl bg-[#D97706] hover:bg-[#B45309] text-white text-[13px] font-bold flex items-center justify-center gap-2 shadow-sm transition-all interactive-tap"
                 >
                   <Lightning className="w-4 h-4" weight="fill" />
                   <span>حل تحدي اليوم</span>
@@ -259,7 +242,7 @@ export function StreakWidget({
                 onClick={() => {
                   window.dispatchEvent(new CustomEvent("kholasa_open_entrance_exam"));
                 }}
-                className="flex-1 sm:flex-initial h-11 px-4 sm:px-5 rounded-xl bg-[#059669]/10 dark:bg-[#059669]/20 border border-[#059669]/30 text-[#059669] dark:text-[#34D399] text-[13px] font-bold flex items-center justify-center gap-2 transition-all hover:bg-[#059669]/15"
+                className="flex-1 sm:flex-initial h-11 px-4 sm:px-5 rounded-xl bg-[#059669]/10 dark:bg-[#1E293B] border border-[#059669]/30 text-[#059669] dark:text-[#34D399] text-[13px] font-bold flex items-center justify-center gap-2 transition-all hover:bg-[#059669]/15"
               >
                 <Trophy className="w-4 h-4" weight="fill" />
                 <span>شعلتك آمنة اليوم! تحدي إضافي؟</span>
@@ -269,17 +252,14 @@ export function StreakWidget({
         </div>
       </div>
 
-      {/* Floating Celebration Banner */}
+      {/* Celebration Banner (Solid Clean Green) */}
       <AnimatePresence>
         {showCelebration && (
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            style={{
-              background: "linear-gradient(135deg, #059669 0%, #047857 100%)",
-            }}
-            className="mt-4 p-3 rounded-xl text-white text-[13px] font-bold flex items-center justify-between gap-3 shadow-md"
+            className="mt-4 p-3 rounded-xl bg-[#059669] text-white text-[13px] font-bold flex items-center justify-between gap-3 shadow-sm"
           >
             <div className="flex items-center gap-2">
               <Sparkle className="w-5 h-5 fill-current animate-spin-slow" weight="fill" />

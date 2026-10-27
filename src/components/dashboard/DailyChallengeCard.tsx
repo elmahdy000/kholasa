@@ -250,7 +250,7 @@ export function DailyChallengeCard({
             )}
 
             {streakEarned !== null && (
-              <div className="p-3.5 rounded-xl bg-gradient-to-r from-[#F59E0B]/15 to-[#D97706]/20 border border-[#F59E0B]/40 flex items-center justify-between gap-3 text-right">
+              <div className="p-3.5 rounded-xl bg-[#D97706]/10 dark:bg-[#1E293B] border border-[#D97706]/30 flex items-center justify-between gap-3 text-right">
                 <div className="flex items-center gap-2">
                   <Fire className="w-5 h-5 text-[#D97706] dark:text-[#FBBF24] shrink-0" weight="fill" />
                   <span className="text-[13px] font-bold text-[#D97706] dark:text-[#FBBF24]">
