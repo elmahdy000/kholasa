@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { getCurriculumScope, isSubjectInScope, subjectScopeWhere } from "@/lib/curriculum";
-import { calculateStreak } from "@/lib/date";
+import { calculateStreak, getCairoDayKey, shiftDayKey } from "@/lib/date";
 import { StudentShell } from "@/components/layout/StudentShell";
 import { DashboardClient } from "@/components/dashboard/DashboardClient";
 
@@ -99,7 +99,23 @@ export default async function DashboardPage() {
     examStats._avg.percentage !== null
       ? Math.round(examStats._avg.percentage)
       : null;
+  const todayKey = getCairoDayKey();
+  const isTodayCompleted = challengeDays.some((c) => c.day === todayKey);
   const streakDays = calculateStreak(challengeDays.map((c) => c.day));
+
+  const weekDayNames = ["السبت", "الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة"];
+  const weekDays = Array.from({ length: 7 }, (_, i) => {
+    const dayKey = shiftDayKey(todayKey, i - 6);
+    const dateObj = new Date(dayKey + "T00:00:00Z");
+    const dayIndex = (dateObj.getUTCDay() + 1) % 7;
+    const isCompleted = challengeDays.some((c) => c.day === dayKey);
+    return {
+      dayKey,
+      dayName: weekDayNames[dayIndex] || dayKey.slice(5),
+      isCompleted,
+      isToday: dayKey === todayKey,
+    };
+  });
 
   const completedLessonIds = new Set(userProgress.map((p) => p.lessonId));
 
@@ -162,6 +178,28 @@ export default async function DashboardPage() {
     }),
   ]);
 
+  const resolvedDailyQuestion =
+    dailyQuestion ||
+    (await prisma.question.findFirst({
+      where: {
+        status: "PUBLISHED",
+        type: "MCQ",
+      },
+      select: {
+        id: true,
+        statement: true,
+        type: true,
+        difficulty: true,
+        subject: { select: { id: true, name: true } },
+        unit: { select: { id: true, title: true } },
+        options: {
+          select: { id: true, text: true, order: true },
+          orderBy: { order: "asc" },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    }));
+
   const activeLesson =
     (lastActiveProgress?.lesson &&
     isSubjectInScope(scope, lastActiveProgress.lesson.unit.subject)
@@ -214,10 +252,12 @@ export default async function DashboardPage() {
         recentAttemptsCount={completedAttemptsCount}
         averageScore={averageScore}
         streakDays={streakDays}
+        isTodayCompleted={isTodayCompleted}
+        weekDays={weekDays}
         unresolvedMistakesCount={unresolvedMistakesCount}
         subjects={subjectsForClient}
         continueLesson={continueLessonData}
-        dailyQuestion={dailyQuestion as any}
+        dailyQuestion={resolvedDailyQuestion as any}
         recentExams={recentAttempts.map((a) => ({
           id: a.id,
           title: a.title,

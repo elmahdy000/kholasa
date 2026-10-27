@@ -11,9 +11,46 @@ import {
   ArrowRight,
   AlertCircle,
   Loader2,
+  Sparkles,
+  GraduationCap,
+  ShieldCheck,
+  UserCheck,
 } from "lucide-react";
 
 import { BrandLogo } from "@/components/ui/BrandLogo";
+
+const DEMO_ACCOUNTS = [
+  {
+    title: "طالب (تانية بكالوريا - هندسة)",
+    badge: "طالب ثانوي",
+    identifier: "student@kholasa.app",
+    password: "Student@123",
+    icon: GraduationCap,
+    iconBg: "bg-[#800020]/10 dark:bg-[#800020]/20",
+    iconColor: "text-[#800020] dark:text-[#FB7185]",
+    badgeStyle: "bg-[#800020]/10 text-[#800020] dark:text-[#FB7185]",
+  },
+  {
+    title: "طالبة (أولى بكالوريا - عام)",
+    badge: "طالبة ثانوي",
+    identifier: "student.g10@kholasa.app",
+    password: "Student@123",
+    icon: UserCheck,
+    iconBg: "bg-[#059669]/10 dark:bg-[#059669]/20",
+    iconColor: "text-[#059669] dark:text-[#34D399]",
+    badgeStyle: "bg-[#059669]/10 text-[#059669] dark:text-[#34D399]",
+  },
+  {
+    title: "المشرف العام (لوحة الإدارة)",
+    badge: "Admin",
+    identifier: "admin@kholasa.app",
+    password: "Admin@123",
+    icon: ShieldCheck,
+    iconBg: "bg-[#D97706]/10 dark:bg-[#D97706]/20",
+    iconColor: "text-[#D97706] dark:text-[#FBBF24]",
+    badgeStyle: "bg-[#D97706]/10 text-[#D97706] dark:text-[#FBBF24]",
+  },
+];
 
 export default function LoginPage() {
   const router = useRouter();
@@ -21,10 +58,10 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingDemoId, setLoadingDemoId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const executeLogin = async (id: string, pass: string) => {
     setError(null);
     setIsLoading(true);
 
@@ -32,7 +69,7 @@ export default function LoginPage() {
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ identifier, password }),
+        body: JSON.stringify({ identifier: id, password: pass }),
       });
 
       const data = await res.json();
@@ -56,7 +93,26 @@ export default function LoginPage() {
       }
     } finally {
       setIsLoading(false);
+      setLoadingDemoId(null);
     }
+  };
+
+  const handleDemoLogin = (demoIdentifier: string, demoPass: string) => {
+    setIdentifier(demoIdentifier);
+    setPassword(demoPass);
+    setLoadingDemoId(demoIdentifier);
+    executeLogin(demoIdentifier, demoPass);
+  };
+
+  const fillFormOnly = (demoIdentifier: string, demoPass: string) => {
+    setIdentifier(demoIdentifier);
+    setPassword(demoPass);
+    setError(null);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await executeLogin(identifier, password);
   };
 
   return (
@@ -164,9 +220,9 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full h-11 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white font-bold text-[13px] sm:text-sm  flex items-center justify-center gap-2 transition-colors disabled:opacity-50 interactive-tap"
+              className="w-full h-11 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white font-bold text-[13px] sm:text-sm flex items-center justify-center gap-2 transition-colors disabled:opacity-50 interactive-tap"
             >
-              {isLoading ? (
+              {isLoading && !loadingDemoId ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
                   <span>جارٍ تسجيل الدخول...</span>
@@ -176,6 +232,88 @@ export default function LoginPage() {
               )}
             </button>
           </form>
+
+          {/* Quick Demo Accounts (حسابات تجريبية للمعاينة السريعة) */}
+          <div className="mt-8 pt-6 border-t border-[#E2E8F0] dark:border-[#334155]">
+            <div className="flex items-center justify-between mb-3.5">
+              <div className="flex items-center gap-1.5">
+                <Sparkles className="w-4 h-4 text-[#D97706] dark:text-[#FBBF24]" />
+                <h3 className="text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC]">
+                  حسابات تجريبية (اضغط وجرب مباشرة ⚡)
+                </h3>
+              </div>
+              <span className="text-[11px] font-medium text-[#64748B] dark:text-[#94A3B8]">
+                نقرة واحدة للدخول
+              </span>
+            </div>
+
+            <div className="space-y-2.5">
+              {DEMO_ACCOUNTS.map((acc) => {
+                const isThisLoading = loadingDemoId === acc.identifier;
+                const Icon = acc.icon;
+                return (
+                  <div
+                    key={acc.identifier}
+                    className="p-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B]/60 hover:border-[#800020]/40 dark:hover:border-[#FB7185]/40 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-2.5"
+                  >
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div
+                        className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${acc.iconBg}`}
+                      >
+                        <Icon className={`w-4.5 h-4.5 ${acc.iconColor}`} />
+                      </div>
+                      <div className="min-w-0 text-right">
+                        <div className="flex items-center gap-2">
+                          <span className="text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC]">
+                            {acc.title}
+                          </span>
+                          <span
+                            className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${acc.badgeStyle}`}
+                          >
+                            {acc.badge}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2 text-[11px] text-[#64748B] dark:text-[#94A3B8] font-mono mt-0.5">
+                          <span dir="ltr">{acc.identifier}</span>
+                          <span>•</span>
+                          <span dir="ltr">{acc.password}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto">
+                      <button
+                        type="button"
+                        onClick={() => fillFormOnly(acc.identifier, acc.password)}
+                        className="text-[11px] font-bold text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white px-2 py-1 rounded-md border border-[#E2E8F0] dark:border-[#334155] hover:bg-white dark:hover:bg-[#1E293B] transition-colors"
+                        title="تعبئة بيانات الحساب في الحقول أعلاه"
+                      >
+                        تعبئة فقط
+                      </button>
+                      <button
+                        type="button"
+                        disabled={isLoading}
+                        onClick={() => handleDemoLogin(acc.identifier, acc.password)}
+                        className="h-8 px-3 rounded-lg bg-[#800020] hover:bg-[#66001A] text-white text-[12px] font-bold flex items-center gap-1.5 shadow-sm transition-all disabled:opacity-50 interactive-tap"
+                      >
+                        {isThisLoading ? (
+                          <>
+                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            <span>جارٍ الدخول...</span>
+                          </>
+                        ) : (
+                          <>
+                            <span>دخول فوري</span>
+                            <span className="text-[11px]">⚡</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
 
           {/* Footer Navigation */}
           <div className="mt-6 text-center text-[13px] text-[#64748B] dark:text-[#94A3B8]">

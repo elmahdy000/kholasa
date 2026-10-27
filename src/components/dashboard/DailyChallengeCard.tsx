@@ -37,14 +37,19 @@ interface RevealedAnswer {
 
 interface DailyChallengeCardProps {
   question: DailyQuestion | null;
+  isTodayAlreadyCompleted?: boolean;
 }
 
-export function DailyChallengeCard({ question }: DailyChallengeCardProps) {
+export function DailyChallengeCard({
+  question,
+  isTodayAlreadyCompleted = false,
+}: DailyChallengeCardProps) {
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
   const [isAnswered, setIsAnswered] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [revealed, setRevealed] = useState<RevealedAnswer | null>(null);
+  const [streakEarned, setStreakEarned] = useState<number | null>(null);
 
   if (!question) {
     return null;
@@ -58,7 +63,7 @@ export function DailyChallengeCard({ question }: DailyChallengeCardProps) {
       const res = await fetch(`/api/questions/${question.id}/answer`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ selectedOptionId }),
+        body: JSON.stringify({ selectedOptionId, isDailyChallenge: true }),
       });
 
       const data = await res.json();
@@ -69,6 +74,15 @@ export function DailyChallengeCard({ question }: DailyChallengeCardProps) {
       setRevealed(data);
       setIsCorrect(Boolean(data.isCorrect));
       setIsAnswered(true);
+
+      if (typeof data.streakDays === "number") {
+        setStreakEarned(data.streakDays);
+        window.dispatchEvent(
+          new CustomEvent("kholasa_streak_updated", {
+            detail: { streakDays: data.streakDays, isTodayCompleted: true },
+          })
+        );
+      }
     } catch (err) {
       console.error(err);
       alert(
@@ -86,7 +100,10 @@ export function DailyChallengeCard({ question }: DailyChallengeCardProps) {
     question.options.find((o) => o.id === revealed?.correctOptionId);
 
   return (
-    <div className="rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] p-5 sm:p-6 shadow-sm mb-6">
+    <div
+      id="daily-challenge-card"
+      className="rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] p-5 sm:p-6 shadow-sm mb-6 transition-all scroll-mt-24"
+    >
       <div className="space-y-4">
         {/* Top Header */}
         <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#E2E8F0] dark:border-[#334155]/80 pb-3">
@@ -105,10 +122,17 @@ export function DailyChallengeCard({ question }: DailyChallengeCardProps) {
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-[13px] font-bold text-[#D97706] dark:text-[#FBBF24] bg-[#D97706]/10 dark:bg-[#1E293B] px-3 py-1 rounded-md border border-[#D97706]/20 dark:border-[#FBBF24]/40 flex items-center gap-1">
-              <Fire className="w-3.5 h-3.5" weight="fill" />
-              <span>سؤال اليوم</span>
-            </span>
+            {isTodayAlreadyCompleted ? (
+              <span className="text-[12px] font-bold text-[#059669] dark:text-[#34D399] bg-[#059669]/10 px-3 py-1 rounded-md border border-[#059669]/30 flex items-center gap-1">
+                <CheckCircle className="w-3.5 h-3.5" weight="fill" />
+                <span>حضور اليوم مسجل</span>
+              </span>
+            ) : (
+              <span className="text-[13px] font-bold text-[#D97706] dark:text-[#FBBF24] bg-[#D97706]/10 dark:bg-[#1E293B] px-3 py-1 rounded-md border border-[#D97706]/20 dark:border-[#FBBF24]/40 flex items-center gap-1">
+                <Fire className="w-3.5 h-3.5 text-[#D97706]" weight="fill" />
+                <span>سؤال اليوم</span>
+              </span>
+            )}
           </div>
         </div>
 
@@ -225,14 +249,28 @@ export function DailyChallengeCard({ question }: DailyChallengeCardProps) {
               </div>
             )}
 
+            {streakEarned !== null && (
+              <div className="p-3.5 rounded-xl bg-gradient-to-r from-[#F59E0B]/15 to-[#D97706]/20 border border-[#F59E0B]/40 flex items-center justify-between gap-3 text-right">
+                <div className="flex items-center gap-2">
+                  <Fire className="w-5 h-5 text-[#D97706] dark:text-[#FBBF24] shrink-0" weight="fill" />
+                  <span className="text-[13px] font-bold text-[#D97706] dark:text-[#FBBF24]">
+                    شعلتك متوهجة الآن! أصبحت {streakEarned} أيام متتالية 🔥
+                  </span>
+                </div>
+                <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-[#D97706] text-white shrink-0">
+                  +1 يوم
+                </span>
+              </div>
+            )}
+
             {/* Lesson link or Mistake link */}
             <div className="flex flex-wrap items-center justify-between gap-2 pt-1 text-[13px]">
               <span className="text-[13px] text-[#64748B] dark:text-[#94A3B8]">
-                {isAnswered ? "تم تسجيل إجابتك اليومية بنجاح." : ""}
+                {isAnswered ? "تم تسجيل إجابتك وتثبيت حضورك اليومي بنجاح." : ""}
               </span>
               <Link
                 href="/exams/builder"
-                className="text-[13px] font-bold text-[#800020] hover:underline flex items-center gap-1"
+                className="text-[13px] font-bold text-[#800020] dark:text-[#FB7185] hover:underline flex items-center gap-1"
               >
                 <span>تدرب على مزيد من الأسئلة في بنك الاختبارات</span>
                 <ArrowLeft className="w-3.5 h-3.5" weight="bold" />

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {
@@ -16,6 +17,7 @@ import {
   GraduationCap,
 } from "@phosphor-icons/react";
 import { DailyChallengeCard } from "./DailyChallengeCard";
+import { StreakWidget, WeekDayProgress } from "./StreakWidget";
 import { formatArabicDays } from "@/lib/utils";
 
 const fadeInUp = {
@@ -76,6 +78,8 @@ interface DashboardClientProps {
   recentAttemptsCount: number;
   averageScore?: number | null;
   streakDays?: number;
+  isTodayCompleted?: boolean;
+  weekDays?: WeekDayProgress[];
   unresolvedMistakesCount: number;
   subjects: SubjectItem[];
   continueLesson?: ContinueLessonItem | null;
@@ -89,12 +93,32 @@ export function DashboardClient({
   recentAttemptsCount,
   averageScore = null,
   streakDays = 0,
+  isTodayCompleted = false,
+  weekDays = [],
   unresolvedMistakesCount,
   subjects,
   continueLesson,
   dailyQuestion,
   recentExams = [],
 }: DashboardClientProps) {
+  const [currentStreakDays, setCurrentStreakDays] = useState(streakDays);
+  const [isTodayCompletedState, setIsTodayCompletedState] = useState(isTodayCompleted);
+
+  useEffect(() => {
+    const handleStreakUpdate = (e: Event) => {
+      const customEvent = e as CustomEvent<{ streakDays: number; isTodayCompleted: boolean }>;
+      if (customEvent.detail) {
+        if (typeof customEvent.detail.streakDays === "number") {
+          setCurrentStreakDays(customEvent.detail.streakDays);
+        }
+        if (customEvent.detail.isTodayCompleted) {
+          setIsTodayCompletedState(true);
+        }
+      }
+    };
+    window.addEventListener("kholasa_streak_updated", handleStreakUpdate);
+    return () => window.removeEventListener("kholasa_streak_updated", handleStreakUpdate);
+  }, []);
   const stats = [
     {
       icon: BookOpen,
@@ -187,10 +211,15 @@ export function DashboardClient({
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FAF7F8] dark:bg-[#1E293B] border border-[#F0E6E8]/80 dark:border-[#334155] text-[13px] font-bold text-[#1A0A10] dark:text-[#F8FAFC]">
               <span className="w-2 h-2 rounded-full bg-[#059669] animate-pulse" />
               <span>منصة الخلاصة • مسارك الدراسي</span>
-              {streakDays > 0 && (
+              {currentStreakDays > 0 ? (
                 <span className="inline-flex items-center gap-1 font-mono text-[13px] text-[#D97706] dark:text-[#FBBF24] border-r border-[#F0E6E8] dark:border-[#334155] pr-2 mr-1">
                   <Fire className="w-3.5 h-3.5 fill-current" />
-                  <span>{formatArabicDays(streakDays)}</span>
+                  <span>{formatArabicDays(currentStreakDays)}</span>
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1 text-[12px] text-[#D97706] dark:text-[#FBBF24] border-r border-[#F0E6E8] dark:border-[#334155] pr-2 mr-1">
+                  <Fire className="w-3.5 h-3.5 text-[#D97706]" />
+                  <span>شعلة جديدة اليوم</span>
                 </span>
               )}
             </div>
@@ -208,7 +237,7 @@ export function DashboardClient({
               onClick={() => {
                 window.dispatchEvent(new CustomEvent("kholasa_open_entrance_exam"));
               }}
-              className="h-11 px-4 rounded-xl bg-[#D97706]/10 dark:bg-[#1E293B] border border-[#F0E6E8] dark:border-[#FBBF24]/60 text-[#D97706] dark:text-[#FBBF24] text-[13px] font-bold flex items-center gap-2 hover:bg-[#D97706]/10 dark:hover:bg-[#1E293B] transition-all  active:opacity-80"
+              className="h-11 px-4 rounded-xl bg-[#D97706]/10 dark:bg-[#1E293B] border border-[#F0E6E8] dark:border-[#FBBF24]/60 text-[#D97706] dark:text-[#FBBF24] text-[13px] font-bold flex items-center gap-2 hover:bg-[#D97706]/10 dark:hover:bg-[#1E293B] transition-all active:opacity-80"
             >
               <Fire className="w-3.5 h-3.5 text-[#D97706]" weight="fill" />
               <span>تحدي الدخول اليومي</span>
@@ -222,7 +251,7 @@ export function DashboardClient({
             </Link>
             <Link
               href="/mistakes"
-              className="h-11 px-4 rounded-xl bg-[#FAF7F8] dark:bg-[#1E293B] border border-[#F0E6E8] dark:border-[#334155] text-[#1A0A10] dark:text-[#F8FAFC] text-[13px] font-bold flex items-center gap-2 hover:border-[#800020]/40 dark:hover:border-[#E11D48]/60 transition-all  active:opacity-80"
+              className="h-11 px-4 rounded-xl bg-[#FAF7F8] dark:bg-[#1E293B] border border-[#F0E6E8] dark:border-[#334155] text-[#1A0A10] dark:text-[#F8FAFC] text-[13px] font-bold flex items-center gap-2 hover:border-[#800020]/40 dark:hover:border-[#E11D48]/60 transition-all active:opacity-80"
             >
               <ArrowCounterClockwise className="w-3.5 h-3.5 text-[#DC2626]" weight="bold" />
               <span>ركن غلطاتي ({unresolvedMistakesCount})</span>
@@ -230,6 +259,21 @@ export function DashboardClient({
           </div>
         </div>
       </motion.section>
+
+      {/* 2. Interactive Streak & Daily Challenge Widget */}
+      <StreakWidget
+        initialStreakDays={currentStreakDays}
+        initialIsTodayCompleted={isTodayCompletedState}
+        initialWeekDays={weekDays}
+        onOpenDailyChallenge={() => {
+          const el = document.getElementById("daily-challenge-card");
+          if (el) {
+            el.scrollIntoView({ behavior: "smooth", block: "center" });
+          } else {
+            window.dispatchEvent(new CustomEvent("kholasa_open_entrance_exam"));
+          }
+        }}
+      />
 
       {/* 2. Step 1 in Flow: Continue Learning (Primary Action Card) */}
       {continueLesson && (
@@ -335,7 +379,10 @@ export function DashboardClient({
       {/* 4. Step 3 in Flow: Daily Challenge Card (Inline & Engaging) */}
       {dailyQuestion && (
         <section>
-          <DailyChallengeCard question={dailyQuestion} />
+          <DailyChallengeCard
+            question={dailyQuestion}
+            isTodayAlreadyCompleted={isTodayCompletedState}
+          />
         </section>
       )}
 
