@@ -231,51 +231,62 @@ export function EntranceGatekeeperModal({
 
   if (alreadyCompleted) {
     return (
-      <div className="fixed inset-0 z-50 overflow-y-auto bg-[#F8FAFC] dark:bg-[#0F172A] flex items-center justify-center p-3 sm:p-5 font-sans animate-in fade-in duration-300">
+      <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 font-sans animate-in fade-in duration-300">
         <div
           ref={dialogRef}
           role="dialog"
           aria-modal="true"
           aria-labelledby="daily-gate-complete-title"
           tabIndex={-1}
-          className="w-full max-w-lg bg-white dark:bg-[#1E293B] rounded-2xl border border-[#E2E8F0] dark:border-[#334155] shadow-sm overflow-hidden flex flex-col text-right focus:outline-none"
+          className="w-full max-w-lg bg-white dark:bg-[#1E293B] rounded-2xl border border-[#E2E8F0] dark:border-[#334155] shadow-xl overflow-hidden flex flex-col text-right focus:outline-none relative"
         >
-          <div className="p-5 sm:p-6 bg-[#0F172A] space-y-3">
-            <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-xl bg-[#059669]/10 text-[#34D399] flex items-center justify-center shrink-0">
-                <CheckCircle2 className="w-5 h-5" />
+          {/* Close button */}
+          <button
+            type="button"
+            onClick={handleUnlockAndEnter}
+            aria-label="إغلاق النافذة"
+            className="absolute top-4 left-4 z-10 w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+          >
+            <X className="w-4 h-4" />
+          </button>
+
+          {/* Clean, high-contrast header */}
+          <div className="p-5 sm:p-6 border-b border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#0F172A]/50">
+            <div className="flex items-center gap-3.5">
+              <div className="w-12 h-12 rounded-xl bg-[#059669]/10 text-[#059669] dark:text-[#34D399] flex items-center justify-center shrink-0 border border-[#059669]/20">
+                <CheckCircle2 className="w-6 h-6" />
               </div>
-              <div>
-                <span className="text-[13px] font-bold text-[#34D399]">
+              <div className="space-y-0.5">
+                <span className="text-xs font-bold text-[#059669] dark:text-[#34D399] tracking-wide block">
                   بوابة الدخول اليومية
                 </span>
                 <h2
                   id="daily-gate-complete-title"
-                  className="text-lg font-bold text-[#F8FAFC]"
+                  className="text-lg sm:text-xl font-extrabold text-[#0F172A] dark:text-white"
                 >
-                  أنجزت تحدي اليوم
+                  أنجزت تحدي اليوم بنجاح!
                 </h2>
               </div>
             </div>
           </div>
 
           <div className="p-5 sm:p-6 space-y-3">
-            <p className="text-sm font-bold text-[#0F172A] dark:text-[#F8FAFC] leading-relaxed">
+            <p className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-[#F8FAFC] leading-relaxed">
               لقد أكملت تحدي الدخول اليومي بنجاح، وتم فتح المنصة لك لهذا اليوم.
             </p>
-            <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8] leading-relaxed">
-              يمكنك الآن متابعة المذاكرة والدروس من حيث توقفت، وسيتجدد التحدي غداً.
+            <p className="text-[13px] sm:text-sm text-[#64748B] dark:text-[#94A3B8] leading-relaxed">
+              يمكنك الآن متابعة المذاكرة والدروس من حيث توقفت، وسيتجدد التحدي غداً لتثبيت شعلة الحماس والـ Streak.
             </p>
           </div>
 
-          <div className="p-4 sm:p-5 bg-[#F8FAFC] dark:bg-[#1E293B] border-t border-[#E2E8F0] dark:border-[#334155]">
+          <div className="p-4 sm:p-5 bg-[#F8FAFC] dark:bg-[#0F172A]/40 border-t border-[#E2E8F0] dark:border-[#334155]">
             <button
               type="button"
               onClick={handleUnlockAndEnter}
-              className="w-full h-11 px-6 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] font-bold flex items-center justify-center gap-2 transition-colors active:opacity-80"
+              className="w-full h-11 px-6 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] sm:text-sm font-bold flex items-center justify-center gap-2 transition-all active:opacity-90 shadow-sm"
             >
-              <Unlock className="w-4 h-4" />
-              <span>العودة للمنصة</span>
+              <span>العودة للمنصة والمتابعة</span>
+              <ArrowLeft className="w-4 h-4 rtl:rotate-0" />
             </button>
           </div>
         </div>
@@ -300,7 +311,7 @@ export function EntranceGatekeeperModal({
     objectiveTotal === 1 ? "سؤال موضوعي واحد" : `${objectiveTotal} أسئلة موضوعية`;
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-[#F8FAFC] dark:bg-[#0F172A] flex items-center justify-center p-3 sm:p-5 font-sans animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 font-sans animate-in fade-in duration-300">
       <div
         ref={dialogRef}
         role="dialog"
@@ -740,9 +751,8 @@ export function EntranceGatekeeperModal({
               <button
                 type="button"
                 onClick={handleUnlockAndEnter}
-                className="w-full sm:w-auto h-11 px-8 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] sm:text-sm font-bold flex items-center justify-center gap-2 transition-colors active:opacity-80"
+                className="w-full sm:w-auto h-11 px-8 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] sm:text-sm font-bold flex items-center justify-center gap-2 transition-colors active:opacity-80 shadow-sm"
               >
-                <Unlock className="w-4 h-4" />
                 <span>دخول المنصة الآن والمتابعة للمذاكرة</span>
                 <ArrowLeft className="w-4 h-4" />
               </button>
