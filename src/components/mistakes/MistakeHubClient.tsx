@@ -65,6 +65,7 @@ export function MistakeHubClient({
   const [selectedSubjectId, setSelectedSubjectId] = useState<string>("all");
   const [filterStatus, setFilterStatus] = useState<"all" | "unresolved" | "resolved">("unresolved");
   const [isGeneratingExam, setIsGeneratingExam] = useState(false);
+  const [generationError, setGenerationError] = useState<string | null>(null);
 
   // Inline answering state for questions in mistake hub
   const [activeAnswers, setActiveAnswers] = useState<
@@ -139,6 +140,7 @@ export function MistakeHubClient({
     if (targetMistakes.length === 0) return;
 
     setIsGeneratingExam(true);
+    setGenerationError(null);
     try {
       const res = await fetch("/api/exams/create", {
         method: "POST",
@@ -156,12 +158,12 @@ export function MistakeHubClient({
       if (res.ok && data.examId && data.attemptId) {
         router.push(`/exams/${data.examId}?attemptId=${data.attemptId}`);
       } else {
-        alert(data.error || "تعذر تجهيز الامتحان، حاول مرة أخرى.");
+        setGenerationError(data.error || "تعذر تجهيز الامتحان، حاول مرة أخرى.");
         setIsGeneratingExam(false);
       }
     } catch (err) {
       console.error(err);
-      alert("حدث خطأ في الاتصال، يرجى المحاولة لاحقاً.");
+      setGenerationError("حدث خطأ في الاتصال، يرجى المحاولة لاحقاً.");
       setIsGeneratingExam(false);
     }
   };
@@ -214,6 +216,20 @@ export function MistakeHubClient({
           </div>
         </div>
       </div>
+
+      {/* Generation Error Alert */}
+      {generationError && (
+        <div className="p-3.5 rounded-xl bg-[#DC2626]/10 border border-[#DC2626]/20 text-[#DC2626] dark:text-[#F87171] text-xs font-bold flex items-center justify-between gap-3">
+          <span>{generationError}</span>
+          <button
+            type="button"
+            onClick={() => setGenerationError(null)}
+            className="text-[11px] underline hover:no-underline"
+          >
+            إغلاق
+          </button>
+        </div>
+      )}
 
       {/* Quick Exam Banner when there are unresolved mistakes */}
       {actionableUnresolvedCount > 0 && (

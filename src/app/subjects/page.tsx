@@ -73,9 +73,6 @@ export default async function SubjectsPage() {
 
         {/* Hero Banner Section */}
         <section className="relative overflow-hidden rounded-3xl p-6 sm:p-10 bg-white dark:bg-[#1E293B] border border-[#E8E9ED] dark:border-[#334155] shadow-xs">
-          {/* Subtle Ambient Accent */}
-          <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-bl from-[#800020]/10 via-[#800020]/5 to-transparent rounded-full blur-2xl pointer-events-none -mr-20 -mt-20" />
-
           <div className="relative z-10 space-y-6">
             {/* Top Badge & Action Button */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">

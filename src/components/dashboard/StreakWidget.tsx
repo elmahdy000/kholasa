@@ -37,6 +37,7 @@ export function StreakWidget({
   const [weekDays, setWeekDays] = useState<WeekDayProgress[]>(initialWeekDays);
   const [isCheckingIn, setIsCheckingIn] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
+  const [checkInError, setCheckInError] = useState<string | null>(null);
 
   // Listen to cross-component streak updates (e.g. from DailyChallengeCard or Entrance Exam)
   useEffect(() => {
@@ -65,6 +66,7 @@ export function StreakWidget({
     if (isTodayCompleted || isCheckingIn) return;
 
     setIsCheckingIn(true);
+    setCheckInError(null);
     try {
       const res = await fetch("/api/student/daily-checkin/quick", {
         method: "POST",
@@ -91,7 +93,7 @@ export function StreakWidget({
       );
     } catch (err) {
       console.error(err);
-      alert(err instanceof Error ? err.message : "تعذر تسجيل الحضور، تأكد من الاتصال");
+      setCheckInError(err instanceof Error ? err.message : "تعذر تسجيل الحضور، تأكد من الاتصال وجرب مرة أخرى");
     } finally {
       setIsCheckingIn(false);
     }
@@ -251,6 +253,20 @@ export function StreakWidget({
           </div>
         </div>
       </div>
+
+      {/* Inline Error Notice */}
+      {checkInError && (
+        <div className="mt-3 p-3 rounded-xl bg-[#DC2626]/10 border border-[#DC2626]/20 text-[#DC2626] dark:text-[#F87171] text-xs font-bold flex items-center justify-between gap-2">
+          <span>{checkInError}</span>
+          <button
+            type="button"
+            onClick={() => setCheckInError(null)}
+            className="text-[11px] underline hover:no-underline"
+          >
+            إغلاق
+          </button>
+        </div>
+      )}
 
       {/* Celebration Banner (Solid Clean Green) */}
       <AnimatePresence>

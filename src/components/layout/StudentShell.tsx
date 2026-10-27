@@ -72,7 +72,7 @@ function MobileBottomNav({ items, pathname }: { items: NavItem[]; pathname: stri
               <div
                 className={cn(
                   "w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-300 border-2",
-                  "bg-linear-to-b from-[#800020] via-[#940D2F] to-[#66001A] dark:from-[#A30D36] dark:via-[#BD123F] dark:to-[#800020]",
+                  "bg-[#800020] hover:bg-[#66001A] dark:bg-[#A30D36] dark:hover:bg-[#BD123F]",
                   "text-white border-white dark:border-[#081426] shadow-[0_6px_20px_rgba(128,0,32,0.38)] dark:shadow-[0_0_24px_rgba(163,13,54,0.55)] group-hover:scale-105",
                   isActive
                     ? "ring-2 ring-[#E59A18] dark:ring-[#FBBF24] shadow-[0_6px_24px_rgba(229,154,24,0.4)] dark:shadow-[0_0_24px_rgba(251,191,36,0.5)]"

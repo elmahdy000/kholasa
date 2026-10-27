@@ -107,12 +107,13 @@ export function ExamSolver({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isRevealing, setIsRevealing] = useState(false);
   const [revealed, setRevealed] = useState<Record<string, RevealedAnswer>>({});
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [practiceError, setPracticeError] = useState<string | null>(null);
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const executeSubmitRef = useRef<() => void>(() => {});
 
   const handleAutoSubmit = () => {
-    alert("الوقت خلص! هنسلّم إجاباتك دلوقتي تلقائياً.");
     executeSubmitRef.current();
   };
 
@@ -188,7 +189,7 @@ export function ExamSolver({
       }));
     } catch (err) {
       console.error(err);
-      alert(
+      setPracticeError(
         err instanceof Error
           ? err.message
           : "تعذر عرض الإجابة، تأكد من الاتصال وجرب مرة أخرى."
@@ -207,6 +208,7 @@ export function ExamSolver({
 
   const executeSubmit = useCallback(async () => {
     setIsSubmitting(true);
+    setSubmitError(null);
     try {
       const res = await fetch(`/api/exams/${exam.id}/submit`, {
         method: "POST",
@@ -222,11 +224,13 @@ export function ExamSolver({
       if (res.ok) {
         router.push(`/exams/${exam.id}/results?attemptId=${attemptId}`);
       } else {
-        alert(data.error || "حصلت مشكلة أثناء تسليم الامتحان، جرب تاني.");
+        setSubmitError(data.error || "حصلت مشكلة أثناء تسليم الامتحان، جرب تاني.");
+        setShowConfirmModal(true);
       }
     } catch (err) {
       console.error(err);
-      alert("مشكلة في الاتصال بالإنترنت أثناء التسليم، اتأكد من النت وجرب تاني.");
+      setSubmitError("مشكلة في الاتصال بالإنترنت أثناء التسليم، اتأكد من النت وجرب تاني.");
+      setShowConfirmModal(true);
     } finally {
       setIsSubmitting(false);
     }
@@ -598,10 +602,17 @@ export function ExamSolver({
               </div>
             </div>
 
-            {unansweredCount > 0 && (
+            {unansweredCount > 0 && !submitError && (
               <div className="p-3 rounded-lg bg-[#D97706]/10 border border-[#D97706]/20 text-[13px] font-bold text-[#D97706] flex items-center gap-2">
                 <Warning className="w-4 h-4 shrink-0" weight="fill" />
                 <span>خلّي بالك! لسه في أسئلة ما جاوبتهاش.</span>
+              </div>
+            )}
+
+            {submitError && (
+              <div className="p-3 rounded-lg bg-[#DC2626]/10 border border-[#DC2626]/30 text-[13px] font-bold text-[#DC2626] dark:text-[#F87171] flex items-center gap-2">
+                <Warning className="w-4 h-4 shrink-0" weight="fill" />
+                <span>{submitError}</span>
               </div>
             )}
 

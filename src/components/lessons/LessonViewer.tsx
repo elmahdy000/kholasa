@@ -177,6 +177,7 @@ export function LessonViewer({
   const [isCompleted, setIsCompleted] = useState(initialIsCompleted);
   const [isTogglingBookmark, setIsTogglingBookmark] = useState(false);
   const [isTogglingComplete, setIsTogglingComplete] = useState(false);
+  const [bookmarkNotice, setBookmarkNotice] = useState<string | null>(null);
 
   // Audio Player State
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
@@ -259,9 +260,11 @@ export function LessonViewer({
 
   const toggleBookmark = async () => {
     if (!userId) {
-      alert("يرجى تسجيل الدخول لحفظ الدرس في المفضلة");
+      setBookmarkNotice("يرجى تسجيل الدخول لحفظ الدرس في المفضلة");
+      setTimeout(() => setBookmarkNotice(null), 3500);
       return;
     }
+    setBookmarkNotice(null);
     setIsTogglingBookmark(true);
     try {
       const res = await fetch("/api/bookmarks", {
@@ -380,7 +383,12 @@ export function LessonViewer({
         </div>
 
         {/* Actions (Bookmark & Complete) */}
-        <div className="flex items-center gap-2 self-start sm:self-center">
+        <div className="flex items-center gap-2 self-start sm:self-center relative">
+          {bookmarkNotice && (
+            <span className="absolute -top-8 start-0 text-xs font-bold text-[#D97706] dark:text-[#FBBF24] bg-[#D97706]/10 px-2.5 py-1 rounded-md border border-[#D97706]/20 whitespace-nowrap animate-in fade-in">
+              {bookmarkNotice}
+            </span>
+          )}
           <button
             onClick={toggleBookmark}
             disabled={isTogglingBookmark}
@@ -1047,13 +1055,13 @@ export function LessonViewer({
                 </div>
 
                 {/* Map Canvas or Outline */}
-                <div className="p-6 min-h-[400px] overflow-auto">
+                <div className="p-4 sm:p-6 min-h-[400px] overflow-auto overscroll-contain">
                   {!isOutlineMode ? (
                     <div
                       className="transition-transform duration-200 origin-top-right"
                       style={{ transform: `scale(${zoomLevel})` }}
                     >
-                      <div className="flex flex-col items-center gap-6 min-w-[600px]">
+                      <div className="flex flex-col items-center gap-6 min-w-[480px] sm:min-w-[600px]">
                         {(() => {
                           const mindNodes = (lesson.mindMap?.nodes as MindNode[]) || [];
                           const rootNodes = mindNodes.filter((n) => n.level === 0);

@@ -560,7 +560,7 @@ export function MediaManagerClient({ initialFiles }: MediaManagerClientProps) {
               {previewFile.type === "document" && (
                 <div className="w-full h-full flex flex-col items-center">
                   {previewFile.ext === ".pdf" ? (
-                    <div className="w-full h-[65vh] rounded-xl overflow-hidden border border-[#E2E8F0] dark:border-[#334155] bg-white">
+                    <div className="w-full h-[65vh] rounded-xl overflow-hidden border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B]">
                       <iframe
                         src={previewFile.url}
                         title={previewFile.name}

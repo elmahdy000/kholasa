@@ -50,6 +50,7 @@ export function DailyChallengeCard({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [revealed, setRevealed] = useState<RevealedAnswer | null>(null);
   const [streakEarned, setStreakEarned] = useState<number | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   if (!question) {
     return null;
@@ -59,6 +60,7 @@ export function DailyChallengeCard({
     if (!selectedOptionId || isAnswered || isSubmitting) return;
 
     setIsSubmitting(true);
+    setSubmitError(null);
     try {
       const res = await fetch(`/api/questions/${question.id}/answer`, {
         method: "POST",
@@ -85,7 +87,7 @@ export function DailyChallengeCard({
       }
     } catch (err) {
       console.error(err);
-      alert(
+      setSubmitError(
         err instanceof Error
           ? err.message
           : "تعذر التحقق من الإجابة، تأكد من الاتصال وجرب مرة أخرى."
@@ -205,13 +207,26 @@ export function DailyChallengeCard({
           })}
         </div>
 
+        {submitError && (
+          <div className="p-3 rounded-xl bg-[#DC2626]/10 border border-[#DC2626]/20 text-[#DC2626] dark:text-[#F87171] text-xs font-bold flex items-center justify-between gap-2">
+            <span>{submitError}</span>
+            <button
+              type="button"
+              onClick={() => setSubmitError(null)}
+              className="text-[11px] underline hover:no-underline"
+            >
+              إغلاق
+            </button>
+          </div>
+        )}
+
         {/* Action / Result Feedback */}
         {!isAnswered ? (
           <div className="pt-2 flex items-center justify-end">
             <button
               onClick={handleSubmit}
               disabled={!selectedOptionId || isSubmitting}
-              className="w-full sm:w-auto h-11 px-8 rounded-xl bg-[#800020] hover:bg-[#66001A] dark:bg-[#E11D48] dark:hover:bg-[#BE123C] disabled:opacity-40 text-white text-[13px] font-bold flex items-center justify-center gap-2 transition-all  active:opacity-80"
+              className="w-full sm:w-auto h-11 px-8 rounded-xl bg-[#800020] hover:bg-[#66001A] dark:bg-[#E11D48] dark:hover:bg-[#BE123C] disabled:opacity-40 text-white text-[13px] font-bold flex items-center justify-center gap-2 transition-all active:opacity-80 shadow-sm"
             >
               <Sparkle className="w-4 h-4" weight="bold" />
               <span>{isSubmitting ? "بنراجع إجابتك..." : "أكّد إجابتك"}</span>
