@@ -119,6 +119,10 @@ export function DashboardClient({
     window.addEventListener("kholasa_streak_updated", handleStreakUpdate);
     return () => window.removeEventListener("kholasa_streak_updated", handleStreakUpdate);
   }, []);
+
+  const displayName = userName?.replace(/\s*\([^)]*\)/g, "").trim() || "طالبنا العزيز";
+  const userTrack = userName?.match(/\(([^)]+)\)/)?.[1];
+
   const stats = [
     {
       icon: BookOpen,
@@ -212,20 +216,27 @@ export function DashboardClient({
               <span className="w-2 h-2 rounded-full bg-[#059669] animate-pulse" />
               <span>منصة الخلاصة • مسارك الدراسي</span>
               {currentStreakDays > 0 ? (
-                <span className="inline-flex items-center gap-1 font-mono text-[13px] text-[#D97706] dark:text-[#FBBF24] border-r border-[#F0E6E8] dark:border-[#334155] pr-2 mr-1">
+                <span className="inline-flex items-center gap-1 text-[13px] font-bold text-[#D97706] dark:text-[#FBBF24] border-r border-[#F0E6E8] dark:border-[#334155] pr-2 mr-1">
                   <Fire className="w-3.5 h-3.5 fill-current" />
-                  <span>{formatArabicDays(currentStreakDays)}</span>
+                  <span>{currentStreakDays === 1 ? "يوم واحد" : formatArabicDays(currentStreakDays)}</span>
                 </span>
               ) : (
-                <span className="inline-flex items-center gap-1 text-[12px] text-[#D97706] dark:text-[#FBBF24] border-r border-[#F0E6E8] dark:border-[#334155] pr-2 mr-1">
+                <span className="inline-flex items-center gap-1 text-[12px] font-bold text-[#D97706] dark:text-[#FBBF24] border-r border-[#F0E6E8] dark:border-[#334155] pr-2 mr-1">
                   <Fire className="w-3.5 h-3.5 text-[#D97706]" />
-                  <span>شعلة جديدة اليوم</span>
+                  <span>ابدأ شعلتك اليوم</span>
                 </span>
               )}
             </div>
-            <h1 className="text-2xl sm:text-2xl sm:text-3xl lg:text-4xl font-bold text-[#1A0A10] dark:text-[#F8FAFC] leading-tight">
-              أهلاً بك، {userName || "طالبنا العزيز"}
-            </h1>
+            <div className="flex items-center gap-2.5 flex-wrap">
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#1A0A10] dark:text-[#F8FAFC] leading-tight">
+                أهلاً بك، {displayName}
+              </h1>
+              {userTrack && (
+                <span className="text-[12px] font-bold px-3 py-0.5 rounded-full bg-[#800020]/10 dark:bg-[#800020]/25 text-[#800020] dark:text-[#FB7185] border border-[#800020]/20 dark:border-[#FB7185]/30">
+                  {userTrack}
+                </span>
+              )}
+            </div>
             <p className="text-[13px] sm:text-sm text-[#735C63] dark:text-[#94A3B8] font-medium max-w-lg leading-relaxed">
               افهم المفاهيم خطوة بخطوة بالخلاصة المركزة، واختبر استيعابك فوراً.
             </p>

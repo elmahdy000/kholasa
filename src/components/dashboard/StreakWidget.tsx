@@ -8,7 +8,6 @@ import {
   Lightning,
   Sparkle,
   Trophy,
-  ArrowLeft,
   CalendarCheck,
 } from "@phosphor-icons/react";
 import { formatArabicDays } from "@/lib/utils";
@@ -111,10 +110,24 @@ export function StreakWidget({
     return `مستوى أسطوري! ${formatArabicDays(streakDays)} من الالتزام اليومي والتعلم المستمر، شعلتك لا تنطفئ!`;
   };
 
+  const getStreakUnitLabel = () => {
+    if (streakDays === 0) return "يوم • ابدأ شعلتك";
+    if (streakDays === 1) return "يوم من الالتزام";
+    if (streakDays === 2) return "يومان متتاليان";
+    if (streakDays <= 10) return "أيام متتالية";
+    return "يوماً متتالياً";
+  };
+
   return (
-    <div className="relative rounded-2xl bg-gradient-to-br from-[#FFF8EE] via-white to-[#FDF4EB] dark:from-[#1E1B18] dark:via-[#0F172A] dark:to-[#1F1612] border border-[#F59E0B]/30 dark:border-[#D97706]/40 p-5 sm:p-6 shadow-sm overflow-hidden text-right">
+    <div
+      style={{
+        background:
+          "linear-gradient(135deg, rgba(254, 243, 199, 0.4) 0%, rgba(255, 255, 255, 0.98) 50%, rgba(254, 243, 199, 0.3) 100%)",
+      }}
+      className="relative rounded-2xl border border-[#F59E0B]/40 dark:border-[#D97706]/40 p-5 sm:p-6 shadow-sm overflow-hidden text-right dark:bg-[#0F172A]"
+    >
       {/* Background Decorative Glow */}
-      <div className="absolute -top-12 -left-12 w-48 h-48 bg-[#F59E0B]/10 dark:bg-[#F59E0B]/15 rounded-full blur-2xl pointer-events-none" />
+      <div className="absolute -top-12 -left-12 w-48 h-48 bg-[#F59E0B]/15 rounded-full blur-2xl pointer-events-none" />
 
       {/* Main Content Layout */}
       <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
@@ -122,8 +135,13 @@ export function StreakWidget({
         <div className="flex items-start gap-4 sm:gap-5 min-w-0">
           {/* Animated Flame Icon Container */}
           <div className="relative shrink-0 mt-0.5">
-            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-[#F59E0B] to-[#D97706] text-white flex items-center justify-center shadow-md shadow-[#F59E0B]/25">
-              <Fire className="w-8 h-8 sm:w-9 sm:h-9 fill-current animate-bounce-subtle" weight="fill" />
+            <div
+              style={{
+                background: "linear-gradient(135deg, #F59E0B 0%, #D97706 100%)",
+              }}
+              className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center shadow-lg shadow-[#F59E0B]/35 border border-[#F59E0B]/40"
+            >
+              <Fire className="w-8 h-8 sm:w-9 sm:h-9 text-white drop-shadow" weight="fill" />
             </div>
             {isTodayCompleted && (
               <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-[#059669] text-white flex items-center justify-center shadow-sm border-2 border-white dark:border-[#0F172A]">
@@ -151,11 +169,11 @@ export function StreakWidget({
             </div>
 
             <div className="flex items-baseline gap-2">
-              <span className="text-3xl sm:text-4xl font-extrabold font-mono text-[#0F172A] dark:text-white tracking-tight">
+              <span className="text-3xl sm:text-4xl font-extrabold text-[#0F172A] dark:text-white tracking-tight">
                 {streakDays}
               </span>
               <span className="text-sm sm:text-base font-bold text-[#D97706] dark:text-[#FBBF24]">
-                {formatArabicDays(streakDays)} متتالية
+                {getStreakUnitLabel()}
               </span>
             </div>
 
@@ -168,22 +186,23 @@ export function StreakWidget({
         {/* Center/Left Side: 7-Day Week Calendar & Quick Action */}
         <div className="flex flex-col sm:flex-row lg:flex-col xl:flex-row items-stretch sm:items-center gap-4 shrink-0">
           {/* 7-Day Mini Calendar */}
-          <div className="bg-white/80 dark:bg-[#1E293B]/80 backdrop-blur-sm p-2.5 sm:p-3 rounded-xl border border-[#F0E6E8] dark:border-[#334155] flex items-center justify-between gap-1.5 sm:gap-2">
+          <div className="bg-white/90 dark:bg-[#1E293B]/90 backdrop-blur-sm p-2.5 sm:p-3 rounded-xl border border-[#F0E6E8] dark:border-[#334155] flex items-center justify-between gap-1.5 sm:gap-2 shadow-sm">
             {weekDays.map((day) => {
+              const cleanDayLabel = day.dayName.replace(/^ال/, "");
               return (
                 <div
                   key={day.dayKey}
-                  className={`flex flex-col items-center justify-center w-8 sm:w-9 py-1.5 rounded-lg text-center transition-all ${
+                  className={`flex flex-col items-center justify-center min-w-[36px] sm:min-w-[42px] px-1 py-1.5 rounded-lg text-center transition-all ${
                     day.isCompleted
-                      ? "bg-[#D97706]/15 dark:bg-[#F59E0B]/20 text-[#D97706] dark:text-[#FBBF24] font-bold"
+                      ? "bg-[#D97706]/15 dark:bg-[#F59E0B]/20 text-[#D97706] dark:text-[#FBBF24] font-bold border border-[#D97706]/30"
                       : day.isToday
-                      ? "bg-[#FAF7F8] dark:bg-[#334155] border-2 border-dashed border-[#D97706] text-[#D97706] dark:text-[#FBBF24]"
-                      : "bg-[#FAF7F8]/60 dark:bg-[#1E293B]/40 text-[#94A3B8]"
+                      ? "bg-white dark:bg-[#334155] border-2 border-dashed border-[#D97706] text-[#D97706] dark:text-[#FBBF24] font-bold"
+                      : "bg-[#FAF7F8]/80 dark:bg-[#1E293B]/40 text-[#94A3B8]"
                   }`}
                   title={`${day.dayName}: ${day.isCompleted ? "مكتمل" : day.isToday ? "اليوم" : "لم يكتمل"}`}
                 >
-                  <span className="text-[10px] font-medium leading-none mb-1">
-                    {day.dayName.slice(0, 2)}
+                  <span className="text-[11px] font-bold leading-none mb-1">
+                    {cleanDayLabel}
                   </span>
                   {day.isCompleted ? (
                     <Fire className="w-4 h-4 fill-current text-[#D97706] dark:text-[#FBBF24]" weight="fill" />
@@ -203,6 +222,9 @@ export function StreakWidget({
               <>
                 <button
                   type="button"
+                  style={{
+                    background: "linear-gradient(135deg, #D97706 0%, #B45309 100%)",
+                  }}
                   onClick={() => {
                     if (onOpenDailyChallenge) {
                       onOpenDailyChallenge();
@@ -215,7 +237,7 @@ export function StreakWidget({
                       }
                     }
                   }}
-                  className="flex-1 sm:flex-initial h-11 px-4 sm:px-5 rounded-xl bg-gradient-to-r from-[#D97706] to-[#B45309] hover:from-[#B45309] hover:to-[#92400E] text-white text-[13px] font-bold flex items-center justify-center gap-2 shadow-sm transition-all interactive-tap"
+                  className="flex-1 sm:flex-initial h-11 px-4 sm:px-5 rounded-xl text-white text-[13px] font-bold flex items-center justify-center gap-2 shadow-md shadow-[#D97706]/20 hover:opacity-95 transition-all interactive-tap"
                 >
                   <Lightning className="w-4 h-4" weight="fill" />
                   <span>حل تحدي اليوم</span>
@@ -254,7 +276,10 @@ export function StreakWidget({
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="mt-4 p-3 rounded-xl bg-gradient-to-r from-[#059669] to-[#047857] text-white text-[13px] font-bold flex items-center justify-between gap-3 shadow-md"
+            style={{
+              background: "linear-gradient(135deg, #059669 0%, #047857 100%)",
+            }}
+            className="mt-4 p-3 rounded-xl text-white text-[13px] font-bold flex items-center justify-between gap-3 shadow-md"
           >
             <div className="flex items-center gap-2">
               <Sparkle className="w-5 h-5 fill-current animate-spin-slow" weight="fill" />
