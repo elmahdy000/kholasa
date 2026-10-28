@@ -3,6 +3,7 @@ import { ParsedQuestion, QuestionType, QuestionDifficulty } from "@/lib/question
 export interface TrackItem {
   id: string;
   name: string;
+  nameEn?: string | null;
   code: string;
 }
 

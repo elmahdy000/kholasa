@@ -1,6 +1,7 @@
 "use client";
 
-import { BookOpen, Layers } from "lucide-react";
+import React from "react";
+import { BookOpen, Layers, GraduationCap, School, Compass, HelpCircle } from "lucide-react";
 import { GradeItem, TrackItem, SubjectItem, UnitItem } from "./types";
 import { QuestionType, QuestionDifficulty } from "@/lib/question-parser";
 
@@ -59,44 +60,52 @@ export function HierarchySelector({
   selectedDifficulty,
   onDifficultyChange,
 }: HierarchySelectorProps) {
+  const g10 = grades?.find((g) => g.code === "bacc_g10") || grades?.[0];
+  const g11 = grades?.find((g) => g.code === "bacc_g11") || grades?.[1];
+
+  const isG10 =
+    activeGrade?.code === "bacc_g10" ||
+    (!activeGrade && (selectedGradeId.includes("g10") || !selectedGradeId));
+  const isG11 = activeGrade?.code === "bacc_g11" || selectedGradeId.includes("g11");
+
   return (
-    <div className="space-y-5">
-      {/* STEP 1: Strict Curriculum Hierarchy Destination */}
-      <div className="p-5 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0]/90 dark:border-[#334155]/90 space-y-5">
-        <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#334155]/80 pb-3">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-[#800020] text-white flex items-center justify-center text-[13px] font-bold shadow-sm">
-              1
+    <div className="space-y-4">
+      {/* 1. Academic Destination Card */}
+      <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-4">
+        <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800/80">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-[#800020]/10 dark:bg-[#800020]/25 text-[#800020] dark:text-[#FB7185] flex items-center justify-center">
+              <GraduationCap className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-[14px] font-bold text-[#0F172A] dark:text-white">
-                تحديد المسار الهرمي للمنهج الدراسي
-              </h3>
-              <span className="text-[12px] text-[#64748B] dark:text-[#94A3B8]">
-                الصف الدراسي ← فئة المدرسة ← المسار التخصصي ← المادة المقررة ← الوحدة ← الدرس
-              </span>
+              <h2 className="text-sm font-bold text-slate-900 dark:text-white">
+                تحديد مكان الأسئلة في المنهج
+              </h2>
+              <p className="text-[12px] text-slate-500 dark:text-slate-400">
+                اختر الصف وفئة المدرسة والمادة لإلحاق الأسئلة بمكانها المعتمد بدقة
+              </p>
             </div>
           </div>
         </div>
 
-        {/* Sub-steps 1, 2: Grade and School Category */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* 1. Grade Selector */}
-          <div className="space-y-2">
-            <label className="text-[13px] font-bold text-[#0F172A] dark:text-white block">
-              1. الصف الدراسي *
+        {/* Grade and School Category Buttons */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {/* Grade Selector */}
+          <div>
+            <label className="text-[12px] font-bold text-slate-700 dark:text-slate-300 block mb-1.5">
+              الصف الدراسي (البكالوريا المصرية)
             </label>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-1.5 p-1 bg-slate-50 dark:bg-slate-900/60 rounded-xl border border-slate-200/80 dark:border-slate-800">
               <button
                 type="button"
                 onClick={() => {
-                  const g10 = grades?.find((g) => g.code === "bacc_g10");
                   if (g10) onGradeChange(g10.id);
+                  else onGradeChange("bacc_g10");
                 }}
-                className={`h-11 px-3 rounded-xl border text-[13px] font-bold transition-all flex items-center justify-center gap-2 ${
-                  activeGrade?.code === "bacc_g10" || (!activeGrade && selectedGradeId.includes("g10"))
-                    ? "bg-[#800020] text-white border-[#800020] shadow-sm"
-                    : "bg-[#F8FAFC] dark:bg-[#0F172A] text-[#0F172A] dark:text-white border-[#E2E8F0] dark:border-[#334155] hover:border-[#800020]"
+                className={`h-9 px-2 rounded-lg text-[13px] font-bold transition-all flex items-center justify-center gap-1.5 ${
+                  isG10
+                    ? "bg-[#800020] text-white shadow-sm"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-slate-800/60"
                 }`}
               >
                 <span>أولى بكالوريا</span>
@@ -105,13 +114,13 @@ export function HierarchySelector({
               <button
                 type="button"
                 onClick={() => {
-                  const g11 = grades?.find((g) => g.code === "bacc_g11");
                   if (g11) onGradeChange(g11.id);
+                  else onGradeChange("bacc_g11");
                 }}
-                className={`h-11 px-3 rounded-xl border text-[13px] font-bold transition-all flex items-center justify-center gap-2 ${
-                  activeGrade?.code === "bacc_g11" || selectedGradeId.includes("g11")
-                    ? "bg-[#800020] text-white border-[#800020] shadow-sm"
-                    : "bg-[#F8FAFC] dark:bg-[#0F172A] text-[#0F172A] dark:text-white border-[#E2E8F0] dark:border-[#334155] hover:border-[#800020]"
+                className={`h-9 px-2 rounded-lg text-[13px] font-bold transition-all flex items-center justify-center gap-1.5 ${
+                  isG11
+                    ? "bg-[#800020] text-white shadow-sm"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-slate-800/60"
                 }`}
               >
                 <span>تانية بكالوريا</span>
@@ -119,97 +128,109 @@ export function HierarchySelector({
             </div>
           </div>
 
-          {/* 2. School Category Selector */}
-          <div className="space-y-2">
-            <label className="text-[13px] font-bold text-[#0F172A] dark:text-white block">
-              2. فئة المدرسة التعليمية *
+          {/* School Category Selector */}
+          <div>
+            <label className="text-[12px] font-bold text-slate-700 dark:text-slate-300 block mb-1.5 flex items-center gap-1">
+              <span>فئة المدرسة</span>
+              <span className="text-[11px] font-normal text-slate-400">(عزل المحتوى)</span>
             </label>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-1.5 p-1 bg-slate-50 dark:bg-slate-900/60 rounded-xl border border-slate-200/80 dark:border-slate-800">
               <button
                 type="button"
                 onClick={() => onCategoryChange("ARABIC")}
-                className={`h-11 px-3 rounded-xl border text-[13px] font-bold transition-all flex items-center justify-center gap-2 ${
+                className={`h-9 px-2 rounded-lg text-[13px] font-bold transition-all flex items-center justify-center gap-1.5 ${
                   selectedSchoolCategory === "ARABIC"
-                    ? "bg-[#059669] text-white border-[#059669] shadow-sm"
-                    : "bg-[#F8FAFC] dark:bg-[#0F172A] text-[#0F172A] dark:text-white border-[#E2E8F0] dark:border-[#334155] hover:border-[#059669]"
+                    ? "bg-[#800020] text-white shadow-sm"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-slate-800/60"
                 }`}
               >
-                <span>مدارس عربي</span>
+                <School className="w-3.5 h-3.5" />
+                <span>عربي</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => onCategoryChange("LANGUAGES")}
-                className={`h-11 px-3 rounded-xl border text-[13px] font-bold transition-all flex items-center justify-center gap-2 ${
+                className={`h-9 px-2 rounded-lg text-[13px] font-bold transition-all flex items-center justify-center gap-1.5 ${
                   selectedSchoolCategory === "LANGUAGES"
-                    ? "bg-[#0284C7] text-white border-[#0284C7] shadow-sm"
-                    : "bg-[#F8FAFC] dark:bg-[#0F172A] text-[#0F172A] dark:text-white border-[#E2E8F0] dark:border-[#334155] hover:border-[#0284C7]"
+                    ? "bg-[#800020] text-white shadow-sm"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-slate-800/60"
                 }`}
               >
-                <span>مدارس لغات (Language)</span>
+                <School className="w-3.5 h-3.5" />
+                <span>لغات (Languages)</span>
               </button>
             </div>
           </div>
         </div>
 
-        {/* Sub-steps 3, 4: Track (if applicable) and Eligible Subject */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
-          {requiresTrack && (
-            <div>
-              <label className="text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC] block mb-2">
-                3. المسار التخصصي (اختياري / حسب الشعبة)
-              </label>
-              <select
-                value={selectedTrackId}
-                onChange={(e) => onTrackChange(e.target.value)}
-                className="w-full h-11 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#0F172A] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#800020]"
-              >
-                <option value="">كافة المسارات / المسار المشترك</option>
-                {availableTracks.map((t) => (
-                  <option key={t.id} value={t.id}>
-                    {t.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-
-          <div className={!requiresTrack ? "md:col-span-2" : ""}>
-            <label className="text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC] block mb-2">
-              4. المادة المقررة للفئة المحددة *
+        {/* Academic Track (shown if G11 has tracks) */}
+        {requiresTrack && (
+          <div className="pt-0.5">
+            <label className="text-[12px] font-bold text-slate-700 dark:text-slate-300 block mb-1.5">
+              المسار التخصصي (تانية بكالوريا)
             </label>
             <div className="relative">
               <select
-                value={selectedSubjectId}
-                onChange={(e) => onSubjectChange(e.target.value)}
-                className="w-full h-11 px-3 pr-8 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#0F172A] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#800020]"
+                value={selectedTrackId}
+                onChange={(e) => onTrackChange(e.target.value)}
+                className="w-full h-10 px-3 pr-9 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 text-[13px] font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#800020]/20 focus:border-[#800020]"
               >
-                {eligibleSubjects.length === 0 ? (
-                  <option value="">لا توجد مواد مهيأة لهذه الفئة حالياً</option>
-                ) : (
-                  eligibleSubjects.map((s) => (
-                    <option key={s.id} value={s.id}>
-                      {s.name} ({s.schoolCategory === "ARABIC" ? "عربي" : "لغات / English"})
-                    </option>
-                  ))
-                )}
+                <option value="">كافة المسارات / المسار العام المشترك</option>
+                {availableTracks.map((t) => (
+                  <option key={t.id} value={t.id}>
+                    {t.name} {t.nameEn ? `(${t.nameEn})` : ""}
+                  </option>
+                ))}
               </select>
-              <BookOpen className="w-4 h-4 text-[#94A3B8] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <Compass className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
           </div>
+        )}
+
+        {/* Subject Selector */}
+        <div>
+          <label className="text-[12px] font-bold text-slate-700 dark:text-slate-300 block mb-1.5">
+            المادة الدراسية المقررة
+          </label>
+          <div className="relative">
+            <select
+              value={selectedSubjectId}
+              onChange={(e) => onSubjectChange(e.target.value)}
+              className="w-full h-10 px-3 pr-9 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 text-[13px] font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#800020]/20 focus:border-[#800020]"
+            >
+              {eligibleSubjects.length === 0 ? (
+                <option value="">لا توجد مواد دراسية مسجلة لهذه الفئة حتى الآن</option>
+              ) : (
+                eligibleSubjects.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.name} ({s.schoolCategory === "ARABIC" ? "عربي" : "لغات / English"})
+                  </option>
+                ))
+              )}
+            </select>
+            <BookOpen className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+          </div>
+          {eligibleSubjects.length === 0 && (
+            <p className="text-[11px] text-amber-600 dark:text-amber-400 mt-1">
+              تنبيه: يمكنك إضافة المادة أولاً من صفحة المناهج ثم العودة للاستيراد إليها.
+            </p>
+          )}
         </div>
 
-        {/* Sub-steps 5, 6: Unit and Scope */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
+        {/* Unit and Scope Row */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-0.5">
+          {/* Unit */}
           <div>
-            <label className="text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC] block mb-2">
-              5. الوحدة الدراسية *
+            <label className="text-[12px] font-bold text-slate-700 dark:text-slate-300 block mb-1.5">
+              الوحدة الدراسية
             </label>
             <div className="relative">
               <select
                 value={selectedUnitId}
                 onChange={(e) => onUnitChange(e.target.value)}
-                className="w-full h-11 px-3 pr-8 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#0F172A] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#800020]"
+                disabled={!activeSubject || !activeSubject.units?.length}
+                className="w-full h-10 px-3 pr-9 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 text-[13px] font-bold text-slate-900 dark:text-white disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-[#800020]/20 focus:border-[#800020]"
               >
                 <option value="">-- اختر الوحدة الدراسية --</option>
                 {activeSubject?.units.map((u) => (
@@ -218,22 +239,23 @@ export function HierarchySelector({
                   </option>
                 ))}
               </select>
-              <Layers className="w-4 h-4 text-[#94A3B8] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <Layers className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
           </div>
 
-          <div className="space-y-2">
-            <label className="text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC] block">
-              6. نطاق ربط الأسئلة *
+          {/* Scope Selector */}
+          <div>
+            <label className="text-[12px] font-bold text-slate-700 dark:text-slate-300 block mb-1.5">
+              نطاق إلحاق الأسئلة
             </label>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-1.5 p-1 bg-slate-50 dark:bg-slate-900/60 rounded-xl border border-slate-200/80 dark:border-slate-800">
               <button
                 type="button"
                 onClick={() => onScopeChange("LESSON")}
-                className={`h-11 px-3 rounded-xl border text-[12px] font-bold transition-all flex items-center justify-center gap-2 ${
+                className={`h-8 px-2 rounded-lg text-[12px] font-bold transition-all flex items-center justify-center gap-1 ${
                   selectedScope === "LESSON"
-                    ? "bg-[#800020] text-white border-[#800020] shadow-sm"
-                    : "bg-[#F8FAFC] dark:bg-[#0F172A] text-[#64748B] border-[#E2E8F0] dark:border-[#334155]"
+                    ? "bg-[#800020] text-white shadow-sm"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                 }`}
               >
                 <span>درس محدد</span>
@@ -242,104 +264,110 @@ export function HierarchySelector({
               <button
                 type="button"
                 onClick={() => onScopeChange("UNIT")}
-                className={`h-11 px-3 rounded-xl border text-[12px] font-bold transition-all flex items-center justify-center gap-2 ${
+                className={`h-8 px-2 rounded-lg text-[12px] font-bold transition-all flex items-center justify-center gap-1 ${
                   selectedScope === "UNIT"
-                    ? "bg-[#800020] text-white border-[#800020] shadow-sm"
-                    : "bg-[#F8FAFC] dark:bg-[#0F172A] text-[#64748B] border-[#E2E8F0] dark:border-[#334155]"
+                    ? "bg-[#800020] text-white shadow-sm"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                 }`}
               >
-                <span>نطاق الوحدة ككل</span>
+                <span>الوحدة كاملة</span>
               </button>
             </div>
-
-            {selectedScope === "LESSON" && (
-              <div className="pt-1">
-                <select
-                  value={selectedLessonId}
-                  onChange={(e) => onLessonChange(e.target.value)}
-                  disabled={!selectedUnitId || !activeUnit?.lessons?.length}
-                  className="w-full h-10 px-3 pr-8 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#0F172A] text-[13px] font-bold text-[#0F172A] dark:text-white disabled:opacity-50 focus:outline-none focus:border-[#800020]"
-                >
-                  <option value="">-- اختر الدرس المستهدف للتراكم --</option>
-                  {activeUnit?.lessons?.map((l) => (
-                    <option key={l.id} value={l.id}>
-                      {l.title}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
           </div>
         </div>
+
+        {/* Lesson dropdown (only if Scope === LESSON) */}
+        {selectedScope === "LESSON" && (
+          <div className="pt-0.5">
+            <label className="text-[12px] font-bold text-slate-700 dark:text-slate-300 block mb-1.5">
+              الدرس المستهدف للتراكم
+            </label>
+            <select
+              value={selectedLessonId}
+              onChange={(e) => onLessonChange(e.target.value)}
+              disabled={!selectedUnitId || !activeUnit?.lessons?.length}
+              className="w-full h-10 px-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 text-[13px] font-bold text-slate-900 dark:text-white disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-[#800020]/20 focus:border-[#800020]"
+            >
+              <option value="">-- اختر الدرس المستهدف --</option>
+              {activeUnit?.lessons?.map((l) => (
+                <option key={l.id} value={l.id}>
+                  {l.title}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
       </div>
 
-      {/* STEP 2: Strict Question Type & Difficulty Configuration */}
-      <div className="p-5 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0]/90 dark:border-[#334155]/90 space-y-4">
-        <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#334155]/80 pb-3">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-[#800020] text-white flex items-center justify-center text-[13px] font-bold shadow-sm">
-              2
+      {/* 2. Compact Question Type & Difficulty Section */}
+      <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-4">
+        <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800/80">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-[#800020]/10 dark:bg-[#800020]/25 text-[#800020] dark:text-[#FB7185] flex items-center justify-center">
+              <HelpCircle className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-[14px] font-bold text-[#0F172A] dark:text-white">
-                نوع الأسئلة ومستوى الصعوبة للمستند
-              </h3>
-              <span className="text-[12px] font-bold text-[#D97706] dark:text-[#FBBF24]">
-                ⚠ قاعدة المنصة: كل مستند يحتوي على نوع واحد فقط من الأسئلة
-              </span>
+              <h2 className="text-sm font-bold text-slate-900 dark:text-white">
+                نوع الأسئلة ومستوى الصعوبة للملف
+              </h2>
+              <p className="text-[12px] text-slate-500 dark:text-slate-400">
+                يحتوي كل ملف مستورد على نوع موحد من الأسئلة مع تحديد الصعوبة
+              </p>
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {/* Question Type */}
           <div>
-            <label className="text-[13px] font-bold text-[#0F172A] dark:text-white block mb-2">
-              7. نوع الأسئلة في هذا الملف *
+            <label className="text-[12px] font-bold text-slate-700 dark:text-slate-300 block mb-1.5">
+              نوع السؤال في الملف
             </label>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-3 gap-1.5 p-1 bg-slate-50 dark:bg-slate-900/60 rounded-xl border border-slate-200/80 dark:border-slate-800">
               <button
                 type="button"
                 onClick={() => onQuestionTypeChange("MCQ")}
-                className={`h-11 px-2 rounded-xl border text-[12px] font-bold transition-all flex items-center justify-center ${
+                className={`h-9 px-1.5 rounded-lg text-[12px] font-bold transition-all flex items-center justify-center ${
                   selectedQuestionType === "MCQ"
-                    ? "bg-[#800020] text-white border-[#800020] shadow-sm"
-                    : "bg-[#F8FAFC] dark:bg-[#0F172A] text-[#0F172A] dark:text-white border-[#E2E8F0] dark:border-[#334155]"
+                    ? "bg-[#800020] text-white shadow-sm"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                 }`}
               >
-                <span>اختيار من متعدد (MCQ)</span>
+                <span>اختيار من متعدد</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => onQuestionTypeChange("TRUE_FALSE")}
-                className={`h-11 px-2 rounded-xl border text-[12px] font-bold transition-all flex items-center justify-center ${
+                className={`h-9 px-1.5 rounded-lg text-[12px] font-bold transition-all flex items-center justify-center ${
                   selectedQuestionType === "TRUE_FALSE"
-                    ? "bg-[#800020] text-white border-[#800020] shadow-sm"
-                    : "bg-[#F8FAFC] dark:bg-[#0F172A] text-[#0F172A] dark:text-white border-[#E2E8F0] dark:border-[#334155]"
+                    ? "bg-[#800020] text-white shadow-sm"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                 }`}
               >
-                <span>صواب أو خطأ</span>
+                <span>صح أو خطأ</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => onQuestionTypeChange("ESSAY")}
-                className={`h-11 px-2 rounded-xl border text-[12px] font-bold transition-all flex items-center justify-center ${
+                className={`h-9 px-1.5 rounded-lg text-[12px] font-bold transition-all flex items-center justify-center ${
                   selectedQuestionType === "ESSAY"
-                    ? "bg-[#800020] text-white border-[#800020] shadow-sm"
-                    : "bg-[#F8FAFC] dark:bg-[#0F172A] text-[#0F172A] dark:text-white border-[#E2E8F0] dark:border-[#334155]"
+                    ? "bg-[#800020] text-white shadow-sm"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                 }`}
               >
-                <span>أسئلة مقالية (Essay)</span>
+                <span>أسئلة مقالية</span>
               </button>
             </div>
           </div>
 
+          {/* Difficulty */}
           <div>
-            <label className="text-[13px] font-bold text-[#0F172A] dark:text-white block mb-2">
-              8. مستوى الصعوبة *
+            <label className="text-[12px] font-bold text-slate-700 dark:text-slate-300 block mb-1.5">
+              مستوى الصعوبة
             </label>
-            <div className="grid grid-cols-4 gap-2">
+            <div className="grid grid-cols-4 gap-1.5 p-1 bg-slate-50 dark:bg-slate-900/60 rounded-xl border border-slate-200/80 dark:border-slate-800">
               {[
                 { id: "EASY", label: "سهل" },
                 { id: "MEDIUM", label: "متوسط" },
@@ -350,10 +378,10 @@ export function HierarchySelector({
                   key={diff.id}
                   type="button"
                   onClick={() => onDifficultyChange(diff.id as any)}
-                  className={`h-11 px-1 rounded-xl border text-[12px] font-bold transition-all flex items-center justify-center ${
+                  className={`h-9 px-1 rounded-lg text-[12px] font-bold transition-all flex items-center justify-center ${
                     selectedDifficulty === diff.id
-                      ? "bg-[#0F172A] dark:bg-white text-white dark:text-[#0F172A] border-[#0F172A] dark:border-white shadow-sm"
-                      : "bg-[#F8FAFC] dark:bg-[#0F172A] text-[#64748B] border-[#E2E8F0] dark:border-[#334155]"
+                      ? "bg-[#800020] text-white shadow-sm"
+                      : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                   }`}
                 >
                   <span>{diff.label}</span>

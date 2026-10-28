@@ -30,18 +30,11 @@ export function AdminServicesMatrix({ metrics }: AdminServicesMatrixProps) {
 
   const administrativeServices = [
     {
-      title: "المناهج والدروس",
-      desc: "تحرير الدروس، مشغلات الفيديو والبودكاست والخرائط الذهنية",
+      title: "المناهج والهيكل الأكاديمي",
+      desc: "إدارة المقررات، المسارات، الوحدات، الدروس، والخرائط الذهنية",
       href: "/admin/curriculum",
       icon: BookOpen,
-      stat: `${lessonsCount} درس`,
-    },
-    {
-      title: "الهيكل والأنظمة والصفوف",
-      desc: "إدارة الأنظمة التعليمية، الصفوف، وتوزيع المواد والمسارات",
-      href: "/admin/structure",
-      icon: Layers,
-      stat: `${subjectsCount} مادة`,
+      stat: `${subjectsCount} مادة • ${lessonsCount} درس`,
     },
     {
       title: "بنك الأسئلة والتفسيرات",

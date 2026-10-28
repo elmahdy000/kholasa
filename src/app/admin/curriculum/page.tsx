@@ -57,10 +57,10 @@ export default async function AdminCurriculumPage() {
       <div className="space-y-6 text-right font-sans">
         <div className="border-b border-[#E2E8F0] dark:border-[#334155] pb-4">
           <h1 className="text-xl sm:text-2xl font-bold text-[#0F172A] dark:text-white">
-            إدارة المناهج والوحدات والدروس
+            المناهج والهيكل الأكاديمي
           </h1>
           <p className="text-[13px] sm:text-sm text-[#64748B] dark:text-[#94A3B8] mt-1">
-            التحكم في نشر المناهج، ترتيب الدروس، ومعاينة تجربة الطالب الحية
+            إدارة الصفوف والمسارات التخصصية والمواد الدراسية والوحدات والدروس لشهادة البكالوريا المصرية
           </p>
         </div>
 

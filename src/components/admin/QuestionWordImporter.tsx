@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import Link from "next/link";
-import { Download, ArrowRight } from "lucide-react";
+import { ArrowRight, Sparkles } from "lucide-react";
 import {
   ParsedQuestion,
   QuestionType,
@@ -29,8 +29,8 @@ export type {
 } from "./questions/importer/types";
 
 export function QuestionWordImporter({
-  subjects,
-  grades,
+  subjects = [],
+  grades = [],
   initialGradeId,
   initialSchoolCategory,
   initialSubjectId,
@@ -40,12 +40,12 @@ export function QuestionWordImporter({
   onImportSuccess,
   isModal = false,
 }: QuestionWordImporterProps) {
-  // 1. Grade selection
+  // 1. Grade selection (Default to G10 or first available)
   const defaultGradeId =
     initialGradeId ||
     subjects.find((s) => s.id === initialSubjectId)?.gradeId ||
-    grades?.[0]?.id ||
-    subjects[0]?.gradeId ||
+    grades.find((g) => g.code === "bacc_g10")?.id ||
+    grades[0]?.id ||
     "";
   const [selectedGradeId, setSelectedGradeId] = useState<string>(defaultGradeId);
 
@@ -58,10 +58,13 @@ export function QuestionWordImporter({
     defaultCategory
   );
 
-  // 3. Track selection (if applicable)
-  const activeGrade = grades?.find((g) => g.id === selectedGradeId);
+  // 3. Track selection (if applicable for G11)
+  const activeGrade = grades.find((g) => g.id === selectedGradeId);
   const availableTracks = activeGrade?.tracks || [];
-  const requiresTrack = Boolean(availableTracks.length > 0);
+  const requiresTrack = Boolean(
+    availableTracks.length > 0 &&
+      (activeGrade?.code === "bacc_g11" || selectedGradeId.includes("g11"))
+  );
   const [selectedTrackId, setSelectedTrackId] = useState<string>("");
 
   // 4. Eligible Subjects
@@ -90,12 +93,16 @@ export function QuestionWordImporter({
   const [selectedQuestionType, setSelectedQuestionType] = useState<QuestionType>("MCQ");
   const [selectedDifficulty, setSelectedDifficulty] = useState<QuestionDifficulty | "MIXED">("MEDIUM");
 
-  // Input Mode state
-  const [inputMode, setInputMode] = useState<"file" | "paste" | "csv">("file");
-  const [pastedText, setPastedText] = useState("");
+  // File Upload state
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
+  const [fileSize, setFileSize] = useState<number | null>(null);
   const [isParsing, setIsParsing] = useState(false);
   const [parseError, setParseError] = useState<string | null>(null);
+
+  // Secondary Input Mode state
+  const [inputMode, setInputMode] = useState<"file" | "paste" | "csv">("file");
+  const [pastedText, setPastedText] = useState("");
 
   // Parsed Questions State
   const [questions, setQuestions] = useState<ParsedQuestion[]>([]);
@@ -147,7 +154,7 @@ export function QuestionWordImporter({
     }
 
     if (q.type === "MCQ") {
-      if (q.options.length < 2) {
+      if (!q.options || q.options.length < 2) {
         isValid = false;
         notes.push("السؤال الاختياري يتطلب خيارين على الأقل");
       } else if (!q.options.some((o) => o.isCorrect)) {
@@ -155,7 +162,7 @@ export function QuestionWordImporter({
         notes.push("لم يتم تحديد الإجابة الصحيحة");
       }
     } else if (q.type === "TRUE_FALSE") {
-      if (!q.options.some((o) => o.isCorrect)) {
+      if (!q.options || !q.options.some((o) => o.isCorrect)) {
         isValid = false;
         notes.push("يرجى تحديد ما إذا كانت العبارة صواب أو خطأ");
       }
@@ -164,28 +171,46 @@ export function QuestionWordImporter({
     return { ...q, isValid, validationNotes: notes };
   };
 
-  // Upload Word/PDF
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
+  // Select File Handler
+  const handleFileSelect = (file: File) => {
     const lowerName = file.name.toLowerCase();
     const isDocx = lowerName.endsWith(".docx");
     const isPdf = lowerName.endsWith(".pdf");
 
     if (!isDocx && !isPdf) {
-      setParseError("يرجى رفع ملف بصيغة Word (.docx) أو PDF (.pdf)");
+      setParseError("يرجى اختيار ملف بصيغة Word (.docx) أو PDF (.pdf)");
       return;
     }
 
+    setUploadedFile(file);
     setFileName(file.name);
+    setFileSize(file.size);
+    setParseError(null);
+  };
+
+  // Remove File Handler
+  const handleFileRemove = () => {
+    setUploadedFile(null);
+    setFileName(null);
+    setFileSize(null);
+    setParseError(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  // Trigger Extraction
+  const handleExtractQuestions = async () => {
+    if (!uploadedFile) {
+      setParseError("يرجى اختيار ملف Word أو PDF أولاً.");
+      return;
+    }
+
     setParseError(null);
     setSubmitError(null);
     setIsParsing(true);
 
     try {
       const formData = new FormData();
-      formData.append("file", file);
+      formData.append("file", uploadedFile);
       formData.append("type", selectedQuestionType);
       formData.append("difficulty", selectedDifficulty);
       formData.append("schoolCategory", selectedSchoolCategory);
@@ -207,10 +232,9 @@ export function QuestionWordImporter({
       setQuestions(data.questions);
       setSelectedQuestionIds(new Set(data.questions.map((q: ParsedQuestion) => q.id)));
     } catch (err: any) {
-      setParseError(err.message || "حدث خطأ أثناء معالجة المستند");
+      setParseError(err.message || "حدث خطأ أثناء معالجة واستخراج الأسئلة من المستند");
     } finally {
       setIsParsing(false);
-      if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };
 
@@ -248,6 +272,7 @@ export function QuestionWordImporter({
     if (!file) return;
 
     setFileName(file.name);
+    setFileSize(file.size);
     setParseError(null);
     setIsParsing(true);
 
@@ -330,28 +355,28 @@ export function QuestionWordImporter({
     const sampleText = isLang
       ? `EL KHOLASA - Question Bank Sample Template (${selectedQuestionType})
 
-Subject: ${activeSubject?.name || "Programming, Computational Thinking & AI"}
+Subject: ${activeSubject?.name || "Official Baccalaureate Curriculum"}
 Category: Language Schools (English Curriculum)
 
-Q1: What is the smallest unit of digital data in computer science?
-A) Bit*
-B) Byte
-C) Kilobyte
-D) Megahertz
+Q1: Which component is responsible for executing arithmetic and logical instructions in a computer system?
+A) Central Processing Unit (CPU)*
+B) Solid State Drive (SSD)
+C) Random Access Memory (RAM)
+D) Graphics Processing Unit (GPU)
 Answer: A
-Explanation: A bit (binary digit) is the fundamental unit of data in binary computation.`
+Explanation: The CPU contains the ALU (Arithmetic Logic Unit) which executes mathematical calculations and logic.`
       : `منصة الخلاصة - نموذج استرشادي لاستيراد الأسئلة (${selectedQuestionType})
 
-المادة: ${activeSubject?.name || "البرمجة والتفكير الحاسوبي والذكاء الاصطناعي"}
+المادة: ${activeSubject?.name || "مناهج البكالوريا المصرية"}
 الفئة التعليمية: مدارس عربي
 
-س1: ما هي أصغر وحدة لقياس البيانات الرقمية في الحاسوب؟
-أ) البايت (Byte)
-ب) البت (Bit)*
-ج) الكيلوبايت (KB)
-د) الميغاهرتز (MHz)
-الإجابة: ب
-التفسير: البت (Bit) هو أصغر وحدة تخزين رقمية ويحمل إما القيمة 0 أو 1.`;
+س1: ما هي الوحدة المسؤولة عن معالجة وتنفيذ العمليات الحسابية والمنطقية في الحاسوب؟
+أ) وحدة المعالجة المركزية (CPU)*
+ب) القرص الصلب (Hard Disk)
+ج) ذاكرة الوصول العشوائي (RAM)
+د) بطاقة الشاشة (GPU)
+الإجابة: أ
+التفسير: وحدة المعالجة المركزية تحتوي على وحدة الحساب والمنطق (ALU) المسؤولة عن تنفيذ العمليات الرياضية والمقارنات.`;
 
     const blob = new Blob([sampleText], { type: "text/plain;charset=utf-8" });
     const url = URL.createObjectURL(blob);
@@ -362,7 +387,7 @@ Explanation: A bit (binary digit) is the fundamental unit of data in binary comp
     URL.revokeObjectURL(url);
   };
 
-  // Commit Questions
+  // Commit Questions to Database
   const handleCommitQuestions = async () => {
     const readyQuestions = questions.filter((q) => q.isValid && selectedQuestionIds.has(q.id));
     if (!readyQuestions.length) return;
@@ -383,7 +408,7 @@ Explanation: A bit (binary digit) is the fundamental unit of data in binary comp
         correctReason: q.correctReason,
         modelAnswer: q.modelAnswer,
         points: q.points || (q.type === "ESSAY" ? 5 : 1),
-        options: q.options.map((o, idx) => ({
+        options: q.options?.map((o, idx) => ({
           text: o.text,
           isCorrect: o.isCorrect,
           explanation: o.explanation,
@@ -434,42 +459,92 @@ Explanation: A bit (binary digit) is the fundamental unit of data in binary comp
 
   const isLanguageSchool = selectedSchoolCategory === "LANGUAGES";
 
+  // Compute current step: 1: تحديد الدرس, 2: رفع الملف, 3: مراجعة الأسئلة, 4: الحفظ
+  const currentStep =
+    submitSuccess !== null
+      ? 4
+      : questions.length > 0
+      ? 3
+      : uploadedFile !== null || pastedText.length > 0
+      ? 2
+      : 1;
+
+  const activeGradeName =
+    activeGrade?.name ||
+    (selectedGradeId.includes("g11") ? "الصف الثاني الثانوي (تانية بكالوريا)" : "الصف الأول الثانوي (أولى بكالوريا)");
+
+  const activeTrackObj = availableTracks.find((t) => t.id === selectedTrackId);
+  const activeTrackName = activeTrackObj ? `${activeTrackObj.name}` : undefined;
+
+  const activeLessonObj = activeUnit?.lessons?.find((l) => l.id === selectedLessonId);
+
   return (
     <div className="space-y-6">
-      {/* Header section (if not in compact modal) */}
+      {/* 1. Page Header and Step Progress Indicator */}
       {!isModal && (
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E2E8F0] dark:border-[#334155] pb-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-slate-800">
           <div>
             <Link
               href="/admin/questions"
-              className="inline-flex items-center gap-2 text-[13px] font-bold text-[#64748B] hover:text-[#800020] mb-2 transition-colors"
+              className="inline-flex items-center gap-1.5 text-[12px] font-bold text-slate-500 hover:text-[#800020] dark:hover:text-[#FB7185] mb-1.5 transition-colors"
             >
               <ArrowRight className="w-3.5 h-3.5" />
               <span>العودة لبنك الأسئلة</span>
             </Link>
-            <h1 className="text-xl sm:text-2xl font-bold text-[#0F172A] dark:text-white flex items-center gap-3">
-              <span>استيراد الأسئلة من ملفات Word و PDF</span>
-              <span className="text-[12px] font-bold px-2.5 py-0.5 rounded-full bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] border border-[#E2E8F0]/50 dark:border-[#E11D48]/50">
-                Word (.docx) & PDF (.pdf)
-              </span>
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
+              استيراد الأسئلة
             </h1>
-            <p className="text-[13px] sm:text-sm text-[#64748B] dark:text-[#94A3B8] mt-1">
-              اتبع المسار الهرمي المنضبط: الصف الدراسي ← فئة المدرسة (عربي / لغات) ← المسار ← المادة ← الوحدة ← الدرس/نطاق الوحدة ← نوع السؤال والصعوبة ← رفع الملف والمعاينة
+            <p className="text-[13px] text-slate-500 dark:text-slate-400 mt-0.5">
+              ارفع ملف Word أو PDF، وراجع الأسئلة المستخرجة قبل حفظها.
             </p>
           </div>
 
-          <button
-            onClick={handleDownloadSample}
-            type="button"
-            className="h-11 px-4 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-bold text-[#0F172A] dark:text-white hover:border-[#800020] flex items-center gap-2 transition-all shrink-0 shadow-sm"
-          >
-            <Download className="w-4 h-4 text-[#800020]" />
-            <span>تحميل نموذج استرشادي ({isLanguageSchool ? "English" : "عربي"})</span>
-          </button>
+          {/* Simple Step Indicator */}
+          <div className="flex items-center gap-1.5 sm:gap-2 text-[12px] font-bold bg-white dark:bg-[#1E293B] p-1.5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm self-start md:self-auto">
+            <span
+              className={`px-3 py-1 rounded-lg transition-all ${
+                currentStep === 1
+                  ? "bg-[#800020] text-white shadow-sm"
+                  : "text-slate-500 dark:text-slate-400"
+              }`}
+            >
+              تحديد الدرس
+            </span>
+            <span className="text-slate-300 dark:text-slate-700">←</span>
+            <span
+              className={`px-3 py-1 rounded-lg transition-all ${
+                currentStep === 2
+                  ? "bg-[#800020] text-white shadow-sm"
+                  : "text-slate-500 dark:text-slate-400"
+              }`}
+            >
+              رفع الملف
+            </span>
+            <span className="text-slate-300 dark:text-slate-700">←</span>
+            <span
+              className={`px-3 py-1 rounded-lg transition-all ${
+                currentStep === 3
+                  ? "bg-[#800020] text-white shadow-sm"
+                  : "text-slate-500 dark:text-slate-400"
+              }`}
+            >
+              مراجعة الأسئلة
+            </span>
+            <span className="text-slate-300 dark:text-slate-700">←</span>
+            <span
+              className={`px-3 py-1 rounded-lg transition-all ${
+                currentStep === 4
+                  ? "bg-[#800020] text-white shadow-sm"
+                  : "text-slate-500 dark:text-slate-400"
+              }`}
+            >
+              الحفظ
+            </span>
+          </div>
         </div>
       )}
 
-      {/* Success View */}
+      {/* 2. Success View */}
       {submitSuccess !== null ? (
         <ImportSuccessView
           importedCount={submitSuccess}
@@ -483,94 +558,118 @@ Explanation: A bit (binary digit) is the fundamental unit of data in binary comp
             setSubmitSuccess(null);
             setQuestions([]);
             setPastedText("");
+            setUploadedFile(null);
             setFileName(null);
+            setFileSize(null);
             setSelectedQuestionIds(new Set());
           }}
         />
+      ) : questions.length > 0 ? (
+        /* 3. Dedicated Review Screen */
+        <QuestionsPreviewList
+          questions={questions}
+          selectedQuestionIds={selectedQuestionIds}
+          isLanguageSchool={isLanguageSchool}
+          isSubmitting={isSubmitting}
+          submitError={submitError}
+          onCommit={handleCommitQuestions}
+          onBackToUpload={() => {
+            setQuestions([]);
+            setSelectedQuestionIds(new Set());
+          }}
+          onSelectAll={() => setSelectedQuestionIds(new Set(questions.map((q) => q.id)))}
+          onDeselectAll={() => setSelectedQuestionIds(new Set())}
+          onToggleSelect={(id) => {
+            setSelectedQuestionIds((prev) => {
+              const next = new Set(prev);
+              if (next.has(id)) next.delete(id);
+              else next.add(id);
+              return next;
+            });
+          }}
+          onUpdateQuestion={(updated) => {
+            setQuestions((prev) => prev.map((q) => (q.id === updated.id ? updated : q)));
+          }}
+          revalidateQuestion={revalidateQuestion}
+        />
       ) : (
-        <>
-          <HierarchySelector
-            grades={grades}
-            activeGrade={activeGrade}
-            selectedGradeId={selectedGradeId}
-            onGradeChange={handleGradeChange}
-            selectedSchoolCategory={selectedSchoolCategory}
-            onCategoryChange={handleCategoryChange}
-            requiresTrack={requiresTrack}
-            availableTracks={availableTracks}
-            selectedTrackId={selectedTrackId}
-            onTrackChange={(trackId) => {
-              setSelectedTrackId(trackId);
-              const next = subjects.filter(
-                (s) =>
-                  s.gradeId === selectedGradeId &&
-                  s.schoolCategory === selectedSchoolCategory &&
-                  (!trackId || !s.trackId || s.trackId === trackId)
-              );
-              setSelectedSubjectId(next[0]?.id || "");
-              setSelectedUnitId("");
-              setSelectedLessonId("");
-            }}
-            eligibleSubjects={eligibleSubjects}
-            selectedSubjectId={selectedSubjectId}
-            onSubjectChange={handleSubjectChange}
-            activeSubject={activeSubject}
-            selectedUnitId={selectedUnitId}
-            onUnitChange={(unitId) => {
-              setSelectedUnitId(unitId);
-              setSelectedLessonId("");
-            }}
-            activeUnit={activeUnit}
-            selectedScope={selectedScope}
-            onScopeChange={setSelectedScope}
-            selectedLessonId={selectedLessonId}
-            onLessonChange={setSelectedLessonId}
-            selectedQuestionType={selectedQuestionType}
-            onQuestionTypeChange={setSelectedQuestionType}
-            selectedDifficulty={selectedDifficulty}
-            onDifficultyChange={setSelectedDifficulty}
-          />
-
-          <FileUploadSection
-            inputMode={inputMode}
-            onInputModeChange={setInputMode}
-            isLanguageSchool={isLanguageSchool}
-            fileName={fileName}
-            isParsing={isParsing}
-            parseError={parseError}
-            fileInputRef={fileInputRef}
-            onFileUpload={handleFileUpload}
-            pastedText={pastedText}
-            onPastedTextChange={setPastedText}
-            onDirectTextParse={handleDirectTextParse}
-            onCsvFileUpload={handleCsvFileUpload}
-          />
-
-          {questions.length > 0 && (
-            <QuestionsPreviewList
-              questions={questions}
-              selectedQuestionIds={selectedQuestionIds}
-              isLanguageSchool={isLanguageSchool}
-              isSubmitting={isSubmitting}
-              submitError={submitError}
-              onCommit={handleCommitQuestions}
-              onSelectAll={() => setSelectedQuestionIds(new Set(questions.map((q) => q.id)))}
-              onDeselectAll={() => setSelectedQuestionIds(new Set())}
-              onToggleSelect={(id) => {
-                setSelectedQuestionIds((prev) => {
-                  const next = new Set(prev);
-                  if (next.has(id)) next.delete(id);
-                  else next.add(id);
-                  return next;
-                });
+        /* 4. Configuration and Upload Screen (Balanced Two-Column Layout) */
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+          {/* Right Column (60%): Curriculum Selection + Question Type & Difficulty */}
+          <div className="lg:col-span-7 space-y-4">
+            <HierarchySelector
+              grades={grades}
+              activeGrade={activeGrade}
+              selectedGradeId={selectedGradeId}
+              onGradeChange={handleGradeChange}
+              selectedSchoolCategory={selectedSchoolCategory}
+              onCategoryChange={handleCategoryChange}
+              requiresTrack={requiresTrack}
+              availableTracks={availableTracks}
+              selectedTrackId={selectedTrackId}
+              onTrackChange={(trackId) => {
+                setSelectedTrackId(trackId);
+                const next = subjects.filter(
+                  (s) =>
+                    s.gradeId === selectedGradeId &&
+                    s.schoolCategory === selectedSchoolCategory &&
+                    (!trackId || !s.trackId || s.trackId === trackId)
+                );
+                setSelectedSubjectId(next[0]?.id || "");
+                setSelectedUnitId("");
+                setSelectedLessonId("");
               }}
-              onUpdateQuestion={(updated) => {
-                setQuestions((prev) => prev.map((q) => (q.id === updated.id ? updated : q)));
+              eligibleSubjects={eligibleSubjects}
+              selectedSubjectId={selectedSubjectId}
+              onSubjectChange={handleSubjectChange}
+              activeSubject={activeSubject}
+              selectedUnitId={selectedUnitId}
+              onUnitChange={(unitId) => {
+                setSelectedUnitId(unitId);
+                setSelectedLessonId("");
               }}
-              revalidateQuestion={revalidateQuestion}
+              activeUnit={activeUnit}
+              selectedScope={selectedScope}
+              onScopeChange={setSelectedScope}
+              selectedLessonId={selectedLessonId}
+              onLessonChange={setSelectedLessonId}
+              selectedQuestionType={selectedQuestionType}
+              onQuestionTypeChange={setSelectedQuestionType}
+              selectedDifficulty={selectedDifficulty}
+              onDifficultyChange={setSelectedDifficulty}
             />
-          )}
-        </>
+          </div>
+
+          {/* Left Column (40%): Upload Dropzone + Smart Summary + Primary CTA */}
+          <div className="lg:col-span-5 space-y-4">
+            <FileUploadSection
+              gradeLabel={activeGradeName}
+              isLanguageSchool={isLanguageSchool}
+              trackLabel={activeTrackName}
+              subjectName={activeSubject?.name}
+              unitTitle={activeUnit?.title}
+              scopeLabel={selectedScope}
+              lessonTitle={activeLessonObj?.title}
+              questionType={selectedQuestionType}
+              difficulty={selectedDifficulty}
+              fileName={fileName}
+              fileSize={fileSize}
+              isParsing={isParsing}
+              parseError={parseError}
+              fileInputRef={fileInputRef}
+              onFileSelect={handleFileSelect}
+              onFileRemove={handleFileRemove}
+              onExtract={handleExtractQuestions}
+              onDownloadSample={handleDownloadSample}
+              inputMode={inputMode}
+              onInputModeChange={setInputMode}
+              pastedText={pastedText}
+              onPastedTextChange={setPastedText}
+              onDirectTextParse={handleDirectTextParse}
+              onCsvFileUpload={handleCsvFileUpload}
+            />
+          </div>
+        </div>
       )}
     </div>
   );

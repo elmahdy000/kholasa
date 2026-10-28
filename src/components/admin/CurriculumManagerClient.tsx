@@ -579,410 +579,289 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
   };
 
   return (
-    <div className="space-y-8 font-sans" dir="rtl">
+    <div className="space-y-6 font-sans" dir="rtl">
       {/* ─────────────────────────────────────────────────────────────
-          STEP 1: SELECT GRADE (Exactly 2 Large Cards: G10 vs G11)
+          TOP ACTION BAR (Quick summary & Actions)
       ───────────────────────────────────────────────────────────── */}
-      <section className="space-y-3">
-        <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
           <div className="flex items-center gap-2">
-            <span className="w-6 h-6 rounded-lg bg-[#800020] text-white flex items-center justify-center text-xs font-bold">
-              ١
-            </span>
-            <h2 className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-white">
-              تحديد الصف الدراسي (البكالوريا المصرية)
+            <span className="w-2.5 h-2.5 rounded-full bg-[#800020] animate-pulse" />
+            <h2 className="text-base sm:text-lg font-bold text-[#0F172A] dark:text-white">
+              هيكل المناهج والمقررات
             </h2>
+            <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-[#800020]/10 text-[#800020] dark:text-[#FB7185] border border-[#800020]/20">
+              البكالوريا المصرية
+            </span>
           </div>
-          <span className="text-xs text-[#64748B] dark:text-[#94A3B8]">
-            نظام البكالوريا الرسمي المعتمد
-          </span>
+          <p className="text-xs text-[#64748B] dark:text-[#94A3B8] mt-1">
+            اختر الصف ونوع المدرسة للوصول الفوري للمواد، الوحدات، والدروس المعتمدة
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {grades.map((grade) => {
-            const isSelected = selectedGradeId === grade.id;
-            const isGrade10 = grade.code === "bacc_g10" || grade.code === "G10" || grade.name.includes("أولى");
-            const gradeSubjectCount = grade.subjects.length;
+        {/* Action Buttons */}
+        <div className="flex items-center gap-2.5 shrink-0 flex-wrap">
+          <button
+            type="button"
+            onClick={() => {
+              setBulkImportSubjectId(undefined);
+              setIsBulkImportOpen(true);
+            }}
+            className="h-10 px-3.5 rounded-xl border border-[#CBD5E1] dark:border-[#334155] bg-white dark:bg-[#0F172A] hover:bg-[#F8FAFC] dark:hover:bg-[#1E293B] text-[#0F172A] dark:text-white text-xs font-bold flex items-center justify-center gap-2 cursor-pointer transition-colors shadow-2xs"
+          >
+            <UploadCloud className="w-4 h-4 text-[#800020] dark:text-[#FB7185]" />
+            <span>استيراد هيكل المنهج</span>
+          </button>
 
-            return (
+          <button
+            type="button"
+            onClick={() => setSubjectModalState({ isOpen: true, initialSubject: null })}
+            className="h-10 px-4 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-xs font-bold flex items-center justify-center gap-2 cursor-pointer shadow-xs transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+            <span>+ إضافة مادة جديدة</span>
+          </button>
+        </div>
+      </div>
+
+      {/* ─────────────────────────────────────────────────────────────
+          UNIFIED COMPACT CONTROL BAR (Grade, Category, Tracks)
+      ───────────────────────────────────────────────────────────── */}
+      <div className="rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] p-4 sm:p-5 shadow-xs space-y-4">
+        {/* Row 1: Grade & School Category Segmented Tabs */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Grade Selector */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-xs font-bold text-[#475569] dark:text-[#94A3B8] flex items-center gap-1.5">
+                <GraduationCap className="w-4 h-4 text-[#800020] dark:text-[#FB7185]" />
+                <span>الصف الدراسي</span>
+              </label>
+            </div>
+            <div className="grid grid-cols-2 p-1 rounded-xl bg-[#F1F5F9] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155]/60 gap-1">
+              {grades.map((grade) => {
+                const isSelected = selectedGradeId === grade.id;
+                const isGrade10 = grade.code === "bacc_g10" || grade.code === "G10" || grade.name.includes("أولى");
+                const count = grade.subjects.filter((s) => s.schoolCategory === selectedCategory).length;
+
+                return (
+                  <button
+                    key={grade.id}
+                    type="button"
+                    onClick={() => {
+                      setSelectedGradeId(grade.id);
+                      setSelectedTrackId("ALL");
+                      setSubjectFilterTab("ALL");
+                    }}
+                    className={`py-2 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                      isSelected
+                        ? "bg-[#800020] text-white shadow-xs"
+                        : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
+                    }`}
+                  >
+                    <span>{isGrade10 ? "أولى بكالوريا (G10)" : "تانية بكالوريا (G11)"}</span>
+                    <span
+                      className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono ${
+                        isSelected
+                          ? "bg-white/20 text-white"
+                          : "bg-black/5 dark:bg-white/5 text-[#64748B] dark:text-[#94A3B8]"
+                      }`}
+                    >
+                      {count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* School Category Selector */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-xs font-bold text-[#475569] dark:text-[#94A3B8] flex items-center gap-1.5">
+                <School className="w-4 h-4 text-[#800020] dark:text-[#FB7185]" />
+                <span>نوع المدرسة واللغة</span>
+              </label>
+              <span className="text-[11px] font-bold text-[#800020] dark:text-[#FB7185]">
+                عزل تام للمحتوى
+              </span>
+            </div>
+            <div className="grid grid-cols-2 p-1 rounded-xl bg-[#F1F5F9] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155]/60 gap-1">
               <button
-                key={grade.id}
+                type="button"
+                onClick={() => setSelectedCategory("ARABIC")}
+                className={`py-2 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                  selectedCategory === "ARABIC"
+                    ? "bg-[#800020] text-white shadow-xs"
+                    : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
+                }`}
+              >
+                <span>مدارس عربي (Arabic)</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setSelectedCategory("LANGUAGES")}
+                className={`py-2 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                  selectedCategory === "LANGUAGES"
+                    ? "bg-[#800020] text-white shadow-xs"
+                    : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
+                }`}
+              >
+                <span>مدارس لغات (Languages)</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Row 2: Tracks Row (G11 ONLY) */}
+        {isG11 && (
+          <div className="pt-3 border-t border-[#F1F5F9] dark:border-[#1E293B] space-y-2 animate-in fade-in duration-200">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-1.5 text-xs font-bold text-[#0F172A] dark:text-white">
+                <Layers className="w-3.5 h-3.5 text-[#800020] dark:text-[#FB7185]" />
+                <span>المسار التخصصي (تانية بكالوريا):</span>
+              </div>
+
+              {/* Add Track Button */}
+              <button
+                type="button"
+                onClick={() => setTrackModalState({ isOpen: true, initialTrack: null })}
+                className="text-[11px] font-bold text-[#800020] dark:text-[#FB7185] hover:underline flex items-center gap-1 cursor-pointer"
+              >
+                <Plus className="w-3 h-3" />
+                <span>إضافة مسار جديد</span>
+              </button>
+            </div>
+
+            {/* Track Pills */}
+            <div className="flex items-center gap-2 flex-wrap">
+              {/* All Tracks Pill */}
+              <button
                 type="button"
                 onClick={() => {
-                  setSelectedGradeId(grade.id);
                   setSelectedTrackId("ALL");
                   setSubjectFilterTab("ALL");
                 }}
-                className={`relative p-5 rounded-2xl border text-right transition-all flex items-start justify-between gap-4 cursor-pointer overflow-hidden ${
-                  isSelected
-                    ? "border-[#800020] bg-linear-to-l from-[#800020]/5 to-transparent dark:from-[#800020]/20 shadow-md ring-2 ring-[#800020]/20"
-                    : "border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] hover:border-[#800020]/40"
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                  selectedTrackId === "ALL"
+                    ? "bg-[#800020] text-white shadow-2xs"
+                    : "bg-[#F1F5F9] dark:bg-[#1E293B] text-[#64748B] dark:text-[#94A3B8] hover:bg-[#E2E8F0] dark:hover:bg-[#334155]"
                 }`}
               >
-                <div className="flex items-start gap-4">
+                <span>كافة المسارات</span>
+                <span
+                  className={`text-[10px] px-1.5 py-0.2 rounded-full ${
+                    selectedTrackId === "ALL" ? "bg-white/20 text-white" : "bg-black/5 dark:bg-white/10"
+                  }`}
+                >
+                  {allGradeSubjects.length}
+                </span>
+              </button>
+
+              {/* Individual Track Pills */}
+              {eligibleTracks.map((track) => {
+                const isSelected = selectedTrackId === track.id;
+                const trackSubjectCount = allGradeSubjects.filter((s) => s.trackId === track.id).length;
+                const TrackIcon = getTrackIcon(track.code);
+
+                return (
                   <div
-                    className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-colors ${
+                    key={track.id}
+                    className={`group inline-flex items-center rounded-xl border text-xs font-bold transition-all ${
                       isSelected
-                        ? "bg-[#800020] text-white shadow-xs"
-                        : "bg-[#F1F5F9] dark:bg-[#1E293B] text-[#64748B] dark:text-[#94A3B8]"
+                        ? "bg-[#800020] text-white border-[#800020] shadow-2xs"
+                        : "bg-[#F1F5F9] dark:bg-[#1E293B] text-[#64748B] dark:text-[#94A3B8] border-transparent hover:border-[#CBD5E1] dark:hover:border-[#475569]"
                     }`}
                   >
-                    <GraduationCap className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h3 className="text-base sm:text-lg font-bold text-[#0F172A] dark:text-white">
-                        {isGrade10 ? "أولى بكالوريا (G10)" : "تانية بكالوريا (G11)"}
-                      </h3>
-                      <span className="text-[11px] font-mono px-2 py-0.5 rounded-md bg-[#E2E8F0] dark:bg-[#1E293B] text-[#64748B] dark:text-[#94A3B8]">
-                        #{grade.code}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedTrackId(track.id);
+                        setSubjectFilterTab("ALL");
+                      }}
+                      className="px-3 py-1.5 flex items-center gap-1.5 cursor-pointer"
+                    >
+                      <TrackIcon className="w-3.5 h-3.5" />
+                      <span>{track.name}</span>
+                      <span
+                        className={`text-[10px] px-1.5 py-0.2 rounded-full ${
+                          isSelected ? "bg-white/20 text-white" : "bg-black/5 dark:bg-white/10"
+                        }`}
+                      >
+                        {trackSubjectCount}
                       </span>
-                    </div>
-                    <p className="text-xs text-[#64748B] dark:text-[#94A3B8] mt-1">
-                      {isGrade10
-                        ? "الصف الأول الثانوي — منهج عام وموحد (عربي ولغات) بدون تشعيب"
-                        : "الصف الثاني الثانوي — تشعيب تخصصي إلى ٤ مسارات معتمدة"}
-                    </p>
-                    <div className="flex items-center gap-2 mt-2 text-[11px] text-[#800020] dark:text-[#FB7185] font-bold">
-                      <span>{gradeSubjectCount} مواد دراسية مسجلة</span>
-                      {!isGrade10 && <span>• ٤ مسارات تخصصية</span>}
+                    </button>
+
+                    {/* Quick edit / delete track actions */}
+                    <div className="flex items-center pl-1.5 pr-0.5 gap-0.5">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setTrackModalState({ isOpen: true, initialTrack: track });
+                        }}
+                        className={`w-5 h-5 rounded-md flex items-center justify-center transition-colors ${
+                          isSelected
+                            ? "hover:bg-white/20 text-white"
+                            : "hover:bg-[#E2E8F0] dark:hover:bg-[#334155] text-[#64748B]"
+                        }`}
+                        title="تعديل المسار"
+                      >
+                        <Edit3 className="w-3 h-3" />
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDirectDeleteTrack(track.id, track.name);
+                        }}
+                        className={`w-5 h-5 rounded-md flex items-center justify-center transition-colors ${
+                          isSelected
+                            ? "hover:bg-red-500/30 text-white"
+                            : "hover:bg-red-50 dark:hover:bg-red-950/40 text-red-500"
+                        }`}
+                        title="حذف المسار"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </button>
                     </div>
                   </div>
-                </div>
-
-                <div
-                  className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 mt-1 transition-colors ${
-                    isSelected
-                      ? "border-[#800020] bg-[#800020] text-white"
-                      : "border-[#CBD5E1] dark:border-[#475569]"
-                  }`}
-                >
-                  {isSelected && <span className="w-2 h-2 rounded-full bg-white" />}
-                </div>
-              </button>
-            );
-          })}
-        </div>
-      </section>
+                );
+              })}
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* ─────────────────────────────────────────────────────────────
-          STEP 2: SELECT SCHOOL CATEGORY (Arabic vs Languages)
-      ───────────────────────────────────────────────────────────── */}
-      <section className="space-y-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="w-6 h-6 rounded-lg bg-[#800020] text-white flex items-center justify-center text-xs font-bold">
-              ٢
-            </span>
-            <h2 className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-white">
-              تحديد نوع المدرسة (عزل تام للمحتوى والمناهج)
-            </h2>
-          </div>
-          <span className="text-[11px] text-[#059669] dark:text-[#34D399] font-bold">
-            محتوى مستقل ومفصول تماماً ✓
-          </span>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {/* Arabic Schools */}
-          <button
-            type="button"
-            onClick={() => setSelectedCategory("ARABIC")}
-            className={`p-4 sm:p-5 rounded-2xl border text-right transition-all flex items-start justify-between gap-3 cursor-pointer ${
-              selectedCategory === "ARABIC"
-                ? "border-[#059669] bg-[#059669]/5 dark:bg-[#059669]/20 text-[#059669] dark:text-[#34D399] shadow-sm ring-2 ring-[#059669]/20"
-                : "border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] hover:border-[#059669]/40"
-            }`}
-          >
-            <div className="flex items-start gap-3">
-              <div
-                className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${
-                  selectedCategory === "ARABIC"
-                    ? "bg-[#059669] text-white"
-                    : "bg-[#F1F5F9] dark:bg-[#1E293B] text-[#64748B] dark:text-[#94A3B8]"
-                }`}
-              >
-                <School className="w-5 h-5" />
-              </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <h3 className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-white">
-                    مدارس عربي (Arabic Schools)
-                  </h3>
-                  <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-[#059669]/10 text-[#059669] dark:text-[#34D399]">
-                    عربي
-                  </span>
-                </div>
-                <p className="text-[12px] text-[#64748B] dark:text-[#94A3B8] mt-1 leading-relaxed">
-                  مناهج ومصطلحات وأسئلة وامتحانات مخصصة باللغة العربية حصراً لطلاب المدارس الحكومية والخاصة عربي.
-                </p>
-              </div>
-            </div>
-
-            <div
-              className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 mt-0.5 ${
-                selectedCategory === "ARABIC"
-                  ? "border-[#059669] bg-[#059669]"
-                  : "border-[#CBD5E1] dark:border-[#475569]"
-              }`}
-            >
-              {selectedCategory === "ARABIC" && <span className="w-2 h-2 rounded-full bg-white" />}
-            </div>
-          </button>
-
-          {/* Language Schools */}
-          <button
-            type="button"
-            onClick={() => setSelectedCategory("LANGUAGES")}
-            className={`p-4 sm:p-5 rounded-2xl border text-right transition-all flex items-start justify-between gap-3 cursor-pointer ${
-              selectedCategory === "LANGUAGES"
-                ? "border-[#2563EB] bg-[#2563EB]/5 dark:bg-[#2563EB]/20 text-[#2563EB] dark:text-[#60A5FA] shadow-sm ring-2 ring-[#2563EB]/20"
-                : "border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] hover:border-[#2563EB]/40"
-            }`}
-          >
-            <div className="flex items-start gap-3">
-              <div
-                className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${
-                  selectedCategory === "LANGUAGES"
-                    ? "bg-[#2563EB] text-white"
-                    : "bg-[#F1F5F9] dark:bg-[#1E293B] text-[#64748B] dark:text-[#94A3B8]"
-                }`}
-              >
-                <School className="w-5 h-5" />
-              </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <h3 className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-white">
-                    مدارس لغات (Language Schools)
-                  </h3>
-                  <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-[#2563EB]/10 text-[#2563EB] dark:text-[#60A5FA]">
-                    Languages
-                  </span>
-                </div>
-                <p className="text-[12px] text-[#64748B] dark:text-[#94A3B8] mt-1 leading-relaxed">
-                  Dedicated English-medium curriculum, technical terminology, and distinct language question bank.
-                </p>
-              </div>
-            </div>
-
-            <div
-              className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 mt-0.5 ${
-                selectedCategory === "LANGUAGES"
-                  ? "border-[#2563EB] bg-[#2563EB]"
-                  : "border-[#CBD5E1] dark:border-[#475569]"
-              }`}
-            >
-              {selectedCategory === "LANGUAGES" && <span className="w-2 h-2 rounded-full bg-white" />}
-            </div>
-          </button>
-        </div>
-      </section>
-
-      {/* ─────────────────────────────────────────────────────────────
-          STEP 3: SELECT ACADEMIC TRACK (ONLY FOR G11)
-      ───────────────────────────────────────────────────────────── */}
-      {isG11 && (
-        <section className="space-y-4 animate-in fade-in duration-300">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div className="flex items-center gap-2">
-              <span className="w-6 h-6 rounded-lg bg-[#800020] text-white flex items-center justify-center text-xs font-bold">
-                ٣
-              </span>
-              <div>
-                <h2 className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-white">
-                  المسارات الأكاديمية الرسمية (تانية بكالوريا)
-                </h2>
-                <p className="text-[12px] text-[#64748B] dark:text-[#94A3B8]">
-                  حدد مساراً لتصفية مواده التخصصية أو عرض المواد المشتركة العامة
-                </p>
-              </div>
-            </div>
-
-            {/* + Add Track Button */}
-            <button
-              type="button"
-              onClick={() => setTrackModalState({ isOpen: true, initialTrack: null })}
-              className="h-10 px-4 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-xs font-bold flex items-center justify-center gap-2 cursor-pointer shadow-xs transition-colors shrink-0"
-            >
-              <Plus className="w-4 h-4" />
-              <span>إضافة مسار</span>
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            {/* All Tracks Card / Option */}
-            <button
-              type="button"
-              onClick={() => {
-                setSelectedTrackId("ALL");
-                setSubjectFilterTab("ALL");
-              }}
-              className={`p-4 rounded-2xl border text-right transition-all flex flex-col justify-between cursor-pointer ${
-                selectedTrackId === "ALL"
-                  ? "border-[#800020] bg-[#800020]/5 dark:bg-[#800020]/20 shadow-xs ring-2 ring-[#800020]/20"
-                  : "border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] hover:border-[#800020]/40"
-              }`}
-            >
-              <div>
-                <div className="flex items-center justify-between">
-                  <div className="w-9 h-9 rounded-xl bg-[#800020]/10 text-[#800020] dark:text-[#FB7185] flex items-center justify-center">
-                    <Layers className="w-5 h-5" />
-                  </div>
-                  {selectedTrackId === "ALL" && (
-                    <span className="text-[11px] font-bold text-[#800020] dark:text-[#FB7185] flex items-center gap-1">
-                      <CheckCircle2 className="w-3.5 h-3.5" />
-                      <span>محدد</span>
-                    </span>
-                  )}
-                </div>
-                <h4 className="text-sm font-bold text-[#0F172A] dark:text-white mt-3">
-                  جميع المسارات والمواد
-                </h4>
-                <p className="text-[11px] text-[#64748B] dark:text-[#94A3B8] mt-1">
-                  عرض جميع المواد المشتركة والتخصصية معاً
-                </p>
-              </div>
-              <div className="mt-3 pt-2 border-t border-[#E2E8F0] dark:border-[#334155] text-[11px] font-bold text-[#64748B] dark:text-[#94A3B8]">
-                {allGradeSubjects.length} مادة دراسية
-              </div>
-            </button>
-
-            {/* Individual Official Tracks */}
-            {eligibleTracks.map((track) => {
-              const TrackIcon = getTrackIcon(track.code);
-              const isSelected = selectedTrackId === track.id;
-              const trackSubjectCount = allGradeSubjects.filter((s) => s.trackId === track.id).length;
-
-              return (
-                <div
-                  key={track.id}
-                  onClick={() => {
-                    setSelectedTrackId(track.id);
-                    setSubjectFilterTab("ALL");
-                  }}
-                  className={`p-4 rounded-2xl border text-right transition-all flex flex-col justify-between cursor-pointer relative group ${
-                    isSelected
-                      ? "border-[#800020] bg-[#800020]/5 dark:bg-[#800020]/20 shadow-xs ring-2 ring-[#800020]/20"
-                      : "border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] hover:border-[#800020]/40"
-                  }`}
-                >
-                  <div>
-                    <div className="flex items-center justify-between">
-                      <div className="w-9 h-9 rounded-xl bg-[#800020]/10 text-[#800020] dark:text-[#FB7185] flex items-center justify-center">
-                        <TrackIcon className="w-5 h-5" />
-                      </div>
-
-                      <div className="flex items-center gap-1">
-                        {/* Edit Track Button */}
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setTrackModalState({ isOpen: true, initialTrack: track });
-                          }}
-                          className="w-7 h-7 rounded-lg hover:bg-[#F1F5F9] dark:hover:bg-[#1E293B] text-[#64748B] hover:text-[#0F172A] dark:hover:text-white flex items-center justify-center transition-colors"
-                          title="تعديل بيانات المسار"
-                        >
-                          <Edit3 className="w-3.5 h-3.5" />
-                        </button>
-
-                        {/* Delete Track Button */}
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDirectDeleteTrack(track.id, track.name);
-                          }}
-                          className="w-7 h-7 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/40 text-red-500 flex items-center justify-center transition-colors"
-                          title="حذف المسار"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    </div>
-
-                    <h4 className="text-sm font-bold text-[#0F172A] dark:text-white mt-3">
-                      {track.name}
-                    </h4>
-                    {track.nameEn && (
-                      <p className="text-[11px] text-[#64748B] dark:text-[#94A3B8] font-sans mt-0.5" dir="ltr">
-                        {track.nameEn}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="mt-3 pt-2 border-t border-[#E2E8F0] dark:border-[#334155] flex items-center justify-between text-[11px] font-bold">
-                    <span className="text-[#800020] dark:text-[#FB7185]">
-                      {trackSubjectCount} مواد تخصصية
-                    </span>
-                    <span className="text-[#64748B] dark:text-[#94A3B8]">
-                      {track.isActive ? "نشط" : "معطل"}
-                    </span>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </section>
-      )}
-
-      {/* ─────────────────────────────────────────────────────────────
-          STEP 4: MANAGE SUBJECTS (Filtered by Grade, Category, Track)
+          SUBJECTS & CURRICULUM SECTION
       ───────────────────────────────────────────────────────────── */}
       <section className="space-y-4">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 p-5 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] shadow-xs">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="w-6 h-6 rounded-lg bg-[#800020] text-white flex items-center justify-center text-xs font-bold">
-                {isG11 ? "٤" : "٣"}
-              </span>
-              <h3 className="text-base font-bold text-[#0F172A] dark:text-white">
-                المواد الدراسية ومحتوى المنهج
-              </h3>
-            </div>
-            <p className="text-xs text-[#64748B] dark:text-[#94A3B8] mt-1.5 flex items-center gap-1.5 flex-wrap">
-              <span className="font-bold text-[#0F172A] dark:text-white">المسار النشط:</span>
-              <span className="px-2 py-0.5 rounded-md bg-[#F1F5F9] dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] font-bold">
-                {selectedGrade?.name}
-              </span>
-              <span>•</span>
-              <span className="px-2 py-0.5 rounded-md bg-[#F1F5F9] dark:bg-[#1E293B] text-[#059669] dark:text-[#34D399] font-bold">
-                {selectedCategory === "LANGUAGES" ? "مدارس لغات" : "مدارس عربي"}
-              </span>
-              {isG11 && selectedTrackId !== "ALL" && (
-                <>
-                  <span>•</span>
-                  <span className="px-2 py-0.5 rounded-md bg-[#F1F5F9] dark:bg-[#1E293B] text-[#2563EB] dark:text-[#60A5FA] font-bold">
-                    {eligibleTracks.find((t) => t.id === selectedTrackId)?.name || "مسار محدد"}
-                  </span>
-                </>
-              )}
-            </p>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-[#E2E8F0] dark:border-[#334155]">
+          <div className="flex items-center gap-2">
+            <h3 className="text-base font-bold text-[#0F172A] dark:text-white">
+              المواد الدراسية ومحتوى المنهج
+            </h3>
+            <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-[#800020]/10 text-[#800020] dark:text-[#FB7185]">
+              {filteredSubjects.length} مادة
+            </span>
           </div>
 
-          <div className="flex items-center gap-2 flex-wrap shrink-0">
-            {/* Bulk Import Button */}
-            <button
-              type="button"
-              onClick={() => {
-                setBulkImportSubjectId(undefined);
-                setIsBulkImportOpen(true);
-              }}
-              className="h-10 px-3.5 rounded-xl border border-[#800020]/30 hover:bg-[#800020]/10 text-[#800020] dark:text-[#FB7185] text-xs font-bold flex items-center justify-center gap-2 cursor-pointer transition-colors"
-            >
-              <UploadCloud className="w-4 h-4" />
-              <span>استيراد هيكل المنهج</span>
-            </button>
-
-            {/* + Add Subject Button */}
-            <button
-              type="button"
-              onClick={() => setSubjectModalState({ isOpen: true, initialSubject: null })}
-              className="h-10 px-4 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-xs font-bold flex items-center justify-center gap-2 cursor-pointer shadow-xs transition-colors"
-            >
-              <Plus className="w-4 h-4" />
-              <span>+ إضافة مادة جديدة</span>
-            </button>
+          <div className="flex items-center gap-2 text-xs text-[#64748B] dark:text-[#94A3B8]">
+            <span className="font-bold text-[#0F172A] dark:text-white">المعروض حالياً:</span>
+            <span>{selectedGrade?.name}</span>
+            <span>•</span>
+            <span>{selectedCategory === "LANGUAGES" ? "مدارس لغات" : "مدارس عربي"}</span>
+            {isG11 && selectedTrackId !== "ALL" && (
+              <>
+                <span>•</span>
+                <span className="font-bold text-[#800020] dark:text-[#FB7185]">
+                  {eligibleTracks.find((t) => t.id === selectedTrackId)?.name || "مسار محدد"}
+                </span>
+              </>
+            )}
           </div>
         </div>
 

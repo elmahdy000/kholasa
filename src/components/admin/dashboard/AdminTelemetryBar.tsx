@@ -22,10 +22,10 @@ export function AdminTelemetryBar() {
           عرض سجل التدقيق
         </Link>
         <Link
-          href="/admin/structure"
+          href="/admin/curriculum"
           className="hover:text-[#0F172A] dark:hover:text-[#F8FAFC] transition-colors"
         >
-          إدارة الهيكل الأكاديمي
+          إدارة المناهج والهيكل
         </Link>
       </div>
     </div>

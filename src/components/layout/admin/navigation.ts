@@ -38,19 +38,11 @@ export const rawNavigationGroups: AdminNavGroup[] = [
     title: "الهيكل والمحتوى الأكاديمي",
     items: [
       {
-        label: "المناهج والدروس",
+        label: "المناهج والهيكل الأكاديمي",
         href: "/admin/curriculum",
         icon: BookOpen,
         badge: null,
         allowedRoles: ["TEACHER", "EDITOR", "ADMIN", "SUPER_ADMIN"],
-      },
-      {
-        label: "الأنظمة والصفوف الدراسية",
-        href: "/admin/structure",
-        icon: Layers,
-        badge: "جديد",
-        badgeColor: "bg-[#800020]/10 text-[#800020] border-[#800020]/20",
-        allowedRoles: ["ADMIN", "SUPER_ADMIN"],
       },
       {
         label: "مركز الوسائط والملفات",

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Search, X, ArrowUpRight, Award, HelpCircle, HardDrive, Upload, Layers, Compass } from "lucide-react";
+import { Search, X, ArrowUpRight, Award, HelpCircle, HardDrive, Upload, Layers, Compass, BookOpen } from "lucide-react";
 import type { AdminNavItem } from "./types";
 
 interface AdminCommandPaletteProps {
@@ -28,7 +28,7 @@ export function AdminCommandPalette({
     { label: "إضافة سؤال لبنك الأسئلة", href: "/admin/questions?action=create", icon: HelpCircle },
     { label: "رفع ملفات وسائط وبودكاست", href: "/admin/media", icon: HardDrive },
     { label: "استيراد بنك أسئلة CSV/JSON", href: "/admin/questions/import", icon: Upload },
-    { label: "إضافة نظام تعليمي أو صف", href: "/admin/structure", icon: Layers },
+    { label: "إدارة المناهج والهيكل الأكاديمي", href: "/admin/curriculum", icon: BookOpen },
     { label: "معاينة واجهة الطالب الحية", href: "/dashboard", icon: Compass, external: true },
   ].filter((a) => a.label.includes(commandQuery));
 
