@@ -43,22 +43,40 @@ interface EssayRubric {
   maxScore: number;
 }
 
+interface Grade {
+  id: string;
+  name: string;
+  code: string;
+  tracks?: { id: string; name: string; code: string }[];
+}
+
 interface Question {
   id: string;
   statement: string;
   type: string;
   difficulty: string;
-  subject: { id: string; name: string };
+  schoolCategory?: "ARABIC" | "LANGUAGES";
+  subject: {
+    id: string;
+    name: string;
+    gradeId?: string;
+    schoolCategory?: "ARABIC" | "LANGUAGES";
+  };
   unit?: { id: string; title: string } | null;
   lessons?: { lesson: { id: string; title: string } }[] | null;
   options: QuestionOption[];
   explanation?: QuestionExplanation | null;
   rubric?: EssayRubric | null;
+  batch?: { id: string; fileName: string; fileType: string } | null;
 }
 
 interface Subject {
   id: string;
   name: string;
+  gradeId?: string;
+  schoolCategory?: "ARABIC" | "LANGUAGES";
+  grade?: { id: string; name: string; code: string };
+  track?: { id: string; name: string; code: string } | null;
   units: {
     id: string;
     title: string;
@@ -69,20 +87,26 @@ interface Subject {
 interface QuestionBankManagerClientProps {
   initialQuestions: Question[];
   subjects: Subject[];
+  grades?: Grade[];
 }
 
 export function QuestionBankManagerClient({
   initialQuestions,
   subjects,
+  grades,
 }: QuestionBankManagerClientProps) {
   const router = useRouter();
   const [questions, setQuestions] = useState<Question[]>(initialQuestions);
+
+  // Grade & School Category Primary Hierarchy Filters
+  const [selectedGradeCode, setSelectedGradeCode] = useState<string>("all"); // "all" | "bacc_g10" | "bacc_g11"
+  const [selectedCategory, setSelectedCategory] = useState<string>("all"); // "all" | "ARABIC" | "LANGUAGES"
   const [selectedSubjectId, setSelectedSubjectId] = useState<string>("all");
   const [selectedType, setSelectedType] = useState<string>("all");
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Word Import Modal State
+  // Word/PDF Import Modal State
   const [isWordImportOpen, setIsWordImportOpen] = useState(false);
 
   // Create Modal State
@@ -90,7 +114,13 @@ export function QuestionBankManagerClient({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // New Question Form State
+  // Baccalaureate grades helpers
+  const g10Grade = grades?.find((g) => g.code === "bacc_g10");
+  const g11Grade = grades?.find((g) => g.code === "bacc_g11");
+
+  // New Question Form State (Curriculum Hierarchy: Grade -> Category -> Subject -> Unit -> Lesson)
+  const [newGradeId, setNewGradeId] = useState<string>(g10Grade?.id || "");
+  const [newSchoolCategory, setNewSchoolCategory] = useState<"ARABIC" | "LANGUAGES">("ARABIC");
   const [newSubjectId, setNewSubjectId] = useState<string>(subjects[0]?.id || "");
   const [newUnitId, setNewUnitId] = useState<string>("");
   const [newLessonId, setNewLessonId] = useState<string>("");
@@ -279,13 +309,67 @@ export function QuestionBankManagerClient({
     }
   };
 
-  // Filtered list
+  // Subject resolution helpers
+  const getSubjectGradeCode = (subjectId: string) => {
+    const sub = subjects.find((s) => s.id === subjectId);
+    if (sub?.grade?.code) return sub.grade.code;
+    if (sub?.gradeId && sub.gradeId === g10Grade?.id) return "bacc_g10";
+    if (sub?.gradeId && sub.gradeId === g11Grade?.id) return "bacc_g11";
+    return "";
+  };
+
+  const getSubjectCategory = (subjectId: string): "ARABIC" | "LANGUAGES" => {
+    const sub = subjects.find((s) => s.id === subjectId);
+    return sub?.schoolCategory || "ARABIC";
+  };
+
+  // Filter available subjects based on selected Grade & School Category
+  const availableSubjects = subjects.filter((s) => {
+    if (selectedGradeCode !== "all") {
+      const gCode = s.grade?.code || (s.gradeId === g10Grade?.id ? "bacc_g10" : s.gradeId === g11Grade?.id ? "bacc_g11" : "");
+      if (gCode && gCode !== selectedGradeCode) return false;
+    }
+    if (selectedCategory !== "all") {
+      const cat = s.schoolCategory || "ARABIC";
+      if (cat !== selectedCategory) return false;
+    }
+    return true;
+  });
+
+  // 4 Primary Curriculum Groupings Question Counts
+  const stats = {
+    g10Arabic: questions.filter((q) => {
+      const gCode = q.subject?.gradeId === g10Grade?.id ? "bacc_g10" : getSubjectGradeCode(q.subject.id);
+      const cat = q.schoolCategory || q.subject?.schoolCategory || getSubjectCategory(q.subject.id);
+      return gCode === "bacc_g10" && cat === "ARABIC";
+    }).length,
+    g10Languages: questions.filter((q) => {
+      const gCode = q.subject?.gradeId === g10Grade?.id ? "bacc_g10" : getSubjectGradeCode(q.subject.id);
+      const cat = q.schoolCategory || q.subject?.schoolCategory || getSubjectCategory(q.subject.id);
+      return gCode === "bacc_g10" && cat === "LANGUAGES";
+    }).length,
+    g11Arabic: questions.filter((q) => {
+      const gCode = q.subject?.gradeId === g11Grade?.id ? "bacc_g11" : getSubjectGradeCode(q.subject.id);
+      const cat = q.schoolCategory || q.subject?.schoolCategory || getSubjectCategory(q.subject.id);
+      return gCode === "bacc_g11" && cat === "ARABIC";
+    }).length,
+    g11Languages: questions.filter((q) => {
+      const gCode = q.subject?.gradeId === g11Grade?.id ? "bacc_g11" : getSubjectGradeCode(q.subject.id);
+      const cat = q.schoolCategory || q.subject?.schoolCategory || getSubjectCategory(q.subject.id);
+      return gCode === "bacc_g11" && cat === "LANGUAGES";
+    }).length,
+  };
+
+  // Filtered list strictly adhering to Curriculum Hierarchy
   const filteredQuestions = questions.filter((q) => {
-    if (selectedSubjectId !== "all" && q.subject.id !== selectedSubjectId)
-      return false;
+    const gCode = q.subject?.gradeId === g10Grade?.id ? "bacc_g10" : (q.subject?.gradeId === g11Grade?.id ? "bacc_g11" : getSubjectGradeCode(q.subject.id));
+    const cat = q.schoolCategory || q.subject?.schoolCategory || getSubjectCategory(q.subject.id);
+
+    if (selectedGradeCode !== "all" && gCode !== selectedGradeCode) return false;
+    if (selectedCategory !== "all" && cat !== selectedCategory) return false;
+    if (selectedSubjectId !== "all" && q.subject.id !== selectedSubjectId) return false;
     if (selectedType !== "all" && q.type !== selectedType) return false;
-    if (selectedDifficulty !== "all" && q.difficulty !== selectedDifficulty)
-      return false;
+    if (selectedDifficulty !== "all" && q.difficulty !== selectedDifficulty) return false;
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
       const matchStatement = q.statement.toLowerCase().includes(query);
@@ -297,10 +381,305 @@ export function QuestionBankManagerClient({
 
   return (
     <div className="space-y-6">
+      {/* 4 PRIMARY CURRICULUM GROUPINGS CARDS */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+        {/* Card 1: G10 Arabic */}
+        <button
+          type="button"
+          onClick={() => {
+            if (selectedGradeCode === "bacc_g10" && selectedCategory === "ARABIC") {
+              setSelectedGradeCode("all");
+              setSelectedCategory("all");
+            } else {
+              setSelectedGradeCode("bacc_g10");
+              setSelectedCategory("ARABIC");
+              setSelectedSubjectId("all");
+            }
+          }}
+          className={`p-4 rounded-2xl border text-right transition-all flex flex-col justify-between ${
+            selectedGradeCode === "bacc_g10" && selectedCategory === "ARABIC"
+              ? "bg-[#800020]/10 border-[#800020] dark:bg-[#800020]/20 dark:border-[#FB7185] shadow-sm"
+              : "bg-white dark:bg-[#0F172A] border-[#E2E8F0] dark:border-[#334155] hover:border-[#800020]/40"
+          }`}
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-[#059669]/10 text-[#059669] dark:bg-[#059669]/20">
+              مدارس عربي
+            </span>
+            <span className="text-[11px] font-bold text-[#64748B] dark:text-[#94A3B8]">
+              أولى ثانوي
+            </span>
+          </div>
+          <div className="mt-2.5">
+            <h4 className="text-[13px] font-bold text-[#0F172A] dark:text-white">
+              أولى بكالوريا — عربي
+            </h4>
+            <div className="mt-1 flex items-baseline gap-1.5">
+              <span className="text-xl font-extrabold text-[#800020] dark:text-[#FB7185]">
+                {stats.g10Arabic}
+              </span>
+              <span className="text-[11px] text-[#64748B] dark:text-[#94A3B8]">سؤال معتمد</span>
+            </div>
+          </div>
+        </button>
+
+        {/* Card 2: G10 Languages */}
+        <button
+          type="button"
+          onClick={() => {
+            if (selectedGradeCode === "bacc_g10" && selectedCategory === "LANGUAGES") {
+              setSelectedGradeCode("all");
+              setSelectedCategory("all");
+            } else {
+              setSelectedGradeCode("bacc_g10");
+              setSelectedCategory("LANGUAGES");
+              setSelectedSubjectId("all");
+            }
+          }}
+          className={`p-4 rounded-2xl border text-right transition-all flex flex-col justify-between ${
+            selectedGradeCode === "bacc_g10" && selectedCategory === "LANGUAGES"
+              ? "bg-[#2563EB]/10 border-[#2563EB] dark:bg-[#2563EB]/20 dark:border-[#60A5FA] shadow-sm"
+              : "bg-white dark:bg-[#0F172A] border-[#E2E8F0] dark:border-[#334155] hover:border-[#2563EB]/40"
+          }`}
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-[#2563EB]/10 text-[#2563EB] dark:bg-[#2563EB]/20 dark:text-[#60A5FA]">
+              Language Schools
+            </span>
+            <span className="text-[11px] font-bold text-[#64748B] dark:text-[#94A3B8]">
+              Grade 10
+            </span>
+          </div>
+          <div className="mt-2.5">
+            <h4 className="text-[13px] font-bold text-[#0F172A] dark:text-white">
+              أولى بكالوريا — لغات
+            </h4>
+            <div className="mt-1 flex items-baseline gap-1.5">
+              <span className="text-xl font-extrabold text-[#2563EB] dark:text-[#60A5FA]">
+                {stats.g10Languages}
+              </span>
+              <span className="text-[11px] text-[#64748B] dark:text-[#94A3B8]">سؤال معتمد</span>
+            </div>
+          </div>
+        </button>
+
+        {/* Card 3: G11 Arabic */}
+        <button
+          type="button"
+          onClick={() => {
+            if (selectedGradeCode === "bacc_g11" && selectedCategory === "ARABIC") {
+              setSelectedGradeCode("all");
+              setSelectedCategory("all");
+            } else {
+              setSelectedGradeCode("bacc_g11");
+              setSelectedCategory("ARABIC");
+              setSelectedSubjectId("all");
+            }
+          }}
+          className={`p-4 rounded-2xl border text-right transition-all flex flex-col justify-between ${
+            selectedGradeCode === "bacc_g11" && selectedCategory === "ARABIC"
+              ? "bg-[#D97706]/10 border-[#D97706] dark:bg-[#D97706]/20 dark:border-[#FBBF24] shadow-sm"
+              : "bg-white dark:bg-[#0F172A] border-[#E2E8F0] dark:border-[#334155] hover:border-[#D97706]/40"
+          }`}
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-[#059669]/10 text-[#059669] dark:bg-[#059669]/20">
+              مدارس عربي
+            </span>
+            <span className="text-[11px] font-bold text-[#64748B] dark:text-[#94A3B8]">
+              تانية ثانوي
+            </span>
+          </div>
+          <div className="mt-2.5">
+            <h4 className="text-[13px] font-bold text-[#0F172A] dark:text-white">
+              تانية بكالوريا — عربي
+            </h4>
+            <div className="mt-1 flex items-baseline gap-1.5">
+              <span className="text-xl font-extrabold text-[#D97706] dark:text-[#FBBF24]">
+                {stats.g11Arabic}
+              </span>
+              <span className="text-[11px] text-[#64748B] dark:text-[#94A3B8]">سؤال معتمد</span>
+            </div>
+          </div>
+        </button>
+
+        {/* Card 4: G11 Languages */}
+        <button
+          type="button"
+          onClick={() => {
+            if (selectedGradeCode === "bacc_g11" && selectedCategory === "LANGUAGES") {
+              setSelectedGradeCode("all");
+              setSelectedCategory("all");
+            } else {
+              setSelectedGradeCode("bacc_g11");
+              setSelectedCategory("LANGUAGES");
+              setSelectedSubjectId("all");
+            }
+          }}
+          className={`p-4 rounded-2xl border text-right transition-all flex flex-col justify-between ${
+            selectedGradeCode === "bacc_g11" && selectedCategory === "LANGUAGES"
+              ? "bg-[#7C3AED]/10 border-[#7C3AED] dark:bg-[#7C3AED]/20 dark:border-[#A78BFA] shadow-sm"
+              : "bg-white dark:bg-[#0F172A] border-[#E2E8F0] dark:border-[#334155] hover:border-[#7C3AED]/40"
+          }`}
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-[#7C3AED]/10 text-[#7C3AED] dark:bg-[#7C3AED]/20 dark:text-[#A78BFA]">
+              Language Schools
+            </span>
+            <span className="text-[11px] font-bold text-[#64748B] dark:text-[#94A3B8]">
+              Grade 11
+            </span>
+          </div>
+          <div className="mt-2.5">
+            <h4 className="text-[13px] font-bold text-[#0F172A] dark:text-white">
+              تانية بكالوريا — لغات
+            </h4>
+            <div className="mt-1 flex items-baseline gap-1.5">
+              <span className="text-xl font-extrabold text-[#7C3AED] dark:text-[#A78BFA]">
+                {stats.g11Languages}
+              </span>
+              <span className="text-[11px] text-[#64748B] dark:text-[#94A3B8]">سؤال معتمد</span>
+            </div>
+          </div>
+        </button>
+      </div>
+
       {/* Top Action & Filters */}
-      <div className="p-4 sm:p-5 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0]/80 dark:border-[#334155]/80  flex flex-col md:flex-row md:items-center justify-between gap-4">
-        {/* Search & Dropdown Filters */}
-        <div className="flex flex-wrap items-center gap-3 flex-1">
+      <div className="p-4 sm:p-5 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0]/80 dark:border-[#334155]/80 flex flex-col gap-4">
+        {/* Curriculum Hierarchy Filter Row */}
+        <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-[#E2E8F0] dark:border-[#334155]">
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex items-center gap-2">
+              <span className="text-[12px] font-bold text-[#64748B] dark:text-[#94A3B8]">
+                الصف الدراسي:
+              </span>
+              <div className="flex items-center bg-[#F8FAFC] dark:bg-[#1E293B] p-1 rounded-xl border border-[#E2E8F0] dark:border-[#334155]">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedGradeCode("all");
+                    setSelectedSubjectId("all");
+                  }}
+                  className={`px-3 py-1.5 rounded-lg text-[12px] font-bold transition-colors ${
+                    selectedGradeCode === "all"
+                      ? "bg-[#800020] text-white"
+                      : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A]"
+                  }`}
+                >
+                  الكل
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedGradeCode("bacc_g10");
+                    setSelectedSubjectId("all");
+                  }}
+                  className={`px-3 py-1.5 rounded-lg text-[12px] font-bold transition-colors ${
+                    selectedGradeCode === "bacc_g10"
+                      ? "bg-[#800020] text-white"
+                      : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A]"
+                  }`}
+                >
+                  أولى بكالوريا
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedGradeCode("bacc_g11");
+                    setSelectedSubjectId("all");
+                  }}
+                  className={`px-3 py-1.5 rounded-lg text-[12px] font-bold transition-colors ${
+                    selectedGradeCode === "bacc_g11"
+                      ? "bg-[#800020] text-white"
+                      : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A]"
+                  }`}
+                >
+                  تانية بكالوريا
+                </button>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <span className="text-[12px] font-bold text-[#64748B] dark:text-[#94A3B8]">
+                نوع المدرسة:
+              </span>
+              <div className="flex items-center bg-[#F8FAFC] dark:bg-[#1E293B] p-1 rounded-xl border border-[#E2E8F0] dark:border-[#334155]">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedCategory("all");
+                    setSelectedSubjectId("all");
+                  }}
+                  className={`px-3 py-1.5 rounded-lg text-[12px] font-bold transition-colors ${
+                    selectedCategory === "all"
+                      ? "bg-[#800020] text-white"
+                      : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A]"
+                  }`}
+                >
+                  الكل
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedCategory("ARABIC");
+                    setSelectedSubjectId("all");
+                  }}
+                  className={`px-3 py-1.5 rounded-lg text-[12px] font-bold transition-colors ${
+                    selectedCategory === "ARABIC"
+                      ? "bg-[#059669] text-white"
+                      : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A]"
+                  }`}
+                >
+                  مدارس عربي
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedCategory("LANGUAGES");
+                    setSelectedSubjectId("all");
+                  }}
+                  className={`px-3 py-1.5 rounded-lg text-[12px] font-bold transition-colors ${
+                    selectedCategory === "LANGUAGES"
+                      ? "bg-[#2563EB] text-white"
+                      : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A]"
+                  }`}
+                >
+                  مدارس لغات
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex flex-wrap items-center gap-2 shrink-0">
+            <button
+              onClick={() => setIsWordImportOpen(true)}
+              className="h-10 px-3.5 rounded-xl bg-[#800020]/10 dark:bg-[#1E293B] hover:bg-[#800020]/20 text-[#800020] dark:text-[#FB7185] text-[12px] font-bold flex items-center justify-center gap-2 border border-[#800020]/20 dark:border-[#FB7185]/30 transition-colors"
+            >
+              <FileText className="w-4 h-4 text-[#800020] dark:text-[#FB7185]" />
+              <span>استيراد Word / PDF</span>
+            </button>
+
+            <Link
+              href="/admin/questions/import"
+              className="h-10 px-3.5 rounded-xl bg-[#F8FAFC] hover:bg-[#E2E8F0] dark:bg-[#1E293B] dark:hover:bg-[#1E293B] text-[#0F172A] dark:text-white text-[12px] font-bold flex items-center justify-center gap-2 transition-colors"
+            >
+              <Upload className="w-4 h-4 text-[#800020]" />
+              <span>استيراد شامل / CSV</span>
+            </Link>
+
+            <button
+              onClick={() => setIsCreateOpen(true)}
+              className="h-10 px-4 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[12px] font-bold flex items-center justify-center gap-2 shadow-sm transition-colors active:opacity-80"
+            >
+              <Plus className="w-4 h-4" />
+              <span>إضافة سؤال جديد</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Detailed Search & Secondary Dropdown Filters */}
+        <div className="flex flex-wrap items-center gap-3">
           {/* Search Input */}
           <div className="relative min-w-[220px] flex-1 max-w-xs">
             <Search className="w-4 h-4 text-[#94A3B8] absolute right-3 top-1/2 -translate-y-1/2" />
@@ -309,19 +688,19 @@ export function QuestionBankManagerClient({
               placeholder="ابحث في نص السؤال أو المفهوم..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full h-11 pr-9 pl-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold text-[#0F172A] dark:text-white placeholder:text-[#94A3B8] focus:outline-none focus:border-[#800020]"
+              className="w-full h-10 pr-9 pl-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold text-[#0F172A] dark:text-white placeholder:text-[#94A3B8] focus:outline-none focus:border-[#800020]"
             />
           </div>
 
           <select
             value={selectedSubjectId}
             onChange={(e) => setSelectedSubjectId(e.target.value)}
-            className="h-11 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold text-[#0F172A] dark:text-white"
+            className="h-10 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold text-[#0F172A] dark:text-white"
           >
-            <option value="all">كل المواد الدراسية</option>
-            {subjects.map((s) => (
+            <option value="all">كل المواد المؤهلة ({availableSubjects.length})</option>
+            {availableSubjects.map((s) => (
               <option key={s.id} value={s.id}>
-                {s.name}
+                {s.name} {s.schoolCategory === "LANGUAGES" ? "— لغات" : "— عربي"}
               </option>
             ))}
           </select>
@@ -329,7 +708,7 @@ export function QuestionBankManagerClient({
           <select
             value={selectedType}
             onChange={(e) => setSelectedType(e.target.value)}
-            className="h-11 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold text-[#0F172A] dark:text-white"
+            className="h-10 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold text-[#0F172A] dark:text-white"
           >
             <option value="all">كل أنواع الأسئلة</option>
             <option value="MCQ">اختيار من متعدد (MCQ)</option>
@@ -340,7 +719,7 @@ export function QuestionBankManagerClient({
           <select
             value={selectedDifficulty}
             onChange={(e) => setSelectedDifficulty(e.target.value)}
-            className="h-11 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold text-[#0F172A] dark:text-white"
+            className="h-10 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold text-[#0F172A] dark:text-white"
           >
             <option value="all">كل الصعوبات</option>
             <option value="EASY">سهل</option>
@@ -348,38 +727,17 @@ export function QuestionBankManagerClient({
             <option value="HARD">متقدم</option>
           </select>
         </div>
-
-        {/* Action Buttons */}
-        <div className="flex flex-wrap items-center gap-2 shrink-0">
-          <button
-            onClick={() => setIsWordImportOpen(true)}
-            className="h-11 px-4 rounded-xl bg-[#800020]/10 dark:bg-[#1E293B] hover:bg-[#800020]/10 dark:hover:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] text-[13px] font-bold flex items-center justify-center gap-2 border border-[#E2E8F0] dark:border-[#E11D48] transition-colors "
-          >
-            <FileText className="w-4 h-4 text-[#800020] dark:text-[#FB7185]" />
-            <span>استيراد ملف وورد (.docx)</span>
-          </button>
-
-          <Link
-            href="/admin/questions/import"
-            className="h-11 px-4 rounded-xl bg-[#F8FAFC] hover:bg-[#E2E8F0] dark:bg-[#1E293B] dark:hover:bg-[#1E293B] text-[#0F172A] dark:text-white text-[13px] font-bold flex items-center justify-center gap-2 transition-colors"
-          >
-            <Upload className="w-4 h-4 text-[#800020]" />
-            <span>استيراد شامل / CSV</span>
-          </Link>
-
-          <button
-            onClick={() => setIsCreateOpen(true)}
-            className="h-11 px-5 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] font-bold flex items-center justify-center gap-2 shadow-sm transition-colors active:opacity-80"
-          >
-            <Plus className="w-4 h-4" />
-            <span>إضافة سؤال جديد</span>
-          </button>
-        </div>
       </div>
 
       {/* Questions Counter Header */}
       <div className="flex items-center justify-between text-[13px] font-bold text-[#64748B] px-1">
         <span>عرض {filteredQuestions.length} سؤال من إجمالي {questions.length}</span>
+        {selectedGradeCode !== "all" || selectedCategory !== "all" ? (
+          <span className="text-[12px] font-bold text-[#800020] dark:text-[#FB7185]">
+            تطبيق فلتر: {selectedGradeCode === "bacc_g10" ? "أولى بكالوريا" : selectedGradeCode === "bacc_g11" ? "تانية بكالوريا" : ""}{" "}
+            {selectedCategory === "ARABIC" ? "• مدارس عربي" : selectedCategory === "LANGUAGES" ? "• مدارس لغات" : ""}
+          </span>
+        ) : null}
       </div>
 
       {/* Questions List */}
@@ -398,6 +756,22 @@ export function QuestionBankManagerClient({
                 <span className="px-3 py-1 rounded-lg bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] text-[13px] font-bold">
                   {q.subject.name}
                 </span>
+                {/* School Category Badge */}
+                {((q.schoolCategory || q.subject?.schoolCategory || getSubjectCategory(q.subject.id)) === "LANGUAGES") ? (
+                  <span className="px-2.5 py-1 rounded-lg bg-[#2563EB]/10 text-[#2563EB] dark:bg-[#2563EB]/20 dark:text-[#60A5FA] text-[12px] font-bold">
+                    مدارس لغات (Language)
+                  </span>
+                ) : (
+                  <span className="px-2.5 py-1 rounded-lg bg-[#059669]/10 text-[#059669] dark:bg-[#059669]/20 text-[12px] font-bold">
+                    مدارس عربي
+                  </span>
+                )}
+                {/* Batch Badge if imported */}
+                {q.batch && (
+                  <span className="px-2 py-0.5 rounded-lg bg-[#64748B]/10 text-[#64748B] dark:bg-[#334155] dark:text-[#94A3B8] text-[11px] font-medium" title={q.batch.fileName}>
+                    ملف: {q.batch.fileName.length > 22 ? q.batch.fileName.slice(0, 20) + "..." : q.batch.fileName}
+                  </span>
+                )}
                 {q.unit && (
                   <span className="px-3 py-1 rounded-lg bg-[#F8FAFC] dark:bg-[#1E293B] text-[#64748B] dark:text-[#F8FAFC] text-[13px] font-bold">
                     {q.unit.title}
@@ -451,10 +825,16 @@ export function QuestionBankManagerClient({
               </div>
             </div>
 
-            {/* Question Statement */}
-            <div className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-white leading-relaxed">
-              <BidiStatement as="div" text={q.statement} />
-            </div>
+            {/* Question Statement (LTR for Language Schools, RTL with Bidi for Arabic) */}
+            {((q.schoolCategory || q.subject?.schoolCategory || getSubjectCategory(q.subject.id)) === "LANGUAGES") ? (
+              <div dir="ltr" className="text-left font-sans text-sm sm:text-base font-semibold text-[#0F172A] dark:text-white leading-relaxed">
+                {q.statement}
+              </div>
+            ) : (
+              <div dir="rtl" className="text-right text-sm sm:text-base font-bold text-[#0F172A] dark:text-white leading-relaxed">
+                <BidiStatement as="div" text={q.statement} />
+              </div>
+            )}
 
             {/* Options */}
             {q.options && q.options.length > 0 && (
@@ -468,9 +848,13 @@ export function QuestionBankManagerClient({
                         : "bg-[#F8FAFC] dark:bg-[#1E293B] border-[#E2E8F0] dark:border-[#334155] text-[#64748B] dark:text-[#F8FAFC]"
                     }`}
                   >
-                    <BidiStatement as="span" text={opt.text} />
+                    {((q.schoolCategory || q.subject?.schoolCategory || getSubjectCategory(q.subject.id)) === "LANGUAGES") ? (
+                      <span dir="ltr" className="text-left font-sans">{opt.text}</span>
+                    ) : (
+                      <BidiStatement as="span" text={opt.text} />
+                    )}
                     {opt.isCorrect && (
-                      <span className="text-[13px] font-bold text-[#059669] flex items-center gap-1">
+                      <span className="text-[13px] font-bold text-[#059669] flex items-center gap-1 shrink-0">
                         <Check className="w-3 h-3" />
                         الإجابة الصحيحة
                       </span>
@@ -509,7 +893,7 @@ export function QuestionBankManagerClient({
 
       {/* CREATE QUESTION MODAL */}
       {isCreateOpen && (
-        <div className="fixed inset-0 z-50 bg-black/60  flex items-center justify-center p-4 overflow-y-auto">
+        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4 overflow-y-auto">
           <div className="w-full max-w-2xl bg-white dark:bg-[#0F172A] rounded-2xl p-6 sm:p-8 space-y-5 text-right shadow-sm border border-[#E2E8F0] dark:border-[#334155] max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#334155] pb-4">
               <h3 className="text-base font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
@@ -531,10 +915,78 @@ export function QuestionBankManagerClient({
             )}
 
             <form onSubmit={handleCreateQuestion} className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {/* Grade and School Category Hierarchy */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/50 border border-[#E2E8F0] dark:border-[#334155]">
+                <div>
+                  <label className="block text-[12px] font-bold text-[#64748B] dark:text-[#94A3B8] mb-1">
+                    1. الصف الدراسي *
+                  </label>
+                  <select
+                    value={newGradeId}
+                    onChange={(e) => {
+                      const nextGradeId = e.target.value;
+                      setNewGradeId(nextGradeId);
+                      const nextSubs = subjects.filter((s) => {
+                        if (s.gradeId && s.gradeId !== nextGradeId) return false;
+                        const targetGrade = grades?.find((g) => g.id === nextGradeId);
+                        if (targetGrade && s.grade?.code && s.grade.code !== targetGrade.code) return false;
+                        return (s.schoolCategory || "ARABIC") === newSchoolCategory;
+                      });
+                      const firstSub = nextSubs[0];
+                      setNewSubjectId(firstSub?.id || "");
+                      setNewUnitId(firstSub?.units[0]?.id || "");
+                      setNewLessonId("");
+                    }}
+                    className="w-full h-10 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] text-[13px] font-bold"
+                  >
+                    {grades && grades.length > 0 ? (
+                      grades.map((g) => (
+                        <option key={g.id} value={g.id}>
+                          {g.name}
+                        </option>
+                      ))
+                    ) : (
+                      <>
+                        <option value="bacc_g10">أولى بكالوريا (الصف العاشر)</option>
+                        <option value="bacc_g11">تانية بكالوريا (الصف الحادي عشر)</option>
+                      </>
+                    )}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-[12px] font-bold text-[#64748B] dark:text-[#94A3B8] mb-1">
+                    2. نوع المدرسة (فصل المنهج) *
+                  </label>
+                  <select
+                    value={newSchoolCategory}
+                    onChange={(e) => {
+                      const nextCat = e.target.value as "ARABIC" | "LANGUAGES";
+                      setNewSchoolCategory(nextCat);
+                      const nextSubs = subjects.filter((s) => {
+                        if (newGradeId && s.gradeId && s.gradeId !== newGradeId) return false;
+                        const targetGrade = grades?.find((g) => g.id === newGradeId);
+                        if (targetGrade && s.grade?.code && s.grade.code !== targetGrade.code) return false;
+                        return (s.schoolCategory || "ARABIC") === nextCat;
+                      });
+                      const firstSub = nextSubs[0];
+                      setNewSubjectId(firstSub?.id || "");
+                      setNewUnitId(firstSub?.units[0]?.id || "");
+                      setNewLessonId("");
+                    }}
+                    className="w-full h-10 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] text-[13px] font-bold"
+                  >
+                    <option value="ARABIC">مدارس عربي (Arabic Schools)</option>
+                    <option value="LANGUAGES">مدارس لغات (Language Schools)</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Subject, Unit, Lesson */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
                   <label className="block text-[13px] font-bold text-[#64748B] mb-1">
-                    المادة الدراسية *
+                    المادة الدراسية المؤهلة *
                   </label>
                   <select
                     value={newSubjectId}
@@ -542,14 +994,25 @@ export function QuestionBankManagerClient({
                       setNewSubjectId(e.target.value);
                       const target = subjects.find((s) => s.id === e.target.value);
                       setNewUnitId(target?.units[0]?.id || "");
+                      setNewLessonId("");
                     }}
                     className="w-full h-11 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold"
                   >
-                    {subjects.map((s) => (
-                      <option key={s.id} value={s.id}>
-                        {s.name}
-                      </option>
-                    ))}
+                    {subjects
+                      .filter((s) => {
+                        if (newGradeId) {
+                          if (s.gradeId && s.gradeId !== newGradeId) return false;
+                          const targetGrade = grades?.find((g) => g.id === newGradeId);
+                          if (targetGrade && s.grade?.code && s.grade.code !== targetGrade.code) return false;
+                        }
+                        const cat = s.schoolCategory || "ARABIC";
+                        return cat === newSchoolCategory;
+                      })
+                      .map((s) => (
+                        <option key={s.id} value={s.id}>
+                          {s.name}
+                        </option>
+                      ))}
                   </select>
                 </div>
 
@@ -1036,10 +1499,10 @@ export function QuestionBankManagerClient({
                 </div>
                 <div>
                   <h2 className="text-base sm:text-lg font-bold text-[#0F172A] dark:text-white">
-                    استيراد الأسئلة من ملف وورد (.docx)
+                    استيراد بنك الأسئلة (Word / PDF)
                   </h2>
                   <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8]">
-                    استخراج فوري للأسئلة مع شاشة معاينة تفاعلية وتعديل كامل قبل الحفظ
+                    استيراد فوري للأسئلة مع الفصل الكامل بين المدارس العربي واللغات وربط الدروس
                   </p>
                 </div>
               </div>
@@ -1053,6 +1516,19 @@ export function QuestionBankManagerClient({
 
             <QuestionWordImporter
               subjects={subjects as any}
+              grades={grades as any}
+              initialGradeId={
+                selectedGradeCode === "bacc_g10"
+                  ? g10Grade?.id
+                  : selectedGradeCode === "bacc_g11"
+                  ? g11Grade?.id
+                  : undefined
+              }
+              initialSchoolCategory={
+                selectedCategory !== "all"
+                  ? (selectedCategory as "ARABIC" | "LANGUAGES")
+                  : undefined
+              }
               isModal={true}
               onSuccess={() => {
                 setIsWordImportOpen(false);

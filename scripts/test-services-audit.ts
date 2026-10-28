@@ -65,6 +65,7 @@ async function runServicesAudit() {
     {
       systemId: studentUser.systemId,
       gradeId: studentUser.gradeId,
+      schoolCategory: studentUser.schoolCategory,
       trackId: studentUser.trackId,
     }
   );

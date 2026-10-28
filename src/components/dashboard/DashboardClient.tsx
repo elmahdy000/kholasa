@@ -12,20 +12,20 @@ import {
   Trophy,
   Fire,
   Play,
-  CheckCircle,
   Clock,
-  GraduationCap,
+  Sparkle,
+  Compass,
 } from "@phosphor-icons/react";
 import { DailyChallengeCard } from "./DailyChallengeCard";
 import { StreakWidget, WeekDayProgress } from "./StreakWidget";
-import { formatArabicDays } from "@/lib/utils";
+import { BidiStatement } from "@/components/ui/BidiStatement";
 
 const fadeInUp = {
-  hidden: { opacity: 0, y: 14 },
+  hidden: { opacity: 0, y: 12 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] as const },
+    transition: { duration: 0.22, ease: [0.25, 0.46, 0.45, 0.94] as const },
   },
 };
 
@@ -33,7 +33,7 @@ const staggerContainer = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { staggerChildren: 0.06, delayChildren: 0.04 },
+    transition: { staggerChildren: 0.05, delayChildren: 0.02 },
   },
 };
 
@@ -72,8 +72,15 @@ interface RecentExamItem {
   completedAt: string | null;
 }
 
+interface StudentMeta {
+  systemName?: string | null;
+  gradeName?: string | null;
+  trackName?: string | null;
+}
+
 interface DashboardClientProps {
   userName?: string | null;
+  studentMeta?: StudentMeta;
   completedLessonsCount: number;
   recentAttemptsCount: number;
   averageScore?: number | null;
@@ -89,6 +96,7 @@ interface DashboardClientProps {
 
 export function DashboardClient({
   userName,
+  studentMeta,
   completedLessonsCount,
   recentAttemptsCount,
   averageScore = null,
@@ -120,158 +128,209 @@ export function DashboardClient({
     return () => window.removeEventListener("kholasa_streak_updated", handleStreakUpdate);
   }, []);
 
+  // Clean student name without parenthesized metadata
   const displayName = userName?.replace(/\s*\([^)]*\)/g, "").trim() || "طالبنا العزيز";
-  const userTrack = userName?.match(/\(([^)]+)\)/)?.[1];
 
+  // Academic metadata tags
+  const metaPills = [
+    studentMeta?.systemName,
+    studentMeta?.gradeName,
+    studentMeta?.trackName,
+  ].filter(Boolean) as string[];
+
+  // 4 Key Statistics Cards
   const stats = [
     {
       icon: BookOpen,
       color: "#800020",
+      bgColor: "bg-[#800020]/10 dark:bg-[#800020]/20",
+      textColor: "text-[#800020] dark:text-[#FB7185]",
       value: completedLessonsCount,
-      label: "دروس أتممتها",
+      label: "دروس أتقنتها",
       subtext: "مفاهيم مستوعبة",
     },
     {
       icon: Target,
       color: "#059669",
+      bgColor: "bg-[#059669]/10 dark:bg-[#059669]/20",
+      textColor: "text-[#059669] dark:text-[#34D399]",
       value: recentAttemptsCount,
       label: "اختبارات منجزة",
-      subtext: "جلسات تدريب",
+      subtext: "جلسات تدريب مكتملة",
     },
     {
       icon: ArrowCounterClockwise,
       color: "#DC2626",
+      bgColor: "bg-[#DC2626]/10 dark:bg-[#DC2626]/20",
+      textColor: "text-[#DC2626] dark:text-[#F87171]",
       value: unresolvedMistakesCount,
       label: "أخطاء للمراجعة",
-      textColor: "text-[#DC2626] dark:text-[#F87171]",
-      subtext: "تحتاج تركيز",
+      subtext: "تحتاج تركيز وتثبيت",
     },
     {
       icon: Trophy,
       color: "#D97706",
+      bgColor: "bg-[#D97706]/10 dark:bg-[#D97706]/20",
+      textColor: "text-[#D97706] dark:text-[#FBBF24]",
       value: averageScore !== null ? `${averageScore}%` : "—",
       label: "معدل الاستيعاب",
-      textColor: "text-[#D97706] dark:text-[#FBBF24]",
       subtext: "متوسط نتائج اختباراتك",
     },
   ];
 
+  // 5 Quick Access Cards (Bento-balanced)
   const quickActions = [
     {
+      id: "subjects",
       title: "تصفح المناهج",
-      desc: "كل المواد والوحدات",
+      desc: "كل المواد والوحدات والدروس المقررة",
       href: "/subjects",
       icon: BookOpen,
       badge: `${subjects.length} مواد`,
-      color: "text-[#800020] dark:text-[#FB7185] bg-[#800020]/10 dark:bg-[#1E293B] border-[#F0E6E8]/60 dark:border-[#E11D48]/40",
+      badgeColor: "bg-[#800020]/10 text-[#800020] dark:bg-[#800020]/30 dark:text-[#FB7185]",
+      iconBg: "bg-[#800020]/10 text-[#800020] dark:bg-[#1E293B] dark:text-[#FB7185]",
+      // Layout classes across breakpoints
+      layoutClass: "col-span-2 sm:col-span-3 lg:col-span-1",
+      isFeaturedOnMobile: true,
     },
     {
+      id: "quick-exam",
       title: "اختبار سريع 5 دقائق",
-      desc: "تحديد مستوى مخصص",
+      desc: "تقييم فوري لمستوى استيعابك",
       href: "/exams/builder",
       icon: Target,
       badge: "فوري",
-      color: "text-[#059669] dark:text-[#34D399] bg-[#059669]/10 dark:bg-[#1E293B] border-[#F0E6E8]/60 dark:border-[#34D399]/40",
+      badgeColor: "bg-[#059669]/10 text-[#059669] dark:bg-[#059669]/30 dark:text-[#34D399]",
+      iconBg: "bg-[#059669]/10 text-[#059669] dark:bg-[#1E293B] dark:text-[#34D399]",
+      layoutClass: "col-span-1 sm:col-span-3 lg:col-span-1",
     },
     {
+      id: "capsule",
       title: "كبسولة الزتونة",
-      desc: "مفاهيم وقوانين مركزة",
+      desc: "خلاصات القوانين والمفاهيم المركزة",
       href: "/subjects",
       icon: BookmarkSimple,
       badge: "شامل",
-      color: "text-[#D97706] dark:text-[#FBBF24] bg-[#D97706]/10 dark:bg-[#1E293B] border-[#F0E6E8]/60 dark:border-[#FBBF24]/40",
+      badgeColor: "bg-[#D97706]/10 text-[#D97706] dark:bg-[#D97706]/30 dark:text-[#FBBF24]",
+      iconBg: "bg-[#D97706]/10 text-[#D97706] dark:bg-[#1E293B] dark:text-[#FBBF24]",
+      layoutClass: "col-span-1 sm:col-span-2 lg:col-span-1",
     },
     {
+      id: "mistakes",
       title: "ركن غلطاتي",
-      desc: "علاج نقاط الضعف",
+      desc: "علاج نقاط الضعف والمراجعة الذكية",
       href: "/mistakes",
       icon: ArrowCounterClockwise,
       badge: `${unresolvedMistakesCount} أخطاء`,
-      badgeColor: unresolvedMistakesCount > 0 ? "bg-[#DC2626] text-white" : undefined,
-      color: "text-[#DC2626] dark:text-[#F87171] bg-[#DC2626]/10 dark:bg-[#1E293B] border-[#F0E6E8]/60 dark:border-[#F87171]/40",
+      badgeColor:
+        unresolvedMistakesCount > 0
+          ? "bg-[#DC2626] text-white"
+          : "bg-[#F3F4F6] text-[#6B7280] dark:bg-[#334155] dark:text-[#94A3B8]",
+      iconBg: "bg-[#DC2626]/10 text-[#DC2626] dark:bg-[#1E293B] dark:text-[#F87171]",
+      layoutClass: "col-span-1 sm:col-span-2 lg:col-span-1",
     },
     {
+      id: "leaderboard",
       title: "لوحة الشرف",
-      desc: "ترتيب المتفوقين",
+      desc: "ترتيب المتفوقين والتنافس الأسبوعي",
       href: "/leaderboard",
       icon: Trophy,
       badge: "تنافسي",
-      color: "text-[#800020] dark:text-[#FB7185] bg-[#800020]/10 dark:bg-[#1E293B] border-[#F0E6E8]/60 dark:border-[#E11D48]/40",
+      badgeColor: "bg-[#800020]/10 text-[#800020] dark:bg-[#800020]/30 dark:text-[#FB7185]",
+      iconBg: "bg-[#800020]/10 text-[#800020] dark:bg-[#1E293B] dark:text-[#FB7185]",
+      layoutClass: "col-span-1 sm:col-span-2 lg:col-span-1",
     },
   ];
 
   return (
-    <div className="space-y-7 text-right">
-      {/* 1. Personalized Hero Header */}
+    <div className="space-y-6 sm:space-y-7 text-right">
+      {/* 1. Redesigned Student Dashboard Hero */}
       <motion.section
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.25 }}
-        className="rounded-xl bg-white dark:bg-[#0F172A] border border-[#F0E6E8] dark:border-[#334155] p-6 sm:p-7 relative overflow-hidden "
+        transition={{ duration: 0.22 }}
+        className="rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E5E7EB] dark:border-[#334155] p-5 sm:p-6 lg:p-7 relative overflow-hidden"
       >
-        <div className="absolute inset-0 bg-grid-pattern opacity-30 pointer-events-none" />
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5">
-          <div className="space-y-3">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FAF7F8] dark:bg-[#1E293B] border border-[#F0E6E8]/80 dark:border-[#334155] text-[13px] font-bold text-[#1A0A10] dark:text-[#F8FAFC]">
-              <span className="w-2 h-2 rounded-full bg-[#059669] animate-pulse" />
-              <span>منصة الخلاصة • مسارك الدراسي</span>
-              {currentStreakDays > 0 ? (
-                <span className="inline-flex items-center gap-1 text-[13px] font-bold text-[#D97706] dark:text-[#FBBF24] border-r border-[#F0E6E8] dark:border-[#334155] pr-2 mr-1">
-                  <Fire className="w-3.5 h-3.5 fill-current" />
-                  <span>{currentStreakDays === 1 ? "يوم واحد" : formatArabicDays(currentStreakDays)}</span>
-                </span>
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5 lg:gap-6">
+          {/* Welcome Text & Metadata */}
+          <div className="space-y-2.5 max-w-2xl">
+            {/* Metadata Pills Row */}
+            <div className="flex items-center gap-2 flex-wrap text-xs sm:text-[13px] font-bold">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#059669]/10 text-[#059669] dark:text-[#34D399] border border-[#059669]/20">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#059669] animate-pulse" />
+                <span>حساب مفعل</span>
+              </span>
+
+              {metaPills.length > 0 ? (
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  {metaPills.map((pill, idx) => (
+                    <span
+                      key={idx}
+                      className="px-2.5 py-0.5 rounded-full bg-[#F3F4F6] dark:bg-[#1E293B] text-[#4B5563] dark:text-[#CBD5E1] border border-[#E5E7EB] dark:border-[#334155]"
+                    >
+                      <BidiStatement as="span" text={pill} />
+                    </span>
+                  ))}
+                </div>
               ) : (
-                <span className="inline-flex items-center gap-1 text-[12px] font-bold text-[#D97706] dark:text-[#FBBF24] border-r border-[#F0E6E8] dark:border-[#334155] pr-2 mr-1">
-                  <Fire className="w-3.5 h-3.5 text-[#D97706]" />
-                  <span>ابدأ شعلتك اليوم</span>
+                <span className="px-2.5 py-0.5 rounded-full bg-[#F3F4F6] dark:bg-[#1E293B] text-[#4B5563] dark:text-[#CBD5E1] border border-[#E5E7EB] dark:border-[#334155]">
+                  مسارك الدراسي
                 </span>
               )}
             </div>
-            <div className="flex items-center gap-2.5 flex-wrap">
-              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#1A0A10] dark:text-[#F8FAFC] leading-tight">
-                أهلاً بك، {displayName}
-              </h1>
-              {userTrack && (
-                <span className="text-[12px] font-bold px-3 py-0.5 rounded-full bg-[#800020]/10 dark:bg-[#800020]/25 text-[#800020] dark:text-[#FB7185] border border-[#800020]/20 dark:border-[#FB7185]/30">
-                  {userTrack}
-                </span>
-              )}
-            </div>
-            <p className="text-[13px] sm:text-sm text-[#735C63] dark:text-[#94A3B8] font-medium max-w-lg leading-relaxed">
-              افهم المفاهيم خطوة بخطوة بالخلاصة المركزة، واختبر استيعابك فوراً.
+
+            {/* Welcome Heading */}
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#12263F] dark:text-[#F8FAFC] tracking-tight">
+              أهلًا بيك، {displayName}
+            </h1>
+
+            {/* Supporting Subtext */}
+            <p className="text-xs sm:text-sm text-[#64748B] dark:text-[#94A3B8] font-medium leading-relaxed">
+              كمّل مذاكرتك من آخر درس، واختبر فهمك خطوة بخطوة.
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
+          {/* Action Buttons */}
+          <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 shrink-0">
+            {/* Primary Action: Continue Learning */}
+            <Link
+              href={continueLesson ? `/lessons/${continueLesson.id}` : "/subjects"}
+              className="h-11 px-5 sm:px-6 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] sm:text-sm font-bold flex items-center justify-center gap-2 shadow-sm transition-all active:scale-[0.98]"
+            >
+              <Play className="w-4 h-4 fill-current ml-0.5" />
+              <span>كمّل مذاكرتك</span>
+            </Link>
+
+            {/* Secondary Action: Quick Exam */}
+            <Link
+              href="/exams/builder"
+              className="h-11 px-4 sm:px-5 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E5E7EB] dark:border-[#334155] text-[#12263F] dark:text-[#F8FAFC] hover:border-[#800020]/40 dark:hover:border-[#E11D48]/60 text-[13px] sm:text-sm font-bold flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+            >
+              <Target className="w-4 h-4 text-[#D97706]" weight="fill" />
+              <span>اختبار سريع</span>
+            </Link>
+
+            {/* Daily Challenge Pill (non-competing) */}
             <button
               type="button"
               onClick={() => {
-                window.dispatchEvent(new CustomEvent("kholasa_open_entrance_exam"));
+                const el = document.getElementById("daily-challenge-card");
+                if (el) {
+                  el.scrollIntoView({ behavior: "smooth", block: "center" });
+                } else {
+                  window.dispatchEvent(new CustomEvent("kholasa_open_entrance_exam"));
+                }
               }}
-              className="h-11 px-4 rounded-xl bg-[#D97706]/10 dark:bg-[#1E293B] border border-[#F0E6E8] dark:border-[#FBBF24]/60 text-[#D97706] dark:text-[#FBBF24] text-[13px] font-bold flex items-center gap-2 hover:bg-[#D97706]/10 dark:hover:bg-[#1E293B] transition-all active:opacity-80"
+              className="h-11 px-3.5 rounded-xl bg-[#D97706]/10 dark:bg-[#1E293B] border border-[#D97706]/30 dark:border-[#FBBF24]/40 text-[#D97706] dark:text-[#FBBF24] text-[12px] sm:text-[13px] font-bold flex items-center justify-center gap-1.5 transition-all hover:bg-[#D97706]/15 active:scale-[0.98]"
             >
-              <Fire className="w-3.5 h-3.5 text-[#D97706]" weight="fill" />
-              <span>تحدي الدخول اليومي</span>
+              <Fire className="w-4 h-4 fill-current" />
+              <span className="hidden xs:inline">تحدي اليوم</span>
             </button>
-            <Link
-              href="/exams/builder"
-              className="h-11 px-5 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] font-bold flex items-center gap-2 transition-all shadow-sm active:opacity-80"
-            >
-              <Target className="w-3.5 h-3.5 text-[#D97706]" weight="fill" />
-              <span>اختبار مخصص 5 دقائق</span>
-            </Link>
-            <Link
-              href="/mistakes"
-              className="h-11 px-4 rounded-xl bg-[#FAF7F8] dark:bg-[#1E293B] border border-[#F0E6E8] dark:border-[#334155] text-[#1A0A10] dark:text-[#F8FAFC] text-[13px] font-bold flex items-center gap-2 hover:border-[#800020]/40 dark:hover:border-[#E11D48]/60 transition-all active:opacity-80"
-            >
-              <ArrowCounterClockwise className="w-3.5 h-3.5 text-[#DC2626]" weight="bold" />
-              <span>ركن غلطاتي ({unresolvedMistakesCount})</span>
-            </Link>
           </div>
         </div>
       </motion.section>
 
-      {/* 2. Interactive Streak & Daily Challenge Widget */}
+      {/* 2. Study Streak Timeline Component */}
       <StreakWidget
         initialStreakDays={currentStreakDays}
         initialIsTodayCompleted={isTodayCompletedState}
@@ -286,98 +345,176 @@ export function DashboardClient({
         }}
       />
 
-      {/* 2. Step 1 in Flow: Continue Learning (Primary Action Card) */}
-      {continueLesson && (
-        <motion.section
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.25, delay: 0.05 }}
-          className="rounded-xl p-5 sm:p-6 bg-white dark:bg-[#0F172A] border border-[#F0E6E8] dark:border-[#334155] "
-        >
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 rounded-xl bg-[#800020] text-white flex items-center justify-center shrink-0 shadow-sm mt-1">
-                <Play className="w-5 h-5 fill-current ml-1" />
+      {/* 3. Continue Learning Section */}
+      <section>
+        {continueLesson ? (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.22, delay: 0.04 }}
+            className="rounded-2xl p-5 sm:p-6 bg-white dark:bg-[#0F172A] border border-[#E5E7EB] dark:border-[#334155]"
+          >
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div className="flex items-start gap-3.5 sm:gap-4 min-w-0 flex-1">
+                <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-[#800020] text-white flex items-center justify-center shrink-0 shadow-sm mt-0.5">
+                  <Play className="w-5 h-5 fill-current ml-0.5" />
+                </div>
+                <div className="space-y-1.5 min-w-0 flex-1">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-xs font-bold text-[#800020] dark:text-[#FB7185] bg-[#800020]/10 dark:bg-[#1E293B] px-2.5 py-0.5 rounded-md border border-[#800020]/20 dark:border-[#E11D48]/30">
+                      واصل من حيث توقفت
+                    </span>
+                    <span className="text-xs sm:text-[13px] font-bold text-[#64748B] dark:text-[#94A3B8] truncate">
+                      {continueLesson.unit.subject.name} • {continueLesson.unit.title}
+                    </span>
+                  </div>
+
+                  <h2 className="text-base sm:text-lg font-bold text-[#12263F] dark:text-[#F8FAFC] break-words leading-snug">
+                    {continueLesson.title}
+                  </h2>
+
+                  <div className="flex items-center gap-3 text-xs text-[#64748B] dark:text-[#94A3B8] flex-wrap">
+                    <span className="flex items-center gap-1 font-mono font-medium">
+                      <Clock className="w-3.5 h-3.5" />
+                      <span>{continueLesson.durationMinutes} دقيقة</span>
+                    </span>
+                    <span>•</span>
+                    <span className="text-[#D97706] dark:text-[#FBBF24] font-bold flex items-center gap-1">
+                      <BookmarkSimple className="w-3.5 h-3.5" />
+                      <span>الزتونة جاهزة للمراجعة</span>
+                    </span>
+                    {typeof continueLesson.progressPercent === "number" &&
+                      continueLesson.progressPercent > 0 && (
+                        <>
+                          <span>•</span>
+                          <span className="font-mono font-bold text-[#059669] dark:text-[#34D399]">
+                            {continueLesson.progressPercent}% مكتمل
+                          </span>
+                        </>
+                      )}
+                  </div>
+                </div>
               </div>
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-[13px] font-bold text-[#800020] dark:text-[#FB7185] bg-[#800020]/10 dark:bg-[#1E293B] px-3 py-1 rounded-md border border-[#F0E6E8]/50 dark:border-[#E11D48]/50">
-                    واصل من حيث توقفت
-                  </span>
-                  <span className="text-[13px] font-bold text-[#735C63] dark:text-[#94A3B8]">
-                    {continueLesson.unit.subject.name} • {continueLesson.unit.title}
-                  </span>
-                </div>
-                <h2 className="text-base sm:text-xl font-bold text-[#1A0A10] dark:text-[#F8FAFC]">
-                  {continueLesson.title}
+
+              <Link
+                href={`/lessons/${continueLesson.id}`}
+                className="h-11 px-6 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] sm:text-sm font-bold flex items-center justify-center gap-2 shadow-sm transition-all shrink-0 active:scale-[0.98]"
+              >
+                <span>كمّل الدرس</span>
+                <ArrowLeft className="w-3.5 h-3.5" weight="bold" />
+              </Link>
+            </div>
+          </motion.div>
+        ) : (
+          <div className="rounded-2xl p-5 sm:p-6 bg-white dark:bg-[#0F172A] border border-[#E5E7EB] dark:border-[#334155] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-start gap-3.5">
+              <div className="w-11 h-11 rounded-xl bg-[#800020]/10 text-[#800020] dark:bg-[#1E293B] dark:text-[#FB7185] flex items-center justify-center shrink-0">
+                <Compass className="w-5 h-5" weight="bold" />
+              </div>
+              <div className="space-y-1">
+                <h2 className="text-base font-bold text-[#12263F] dark:text-[#F8FAFC]">
+                  ابدأ رحلتك التعليمية
                 </h2>
-                <div className="flex items-center gap-3 text-[13px] text-[#735C63] dark:text-[#94A3B8]">
-                  <span className="flex items-center gap-1 font-mono text-[13px]">
-                    <Clock className="w-3.5 h-3.5" />
-                    <span>{continueLesson.durationMinutes} دقيقة</span>
-                  </span>
-                  <span>•</span>
-                  <span className="text-[#D97706] dark:text-[#FBBF24] font-bold flex items-center gap-1">
-                    <BookmarkSimple className="w-3.5 h-3.5" />
-                    <span>الزتونة جاهزة للمراجعة</span>
-                  </span>
-                </div>
+                <p className="text-xs sm:text-[13px] text-[#64748B] dark:text-[#94A3B8] leading-relaxed">
+                  اختر مادتك الأولى للبدء في المذاكرة خطوة بخطوة وتثبيت حضورك وتقدمك تلقائيًا.
+                </p>
               </div>
             </div>
 
             <Link
-              href={`/lessons/${continueLesson.id}`}
-              className="h-11 px-6 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] font-bold flex items-center justify-center gap-2 shadow-sm transition-all shrink-0 active:opacity-80"
+              href="/subjects"
+              className="h-11 px-5 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] font-bold flex items-center justify-center gap-2 shadow-sm transition-all shrink-0 active:scale-[0.98]"
             >
-              <span>استكمال المذاكرة الآن</span>
+              <span>تصفح المواد الدراسية</span>
               <ArrowLeft className="w-3.5 h-3.5" weight="bold" />
             </Link>
           </div>
-        </motion.section>
-      )}
+        )}
+      </section>
 
-      {/* 3. Step 2 in Flow: Quick Action Hub (5 Clear Commands) */}
+      {/* 4. Student Key Metrics Grid (4 Balanced Cards) */}
+      <motion.section
+        variants={staggerContainer}
+        initial="hidden"
+        animate="visible"
+        className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4"
+      >
+        {stats.map((stat, i) => (
+          <motion.div
+            key={i}
+            variants={fadeInUp}
+            className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E5E7EB] dark:border-[#334155] hover:border-[#800020]/40 dark:hover:border-[#E11D48]/60 transition-colors flex flex-col justify-between min-h-[118px] sm:min-h-[126px]"
+          >
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-xs sm:text-[13px] text-[#64748B] dark:text-[#94A3B8] font-bold">
+                {stat.label}
+              </span>
+              <div
+                className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center shrink-0 ${stat.bgColor} ${stat.textColor}`}
+              >
+                <stat.icon className="w-4 h-4 sm:w-4.5 sm:h-4.5" weight="bold" />
+              </div>
+            </div>
+
+            <div className="pt-2">
+              <span className={`text-2xl sm:text-3xl font-bold font-mono tracking-tight block ${stat.textColor}`}>
+                {stat.value}
+              </span>
+              <span className="text-[11px] sm:text-xs text-[#64748B] dark:text-[#94A3B8] mt-0.5 block">
+                {stat.subtext}
+              </span>
+            </div>
+          </motion.div>
+        ))}
+      </motion.section>
+
+      {/* 5. Adaptive Bento Quick Action Grid (No Orphaned 5th Card) */}
       <section className="space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm sm:text-base font-bold text-[#1A0A10] dark:text-[#F8FAFC]">
+          <h2 className="text-sm sm:text-base font-bold text-[#12263F] dark:text-[#F8FAFC]">
             محطات الوصول السريع
           </h2>
-          <span className="text-[13px] text-[#735C63] dark:text-[#94A3B8] font-medium">
+          <span className="text-xs sm:text-[13px] text-[#64748B] dark:text-[#94A3B8] font-medium">
             كل أدواتك في متناول يدك
           </span>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-          {quickActions.map((action, i) => {
+        {/* 
+          Bento Grid Layout Strategy:
+          - Mobile (< sm): 2 columns. Card 1 spans 2 cols (full width header card). Cards 2-5 are 1 col each in 2x2.
+          - Tablet (sm to lg): 6 columns. Row 1 has 2 cards (3+3 cols). Row 2 has 3 cards (2+2+2 cols).
+          - Desktop (lg+): 5 columns. All 5 cards in 1 row (1 col each).
+          Zero orphans anywhere!
+        */}
+        <div className="grid grid-cols-2 sm:grid-cols-6 lg:grid-cols-5 gap-3 sm:gap-4">
+          {quickActions.map((action) => {
             const Icon = action.icon;
             return (
               <Link
-                key={i}
+                key={action.id}
                 href={action.href}
-                className="group p-4 rounded-xl bg-white dark:bg-[#0F172A] border border-[#F0E6E8] dark:border-[#334155] hover:border-[#800020]/40 dark:hover:border-[#E11D48]/60  transition-all flex flex-col justify-between space-y-3 text-right "
+                className={`group p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E5E7EB] dark:border-[#334155] hover:border-[#800020]/40 dark:hover:border-[#E11D48]/60 transition-all flex flex-col justify-between text-right ${action.layoutClass}`}
               >
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between gap-2 mb-3">
                   <div
-                    className={`w-11 h-11 rounded-xl flex items-center justify-center border ${action.color}`}
+                    className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${action.iconBg}`}
                   >
-                    <Icon className="w-4.5 h-4.5" weight="bold" />
+                    <Icon className="w-5 h-5" weight="bold" />
                   </div>
                   {action.badge && (
                     <span
-                      className={`text-[13px] font-bold px-2 py-1 rounded-full ${
-                        action.badgeColor ||
-                        "bg-[#FAF7F8] dark:bg-[#334155] text-[#735C63] dark:text-[#F8FAFC]"
-                      }`}
+                      className={`text-[11px] sm:text-xs font-bold px-2 py-0.5 rounded-full shrink-0 ${action.badgeColor}`}
                     >
                       {action.badge}
                     </span>
                   )}
                 </div>
-                <div>
-                  <h3 className="text-[13px] sm:text-sm font-bold text-[#1A0A10] dark:text-[#F8FAFC] group-hover:text-[#800020] dark:group-hover:text-[#FB7185] transition-colors">
+
+                <div className="space-y-1">
+                  <h3 className="text-[13px] sm:text-sm font-bold text-[#12263F] dark:text-[#F8FAFC] group-hover:text-[#800020] dark:group-hover:text-[#FB7185] transition-colors leading-snug">
                     {action.title}
                   </h3>
-                  <p className="text-[13px] text-[#735C63] dark:text-[#94A3B8] mt-1">
+                  <p className="text-[11px] sm:text-xs text-[#64748B] dark:text-[#94A3B8] leading-relaxed line-clamp-2">
                     {action.desc}
                   </p>
                 </div>
@@ -387,7 +524,7 @@ export function DashboardClient({
         </div>
       </section>
 
-      {/* 4. Step 3 in Flow: Daily Challenge Card (Inline & Engaging) */}
+      {/* 6. Daily Challenge Card */}
       {dailyQuestion && (
         <section>
           <DailyChallengeCard
@@ -397,60 +534,20 @@ export function DashboardClient({
         </section>
       )}
 
-      {/* 5. Key Metrics Grid (Razor-sharp Zinc/Vercel Cards) */}
-      <motion.section
-        variants={staggerContainer}
-        initial="hidden"
-        animate="visible"
-        className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-4"
-      >
-        {stats.map((stat, i) => (
-          <motion.div
-            key={i}
-            variants={fadeInUp}
-            className="p-5 rounded-xl bg-white dark:bg-[#0F172A] border border-[#F0E6E8] dark:border-[#334155]  hover:border-[#800020]/40 dark:hover:border-[#E11D48]/60 transition-colors flex flex-col justify-between space-y-3"
-          >
-            <div className="flex items-center justify-between">
-              <span className="text-[13px] text-[#735C63] dark:text-[#94A3B8] font-bold block">
-                {stat.label}
-              </span>
-              <div
-                className="w-11 h-11 rounded-lg flex items-center justify-center shrink-0"
-                style={{ backgroundColor: `${stat.color}15`, color: stat.color }}
-              >
-                <stat.icon className="w-4 h-4" weight="bold" />
-              </div>
-            </div>
-            <div>
-              <span
-                className={`text-2xl sm:text-2xl sm:text-3xl font-bold block tracking-tight ${
-                  stat.textColor || "text-[#1A0A10] dark:text-[#F8FAFC]"
-                }`}
-              >
-                {stat.value}
-              </span>
-              <span className="text-[13px] text-[#735C63] dark:text-[#94A3B8] mt-1 block">
-                {stat.subtext}
-              </span>
-            </div>
-          </motion.div>
-        ))}
-      </motion.section>
-
-      {/* 6. Step 4 in Flow: Curriculum Subjects with Real Progress */}
-      <section className="space-y-4">
+      {/* 7. Curriculum Subjects with Real Progress */}
+      <section className="space-y-3.5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <h2 className="text-base sm:text-lg font-bold text-[#1A0A10] dark:text-[#F8FAFC]">
+            <h2 className="text-sm sm:text-base font-bold text-[#12263F] dark:text-[#F8FAFC]">
               المواد الدراسية المقررة
             </h2>
-            <span className="px-2 py-1 rounded-full text-[13px] font-mono font-bold bg-[#FAF7F8] dark:bg-[#334155] text-[#735C63] dark:text-[#94A3B8]">
+            <span className="px-2 py-0.5 rounded-full text-xs font-mono font-bold bg-[#F3F4F6] dark:bg-[#1E293B] text-[#64748B] dark:text-[#94A3B8]">
               {subjects.length} مواد
             </span>
           </div>
           <Link
             href="/subjects"
-            className="text-[13px] font-bold text-[#800020] dark:text-[#FB7185] hover:underline flex items-center gap-1"
+            className="text-xs sm:text-[13px] font-bold text-[#800020] dark:text-[#FB7185] hover:underline flex items-center gap-1"
           >
             <span>عرض كل المواد</span>
             <ArrowLeft className="w-3.5 h-3.5" weight="bold" />
@@ -462,7 +559,7 @@ export function DashboardClient({
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-40px" }}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4"
         >
           {subjects.map((subj) => {
             const progress = subj.progressPercent ?? 0;
@@ -470,42 +567,42 @@ export function DashboardClient({
 
             return (
               <motion.div key={subj.id} variants={fadeInUp}>
-                <div className="group p-5 rounded-xl bg-white dark:bg-[#0F172A] border border-[#F0E6E8] dark:border-[#334155] hover:border-[#800020]/40 dark:hover:border-[#E11D48]/60  transition-all flex flex-col justify-between space-y-4 h-full">
+                <div className="group p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E5E7EB] dark:border-[#334155] hover:border-[#800020]/40 dark:hover:border-[#E11D48]/60 transition-all flex flex-col justify-between space-y-4 h-full">
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
                       <div
-                        className="w-11 h-11 rounded-xl flex items-center justify-center text-white font-bold text-base "
+                        className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-base shadow-sm"
                         style={{ backgroundColor: subj.color || "#800020" }}
                       >
                         {subj.name[0]}
                       </div>
-                      <span className="text-[13px] font-mono font-bold text-[#735C63] dark:text-[#94A3B8] bg-[#FAF7F8] dark:bg-[#1E293B] px-3 py-1 rounded-md border border-[#F0E6E8]/60 dark:border-[#334155]">
+                      <span className="text-xs font-mono font-bold text-[#64748B] dark:text-[#94A3B8] bg-[#F3F4F6] dark:bg-[#1E293B] px-2.5 py-0.5 rounded-md border border-[#E5E7EB] dark:border-[#334155]">
                         {subj.unitsCount} وحدات
                       </span>
                     </div>
 
                     <div>
-                      <h3 className="text-sm sm:text-base font-bold text-[#1A0A10] dark:text-[#F8FAFC] group-hover:text-[#800020] dark:group-hover:text-[#FB7185] transition-colors">
+                      <h3 className="text-sm sm:text-base font-bold text-[#12263F] dark:text-[#F8FAFC] group-hover:text-[#800020] dark:group-hover:text-[#FB7185] transition-colors leading-snug">
                         {subj.name}
                       </h3>
                       {subj.description && (
-                        <p className="text-[13px] text-[#735C63] dark:text-[#94A3B8] line-clamp-2 mt-1 leading-relaxed">
+                        <p className="text-xs text-[#64748B] dark:text-[#94A3B8] line-clamp-2 mt-1 leading-relaxed">
                           {subj.description}
                         </p>
                       )}
                     </div>
 
                     {/* Progress Bar */}
-                    <div className="space-y-1 pt-1">
-                      <div className="flex items-center justify-between text-[13px] text-[#735C63] dark:text-[#94A3B8] font-mono">
+                    <div className="space-y-1.5 pt-1">
+                      <div className="flex items-center justify-between text-xs text-[#64748B] dark:text-[#94A3B8] font-mono">
                         <span>
                           {completed} من {subj.totalLessons} دروس مكتملة
                         </span>
-                        <span className="font-bold text-[#1A0A10] dark:text-[#F8FAFC]">
+                        <span className="font-bold text-[#12263F] dark:text-[#F8FAFC]">
                           {progress}%
                         </span>
                       </div>
-                      <div className="w-full h-1.5 rounded-full bg-[#FAF7F8] dark:bg-[#334155] overflow-hidden">
+                      <div className="w-full h-1.5 rounded-full bg-[#F3F4F6] dark:bg-[#334155] overflow-hidden">
                         <div
                           className="h-full rounded-full bg-[#800020] dark:bg-[#E11D48] transition-all duration-500"
                           style={{ width: `${progress}%` }}
@@ -515,10 +612,10 @@ export function DashboardClient({
                   </div>
 
                   {/* Actions Bar */}
-                  <div className="pt-3 border-t border-[#F0E6E8] dark:border-[#334155]/80 flex items-center justify-between text-[13px]">
+                  <div className="pt-3 border-t border-[#E5E7EB] dark:border-[#334155] flex items-center justify-between text-xs">
                     <Link
                       href={`/exams/builder?subjectId=${subj.id}`}
-                      className="text-[#735C63] dark:text-[#94A3B8] hover:text-[#1A0A10] dark:hover:text-[#F8FAFC] flex items-center gap-1 font-medium"
+                      className="text-[#64748B] dark:text-[#94A3B8] hover:text-[#12263F] dark:hover:text-[#F8FAFC] flex items-center gap-1 font-medium"
                     >
                       <Target className="w-3.5 h-3.5 text-[#D97706]" weight="fill" />
                       <span>اختبار سريع</span>
@@ -539,16 +636,16 @@ export function DashboardClient({
         </motion.div>
       </section>
 
-      {/* 7. Step 5 in Flow: Recent Exams / History (if exists) */}
+      {/* 8. Recent Exam Results */}
       {recentExams.length > 0 && (
         <section className="space-y-3">
           <div className="flex items-center justify-between">
-            <h2 className="text-sm sm:text-base font-bold text-[#1A0A10] dark:text-[#F8FAFC]">
+            <h2 className="text-sm sm:text-base font-bold text-[#12263F] dark:text-[#F8FAFC]">
               آخر نتائج الاختبارات
             </h2>
             <Link
               href="/exams/builder"
-              className="text-[13px] font-bold text-[#800020] dark:text-[#FB7185] hover:underline"
+              className="text-xs sm:text-[13px] font-bold text-[#800020] dark:text-[#FB7185] hover:underline"
             >
               ابدأ اختباراً جديداً
             </Link>
@@ -559,13 +656,13 @@ export function DashboardClient({
               <Link
                 key={exam.id}
                 href={`/exams/${exam.id}/results`}
-                className="p-4 rounded-xl bg-white dark:bg-[#0F172A] border border-[#F0E6E8] dark:border-[#334155] hover:border-[#800020]/40 dark:hover:border-[#E11D48]/60  transition-colors flex items-center justify-between"
+                className="p-4 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E5E7EB] dark:border-[#334155] hover:border-[#800020]/40 dark:hover:border-[#E11D48]/60 transition-colors flex items-center justify-between"
               >
                 <div>
-                  <h3 className="text-[13px] font-bold text-[#1A0A10] dark:text-[#F8FAFC] line-clamp-1">
+                  <h3 className="text-xs sm:text-[13px] font-bold text-[#12263F] dark:text-[#F8FAFC] line-clamp-1">
                     {exam.title}
                   </h3>
-                  <span className="text-[13px] text-[#735C63] dark:text-[#94A3B8]">
+                  <span className="text-xs text-[#64748B] dark:text-[#94A3B8]">
                     {exam.totalQuestions} أسئلة
                   </span>
                 </div>

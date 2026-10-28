@@ -11,14 +11,15 @@ interface BidiStatementProps {
 
 // Comprehensive tokenization regex:
 // 1. Explicit markdown inline code: `...`
-// 2. Programming languages with symbols: C++, C#, .NET, F#
-// 3. Variable declarations and statements (e.g. int x = 13 % 4; or float val = 0.5;)
-// 4. I/O statements (e.g. cout << x; or cin >> y;)
-// 5. Control flow expressions (e.g. if (x == 10), for (int i = 0; ...))
-// 6. Assignment expressions (e.g. x = 13 % 4; or res = a + b;)
-// 7. Increment/decrement expressions (e.g. x++; or --count;)
+// 2. Big-O, Theta, Omega asymptotic notations: O(1), O(n), O(log n), O(n²), O(n^2), O(n log n), O(2^n)
+// 3. Programming languages with symbols: C++, C#, .NET, F#, HTML5, CSS3
+// 4. Variable declarations and statements (e.g. int x = 13 % 4; or float val = 0.5;)
+// 5. I/O statements (e.g. cout << x; or cin >> y;)
+// 6. Control flow expressions (e.g. if (x == 10), for (int i = 0; ...))
+// 7. Assignment expressions (e.g. x = 13 % 4; or res = a + b;)
+// 8. Increment/decrement expressions (e.g. x++; or --count;)
 const CODE_TOKEN_REGEX =
-  /(`[^`]+`|\bC\+\+|\bC#|\b\.NET|\bF#|\b(?:const\s+)?(?:int|float|double|char|bool|string|void|auto|long|short|unsigned)\s+[a-zA-Z0-9_\s*+=%&|<>!/().-]+;?|\b(?:cout|cin)\s*(?:<<|>>)\s*[^;]+;?|\b(?:printf|scanf|return|sizeof)\s*[^;]+;?|\b(?:if|for|while|switch)\s*\([^)]+\)|\b[a-zA-Z_][a-zA-Z0-9_]*\s*=\s*[^;]+;|\b[a-zA-Z_][a-zA-Z0-9_]*(?:\+\+|--);?)/g;
+  /(`[^`]+`|\b(?:O|Θ|Ω)\s*\([^)]+\)|\bC\+\+|\bC#|\b\.NET|\bF#|\bHTML5|\bCSS3|\b(?:const\s+)?(?:int|float|double|char|bool|string|void|auto|long|short|unsigned)\s+[a-zA-Z0-9_\s*+=%&|<>!/().-]+;?|\b(?:cout|cin)\s*(?:<<|>>)\s*[^;]+;?|\b(?:printf|scanf|return|sizeof)\s*[^;]+;?|\b(?:if|for|while|switch)\s*\([^)]+\)|\b[a-zA-Z_][a-zA-Z0-9_]*\s*=\s*[^;]+;|\b[a-zA-Z_][a-zA-Z0-9_]*(?:\+\+|--);?)/g;
 
 export function BidiStatement({
   text,
@@ -101,12 +102,28 @@ export function BidiStatement({
           );
         }
 
-        // 2. Language tokens (C++, C#, .NET, F#)
+        // 2. Big-O, Theta, Omega Asymptotic Notations
+        if (/^(?:O|Θ|Ω)\s*\([^)]+\)$/.test(token)) {
+          return (
+            <bdi
+              key={index}
+              dir="ltr"
+              className="inline-block font-mono font-bold text-[#800020] dark:text-[#FB7185] bg-[#800020]/10 dark:bg-[#1E293B] px-1.5 py-0.5 rounded border border-[#800020]/20 dark:border-[#FB7185]/30 text-[13px] sm:text-sm mx-1 align-baseline whitespace-nowrap"
+              style={{ unicodeBidi: "isolate" }}
+            >
+              {token.trim()}
+            </bdi>
+          );
+        }
+
+        // 3. Language tokens (C++, C#, .NET, F#, HTML5, CSS3)
         if (
           token === "C++" ||
           token === "C#" ||
           token === ".NET" ||
-          token === "F#"
+          token === "F#" ||
+          token === "HTML5" ||
+          token === "CSS3"
         ) {
           return (
             <bdi

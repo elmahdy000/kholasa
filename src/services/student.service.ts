@@ -289,12 +289,13 @@ export class StudentService {
       phone?: string | null;
       systemId?: string | null;
       gradeId?: string | null;
+      schoolCategory?: "ARABIC" | "LANGUAGES";
       trackId?: string | null;
     }
   ) {
     const current = await prisma.user.findUnique({
       where: { id: userId },
-      select: { systemId: true, gradeId: true, trackId: true },
+      select: { systemId: true, gradeId: true, trackId: true, schoolCategory: true },
     });
     if (!current) throw notFound("المستخدم غير موجود");
 
@@ -351,6 +352,7 @@ export class StudentService {
         phone,
         systemId: data.systemId !== undefined || gradeId ? (systemId ?? null) : undefined,
         gradeId: data.gradeId !== undefined ? data.gradeId : undefined,
+        schoolCategory: data.schoolCategory !== undefined ? data.schoolCategory : undefined,
         trackId: trackId ?? null,
       },
       select: {
@@ -360,6 +362,7 @@ export class StudentService {
         phone: true,
         gradeId: true,
         systemId: true,
+        schoolCategory: true,
         trackId: true,
         avatar: true,
       },

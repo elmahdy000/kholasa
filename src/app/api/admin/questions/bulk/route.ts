@@ -10,7 +10,7 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json().catch(() => ({}));
-    const { questions } = body;
+    const { questions, batchMeta } = body;
 
     if (!Array.isArray(questions) || questions.length === 0) {
       return NextResponse.json(
@@ -19,11 +19,12 @@ export async function POST(req: Request) {
       );
     }
 
-    const importedCount = await QuestionService.bulkCreateQuestions(questions);
+    const result = await QuestionService.bulkCreateQuestions(questions, batchMeta);
 
     return NextResponse.json({
       success: true,
-      importedCount,
+      importedCount: typeof result === "number" ? result : result.count,
+      batchId: typeof result === "object" ? result.batchId : undefined,
     });
   } catch (error) {
     console.error("Bulk import failed:", error);

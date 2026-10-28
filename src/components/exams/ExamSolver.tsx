@@ -360,11 +360,20 @@ export function ExamSolver({
           </div>
 
           {/* Statement */}
-          <BidiStatement
-            as="h2"
-            text={currentQ.statement}
-            className="text-base sm:text-lg font-bold text-[#0F172A] dark:text-white leading-relaxed font-content"
-          />
+          {((currentQ as any)?.schoolCategory === "LANGUAGES" || (exam as any)?.schoolCategory === "LANGUAGES" || (exam as any)?.subject?.schoolCategory === "LANGUAGES") ? (
+            <h2
+              dir="ltr"
+              className="text-base sm:text-lg font-semibold text-[#0F172A] dark:text-white leading-relaxed font-sans text-left"
+            >
+              {currentQ.statement}
+            </h2>
+          ) : (
+            <BidiStatement
+              as="h2"
+              text={currentQ.statement}
+              className="text-base sm:text-lg font-bold text-[#0F172A] dark:text-white leading-relaxed font-content"
+            />
+          )}
 
           {/* MCQ / TRUE_FALSE Options */}
           {(currentQ.type === "MCQ" || currentQ.type === "TRUE_FALSE") && (
@@ -394,14 +403,23 @@ export function ExamSolver({
                   }
                 }
 
+                const isLanguages =
+                  (currentQ as any)?.schoolCategory === "LANGUAGES" ||
+                  (exam as any)?.schoolCategory === "LANGUAGES" ||
+                  (exam as any)?.subject?.schoolCategory === "LANGUAGES";
+
                 const arabicLetters = ["أ", "ب", "ج", "د", "هـ"];
+                const englishLetters = ["A", "B", "C", "D", "E"];
+                const letter = isLanguages
+                  ? englishLetters[optIdx] || opt.order
+                  : arabicLetters[optIdx] || opt.order;
 
                 return (
                   <button
                     key={opt.id}
                     type="button"
                     onClick={() => handleSelectOption(opt.id)}
-                    className={`w-full p-4 sm:p-4 rounded-xl border text-right text-[13px] sm:text-sm font-medium flex items-start sm:items-center justify-between gap-3 transition-colors ${cardStyle}`}
+                    className={`w-full p-4 sm:p-4 rounded-xl border ${isLanguages ? "text-left font-sans" : "text-right"} text-[13px] sm:text-sm font-medium flex items-start sm:items-center justify-between gap-3 transition-colors ${cardStyle}`}
                   >
                     <div className="flex items-start sm:items-center gap-3 min-w-0 flex-1">
                       <div
@@ -411,10 +429,14 @@ export function ExamSolver({
                             : "bg-[#F8FAFC] dark:bg-[#334155] text-[#64748B] dark:text-[#F8FAFC] border border-[#E2E8F0]/60 dark:border-[#334155]"
                         }`}
                       >
-                        {arabicLetters[optIdx] || opt.order}
+                        {letter}
                       </div>
                       <div className="min-w-0 flex-1 leading-relaxed">
-                        <BidiStatement as="span" text={opt.text} />
+                        {isLanguages ? (
+                          <span className="font-sans">{opt.text}</span>
+                        ) : (
+                          <BidiStatement as="span" text={opt.text} />
+                        )}
                       </div>
                     </div>
 

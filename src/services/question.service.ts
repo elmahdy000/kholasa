@@ -1,17 +1,20 @@
 import { prisma } from "@/lib/prisma";
-import { QuestionType, Difficulty, PublishStatus, Prisma } from "@prisma/client";
+import { QuestionType, Difficulty, PublishStatus, SchoolCategory, Prisma } from "@prisma/client";
 
 export interface ParsedQuestionImportItem {
   statement: string;
   subjectId: string;
   unitId?: string | null;
   lessonId?: string | null;
+  questionLesson?: string | null;
   type?: QuestionType;
   difficulty?: Difficulty;
+  schoolCategory?: SchoolCategory;
   options?: {
     text: string;
     isCorrect: boolean;
     explanation?: string | null;
+    order?: number;
   }[];
   concept?: string | null;
   correctReason?: string | null;
@@ -19,8 +22,24 @@ export interface ParsedQuestionImportItem {
   points?: number;
 }
 
+export interface BulkImportMeta {
+  fileName?: string;
+  fileType?: string; // "DOCX" | "PDF" | "MANUAL"
+  questionType?: QuestionType;
+  difficulty?: Difficulty;
+  schoolCategory?: SchoolCategory;
+  gradeId?: string;
+  subjectId: string;
+  unitId?: string | null;
+  lessonId?: string | null;
+  lessonScope?: "UNIT" | "LESSON";
+  trackId?: string | null;
+}
+
 export interface QuestionFilterParams {
   subjectId?: string;
+  gradeId?: string;
+  schoolCategory?: SchoolCategory | "ALL";
   unitId?: string;
   lessonId?: string;
   type?: QuestionType | "ALL";
@@ -90,6 +109,8 @@ export class QuestionService {
   static async getQuestions(params: QuestionFilterParams = {}) {
     const {
       subjectId,
+      gradeId,
+      schoolCategory,
       unitId,
       lessonId,
       type,
@@ -107,6 +128,8 @@ export class QuestionService {
     if (type && type !== "ALL") where.type = type;
     if (difficulty && difficulty !== "ALL") where.difficulty = difficulty;
     if (status && status !== "ALL") where.status = status;
+    if (schoolCategory && schoolCategory !== "ALL") where.schoolCategory = schoolCategory;
+    if (gradeId) where.subject = { gradeId };
 
     if (lessonId) {
       where.lessons = {
@@ -127,11 +150,12 @@ export class QuestionService {
         take: limit,
         orderBy: { createdAt: "desc" },
         include: {
-          subject: { select: { id: true, name: true, color: true } },
+          subject: { select: { id: true, name: true, color: true, schoolCategory: true, gradeId: true } },
           unit: { select: { id: true, title: true } },
           options: { orderBy: { order: "asc" } },
           explanation: true,
           rubric: true,
+          batch: { select: { id: true, fileName: true, fileType: true } },
           lessons: {
             include: {
               lesson: { select: { id: true, title: true } },
@@ -327,25 +351,51 @@ export class QuestionService {
   }
 
   /**
-   * Fetch statistical breakdown of question bank
+   * Fetch statistical breakdown of question bank, optionally by subject, grade, or school category
    */
-  static async getQuestionStats(subjectId?: string) {
+  static async getQuestionStats(
+    params?:
+      | {
+          subjectId?: string;
+          gradeId?: string;
+          schoolCategory?: SchoolCategory;
+        }
+      | string
+  ) {
+    const filter = typeof params === "string" ? { subjectId: params } : params || {};
     const where: Prisma.QuestionWhereInput = {};
-    if (subjectId) where.subjectId = subjectId;
+    if (filter.subjectId) where.subjectId = filter.subjectId;
+    if (filter.schoolCategory) where.schoolCategory = filter.schoolCategory;
+    if (filter.gradeId) where.subject = { gradeId: filter.gradeId };
 
-    const [total, mcqCount, essayCount, trueFalseCount, easyCount, mediumCount, hardCount] =
-      await Promise.all([
-        prisma.question.count({ where }),
-        prisma.question.count({ where: { ...where, type: QuestionType.MCQ } }),
-        prisma.question.count({ where: { ...where, type: QuestionType.ESSAY } }),
-        prisma.question.count({ where: { ...where, type: QuestionType.TRUE_FALSE } }),
-        prisma.question.count({ where: { ...where, difficulty: Difficulty.EASY } }),
-        prisma.question.count({ where: { ...where, difficulty: Difficulty.MEDIUM } }),
-        prisma.question.count({ where: { ...where, difficulty: Difficulty.HARD } }),
-      ]);
+    const [
+      total,
+      arabicTotal,
+      languagesTotal,
+      mcqCount,
+      essayCount,
+      trueFalseCount,
+      easyCount,
+      mediumCount,
+      hardCount,
+    ] = await Promise.all([
+      prisma.question.count({ where }),
+      prisma.question.count({ where: { ...where, schoolCategory: "ARABIC" } }),
+      prisma.question.count({ where: { ...where, schoolCategory: "LANGUAGES" } }),
+      prisma.question.count({ where: { ...where, type: QuestionType.MCQ } }),
+      prisma.question.count({ where: { ...where, type: QuestionType.ESSAY } }),
+      prisma.question.count({ where: { ...where, type: QuestionType.TRUE_FALSE } }),
+      prisma.question.count({ where: { ...where, difficulty: Difficulty.EASY } }),
+      prisma.question.count({ where: { ...where, difficulty: Difficulty.MEDIUM } }),
+      prisma.question.count({ where: { ...where, difficulty: Difficulty.HARD } }),
+    ]);
 
     return {
       total,
+      byCategory: {
+        ARABIC: arabicTotal,
+        LANGUAGES: languagesTotal,
+      },
       byType: {
         MCQ: mcqCount,
         ESSAY: essayCount,
@@ -360,26 +410,119 @@ export class QuestionService {
   }
 
   /**
-   * Bulk import questions in an atomic database transaction
+   * Bulk import questions in an atomic database transaction with ImportBatch audit
    */
-  static async bulkCreateQuestions(questions: ParsedQuestionImportItem[]) {
+  static async bulkCreateQuestions(
+    questions: ParsedQuestionImportItem[],
+    batchMeta?: BulkImportMeta
+  ) {
     if (!Array.isArray(questions) || questions.length === 0) {
       throw new Error("لم يتم تقديم أي أسئلة صالحة للاستيراد");
     }
 
+    const targetSubjectId = batchMeta?.subjectId || questions[0]?.subjectId;
+    if (!targetSubjectId) {
+      throw new Error("يجب تحديد المادة الدراسية للاستيراد");
+    }
+
+    const subject = await prisma.subject.findUnique({
+      where: { id: targetSubjectId },
+      include: { grade: true, track: true },
+    });
+
+    if (!subject) {
+      throw new Error("المادة الدراسية المحددة غير موجودة في قاعدة البيانات");
+    }
+
+    // Strict validation: prevent cross-category or cross-grade imports!
+    if (batchMeta?.schoolCategory && subject.schoolCategory !== batchMeta.schoolCategory) {
+      throw new Error(
+        `تعارض في الفئة التعليمية: المادة "${subject.name}" تتبع (${subject.schoolCategory}) بينما الفئة المحددة هي (${batchMeta.schoolCategory})`
+      );
+    }
+
+    if (batchMeta?.gradeId && subject.gradeId !== batchMeta.gradeId) {
+      throw new Error(
+        `تعارض في الصف الدراسي: المادة المختارة لا تتبع الصف الدراسي المحدد`
+      );
+    }
+
+    const effectiveSchoolCategory: SchoolCategory = subject.schoolCategory;
+    const effectiveGradeId = subject.gradeId;
+    const effectiveTrackId = subject.trackId;
+    const effectiveUnitId = batchMeta?.unitId || null;
+    const effectiveLessonId = batchMeta?.lessonId || null;
+
+    // Validate unit belongs to subject if provided
+    if (effectiveUnitId) {
+      const unit = await prisma.unit.findFirst({
+        where: { id: effectiveUnitId, subjectId: subject.id },
+      });
+      if (!unit) {
+        throw new Error("الوحدة المختارة لا تتبع هذه المادة الدراسية");
+      }
+    }
+
+    // Validate lesson belongs to unit if provided
+    if (effectiveLessonId) {
+      const lesson = await prisma.lesson.findFirst({
+        where: { id: effectiveLessonId, ...(effectiveUnitId ? { unitId: effectiveUnitId } : {}) },
+      });
+      if (!lesson) {
+        throw new Error("الدرس المختار غير موجود أو لا ينتمي للوحدة المحددة");
+      }
+    }
+
     return prisma.$transaction(async (tx) => {
+      // 1. Create ImportBatch audit record
+      const batch = await tx.importBatch.create({
+        data: {
+          fileName: batchMeta?.fileName || "استيراد مباشر",
+          fileType: batchMeta?.fileType || "DOCX",
+          questionType: batchMeta?.questionType || (questions[0]?.type as QuestionType) || "MCQ",
+          difficulty: batchMeta?.difficulty || (questions[0]?.difficulty as Difficulty) || null,
+          schoolCategory: effectiveSchoolCategory,
+          gradeId: effectiveGradeId,
+          subjectId: subject.id,
+          unitId: effectiveUnitId,
+          lessonId: effectiveLessonId,
+          trackId: effectiveTrackId,
+          importedCount: 0,
+        },
+      });
+
       let count = 0;
       for (const q of questions) {
-        if (!q.statement || !q.subjectId) continue;
+        if (!q.statement) continue;
+
+        let lessonIdToAttach = effectiveLessonId || q.lessonId || null;
+        if (!lessonIdToAttach && q.questionLesson && (effectiveUnitId || q.unitId)) {
+          const targetUId = (effectiveUnitId || q.unitId)!;
+          let matchedLesson = await tx.lesson.findFirst({
+            where: { unitId: targetUId, title: q.questionLesson.trim() },
+          });
+          if (!matchedLesson) {
+            matchedLesson = await tx.lesson.create({
+              data: {
+                unitId: targetUId,
+                title: q.questionLesson.trim(),
+                order: 99,
+              },
+            });
+          }
+          lessonIdToAttach = matchedLesson.id;
+        }
 
         await tx.question.create({
           data: {
             statement: q.statement.trim(),
-            type: q.type || "MCQ",
-            difficulty: q.difficulty || "MEDIUM",
+            type: q.type || batchMeta?.questionType || "MCQ",
+            difficulty: q.difficulty || batchMeta?.difficulty || "MEDIUM",
             status: "PUBLISHED",
-            subjectId: q.subjectId,
-            unitId: q.unitId || null,
+            schoolCategory: effectiveSchoolCategory,
+            subjectId: subject.id,
+            unitId: effectiveUnitId || q.unitId || null,
+            batchId: batch.id,
             options: {
               create: (q.options || []).map((opt, idx: number) => ({
                 text: opt.text.trim(),
@@ -388,11 +531,11 @@ export class QuestionService {
                 explanation: opt.explanation?.trim() || null,
               })),
             },
-            ...(q.lessonId
+            ...(lessonIdToAttach
               ? {
                   lessons: {
                     create: {
-                      lessonId: q.lessonId,
+                      lessonId: lessonIdToAttach,
                     },
                   },
                 }
@@ -421,7 +564,13 @@ export class QuestionService {
         });
         count++;
       }
-      return count;
+
+      await tx.importBatch.update({
+        where: { id: batch.id },
+        data: { importedCount: count },
+      });
+
+      return { count, batchId: batch.id };
     });
   }
 }

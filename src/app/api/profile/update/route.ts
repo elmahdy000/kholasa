@@ -15,6 +15,7 @@ const schema = z.object({
   phone: z.union([egyptianPhone, z.literal(""), z.null()]).optional(),
   systemId: z.string().min(1).nullable().optional(),
   gradeId: z.string().min(1).nullable().optional(),
+  schoolCategory: z.enum(["ARABIC", "LANGUAGES"]).optional(),
   trackId: z.string().min(1).nullable().optional(),
 });
 

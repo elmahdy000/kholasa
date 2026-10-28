@@ -248,6 +248,11 @@ export default async function DashboardPage() {
     <StudentShell user={user}>
       <DashboardClient
         userName={user?.name}
+        studentMeta={{
+          systemName: user?.system?.name || null,
+          gradeName: user?.grade?.name || null,
+          trackName: user?.track?.name || null,
+        }}
         completedLessonsCount={completedLessonsCount}
         recentAttemptsCount={completedAttemptsCount}
         averageScore={averageScore}

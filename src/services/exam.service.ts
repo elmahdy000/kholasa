@@ -89,33 +89,68 @@ export class ExamService {
     let selected: { id: string }[] = [];
     let targetSubjectId = inputSubjectId;
 
+    if (!targetSubjectId && Array.isArray(questionIds) && questionIds.length > 0) {
+      const firstQ = await prisma.question.findUnique({
+        where: { id: questionIds[0] },
+        select: { subjectId: true },
+      });
+      if (firstQ) targetSubjectId = firstQ.subjectId;
+    }
+
+    if (!targetSubjectId) {
+      throw new Error("يجب تحديد المادة الدراسية لإنشاء الامتحان");
+    }
+
+    // 4. Validate the subject belongs to the student's curriculum and exact school category
+    const [subject, student] = await Promise.all([
+      prisma.subject.findUnique({
+        where: { id: targetSubjectId },
+        select: {
+          id: true,
+          name: true,
+          isPublished: true,
+          gradeId: true,
+          systemId: true,
+          trackId: true,
+          schoolCategory: true,
+        },
+      }),
+      prisma.user.findUnique({
+        where: { id: userId },
+        select: { role: true, gradeId: true, systemId: true, trackId: true, schoolCategory: true },
+      }),
+    ]);
+
+    if (!subject || !subject.isPublished) {
+      throw new Error("المادة غير متاحة لإنشاء امتحان");
+    }
+
+    if (!isSubjectInScope(getCurriculumScope(student), subject)) {
+      throw new Error("هذه المادة ليست ضمن صفك الدراسي ومسار مدرستك المصرح به");
+    }
+
     if (Array.isArray(questionIds) && questionIds.length > 0) {
       const explicitQuestions = await prisma.question.findMany({
         where: {
           id: { in: questionIds },
           status: "PUBLISHED",
-          ...(targetSubjectId ? { subjectId: targetSubjectId } : {}),
+          subjectId: targetSubjectId,
+          schoolCategory: subject.schoolCategory,
         },
         select: { id: true, subjectId: true },
       });
 
       if (explicitQuestions.length === 0) {
-        throw new Error("الأسئلة المحددة غير موجودة في بنك الأسئلة");
+        throw new Error("الأسئلة المحددة غير موجودة في بنك الأسئلة أو لا تنتمي لهذه الفئة المدرسية");
       }
 
       selected = explicitQuestions.map((q) => ({ id: q.id }));
-      if (!targetSubjectId) {
-        targetSubjectId = explicitQuestions[0].subjectId;
-      }
     } else {
-      if (!targetSubjectId) {
-        throw new Error("يجب تحديد المادة الدراسية لإنشاء الامتحان");
-      }
-
-      // 1. Build question query filter
+      // 1. Build question query filter strictly scoped to subject and its school category
       const questionWhere: Prisma.QuestionWhereInput = {
         subjectId: targetSubjectId,
         status: "PUBLISHED",
+        schoolCategory: subject.schoolCategory,
       };
 
       if (unitId && unitId !== "all") questionWhere.unitId = unitId;
@@ -135,43 +170,12 @@ export class ExamService {
       });
 
       if (availableQuestions.length === 0) {
-        throw new Error("لا توجد أسئلة كافية مطابقة لمعايير الامتحان المحددة");
+        throw new Error("لا توجد أسئلة كافية مطابقة لمعايير الامتحان المحددة في هذا المسار المدرسي");
       }
 
       // 3. Shuffle and pick requested count
       const shuffled = [...availableQuestions].sort(() => 0.5 - Math.random());
       selected = shuffled.slice(0, Math.min(questionCount, availableQuestions.length));
-    }
-
-    if (!targetSubjectId) {
-      throw new Error("تعذر تحديد المادة الدراسية للامتحان");
-    }
-
-    // 4. Validate the subject belongs to the student's curriculum
-    const [subject, student] = await Promise.all([
-      prisma.subject.findUnique({
-        where: { id: targetSubjectId },
-        select: {
-          id: true,
-          name: true,
-          isPublished: true,
-          gradeId: true,
-          systemId: true,
-          trackId: true,
-        },
-      }),
-      prisma.user.findUnique({
-        where: { id: userId },
-        select: { role: true, gradeId: true, systemId: true, trackId: true },
-      }),
-    ]);
-
-    if (!subject || !subject.isPublished) {
-      throw new Error("المادة غير متاحة لإنشاء امتحان");
-    }
-
-    if (!isSubjectInScope(getCurriculumScope(student), subject)) {
-      throw new Error("هذه المادة ليست ضمن صفك الدراسي");
     }
 
     const isPractice = mode === "PRACTICE";
@@ -183,6 +187,7 @@ export class ExamService {
       data: {
         title: examTitle,
         subjectId: targetSubjectId,
+        schoolCategory: subject.schoolCategory,
         durationMinutes: Number(durationMinutes),
         isPractice,
         isCustom: true,

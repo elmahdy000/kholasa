@@ -1,16 +1,19 @@
-import type { Prisma } from "@prisma/client";
+import type { Prisma, SchoolCategory } from "@prisma/client";
 
 /**
- * Curriculum scoping.
+ * Curriculum scoping for EL KHOLASA.
  *
- * A student may only see content that belongs to their own system/grade, plus
- * track-neutral subjects (or subjects for their track). Staff and anonymous
- * visitors are not scoped.
+ * Mandatory Curriculum Separation:
+ * Grade → School Category (مدارس عربي / مدارس لغات) → Academic Track (if applicable) → Subject → Unit → Lesson → Question Bank
+ *
+ * Students only see content belonging to their exact grade and school category (ARABIC or LANGUAGES).
+ * Staff and anonymous visitors are not scoped.
  */
 
 export interface CurriculumScope {
   systemId: string | null;
   gradeId: string | null;
+  schoolCategory?: SchoolCategory | null;
   trackId: string | null;
 }
 
@@ -18,6 +21,7 @@ export interface ScopedUser {
   role?: string | null;
   systemId?: string | null;
   gradeId?: string | null;
+  schoolCategory?: SchoolCategory | null;
   trackId?: string | null;
 }
 
@@ -26,6 +30,7 @@ export function getCurriculumScope(user: ScopedUser | null): CurriculumScope | n
   return {
     systemId: user.systemId ?? null,
     gradeId: user.gradeId,
+    schoolCategory: user.schoolCategory ?? "ARABIC",
     trackId: user.trackId ?? null,
   };
 }
@@ -38,12 +43,25 @@ export function subjectScopeWhere(
 
   return {
     gradeId: scope.gradeId,
+    ...(scope.schoolCategory ? { schoolCategory: scope.schoolCategory } : {}),
     ...(scope.systemId ? { systemId: scope.systemId } : {}),
     // Track-neutral material is always visible; track-specific material only
     // when the student picked that track.
     ...(scope.trackId
       ? { OR: [{ trackId: null }, { trackId: scope.trackId }] }
       : {}),
+  };
+}
+
+/** Prisma filter for questions visible inside a scope. */
+export function questionScopeWhere(
+  scope: CurriculumScope | null
+): Prisma.QuestionWhereInput {
+  if (!scope?.gradeId) return {};
+
+  return {
+    ...(scope.schoolCategory ? { schoolCategory: scope.schoolCategory } : {}),
+    subject: { is: subjectScopeWhere(scope) },
   };
 }
 
@@ -55,6 +73,7 @@ export function examScopeWhere(
 
   return {
     isCustom: false,
+    ...(scope.schoolCategory ? { schoolCategory: scope.schoolCategory } : {}),
     subject: { is: subjectScopeWhere(scope) },
   };
 }
@@ -66,16 +85,29 @@ export function isSubjectInScope(
     gradeId?: string | null;
     systemId?: string | null;
     trackId?: string | null;
+    schoolCategory?: SchoolCategory | string | null;
   } | null
 ): boolean {
   if (!scope?.gradeId) return true;
   if (!subject) return false;
   if (subject.gradeId !== scope.gradeId) return false;
+
+  // Strict separation: Arabic Schools vs Language Schools
+  if (
+    scope.schoolCategory &&
+    subject.schoolCategory &&
+    subject.schoolCategory !== scope.schoolCategory
+  ) {
+    return false;
+  }
+
   if (scope.systemId && subject.systemId && subject.systemId !== scope.systemId) {
     return false;
   }
+
   if (scope.trackId && subject.trackId && subject.trackId !== scope.trackId) {
     return false;
   }
+
   return true;
 }

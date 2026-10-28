@@ -7,6 +7,12 @@
 export type QuestionType = "MCQ" | "TRUE_FALSE" | "ESSAY";
 export type QuestionDifficulty = "EASY" | "MEDIUM" | "HARD";
 
+export interface ParseOptions {
+  forcedType?: QuestionType;
+  forcedDifficulty?: QuestionDifficulty | "MIXED";
+  schoolCategory?: "ARABIC" | "LANGUAGES";
+}
+
 export interface ParsedQuestionOption {
   text: string;
   isCorrect: boolean;
@@ -170,7 +176,10 @@ export function parseOptionItem(rawOption: string): ParsedQuestionOption {
 /**
  * Main parser function: converts text into structured ParsedQuestion array
  */
-export function parseQuestionsFromText(rawContent: string): ParsedQuestion[] {
+export function parseQuestionsFromText(
+  rawContent: string,
+  options?: ParseOptions
+): ParsedQuestion[] {
   const text = cleanText(rawContent);
   if (!text) return [];
 
@@ -181,7 +190,7 @@ export function parseQuestionsFromText(rawContent: string): ParsedQuestion[] {
 
   function flushBlock() {
     if (currentBlock.length === 0) return;
-    const q = processQuestionBlock(currentBlock);
+    const q = processQuestionBlock(currentBlock, options);
     if (q) {
       questions.push(q);
     }
@@ -221,7 +230,10 @@ export function parseQuestionsFromText(rawContent: string): ParsedQuestion[] {
 /**
  * Process a block of lines representing a single question
  */
-function processQuestionBlock(lines: string[]): ParsedQuestion | null {
+function processQuestionBlock(
+  lines: string[],
+  options?: ParseOptions
+): ParsedQuestion | null {
   if (lines.length === 0) return null;
 
   const rawBlockText = lines.join("\n");
@@ -231,7 +243,7 @@ function processQuestionBlock(lines: string[]): ParsedQuestion | null {
   let explanationText = "";
   let conceptText = "";
   let modelAnswerText = "";
-  let detectedType: QuestionType = "MCQ";
+  let detectedType: QuestionType = options?.forcedType || "MCQ";
 
   // First line is almost always the statement start
   statement = lines[0];
@@ -254,7 +266,7 @@ function processQuestionBlock(lines: string[]): ParsedQuestion | null {
     if (modelAnswerMatch) {
       readingStatement = false;
       modelAnswerText = modelAnswerMatch[1].trim();
-      detectedType = "ESSAY";
+      if (!options?.forcedType) detectedType = "ESSAY";
       continue;
     }
 
@@ -271,6 +283,16 @@ function processQuestionBlock(lines: string[]): ParsedQuestion | null {
     if (conceptMatch) {
       readingStatement = false;
       conceptText = conceptMatch[1].trim();
+      continue;
+    }
+
+    // If question is forced as ESSAY, lines are not treated as MCQ options
+    if (options?.forcedType === "ESSAY") {
+      if (readingStatement) {
+        statementLines.push(line);
+      } else {
+        modelAnswerText = (modelAnswerText ? modelAnswerText + " " : "") + line;
+      }
       continue;
     }
 
@@ -308,35 +330,42 @@ function processQuestionBlock(lines: string[]): ParsedQuestion | null {
 
   // Check if statement contains embedded True/False markers like (صح) or (خطأ) or (√) or (×)
   let embeddedTrueFalseAnswer: boolean | null = null;
-  if (/[\(（]\s*(?:صح|صواب|نعم|√|✓)\s*[\)）]/.test(statement)) {
+  if (/[\(（]\s*(?:صح|صواب|نعم|√|✓|true)\s*[\)）]/i.test(statement)) {
     embeddedTrueFalseAnswer = true;
-    detectedType = "TRUE_FALSE";
-    statement = statement.replace(/[\(（]\s*(?:صح|صواب|نعم|√|✓)\s*[\)）]/g, "").trim();
-  } else if (/[\(（]\s*(?:خطأ|غلط|لا|×|X)\s*[\)）]/.test(statement)) {
+    if (!options?.forcedType) detectedType = "TRUE_FALSE";
+    statement = statement.replace(/[\(（]\s*(?:صح|صواب|نعم|√|✓|true)\s*[\)）]/gi, "").trim();
+  } else if (/[\(（]\s*(?:خطأ|غلط|لا|×|X|false)\s*[\)）]/i.test(statement)) {
     embeddedTrueFalseAnswer = false;
-    detectedType = "TRUE_FALSE";
-    statement = statement.replace(/[\(（]\s*(?:خطأ|غلط|لا|×|X)\s*[\)）]/g, "").trim();
-  } else if (/\((?:صح\s*[\/\-]\s*خطأ|صواب\s*[\/\-]\s*خطأ)\)/.test(statement)) {
-    detectedType = "TRUE_FALSE";
-    statement = statement.replace(/\((?:صح\s*[\/\-]\s*خطأ|صواب\s*[\/\-]\s*خطأ)\)/g, "").trim();
+    if (!options?.forcedType) detectedType = "TRUE_FALSE";
+    statement = statement.replace(/[\(（]\s*(?:خطأ|غلط|لا|×|X|false)\s*[\)）]/gi, "").trim();
+  } else if (/\((?:صح\s*[\/\-]\s*خطأ|صواب\s*[\/\-]\s*خطأ|true\s*[\/\-]\s*false)\)/i.test(statement)) {
+    if (!options?.forcedType) detectedType = "TRUE_FALSE";
+    statement = statement.replace(/\((?:صح\s*[\/\-]\s*خطأ|صواب\s*[\/\-]\s*خطأ|true\s*[\/\-]\s*false)\)/gi, "").trim();
   }
 
-  // Detect type if essay prompt keywords are present
-  const essayKeywords = /^(?:علل|فسر|وضح|اشرح|قارن بين|ما النتائج المترتبة على|ما المقصود بـ|عرف|أثبت أن|بين سبب|لماذا)\b/;
-  if (essayKeywords.test(statement) && rawOptionLines.length === 0) {
-    detectedType = "ESSAY";
-  }
-
-  // Detect True/False if options only contain صح / خطأ
-  if (rawOptionLines.length === 2) {
-    const opt1 = rawOptionLines[0].toLowerCase();
-    const opt2 = rawOptionLines[1].toLowerCase();
-    if (
-      (opt1.includes("صح") || opt1.includes("صواب") || opt1.includes("true")) &&
-      (opt2.includes("خطأ") || opt2.includes("غلط") || opt2.includes("false"))
-    ) {
-      detectedType = "TRUE_FALSE";
+  // Detect type if essay prompt keywords are present (only if not forced)
+  if (!options?.forcedType) {
+    const essayKeywords = /^(?:علل|فسر|وضح|اشرح|قارن بين|ما النتائج المترتبة على|ما المقصود بـ|عرف|أثبت أن|بين سبب|لماذا|explain|describe|discuss|compare)\b/i;
+    if (essayKeywords.test(statement) && rawOptionLines.length === 0) {
+      detectedType = "ESSAY";
     }
+
+    // Detect True/False if options only contain صح / خطأ
+    if (rawOptionLines.length === 2) {
+      const opt1 = rawOptionLines[0].toLowerCase();
+      const opt2 = rawOptionLines[1].toLowerCase();
+      if (
+        (opt1.includes("صح") || opt1.includes("صواب") || opt1.includes("true")) &&
+        (opt2.includes("خطأ") || opt2.includes("غلط") || opt2.includes("false"))
+      ) {
+        detectedType = "TRUE_FALSE";
+      }
+    }
+  }
+
+  // Force override type if requested
+  if (options?.forcedType) {
+    detectedType = options.forcedType;
   }
 
   // Process Options
@@ -362,9 +391,10 @@ function processQuestionBlock(lines: string[]): ParsedQuestion | null {
       if (o2.isCorrect) falseIsCorrect = true;
     }
 
+    const isLang = options?.schoolCategory === "LANGUAGES";
     parsedOptions = [
-      { text: "صواب", isCorrect: trueIsCorrect },
-      { text: "خطأ", isCorrect: falseIsCorrect },
+      { text: isLang ? "True" : "صواب", isCorrect: trueIsCorrect },
+      { text: isLang ? "False" : "خطأ", isCorrect: falseIsCorrect },
     ];
   } else if (detectedType === "MCQ") {
     parsedOptions = rawOptionLines.map((optLine) => parseOptionItem(optLine));
@@ -412,8 +442,8 @@ function processQuestionBlock(lines: string[]): ParsedQuestion | null {
       }
     }
 
-    // If options length is 0 and not explicitly typed as MCQ, treat as Essay
-    if (parsedOptions.length === 0) {
+    // If options length is 0 and not explicitly forced as MCQ, fallback to Essay
+    if (parsedOptions.length === 0 && !options?.forcedType) {
       detectedType = "ESSAY";
       if (answerLine && !modelAnswerText) {
         modelAnswerText = answerLine;
@@ -450,13 +480,18 @@ function processQuestionBlock(lines: string[]): ParsedQuestion | null {
     }
   }
 
+  const finalDifficulty: QuestionDifficulty =
+    options?.forcedDifficulty && options.forcedDifficulty !== "MIXED"
+      ? (options.forcedDifficulty as QuestionDifficulty)
+      : "MEDIUM";
+
   const id = "pq_" + Math.random().toString(36).substring(2, 9);
 
   return {
     id,
     statement,
     type: detectedType,
-    difficulty: "MEDIUM",
+    difficulty: finalDifficulty,
     options: parsedOptions,
     modelAnswer: modelAnswerText || undefined,
     concept: conceptText || undefined,
@@ -470,14 +505,55 @@ function processQuestionBlock(lines: string[]): ParsedQuestion | null {
 /**
  * Parse .docx buffer using mammoth
  */
-export async function parseDocxBuffer(buffer: Buffer): Promise<{
+export async function parseDocxBuffer(
+  buffer: Buffer,
+  options?: ParseOptions
+): Promise<{
   text: string;
   questions: ParsedQuestion[];
 }> {
   const mammoth = await import("mammoth");
   const result = await mammoth.extractRawText({ buffer });
   const rawText = result.value || "";
-  const questions = parseQuestionsFromText(rawText);
+  const questions = parseQuestionsFromText(rawText, options);
+  return {
+    text: rawText,
+    questions,
+  };
+}
+
+/**
+ * Parse .pdf buffer using pdf-parse
+ */
+export async function parsePdfBuffer(
+  buffer: Buffer,
+  options?: ParseOptions
+): Promise<{
+  text: string;
+  questions: ParsedQuestion[];
+}> {
+  let rawText = "";
+  try {
+    const pdfModule = await import("pdf-parse");
+    if (typeof (pdfModule as any).PDFParse === "function") {
+      const parser = new (pdfModule as any).PDFParse({ data: buffer });
+      const res = await parser.getText();
+      rawText = res?.text || "";
+    } else if (typeof (pdfModule as any).default === "function") {
+      const data = await (pdfModule as any).default(buffer);
+      rawText = data?.text || "";
+    } else if (typeof pdfModule === "function") {
+      const data = await (pdfModule as any)(buffer);
+      rawText = data?.text || "";
+    }
+  } catch (err: any) {
+    console.error("PDF parse error:", err);
+    throw new Error(
+      "فشل في استخراج النصوص من ملف PDF: " + (err?.message || "خطأ غير معروف")
+    );
+  }
+
+  const questions = parseQuestionsFromText(rawText, options);
   return {
     text: rawText,
     questions,

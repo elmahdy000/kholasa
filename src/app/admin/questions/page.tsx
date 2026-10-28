@@ -11,12 +11,12 @@ export default async function AdminQuestionsPage() {
     redirect("/login?callbackUrl=/admin/questions");
   }
 
-  // Fetch all questions and subjects with units and lessons
-  const [questions, subjects] = await Promise.all([
+  // Fetch all questions, subjects with curriculum hierarchy, and baccalaureate grades
+  const [questions, subjects, grades] = await Promise.all([
     prisma.question.findMany({
       orderBy: { createdAt: "desc" },
       include: {
-        subject: { select: { id: true, name: true } },
+        subject: { select: { id: true, name: true, gradeId: true, schoolCategory: true } },
         unit: { select: { id: true, title: true } },
         lessons: {
           include: {
@@ -26,11 +26,17 @@ export default async function AdminQuestionsPage() {
         options: { orderBy: { order: "asc" } },
         explanation: true,
         rubric: true,
+        batch: { select: { id: true, fileName: true, fileType: true } },
       },
     }),
     prisma.subject.findMany({
+      where: {
+        system: { code: "baccalaureate" },
+      },
       orderBy: { order: "asc" },
       include: {
+        grade: { select: { id: true, name: true, code: true } },
+        track: { select: { id: true, name: true, code: true } },
         units: {
           orderBy: { order: "asc" },
           select: {
@@ -42,6 +48,16 @@ export default async function AdminQuestionsPage() {
             },
           },
         },
+      },
+    }),
+    prisma.grade.findMany({
+      where: {
+        system: { code: "baccalaureate" },
+        code: { in: ["bacc_g10", "bacc_g11"] },
+      },
+      orderBy: { order: "asc" },
+      include: {
+        tracks: { orderBy: { name: "asc" } },
       },
     }),
   ]);
@@ -61,6 +77,7 @@ export default async function AdminQuestionsPage() {
         <QuestionBankManagerClient
           initialQuestions={questions as any}
           subjects={subjects as any}
+          grades={grades as any}
         />
       </div>
     </AdminShell>

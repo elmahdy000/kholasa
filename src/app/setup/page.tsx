@@ -11,15 +11,17 @@ export default async function SetupPage() {
   }
 
   // If user already has system and grade set, skip setup
-  if (user.systemId && user.gradeId) {
+  // If user already has system, grade, and schoolCategory set, skip setup
+  if (user.systemId && user.gradeId && user.schoolCategory) {
     redirect("/dashboard");
   }
 
   const systems = await prisma.educationalSystem.findMany({
-    where: { isActive: true },
+    where: { isActive: true, code: "baccalaureate" },
     orderBy: { order: "asc" },
     include: {
       grades: {
+        where: { code: { in: ["bacc_g10", "bacc_g11"] } },
         orderBy: { order: "asc" },
         include: {
           tracks: true,

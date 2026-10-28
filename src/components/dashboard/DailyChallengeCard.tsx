@@ -253,12 +253,13 @@ export function DailyChallengeCard({
                 <XCircle className="w-5 h-5 text-[#DC2626] dark:text-[#F87171] shrink-0 mt-1" weight="fill" />
                 <div className="space-y-1">
                   <span className="text-[13px] font-bold text-[#DC2626] dark:text-[#F87171] block">
-                    ولا يهمك، المهم نتعلم! الإجابة الصح هي: {correctOption?.text}
+                    ولا يهمك، المهم نتعلم! الإجابة الصحيحة هي:{" "}
+                    <BidiStatement as="span" text={correctOption?.text || ""} />
                   </span>
                   {revealed?.explanation?.correctReason && (
-                    <p className="text-[13px] text-[#0F172A] dark:text-[#F8FAFC] font-content leading-relaxed">
-                      {revealed.explanation.correctReason}
-                    </p>
+                    <div className="text-[13px] text-[#0F172A] dark:text-[#F8FAFC] font-content leading-relaxed mt-1">
+                      <BidiStatement as="p" text={revealed.explanation.correctReason} />
+                    </div>
                   )}
                 </div>
               </div>

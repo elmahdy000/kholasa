@@ -54,7 +54,7 @@ function MobileBottomNav({ items, pathname }: { items: NavItem[]; pathname: stri
   return (
     <nav
       aria-label="شريط التنقل السفلي"
-      className="md:hidden fixed bottom-[max(0.75rem,env(safe-area-inset-bottom))] inset-x-3 sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2 sm:w-[430px] z-40 bg-white/92 dark:bg-[#081426]/92 backdrop-blur-2xl border border-[#E8E9ED]/90 dark:border-[#22364F]/90 rounded-2xl shadow-[0_8px_32px_rgba(18,38,63,0.12)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.55)] px-2 py-1.5 flex items-center justify-around ring-1 ring-black/[0.03] dark:ring-white/[0.06] transition-all duration-300"
+      className="md:hidden fixed bottom-[max(0.5rem,env(safe-area-inset-bottom))] inset-x-2.5 sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2 sm:w-[440px] z-40 bg-white/95 dark:bg-[#081426]/95 backdrop-blur-xl border border-[#E8E9ED] dark:border-[#22364F] rounded-2xl shadow-[0_4px_24px_rgba(18,38,63,0.12)] dark:shadow-[0_4px_24px_rgba(0,0,0,0.5)] px-1.5 py-1.5 flex items-center justify-around"
     >
       {items.map((item) => {
         const Icon = item.icon;
@@ -62,78 +62,39 @@ function MobileBottomNav({ items, pathname }: { items: NavItem[]; pathname: stri
           pathname === item.href ||
           (item.href !== "/dashboard" && item.href !== "/" && pathname.startsWith(item.href));
 
-        if (item.isCenter) {
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="flex-1 flex flex-col items-center justify-center relative -mt-6 group active:scale-95 transition-transform"
-            >
-              <div
-                className={cn(
-                  "w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-300 border-2",
-                  "bg-[#800020] hover:bg-[#66001A] dark:bg-[#A30D36] dark:hover:bg-[#BD123F]",
-                  "text-white border-white dark:border-[#081426] shadow-[0_6px_20px_rgba(128,0,32,0.38)] dark:shadow-[0_0_24px_rgba(163,13,54,0.55)] group-hover:scale-105",
-                  isActive
-                    ? "ring-2 ring-[#E59A18] dark:ring-[#FBBF24] shadow-[0_6px_24px_rgba(229,154,24,0.4)] dark:shadow-[0_0_24px_rgba(251,191,36,0.5)]"
-                    : "ring-1 ring-black/5 dark:ring-white/10"
-                )}
-              >
-                <Icon className="w-[22px] h-[22px] text-white" weight="fill" />
-              </div>
-              <span
-                className={cn(
-                  "text-[10px] sm:text-[11px] font-extrabold leading-tight tracking-tight text-center mt-1 whitespace-nowrap transition-colors",
-                  isActive
-                    ? "text-[#800020] dark:text-[#FB7185]"
-                    : "text-[#64748B] dark:text-[#94A3B8] group-hover:text-[#12263F] dark:group-hover:text-[#F5F7FB]"
-                )}
-              >
-                {item.label}
-              </span>
-            </Link>
-          );
-        }
-
         return (
           <Link
             key={item.href}
             href={item.href}
             className={cn(
-              "flex-1 flex flex-col items-center justify-center gap-0.5 py-1 px-1 rounded-xl transition-all duration-200 active:scale-95 group"
+              "flex-1 min-w-0 flex flex-col items-center justify-center py-1 px-1 rounded-xl transition-all duration-150 active:scale-95 group text-center"
             )}
           >
             <div
               className={cn(
-                "w-10 h-8 rounded-xl flex items-center justify-center transition-all duration-200 relative",
+                "w-9 h-8 sm:w-10 sm:h-8 rounded-xl flex items-center justify-center transition-all duration-150",
                 isActive
-                  ? "bg-[#800020]/10 dark:bg-[#A30D36]/25 text-[#800020] dark:text-[#FB7185] border border-[#800020]/20 dark:border-[#A30D36]/40 shadow-xs scale-105"
+                  ? "bg-[#800020] text-white shadow-xs"
+                  : item.isCenter
+                  ? "bg-[#D97706]/10 text-[#D97706] dark:text-[#FBBF24] hover:bg-[#D97706]/20"
                   : "text-[#64748B] dark:text-[#94A3B8] group-hover:text-[#12263F] dark:group-hover:text-[#F5F7FB] group-hover:bg-[#F7F8FA] dark:group-hover:bg-[#10233A]"
               )}
             >
               <Icon
-                className="w-5 h-5 transition-transform duration-200 group-hover:scale-105"
+                className="w-4.5 h-4.5"
                 weight={isActive ? "fill" : "bold"}
               />
             </div>
             <span
               className={cn(
-                "text-[10px] sm:text-[11px] font-bold leading-tight tracking-tight text-center whitespace-nowrap transition-colors",
+                "text-[10px] sm:text-[11px] leading-tight tracking-tight text-center truncate w-full mt-1 transition-colors",
                 isActive
-                  ? "text-[#800020] dark:text-[#FB7185]"
-                  : "text-[#64748B] dark:text-[#94A3B8] group-hover:text-[#12263F] dark:group-hover:text-[#F5F7FB]"
+                  ? "font-extrabold text-[#800020] dark:text-[#FB7185]"
+                  : "font-bold text-[#64748B] dark:text-[#94A3B8] group-hover:text-[#12263F] dark:group-hover:text-[#F5F7FB]"
               )}
             >
               {item.label}
             </span>
-            <span
-              className={cn(
-                "w-1 h-1 rounded-full transition-all duration-300 mt-0.5",
-                isActive
-                  ? "bg-[#800020] dark:bg-[#FB7185] opacity-100 scale-100 shadow-[0_0_6px_rgba(128,0,32,0.6)] dark:shadow-[0_0_8px_rgba(251,113,133,0.8)]"
-                  : "opacity-0 scale-0 pointer-events-none"
-              )}
-            />
           </Link>
         );
       })}
@@ -233,14 +194,27 @@ export function StudentShell({ children, user }: StudentShellProps) {
       {/* Desktop & Tablet Top Navbar (Vercel / Replit Style) */}
       <header className="sticky top-0 z-40 w-full bg-white/95 dark:bg-[#081426]/95 backdrop-blur-md border-b border-[#E8E9ED] dark:border-[#22364F] transition-colors">
         <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 h-15 flex items-center justify-between gap-4">
-          {/* Logo & Brand */}
-          <BrandLogo
-            href="/dashboard"
-            variant="combined"
-            size="md"
-            priority
-            subtitleText="EL KHOLASA"
-          />
+          {/* Logo & Brand (Responsive scale to prevent mobile clipping) */}
+          <div className="shrink-0 min-w-0">
+            <div className="sm:hidden">
+              <BrandLogo
+                href="/dashboard"
+                variant="combined"
+                size="sm"
+                priority
+                showSubtitle={false}
+              />
+            </div>
+            <div className="hidden sm:block">
+              <BrandLogo
+                href="/dashboard"
+                variant="combined"
+                size="md"
+                priority
+                subtitleText="EL KHOLASA"
+              />
+            </div>
+          </div>
 
           {/* Desktop Nav Links (Vercel-style clean segmented tabs) */}
           <nav className="hidden md:flex items-center gap-1 bg-[#F7F8FA] dark:bg-[#0D1B2E] p-1 rounded-xl border border-[#E8E9ED] dark:border-[#22364F]">
@@ -269,13 +243,15 @@ export function StudentShell({ children, user }: StudentShellProps) {
           </nav>
 
           {/* Right Action Widgets */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             {/* Quick Search Button (⌘K) */}
             <button
               onClick={() => setIsSearchOpen(true)}
-              className="h-10 px-3 rounded-lg border border-[#E8E9ED] dark:border-[#22364F] bg-white dark:bg-[#10233A] text-[13px] font-medium text-[#64748B] dark:text-[#94A3B8] hover:border-[#800020]/40 dark:hover:border-[#A30D36]/60 hover:text-[#12263F] dark:hover:text-[#F5F7FB] flex items-center gap-2 transition-all cursor-pointer"
+              className="w-9 h-9 sm:w-auto sm:h-10 sm:px-3 rounded-lg border border-[#E8E9ED] dark:border-[#22364F] bg-white dark:bg-[#10233A] text-[13px] font-medium text-[#64748B] dark:text-[#94A3B8] hover:border-[#800020]/40 dark:hover:border-[#A30D36]/60 hover:text-[#12263F] dark:hover:text-[#F5F7FB] flex items-center justify-center gap-2 transition-all cursor-pointer"
+              title="بحث سريع (⌘K)"
+              aria-label="بحث سريع"
             >
-              <MagnifyingGlass className="w-3.5 h-3.5 text-[#64748B] dark:text-[#94A3B8]" weight="bold" />
+              <MagnifyingGlass className="w-4 h-4 text-[#64748B] dark:text-[#94A3B8]" weight="bold" />
               <span className="hidden sm:inline text-xs">ابحث...</span>
               <kbd className="hidden sm:inline-block px-1.5 py-0.5 rounded text-[11px] bg-[#F7F8FA] dark:bg-[#132945] text-[#64748B] dark:text-[#94A3B8] font-mono border border-[#E8E9ED] dark:border-[#22364F]">
                 ⌘K
@@ -285,8 +261,9 @@ export function StudentShell({ children, user }: StudentShellProps) {
             {/* Dark Mode Toggle */}
             <button
               onClick={toggleTheme}
-              className="w-10 h-10 rounded-lg border border-[#E8E9ED] dark:border-[#22364F] bg-white dark:bg-[#10233A] flex items-center justify-center text-[#64748B] dark:text-[#94A3B8] hover:text-[#12263F] dark:hover:text-[#F5F7FB] hover:border-[#800020]/40 dark:hover:border-[#A30D36]/60 transition-colors cursor-pointer"
+              className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg border border-[#E8E9ED] dark:border-[#22364F] bg-white dark:bg-[#10233A] flex items-center justify-center text-[#64748B] dark:text-[#94A3B8] hover:text-[#12263F] dark:hover:text-[#F5F7FB] hover:border-[#800020]/40 dark:hover:border-[#A30D36]/60 transition-colors cursor-pointer"
               title={isDark ? "تفعيل الوضع الفاتح" : "تفعيل الوضع الداكن"}
+              aria-label={isDark ? "تفعيل الوضع الفاتح" : "تفعيل الوضع الداكن"}
             >
               {isDark ? (
                 <Sun className="w-4 h-4 text-[#E59A18]" weight="bold" />
@@ -298,9 +275,10 @@ export function StudentShell({ children, user }: StudentShellProps) {
             {/* User Profile Avatar */}
             <Link
               href="/profile"
-              className="flex items-center gap-2 p-1 pl-2 rounded-lg hover:bg-[#F7F8FA] dark:hover:bg-[#132945] transition-colors border border-transparent hover:border-[#E8E9ED] dark:hover:border-[#22364F]"
+              className="flex items-center gap-2 p-1 sm:pl-2 rounded-lg hover:bg-[#F7F8FA] dark:hover:bg-[#132945] transition-colors border border-transparent hover:border-[#E8E9ED] dark:hover:border-[#22364F]"
+              title="الملف الشخصي"
             >
-              <div className="w-8 h-8 rounded-lg bg-[#800020] dark:bg-[#A30D36] text-white flex items-center justify-center font-bold text-xs shadow-xs">
+              <div className="w-8 h-8 rounded-lg bg-[#800020] text-white flex items-center justify-center font-bold text-xs shadow-xs">
                 {user?.name ? user.name[0] : "ط"}
               </div>
               <div className="hidden lg:block text-right">
@@ -314,7 +292,7 @@ export function StudentShell({ children, user }: StudentShellProps) {
       </header>
 
       {/* Main Content Area */}
-      <main className="flex-1 max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 pb-28 sm:pb-32 md:pb-16 w-full">
+      <main className="flex-1 max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 pb-24 sm:pb-28 md:pb-12 w-full">
         {children}
       </main>
 

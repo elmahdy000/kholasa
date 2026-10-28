@@ -1,6 +1,13 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser, canManageCurriculum } from "@/lib/auth";
-import { parseDocxBuffer, parseQuestionsFromText } from "@/lib/question-parser";
+import {
+  parseDocxBuffer,
+  parsePdfBuffer,
+  parseQuestionsFromText,
+  ParseOptions,
+  QuestionType,
+  QuestionDifficulty,
+} from "@/lib/question-parser";
 
 export async function POST(req: Request) {
   try {
@@ -16,19 +23,32 @@ export async function POST(req: Request) {
       const file = formData.get("file") as File | null;
       const textFallback = formData.get("text") as string | null;
 
+      // Extract optional parsing parameters
+      const forcedType = (formData.get("type") as QuestionType) || undefined;
+      const forcedDifficulty = (formData.get("difficulty") as QuestionDifficulty | "MIXED") || undefined;
+      const schoolCategory = (formData.get("schoolCategory") as "ARABIC" | "LANGUAGES") || undefined;
+
+      const parseOptions: ParseOptions = {
+        forcedType: forcedType && ["MCQ", "TRUE_FALSE", "ESSAY"].includes(forcedType) ? forcedType : undefined,
+        forcedDifficulty: forcedDifficulty && ["EASY", "MEDIUM", "HARD", "MIXED"].includes(forcedDifficulty) ? forcedDifficulty : undefined,
+        schoolCategory: schoolCategory && ["ARABIC", "LANGUAGES"].includes(schoolCategory) ? schoolCategory : undefined,
+      };
+
       if (file && file.size > 0) {
-        // Validate file type and size
         const fileName = file.name.toLowerCase();
-        if (!fileName.endsWith(".docx")) {
+        const isDocx = fileName.endsWith(".docx");
+        const isPdf = fileName.endsWith(".pdf");
+
+        if (!isDocx && !isPdf) {
           return NextResponse.json(
-            { error: "يرجى رفع ملف وورد بصيغة .docx" },
+            { error: "يرجى رفع ملف بصيغة Word (.docx) أو PDF (.pdf)" },
             { status: 400 }
           );
         }
 
-        if (file.size > 10 * 1024 * 1024) {
+        if (file.size > 15 * 1024 * 1024) {
           return NextResponse.json(
-            { error: "حجم الملف كبير جداً (الحد الأقصى 10 ميجابايت)" },
+            { error: "حجم الملف كبير جداً (الحد الأقصى 15 ميجابايت)" },
             { status: 413 }
           );
         }
@@ -37,7 +57,9 @@ export async function POST(req: Request) {
         const buffer = Buffer.from(arrayBuffer);
 
         try {
-          const { text, questions } = await parseDocxBuffer(buffer);
+          const { text, questions } = isDocx
+            ? await parseDocxBuffer(buffer, parseOptions)
+            : await parsePdfBuffer(buffer, parseOptions);
 
           const stats = {
             total: questions.length,
@@ -51,22 +73,24 @@ export async function POST(req: Request) {
           return NextResponse.json({
             success: true,
             fileName: file.name,
+            fileType: isDocx ? "DOCX" : "PDF",
             questions,
             rawText: text,
             stats,
           });
-        } catch (docxErr) {
-          console.error("DOCX parsing error:", docxErr);
+        } catch (parseErr: any) {
+          console.error("Document parsing error:", parseErr);
           return NextResponse.json(
             {
               error:
-                "تعذر قراءة ملف الوورد، يرجى التأكد من أن الملف سليم بصيغة .docx أو لصق نصوص الأسئلة مباشرة.",
+                parseErr?.message ||
+                "تعذر قراءة المستند، يرجى التأكد من أن الملف سليم بصيغة .docx أو .pdf أو لصق النصوص مباشرة.",
             },
             { status: 422 }
           );
         }
       } else if (textFallback && textFallback.trim().length > 0) {
-        const questions = parseQuestionsFromText(textFallback);
+        const questions = parseQuestionsFromText(textFallback, parseOptions);
         const stats = {
           total: questions.length,
           valid: questions.filter((q) => q.isValid).length,
@@ -79,6 +103,7 @@ export async function POST(req: Request) {
         return NextResponse.json({
           success: true,
           fileName: "نص مباشر",
+          fileType: "MANUAL",
           questions,
           rawText: textFallback,
           stats,
@@ -86,7 +111,7 @@ export async function POST(req: Request) {
       }
 
       return NextResponse.json(
-        { error: "لم يتم العثور على ملف وورد أو نصوص في الطلب" },
+        { error: "لم يتم العثور على ملف أو نصوص في الطلب" },
         { status: 400 }
       );
     }
@@ -94,7 +119,13 @@ export async function POST(req: Request) {
     // Direct JSON payload with text
     const body = await req.json().catch(() => ({}));
     if (body.text) {
-      const questions = parseQuestionsFromText(body.text);
+      const parseOptions: ParseOptions = {
+        forcedType: body.type,
+        forcedDifficulty: body.difficulty,
+        schoolCategory: body.schoolCategory,
+      };
+
+      const questions = parseQuestionsFromText(body.text, parseOptions);
       const stats = {
         total: questions.length,
         valid: questions.filter((q) => q.isValid).length,
@@ -107,6 +138,7 @@ export async function POST(req: Request) {
       return NextResponse.json({
         success: true,
         fileName: "نص مباشر",
+        fileType: "MANUAL",
         questions,
         rawText: body.text,
         stats,
@@ -118,9 +150,9 @@ export async function POST(req: Request) {
       { status: 400 }
     );
   } catch (error) {
-    console.error("Parse docx API route error:", error);
+    console.error("Parse document API route error:", error);
     return NextResponse.json(
-      { error: "حدث خطأ أثناء معالجة الملف" },
+      { error: "حدث خطأ أثناء معالجة المستند" },
       { status: 500 }
     );
   }
