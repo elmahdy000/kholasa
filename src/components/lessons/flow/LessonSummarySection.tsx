@@ -288,7 +288,6 @@ export function LessonSummarySection({
                     onClick={() => setLightboxIndex(idx)}
                     className="group relative cursor-pointer rounded-xl overflow-hidden border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] aspect-[16/10] flex items-center justify-center hover:border-[#D97706]/60 transition-all shadow-sm hover:shadow-md"
                   >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={imgUrl}
                       alt={`بطاقة الزتونة رقم ${idx + 1}`}
@@ -541,7 +540,6 @@ export function LessonSummarySection({
               </button>
             )}
 
-            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={images[lightboxIndex]}
               alt={`بطاقة الزتونة ${lightboxIndex + 1}`}
@@ -577,7 +575,6 @@ export function LessonSummarySection({
                       : "border-white/20 opacity-50 hover:opacity-100"
                   }`}
                 >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={thumbUrl}
                     alt={`مصغرة ${idx + 1}`}

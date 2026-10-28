@@ -31,16 +31,9 @@ export function StudentShell({ children, user: propUser }: StudentShellProps) {
   const pathname = usePathname();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
-  // If already wrapped in an outer persistent StudentShell (from AppShell),
-  // do not duplicate the header, main container, footer, or bottom navigation.
-  if (parentContext.isInsideShell) {
-    return <>{children}</>;
-  }
-
-  const user = propUser !== undefined ? propUser : parentContext.user;
-
   // Keyboard shortcut Ctrl+K / Cmd+K and Esc
   useEffect(() => {
+    if (parentContext.isInsideShell) return;
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === "k") {
         e.preventDefault();
@@ -52,7 +45,15 @@ export function StudentShell({ children, user: propUser }: StudentShellProps) {
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  }, [parentContext.isInsideShell]);
+
+  // If already wrapped in an outer persistent StudentShell (from AppShell),
+  // do not duplicate the header, main container, footer, or bottom navigation.
+  if (parentContext.isInsideShell) {
+    return <>{children}</>;
+  }
+
+  const user = propUser !== undefined ? propUser : parentContext.user;
 
   // When browsing as a guest / visitor
   if (!user) {

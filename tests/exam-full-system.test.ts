@@ -37,8 +37,12 @@ describe("Full End-to-End Exam System Test", () => {
     });
 
     if (!subject) {
-      subject = await prisma.subject.findFirst({
-        where: { isPublished: true },
+      subject = await CurriculumService.createSubject({
+        name: "مادة اختبار النظام الشامل",
+        code: `full_sys_test_${Date.now()}`,
+        systemId: student.systemId!,
+        gradeId: student.gradeId!,
+        schoolCategory: student.schoolCategory || "ARABIC",
       });
     }
     expect(subject).toBeDefined();
