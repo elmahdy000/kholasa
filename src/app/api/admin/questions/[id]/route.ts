@@ -87,6 +87,8 @@ export async function PUT(req: Request, { params }: RouteParams) {
   }
 }
 
+export const PATCH = PUT;
+
 export async function DELETE(req: Request, { params }: RouteParams) {
   try {
     const user = await getCurrentUser();
