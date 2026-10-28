@@ -75,6 +75,17 @@ export function LessonEditorForm({
     objectives,
     newObjective,
     setNewObjective,
+    contentPdfUrl,
+    setContentPdfUrl,
+    summaryPdfUrl,
+    setSummaryPdfUrl,
+    summaryImages,
+    setSummaryImages,
+    newSummaryImageUrl,
+    setNewSummaryImageUrl,
+    handleAddSummaryImage,
+    handleRemoveSummaryImage,
+    handleMoveSummaryImage,
     keyConcepts,
     newConcept,
     setNewConcept,
@@ -234,11 +245,26 @@ export function LessonEditorForm({
                 onRemoveObjective={handleRemoveObjective}
                 bodyText={bodyText}
                 setBodyText={setBodyText}
+                contentPdfUrl={contentPdfUrl}
+                setContentPdfUrl={setContentPdfUrl}
+                uploadingMedia={uploadingMedia}
+                onUploadMedia={handleMediaUpload}
               />
             )}
 
             {activeTab === "summary" && (
               <LessonSummaryTab
+                summaryPdfUrl={summaryPdfUrl}
+                setSummaryPdfUrl={setSummaryPdfUrl}
+                summaryImages={summaryImages}
+                newSummaryImageUrl={newSummaryImageUrl}
+                setNewSummaryImageUrl={setNewSummaryImageUrl}
+                onAddSummaryImage={handleAddSummaryImage}
+                onRemoveSummaryImage={handleRemoveSummaryImage}
+                onMoveSummaryImage={handleMoveSummaryImage}
+                uploadingMedia={uploadingMedia}
+                onUploadMedia={handleMediaUpload}
+                onPreviewImage={(url) => setPreviewLightboxImage(url)}
                 keyConcepts={keyConcepts}
                 newConcept={newConcept}
                 setNewConcept={setNewConcept}

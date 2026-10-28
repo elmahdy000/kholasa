@@ -23,7 +23,7 @@ interface LessonMindMapTabProps {
   onAddImage: () => void;
   onRemoveImage: (idx: number) => void;
   onMoveImage: (idx: number, dir: "up" | "down") => void;
-  uploadingMedia: "video" | "audio" | "mindmap" | null;
+  uploadingMedia: "video" | "audio" | "mindmap" | "summary_pdf" | "summary_image" | "content_pdf" | null;
   onUploadMedia: (file: File, target: "mindmap") => void;
   onPreviewImage: (url: string) => void;
 }

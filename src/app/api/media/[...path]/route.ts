@@ -29,9 +29,6 @@ export async function GET(
   req: Request,
   { params }: { params: Promise<{ path: string[] }> }
 ) {
-  const user = await getCurrentUser();
-  if (!user) return NextResponse.json({ error: "غير مصرح" }, { status: 401 });
-
   const { path: segments } = await params;
   if (!segments || segments.length !== 2) {
     return NextResponse.json({ error: "غير موجود" }, { status: 404 });
@@ -62,10 +59,15 @@ export async function GET(
     "Content-Type": contentType,
     "X-Content-Type-Options": "nosniff",
     "Content-Disposition": "inline",
-    "Cache-Control": "private, max-age=3600",
+    "Cache-Control": "public, max-age=86400, stale-while-revalidate=604800",
     "Accept-Ranges": "bytes",
-    "Content-Security-Policy": "default-src 'none'; sandbox",
   };
+
+  // Only apply restrictive CSP sandbox to non-document/non-PDF types so browsers
+  // and mobile viewers can render PDFs and embedded images seamlessly.
+  if (ext !== ".pdf" && category !== "documents") {
+    headers["Content-Security-Policy"] = "default-src 'none'; sandbox";
+  }
 
   const rangeHeader = req.headers.get("range");
   let start = 0;

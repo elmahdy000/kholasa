@@ -3,6 +3,7 @@ export interface LessonContent {
   body: string;
   videoUrl?: string | null;
   audioUrl?: string | null;
+  pdfUrl?: string | null;
   objectives: string[];
 }
 
@@ -34,6 +35,8 @@ export interface ChecklistItem {
 
 export interface LessonSummary {
   id: string;
+  pdfUrl?: string | null;
+  images?: string[];
   keyConcepts: string[];
   definitions?: Definition[];
   formulas?: Formula[];

@@ -13,9 +13,12 @@ const createSchema = z.object({
   isPublished: z.boolean().optional(),
   videoUrl: z.string().max(2000).nullable().optional(),
   audioUrl: z.string().max(2000).nullable().optional(),
+  pdfUrl: z.string().max(2000).nullable().optional(),
   bodyText: z.string().max(500000).optional(),
   objectives: z.array(z.string().max(1000)).max(100).optional(),
   images: z.array(z.string().max(2000)).max(100).optional(),
+  summaryPdfUrl: z.string().max(2000).nullable().optional(),
+  summaryImages: z.array(z.string().max(2000)).max(100).optional(),
 });
 
 // GET: List lessons for a unit or search (paginated, default 50, max 100)

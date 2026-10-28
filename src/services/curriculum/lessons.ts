@@ -69,6 +69,7 @@ export class CurriculumLessonsService {
             body: data.bodyText?.trim() || "محتوى وشرح تفصيلي للدرس...",
             videoUrl: data.videoUrl?.trim() || null,
             audioUrl: data.audioUrl?.trim() || null,
+            pdfUrl: data.pdfUrl?.trim() || null,
             objectives: Array.isArray(data.objectives) ? data.objectives : [],
           },
         },
@@ -82,13 +83,15 @@ export class CurriculumLessonsService {
         },
         summary: {
           create: {
-            keyConcepts: [],
-            definitions: [],
-            formulas: [],
-            comparisons: [],
-            examTips: [],
-            commonMistakes: [],
-            checklist: [],
+            pdfUrl: data.summaryPdfUrl?.trim() || null,
+            images: Array.isArray(data.summaryImages) ? data.summaryImages : [],
+            keyConcepts: Array.isArray(data.keyConcepts) ? data.keyConcepts : [],
+            definitions: (data.definitions as any) || [],
+            formulas: (data.formulas as any) || [],
+            comparisons: (data.comparisons as any) || [],
+            examTips: Array.isArray(data.examTips) ? data.examTips : [],
+            commonMistakes: (data.commonMistakes as any) || [],
+            checklist: (data.checklist as any) || [],
           },
         },
       },
@@ -127,7 +130,7 @@ export class CurriculumLessonsService {
             },
           },
         },
-        content: { select: { videoUrl: true, audioUrl: true } },
+        content: { select: { videoUrl: true, audioUrl: true, pdfUrl: true } },
         mindMap: { select: { images: true } },
         summary: true,
         _count: { select: { questions: true } },
@@ -154,9 +157,16 @@ export class CurriculumLessonsService {
     const bodyText = data.bodyText ?? data.content?.body;
     const videoUrl = data.videoUrl !== undefined ? data.videoUrl : data.content?.videoUrl;
     const audioUrl = data.audioUrl !== undefined ? data.audioUrl : data.content?.audioUrl;
+    const pdfUrl = data.pdfUrl !== undefined ? data.pdfUrl : data.content?.pdfUrl;
     const objectives = data.objectives ?? data.content?.objectives;
 
-    if (bodyText !== undefined || videoUrl !== undefined || audioUrl !== undefined || objectives !== undefined) {
+    if (
+      bodyText !== undefined ||
+      videoUrl !== undefined ||
+      audioUrl !== undefined ||
+      pdfUrl !== undefined ||
+      objectives !== undefined
+    ) {
       await prisma.lessonContent.upsert({
         where: { lessonId },
         create: {
@@ -164,12 +174,14 @@ export class CurriculumLessonsService {
           body: bodyText?.trim() || "",
           videoUrl: videoUrl?.trim() || null,
           audioUrl: audioUrl?.trim() || null,
+          pdfUrl: pdfUrl?.trim() || null,
           objectives: Array.isArray(objectives) ? objectives : [],
         },
         update: {
           body: bodyText !== undefined ? bodyText.trim() : undefined,
           videoUrl: videoUrl !== undefined ? (videoUrl?.trim() || null) : undefined,
           audioUrl: audioUrl !== undefined ? (audioUrl?.trim() || null) : undefined,
+          pdfUrl: pdfUrl !== undefined ? (pdfUrl?.trim() || null) : undefined,
           objectives: Array.isArray(objectives) ? objectives : undefined,
         },
       });
@@ -205,6 +217,8 @@ export class CurriculumLessonsService {
         where: { lessonId },
         create: {
           lessonId,
+          pdfUrl: data.summary.pdfUrl !== undefined ? (data.summary.pdfUrl?.trim() || null) : null,
+          images: Array.isArray(data.summary.images) ? data.summary.images : [],
           keyConcepts: data.summary.keyConcepts || [],
           definitions: data.summary.definitions || [],
           formulas: data.summary.formulas || [],
@@ -214,6 +228,8 @@ export class CurriculumLessonsService {
           checklist: data.summary.checklist || [],
         },
         update: {
+          pdfUrl: data.summary.pdfUrl !== undefined ? (data.summary.pdfUrl?.trim() || null) : undefined,
+          images: data.summary.images !== undefined ? (Array.isArray(data.summary.images) ? data.summary.images : []) : undefined,
           keyConcepts: data.summary.keyConcepts !== undefined ? data.summary.keyConcepts : undefined,
           definitions: data.summary.definitions !== undefined ? data.summary.definitions : undefined,
           formulas: data.summary.formulas !== undefined ? data.summary.formulas : undefined,

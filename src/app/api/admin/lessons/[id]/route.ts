@@ -19,6 +19,7 @@ const updateSchema = z.object({
   isPublished: z.boolean().optional(),
   videoUrl: url,
   audioUrl: url,
+  pdfUrl: url,
   bodyText: z.string().max(500000).optional(),
   objectives: strList.optional(),
   images: z.array(z.string().max(2000)).max(100).optional(),
@@ -27,6 +28,7 @@ const updateSchema = z.object({
       body: z.string().max(500000).optional(),
       videoUrl: url,
       audioUrl: url,
+      pdfUrl: url,
       objectives: strList.optional(),
     })
     .optional(),
@@ -41,6 +43,8 @@ const updateSchema = z.object({
     .optional(),
   summary: z
     .object({
+      pdfUrl: url,
+      images: z.array(z.string().max(2000)).max(100).optional(),
       keyConcepts: strList.optional(),
       definitions: strList.optional(),
       formulas: strList.optional(),

@@ -251,21 +251,24 @@ model LessonContent {
   body       String   @db.Text
   videoUrl   String?
   audioUrl   String?
+  pdfUrl     String?
   objectives String[] @default([])
 
   lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
 }
 
 model LessonSummary {
-  id             String @id @default(cuid())
-  lessonId       String @unique
-  keyConcepts    Json   @default("[]")
-  definitions    Json   @default("[]")
-  formulas       Json   @default("[]")
-  comparisons    Json   @default("[]")
-  examTips       Json   @default("[]")
-  commonMistakes Json   @default("[]")
-  checklist      Json   @default("[]")
+  id             String   @id @default(cuid())
+  lessonId       String   @unique
+  pdfUrl         String?
+  images         String[] @default([])
+  keyConcepts    Json     @default("[]")
+  definitions    Json     @default("[]")
+  formulas       Json     @default("[]")
+  comparisons    Json     @default("[]")
+  examTips       Json     @default("[]")
+  commonMistakes Json     @default("[]")
+  checklist      Json     @default("[]")
 
   lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
 }

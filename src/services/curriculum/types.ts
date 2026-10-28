@@ -6,9 +6,19 @@ export interface LessonCreateInput {
   isPublished?: boolean;
   videoUrl?: string | null;
   audioUrl?: string | null;
+  pdfUrl?: string | null;
   bodyText?: string;
   objectives?: string[];
   images?: string[];
+  summaryPdfUrl?: string | null;
+  summaryImages?: string[];
+  keyConcepts?: string[];
+  definitions?: unknown[];
+  formulas?: unknown[];
+  comparisons?: unknown[];
+  examTips?: string[];
+  commonMistakes?: unknown[];
+  checklist?: unknown[];
 }
 
 export interface LessonUpdateInput {
@@ -18,6 +28,7 @@ export interface LessonUpdateInput {
   isPublished?: boolean;
   videoUrl?: string | null;
   audioUrl?: string | null;
+  pdfUrl?: string | null;
   bodyText?: string;
   objectives?: string[];
   images?: string[];
@@ -25,6 +36,7 @@ export interface LessonUpdateInput {
     body?: string;
     videoUrl?: string | null;
     audioUrl?: string | null;
+    pdfUrl?: string | null;
     objectives?: string[];
   };
   mindMap?: {
@@ -35,6 +47,8 @@ export interface LessonUpdateInput {
     edges?: unknown;
   };
   summary?: {
+    pdfUrl?: string | null;
+    images?: string[];
     keyConcepts?: string[];
     definitions?: string[];
     formulas?: string[];

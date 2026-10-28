@@ -23,7 +23,7 @@ interface LessonMediaTabProps {
   setVideoUrl: (v: string) => void;
   audioUrl: string;
   setAudioUrl: (v: string) => void;
-  uploadingMedia: "video" | "audio" | "mindmap" | null;
+  uploadingMedia: "video" | "audio" | "mindmap" | "summary_pdf" | "summary_image" | "content_pdf" | null;
   onUploadMedia: (file: File, target: "video" | "audio") => void;
   onOpenPairUploadModal: () => void;
 }

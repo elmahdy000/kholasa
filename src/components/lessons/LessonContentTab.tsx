@@ -1,6 +1,7 @@
 "use client";
 
-import { Target } from "lucide-react";
+import { useState } from "react";
+import { Target, FileText, Eye, EyeOff, Download, ExternalLink } from "lucide-react";
 import { LessonContent } from "./types";
 
 interface LessonContentTabProps {
@@ -14,6 +15,7 @@ export function LessonContentTab({
   lessonTitle,
   embedUrl,
 }: LessonContentTabProps) {
+  const [isPdfOpen, setIsPdfOpen] = useState(false);
   return (
     <div className="space-y-6">
       {/* Video Embed */}
@@ -49,6 +51,81 @@ export function LessonContentTab({
               </li>
             ))}
           </ul>
+        </div>
+      )}
+
+      {/* Lesson Material PDF File */}
+      {content?.pdfUrl && (
+        <div className="p-5 sm:p-6 rounded-xl bg-white dark:bg-[#0F172A] border border-[#800020]/25 shadow-sm space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-start sm:items-center gap-3.5">
+              <div className="w-12 h-12 rounded-xl bg-[#800020] text-white flex items-center justify-center shrink-0 shadow-md">
+                <FileText className="w-6 h-6" />
+              </div>
+              <div>
+                <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-[#800020]/15 text-[#800020] dark:text-[#FB7185]">
+                  ملف الشرح والمذكرة الرسمية
+                </span>
+                <h3 className="text-base font-bold text-[#0F172A] dark:text-white mt-1">
+                  ملزمة الشرح وماتريال الدرس (PDF)
+                </h3>
+                <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8] mt-0.5">
+                  تحتوي على التوضيحات التحريرية الشاملة والأمثلة المحلولة لدرس اليوم
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center flex-wrap gap-2 pt-2 sm:pt-0">
+              <button
+                type="button"
+                onClick={() => setIsPdfOpen((prev) => !prev)}
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold bg-[#800020] hover:bg-[#660019] text-white transition-all shadow-sm"
+              >
+                {isPdfOpen ? (
+                  <>
+                    <EyeOff className="w-4 h-4" />
+                    <span>إغلاق القارئ</span>
+                  </>
+                ) : (
+                  <>
+                    <Eye className="w-4 h-4" />
+                    <span>معاينة وقراءة</span>
+                  </>
+                )}
+              </button>
+
+              <a
+                href={content.pdfUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-white dark:bg-[#1E293B] hover:bg-slate-50 dark:hover:bg-[#334155] text-[#0F172A] dark:text-white border border-[#E2E8F0] dark:border-[#334155] transition-all"
+              >
+                <ExternalLink className="w-4 h-4" />
+                <span>نافذة كاملة</span>
+              </a>
+
+              <a
+                href={content.pdfUrl}
+                download
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-white dark:bg-[#1E293B] hover:bg-slate-50 dark:hover:bg-[#334155] text-[#0F172A] dark:text-white border border-[#E2E8F0] dark:border-[#334155] transition-all"
+              >
+                <Download className="w-4 h-4" />
+                <span>تحميل</span>
+              </a>
+            </div>
+          </div>
+
+          {isPdfOpen && (
+            <div className="pt-4 border-t border-[#800020]/20 space-y-2">
+              <div className="w-full h-[600px] rounded-xl overflow-hidden border border-[#E2E8F0] dark:border-[#334155] bg-slate-900">
+                <iframe
+                  src={`${content.pdfUrl}#toolbar=1&navpanes=0`}
+                  title="مذكرة الدرس PDF"
+                  className="w-full h-full border-0"
+                />
+              </div>
+            </div>
+          )}
         </div>
       )}
 

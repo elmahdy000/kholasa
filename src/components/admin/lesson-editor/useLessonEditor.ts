@@ -41,8 +41,11 @@ export function useLessonEditor({
   // Media State
   const [videoUrl, setVideoUrl] = useState("");
   const [audioUrl, setAudioUrl] = useState("");
+  const [contentPdfUrl, setContentPdfUrl] = useState("");
   const [showPairUploadModal, setShowPairUploadModal] = useState(false);
-  const [uploadingMedia, setUploadingMedia] = useState<"video" | "audio" | "mindmap" | null>(null);
+  const [uploadingMedia, setUploadingMedia] = useState<
+    "video" | "audio" | "mindmap" | "summary_pdf" | "summary_image" | "content_pdf" | null
+  >(null);
 
   // Mind Map State
   const [mindMapTitle, setMindMapTitle] = useState("");
@@ -56,7 +59,10 @@ export function useLessonEditor({
   const [objectives, setObjectives] = useState<string[]>([]);
   const [newObjective, setNewObjective] = useState("");
 
-  // Summary State
+  // Summary State (الزتونة)
+  const [summaryPdfUrl, setSummaryPdfUrl] = useState("");
+  const [summaryImages, setSummaryImages] = useState<string[]>([]);
+  const [newSummaryImageUrl, setNewSummaryImageUrl] = useState("");
   const [keyConcepts, setKeyConcepts] = useState<string[]>([]);
   const [newConcept, setNewConcept] = useState("");
   const [examTips, setExamTips] = useState<string[]>([]);
@@ -102,6 +108,7 @@ export function useLessonEditor({
 
         setVideoUrl(data.content?.videoUrl || "");
         setAudioUrl(data.content?.audioUrl || "");
+        setContentPdfUrl(data.content?.pdfUrl || "");
         setBodyText(data.content?.body || "");
         setObjectives(Array.isArray(data.content?.objectives) ? data.content.objectives : []);
 
@@ -110,6 +117,8 @@ export function useLessonEditor({
         setMindMapImages(Array.isArray(data.mindMap?.images) ? data.mindMap.images : []);
 
         if (data.summary) {
+          setSummaryPdfUrl(data.summary.pdfUrl || "");
+          setSummaryImages(Array.isArray(data.summary.images) ? data.summary.images : []);
           setKeyConcepts(Array.isArray(data.summary.keyConcepts) ? data.summary.keyConcepts : []);
           setExamTips(Array.isArray(data.summary.examTips) ? data.summary.examTips : []);
           setCommonMistakes(
@@ -132,7 +141,10 @@ export function useLessonEditor({
     };
   }, [lessonId]);
 
-  const handleMediaUpload = async (file: File, target: "video" | "audio" | "mindmap") => {
+  const handleMediaUpload = async (
+    file: File,
+    target: "video" | "audio" | "mindmap" | "summary_pdf" | "summary_image" | "content_pdf"
+  ) => {
     setUploadingMedia(target);
     try {
       const formData = new FormData();
@@ -152,8 +164,14 @@ export function useLessonEditor({
         setVideoUrl(data.url);
       } else if (target === "audio") {
         setAudioUrl(data.url);
+      } else if (target === "content_pdf") {
+        setContentPdfUrl(data.url);
       } else if (target === "mindmap") {
         setMindMapImages((prev) => [...prev, data.url]);
+      } else if (target === "summary_pdf") {
+        setSummaryPdfUrl(data.url);
+      } else if (target === "summary_image") {
+        setSummaryImages((prev) => [...prev, data.url]);
       }
       setStatusMessage({ type: "success", text: "تم رفع الملف بنجاح وتعيينه" });
       setTimeout(() => setStatusMessage(null), 3000);
@@ -177,6 +195,29 @@ export function useLessonEditor({
 
   const handleMoveImage = (index: number, direction: "up" | "down") => {
     setMindMapImages((prev) => {
+      const copy = [...prev];
+      const targetIndex = direction === "up" ? index - 1 : index + 1;
+      if (targetIndex < 0 || targetIndex >= copy.length) return prev;
+      const temp = copy[index];
+      copy[index] = copy[targetIndex];
+      copy[targetIndex] = temp;
+      return copy;
+    });
+  };
+
+  const handleAddSummaryImage = () => {
+    const trimmed = newSummaryImageUrl.trim();
+    if (!trimmed) return;
+    setSummaryImages((prev) => [...prev, trimmed]);
+    setNewSummaryImageUrl("");
+  };
+
+  const handleRemoveSummaryImage = (index: number) => {
+    setSummaryImages((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleMoveSummaryImage = (index: number, direction: "up" | "down") => {
+    setSummaryImages((prev) => {
       const copy = [...prev];
       const targetIndex = direction === "up" ? index - 1 : index + 1;
       if (targetIndex < 0 || targetIndex >= copy.length) return prev;
@@ -252,6 +293,7 @@ export function useLessonEditor({
         body: bodyText,
         videoUrl: videoUrl.trim() || null,
         audioUrl: audioUrl.trim() || null,
+        pdfUrl: contentPdfUrl.trim() || null,
         objectives,
       },
       mindMap: {
@@ -260,6 +302,8 @@ export function useLessonEditor({
         images: mindMapImages,
       },
       summary: {
+        pdfUrl: summaryPdfUrl.trim() || null,
+        images: summaryImages,
         keyConcepts,
         examTips,
         commonMistakes,
@@ -382,6 +426,17 @@ export function useLessonEditor({
     setNewMistake,
     newCorrection,
     setNewCorrection,
+    contentPdfUrl,
+    setContentPdfUrl,
+    summaryPdfUrl,
+    setSummaryPdfUrl,
+    summaryImages,
+    setSummaryImages,
+    newSummaryImageUrl,
+    setNewSummaryImageUrl,
+    handleAddSummaryImage,
+    handleRemoveSummaryImage,
+    handleMoveSummaryImage,
     handleMediaUpload,
     handleAddImage,
     handleRemoveImage,

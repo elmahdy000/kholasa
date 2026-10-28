@@ -19,6 +19,7 @@ export interface LessonData {
     body: string;
     videoUrl?: string | null;
     audioUrl?: string | null;
+    pdfUrl?: string | null;
     objectives: string[];
   } | null;
   mindMap?: {
@@ -31,6 +32,8 @@ export interface LessonData {
   } | null;
   summary?: {
     id?: string;
+    pdfUrl?: string | null;
+    images?: string[];
     keyConcepts?: unknown;
     definitions?: unknown;
     formulas?: unknown;

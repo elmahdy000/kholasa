@@ -39,9 +39,12 @@ export class OfflineService {
       body: lesson.content?.body || "",
       videoUrl: lesson.content?.videoUrl || null,
       audioUrl: lesson.content?.audioUrl || null,
+      pdfUrl: lesson.content?.pdfUrl || null,
       objectives: lesson.content?.objectives || [],
       summary: lesson.summary
         ? {
+            pdfUrl: lesson.summary.pdfUrl,
+            images: lesson.summary.images,
             keyConcepts: lesson.summary.keyConcepts,
             definitions: lesson.summary.definitions,
             formulas: lesson.summary.formulas,

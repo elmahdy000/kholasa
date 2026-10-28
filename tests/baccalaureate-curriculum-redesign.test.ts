@@ -68,13 +68,37 @@ describe("EL KHOLASA — Complete Educational Curriculum Management Redesign Tes
     const g11 = await prisma.grade.findFirst({ where: { code: "bacc_g11" } });
     expect(g11).toBeDefined();
 
-    // Fetch subjects for Arabic vs Languages in G11
-    const arSubjects = await prisma.subject.findMany({
+    // Ensure at least one Arabic and one Languages subject exist for isolation testing
+    let tempAr = null;
+    let tempEn = null;
+
+    let arSubjects = await prisma.subject.findMany({
       where: { gradeId: g11!.id, schoolCategory: "ARABIC" },
     });
-    const enSubjects = await prisma.subject.findMany({
+    if (arSubjects.length === 0) {
+      tempAr = await CurriculumService.createSubject({
+        name: "مادة عربية تجريبية للعزل",
+        code: `iso_test_ar_${Date.now()}`,
+        systemId: g11!.systemId,
+        gradeId: g11!.id,
+        schoolCategory: "ARABIC",
+      });
+      arSubjects = [tempAr as any];
+    }
+
+    let enSubjects = await prisma.subject.findMany({
       where: { gradeId: g11!.id, schoolCategory: "LANGUAGES" },
     });
+    if (enSubjects.length === 0) {
+      tempEn = await CurriculumService.createSubject({
+        name: "Languages Test Subject for Isolation",
+        code: `iso_test_en_${Date.now()}`,
+        systemId: g11!.systemId,
+        gradeId: g11!.id,
+        schoolCategory: "LANGUAGES",
+      });
+      enSubjects = [tempEn as any];
+    }
 
     expect(arSubjects.length).toBeGreaterThan(0);
     expect(enSubjects.length).toBeGreaterThan(0);
@@ -105,6 +129,10 @@ describe("EL KHOLASA — Complete Educational Curriculum Management Redesign Tes
     for (const arSub of arSubjects) {
       expect(isSubjectInScope(enScope, arSub)).toBe(false);
     }
+
+    // Clean up temporary subjects if created
+    if (tempAr) await CurriculumService.deleteSubject(tempAr.id);
+    if (tempEn) await CurriculumService.deleteSubject(tempEn.id);
   });
 
   it("Requirement 4: Common vs Track-Specific Subjects and Elective Groups", async () => {
