@@ -47,8 +47,8 @@ export function StudentHeader({
           </div>
         </div>
 
-        {/* Desktop Nav Links */}
-        <nav className="hidden md:flex items-center gap-1 bg-[#F7F8FA] dark:bg-[#0D1B2E] p-1 rounded-xl border border-[#E8E9ED] dark:border-[#22364F]">
+        {/* Desktop Nav Links (hidden on mobile and tablet, displayed on lg+) */}
+        <nav className="hidden lg:flex items-center gap-1 bg-[#F7F8FA] dark:bg-[#0D1B2E] p-1 rounded-xl border border-[#E8E9ED] dark:border-[#22364F]">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive =
@@ -60,14 +60,14 @@ export function StudentHeader({
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "flex items-center gap-2 px-4 py-2 rounded-lg text-[13px] font-bold transition-all",
+                  "flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-[13px] font-bold transition-all whitespace-nowrap shrink-0",
                   isActive
                     ? "bg-white dark:bg-[#10233A] text-[#800020] dark:text-[#F5F7FB] border border-[#E8E9ED] dark:border-[#2D4563] shadow-xs"
                     : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#12263F] dark:hover:text-[#F5F7FB]"
                 )}
               >
                 <Icon
-                  className={cn("w-3.5 h-3.5", isActive ? "text-[#800020] dark:text-[#A30D36]" : "")}
+                  className={cn("w-3.5 h-3.5 shrink-0", isActive ? "text-[#800020] dark:text-[#A30D36]" : "")}
                   weight={isActive ? "fill" : "bold"}
                 />
                 <span>{item.label}</span>

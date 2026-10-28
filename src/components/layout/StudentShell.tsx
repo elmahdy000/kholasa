@@ -36,7 +36,7 @@ export function StudentShell({ children, user }: StudentShellProps) {
     return (
       <div className="min-h-screen flex flex-col bg-white dark:bg-[#081426] text-[#12263F] dark:text-[#F5F7FB]">
         <SiteHeader />
-        <main className="flex-1 w-full max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 pb-28 md:pb-12">
+        <main className="flex-1 w-full max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 pb-28 lg:pb-12">
           {children}
         </main>
         <SiteFooter />
@@ -56,7 +56,7 @@ export function StudentShell({ children, user }: StudentShellProps) {
       />
 
       {/* Main Content Area */}
-      <main className="flex-1 max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 pb-24 sm:pb-28 md:pb-12 w-full">
+      <main className="flex-1 max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 pb-28 sm:pb-32 lg:pb-12 w-full">
         {children}
       </main>
 

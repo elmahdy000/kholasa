@@ -146,6 +146,8 @@ export function BrandLogo({
         />
       </div>
     );
+  } else {
+    // variant === "combined" (default)
     const titleColors =
       surfaceTheme === "dark"
         ? "text-white group-hover:text-[#FB7185]"
@@ -160,7 +162,6 @@ export function BrandLogo({
         ? "text-[#64748B]"
         : "text-[#64748B] dark:text-[#94A3B8]";
 
-    // variant === "combined"
     content = (
       <div className={cn("flex items-center text-right select-none", cfg.gapClass)}>
         {emblemElement}
