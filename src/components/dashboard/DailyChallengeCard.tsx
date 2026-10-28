@@ -115,7 +115,7 @@ export function DailyChallengeCard({
             </div>
             <div>
               <span className="text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC] block">
-                تحدي اليوم السريع
+                سؤال النهاردة السريع
               </span>
               <span className="text-[13px] text-[#64748B] dark:text-[#94A3B8] font-medium block">
                 <BidiStatement as="span" text={question.subject.name} /> {question.unit ? `• ${question.unit.title}` : ""}
@@ -127,12 +127,12 @@ export function DailyChallengeCard({
             {isTodayAlreadyCompleted ? (
               <span className="text-[12px] font-bold text-[#059669] dark:text-[#34D399] bg-[#059669]/10 px-3 py-1 rounded-md border border-[#059669]/30 flex items-center gap-1">
                 <CheckCircle className="w-3.5 h-3.5" weight="fill" />
-                <span>حضور اليوم مسجل</span>
+                <span>حضور النهاردة اتسجل</span>
               </span>
             ) : (
               <span className="text-[13px] font-bold text-[#D97706] dark:text-[#FBBF24] bg-[#D97706]/10 dark:bg-[#1E293B] px-3 py-1 rounded-md border border-[#D97706]/20 dark:border-[#FBBF24]/40 flex items-center gap-1">
-                <Fire className="w-3.5 h-3.5 text-[#D97706]" weight="fill" />
-                <span>سؤال اليوم</span>
+                <Lightning className="w-3.5 h-3.5 text-[#D97706]" weight="fill" />
+                <span>سؤال النهاردة</span>
               </span>
             )}
           </div>
@@ -268,9 +268,9 @@ export function DailyChallengeCard({
             {streakEarned !== null && (
               <div className="p-3.5 rounded-xl bg-[#D97706]/10 dark:bg-[#1E293B] border border-[#D97706]/30 flex items-center justify-between gap-3 text-right">
                 <div className="flex items-center gap-2">
-                  <Fire className="w-5 h-5 text-[#D97706] dark:text-[#FBBF24] shrink-0" weight="fill" />
+                  <Sparkle className="w-5 h-5 text-[#D97706] dark:text-[#FBBF24] shrink-0" weight="fill" />
                   <span className="text-[13px] font-bold text-[#D97706] dark:text-[#FBBF24]">
-                    شعلتك متوهجة الآن! أصبحت {streakEarned} أيام متتالية 🔥
+                    عاش! كدة بقالك {streakEarned} أيام ورا بعض مستمر 🎉
                   </span>
                 </div>
                 <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-[#D97706] text-white shrink-0">
@@ -282,13 +282,13 @@ export function DailyChallengeCard({
             {/* Lesson link or Mistake link */}
             <div className="flex flex-wrap items-center justify-between gap-2 pt-1 text-[13px]">
               <span className="text-[13px] text-[#64748B] dark:text-[#94A3B8]">
-                {isAnswered ? "تم تسجيل إجابتك وتثبيت حضورك اليومي بنجاح." : ""}
+                {isAnswered ? "إجابتك اتسجلت، وحضور النهاردة في أمان." : ""}
               </span>
               <Link
                 href="/exams/builder"
                 className="text-[13px] font-bold text-[#800020] dark:text-[#FB7185] hover:underline flex items-center gap-1"
               >
-                <span>تدرب على مزيد من الأسئلة في بنك الاختبارات</span>
+                <span>كمّل حل أسئلة في بنك الاختبارات</span>
                 <ArrowLeft className="w-3.5 h-3.5" weight="bold" />
               </Link>
             </div>

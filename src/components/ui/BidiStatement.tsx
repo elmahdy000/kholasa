@@ -19,7 +19,7 @@ interface BidiStatementProps {
 // 7. Assignment expressions (e.g. x = 13 % 4; or res = a + b;)
 // 8. Increment/decrement expressions (e.g. x++; or --count;)
 const CODE_TOKEN_REGEX =
-  /(`[^`]+`|\b(?:O|Θ|Ω)\s*\([^)]+\)|\bC\+\+|\bC#|\b\.NET|\bF#|\bHTML5|\bCSS3|\b(?:const\s+)?(?:int|float|double|char|bool|string|void|auto|long|short|unsigned)\s+[a-zA-Z0-9_\s*+=%&|<>!/().-]+;?|\b(?:cout|cin)\s*(?:<<|>>)\s*[^;]+;?|\b(?:printf|scanf|return|sizeof)\s*[^;]+;?|\b(?:if|for|while|switch)\s*\([^)]+\)|\b[a-zA-Z_][a-zA-Z0-9_]*\s*=\s*[^;]+;|\b[a-zA-Z_][a-zA-Z0-9_]*(?:\+\+|--);?)/g;
+  /(`[^`]+`|\b(?:O|Θ|Ω)\s*\([^)]+\)|\bC\+\+|\bC#|\b\.NET|\bF#|\bHTML5|\bCSS3|\([A-Za-z0-9_\s&+/.:,-]+\)|\b[A-Za-z][A-Za-z0-9_&+/.-]*\b|\b(?:const\s+)?(?:int|float|double|char|bool|string|void|auto|long|short|unsigned)\s+[a-zA-Z0-9_\s*+=%&|<>!/().-]+;?|\b(?:cout|cin)\s*(?:<<|>>)\s*[^;]+;?|\b(?:printf|scanf|return|sizeof)\s*[^;]+;?|\b(?:if|for|while|switch)\s*\([^)]+\)|\b[a-zA-Z_][a-zA-Z0-9_]*\s*=\s*[^;]+;|\b[a-zA-Z_][a-zA-Z0-9_]*(?:\+\+|--);?)/g;
 
 export function BidiStatement({
   text,
@@ -137,7 +137,35 @@ export function BidiStatement({
           );
         }
 
-        // 3. Code statement or expression detected
+        // 4. Parenthesized English / Latin phrase (e.g. (CIA Triad & Threats), (RAM), (API))
+        if (/^\([A-Za-z0-9_\s&+/.:,-]+\)$/.test(token)) {
+          return (
+            <bdi
+              key={index}
+              dir="ltr"
+              className="inline-block whitespace-nowrap mx-1 font-sans"
+              style={{ unicodeBidi: "isolate" }}
+            >
+              {token}
+            </bdi>
+          );
+        }
+
+        // 5. Single Latin / English term or acronym (e.g. DDoS, HTTP, CPU)
+        if (/^[A-Za-z][A-Za-z0-9_&+/.-]*$/.test(token)) {
+          return (
+            <bdi
+              key={index}
+              dir="ltr"
+              className="inline-block font-sans mx-0.5"
+              style={{ unicodeBidi: "isolate" }}
+            >
+              {token}
+            </bdi>
+          );
+        }
+
+        // 6. Code statement or expression detected
         const isMatchedCode =
           /^(?:const\s+)?(?:int|float|double|char|bool|string|void|auto|long|short|unsigned)\s+[a-zA-Z0-9_\s*+=%&|<>!/().-]+;?$/.test(
             token

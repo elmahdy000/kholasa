@@ -33,8 +33,8 @@ export class NotificationService {
       notifications.push({
         id: `daily_${startOfToday.toISOString().slice(0, 10)}`,
         type: "DAILY_EXAM",
-        title: "الامتحان اليومي بانتظارك!",
-        message: "ابدأ يومك بتحدي سريع لقياس جاهزيتك وتثبيت شعلة التزامك اليومي.",
+        title: "سؤال النهاردة مستنيك!",
+        message: "ابدأ يومك بسؤال سريع وسجّل حضورك عشان تحافظ على استمرارك.",
         link: "/dashboard",
         createdAt: new Date(),
         isUrgent: true,

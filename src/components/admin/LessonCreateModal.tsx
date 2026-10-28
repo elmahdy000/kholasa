@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react";
 import { X, Plus, BookOpen, Video, Headphones, AlertCircle, Upload, Loader2 } from "lucide-react";
+import { AudioImagePairModal } from "./AudioImagePairModal";
 
 interface LessonCreateModalProps {
   isOpen: boolean;
@@ -24,6 +25,7 @@ export function LessonCreateModal({
   const [durationMinutes, setDurationMinutes] = useState(15);
   const [videoUrl, setVideoUrl] = useState("");
   const [audioUrl, setAudioUrl] = useState("");
+  const [showPairUploadModal, setShowPairUploadModal] = useState(false);
   const [isPublished, setIsPublished] = useState(true);
 
   const [uploadingMedia, setUploadingMedia] = useState<"video" | "audio" | null>(null);
@@ -233,7 +235,16 @@ export function LessonCreateModal({
                 <Headphones className="w-3.5 h-3.5 text-[#059669]" />
                 <span>بودكاست الدرس الصوتي (audioUrl)</span>
               </label>
-              <div>
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => setShowPairUploadModal(true)}
+                  className="text-[13px] font-bold text-[#800020] hover:underline flex items-center gap-1 cursor-pointer"
+                >
+                  <Upload className="w-3 h-3" />
+                  <span>رفع صوت مع صورة</span>
+                </button>
+
                 <input
                   type="file"
                   ref={audioInputRef}
@@ -254,7 +265,7 @@ export function LessonCreateModal({
                   ) : (
                     <Upload className="w-3 h-3" />
                   )}
-                  <span>{uploadingMedia === "audio" ? "جاري الرفع..." : "رفع صوتي"}</span>
+                  <span>{uploadingMedia === "audio" ? "جاري الرفع..." : "صوت فقط"}</span>
                 </button>
               </div>
             </div>
@@ -288,6 +299,16 @@ export function LessonCreateModal({
           </div>
         </form>
       </div>
+
+      <AudioImagePairModal
+        isOpen={showPairUploadModal}
+        onClose={() => setShowPairUploadModal(false)}
+        title="رفع تسجيل صوتي مع صورة للدرس الجديد"
+        description="اختر صورة الشرح أو الغلاف أولاً، ثم اختر الملف الصوتي لربطهما معاً بالدرس."
+        onSuccess={({ audioUrl: newAudioUrl }) => {
+          setAudioUrl(newAudioUrl);
+        }}
+      />
     </div>
   );
 }

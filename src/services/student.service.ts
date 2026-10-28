@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 import { badRequest, conflict, notFound } from "@/lib/http";
+import { getCurriculumScope, subjectScopeWhere, type SchoolCategory } from "@/lib/curriculum";
 
 export class StudentService {
   /**
@@ -17,10 +18,13 @@ export class StudentService {
 
     if (!user) throw notFound("المستخدم غير موجود");
 
-    // Fetch student subjects based on grade
+    const scope = getCurriculumScope(user);
+
+    // Fetch student subjects based on grade and curriculum scope (Arabic/Language schools & Track)
     const subjects = user.gradeId
       ? await prisma.subject.findMany({
-          where: { gradeId: user.gradeId },
+          where: { isPublished: true, ...subjectScopeWhere(scope) },
+          orderBy: { order: "asc" },
           include: {
             _count: { select: { units: true } },
           },
@@ -88,6 +92,8 @@ export class StudentService {
         email: user.email,
         phone: user.phone,
         role: user.role,
+        schoolCategory: user.schoolCategory,
+        trackId: user.trackId,
         grade: user.grade,
         system: user.system,
       },
@@ -289,7 +295,7 @@ export class StudentService {
       phone?: string | null;
       systemId?: string | null;
       gradeId?: string | null;
-      schoolCategory?: "ARABIC" | "LANGUAGES";
+      schoolCategory?: SchoolCategory;
       trackId?: string | null;
     }
   ) {

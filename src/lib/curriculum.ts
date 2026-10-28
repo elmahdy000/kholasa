@@ -1,4 +1,6 @@
-import type { Prisma, SchoolCategory } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
+
+export type SchoolCategory = "ARABIC" | "LANGUAGES";
 
 /**
  * Curriculum scoping for EL KHOLASA.

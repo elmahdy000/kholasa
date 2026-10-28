@@ -34,6 +34,42 @@ export async function POST(req: Request) {
     }
 
     const formData = await req.formData();
+    const audioFile = formData.get("audio");
+    const imageFile = formData.get("image");
+
+    // Case 1: Paired Audio + Image Upload (Select image, select audio, upload both together)
+    if (audioFile instanceof File && imageFile instanceof File) {
+      if (audioFile.size > MAX_BYTES || imageFile.size > MAX_BYTES) {
+        throw badRequest("حجم أحد الملفات يتجاوز الحد الأقصى المسموح به (50 ميجابايت)");
+      }
+
+      // Save Image
+      const imgBuffer = Buffer.from(await imageFile.arrayBuffer());
+      const uploadedImage = await MediaService.saveUploadedBuffer(imgBuffer, imageFile.name, imageFile.type);
+
+      // Save Audio
+      const audioBuffer = Buffer.from(await audioFile.arrayBuffer());
+      const uploadedAudio = await MediaService.saveUploadedBuffer(audioBuffer, audioFile.name, audioFile.type);
+
+      await AnalyticsService.logAuditAction(user.id, "UPLOAD", "media", uploadedImage.filename, {
+        size: uploadedImage.size,
+        type: uploadedImage.type,
+      });
+      await AnalyticsService.logAuditAction(user.id, "UPLOAD", "media", uploadedAudio.filename, {
+        size: uploadedAudio.size,
+        type: uploadedAudio.type,
+      });
+
+      return NextResponse.json({
+        success: true,
+        image: uploadedImage,
+        audio: uploadedAudio,
+        imageUrl: uploadedImage.url,
+        audioUrl: uploadedAudio.url,
+      });
+    }
+
+    // Case 2: Single File Upload (standard)
     const file = formData.get("file");
     if (!(file instanceof File)) throw badRequest("لم يتم تحديد أي ملف");
     if (file.size > MAX_BYTES) {

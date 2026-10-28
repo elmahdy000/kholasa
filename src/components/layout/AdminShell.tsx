@@ -1,51 +1,16 @@
 "use client";
 
-import { ReactNode, useState, useEffect } from "react";
-import Link from "next/link";
+import { useState, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { BrandLogo } from "@/components/ui/BrandLogo";
-import {
-  LayoutDashboard,
-  BookOpen,
-  Layers,
-  HelpCircle,
-  Upload,
-  Award,
-  CheckCircle2,
-  Users,
-  HardDrive,
-  Activity,
-  Compass,
-  LogOut,
-  Search,
-  ExternalLink,
-  Command,
-  X,
-  ChevronLeft,
-  ChevronRight,
-  Sparkles,
-  ArrowUpRight,
-  Shield,
-  FileText,
-  SlidersHorizontal,
-  Menu,
-  PanelRightClose,
-  PanelRightOpen,
-  Dot,
-  Check,
-  Plus,
-} from "lucide-react";
-import { ThemeToggle } from "@/components/theme/ThemeToggle";
+import { LayoutDashboard } from "lucide-react";
+import { rawNavigationGroups } from "./admin/navigation";
+import { AdminMobileHeader } from "./admin/AdminMobileHeader";
+import { AdminSidebar } from "./admin/AdminSidebar";
+import { AdminTopbar } from "./admin/AdminTopbar";
+import { AdminCommandPalette } from "./admin/AdminCommandPalette";
+import type { AdminShellProps } from "./admin/types";
 
-interface AdminShellProps {
-  children: ReactNode;
-  user: {
-    id?: string;
-    name?: string | null;
-    email?: string | null;
-    role: string;
-  };
-}
+export type { AdminShellProps, AdminUser } from "./admin/types";
 
 export function AdminShell({ children, user }: AdminShellProps) {
   const pathname = usePathname();
@@ -55,107 +20,6 @@ export function AdminShell({ children, user }: AdminShellProps) {
   const [commandQuery, setCommandQuery] = useState("");
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
-
-  // Categorized Navigation Groups for a Standout Sidebar
-  const rawNavigationGroups = [
-    {
-      title: "الرئيسية والتحليلات",
-      items: [
-        {
-          label: "لوحة التحكم الرئيسية",
-          href: "/admin",
-          icon: LayoutDashboard,
-          exact: true,
-          badge: null,
-          allowedRoles: ["TEACHER", "EDITOR", "ADMIN", "SUPER_ADMIN"],
-        },
-        {
-          label: "التحليلات وسجل التدقيق",
-          href: "/admin/analytics",
-          icon: Activity,
-          badge: "مباشر",
-          badgeColor: "bg-[#059669]/10 text-[#059669] border-[#059669]/20",
-          allowedRoles: ["TEACHER", "ADMIN", "SUPER_ADMIN"],
-        },
-      ],
-    },
-    {
-      title: "الهيكل والمحتوى الأكاديمي",
-      items: [
-        {
-          label: "المناهج والدروس",
-          href: "/admin/curriculum",
-          icon: BookOpen,
-          badge: null,
-          allowedRoles: ["TEACHER", "EDITOR", "ADMIN", "SUPER_ADMIN"],
-        },
-        {
-          label: "الأنظمة والصفوف الدراسية",
-          href: "/admin/structure",
-          icon: Layers,
-          badge: "جديد",
-          badgeColor: "bg-[#800020]/10 text-[#800020] border-[#800020]/20",
-          allowedRoles: ["ADMIN", "SUPER_ADMIN"],
-        },
-        {
-          label: "مركز الوسائط والملفات",
-          href: "/admin/media",
-          icon: HardDrive,
-          badge: "Uploads",
-          badgeColor: "bg-[#64748B] text-[#64748B] border-[#94A3B8]/20",
-          allowedRoles: ["TEACHER", "EDITOR", "ADMIN", "SUPER_ADMIN"],
-        },
-      ],
-    },
-    {
-      title: "الامتحانات والتقييمات",
-      items: [
-        {
-          label: "بنك الأسئلة والمفاهيم",
-          href: "/admin/questions",
-          icon: HelpCircle,
-          exact: true,
-          badge: null,
-          allowedRoles: ["TEACHER", "EDITOR", "ADMIN", "SUPER_ADMIN"],
-        },
-        {
-          label: "استيراد الأسئلة المجمع",
-          href: "/admin/questions/import",
-          icon: Upload,
-          badge: "CSV",
-          badgeColor: "bg-[#D97706]/10 text-[#D97706] border-[#D97706]/20",
-          allowedRoles: ["EDITOR", "ADMIN", "SUPER_ADMIN"],
-        },
-        {
-          label: "إدارة الامتحانات الرسمية",
-          href: "/admin/exams",
-          icon: Award,
-          badge: null,
-          allowedRoles: ["TEACHER", "EDITOR", "ADMIN", "SUPER_ADMIN"],
-        },
-        {
-          label: "سجل المحاولات والتصحيح",
-          href: "/admin/attempts",
-          icon: CheckCircle2,
-          badge: "تصحيح",
-          badgeColor: "bg-[#800020]/10 text-[#800020] border-[#800020]/20",
-          allowedRoles: ["TEACHER", "ADMIN", "SUPER_ADMIN"],
-        },
-      ],
-    },
-    {
-      title: "المستخدمون والصلاحيات",
-      items: [
-        {
-          label: "الطلاب والمستخدمون",
-          href: "/admin/users",
-          icon: Users,
-          badge: null,
-          allowedRoles: ["ADMIN", "SUPER_ADMIN"],
-        },
-      ],
-    },
-  ];
 
   // Filter groups according to user role
   const navigationGroups = rawNavigationGroups
@@ -167,21 +31,6 @@ export function AdminShell({ children, user }: AdminShellProps) {
 
   // Flat items list for Command Palette search
   const allNavItems = navigationGroups.flatMap((g) => g.items);
-
-  const getRoleArabicLabel = (role: string) => {
-    switch (role) {
-      case "SUPER_ADMIN":
-        return "مشرف عام أعلى";
-      case "ADMIN":
-        return "مسؤول المنصة";
-      case "EDITOR":
-        return "محرر محتوى (Subadmin)";
-      case "TEACHER":
-        return "معلم ومصحح (Subadmin)";
-      default:
-        return role;
-    }
-  };
 
   // Active page title calculation for breadcrumbs
   const getActivePageDetails = () => {
@@ -199,7 +48,6 @@ export function AdminShell({ children, user }: AdminShellProps) {
   };
 
   const activePage = getActivePageDetails();
-  const ActiveIcon = activePage.icon;
 
   // Keyboard shortcut listener for Cmd+K / Ctrl+K
   useEffect(() => {
@@ -233,447 +81,51 @@ export function AdminShell({ children, user }: AdminShellProps) {
       item.href.toLowerCase().includes(commandQuery.toLowerCase())
   );
 
-  const quickActions = [
-    { label: "إنشاء امتحان رسمي جديد", href: "/admin/exams?action=create", icon: Award },
-    { label: "إضافة سؤال لبنك الأسئلة", href: "/admin/questions?action=create", icon: HelpCircle },
-    { label: "رفع ملفات وسائط وبودكاست", href: "/admin/media", icon: HardDrive },
-    { label: "استيراد بنك أسئلة CSV/JSON", href: "/admin/questions/import", icon: Upload },
-    { label: "إضافة نظام تعليمي أو صف", href: "/admin/structure", icon: Layers },
-    { label: "معاينة واجهة الطالب الحية", href: "/dashboard", icon: Compass, external: true },
-  ].filter((a) => a.label.includes(commandQuery));
-
   return (
     <div
       className="min-h-screen bg-[#F8FAFC] dark:bg-[#0F172A] text-[#0F172A] dark:text-[#F8FAFC] font-sans text-right antialiased selection:bg-[#334155] selection:text-white flex flex-col md:flex-row"
       dir="rtl"
     >
-      {/* =========================================================================
-          1. MOBILE TOP HEADER
-         ========================================================================= */}
-      <header className="md:hidden flex items-center justify-between px-4 h-14 bg-white dark:bg-[#0F172A] border-b border-[#E2E8F0] dark:border-[#334155] sticky top-0 z-40">
-        <div className="flex items-center gap-3">
-          <BrandLogo variant="icon" size="xs" />
-          <div>
-            <span className="font-bold text-[13px] text-[#0F172A] dark:text-[#F8FAFC] block leading-tight">
-              الخلاصة
-            </span>
-            <span className="text-[11px] font-mono text-[#64748B] leading-none">
-              لوحة الإدارة
-            </span>
-          </div>
-        </div>
+      {/* 1. Mobile Top Header */}
+      <AdminMobileHeader
+        mobileMenuOpen={mobileMenuOpen}
+        setMobileMenuOpen={setMobileMenuOpen}
+        setIsCommandOpen={setIsCommandOpen}
+      />
 
-        <div className="flex items-center gap-2">
-          <ThemeToggle className="h-11 w-11" />
-          <button
-            onClick={() => setIsCommandOpen(true)}
-            className="p-2 rounded-lg text-[#64748B] hover:text-[#0F172A] dark:hover:text-white"
-          >
-            <Search className="w-4 h-4" />
-          </button>
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2 rounded-lg bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[#0F172A] dark:text-[#F8FAFC]"
-            aria-label="القائمة"
-          >
-            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
-        </div>
-      </header>
+      {/* 2. Standout Vercel-Style Admin Sidebar */}
+      <AdminSidebar
+        user={user}
+        navigationGroups={navigationGroups}
+        isCollapsed={isCollapsed}
+        mobileMenuOpen={mobileMenuOpen}
+        isLoggingOut={isLoggingOut}
+        setIsCollapsed={setIsCollapsed}
+        setMobileMenuOpen={setMobileMenuOpen}
+        setIsCommandOpen={setIsCommandOpen}
+        onLogout={handleLogout}
+      />
 
-      {/* Mobile Drawer Backdrop */}
-      {mobileMenuOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-black/60  md:hidden"
-          onClick={() => setMobileMenuOpen(false)}
-        />
-      )}
-
-      {/* =========================================================================
-          2. STANDOUT VERCEL-STYLE ADMIN SIDEBAR
-         ========================================================================= */}
-      <aside
-        className={`fixed md:sticky top-0 right-0 h-screen shrink-0 z-50 transition-all duration-200 ease-in-out border-l border-[#E2E8F0] dark:border-[#334155]/80 bg-white dark:bg-[#0F172A] flex flex-col justify-between overflow-y-auto no-scrollbar ${
-          mobileMenuOpen ? "translate-x-0 w-72" : "translate-x-full md:translate-x-0"
-        } ${isCollapsed ? "md:w-20" : "md:w-72"}`}
-      >
-        <div className="p-4 space-y-5">
-          {/* Workspace / Brand Header */}
-          <div className="flex items-center justify-between gap-2 pb-3 border-b border-[#E2E8F0] dark:border-[#1E293B]">
-            <Link
-              href="/admin"
-              className="flex items-center gap-3 group min-w-0"
-              title="لوحة الإدارة - منصة الخلاصة"
-            >
-              {/* Brand Emblem Icon */}
-              <BrandLogo variant="icon" size="sm" className="shrink-0" />
-              {!isCollapsed && (
-                <div className="min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="font-bold text-[13px] text-[#0F172A] dark:text-[#F8FAFC] tracking-tight block truncate">
-                      منصة الخلاصة
-                    </span>
-                    <span className="px-2 py-0.2 rounded text-[13px] font-mono bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[#64748B]">
-                      PRO
-                    </span>
-                  </div>
-                  <span className="text-[13px] font-mono text-[#059669] flex items-center gap-1 mt-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#059669] animate-pulse" />
-                    <span>النظام متصل</span>
-                  </span>
-                </div>
-              )}
-            </Link>
-
-            {/* Collapse Toggle Button (Desktop only) */}
-            <button
-              onClick={() => setIsCollapsed(!isCollapsed)}
-              className="hidden md:flex p-2 rounded-md text-[#64748B] hover:text-[#0F172A] dark:hover:text-[#F8FAFC] hover:bg-[#F8FAFC] dark:hover:bg-[#1E293B] transition-colors cursor-pointer"
-              title={isCollapsed ? "توسيع القائمة" : "تصغير القائمة"}
-            >
-              {isCollapsed ? (
-                <PanelRightOpen className="w-4 h-4" />
-              ) : (
-                <PanelRightClose className="w-4 h-4" />
-              )}
-            </button>
-
-            {/* Close Mobile Menu Button */}
-            <button
-              onClick={() => setMobileMenuOpen(false)}
-              className="md:hidden p-2 rounded-md text-[#64748B] hover:text-[#64748B]"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-
-          {/* Quick Search / Command Button in Sidebar */}
-          {!isCollapsed ? (
-            <button
-              onClick={() => setIsCommandOpen(true)}
-              className="w-full h-11 px-3 rounded-lg bg-[#F8FAFC]/80 hover:bg-[#F8FAFC] dark:bg-[#1E293B]/60 dark:hover:bg-[#1E293B] border border-[#E2E8F0]/80 dark:border-[#334155] text-[#64748B] dark:text-[#94A3B8] text-[13px] flex items-center justify-between transition-colors cursor-pointer group"
-            >
-              <div className="flex items-center gap-2">
-                <Search className="w-3.5 h-3.5 text-[#64748B] group-hover:text-[#0F172A] dark:group-hover:text-[#F8FAFC]" />
-                <span>بحث سريع أو أمر...</span>
-              </div>
-              <kbd className="px-2 py-1 rounded bg-[#E2E8F0] dark:bg-[#334155] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-mono text-[#64748B] dark:text-[#94A3B8]">
-                ⌘K
-              </kbd>
-            </button>
-          ) : (
-            <button
-              onClick={() => setIsCommandOpen(true)}
-              className="w-full h-11 flex items-center justify-center rounded-lg bg-[#F8FAFC] dark:bg-[#1E293B] text-[#64748B] hover:text-[#0F172A] dark:hover:text-[#F8FAFC] transition-colors"
-              title="بحث سريع (⌘K)"
-            >
-              <Search className="w-4 h-4" />
-            </button>
-          )}
-
-          {/* Navigation Groups */}
-          <nav className="space-y-5">
-            {navigationGroups.map((group, gIdx) => (
-              <div key={gIdx} className="space-y-1">
-                {!isCollapsed && (
-                  <span className="px-3 text-[13px] font-mono uppercase tracking-wider text-[#64748B] dark:text-[#94A3B8] block pb-1">
-                    {group.title}
-                  </span>
-                )}
-                <div className="space-y-1">
-                  {group.items.map((item) => {
-                    const Icon = item.icon;
-                    const isActive = item.exact
-                      ? pathname === item.href
-                      : pathname === item.href ||
-                        (item.href !== "/admin" &&
-                          pathname.startsWith(item.href) &&
-                          (item.href !== "/admin/questions" ||
-                            pathname === "/admin/questions"));
-
-                    return (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        onClick={() => setMobileMenuOpen(false)}
-                        title={isCollapsed ? item.label : undefined}
-                        className={`group relative w-full h-11 px-3 rounded-lg text-[13px] font-medium flex items-center transition-all ${
-                          isCollapsed ? "justify-center" : "justify-between"
-                        } ${
-                          isActive
-                            ? "bg-[#334155] text-white dark:bg-[#F8FAFC] dark:text-[#1E293B] font-semibold "
-                            : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-[#F8FAFC] hover:bg-[#F8FAFC]/80 dark:hover:bg-[#1E293B]/60"
-                        }`}
-                      >
-                        <div className="flex items-center gap-3 min-w-0">
-                          <Icon
-                            className={`w-4 h-4 shrink-0 transition-colors ${
-                              isActive
-                                ? "text-white dark:text-[#1E293B]"
-                                : "text-[#64748B] group-hover:text-[#0F172A] dark:group-hover:text-[#F8FAFC]"
-                            }`}
-                          />
-                          {!isCollapsed && (
-                            <span className="truncate">{item.label}</span>
-                          )}
-                        </div>
-
-                        {!isCollapsed && item.badge && (
-                          <span
-                            className={`px-2 py-0.2 rounded text-[13px] font-mono border ${
-                              isActive
-                                ? "bg-white/20 text-white dark:bg-black/20 dark:text-black border-transparent"
-                                : item.badgeColor
-                            }`}
-                          >
-                            {item.badge}
-                          </span>
-                        )}
-
-                        {/* Active Accent Dot on Right */}
-                        {isActive && !isCollapsed && !item.badge && (
-                          <span className="w-1.5 h-1.5 rounded-full bg-white dark:bg-[#1E293B]" />
-                        )}
-                      </Link>
-                    );
-                  })}
-                </div>
-              </div>
-            ))}
-          </nav>
-        </div>
-
-        {/* Sidebar Footer & Utilities */}
-        <div className="p-3 border-t border-[#E2E8F0] dark:border-[#334155]/80 bg-[#F8FAFC]/50 dark:bg-[#0F172A]/40 space-y-2">
-          {/* Student Mode Switcher */}
-          {!isCollapsed ? (
-            <Link
-              href="/dashboard"
-              className="w-full h-11 px-3 rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B] text-[#0F172A] dark:text-[#F8FAFC] hover:text-[#0F172A] dark:hover:text-white hover:border-[#800020]/40 dark:hover:border-[#E11D48]/60 text-[13px] font-semibold flex items-center justify-between transition-colors "
-            >
-              <div className="flex items-center gap-2">
-                <Compass className="w-3.5 h-3.5 text-[#800020]" />
-                <span>معاينة تطبيق الطالب</span>
-              </div>
-              <ExternalLink className="w-3 h-3 text-[#64748B]" />
-            </Link>
-          ) : (
-            <Link
-              href="/dashboard"
-              className="w-full h-11 rounded-lg flex items-center justify-center text-[#64748B] hover:text-[#800020] transition-colors"
-              title="معاينة تطبيق الطالب"
-            >
-              <Compass className="w-4 h-4" />
-            </Link>
-          )}
-
-          {/* User Profile Capsule */}
-          <div
-            className={`flex items-center justify-between p-2 rounded-lg border border-[#E2E8F0]/80 dark:border-[#334155]/80 bg-white dark:bg-[#1E293B]/80 ${
-              isCollapsed ? "justify-center" : ""
-            }`}
-          >
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="w-7 h-7 rounded-full bg-[#334155] text-white flex items-center justify-center font-bold text-[13px] shrink-0">
-                {(user.name || "أ").charAt(0)}
-              </div>
-              {!isCollapsed && (
-                <div className="min-w-0 text-right">
-                  <span className="text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC] block truncate leading-tight">
-                    {user.name || "مشرف المنصة"}
-                  </span>
-                  <span className="text-[13px] font-mono text-[#64748B] block truncate leading-none mt-1">
-                    {getRoleArabicLabel(user.role)}
-                  </span>
-                </div>
-              )}
-            </div>
-
-            <div className="flex items-center gap-2">
-              <ThemeToggle className="h-7 w-7" />
-              {!isCollapsed && (
-                <button
-                  onClick={handleLogout}
-                  disabled={isLoggingOut}
-                  title="تسجيل الخروج"
-                  className="p-1 rounded text-[#64748B] hover:text-[#DC2626] hover:bg-[#F8FAFC] dark:hover:bg-[#334155] transition-colors cursor-pointer shrink-0"
-                >
-                  <LogOut className="w-3.5 h-3.5" />
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-      </aside>
-
-      {/* =========================================================================
-          3. MAIN CONTENT WORKSPACE & DESKTOP TOPBAR
-         ========================================================================= */}
+      {/* 3. Main Content Workspace & Desktop Topbar */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Desktop Topbar */}
-        <header className="hidden md:flex items-center justify-between px-8 h-14 bg-white/80 dark:bg-[#0F172A]/80  border-b border-[#E2E8F0] dark:border-[#334155]/80 sticky top-0 z-30">
-          {/* Breadcrumbs with active section icon */}
-          <div className="flex items-center gap-2 text-[13px]">
-            <span className="text-[#64748B] font-medium">لوحة الإدارة</span>
-            <ChevronLeft className="w-3.5 h-3.5 text-[#64748B]" />
-            <span className="text-[#64748B] font-medium">{activePage.group}</span>
-            <ChevronLeft className="w-3.5 h-3.5 text-[#64748B]" />
-            <div className="flex items-center gap-2 font-bold text-[#0F172A] dark:text-[#F8FAFC]">
-              <ActiveIcon className="w-3.5 h-3.5 text-[#0F172A] dark:text-[#F8FAFC]" />
-              <span>{activePage.title}</span>
-            </div>
-          </div>
+        <AdminTopbar
+          activePage={activePage}
+          setIsCommandOpen={setIsCommandOpen}
+        />
 
-          {/* Top Actions: Search trigger, Theme toggle, DB health, Student link */}
-          <div className="flex items-center gap-3">
-            {/* Quick Command Trigger */}
-            <button
-              onClick={() => setIsCommandOpen(true)}
-              className="h-11 px-3 rounded-lg border border-[#E2E8F0] dark:border-[#334155] hover:bg-[#F8FAFC] dark:hover:bg-[#1E293B] text-[13px] text-[#64748B] flex items-center gap-2 transition-colors cursor-pointer"
-            >
-              <Search className="w-3.5 h-3.5 text-[#64748B]" />
-              <span>بحث سريع...</span>
-              <kbd className="px-2 py-1 rounded bg-[#F8FAFC] dark:bg-[#334155] text-[13px] font-mono text-[#64748B]">
-                ⌘K
-              </kbd>
-            </button>
-
-            {/* Professional Theme Switcher Dropdown */}
-            <ThemeToggle variant="dropdown" />
-
-            {/* PostgreSQL Connection Status */}
-            <div className="hidden lg:flex items-center gap-2 px-3 py-1 rounded-md text-[13px] font-mono text-[#64748B] dark:text-[#94A3B8] border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B]/50">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#059669]" />
-              <span>PostgreSQL: متصل</span>
-            </div>
-
-            {/* Switch to Student Interface */}
-            <Link
-              href="/dashboard"
-              className="h-11 px-3 rounded-lg bg-[#334155] hover:bg-[#334155] dark:bg-[#F8FAFC] dark:hover:bg-white text-white dark:text-[#1E293B] text-[13px] font-semibold flex items-center gap-2 transition-all "
-            >
-              <Compass className="w-3.5 h-3.5" />
-              <span>واجهة الطالب</span>
-            </Link>
-          </div>
-        </header>
-
-        {/* Dynamic Page Content */}
         <main className="flex-1 p-4 sm:p-8 max-w-7xl w-full mx-auto space-y-6">
           {children}
         </main>
       </div>
 
-      {/* =========================================================================
-          4. COMMAND PALETTE MODAL (Cmd+K / Ctrl+K)
-         ========================================================================= */}
-      {isCommandOpen && (
-        <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 p-4 bg-black/60  animate-in fade-in duration-150">
-          <div
-            className="w-full max-w-xl rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] shadow-sm overflow-hidden text-right"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Search Input Box */}
-            <div className="flex items-center gap-3 px-4 py-3 border-b border-[#E2E8F0] dark:border-[#334155]">
-              <Search className="w-4 h-4 text-[#64748B] shrink-0" />
-              <input
-                type="text"
-                autoFocus
-                value={commandQuery}
-                onChange={(e) => setCommandQuery(e.target.value)}
-                placeholder="ابحث عن صفحة، خدمة، مادة أو إجراء سريع..."
-                className="w-full bg-transparent text-sm text-[#0F172A] dark:text-[#F8FAFC] placeholder-[#94A3B8] outline-none"
-              />
-              <button
-                onClick={() => setIsCommandOpen(false)}
-                className="p-1 rounded text-[#64748B] hover:text-[#64748B] dark:hover:text-[#F8FAFC]"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            {/* Results Body */}
-            <div className="max-h-96 overflow-y-auto p-2 space-y-3">
-              {/* Navigation Services */}
-              <div>
-                <span className="px-3 text-[13px] font-mono uppercase tracking-wider text-[#64748B] block pb-1">
-                  الخدمات والصفحات الإدارية
-                </span>
-                <div className="space-y-1">
-                  {filteredCommands.length > 0 ? (
-                    filteredCommands.map((item) => {
-                      const Icon = item.icon;
-                      return (
-                        <button
-                          key={item.href}
-                          onClick={() => {
-                            setIsCommandOpen(false);
-                            router.push(item.href);
-                          }}
-                          className="w-full px-3 py-2 rounded-lg text-[13px] font-medium text-[#0F172A] dark:text-[#F8FAFC] hover:text-[#0F172A] dark:hover:text-white hover:bg-[#F8FAFC] dark:hover:bg-[#1E293B] flex items-center justify-between transition-colors cursor-pointer"
-                        >
-                          <div className="flex items-center gap-3">
-                            <Icon className="w-4 h-4 text-[#64748B]" />
-                            <span>{item.label}</span>
-                          </div>
-                          <span className="text-[13px] font-mono text-[#64748B]">
-                            {item.href}
-                          </span>
-                        </button>
-                      );
-                    })
-                  ) : (
-                    <p className="px-3 py-2 text-[13px] text-[#64748B]">
-                      لا توجد خدمات مطابقة للبحث
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              {/* Quick Actions */}
-              {quickActions.length > 0 && (
-                <div className="border-t border-[#E2E8F0] dark:border-[#1E293B] pt-2">
-                  <span className="px-3 text-[13px] font-mono uppercase tracking-wider text-[#64748B] block pb-1">
-                    إجراءات سريعة
-                  </span>
-                  <div className="space-y-1">
-                    {quickActions.map((action, idx) => {
-                      const Icon = action.icon;
-                      return (
-                        <button
-                          key={idx}
-                          onClick={() => {
-                            setIsCommandOpen(false);
-                            router.push(action.href);
-                          }}
-                          className="w-full px-3 py-2 rounded-lg text-[13px] font-medium text-[#0F172A] dark:text-[#F8FAFC] hover:text-[#0F172A] dark:hover:text-white hover:bg-[#F8FAFC] dark:hover:bg-[#1E293B] flex items-center justify-between transition-colors cursor-pointer"
-                        >
-                          <div className="flex items-center gap-3">
-                            <Icon className="w-4 h-4 text-[#64748B]" />
-                            <span>{action.label}</span>
-                          </div>
-                          <ArrowUpRight className="w-3.5 h-3.5 text-[#64748B]" />
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Footer Shortcut Hints */}
-            <div className="px-4 py-2 border-t border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B]/50 flex items-center justify-between text-[13px] font-mono text-[#64748B]">
-              <div className="flex items-center gap-2">
-                <span>للتنقل:</span>
-                <kbd className="px-1 bg-[#E2E8F0] dark:bg-[#334155] rounded">↵</kbd>
-                <span>للإغلاق:</span>
-                <kbd className="px-1 bg-[#E2E8F0] dark:bg-[#334155] rounded">ESC</kbd>
-              </div>
-              <span>EL KHOLASA ADMIN ENGINE</span>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* 4. Command Palette Modal (Cmd+K / Ctrl+K) */}
+      <AdminCommandPalette
+        isOpen={isCommandOpen}
+        onClose={() => setIsCommandOpen(false)}
+        commandQuery={commandQuery}
+        setCommandQuery={setCommandQuery}
+        filteredCommands={filteredCommands}
+      />
     </div>
   );
 }

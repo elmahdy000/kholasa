@@ -15,6 +15,7 @@ const eslintConfig = defineConfig([
     "scripts/**",
     "prisma/**",
     "public/**",
+    "scratch/**",
   ]),
   {
     rules: {

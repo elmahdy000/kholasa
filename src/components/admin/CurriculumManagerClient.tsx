@@ -1,67 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import {
-  BookOpen,
-  Layers,
-  Play,
-  Eye,
-  EyeOff,
-  CheckCircle2,
-  Clock,
-  Sparkles,
-  ChevronDown,
-  ChevronLeft,
-  Plus,
-  Settings2,
-  Trash2,
-  Edit,
-  ExternalLink,
-  Video,
-  Headphones,
-  Image as ImageIcon,
-  FileText,
-} from "lucide-react";
 import { LessonEditorModal } from "./LessonEditorModal";
 import { UnitEditorModal } from "./UnitEditorModal";
 import { LessonCreateModal } from "./LessonCreateModal";
+import type { CurriculumManagerClientProps, System, Unit } from "./curriculum/types";
+import { SubjectCard } from "./curriculum/SubjectCard";
 
-interface Lesson {
-  id: string;
-  title: string;
-  order: number;
-  durationMinutes: number;
-  isPublished: boolean;
-  viewsCount: number;
-}
-
-interface Unit {
-  id: string;
-  title: string;
-  description?: string | null;
-  order: number;
-  isPublished: boolean;
-  lessons: Lesson[];
-}
-
-interface Subject {
-  id: string;
-  name: string;
-  color?: string | null;
-  isPublished: boolean;
-  units: Unit[];
-}
-
-interface System {
-  id: string;
-  name: string;
-  subjects: Subject[];
-}
-
-interface CurriculumManagerClientProps {
-  initialSystems: System[];
-}
+export type { CurriculumManagerClientProps, System, Subject, Unit, Lesson } from "./curriculum/types";
 
 export function CurriculumManagerClient({
   initialSystems,
@@ -221,7 +167,6 @@ export function CurriculumManagerClient({
       }))
     );
 
-    // Expand unit so the user sees the new lesson
     setExpandedUnits((prev) => ({ ...prev, [newLesson.unitId]: true }));
   };
 
@@ -293,277 +238,33 @@ export function CurriculumManagerClient({
 
           <div className="space-y-5">
             {system.subjects.map((subject) => (
-              <div
+              <SubjectCard
                 key={subject.id}
-                className="rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]  overflow-hidden"
-              >
-                {/* Subject Header */}
-                <div className="p-4 sm:p-5 bg-[#F8FAFC] dark:bg-[#1E293B]/60 border-b border-[#E2E8F0] dark:border-[#334155] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                  <div className="flex items-center gap-3">
-                    <div
-                      className="w-4 h-4 rounded-full shrink-0"
-                      style={{ backgroundColor: subject.color || "#800020" }}
-                    />
-                    <div>
-                      <h3 className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-white">
-                        {subject.name}
-                      </h3>
-                      <span className="text-[13px] text-[#64748B] font-bold">
-                        {subject.units.length} وحدات •{" "}
-                        {subject.units.reduce(
-                          (acc, u) => acc + u.lessons.length,
-                          0
-                        )}{" "}
-                        درساً
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2 self-start sm:self-center">
-                    <button
-                      onClick={() =>
-                        setUnitModalState({
-                          isOpen: true,
-                          mode: "create",
-                          subjectId: subject.id,
-                          subjectName: subject.name,
-                        })
-                      }
-                      className="h-11 px-3 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] font-bold flex items-center gap-2  transition-transform active:opacity-80"
-                    >
-                      <Plus className="w-3.5 h-3.5" />
-                      <span>إضافة وحدة</span>
-                    </button>
-
-                    <button
-                      onClick={() =>
-                        handleTogglePublished(
-                          "subject",
-                          subject.id,
-                          subject.isPublished
-                        )
-                      }
-                      disabled={togglingId === subject.id}
-                      className={`h-11 px-3 rounded-xl text-[13px] font-bold flex items-center gap-2 transition-colors ${
-                        subject.isPublished
-                          ? "bg-[#059669]/10 text-[#059669] dark:text-[#34D399] border border-[#059669]/20"
-                          : "bg-[#E2E8F0] text-[#64748B] dark:bg-[#1E293B] dark:text-[#94A3B8]"
-                      }`}
-                    >
-                      {subject.isPublished ? (
-                        <>
-                          <Eye className="w-3.5 h-3.5" />
-                          <span>منشور للطلاب</span>
-                        </>
-                      ) : (
-                        <>
-                          <EyeOff className="w-3.5 h-3.5" />
-                          <span>مسودة (مخفي)</span>
-                        </>
-                      )}
-                    </button>
-                  </div>
-                </div>
-
-                {/* Units List */}
-                <div className="divide-y divide-[#E2E8F0] dark:divide-[#334155]">
-                  {subject.units.length === 0 ? (
-                    <div className="p-8 text-center text-[13px] font-bold text-[#94A3B8]">
-                      لا توجد وحدات في هذه المادة بعد. اضغط "إضافة وحدة" للبدء.
-                    </div>
-                  ) : (
-                    subject.units.map((unit) => {
-                      const isExpanded = expandedUnits[unit.id] ?? true;
-
-                      return (
-                        <div key={unit.id} className="p-4 sm:p-5 space-y-3">
-                          {/* Unit Title and Actions Bar */}
-                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                            <div className="flex items-center gap-2">
-                              <button
-                                onClick={() => toggleExpand(unit.id)}
-                                className="flex items-center gap-2 text-right font-bold text-[13px] sm:text-sm text-[#0F172A] dark:text-white hover:text-[#800020] transition-colors"
-                              >
-                                <ChevronDown
-                                  className={`w-4 h-4 text-[#94A3B8] transition-transform ${
-                                    !isExpanded ? "-rotate-90" : ""
-                                  }`}
-                                />
-                                <span>{unit.title}</span>
-                                <span className="text-[13px] font-bold text-[#94A3B8]">
-                                  ({unit.lessons.length} دروس)
-                                </span>
-                              </button>
-
-                              <button
-                                onClick={() =>
-                                  setUnitModalState({
-                                    isOpen: true,
-                                    mode: "edit",
-                                    subjectId: subject.id,
-                                    subjectName: subject.name,
-                                    initialUnit: unit,
-                                  })
-                                }
-                                className="p-1 rounded-md text-[#94A3B8] hover:text-[#800020] hover:bg-[#F8FAFC] dark:hover:bg-[#334155] transition-colors"
-                                title="تعديل بيانات الوحدة"
-                              >
-                                <Edit className="w-3.5 h-3.5" />
-                              </button>
-                            </div>
-
-                            <div className="flex items-center gap-2 self-start sm:self-center">
-                              <button
-                                onClick={() =>
-                                  setCreateLessonContext({
-                                    unitId: unit.id,
-                                    unitTitle: unit.title,
-                                    subjectName: subject.name,
-                                  })
-                                }
-                                className="h-7 px-3 rounded-lg bg-[#800020]/10 dark:bg-[#1E293B] hover:bg-[#800020]/10 text-[#800020] dark:text-[#FB7185] text-[13px] font-bold flex items-center gap-1 transition-colors"
-                              >
-                                <Plus className="w-3 h-3" />
-                                <span>إضافة درس</span>
-                              </button>
-
-                              <Link
-                                href={`/admin/questions/import?subjectId=${subject.id}&unitId=${unit.id}`}
-                                className="h-7 px-3 rounded-lg bg-[#800020]/10 dark:bg-[#1E293B] hover:bg-[#800020]/10 text-[#800020] dark:text-[#FB7185] text-[13px] font-bold flex items-center gap-1 transition-colors border border-[#E2E8F0]/50 dark:border-[#E11D48]/50"
-                                title="استيراد أو إضافة أسئلة وورد لهذه الوحدة"
-                              >
-                                <FileText className="w-3 h-3 text-[#800020] dark:text-[#FB7185]" />
-                                <span>أسئلة الوحدة</span>
-                              </Link>
-
-                              <button
-                                onClick={() =>
-                                  handleTogglePublished(
-                                    "unit",
-                                    unit.id,
-                                    unit.isPublished
-                                  )
-                                }
-                                disabled={togglingId === unit.id}
-                                className={`h-7 px-3 rounded-lg text-[13px] font-bold flex items-center gap-1 transition-colors ${
-                                  unit.isPublished
-                                    ? "bg-[#059669]/10 text-[#059669] dark:text-[#34D399]"
-                                    : "bg-[#F8FAFC] text-[#94A3B8]"
-                                }`}
-                              >
-                                {unit.isPublished ? "الوحدة منشورة" : "الوحدة مخفية"}
-                              </button>
-                            </div>
-                          </div>
-
-                          {/* Lessons Accordion Content */}
-                          {isExpanded && (
-                            <div className="pr-4 sm:pr-6 space-y-2 pt-1">
-                              {unit.lessons.length === 0 ? (
-                                <div className="p-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-dashed border-[#E2E8F0] dark:border-[#334155] text-center">
-                                  <span className="text-[13px] font-bold text-[#94A3B8] block mb-2">
-                                    لا توجد دروس في هذه الوحدة بعد
-                                  </span>
-                                  <button
-                                    onClick={() =>
-                                      setCreateLessonContext({
-                                        unitId: unit.id,
-                                        unitTitle: unit.title,
-                                        subjectName: subject.name,
-                                      })
-                                    }
-                                    className="h-11 px-3 rounded-lg bg-[#800020] text-white text-[13px] font-bold inline-flex items-center gap-2"
-                                  >
-                                    <Plus className="w-3.5 h-3.5" />
-                                    <span>إضافة أول درس بالوحدة</span>
-                                  </button>
-                                </div>
-                              ) : (
-                                unit.lessons.map((lesson) => (
-                                  <div
-                                    key={lesson.id}
-                                    className="p-3 sm:p-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/60 border border-[#E2E8F0]/80 dark:border-[#334155] flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:border-[#800020]/40 dark:hover:border-[#E11D48]/60 transition-colors"
-                                  >
-                                    <div className="flex items-center gap-3">
-                                      <div className="w-11 h-11 rounded-xl bg-[#800020]/10 text-[#800020] flex items-center justify-center shrink-0">
-                                        <Play className="w-3.5 h-3.5 fill-current ml-1" />
-                                      </div>
-                                      <div>
-                                        <div className="flex items-center gap-2">
-                                          <span className="text-[13px] font-bold text-[#0F172A] dark:text-white">
-                                            {lesson.title}
-                                          </span>
-                                          <span className="text-[13px] font-mono px-2 py-0.2 rounded bg-[#E2E8F0] dark:bg-[#1E293B] text-[#64748B] dark:text-[#94A3B8]">
-                                            #{lesson.order}
-                                          </span>
-                                        </div>
-                                        <span className="text-[13px] text-[#94A3B8] flex items-center gap-2 mt-1">
-                                          <span>{lesson.durationMinutes} دقيقة</span>
-                                          <span>•</span>
-                                          <span>{lesson.viewsCount} مشاهدة</span>
-                                        </span>
-                                      </div>
-                                    </div>
-
-                                    {/* Action Buttons */}
-                                    <div className="flex items-center gap-2 self-end sm:self-center flex-wrap">
-                                      <button
-                                        onClick={() =>
-                                          setEditingLessonId(lesson.id)
-                                        }
-                                        className="h-7 px-3 rounded-lg bg-[#800020] hover:bg-[#66001A] text-white text-[13px] font-bold flex items-center gap-1  transition-transform active:opacity-80"
-                                      >
-                                        <Settings2 className="w-3 h-3" />
-                                        <span>إدارة المحتوى والوسائط</span>
-                                      </button>
-
-                                      <Link
-                                        href={`/admin/questions/import?subjectId=${subject.id}&unitId=${unit.id}&lessonId=${lesson.id}`}
-                                        className="h-7 px-3 rounded-lg bg-[#800020]/10 hover:bg-[#800020]/10 dark:bg-[#1E293B] dark:hover:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] text-[13px] font-bold flex items-center gap-1 transition-colors border border-[#E2E8F0]/50 dark:border-[#E11D48]/50"
-                                        title="استيراد أو ربط أسئلة وورد بهذا الدرس"
-                                      >
-                                        <FileText className="w-3 h-3 text-[#800020] dark:text-[#FB7185]" />
-                                        <span>أسئلة الدرس</span>
-                                      </Link>
-
-                                      <Link
-                                        href={`/lessons/${lesson.id}`}
-                                        className="h-7 px-3 rounded-lg bg-[#E2E8F0] hover:bg-[#E2E8F0] dark:bg-[#1E293B] dark:hover:bg-[#1E293B] text-[#0F172A] dark:text-[#F8FAFC] text-[13px] font-bold flex items-center gap-1 transition-colors"
-                                        target="_blank"
-                                      >
-                                        <ExternalLink className="w-3 h-3" />
-                                        <span>معاينة</span>
-                                      </Link>
-
-                                      <button
-                                        onClick={() =>
-                                          handleTogglePublished(
-                                            "lesson",
-                                            lesson.id,
-                                            lesson.isPublished
-                                          )
-                                        }
-                                        disabled={togglingId === lesson.id}
-                                        className={`h-7 px-3 rounded-lg text-[13px] font-bold transition-colors ${
-                                          lesson.isPublished
-                                            ? "bg-[#059669]/10 text-[#059669] dark:text-[#34D399]"
-                                            : "bg-[#E2E8F0] text-[#64748B] dark:bg-[#1E293B] dark:text-[#94A3B8]"
-                                        }`}
-                                      >
-                                        {lesson.isPublished ? "منشور" : "مخفي"}
-                                      </button>
-                                    </div>
-                                  </div>
-                                ))
-                              )}
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })
-                  )}
-                </div>
-              </div>
+                subject={subject}
+                expandedUnits={expandedUnits}
+                togglingId={togglingId}
+                onToggleExpand={toggleExpand}
+                onOpenCreateUnit={(id, name) =>
+                  setUnitModalState({
+                    isOpen: true,
+                    mode: "create",
+                    subjectId: id,
+                    subjectName: name,
+                  })
+                }
+                onEditUnit={(u: Unit) =>
+                  setUnitModalState({
+                    isOpen: true,
+                    mode: "edit",
+                    subjectId: subject.id,
+                    subjectName: subject.name,
+                    initialUnit: u,
+                  })
+                }
+                onCreateLesson={setCreateLessonContext}
+                onTogglePublished={handleTogglePublished}
+                onEditLesson={setEditingLessonId}
+              />
             ))}
           </div>
         </div>

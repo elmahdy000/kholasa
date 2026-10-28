@@ -30,7 +30,6 @@ export function PwaInstallBanner() {
       (window.navigator as unknown as { standalone?: boolean }).standalone === true;
 
     if (isStandalone) {
-      setIsInstalled(true);
       return;
     }
 

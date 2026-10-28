@@ -48,6 +48,19 @@ export default async function LessonPage({ params }: LessonPageProps) {
                 select: { id: true, text: true, order: true },
                 orderBy: { order: "asc" },
               },
+              rubric: {
+                select: {
+                  modelAnswer: true,
+                  criteria: true,
+                  maxScore: true,
+                },
+              },
+              explanation: {
+                select: {
+                  concept: true,
+                  correctReason: true,
+                },
+              },
             },
           },
         },

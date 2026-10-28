@@ -2,59 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
-import {
-  AlertTriangle,
-  CheckCircle2,
-  BookOpen,
-  Filter,
-  Check,
-  Lightbulb,
-  ArrowLeft,
-  Trophy,
-  SlidersHorizontal,
-  Loader2,
-} from "lucide-react";
-import { BidiStatement } from "@/components/ui/BidiStatement";
-
-interface QuestionOption {
-  id: string;
-  text: string;
-  isCorrect: boolean;
-  order: number;
-  explanation?: string | null;
-}
-
-interface QuestionExplanation {
-  concept: string;
-  correctReason: string;
-}
-
-interface Question {
-  id: string;
-  statement: string;
-  type: string;
-  difficulty: string;
-  subject: { id: string; name: string };
-  unit?: { id: string; title: string } | null;
-  options: QuestionOption[];
-  explanation?: QuestionExplanation | null;
-  lessons: { lesson: { id: string; title: string } }[];
-}
-
-interface MistakeItem {
-  id: string;
-  questionId: string;
-  wrongCount: number;
-  isResolved: boolean;
-  lastAttemptAt: Date | string;
-  question: Question;
-}
-
-interface MistakeHubClientProps {
-  initialMistakes: MistakeItem[];
-  subjects: { id: string; name: string }[];
-}
+import type { MistakeItem, MistakeHubClientProps, ActiveAnswerState } from "./types";
+import { MistakeAnalyticsBar } from "./MistakeAnalyticsBar";
+import { MistakeExamBanner } from "./MistakeExamBanner";
+import { MistakeFilterBar } from "./MistakeFilterBar";
+import { MistakeCard } from "./MistakeCard";
+import { MistakesEmptyState } from "./MistakesEmptyState";
 
 export function MistakeHubClient({
   initialMistakes,
@@ -68,16 +21,7 @@ export function MistakeHubClient({
   const [generationError, setGenerationError] = useState<string | null>(null);
 
   // Inline answering state for questions in mistake hub
-  const [activeAnswers, setActiveAnswers] = useState<
-    Record<
-      string,
-      {
-        selectedOptionId: string;
-        isChecking: boolean;
-        result?: { isCorrect: boolean };
-      }
-    >
-  >({});
+  const [activeAnswers, setActiveAnswers] = useState<Record<string, ActiveAnswerState>>({});
 
   const filteredMistakes = mistakes.filter((m) => {
     if (selectedSubjectId !== "all" && m.question.subject.id !== selectedSubjectId) {
@@ -123,7 +67,6 @@ export function MistakeHubClient({
       }));
 
       if (isCorrect) {
-        // Mark mistake as resolved locally
         setMistakes((prev) =>
           prev.map((m) =>
             m.questionId === questionId ? { ...m, isResolved: true } : m
@@ -173,49 +116,11 @@ export function MistakeHubClient({
   return (
     <div className="space-y-6">
       {/* Overview Analytics Bar */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="p-5 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]  flex items-center justify-between">
-          <div>
-            <span className="text-2xl sm:text-2xl sm:text-3xl font-bold text-[#DC2626] block tracking-tight">
-              {unresolvedCount}
-            </span>
-            <span className="text-[13px] font-bold text-[#64748B] dark:text-[#94A3B8]">
-              أسئلة محتاجة تتظبّط
-            </span>
-          </div>
-          <div className="w-11 h-11 rounded-xl bg-[#DC2626]/10 dark:bg-[#1E293B] text-[#DC2626] flex items-center justify-center">
-            <AlertTriangle className="w-5 h-5" />
-          </div>
-        </div>
-
-        <div className="p-5 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]  flex items-center justify-between">
-          <div>
-            <span className="text-2xl sm:text-2xl sm:text-3xl font-bold text-[#059669] block tracking-tight">
-              {resolvedCount}
-            </span>
-            <span className="text-[13px] font-bold text-[#64748B] dark:text-[#94A3B8]">
-              أسئلة قفلتها وظبّطتها
-            </span>
-          </div>
-          <div className="w-11 h-11 rounded-xl bg-[#059669]/10 dark:bg-[#1E293B] text-[#059669] flex items-center justify-center">
-            <CheckCircle2 className="w-5 h-5" />
-          </div>
-        </div>
-
-        <div className="p-5 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]  flex items-center justify-between">
-          <div>
-            <span className="text-2xl sm:text-2xl sm:text-3xl font-bold text-[#800020] dark:text-[#FB7185] block tracking-tight">
-              {masteryPercentage !== null ? `${masteryPercentage}%` : "—"}
-            </span>
-            <span className="text-[13px] font-bold text-[#64748B] dark:text-[#94A3B8]">
-              نسبة التمكّن والتثبيت
-            </span>
-          </div>
-          <div className="w-11 h-11 rounded-xl bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] flex items-center justify-center">
-            <Trophy className="w-5 h-5" />
-          </div>
-        </div>
-      </div>
+      <MistakeAnalyticsBar
+        unresolvedCount={unresolvedCount}
+        resolvedCount={resolvedCount}
+        masteryPercentage={masteryPercentage}
+      />
 
       {/* Generation Error Alert */}
       {generationError && (
@@ -232,247 +137,38 @@ export function MistakeHubClient({
       )}
 
       {/* Quick Exam Banner when there are unresolved mistakes */}
-      {actionableUnresolvedCount > 0 && (
-        <div className="p-4 sm:p-5 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-[#800020] animate-ping" />
-              <h3 className="text-sm font-bold text-[#0F172A] dark:text-white">
-                عاوز تتدرب عليهم في امتحان عملي مجمع؟
-              </h3>
-            </div>
-            <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8]">
-              هنعملك امتحان فوري بـ {actionableUnresolvedCount} أسئلة اللي لسه ما قفلتهمش عشان تثبتهم فوراً.
-            </p>
-          </div>
-
-          <button
-            type="button"
-            onClick={handleGenerateExamFromMistakes}
-            disabled={isGeneratingExam}
-            className="h-11 px-5 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] font-bold flex items-center justify-center gap-2  transition-all active:opacity-80 disabled:opacity-50 interactive-tap shrink-0"
-          >
-            {isGeneratingExam ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                <span>بنجهّز الامتحان...</span>
-              </>
-            ) : (
-              <>
-                <SlidersHorizontal className="w-4 h-4" />
-                <span>ابدأ امتحان من غلطاتي ({actionableUnresolvedCount})</span>
-              </>
-            )}
-          </button>
-        </div>
-      )}
+      <MistakeExamBanner
+        actionableUnresolvedCount={actionableUnresolvedCount}
+        isGeneratingExam={isGeneratingExam}
+        onGenerateExam={handleGenerateExamFromMistakes}
+      />
 
       {/* Filters Bar */}
-      <div className="p-4 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]  flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        {/* Status Filter */}
-        <div className="flex items-center gap-1 p-1 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0]/80 dark:border-[#334155]">
-          <button
-            onClick={() => setFilterStatus("unresolved")}
-            className={`px-3 py-2 rounded-lg text-[13px] font-bold transition-all ${
-              filterStatus === "unresolved"
-                ? "bg-[#DC2626] text-white "
-                : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
-            }`}
-          >
-            بحاجة لمراجعة ({unresolvedCount})
-          </button>
-          <button
-            onClick={() => setFilterStatus("resolved")}
-            className={`px-3 py-2 rounded-lg text-[13px] font-bold transition-all ${
-              filterStatus === "resolved"
-                ? "bg-[#059669] text-white "
-                : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
-            }`}
-          >
-            تم إتقانها ({resolvedCount})
-          </button>
-          <button
-            onClick={() => setFilterStatus("all")}
-            className={`px-3 py-2 rounded-lg text-[13px] font-bold transition-all ${
-              filterStatus === "all"
-                ? "bg-white dark:bg-[#1E293B] text-[#0F172A] dark:text-white  border border-[#E2E8F0]/80 dark:border-[#334155]/80"
-                : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
-            }`}
-          >
-            الكل ({totalCount})
-          </button>
-        </div>
+      <MistakeFilterBar
+        filterStatus={filterStatus}
+        setFilterStatus={setFilterStatus}
+        unresolvedCount={unresolvedCount}
+        resolvedCount={resolvedCount}
+        totalCount={totalCount}
+        selectedSubjectId={selectedSubjectId}
+        setSelectedSubjectId={setSelectedSubjectId}
+        subjects={subjects}
+      />
 
-        {/* Subject Filter */}
-        <div className="flex items-center gap-2">
-          <Filter className="w-4 h-4 text-[#94A3B8]" />
-          <select
-            value={selectedSubjectId}
-            onChange={(e) => setSelectedSubjectId(e.target.value)}
-            className="h-11 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#800020]"
-          >
-            <option value="all">جميع المواد</option>
-            {subjects.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.name}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      {/* Mistakes List */}
+      {/* Mistakes List or Empty State */}
       {filteredMistakes.length > 0 ? (
         <div className="space-y-4">
-          {filteredMistakes.map((mistake) => {
-            const q = mistake.question;
-            const relatedLesson = q.lessons[0]?.lesson;
-            const answerState = activeAnswers[q.id];
-
-            return (
-              <div
-                key={mistake.id}
-                className={`p-6 sm:p-7 rounded-xl border  space-y-4 transition-all ${
-                  mistake.isResolved
-                    ? "bg-[#059669]/10 dark:bg-[#1E293B] border-[#E2E8F0] dark:border-[#34D399]/40"
-                    : "bg-white dark:bg-[#0F172A] border-[#E2E8F0] dark:border-[#334155]"
-                }`}
-              >
-                {/* Header */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#E2E8F0] dark:border-[#334155] pb-4">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="px-3 py-1 rounded-lg bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] text-[13px] font-bold border border-[#E2E8F0]/50 dark:border-[#E11D48]/50">
-                      <BidiStatement as="span" text={q.subject.name} />
-                    </span>
-                    {mistake.wrongCount > 1 && (
-                      <span className="px-2 py-1 rounded-lg bg-[#DC2626]/10 dark:bg-[#1E293B] text-[#DC2626] text-[13px] font-bold border border-[#E2E8F0]/50 dark:border-[#F87171]/50">
-                        اتكرر الغلط {mistake.wrongCount} مرات
-                      </span>
-                    )}
-                    {mistake.isResolved && (
-                      <span className="px-3 py-1 rounded-lg bg-[#059669]/10 dark:bg-[#1E293B] text-[#059669] dark:text-[#34D399] text-[13px] font-bold flex items-center gap-1 border border-[#E2E8F0]/50 dark:border-[#34D399]/50">
-                        <Check className="w-3 h-3" />
-                        <span>اتقنتها خلاص</span>
-                      </span>
-                    )}
-                  </div>
-
-                  {relatedLesson && (
-                    <Link
-                      href={`/lessons/${relatedLesson.id}`}
-                      className="inline-flex items-center gap-2 text-[13px] font-semibold text-[#800020] dark:text-[#FB7185] hover:text-[#800020] dark:hover:text-[#FB7185] transition-colors shrink min-w-0 max-w-full sm:max-w-md group"
-                    >
-                      <BookOpen className="w-3.5 h-3.5 shrink-0 text-[#800020]" />
-                      <span className="break-words">
-                        شرح الدرس: <BidiStatement as="span" text={relatedLesson.title} />
-                      </span>
-                      <ArrowLeft className="w-3 h-3 shrink-0" />
-                    </Link>
-                  )}
-                </div>
-
-                {/* Statement */}
-                <BidiStatement
-                  as="h3"
-                  text={q.statement}
-                  className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-white leading-relaxed font-content"
-                />
-
-                {/* Inline Options to Retake */}
-                <div className="space-y-3">
-                  <span className="text-[13px] font-bold text-[#64748B] dark:text-[#94A3B8] block mb-1">
-                    جرب تحلها تاني دلوقتي وافهم الصح عشان متغلطش فيها:
-                  </span>
-                  {q.options.map((opt, optIdx) => {
-                    const isSelected =
-                      answerState?.selectedOptionId === opt.id;
-                    const isChecked = !!answerState?.result;
-
-                    let rowStyle =
-                      "bg-white dark:bg-[#1E293B] border-[#E2E8F0] dark:border-[#334155] text-[#0F172A] dark:text-[#F8FAFC] hover:border-[#E2E8F0]";
-
-                    if (isChecked) {
-                      if (opt.isCorrect) {
-                        rowStyle =
-                          "bg-[#059669]/10 dark:bg-[#1E293B] border-2 border-[#059669] text-[#059669] dark:text-[#34D399] font-bold";
-                      } else if (isSelected && !opt.isCorrect) {
-                        rowStyle =
-                          "bg-[#DC2626]/10 dark:bg-[#1E293B] border-2 border-[#DC2626] text-[#DC2626] dark:text-[#F87171] font-bold";
-                      }
-                    }
-
-                    const arabicLetters = ["أ", "ب", "ج", "د", "هـ"];
-
-                    return (
-                      <button
-                        key={opt.id}
-                        type="button"
-                        onClick={() => handleRetakeAnswer(q.id, opt.id)}
-                        className={`w-full p-4 sm:p-4 rounded-xl border text-right text-[13px] sm:text-sm font-medium flex items-start sm:items-center justify-between gap-3 transition-colors ${rowStyle}`}
-                      >
-                        <div className="flex items-start sm:items-center gap-3 min-w-0 flex-1">
-                          <span className="w-6 h-6 rounded-lg bg-[#F8FAFC] dark:bg-[#1E293B] text-[#64748B] dark:text-[#F8FAFC] flex items-center justify-center text-[13px] font-mono font-bold shrink-0 mt-1 sm:mt-0 border border-[#E2E8F0]/60 dark:border-[#334155]/60">
-                            {arabicLetters[optIdx] || opt.order}
-                          </span>
-                          <div className="min-w-0 flex-1 leading-relaxed">
-                            <BidiStatement as="span" text={opt.text} />
-                          </div>
-                        </div>
-
-                        {isChecked && (
-                          <div className="shrink-0">
-                            {opt.isCorrect ? (
-                              <span className="text-[#059669] dark:text-[#34D399] text-[13px] font-bold flex items-center gap-1">
-                                <Check className="w-3.5 h-3.5" />
-                                <span>صح! برافو عليك</span>
-                              </span>
-                            ) : isSelected ? (
-                              <span className="text-[#DC2626] dark:text-[#F87171] text-[13px] font-bold">
-                                مش صحيحة
-                              </span>
-                            ) : null}
-                          </div>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-
-                {/* Explanation */}
-                {q.explanation && (
-                  <div className="p-4 rounded-xl bg-[#D97706]/10 dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#FBBF24]/40 space-y-2 mt-2">
-                    <div className="flex items-center gap-2 text-[13px] font-bold text-[#D97706] dark:text-[#FBBF24]">
-                      <Lightbulb className="w-3.5 h-3.5 text-[#D97706]" />
-                      <span>المفهوم: {q.explanation.concept}</span>
-                    </div>
-                    <p className="text-[13px] text-[#0F172A] dark:text-[#F8FAFC] leading-relaxed font-medium">
-                      {q.explanation.correctReason}
-                    </p>
-                  </div>
-                )}
-              </div>
-            );
-          })}
+          {filteredMistakes.map((mistake) => (
+            <MistakeCard
+              key={mistake.id}
+              mistake={mistake}
+              answerState={activeAnswers[mistake.question.id]}
+              onRetakeAnswer={handleRetakeAnswer}
+            />
+          ))}
         </div>
       ) : (
-        <div className="p-12 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] text-center space-y-3 ">
-          <div className="w-12 h-12 rounded-xl bg-[#059669]/10 dark:bg-[#1E293B] text-[#059669] flex items-center justify-center mx-auto">
-            <CheckCircle2 className="w-6 h-6" />
-          </div>
-          <h3 className="text-base font-bold text-[#0F172A] dark:text-white">
-            رائع! لا توجد أخطاء في هذا التحديد
-          </h3>
-          <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8]">
-            استمر في خوض الامتحانات وحل التدريبات لاكتشاف المزيد وتثبيت حفظك وفهمك.
-          </p>
-          <Link
-            href="/exams"
-            className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] font-bold transition-all active:opacity-80 "
-          >
-            <span>انتقل إلى الامتحانات</span>
-            <ArrowLeft className="w-3.5 h-3.5" />
-          </Link>
-        </div>
+        <MistakesEmptyState />
       )}
     </div>
   );
