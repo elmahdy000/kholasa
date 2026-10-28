@@ -42,8 +42,8 @@ export function AdminTopbar({ activePage, setIsCommandOpen }: AdminTopbarProps) 
         >
           <Search className="w-3.5 h-3.5 text-[#64748B]" />
           <span>بحث سريع...</span>
-          <kbd className="px-2 py-1 rounded bg-[#F8FAFC] dark:bg-[#334155] text-[13px] font-mono text-[#64748B]">
-            ⌘K
+          <kbd className="px-1.5 py-0.5 rounded-md bg-[#F1F5F9] dark:bg-[#334155] text-[10px] font-mono text-[#64748B] dark:text-[#94A3B8]">
+            Ctrl+K
           </kbd>
         </button>
 

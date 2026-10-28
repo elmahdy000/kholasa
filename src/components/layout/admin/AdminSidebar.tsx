@@ -96,20 +96,20 @@ export function AdminSidebar({
         {!isCollapsed ? (
           <button
             onClick={() => setIsCommandOpen(true)}
-            className="w-full h-11 px-3 rounded-lg bg-[#F8FAFC]/80 hover:bg-[#F8FAFC] dark:bg-[#1E293B]/60 dark:hover:bg-[#1E293B] border border-[#E2E8F0]/80 dark:border-[#334155] text-[#64748B] dark:text-[#94A3B8] text-[13px] flex items-center justify-between transition-colors cursor-pointer group"
+            className="w-full h-10 px-3 rounded-xl bg-[#F8FAFC] hover:bg-[#F1F5F9] dark:bg-[#1E293B]/70 dark:hover:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[#64748B] dark:text-[#94A3B8] text-[13px] flex items-center justify-between transition-colors cursor-pointer group shadow-2xs"
           >
             <div className="flex items-center gap-2">
               <Search className="w-3.5 h-3.5 text-[#64748B] group-hover:text-[#0F172A] dark:group-hover:text-[#F8FAFC]" />
               <span>بحث سريع أو أمر...</span>
             </div>
-            <kbd className="px-1.5 py-0.5 rounded bg-[#E2E8F0] dark:bg-[#334155] border border-[#CBD5E1] dark:border-[#475569] text-[11px] font-mono text-[#64748B] dark:text-[#94A3B8]">
+            <kbd className="px-1.5 py-0.5 rounded-md bg-white dark:bg-[#0F172A] border border-[#CBD5E1] dark:border-[#475569] text-[10px] font-mono text-[#64748B] dark:text-[#94A3B8] shadow-2xs">
               Ctrl+K
             </kbd>
           </button>
         ) : (
           <button
             onClick={() => setIsCommandOpen(true)}
-            className="w-full h-11 flex items-center justify-center rounded-lg bg-[#F8FAFC] dark:bg-[#1E293B] text-[#64748B] hover:text-[#0F172A] dark:hover:text-[#F8FAFC] transition-colors"
+            className="w-full h-10 flex items-center justify-center rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] text-[#64748B] hover:text-[#0F172A] dark:hover:text-[#F8FAFC] transition-colors"
             title="بحث سريع (Ctrl+K)"
           >
             <Search className="w-4 h-4" />
@@ -141,28 +141,30 @@ export function AdminSidebar({
                       href={item.href}
                       onClick={() => setMobileMenuOpen(false)}
                       title={isCollapsed ? item.label : undefined}
-                      className={`group relative w-full h-11 px-3 rounded-lg text-[13px] font-medium flex items-center transition-all ${
-                        isCollapsed ? "justify-center" : "justify-between"
+                      className={`group relative w-full h-10 px-3 rounded-xl text-[13px] font-medium flex items-center transition-all ${
+                        isCollapsed ? "justify-center" : "gap-3"
                       } ${
                         isActive
-                          ? "bg-[#800020] text-white dark:bg-[#800020] dark:text-white font-semibold shadow-sm"
-                          : "text-[#475569] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-[#F8FAFC] hover:bg-[#F8FAFC] dark:hover:bg-[#1E293B]/60"
+                          ? "bg-[#800020] text-white font-semibold shadow-xs"
+                          : "text-[#475569] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-[#F8FAFC] hover:bg-[#F1F5F9] dark:hover:bg-[#1E293B]"
                       }`}
                     >
-                      <div className="flex items-center gap-3 min-w-0">
-                        <Icon
-                          className={`w-4 h-4 shrink-0 transition-colors ${
-                            isActive
-                              ? "text-white"
-                              : "text-[#64748B] group-hover:text-[#0F172A] dark:group-hover:text-[#F8FAFC]"
-                          }`}
-                        />
-                        {!isCollapsed && <span className="truncate">{item.label}</span>}
-                      </div>
+                      <Icon
+                        className={`w-4 h-4 shrink-0 transition-colors ${
+                          isActive
+                            ? "text-white"
+                            : "text-[#64748B] group-hover:text-[#0F172A] dark:group-hover:text-[#F8FAFC]"
+                        }`}
+                      />
+                      {!isCollapsed && (
+                        <span className="truncate flex-1 text-right leading-tight">
+                          {item.label}
+                        </span>
+                      )}
 
                       {!isCollapsed && item.badge && (
                         <span
-                          className={`px-2 py-0.5 rounded-md text-[11px] font-semibold border ${
+                          className={`px-2 py-0.5 rounded-md text-[10px] font-bold border shrink-0 ${
                             isActive
                               ? "bg-white/20 text-white border-white/20"
                               : item.badgeColor
@@ -170,10 +172,6 @@ export function AdminSidebar({
                         >
                           {item.badge}
                         </span>
-                      )}
-
-                      {isActive && !isCollapsed && !item.badge && (
-                        <span className="w-1.5 h-1.5 rounded-full bg-white shrink-0" />
                       )}
                     </Link>
                   );
@@ -189,10 +187,10 @@ export function AdminSidebar({
         {!isCollapsed ? (
           <Link
             href="/dashboard"
-            className="w-full h-11 px-3 rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B] text-[#0F172A] dark:text-[#F8FAFC] hover:text-[#0F172A] dark:hover:text-white hover:border-[#800020]/40 dark:hover:border-[#E11D48]/60 text-[13px] font-semibold flex items-center justify-between transition-colors "
+            className="w-full h-10 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B] text-[#0F172A] dark:text-[#F8FAFC] hover:border-[#800020]/40 text-[13px] font-semibold flex items-center justify-between transition-colors shadow-2xs"
           >
             <div className="flex items-center gap-2">
-              <Compass className="w-3.5 h-3.5 text-[#800020]" />
+              <Compass className="w-3.5 h-3.5 text-[#800020] dark:text-[#FB7185]" />
               <span>معاينة تطبيق الطالب</span>
             </div>
             <ExternalLink className="w-3 h-3 text-[#64748B]" />
@@ -200,7 +198,7 @@ export function AdminSidebar({
         ) : (
           <Link
             href="/dashboard"
-            className="w-full h-11 rounded-lg flex items-center justify-center text-[#64748B] hover:text-[#800020] transition-colors"
+            className="w-full h-10 rounded-xl flex items-center justify-center text-[#64748B] hover:text-[#800020] transition-colors"
             title="معاينة تطبيق الطالب"
           >
             <Compass className="w-4 h-4" />
@@ -209,34 +207,34 @@ export function AdminSidebar({
 
         {/* User Profile Capsule */}
         <div
-          className={`flex items-center justify-between p-2 rounded-lg border border-[#E2E8F0]/80 dark:border-[#334155]/80 bg-white dark:bg-[#1E293B]/80 ${
+          className={`flex items-center justify-between p-2 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B] shadow-2xs ${
             isCollapsed ? "justify-center" : ""
           }`}
         >
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="w-7 h-7 rounded-full bg-[#800020] text-white flex items-center justify-center font-bold text-[12px] shrink-0 shadow-sm">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="w-7 h-7 rounded-full bg-[#800020] text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-2xs">
               {(user.name || "أ").charAt(0)}
             </div>
             {!isCollapsed && (
               <div className="min-w-0 text-right">
-                <span className="text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC] block truncate leading-tight">
+                <span className="text-xs font-bold text-[#0F172A] dark:text-[#F8FAFC] block truncate leading-tight">
                   {user.name || "مشرف المنصة"}
                 </span>
-                <span className="text-[11px] font-medium text-[#64748B] dark:text-[#94A3B8] block truncate leading-none mt-1">
+                <span className="text-[10px] font-medium text-[#64748B] dark:text-[#94A3B8] block truncate leading-none mt-1">
                   {getRoleArabicLabel(user.role)}
                 </span>
               </div>
             )}
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
             <ThemeToggle className="h-7 w-7" />
             {!isCollapsed && (
               <button
                 onClick={onLogout}
                 disabled={isLoggingOut}
                 title="تسجيل الخروج"
-                className="p-1 rounded text-[#64748B] hover:text-[#DC2626] hover:bg-[#F8FAFC] dark:hover:bg-[#334155] transition-colors cursor-pointer shrink-0"
+                className="p-1 rounded-lg text-[#64748B] hover:text-[#DC2626] hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors cursor-pointer shrink-0"
               >
                 <LogOut className="w-3.5 h-3.5" />
               </button>
