@@ -425,7 +425,7 @@ async function main() {
         code: "g11_cs_engineering_en",
         icon: "Cpu",
         color: "#4F46E5",
-        description: "Second Year Egyptian Baccalaureate curriculum for Language Schools (Engineering & CS Track): C++ Advanced Systems, Data Structures, OOP Architecture, and Dynamic Memory.",
+        description: "Second Year Egyptian Baccalaureate curriculum for Language Schools (Engineering & CS Track): Advanced Systems, Data Structures, OOP Architecture, and Dynamic Memory.",
         systemId: baccalaureate.id,
         gradeId: g11.id,
         trackId: g11EngTrack?.id || null,
@@ -437,34 +437,34 @@ async function main() {
 
     const g11EnUnits = [
       {
-        title: "Unit 1: Advanced C++ & Memory Architecture",
+        title: "Unit 1: Computer Systems & Architecture",
         order: 1,
-        description: "Pointers, References, Dynamic Memory Management, and Stack vs Heap Allocation.",
+        description: "Memory Management, Hardware Abstraction, and Data Structures.",
         lessons: [
           {
-            title: "1. Pointers, Memory Addresses and References",
+            title: "1. Memory Addresses and Data Structures",
             order: 1,
             durationMinutes: 25,
             objectives: [
               "Understand physical computer memory addressing in hexadecimal.",
-              "Differentiate between Pointer variables and Reference aliases.",
-              "Master safe dynamic allocation with new and delete."
+              "Differentiate between stack and heap memory allocation.",
+              "Master safe dynamic allocation and deallocation."
             ],
-            body: `## Memory Architecture in Engineering Programming\n\nEach byte in computer memory has a unique numerical address.\n- Pointer declaration: \`int* ptr = &val;\`\n- Dereference operator: \`*ptr\` accesses the value at the address.`,
+            body: `## Memory Architecture in Engineering Computing\n\nEach byte in computer memory has a unique numerical address.\n- Stack memory: Automatic allocation and fast execution.\n- Heap memory: Dynamic allocation managed at runtime.`,
             questions: [
               {
-                statement: "In C++, which operator returns the actual memory address where a variable is located?",
+                statement: "Which area of computer memory is used for dynamic memory allocation during program execution?",
                 type: "MCQ",
                 difficulty: "EASY",
                 options: [
-                  { text: "& (Address-of operator)", isCorrect: true, explanation: "& retrieves the memory address of an operand." },
-                  { text: "* (Dereference operator)", isCorrect: false, explanation: "* dereferences a pointer to access the stored value." },
-                  { text: "-> (Arrow member operator)", isCorrect: false, explanation: "-> accesses struct/class members through a pointer." },
-                  { text: ":: (Scope resolution operator)", isCorrect: false, explanation: ":: resolves namespace or class scope." }
+                  { text: "Heap memory", isCorrect: true, explanation: "Heap memory is dynamically allocated and managed during runtime." },
+                  { text: "Stack memory", isCorrect: false, explanation: "Stack memory is statically reserved for function call frames." },
+                  { text: "ROM", isCorrect: false, explanation: "ROM is read-only memory." },
+                  { text: "Cache L1", isCorrect: false, explanation: "Cache L1 is high-speed CPU cache, not software-allocated memory." }
                 ],
                 explanation: {
-                  concept: "Pointers & Memory Addresses",
-                  correctReason: "The ampersand (&) preceding a variable acts as the unary address-of operator in C++."
+                  concept: "Memory Architecture",
+                  correctReason: "Dynamic memory allocation at runtime occurs on the heap."
                 }
               },
               {
