@@ -44,12 +44,25 @@ export const metadata: Metadata = {
 import Script from "next/script";
 import { PwaRegister } from "@/components/pwa/PwaRegister";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
+import { AppShell } from "@/components/layout/AppShell";
+import { getCurrentUser } from "@/lib/auth";
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const user = await getCurrentUser();
+  const shellUser = user
+    ? {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        role: user.role,
+      }
+    : null;
+
   return (
     <html
       lang="ar"
@@ -85,7 +98,7 @@ export default function RootLayout({
         />
         <ThemeProvider>
           <PwaRegister />
-          {children}
+          <AppShell user={shellUser}>{children}</AppShell>
         </ThemeProvider>
       </body>
     </html>

@@ -9,25 +9,35 @@ export function Skeleton({ className }: { className?: string }) {
   );
 }
 
-/** Header bar that mirrors the real shell so layout does not jump. */
-function ShellSkeleton({ children, label }: { children: React.ReactNode; label: string }) {
+/** Header bar that mirrors the real shell when used outside a persistent shell, or pure content skeleton when inside. */
+function ShellSkeleton({
+  children,
+  label,
+  withHeader = false,
+}: {
+  children: React.ReactNode;
+  label: string;
+  withHeader?: boolean;
+}) {
   return (
     <div
-      className="min-h-screen bg-[#F8FAFC] dark:bg-[#0F172A]"
+      className="w-full space-y-6"
       dir="rtl"
       role="status"
       aria-busy="true"
       aria-live="polite"
     >
       <span className="sr-only">{label}</span>
-      <div className="h-15 border-b border-[#E2E8F0]/80 dark:border-[#334155]/80 bg-white/80 dark:bg-[#0F172A]/80">
-        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center justify-between">
-          <Skeleton className="h-11 w-28" />
-          <Skeleton className="hidden md:block h-11 w-80" />
-          <Skeleton className="h-11 w-24" />
+      {withHeader && (
+        <div className="h-15 border-b border-[#E2E8F0]/80 dark:border-[#334155]/80 bg-white/80 dark:bg-[#0F172A]/80 mb-6">
+          <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center justify-between">
+            <Skeleton className="h-11 w-28" />
+            <Skeleton className="hidden md:block h-11 w-80" />
+            <Skeleton className="h-11 w-24" />
+          </div>
         </div>
-      </div>
-      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
+      )}
+      <div className="w-full space-y-6">
         {children}
       </div>
     </div>
