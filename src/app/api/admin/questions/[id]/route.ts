@@ -42,6 +42,7 @@ export async function PUT(req: Request, { params }: RouteParams) {
       difficulty,
       unitId,
       lessonId,
+      imageUrl,
       options,
       concept,
       correctReason,
@@ -57,6 +58,7 @@ export async function PUT(req: Request, { params }: RouteParams) {
       type,
       difficulty,
       unitId,
+      imageUrl: imageUrl !== undefined ? (typeof imageUrl === "string" ? imageUrl.trim() || null : null) : undefined,
       lessonIds: lessonId !== undefined ? (lessonId ? [lessonId] : []) : undefined,
       options: Array.isArray(options) ? options : undefined,
       explanation:

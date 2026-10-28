@@ -12,16 +12,38 @@ export default async function AdminCurriculumPage() {
   }
 
   const systems = await prisma.educationalSystem.findMany({
+    where: {
+      isActive: true,
+      code: "baccalaureate",
+    },
     orderBy: { order: "asc" },
     include: {
-      subjects: {
+      grades: {
+        where: {
+          code: { in: ["bacc_g10", "bacc_g11", "G10", "G11"] },
+        },
         orderBy: { order: "asc" },
         include: {
-          units: {
+          tracks: {
+            orderBy: { order: "asc" },
+          },
+          subjects: {
             orderBy: { order: "asc" },
             include: {
-              lessons: {
+              units: {
                 orderBy: { order: "asc" },
+                include: {
+                  lessons: {
+                    orderBy: { order: "asc" },
+                  },
+                },
+              },
+              _count: {
+                select: {
+                  units: true,
+                  questions: true,
+                  exams: true,
+                },
               },
             },
           },

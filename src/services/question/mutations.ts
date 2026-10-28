@@ -8,6 +8,15 @@ export class QuestionMutationsService {
    * Create a new question with attached options, explanation, or ideal essay model answer
    */
   static async createQuestion(data: QuestionCreateInput) {
+    let resolvedCategory = data.schoolCategory;
+    if (!resolvedCategory) {
+      const subject = await prisma.subject.findUnique({
+        where: { id: data.subjectId },
+        select: { schoolCategory: true },
+      });
+      resolvedCategory = subject?.schoolCategory || SchoolCategory.ARABIC;
+    }
+
     const question = await prisma.question.create({
       data: {
         statement: data.statement.trim(),
@@ -16,6 +25,8 @@ export class QuestionMutationsService {
         type: data.type || QuestionType.MCQ,
         difficulty: data.difficulty || Difficulty.MEDIUM,
         status: data.status || PublishStatus.PUBLISHED,
+        schoolCategory: resolvedCategory,
+        imageUrl: data.imageUrl?.trim() || null,
         options: data.options?.length
           ? {
               create: data.options.map((opt, idx) => ({
@@ -74,6 +85,8 @@ export class QuestionMutationsService {
         type: data.type,
         difficulty: data.difficulty,
         status: data.status,
+        imageUrl: data.imageUrl !== undefined ? (data.imageUrl?.trim() || null) : undefined,
+        schoolCategory: data.schoolCategory !== undefined ? data.schoolCategory : undefined,
       },
     });
 
@@ -153,6 +166,20 @@ export class QuestionMutationsService {
   static async deleteQuestion(id: string) {
     return prisma.question.delete({
       where: { id },
+    });
+  }
+
+  /**
+   * Bulk delete questions by IDs atomically
+   */
+  static async bulkDeleteQuestions(ids: string[]) {
+    if (!Array.isArray(ids) || ids.length === 0) {
+      return { count: 0 };
+    }
+    return prisma.question.deleteMany({
+      where: {
+        id: { in: ids },
+      },
     });
   }
 
@@ -269,6 +296,7 @@ export class QuestionMutationsService {
             schoolCategory: effectiveSchoolCategory,
             subjectId: subject.id,
             unitId: effectiveUnitId || q.unitId || null,
+            imageUrl: q.imageUrl?.trim() || null,
             batchId: batch.id,
             options: {
               create: (q.options || []).map((opt, idx: number) => ({

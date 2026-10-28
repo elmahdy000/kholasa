@@ -35,8 +35,16 @@ export async function POST(req: Request) {
       durationMinutes = 30,
       isPractice = false,
       questionIds = [],
-      randomQuestionsCount = 0,
+      unitId = null,
+      lessonId = null,
     } = body;
+
+    const randomQuestionsCount =
+      body.randomQuestionsCount !== undefined
+        ? Number(body.randomQuestionsCount)
+        : body.randomQuestionCount !== undefined
+        ? Number(body.randomQuestionCount)
+        : 0;
 
     if (!title?.trim() || !subjectId) {
       return NextResponse.json(
@@ -53,6 +61,8 @@ export async function POST(req: Request) {
       isPractice,
       questionIds,
       randomQuestionsCount,
+      unitId: unitId || null,
+      lessonId: lessonId || null,
     });
 
     return NextResponse.json({

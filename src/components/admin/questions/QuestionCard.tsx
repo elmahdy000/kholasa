@@ -1,12 +1,15 @@
 "use client";
 
-import { Edit2, Trash2, Check } from "lucide-react";
+import { useState } from "react";
+import { Edit2, Trash2, Check, CheckSquare, Square, ImageIcon, ZoomIn, X } from "lucide-react";
 import { BidiStatement } from "@/components/ui/BidiStatement";
 import { Question } from "./types";
 
 interface QuestionCardProps {
   question: Question;
   index: number;
+  isSelected?: boolean;
+  onToggleSelect?: () => void;
   getSubjectCategory: (subjectId: string) => "ARABIC" | "LANGUAGES";
   onEdit: (q: Question) => void;
   onDelete: (id: string) => void;
@@ -15,19 +18,44 @@ interface QuestionCardProps {
 export function QuestionCard({
   question: q,
   index: idx,
+  isSelected = false,
+  onToggleSelect,
   getSubjectCategory,
   onEdit,
   onDelete,
 }: QuestionCardProps) {
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+
   const isLanguageSchool =
     (q.schoolCategory || q.subject?.schoolCategory || getSubjectCategory(q.subject.id)) ===
     "LANGUAGES";
 
   return (
-    <div className="p-6 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0]/80 dark:border-[#334155]/80 space-y-4">
+    <div
+      className={`p-6 rounded-xl bg-white dark:bg-[#0F172A] border transition-colors space-y-4 ${
+        isSelected
+          ? "border-[#800020] dark:border-[#800020] bg-[#800020]/[0.02] shadow-sm"
+          : "border-[#E2E8F0]/80 dark:border-[#334155]/80"
+      }`}
+    >
       {/* Top Bar with Badges and Edit/Delete Actions */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#E2E8F0] dark:border-[#334155]/80 pb-3">
         <div className="flex flex-wrap items-center gap-2">
+          {onToggleSelect && (
+            <button
+              type="button"
+              onClick={onToggleSelect}
+              className="cursor-pointer text-[#94A3B8] hover:text-[#800020] dark:hover:text-[#FB7185] transition-colors p-0.5"
+              title={isSelected ? "إلغاء تحديد هذا السؤال" : "تحديد هذا السؤال"}
+            >
+              {isSelected ? (
+                <CheckSquare className="w-4 h-4 text-[#800020] dark:text-[#FB7185]" />
+              ) : (
+                <Square className="w-4 h-4" />
+              )}
+            </button>
+          )}
+
           <span className="text-[13px] font-bold text-[#800020]">
             #{idx + 1}
           </span>
@@ -91,6 +119,14 @@ export function QuestionCard({
               ? "متوسط"
               : "متقدم"}
           </span>
+
+          {/* Question Image Badge */}
+          {q.imageUrl && (
+            <span className="px-2 py-0.5 rounded-lg bg-[#6366F1]/10 text-[#6366F1] dark:bg-[#6366F1]/20 dark:text-[#818CF8] text-[11px] font-bold flex items-center gap-1">
+              <ImageIcon className="w-3 h-3" />
+              رسم توضيحي
+            </span>
+          )}
         </div>
 
         {/* Action Buttons: Edit and Delete */}
@@ -128,6 +164,59 @@ export function QuestionCard({
           className="text-right text-sm sm:text-base font-bold text-[#0F172A] dark:text-white leading-relaxed"
         >
           <BidiStatement as="div" text={q.statement} />
+        </div>
+      )}
+
+      {/* Question Attached Diagram/Image if present */}
+      {q.imageUrl && (
+        <div className="space-y-1.5">
+          <div
+            onClick={() => setIsImageModalOpen(true)}
+            className="group relative inline-flex max-w-full rounded-xl overflow-hidden border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] p-2 cursor-pointer hover:border-[#800020] dark:hover:border-[#FB7185] transition-colors"
+            title="اضغط لتكبير الصورة"
+          >
+            <img
+              src={q.imageUrl}
+              alt="رسم توضيحي للسؤال"
+              className="max-h-64 max-w-full object-contain rounded-lg transition-transform group-hover:scale-[1.01]"
+            />
+            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1.5 text-white text-[12px] font-bold rounded-xl backdrop-blur-[2px]">
+              <ZoomIn className="w-4 h-4" />
+              <span>تكبير الرسم التوضيحي</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Image Zoom Lightbox Modal */}
+      {isImageModalOpen && q.imageUrl && (
+        <div
+          className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 backdrop-blur-sm"
+          onClick={() => setIsImageModalOpen(false)}
+        >
+          <div
+            className="relative max-w-4xl max-h-[92vh] bg-white dark:bg-[#0F172A] rounded-2xl p-4 shadow-2xl border border-[#334155] flex flex-col items-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="w-full flex items-center justify-between pb-3 border-b border-[#E2E8F0] dark:border-[#334155] mb-3">
+              <span className="text-[13px] font-bold text-[#0F172A] dark:text-white flex items-center gap-1.5">
+                <ImageIcon className="w-4 h-4 text-[#800020] dark:text-[#FB7185]" />
+                معاينة الرسم التوضيحي للسؤال
+              </span>
+              <button
+                type="button"
+                onClick={() => setIsImageModalOpen(false)}
+                className="w-8 h-8 rounded-lg border border-[#E2E8F0] dark:border-[#334155] flex items-center justify-center text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <img
+              src={q.imageUrl}
+              alt="رسم توضيحي للسؤال"
+              className="max-h-[75vh] w-auto max-w-full object-contain rounded-lg"
+            />
+          </div>
         </div>
       )}
 

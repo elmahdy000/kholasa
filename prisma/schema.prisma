@@ -152,10 +152,14 @@ model Grade {
 }
 
 model AcademicTrack {
-  id      String @id @default(cuid())
-  name    String
-  code    String
-  gradeId String
+  id            String   @id @default(cuid())
+  name          String
+  nameEn        String?
+  code          String
+  gradeId       String
+  categoryScope String?  @default("BOTH")
+  isActive      Boolean  @default(true)
+  order         Int      @default(0)
 
   grade    Grade     @relation(fields: [gradeId], references: [id], onDelete: Cascade)
   subjects Subject[]
@@ -175,6 +179,8 @@ model Subject {
   gradeId        String
   trackId        String?
   schoolCategory SchoolCategory @default(ARABIC)
+  isElective     Boolean        @default(false)
+  electiveGroup  String?
   order          Int            @default(0)
   isPublished    Boolean        @default(true)
 
@@ -285,6 +291,7 @@ model Question {
   subjectId      String
   unitId         String?
   schoolCategory SchoolCategory @default(ARABIC)
+  imageUrl       String?
   batchId        String?
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt

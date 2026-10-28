@@ -134,4 +134,71 @@ export class CurriculumUnitsService {
       )
     );
   }
+
+  /**
+   * Bulk import units and their lessons into a subject atomically
+   */
+  static async bulkImportCurriculum(
+    subjectId: string,
+    units: {
+      title: string;
+      description?: string | null;
+      order?: number;
+      lessons: {
+        title: string;
+        order?: number;
+        durationMinutes?: number;
+      }[];
+    }[]
+  ) {
+    const subject = await prisma.subject.findUnique({
+      where: { id: subjectId },
+      select: { id: true, name: true },
+    });
+    if (!subject) {
+      throw notFound("المادة المحددة غير موجودة");
+    }
+
+    if (!Array.isArray(units) || units.length === 0) {
+      return [];
+    }
+
+    const highestUnit = await prisma.unit.findFirst({
+      where: { subjectId },
+      orderBy: { order: "desc" },
+      select: { order: true },
+    });
+    const baseUnitOrder = (highestUnit?.order ?? -1) + 1;
+
+    return prisma.$transaction(async (tx) => {
+      const createdUnits = [];
+      for (let i = 0; i < units.length; i++) {
+        const u = units[i];
+        const unit = await tx.unit.create({
+          data: {
+            subjectId,
+            title: u.title.trim(),
+            description: u.description?.trim() || null,
+            order: baseUnitOrder + (u.order !== undefined ? u.order : i),
+            isPublished: true,
+            lessons: {
+              create: (u.lessons || []).map((l, lIdx) => ({
+                title: l.title.trim(),
+                order: l.order !== undefined ? l.order : lIdx + 1,
+                durationMinutes: l.durationMinutes || 15,
+                isPublished: true,
+              })),
+            },
+          },
+          include: {
+            lessons: {
+              orderBy: { order: "asc" },
+            },
+          },
+        });
+        createdUnits.push(unit);
+      }
+      return createdUnits;
+    });
+  }
 }

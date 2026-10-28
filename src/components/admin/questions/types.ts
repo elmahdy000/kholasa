@@ -35,6 +35,7 @@ export interface Question {
   type: string;
   difficulty: string;
   schoolCategory?: "ARABIC" | "LANGUAGES";
+  imageUrl?: string | null;
   subject: {
     id: string;
     name: string;

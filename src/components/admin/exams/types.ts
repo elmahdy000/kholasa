@@ -3,6 +3,16 @@ export interface Subject {
   name: string;
   color?: string | null;
   questionsCount?: number;
+  units?: {
+    id: string;
+    title: string;
+    order?: number;
+    lessons?: {
+      id: string;
+      title: string;
+      order?: number;
+    }[];
+  }[];
 }
 
 export interface ExamItem {

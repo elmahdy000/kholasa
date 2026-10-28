@@ -58,6 +58,8 @@ export class ExamCoreService {
     isPractice?: boolean;
     questionIds?: string[];
     randomQuestionsCount?: number;
+    unitId?: string | null;
+    lessonId?: string | null;
   }) {
     const {
       title,
@@ -67,13 +69,28 @@ export class ExamCoreService {
       isPractice = false,
       questionIds = [],
       randomQuestionsCount = 0,
+      unitId,
+      lessonId,
     } = input;
 
     let selectedQuestionIds: string[] = Array.isArray(questionIds) ? questionIds : [];
 
     if (selectedQuestionIds.length === 0 && Number(randomQuestionsCount) > 0) {
+      const questionWhere: Prisma.QuestionWhereInput = {
+        subjectId,
+        status: "PUBLISHED",
+      };
+      if (unitId) {
+        questionWhere.unitId = unitId;
+      }
+      if (lessonId) {
+        questionWhere.lessons = {
+          some: { lessonId },
+        };
+      }
+
       const availableQuestions = await prisma.question.findMany({
-        where: { subjectId, status: "PUBLISHED" },
+        where: questionWhere,
         select: { id: true },
         take: Number(randomQuestionsCount),
       });
@@ -96,7 +113,7 @@ export class ExamCoreService {
       },
       include: {
         subject: { select: { id: true, name: true, color: true } },
-        questions: { select: { id: true } },
+        questions: { select: { id: true, questionId: true, order: true } },
       },
     });
   }

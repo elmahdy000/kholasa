@@ -23,6 +23,9 @@ export class CurriculumService {
   static createGrade = CurriculumHierarchyService.createGrade;
   static updateGrade = CurriculumHierarchyService.updateGrade;
   static deleteGrade = CurriculumHierarchyService.deleteGrade;
+  static createTrack = CurriculumHierarchyService.createTrack;
+  static updateTrack = CurriculumHierarchyService.updateTrack;
+  static deleteTrack = CurriculumHierarchyService.deleteTrack;
   static createSubject = CurriculumHierarchyService.createSubject;
   static updateSubject = CurriculumHierarchyService.updateSubject;
   static deleteSubject = CurriculumHierarchyService.deleteSubject;
@@ -34,6 +37,7 @@ export class CurriculumService {
   static updateUnit = CurriculumUnitsService.updateUnit;
   static deleteUnit = CurriculumUnitsService.deleteUnit;
   static reorderUnits = CurriculumUnitsService.reorderUnits;
+  static bulkImportCurriculum = CurriculumUnitsService.bulkImportCurriculum;
 
   // Lessons
   static getLesson = CurriculumLessonsService.getLesson;

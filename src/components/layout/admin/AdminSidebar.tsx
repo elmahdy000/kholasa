@@ -62,11 +62,11 @@ export function AdminSidebar({
                   <span className="font-bold text-[13px] text-[#0F172A] dark:text-[#F8FAFC] tracking-tight block truncate">
                     منصة الخلاصة
                   </span>
-                  <span className="px-2 py-0.2 rounded text-[13px] font-mono bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[#64748B]">
+                  <span className="px-1.5 py-0.5 rounded text-[11px] font-bold font-mono bg-[#800020]/10 text-[#800020] border border-[#800020]/20">
                     PRO
                   </span>
                 </div>
-                <span className="text-[13px] font-mono text-[#059669] flex items-center gap-1 mt-1">
+                <span className="text-[11px] font-medium text-[#059669] flex items-center gap-1 mt-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#059669] animate-pulse" />
                   <span>النظام متصل</span>
                 </span>
@@ -102,15 +102,15 @@ export function AdminSidebar({
               <Search className="w-3.5 h-3.5 text-[#64748B] group-hover:text-[#0F172A] dark:group-hover:text-[#F8FAFC]" />
               <span>بحث سريع أو أمر...</span>
             </div>
-            <kbd className="px-2 py-1 rounded bg-[#E2E8F0] dark:bg-[#334155] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-mono text-[#64748B] dark:text-[#94A3B8]">
-              ⌘K
+            <kbd className="px-1.5 py-0.5 rounded bg-[#E2E8F0] dark:bg-[#334155] border border-[#CBD5E1] dark:border-[#475569] text-[11px] font-mono text-[#64748B] dark:text-[#94A3B8]">
+              Ctrl+K
             </kbd>
           </button>
         ) : (
           <button
             onClick={() => setIsCommandOpen(true)}
             className="w-full h-11 flex items-center justify-center rounded-lg bg-[#F8FAFC] dark:bg-[#1E293B] text-[#64748B] hover:text-[#0F172A] dark:hover:text-[#F8FAFC] transition-colors"
-            title="بحث سريع (⌘K)"
+            title="بحث سريع (Ctrl+K)"
           >
             <Search className="w-4 h-4" />
           </button>
@@ -121,7 +121,7 @@ export function AdminSidebar({
           {navigationGroups.map((group, gIdx) => (
             <div key={gIdx} className="space-y-1">
               {!isCollapsed && (
-                <span className="px-3 text-[13px] font-mono uppercase tracking-wider text-[#64748B] dark:text-[#94A3B8] block pb-1">
+                <span className="px-3 text-[11px] font-bold text-[#64748B] dark:text-[#94A3B8] block pb-1">
                   {group.title}
                 </span>
               )}
@@ -145,15 +145,15 @@ export function AdminSidebar({
                         isCollapsed ? "justify-center" : "justify-between"
                       } ${
                         isActive
-                          ? "bg-[#334155] text-white dark:bg-[#F8FAFC] dark:text-[#1E293B] font-semibold "
-                          : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-[#F8FAFC] hover:bg-[#F8FAFC]/80 dark:hover:bg-[#1E293B]/60"
+                          ? "bg-[#800020] text-white dark:bg-[#800020] dark:text-white font-semibold shadow-sm"
+                          : "text-[#475569] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-[#F8FAFC] hover:bg-[#F8FAFC] dark:hover:bg-[#1E293B]/60"
                       }`}
                     >
                       <div className="flex items-center gap-3 min-w-0">
                         <Icon
                           className={`w-4 h-4 shrink-0 transition-colors ${
                             isActive
-                              ? "text-white dark:text-[#1E293B]"
+                              ? "text-white"
                               : "text-[#64748B] group-hover:text-[#0F172A] dark:group-hover:text-[#F8FAFC]"
                           }`}
                         />
@@ -162,9 +162,9 @@ export function AdminSidebar({
 
                       {!isCollapsed && item.badge && (
                         <span
-                          className={`px-2 py-0.2 rounded text-[13px] font-mono border ${
+                          className={`px-2 py-0.5 rounded-md text-[11px] font-semibold border ${
                             isActive
-                              ? "bg-white/20 text-white dark:bg-black/20 dark:text-black border-transparent"
+                              ? "bg-white/20 text-white border-white/20"
                               : item.badgeColor
                           }`}
                         >
@@ -173,7 +173,7 @@ export function AdminSidebar({
                       )}
 
                       {isActive && !isCollapsed && !item.badge && (
-                        <span className="w-1.5 h-1.5 rounded-full bg-white dark:bg-[#1E293B]" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-white shrink-0" />
                       )}
                     </Link>
                   );
@@ -214,7 +214,7 @@ export function AdminSidebar({
           }`}
         >
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-7 h-7 rounded-full bg-[#334155] text-white flex items-center justify-center font-bold text-[13px] shrink-0">
+            <div className="w-7 h-7 rounded-full bg-[#800020] text-white flex items-center justify-center font-bold text-[12px] shrink-0 shadow-sm">
               {(user.name || "أ").charAt(0)}
             </div>
             {!isCollapsed && (
@@ -222,7 +222,7 @@ export function AdminSidebar({
                 <span className="text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC] block truncate leading-tight">
                   {user.name || "مشرف المنصة"}
                 </span>
-                <span className="text-[13px] font-mono text-[#64748B] block truncate leading-none mt-1">
+                <span className="text-[11px] font-medium text-[#64748B] dark:text-[#94A3B8] block truncate leading-none mt-1">
                   {getRoleArabicLabel(user.role)}
                 </span>
               </div>

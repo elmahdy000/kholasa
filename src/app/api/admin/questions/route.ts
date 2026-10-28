@@ -52,6 +52,7 @@ export async function POST(req: Request) {
       subjectId,
       unitId,
       lessonId,
+      imageUrl,
       options = [],
       concept,
       correctReason,
@@ -71,6 +72,7 @@ export async function POST(req: Request) {
       difficulty,
       subjectId,
       unitId: unitId || null,
+      imageUrl: typeof imageUrl === "string" ? imageUrl.trim() || null : null,
       lessonIds: lessonId ? [lessonId] : [],
       options: Array.isArray(options) ? options : [],
       explanation:

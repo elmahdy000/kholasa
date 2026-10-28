@@ -17,6 +17,7 @@ import { GradeCard } from "./structure/GradeCard";
 import { SystemModal } from "./structure/SystemModal";
 import { GradeModal } from "./structure/GradeModal";
 import { SubjectModal } from "./structure/SubjectModal";
+import { ConfirmModal } from "@/components/ui/ConfirmModal";
 
 export type {
   System,
@@ -32,6 +33,19 @@ export function StructureManagerClient({
   const [selectedSystemId, setSelectedSystemId] = useState<string>(
     initialSystems[0]?.id || ""
   );
+
+  // Confirmation modal state
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean;
+    title: string;
+    description: string;
+    onConfirm: () => Promise<void>;
+  }>({
+    isOpen: false,
+    title: "",
+    description: "",
+    onConfirm: async () => {},
+  });
 
   // Modals state
   const [systemModal, setSystemModal] = useState<{
@@ -117,22 +131,31 @@ export function StructureManagerClient({
     }
   };
 
-  const handleDeleteSystem = async (id: string) => {
-    if (!confirm("هل أنت متأكد من حذف هذا النظام التعليمي وجميع صفوفه ومواده؟"))
-      return;
-    setLoading(true);
-    try {
-      const res = await fetch(`/api/admin/structure?type=system&id=${id}`, {
-        method: "DELETE",
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
-      await refreshData();
-    } catch (err: any) {
-      alert(err.message || "فشل الحذف");
-    } finally {
-      setLoading(false);
-    }
+  const handleDeleteSystem = (id: string) => {
+    const sys = systems.find((s) => s.id === id);
+    const sysName = sys ? `"${sys.name}"` : "هذا النظام التعليمي";
+    setConfirmModal({
+      isOpen: true,
+      title: "حذف النظام التعليمي",
+      description: `هل أنت متأكد من حذف ${sysName} وجميع صفوفه ومواده؟ لا يمكن التراجع عن هذا الإجراء بعد تنفيذه.`,
+      onConfirm: async () => {
+        setLoading(true);
+        try {
+          const res = await fetch(`/api/admin/structure?type=system&id=${id}`, {
+            method: "DELETE",
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error);
+          await refreshData();
+          setConfirmModal((prev) => ({ ...prev, isOpen: false }));
+        } catch (err: any) {
+          setErrorMsg(err.message || "فشل الحذف");
+          throw err;
+        } finally {
+          setLoading(false);
+        }
+      },
+    });
   };
 
   // Handlers for Grade
@@ -181,18 +204,28 @@ export function StructureManagerClient({
     }
   };
 
-  const handleDeleteGrade = async (id: string) => {
-    if (!confirm("هل أنت متأكد من حذف هذا الصف الدراسي؟")) return;
-    try {
-      const res = await fetch(`/api/admin/structure?type=grade&id=${id}`, {
-        method: "DELETE",
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
-      await refreshData();
-    } catch (err: any) {
-      alert(err.message || "فشل الحذف");
-    }
+  const handleDeleteGrade = (id: string) => {
+    const grade = systems.flatMap((s) => s.grades).find((g) => g.id === id);
+    const gradeName = grade ? `"${grade.name}"` : "هذا الصف الدراسي";
+    setConfirmModal({
+      isOpen: true,
+      title: "حذف الصف الدراسي",
+      description: `هل أنت متأكد من حذف ${gradeName} وجميع مواده ومحتوياته؟ لا يمكن التراجع عن هذا الإجراء بعد تنفيذه.`,
+      onConfirm: async () => {
+        try {
+          const res = await fetch(`/api/admin/structure?type=grade&id=${id}`, {
+            method: "DELETE",
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error);
+          await refreshData();
+          setConfirmModal((prev) => ({ ...prev, isOpen: false }));
+        } catch (err: any) {
+          setErrorMsg(err.message || "فشل الحذف");
+          throw err;
+        }
+      },
+    });
   };
 
   // Handlers for Subject
@@ -249,18 +282,31 @@ export function StructureManagerClient({
     }
   };
 
-  const handleDeleteSubject = async (id: string) => {
-    if (!confirm("هل أنت متأكد من حذف هذه المادة؟")) return;
-    try {
-      const res = await fetch(`/api/admin/structure?type=subject&id=${id}`, {
-        method: "DELETE",
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
-      await refreshData();
-    } catch (err: any) {
-      alert(err.message || "فشل الحذف");
-    }
+  const handleDeleteSubject = (id: string) => {
+    const subject = systems
+      .flatMap((s) => s.grades)
+      .flatMap((g) => g.subjects)
+      .find((sub) => sub.id === id);
+    const subjectName = subject ? `"${subject.name}"` : "هذه المادة";
+    setConfirmModal({
+      isOpen: true,
+      title: "حذف المادة الدراسية",
+      description: `هل أنت متأكد من حذف ${subjectName} وجميع وحداتها ودروسها؟ لا يمكن التراجع عن هذا الإجراء بعد تنفيذه.`,
+      onConfirm: async () => {
+        try {
+          const res = await fetch(`/api/admin/structure?type=subject&id=${id}`, {
+            method: "DELETE",
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error);
+          await refreshData();
+          setConfirmModal((prev) => ({ ...prev, isOpen: false }));
+        } catch (err: any) {
+          setErrorMsg(err.message || "فشل الحذف");
+          throw err;
+        }
+      },
+    });
   };
 
   return (
@@ -457,6 +503,18 @@ export function StructureManagerClient({
         loading={loading}
         onClose={() => setSubjectModal({ isOpen: false, systemId: "", gradeId: "" })}
         onSubmit={handleSaveSubject}
+      />
+
+      {/* Confirmation Dialog */}
+      <ConfirmModal
+        open={confirmModal.isOpen}
+        title={confirmModal.title}
+        description={confirmModal.description}
+        onClose={() => setConfirmModal((prev) => ({ ...prev, isOpen: false }))}
+        onConfirm={confirmModal.onConfirm}
+        confirmText="تأكيد الحذف"
+        cancelText="إلغاء"
+        variant="danger"
       />
     </div>
   );

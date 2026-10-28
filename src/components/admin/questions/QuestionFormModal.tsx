@@ -6,6 +6,7 @@ import type { Question, Subject, Grade } from "./types";
 import { QuestionCurriculumSelector } from "./QuestionCurriculumSelector";
 import { QuestionTypeOptionsEditor, type FormOption } from "./QuestionTypeOptionsEditor";
 import { QuestionExplanationEditor } from "./QuestionExplanationEditor";
+import { QuestionImageUploader } from "./QuestionImageUploader";
 
 interface QuestionFormModalProps {
   isOpen: boolean;
@@ -34,6 +35,7 @@ export function QuestionFormModal({
   const [unitId, setUnitId] = useState<string>("");
   const [lessonId, setLessonId] = useState<string>("");
   const [statement, setStatement] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
   const [type, setType] = useState<"MCQ" | "TRUE_FALSE" | "ESSAY">("MCQ");
   const [difficulty, setDifficulty] = useState<"EASY" | "MEDIUM" | "HARD">("MEDIUM");
   const [concept, setConcept] = useState("");
@@ -56,6 +58,7 @@ export function QuestionFormModal({
         setUnitId(editingQuestion.unit?.id || "");
         setLessonId(editingQuestion.lessons?.[0]?.lesson?.id || "");
         setStatement(editingQuestion.statement);
+        setImageUrl(editingQuestion.imageUrl || "");
         setType(editingQuestion.type as any);
         setDifficulty(editingQuestion.difficulty as any);
         setConcept(editingQuestion.explanation?.concept || "");
@@ -73,6 +76,7 @@ export function QuestionFormModal({
         setUnitId("");
         setLessonId("");
         setStatement("");
+        setImageUrl("");
         setType("MCQ");
         setDifficulty("MEDIUM");
         setConcept("");
@@ -126,6 +130,7 @@ export function QuestionFormModal({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           statement: statement.trim(),
+          imageUrl: imageUrl.trim() || undefined,
           subjectId,
           unitId: unitId || undefined,
           lessonId: lessonId || undefined,
@@ -208,6 +213,12 @@ export function QuestionFormModal({
               className="w-full p-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#800020]"
             />
           </div>
+
+          {/* Question Image (Optional) */}
+          <QuestionImageUploader
+            imageUrl={imageUrl}
+            onChange={setImageUrl}
+          />
 
           {/* Type and Difficulty */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

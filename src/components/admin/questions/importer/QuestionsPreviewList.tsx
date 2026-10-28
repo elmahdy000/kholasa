@@ -181,6 +181,16 @@ export function QuestionsPreviewList({
                 )}
               </div>
 
+              {q.imageUrl && (
+                <div className="mb-3">
+                  <img
+                    src={q.imageUrl}
+                    alt="صورة السؤال"
+                    className="max-h-48 max-w-full object-contain rounded-lg border border-[#E2E8F0] dark:border-[#334155]"
+                  />
+                </div>
+              )}
+
               {/* Options or Model Answer */}
               {q.type !== "ESSAY" && q.options.length > 0 && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">

@@ -20,6 +20,18 @@ const createSchema = z.discriminatedUnion("type", [
     data: z.object({ name, code, systemId: z.string().min(1), order }),
   }),
   z.object({
+    type: z.literal("track"),
+    data: z.object({
+      name,
+      code,
+      gradeId: z.string().min(1),
+      nameEn: optText,
+      categoryScope: z.string().optional(),
+      isActive: z.boolean().optional(),
+      order,
+    }),
+  }),
+  z.object({
     type: z.literal("subject"),
     data: z.object({
       name,
@@ -30,6 +42,9 @@ const createSchema = z.discriminatedUnion("type", [
       systemId: z.string().min(1),
       gradeId: z.string().min(1),
       trackId: z.string().nullable().optional(),
+      schoolCategory: z.enum(["ARABIC", "LANGUAGES"]).optional(),
+      isElective: z.boolean().optional(),
+      electiveGroup: optText,
       isPublished: z.boolean().optional(),
       order,
     }),
@@ -54,6 +69,18 @@ const updateSchema = z.discriminatedUnion("type", [
     data: z.object({ name: name.optional(), code: code.optional(), order }),
   }),
   z.object({
+    type: z.literal("track"),
+    id: z.string().min(1),
+    data: z.object({
+      name: name.optional(),
+      code: code.optional(),
+      nameEn: optText,
+      categoryScope: z.string().optional(),
+      isActive: z.boolean().optional(),
+      order,
+    }),
+  }),
+  z.object({
     type: z.literal("subject"),
     id: z.string().min(1),
     data: z.object({
@@ -62,6 +89,10 @@ const updateSchema = z.discriminatedUnion("type", [
       icon: z.string().max(100).nullable().optional(),
       color: z.string().max(20).optional(),
       description: optText,
+      trackId: z.string().nullable().optional(),
+      schoolCategory: z.enum(["ARABIC", "LANGUAGES"]).optional(),
+      isElective: z.boolean().optional(),
+      electiveGroup: optText,
       order,
       isPublished: z.boolean().optional(),
     }),
@@ -87,7 +118,7 @@ export async function GET() {
   }
 }
 
-// POST: Create a system, grade, or subject
+// POST: Create a system, grade, track, or subject
 export async function POST(req: Request) {
   try {
     const user = await requireAdminUser();
@@ -96,7 +127,8 @@ export async function POST(req: Request) {
     let item: { id: string };
     if (body.type === "system") item = await CurriculumService.createSystem(body.data);
     else if (body.type === "grade") item = await CurriculumService.createGrade(body.data);
-    else item = await CurriculumService.createSubject(body.data);
+    else if (body.type === "track") item = await CurriculumService.createTrack(body.data);
+    else item = await CurriculumService.createSubject(body.data as any);
 
     await AnalyticsService.logAuditAction(user.id, "CREATE", body.type, item.id, {
       name: body.data.name,
@@ -107,7 +139,7 @@ export async function POST(req: Request) {
   }
 }
 
-// PATCH: Update an existing system, grade, or subject
+// PATCH: Update an existing system, grade, track, or subject
 export async function PATCH(req: Request) {
   try {
     const user = await requireAdminUser();
@@ -116,7 +148,8 @@ export async function PATCH(req: Request) {
     let item: { id: string };
     if (body.type === "system") item = await CurriculumService.updateSystem(body.id, body.data);
     else if (body.type === "grade") item = await CurriculumService.updateGrade(body.id, body.data);
-    else item = await CurriculumService.updateSubject(body.id, body.data);
+    else if (body.type === "track") item = await CurriculumService.updateTrack(body.id, body.data);
+    else item = await CurriculumService.updateSubject(body.id, body.data as any);
 
     await AnalyticsService.logAuditAction(user.id, "UPDATE", body.type, body.id, {
       fields: Object.keys(body.data),
@@ -127,7 +160,7 @@ export async function PATCH(req: Request) {
   }
 }
 
-// DELETE: Delete a system, grade, or subject
+// DELETE: Delete a system, grade, track, or subject
 export async function DELETE(req: Request) {
   try {
     const user = await requireAdminUser();
@@ -139,6 +172,7 @@ export async function DELETE(req: Request) {
 
     if (type === "system") await CurriculumService.deleteSystem(id);
     else if (type === "grade") await CurriculumService.deleteGrade(id);
+    else if (type === "track") await CurriculumService.deleteTrack(id);
     else if (type === "subject") await CurriculumService.deleteSubject(id);
     else throw badRequest("نوع العنصر غير مدعوم");
 

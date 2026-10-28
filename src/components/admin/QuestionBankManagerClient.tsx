@@ -12,6 +12,8 @@ import {
 import { QuestionFilterBar } from "./questions/QuestionFilterBar";
 import { QuestionCard } from "./questions/QuestionCard";
 import { QuestionFormModal } from "./questions/QuestionFormModal";
+import { QuestionBulkActionsBar } from "./questions/QuestionBulkActionsBar";
+import { ConfirmModal } from "@/components/ui/ConfirmModal";
 
 export type {
   Question,
@@ -26,6 +28,23 @@ export function QuestionBankManagerClient({
   grades,
 }: QuestionBankManagerClientProps) {
   const [questions, setQuestions] = useState<Question[]>(initialQuestions);
+
+  // Multi-selection state for Bulk Actions
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [isBulkDeleting, setIsBulkDeleting] = useState(false);
+
+  // Confirmation dialog state
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean;
+    title: string;
+    description: string;
+    onConfirm: () => Promise<void>;
+  }>({
+    isOpen: false,
+    title: "",
+    description: "",
+    onConfirm: async () => {},
+  });
 
   // Grade & School Category Primary Hierarchy Filters
   const [selectedGradeCode, setSelectedGradeCode] = useState<string>("all");
@@ -46,22 +65,49 @@ export function QuestionBankManagerClient({
     return s?.schoolCategory === "LANGUAGES" ? "LANGUAGES" : "ARABIC";
   };
 
-  // Delete Question
-  const handleDeleteQuestion = async (qId: string) => {
-    if (!confirm("هل أنت متأكد من حذف هذا السؤال نهائياً من بنك الأسئلة؟")) return;
-
-    try {
-      const res = await fetch(`/api/admin/questions/${qId}`, {
-        method: "DELETE",
-      });
-      if (res.ok) {
-        setQuestions((prev) => prev.filter((q) => q.id !== qId));
+  // Toggle selection of a single question
+  const handleToggleSelect = (qId: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(qId)) {
+        next.delete(qId);
       } else {
-        alert("تعذر حذف السؤال");
+        next.add(qId);
       }
-    } catch {
-      alert("حدث خطأ أثناء حذف السؤال");
-    }
+      return next;
+    });
+  };
+
+  const handleClearSelection = () => {
+    setSelectedIds(new Set());
+  };
+
+  // Delete Single Question
+  const handleDeleteQuestion = (qId: string) => {
+    setConfirmModal({
+      isOpen: true,
+      title: "حذف السؤال من بنك الأسئلة",
+      description: "هل أنت متأكد من حذف هذا السؤال نهائياً من بنك الأسئلة؟ لا يمكن التراجع عن هذا الإجراء.",
+      onConfirm: async () => {
+        const res = await fetch(`/api/admin/questions/${qId}`, {
+          method: "DELETE",
+        });
+        if (res.ok) {
+          setQuestions((prev) => prev.filter((q) => q.id !== qId));
+          setSelectedIds((prev) => {
+            if (prev.has(qId)) {
+              const next = new Set(prev);
+              next.delete(qId);
+              return next;
+            }
+            return prev;
+          });
+          setConfirmModal((prev) => ({ ...prev, isOpen: false }));
+        } else {
+          throw new Error("تعذر حذف السؤال");
+        }
+      },
+    });
   };
 
   const handleQuestionSaved = (savedQuestion: Question) => {
@@ -111,6 +157,66 @@ export function QuestionBankManagerClient({
     return true;
   });
 
+  // Check if all filtered questions are currently selected
+  const isAllSelected =
+    filteredQuestions.length > 0 &&
+    filteredQuestions.every((q) => selectedIds.has(q.id));
+
+  // Toggle select all visible filtered questions
+  const handleToggleSelectAll = () => {
+    if (isAllSelected) {
+      setSelectedIds((prev) => {
+        const next = new Set(prev);
+        filteredQuestions.forEach((q) => next.delete(q.id));
+        return next;
+      });
+    } else {
+      setSelectedIds((prev) => {
+        const next = new Set(prev);
+        filteredQuestions.forEach((q) => next.add(q.id));
+        return next;
+      });
+    }
+  };
+
+  // Bulk Delete Selected Questions
+  const handleBulkDelete = () => {
+    const idsToDelete = Array.from(selectedIds);
+    if (idsToDelete.length === 0) return;
+
+    const count = idsToDelete.length;
+    setConfirmModal({
+      isOpen: true,
+      title: "حذف الأسئلة المحددة",
+      description: `هل أنت متأكد من حذف ${count} ${count === 1 ? "سؤال محدد" : "أسئلة محددة"} نهائياً من بنك الأسئلة؟ لا يمكن التراجع عن هذا الإجراء.`,
+      onConfirm: async () => {
+        setIsBulkDeleting(true);
+        try {
+          const res = await fetch("/api/admin/questions/bulk", {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ ids: idsToDelete }),
+          });
+
+          const data = await res.json();
+          if (!res.ok) {
+            throw new Error(data.error || "تعذر حذف الأسئلة المحددة");
+          }
+
+          const deletedSet = new Set(idsToDelete);
+          setQuestions((prev) => prev.filter((q) => !deletedSet.has(q.id)));
+          setSelectedIds(new Set());
+          setConfirmModal((prev) => ({ ...prev, isOpen: false }));
+        } catch (err: unknown) {
+          console.error("Bulk delete questions failed:", err);
+          throw err;
+        } finally {
+          setIsBulkDeleting(false);
+        }
+      },
+    });
+  };
+
   return (
     <div className="space-y-6">
       <QuestionFilterBar
@@ -130,6 +236,17 @@ export function QuestionBankManagerClient({
         totalQuestions={questions.length}
         filteredCount={filteredQuestions.length}
         onOpenCreate={() => setIsCreateOpen(true)}
+      />
+
+      {/* Bulk Actions Bar */}
+      <QuestionBulkActionsBar
+        totalCount={filteredQuestions.length}
+        selectedCount={selectedIds.size}
+        isAllSelected={isAllSelected}
+        onToggleSelectAll={handleToggleSelectAll}
+        onClearSelection={handleClearSelection}
+        onDeleteSelected={handleBulkDelete}
+        isDeleting={isBulkDeleting}
       />
 
       {/* Questions List */}
@@ -152,6 +269,8 @@ export function QuestionBankManagerClient({
               key={q.id}
               question={q}
               index={idx}
+              isSelected={selectedIds.has(q.id)}
+              onToggleSelect={() => handleToggleSelect(q.id)}
               getSubjectCategory={getSubjectCategory}
               onEdit={(question) => setEditingQuestion(question)}
               onDelete={handleDeleteQuestion}
@@ -211,6 +330,18 @@ export function QuestionBankManagerClient({
           </div>
         </div>
       )}
+
+      {/* Confirmation Dialog */}
+      <ConfirmModal
+        open={confirmModal.isOpen}
+        title={confirmModal.title}
+        description={confirmModal.description}
+        onClose={() => setConfirmModal((prev) => ({ ...prev, isOpen: false }))}
+        onConfirm={confirmModal.onConfirm}
+        confirmText="تأكيد الحذف"
+        cancelText="إلغاء"
+        variant="danger"
+      />
     </div>
   );
 }

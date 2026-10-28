@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ChevronDown, Edit, Plus, FileText } from "lucide-react";
+import { ChevronDown, Edit, Plus, FileText, Trash2 } from "lucide-react";
 import type { Unit } from "./types";
 import { LessonRow } from "./LessonRow";
 
@@ -13,9 +13,11 @@ interface UnitAccordionProps {
   togglingId: string | null;
   onToggleExpand: (unitId: string) => void;
   onEditUnit: (unit: Unit) => void;
+  onDeleteUnit?: (id: string, title: string) => void;
   onCreateLesson: (context: { unitId: string; unitTitle: string; subjectName: string }) => void;
   onTogglePublished: (entity: "subject" | "unit" | "lesson", id: string, currentStatus: boolean) => void;
   onEditLesson: (id: string) => void;
+  onDeleteLesson?: (id: string, title: string) => void;
 }
 
 export function UnitAccordion({
@@ -26,9 +28,11 @@ export function UnitAccordion({
   togglingId,
   onToggleExpand,
   onEditUnit,
+  onDeleteUnit,
   onCreateLesson,
   onTogglePublished,
   onEditLesson,
+  onDeleteLesson,
 }: UnitAccordionProps) {
   return (
     <div className="p-4 sm:p-5 space-y-3">
@@ -52,11 +56,21 @@ export function UnitAccordion({
 
           <button
             onClick={() => onEditUnit(unit)}
-            className="p-1 rounded-md text-[#94A3B8] hover:text-[#800020] hover:bg-[#F8FAFC] dark:hover:bg-[#334155] transition-colors"
-            title="تعديل بيانات الوحدة"
+            className="p-1 rounded-md text-[#94A3B8] hover:text-[#800020] hover:bg-[#F8FAFC] dark:hover:bg-[#334155] transition-colors cursor-pointer"
+            title="تعديل اسم وبيانات الوحدة"
           >
             <Edit className="w-3.5 h-3.5" />
           </button>
+
+          {onDeleteUnit && (
+            <button
+              onClick={() => onDeleteUnit(unit.id, unit.title)}
+              className="p-1 rounded-md text-[#94A3B8] hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors cursor-pointer"
+              title="حذف الوحدة"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+            </button>
+          )}
         </div>
 
         <div className="flex items-center gap-2 self-start sm:self-center">
@@ -128,6 +142,7 @@ export function UnitAccordion({
                 unitId={unit.id}
                 togglingId={togglingId}
                 onEditLesson={onEditLesson}
+                onDeleteLesson={onDeleteLesson || (() => {})}
                 onTogglePublished={(id, status) => onTogglePublished("lesson", id, status)}
               />
             ))

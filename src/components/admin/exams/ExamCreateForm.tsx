@@ -22,12 +22,19 @@ export function ExamCreateForm({
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [subjectId, setSubjectId] = useState(subjects[0]?.id || "");
+  const [unitId, setUnitId] = useState("");
+  const [lessonId, setLessonId] = useState("");
   const [durationMinutes, setDurationMinutes] = useState(30);
   const [isPractice, setIsPractice] = useState(false);
   const [randomCount, setRandomCount] = useState(10);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  const activeSubject = subjects.find((s) => s.id === subjectId);
+  const availableUnits = activeSubject?.units || [];
+  const activeUnit = availableUnits.find((u) => u.id === unitId);
+  const availableLessons = activeUnit?.lessons || [];
 
   const handleCreateExam = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,6 +54,8 @@ export function ExamCreateForm({
           durationMinutes: Number(durationMinutes),
           isPractice,
           randomQuestionCount: Number(randomCount),
+          unitId: unitId || null,
+          lessonId: lessonId || null,
         }),
       });
 
@@ -150,7 +159,11 @@ export function ExamCreateForm({
             </label>
             <select
               value={subjectId}
-              onChange={(e) => setSubjectId(e.target.value)}
+              onChange={(e) => {
+                setSubjectId(e.target.value);
+                setUnitId("");
+                setLessonId("");
+              }}
               className="w-full h-11 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#800020]"
             >
               {subjects.map((s) => (
@@ -173,6 +186,49 @@ export function ExamCreateForm({
               onChange={(e) => setDurationMinutes(Number(e.target.value))}
               className="w-full h-11 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold font-mono text-[#0F172A] dark:text-white focus:outline-none focus:border-[#800020]"
             />
+          </div>
+        </div>
+
+        {/* Scope: Unit & Lesson */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3.5 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/60 border border-[#E2E8F0] dark:border-[#334155]">
+          <div>
+            <label className="block text-[12px] font-bold text-[#64748B] mb-1">
+              الوحدة الدراسية (اختياري)
+            </label>
+            <select
+              value={unitId}
+              onChange={(e) => {
+                setUnitId(e.target.value);
+                setLessonId("");
+              }}
+              className="w-full h-10 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#800020]"
+            >
+              <option value="">امتحان شامل لكل وحدات المادة</option>
+              {availableUnits.map((u) => (
+                <option key={u.id} value={u.id}>
+                  {u.title}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-[12px] font-bold text-[#64748B] mb-1">
+              الدرس المستهدف (اختياري)
+            </label>
+            <select
+              value={lessonId}
+              onChange={(e) => setLessonId(e.target.value)}
+              disabled={!unitId}
+              className="w-full h-10 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] text-[13px] font-bold text-[#0F172A] dark:text-white disabled:opacity-50 focus:outline-none focus:border-[#800020]"
+            >
+              <option value="">جميع دروس الوحدة المحددة</option>
+              {availableLessons.map((l) => (
+                <option key={l.id} value={l.id}>
+                  {l.title}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
 

@@ -11,6 +11,7 @@ import { MediaFilterBar } from "./media/MediaFilterBar";
 import { MediaCard } from "./media/MediaCard";
 import { MediaPreviewModal } from "./media/MediaPreviewModal";
 import { PairUploadModal } from "./media/PairUploadModal";
+import { ConfirmModal } from "@/components/ui/ConfirmModal";
 
 export type { MediaFile, MediaManagerClientProps } from "./media/types";
 
@@ -24,6 +25,19 @@ export function MediaManagerClient({ initialFiles }: MediaManagerClientProps) {
   const [playingAudio, setPlayingAudio] = useState<string | null>(null);
   const [previewFile, setPreviewFile] = useState<MediaFile | null>(null);
   const [showPairUploadModal, setShowPairUploadModal] = useState(false);
+
+  // Confirmation modal state
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean;
+    title: string;
+    description: string;
+    onConfirm: () => Promise<void>;
+  }>({
+    isOpen: false,
+    title: "",
+    description: "",
+    onConfirm: async () => {},
+  });
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -63,22 +77,25 @@ export function MediaManagerClient({ initialFiles }: MediaManagerClientProps) {
     }
   };
 
-  const handleDelete = async (filename: string) => {
-    if (!confirm(`هل أنت متأكد من حذف الملف "${filename}"؟`)) return;
-    try {
-      const res = await fetch(`/api/admin/upload?filename=${encodeURIComponent(filename)}`, {
-        method: "DELETE",
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
+  const handleDelete = (filename: string) => {
+    setConfirmModal({
+      isOpen: true,
+      title: "حذف الملف",
+      description: `هل أنت متأكد من حذف الملف "${filename}" نهائياً من خادم الوسائط؟ لا يمكن التراجع عن هذا الإجراء.`,
+      onConfirm: async () => {
+        const res = await fetch(`/api/admin/upload?filename=${encodeURIComponent(filename)}`, {
+          method: "DELETE",
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "تعذر حذف الملف");
 
-      setFiles((prev) => prev.filter((f) => f.name !== filename));
-      if (previewFile?.name === filename) {
-        setPreviewFile(null);
-      }
-    } catch (err: any) {
-      alert(err.message || "تعذر حذف الملف");
-    }
+        setFiles((prev) => prev.filter((f) => f.name !== filename));
+        if (previewFile?.name === filename) {
+          setPreviewFile(null);
+        }
+        setConfirmModal((prev) => ({ ...prev, isOpen: false }));
+      },
+    });
   };
 
   const toggleAudio = (url: string) => {
@@ -231,6 +248,18 @@ export function MediaManagerClient({ initialFiles }: MediaManagerClientProps) {
         isOpen={showPairUploadModal}
         onClose={() => setShowPairUploadModal(false)}
         onUploadSuccess={(newFiles) => setFiles(newFiles)}
+      />
+
+      {/* Confirmation Dialog */}
+      <ConfirmModal
+        open={confirmModal.isOpen}
+        title={confirmModal.title}
+        description={confirmModal.description}
+        onClose={() => setConfirmModal((prev) => ({ ...prev, isOpen: false }))}
+        onConfirm={confirmModal.onConfirm}
+        confirmText="تأكيد الحذف"
+        cancelText="إلغاء"
+        variant="danger"
       />
     </div>
   );

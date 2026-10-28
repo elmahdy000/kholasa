@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Play, Settings2, Maximize2, FileText, ExternalLink } from "lucide-react";
+import { Play, Settings2, Maximize2, FileText, ExternalLink, Trash2 } from "lucide-react";
 import type { Lesson } from "./types";
 
 interface LessonRowProps {
@@ -10,6 +10,7 @@ interface LessonRowProps {
   unitId: string;
   togglingId: string | null;
   onEditLesson: (id: string) => void;
+  onDeleteLesson: (id: string, title: string) => void;
   onTogglePublished: (id: string, currentStatus: boolean) => void;
 }
 
@@ -19,6 +20,7 @@ export function LessonRow({
   unitId,
   togglingId,
   onEditLesson,
+  onDeleteLesson,
   onTogglePublished,
 }: LessonRowProps) {
   return (
@@ -90,6 +92,14 @@ export function LessonRow({
           }`}
         >
           {lesson.isPublished ? "منشور" : "مخفي"}
+        </button>
+
+        <button
+          onClick={() => onDeleteLesson(lesson.id, lesson.title)}
+          className="h-7 w-7 rounded-lg bg-red-50 hover:bg-red-100 dark:bg-red-950/30 dark:hover:bg-red-900/50 text-red-600 dark:text-red-400 flex items-center justify-center transition-colors border border-red-200 dark:border-red-900/50 cursor-pointer"
+          title="حذف الدرس"
+        >
+          <Trash2 className="w-3.5 h-3.5" />
         </button>
       </div>
     </div>

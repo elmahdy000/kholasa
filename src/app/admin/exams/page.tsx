@@ -25,7 +25,27 @@ export default async function AdminExamsPage() {
     }),
     prisma.subject.findMany({
       orderBy: { order: "asc" },
-      select: { id: true, name: true, color: true },
+      select: {
+        id: true,
+        name: true,
+        color: true,
+        units: {
+          orderBy: { order: "asc" },
+          select: {
+            id: true,
+            title: true,
+            order: true,
+            lessons: {
+              orderBy: { order: "asc" },
+              select: {
+                id: true,
+                title: true,
+                order: true,
+              },
+            },
+          },
+        },
+      },
     }),
   ]);
 

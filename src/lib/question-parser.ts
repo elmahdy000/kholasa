@@ -25,6 +25,7 @@ export interface ParsedQuestion {
   type: QuestionType;
   difficulty: QuestionDifficulty;
   options: ParsedQuestionOption[];
+  imageUrl?: string;
   modelAnswer?: string;
   concept?: string;
   correctReason?: string;

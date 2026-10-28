@@ -9,6 +9,7 @@ export interface ParsedQuestionImportItem {
   type?: QuestionType;
   difficulty?: Difficulty;
   schoolCategory?: SchoolCategory;
+  imageUrl?: string | null;
   options?: {
     text: string;
     isCorrect: boolean;
@@ -57,6 +58,8 @@ export interface QuestionCreateInput {
   type?: QuestionType;
   difficulty?: Difficulty;
   status?: PublishStatus;
+  schoolCategory?: SchoolCategory;
+  imageUrl?: string | null;
   options?: {
     text: string;
     isCorrect: boolean;
@@ -82,6 +85,8 @@ export interface QuestionUpdateInput {
   type?: QuestionType;
   difficulty?: Difficulty;
   status?: PublishStatus;
+  schoolCategory?: SchoolCategory;
+  imageUrl?: string | null;
   options?: {
     id?: string;
     text: string;

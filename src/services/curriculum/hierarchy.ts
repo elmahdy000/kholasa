@@ -268,6 +268,73 @@ export class CurriculumHierarchyService {
   }
 
   /**
+   * Academic Track Management
+   */
+  static async createTrack(data: {
+    name: string;
+    code: string;
+    gradeId: string;
+    nameEn?: string | null;
+    categoryScope?: string;
+    isActive?: boolean;
+    order?: number;
+  }) {
+    const grade = await prisma.grade.findUnique({ where: { id: data.gradeId }, select: { id: true } });
+    if (!grade) throw notFound("الصف الدراسي المحدد غير موجود");
+
+    const existing = await prisma.academicTrack.findUnique({
+      where: { gradeId_code: { gradeId: data.gradeId, code: data.code.trim() } },
+    });
+    if (existing) {
+      throw badRequest("هذا المسار أو الكود مضاف بالفعل لهذا الصف");
+    }
+
+    return prisma.academicTrack.create({
+      data: {
+        name: data.name.trim(),
+        nameEn: data.nameEn?.trim() || null,
+        code: data.code.trim(),
+        gradeId: data.gradeId,
+        categoryScope: data.categoryScope || "BOTH",
+        isActive: data.isActive !== undefined ? Boolean(data.isActive) : true,
+        order: data.order !== undefined ? Number(data.order) : 0,
+      },
+    });
+  }
+
+  static async updateTrack(
+    id: string,
+    data: {
+      name?: string;
+      nameEn?: string | null;
+      code?: string;
+      categoryScope?: string;
+      isActive?: boolean;
+      order?: number;
+    }
+  ) {
+    return prisma.academicTrack.update({
+      where: { id },
+      data: {
+        ...(data.name !== undefined ? { name: data.name.trim() } : {}),
+        ...(data.nameEn !== undefined ? { nameEn: data.nameEn?.trim() || null } : {}),
+        ...(data.code !== undefined ? { code: data.code.trim() } : {}),
+        ...(data.categoryScope !== undefined ? { categoryScope: data.categoryScope } : {}),
+        ...(data.isActive !== undefined ? { isActive: Boolean(data.isActive) } : {}),
+        ...(data.order !== undefined ? { order: Number(data.order) } : {}),
+      },
+    });
+  }
+
+  static async deleteTrack(id: string) {
+    const activeSubjects = await prisma.subject.count({ where: { trackId: id } });
+    if (activeSubjects > 0) {
+      throw badRequest("لا يمكن حذف هذا المسار لوجود مواد دراسية ومناهج نشطة مرتبطة به حالياً");
+    }
+    return prisma.academicTrack.delete({ where: { id } });
+  }
+
+  /**
    * Subjects Management
    */
   static async createSubject(data: {
@@ -279,6 +346,9 @@ export class CurriculumHierarchyService {
     systemId: string;
     gradeId: string;
     trackId?: string | null;
+    schoolCategory?: "ARABIC" | "LANGUAGES";
+    isElective?: boolean;
+    electiveGroup?: string | null;
     isPublished?: boolean;
     order?: number;
   }) {
@@ -288,6 +358,22 @@ export class CurriculumHierarchyService {
     ]);
     if (!system) throw notFound("النظام التعليمي المحدد غير موجود");
     if (!grade) throw notFound("الصف الدراسي المحدد غير موجود");
+
+    const category = data.schoolCategory || "ARABIC";
+
+    // Validate unique subject code per grade + schoolCategory
+    const existing = await prisma.subject.findUnique({
+      where: {
+        gradeId_schoolCategory_code: {
+          gradeId: data.gradeId,
+          schoolCategory: category,
+          code: data.code.trim(),
+        },
+      },
+    });
+    if (existing) {
+      throw badRequest("رمز المادة (Code) مكرر بالفعل ضمن هذا الصف ونوع المدرسة");
+    }
 
     return prisma.subject.create({
       data: {
@@ -299,6 +385,9 @@ export class CurriculumHierarchyService {
         systemId: data.systemId,
         gradeId: data.gradeId,
         trackId: data.trackId || null,
+        schoolCategory: category,
+        isElective: Boolean(data.isElective),
+        electiveGroup: data.electiveGroup?.trim() || null,
         isPublished: data.isPublished !== undefined ? Boolean(data.isPublished) : true,
         order: data.order !== undefined ? Number(data.order) : 0,
       },
@@ -313,6 +402,10 @@ export class CurriculumHierarchyService {
       icon?: string | null;
       color?: string;
       description?: string | null;
+      trackId?: string | null;
+      schoolCategory?: "ARABIC" | "LANGUAGES";
+      isElective?: boolean;
+      electiveGroup?: string | null;
       order?: number;
       isPublished?: boolean;
     }
@@ -325,6 +418,10 @@ export class CurriculumHierarchyService {
         ...(data.icon !== undefined ? { icon: data.icon } : {}),
         ...(data.color !== undefined ? { color: data.color } : {}),
         ...(data.description !== undefined ? { description: data.description?.trim() || null } : {}),
+        ...(data.trackId !== undefined ? { trackId: data.trackId } : {}),
+        ...(data.schoolCategory !== undefined ? { schoolCategory: data.schoolCategory } : {}),
+        ...(data.isElective !== undefined ? { isElective: Boolean(data.isElective) } : {}),
+        ...(data.electiveGroup !== undefined ? { electiveGroup: data.electiveGroup?.trim() || null } : {}),
         ...(data.order !== undefined ? { order: Number(data.order) } : {}),
         ...(data.isPublished !== undefined ? { isPublished: Boolean(data.isPublished) } : {}),
       },

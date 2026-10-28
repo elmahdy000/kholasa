@@ -7,6 +7,7 @@ import { UserFilterBar } from "./users/UserFilterBar";
 import { UserTable } from "./users/UserTable";
 import { EditRoleModal } from "./users/EditRoleModal";
 import { CreateUserModal } from "./users/CreateUserModal";
+import { ConfirmModal } from "@/components/ui/ConfirmModal";
 
 export type { UserManagerClientProps, UserItem, EducationalSystem, Grade } from "./users/types";
 
@@ -21,6 +22,19 @@ export function UserManagerClient({
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedRole, setSelectedRole] = useState("all");
   const [selectedSystemId, setSelectedSystemId] = useState("all");
+
+  // Confirmation modal state
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean;
+    title: string;
+    description: string;
+    onConfirm: () => Promise<void>;
+  }>({
+    isOpen: false,
+    title: "",
+    description: "",
+    onConfirm: async () => {},
+  });
 
   // Edit Role Modal State
   const [selectedUser, setSelectedUser] = useState<UserItem | null>(null);
@@ -111,30 +125,30 @@ export function UserManagerClient({
     }
   };
 
-  const handleDeleteUser = async (userId: string, userName: string) => {
+  const handleDeleteUser = (userId: string, userName: string) => {
     if (userId === currentUserId) {
       alert("لا يمكنك حذف حسابك الحالي المسجل به الآن.");
       return;
     }
 
-    if (!confirm(`هل أنت متأكد من حذف المستخدم "${userName || "هذا الحساب"}" نهائياً؟`)) {
-      return;
-    }
+    setConfirmModal({
+      isOpen: true,
+      title: "حذف المستخدم",
+      description: `هل أنت متأكد من حذف المستخدم "${userName || "هذا الحساب"}" نهائياً؟ لا يمكن التراجع عن هذا الإجراء.`,
+      onConfirm: async () => {
+        const res = await fetch(`/api/admin/users/${userId}`, {
+          method: "DELETE",
+        });
 
-    try {
-      const res = await fetch(`/api/admin/users/${userId}`, {
-        method: "DELETE",
-      });
-
-      if (res.ok) {
-        setUsers((prev) => prev.filter((u) => u.id !== userId));
-      } else {
-        const data = await res.json();
-        alert(data.error || "تعذر حذف المستخدم");
-      }
-    } catch {
-      alert("حدث خطأ أثناء حذف المستخدم");
-    }
+        if (res.ok) {
+          setUsers((prev) => prev.filter((u) => u.id !== userId));
+          setConfirmModal((prev) => ({ ...prev, isOpen: false }));
+        } else {
+          const data = await res.json();
+          throw new Error(data.error || "تعذر حذف المستخدم");
+        }
+      },
+    });
   };
 
   const filteredUsers = users.filter((u) => {
@@ -220,6 +234,18 @@ export function UserManagerClient({
         grades={grades}
         currentUserRole={currentUserRole}
         onSubmit={handleCreateUser}
+      />
+
+      {/* Confirmation Dialog */}
+      <ConfirmModal
+        open={confirmModal.isOpen}
+        title={confirmModal.title}
+        description={confirmModal.description}
+        onClose={() => setConfirmModal((prev) => ({ ...prev, isOpen: false }))}
+        onConfirm={confirmModal.onConfirm}
+        confirmText="تأكيد الحذف"
+        cancelText="إلغاء"
+        variant="danger"
       />
     </div>
   );

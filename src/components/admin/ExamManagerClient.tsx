@@ -6,6 +6,7 @@ import { Subject, ExamItem } from "./exams/types";
 import { ExamFilterBar } from "./exams/ExamFilterBar";
 import { ExamCard } from "./exams/ExamCard";
 import { ExamCreateForm } from "./exams/ExamCreateForm";
+import { ConfirmModal } from "@/components/ui/ConfirmModal";
 
 export type { Subject, ExamItem } from "./exams/types";
 
@@ -23,6 +24,19 @@ export function ExamManagerClient({
   const [selectedSubjectId, setSelectedSubjectId] = useState("all");
   const [selectedType, setSelectedType] = useState("all");
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+
+  // Confirmation dialog state
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean;
+    title: string;
+    description: string;
+    onConfirm: () => Promise<void>;
+  }>({
+    isOpen: false,
+    title: "",
+    description: "",
+    onConfirm: async () => {},
+  });
 
   // Toggle Exam Mode (Official Exam vs Practice)
   const handleTogglePractice = async (examId: string, currentIsPractice: boolean) => {
@@ -56,29 +70,25 @@ export function ExamManagerClient({
   };
 
   // Delete Exam
-  const handleDeleteExam = async (examId: string, examTitle: string) => {
-    if (
-      !confirm(
-        `هل أنت متأكد من رغبتك في حذف امتحان "${examTitle}"؟ لا يمكن التراجع عن هذا الإجراء.`
-      )
-    ) {
-      return;
-    }
+  const handleDeleteExam = (examId: string, examTitle: string) => {
+    setConfirmModal({
+      isOpen: true,
+      title: "حذف الامتحان",
+      description: `هل أنت متأكد من رغبتك في حذف امتحان "${examTitle}"؟ لا يمكن التراجع عن هذا الإجراء بعد تنفيذه.`,
+      onConfirm: async () => {
+        const res = await fetch(`/api/admin/exams/${examId}`, {
+          method: "DELETE",
+        });
 
-    try {
-      const res = await fetch(`/api/admin/exams/${examId}`, {
-        method: "DELETE",
-      });
-
-      if (res.ok) {
-        setExams((prev) => prev.filter((e) => e.id !== examId));
-      } else {
-        const data = await res.json();
-        alert(data.error || "فشل حذف الامتحان");
-      }
-    } catch {
-      alert("حدث خطأ أثناء محاولة حذف الامتحان");
-    }
+        if (res.ok) {
+          setExams((prev) => prev.filter((e) => e.id !== examId));
+          setConfirmModal((prev) => ({ ...prev, isOpen: false }));
+        } else {
+          const data = await res.json();
+          throw new Error(data.error || "فشل حذف الامتحان");
+        }
+      },
+    });
   };
 
   const handleExamCreated = (newExam: ExamItem) => {
@@ -151,6 +161,18 @@ export function ExamManagerClient({
           />
         </div>
       )}
+
+      {/* Confirmation Dialog */}
+      <ConfirmModal
+        open={confirmModal.isOpen}
+        title={confirmModal.title}
+        description={confirmModal.description}
+        onClose={() => setConfirmModal((prev) => ({ ...prev, isOpen: false }))}
+        onConfirm={confirmModal.onConfirm}
+        confirmText="تأكيد الحذف"
+        cancelText="إلغاء"
+        variant="danger"
+      />
     </div>
   );
 }
