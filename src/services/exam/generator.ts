@@ -72,14 +72,25 @@ export class ExamGeneratorService {
           subjectId: targetSubjectId,
           schoolCategory: subject.schoolCategory,
         },
-        select: { id: true, subjectId: true },
+        select: { id: true, subjectId: true, statement: true },
       });
 
       if (explicitQuestions.length === 0) {
         throw new Error("الأسئلة المحددة غير موجودة في بنك الأسئلة أو لا تنتمي لهذه الفئة المدرسية");
       }
 
-      selected = explicitQuestions.map((q) => ({ id: q.id }));
+      // Deduplicate questions by statement and ID to guarantee zero duplicates within the exam
+      const seenExplicit = new Set<string>();
+      const uniqueExplicit: { id: string }[] = [];
+      for (const q of explicitQuestions) {
+        const norm = q.statement.trim().toLowerCase();
+        if (!seenExplicit.has(norm) && !seenExplicit.has(q.id)) {
+          seenExplicit.add(norm);
+          seenExplicit.add(q.id);
+          uniqueExplicit.push({ id: q.id });
+        }
+      }
+      selected = uniqueExplicit;
     } else {
       // 1. Build question query filter strictly scoped to subject and its school category
       const questionWhere: Prisma.QuestionWhereInput = {
@@ -101,16 +112,43 @@ export class ExamGeneratorService {
       // 2. Fetch candidate questions
       const availableQuestions = await prisma.question.findMany({
         where: questionWhere,
-        select: { id: true, type: true },
+        select: { id: true, type: true, statement: true },
       });
 
       if (availableQuestions.length === 0) {
         throw new Error("لا توجد أسئلة كافية مطابقة لمعايير الامتحان المحددة في هذا المسار المدرسي");
       }
 
-      // 3. Shuffle and pick requested count
-      const shuffled = [...availableQuestions].sort(() => 0.5 - Math.random());
-      selected = shuffled.slice(0, Math.min(questionCount, availableQuestions.length));
+      // 3. Prevent repeating questions the student has already taken in previous exams
+      const previousAnswers = await prisma.studentAnswer.findMany({
+        where: { attempt: { userId } },
+        select: { questionId: true },
+      });
+      const attemptedQuestionIds = new Set(previousAnswers.map((a) => a.questionId));
+
+      // Prioritize unattempted (fresh) questions so questions don't repeat for the student
+      const unattempted = availableQuestions.filter((q) => !attemptedQuestionIds.has(q.id));
+      const attempted = availableQuestions.filter((q) => attemptedQuestionIds.has(q.id));
+
+      const shuffledUnattempted = [...unattempted].sort(() => 0.5 - Math.random());
+      const shuffledAttempted = [...attempted].sort(() => 0.5 - Math.random());
+
+      // Candidate pool gives absolute priority to unattempted questions
+      const candidatePool = [...shuffledUnattempted, ...shuffledAttempted];
+
+      // Ensure no duplicate statements or questions exist within the exam itself
+      const seenStatements = new Set<string>();
+      const deduplicated: { id: string }[] = [];
+      for (const q of candidatePool) {
+        const norm = q.statement.trim().toLowerCase();
+        if (!seenStatements.has(norm)) {
+          seenStatements.add(norm);
+          deduplicated.push({ id: q.id });
+          if (deduplicated.length >= questionCount) break;
+        }
+      }
+
+      selected = deduplicated;
     }
 
     const isPractice = mode === "PRACTICE";

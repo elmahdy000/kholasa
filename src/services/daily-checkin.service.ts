@@ -48,10 +48,22 @@ export class DailyCheckinService {
   }
 
   private static async pickQuestionIds(
-    scope: CurriculumScope | null
+    scope: CurriculumScope | null,
+    userId?: string
   ): Promise<string[]> {
     const subjectFilter = subjectScopeWhere(scope);
     const hasScope = Boolean(scope?.gradeId);
+
+    // Identify questions already answered by this student to prevent repetition
+    let answeredIds = new Set<string>();
+    if (userId) {
+      const pastAnswers = await prisma.studentAnswer.findMany({
+        where: { attempt: { userId } },
+        select: { questionId: true },
+      });
+      answeredIds = new Set(pastAnswers.map((a) => a.questionId));
+    }
+
     const whereClause = {
       status: "PUBLISHED" as const,
       ...(hasScope ? { subject: { is: subjectFilter } } : {}),
@@ -61,28 +73,30 @@ export class DailyCheckinService {
       prisma.question.findMany({
         where: { ...whereClause, type: QuestionType.MCQ },
         select: { id: true },
-        take: 20,
+        take: 40,
       }),
       prisma.question.findMany({
         where: { ...whereClause, type: QuestionType.TRUE_FALSE },
         select: { id: true },
-        take: 20,
+        take: 40,
       }),
       prisma.question.findMany({
         where: { ...whereClause, type: QuestionType.ESSAY },
         select: { id: true },
-        take: 20,
+        take: 40,
       }),
     ]);
 
+    const filterFresh = (list: { id: string }[], count: number) => {
+      const fresh = list.filter((q) => !answeredIds.has(q.id));
+      const pool = fresh.length >= count ? fresh : [...fresh, ...list.filter((q) => answeredIds.has(q.id))];
+      return this.shuffle(pool).slice(0, count).map((q) => q.id);
+    };
+
     const ids = [
-      ...this.shuffle(mcq).slice(0, DAILY_QUESTION_COUNT.mcq).map((q) => q.id),
-      ...this.shuffle(trueFalse)
-        .slice(0, DAILY_QUESTION_COUNT.trueFalse)
-        .map((q) => q.id),
-      ...this.shuffle(essay)
-        .slice(0, DAILY_QUESTION_COUNT.essay)
-        .map((q) => q.id),
+      ...filterFresh(mcq, DAILY_QUESTION_COUNT.mcq),
+      ...filterFresh(trueFalse, DAILY_QUESTION_COUNT.trueFalse),
+      ...filterFresh(essay, DAILY_QUESTION_COUNT.essay),
     ];
 
     // Fallback if the grade has no matching published questions yet. The
@@ -141,7 +155,7 @@ export class DailyCheckinService {
     });
 
     if (!challenge || challenge.questionIds.length === 0) {
-      const questionIds = await this.pickQuestionIds(scope);
+      const questionIds = await this.pickQuestionIds(scope, userId);
 
       if (challenge) {
         challenge = await prisma.dailyChallenge.update({

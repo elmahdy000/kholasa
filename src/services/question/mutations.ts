@@ -513,15 +513,23 @@ export class QuestionMutationsService {
     }
 
     // Duplicate detection against the subject bank and inside the batch
+    // Strictly isolate by question type and difficulty: Essay is NEVER compared against MCQ,
+    // and each difficulty level is maintained as a distinct question.
     const existingStatements = await prisma.question.findMany({
       where: { subjectId: subject.id },
-      select: { statement: true },
+      select: { statement: true, type: true, difficulty: true },
     });
-    const seen = new Set(existingStatements.map((r) => normalizeStatement(r.statement)));
+    const seen = new Set(
+      existingStatements.map(
+        (r) => `${r.type}:${r.difficulty}:${normalizeStatement(r.statement)}`
+      )
+    );
     const uniqueQuestions: ParsedQuestionImportItem[] = [];
     let skippedDuplicates = 0;
     for (const q of questions) {
-      const key = normalizeStatement(q.statement);
+      const qType = q.type || batchMeta?.questionType || "MCQ";
+      const qDiff = q.difficulty || batchMeta?.difficulty || "MEDIUM";
+      const key = `${qType}:${qDiff}:${normalizeStatement(q.statement)}`;
       if (seen.has(key)) {
         skippedDuplicates++;
         continue;
