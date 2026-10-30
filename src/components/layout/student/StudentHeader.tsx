@@ -5,6 +5,7 @@ import { MagnifyingGlass, Moon, Sun } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 import { BrandLogo } from "@/components/ui/BrandLogo";
 import { useTheme } from "@/components/theme/ThemeProvider";
+import { NotificationBell } from "@/components/notifications/NotificationBell";
 import type { NavItem, StudentShellUser } from "./types";
 
 interface StudentHeaderProps {
@@ -92,6 +93,9 @@ export function StudentHeader({
               ⌘K
             </kbd>
           </button>
+
+          {/* Notification Bell Widget */}
+          <NotificationBell />
 
           {/* Dark Mode Toggle */}
           <button

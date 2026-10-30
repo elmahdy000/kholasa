@@ -183,6 +183,11 @@ export function canManageStructure(role?: string | null): boolean {
   return ["ADMIN", "SUPER_ADMIN"].includes(role);
 }
 
+export function canManageAnnouncements(role?: string | null): boolean {
+  if (!role) return false;
+  return ["ADMIN", "SUPER_ADMIN", "EDITOR"].includes(role);
+}
+
 export function canViewAnalytics(role?: string | null): boolean {
   if (!role) return false;
   return ["TEACHER", "ADMIN", "SUPER_ADMIN"].includes(role);

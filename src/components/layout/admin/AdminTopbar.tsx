@@ -4,6 +4,7 @@ import Link from "next/link";
 import { type ElementType } from "react";
 import { ChevronLeft, Search, Compass } from "lucide-react";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
+import { NotificationBell } from "@/components/notifications/NotificationBell";
 
 interface ActivePageDetails {
   title: string;
@@ -49,6 +50,9 @@ export function AdminTopbar({ activePage, setIsCommandOpen }: AdminTopbarProps) 
 
         {/* Professional Theme Switcher Dropdown */}
         <ThemeToggle variant="dropdown" />
+
+        {/* Notifications */}
+        <NotificationBell />
 
         {/* PostgreSQL Connection Status */}
         <div className="hidden lg:flex items-center gap-2 px-3 py-1 rounded-md text-[13px] font-mono text-[#64748B] dark:text-[#94A3B8] border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B]/50">

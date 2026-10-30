@@ -9,6 +9,7 @@ import {
   Award,
   CheckCircle2,
   Users,
+  Bell,
 } from "lucide-react";
 import type { AdminNavGroup } from "./types";
 
@@ -95,6 +96,13 @@ export const rawNavigationGroups: AdminNavGroup[] = [
         icon: Users,
         badge: null,
         allowedRoles: ["ADMIN", "SUPER_ADMIN"],
+      },
+      {
+        label: "الإعلانات والإشعارات العامة",
+        href: "/admin/notifications",
+        icon: Bell,
+        badge: null,
+        allowedRoles: ["EDITOR", "ADMIN", "SUPER_ADMIN"],
       },
     ],
   },

@@ -45,6 +45,14 @@ enum SchoolCategory {
   LANGUAGES
 }
 
+enum NotificationType {
+  ANNOUNCEMENT
+  SYSTEM
+  DAILY_EXAM
+  MISTAKE_REMINDER
+  COURSE_UPDATE
+}
+
 model User {
   id             String         @id @default(cuid())
   name           String?
@@ -68,10 +76,13 @@ model User {
   progress        StudentProgress[]
   attempts        ExamAttempt[]
   mistakes        MistakeReview[]
-  bookmarks       Bookmark[]
-  auditLogs       AuditLog[]
-  createdExams    Exam[]             @relation("ExamCreator")
-  dailyChallenges DailyChallenge[]
+  bookmarks            Bookmark[]
+  auditLogs            AuditLog[]
+  createdExams         Exam[]             @relation("ExamCreator")
+  dailyChallenges      DailyChallenge[]
+  notificationsRead    NotificationRead[]
+  pushSubscriptions    PushSubscription[]
+  createdAnnouncements Announcement[]     @relation("AnnouncementCreator")
 }
 
 model Account {
@@ -531,4 +542,52 @@ model AuditLog {
 
   @@index([createdAt])
   @@index([resource, resourceId])
+}
+
+model Announcement {
+  id                   String           @id @default(cuid())
+  title                String
+  message              String           @db.Text
+  type                 NotificationType @default(ANNOUNCEMENT)
+  targetGradeId        String?
+  targetSchoolCategory SchoolCategory?
+  link                 String?
+  isUrgent             Boolean          @default(false)
+  createdById          String?
+  createdAt            DateTime         @default(now())
+  expiresAt            DateTime?
+
+  createdBy            User?              @relation("AnnouncementCreator", fields: [createdById], references: [id], onDelete: SetNull)
+  reads                NotificationRead[]
+
+  @@index([createdAt])
+  @@index([targetGradeId, targetSchoolCategory])
+}
+
+model NotificationRead {
+  id             String       @id @default(cuid())
+  userId         String
+  announcementId String
+  readAt         DateTime     @default(now())
+
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  announcement   Announcement @relation(fields: [announcementId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, announcementId])
+  @@index([userId])
+}
+
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  userAgent String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
