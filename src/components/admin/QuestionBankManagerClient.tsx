@@ -81,6 +81,13 @@ export function QuestionBankManagerClient({
 
   // Modals & Drawers state
   const [isImportWizardOpen, setIsImportWizardOpen] = useState(false);
+  const [wizardInitialType, setWizardInitialType] = useState<"ALL" | "MCQ" | "TRUE_FALSE" | "ESSAY">("ALL");
+
+  const openImportWizardWithType = (type: "ALL" | "MCQ" | "TRUE_FALSE" | "ESSAY" = "ALL") => {
+    setWizardInitialType(type);
+    setIsImportWizardOpen(true);
+  };
+
   const [drawerState, setDrawerState] = useState<{
     isOpen: boolean;
     mode: "create" | "edit";
@@ -379,6 +386,105 @@ export function QuestionBankManagerClient({
         </div>
       </div>
 
+      {/* Question Category Tabs Bar */}
+      <div className="flex flex-wrap items-center gap-2 p-1.5 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] shadow-xs">
+        <button
+          type="button"
+          onClick={() => {
+            setSelectedType("all");
+            setCurrentPage(1);
+          }}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] font-bold transition-all cursor-pointer ${
+            selectedType === "all"
+              ? "bg-[#800020] text-white shadow-xs"
+              : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
+          }`}
+        >
+          <span>جميع الأسئلة</span>
+          <span
+            className={`px-2 py-0.5 rounded-full text-[11px] ${
+              selectedType === "all"
+                ? "bg-white/20 text-white"
+                : "bg-[#F1F5F9] dark:bg-[#1E293B] text-[#64748B]"
+            }`}
+          >
+            {metrics.total}
+          </span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            setSelectedType("MCQ");
+            setCurrentPage(1);
+          }}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] font-bold transition-all cursor-pointer ${
+            selectedType === "MCQ"
+              ? "bg-blue-600 text-white shadow-xs"
+              : "text-[#64748B] dark:text-[#94A3B8] hover:text-blue-600 dark:hover:text-blue-400"
+          }`}
+        >
+          <span>🎯 اختيار من متعدد</span>
+          <span
+            className={`px-2 py-0.5 rounded-full text-[11px] ${
+              selectedType === "MCQ"
+                ? "bg-white/20 text-white"
+                : "bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300"
+            }`}
+          >
+            {metrics.mcq}
+          </span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            setSelectedType("TRUE_FALSE");
+            setCurrentPage(1);
+          }}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] font-bold transition-all cursor-pointer ${
+            selectedType === "TRUE_FALSE"
+              ? "bg-purple-600 text-white shadow-xs"
+              : "text-[#64748B] dark:text-[#94A3B8] hover:text-purple-600 dark:hover:text-purple-400"
+          }`}
+        >
+          <span>⚖️ صواب وخطأ</span>
+          <span
+            className={`px-2 py-0.5 rounded-full text-[11px] ${
+              selectedType === "TRUE_FALSE"
+                ? "bg-white/20 text-white"
+                : "bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300"
+            }`}
+          >
+            {metrics.tf}
+          </span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            setSelectedType("ESSAY");
+            setCurrentPage(1);
+          }}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[13px] font-bold transition-all cursor-pointer ${
+            selectedType === "ESSAY"
+              ? "bg-amber-600 text-white shadow-xs"
+              : "text-[#64748B] dark:text-[#94A3B8] hover:text-amber-600 dark:hover:text-amber-400"
+          }`}
+        >
+          <span>📝 أسئلة مقالية</span>
+          <span
+            className={`px-2 py-0.5 rounded-full text-[11px] ${
+              selectedType === "ESSAY"
+                ? "bg-white/20 text-white"
+                : "bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300"
+            }`}
+          >
+            {metrics.essay}
+          </span>
+        </button>
+      </div>
+
       {/* Filter and Search Bar */}
       <QuestionFilterBar
         selectedGradeCode={selectedGradeCode}
@@ -417,7 +523,7 @@ export function QuestionBankManagerClient({
         onOpenCreate={() =>
           setDrawerState({ isOpen: true, mode: "create", question: null })
         }
-        onOpenImport={() => setIsImportWizardOpen(true)}
+        onOpenImport={openImportWizardWithType}
       />
 
       {/* Control Strip: Bulk Selection & Expand All */}
@@ -594,6 +700,7 @@ export function QuestionBankManagerClient({
       {/* Dedicated 4-Step Import Wizard Modal */}
       <QuestionImportWizardModal
         isOpen={isImportWizardOpen}
+        initialType={wizardInitialType}
         onClose={() => {
           setIsImportWizardOpen(false);
           if (importCommitted) {

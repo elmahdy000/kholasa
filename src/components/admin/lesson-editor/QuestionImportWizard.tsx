@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useMemo } from "react";
+import { useState, useRef, useMemo, useEffect } from "react";
 import {
   FileText,
   Upload,
@@ -34,12 +34,15 @@ import type {
   QuestionReviewStatus,
 } from "@/lib/question-parser";
 
+export type ImportTargetType = "ALL" | "MCQ" | "TRUE_FALSE" | "ESSAY";
+
 interface QuestionImportWizardProps {
   isOpen: boolean;
   onClose: () => void;
   lessonId: string;
   unitInfo: UnitInfo;
   onImportSuccess: () => void;
+  initialType?: ImportTargetType;
 }
 
 export function QuestionImportWizard({
@@ -48,9 +51,13 @@ export function QuestionImportWizard({
   lessonId,
   unitInfo,
   onImportSuccess,
+  initialType = "ALL",
 }: QuestionImportWizardProps) {
   // Stepper state: 1 = Settings, 2 = Upload & Analyze, 3 = Full Review, 4 = Final Commit
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
+
+  // Dedicated Target Type Mode (Separated Logic per Type)
+  const [targetType, setTargetType] = useState<ImportTargetType>(initialType);
 
   // Stage 1: Settings
   const [allowedTypes, setAllowedTypes] = useState<QuestionType[]>([
@@ -82,6 +89,44 @@ export function QuestionImportWizard({
   const [commitError, setCommitError] = useState<string | null>(null);
   const [commitSuccess, setCommitSuccess] = useState(false);
 
+  // Synchronize targetType and allowedTypes whenever modal opens or initialType changes
+  useEffect(() => {
+    if (isOpen) {
+      const mode = initialType || "ALL";
+      setTargetType(mode);
+      if (mode === "MCQ") {
+        setAllowedTypes(["MCQ"]);
+        setTypeFilter("MCQ");
+      } else if (mode === "TRUE_FALSE") {
+        setAllowedTypes(["TRUE_FALSE"]);
+        setTypeFilter("TRUE_FALSE");
+      } else if (mode === "ESSAY") {
+        setAllowedTypes(["ESSAY"]);
+        setTypeFilter("ESSAY");
+      } else {
+        setAllowedTypes(["MCQ", "TRUE_FALSE", "ESSAY"]);
+        setTypeFilter("ALL");
+      }
+    }
+  }, [isOpen, initialType]);
+
+  const selectTargetType = (type: ImportTargetType) => {
+    setTargetType(type);
+    if (type === "MCQ") {
+      setAllowedTypes(["MCQ"]);
+      setTypeFilter("MCQ");
+    } else if (type === "TRUE_FALSE") {
+      setAllowedTypes(["TRUE_FALSE"]);
+      setTypeFilter("TRUE_FALSE");
+    } else if (type === "ESSAY") {
+      setAllowedTypes(["ESSAY"]);
+      setTypeFilter("ESSAY");
+    } else {
+      setAllowedTypes(["MCQ", "TRUE_FALSE", "ESSAY"]);
+      setTypeFilter("ALL");
+    }
+  };
+
   // Reset or close modal
   const handleClose = () => {
     if (stagedQuestions.length > 0 && !commitSuccess) {
@@ -100,7 +145,7 @@ export function QuestionImportWizard({
     onClose();
   };
 
-  // Toggle allowed type in settings
+  // Toggle allowed type in settings (only active in ALL mode)
   const toggleAllowedType = (type: QuestionType) => {
     setAllowedTypes((prev) => {
       if (prev.includes(type)) {
@@ -110,6 +155,29 @@ export function QuestionImportWizard({
         return [...prev, type];
       }
     });
+  };
+
+  // Helper for quick True/False setting in staging
+  const handleSetTrueFalseAnswer = (qId: string, isTrue: boolean) => {
+    setStagedQuestions((prev) =>
+      prev.map((q) => {
+        if (q.id !== qId) return q;
+        const isLang = unitInfo.schoolCategory === "LANGUAGES";
+        const trueLabel = isLang ? "True" : "صواب";
+        const falseLabel = isLang ? "False" : "خطأ";
+        const updatedOptions = [
+          { text: trueLabel, isCorrect: isTrue },
+          { text: falseLabel, isCorrect: !isTrue },
+        ];
+        return {
+          ...q,
+          options: updatedOptions,
+          isValid: true,
+          reviewStatus: q.reviewStatus === "EXCLUDED" ? "EXCLUDED" : "APPROVED",
+          validationNotes: q.validationNotes.filter((n) => !n.includes("صواب") && !n.includes("خطأ")),
+        };
+      })
+    );
   };
 
   // Stage 2: Process file or text into staging
@@ -133,6 +201,9 @@ export function QuestionImportWizard({
         formData.append("file", selectedFile);
         formData.append("strategy", strategy);
         formData.append("allowedTypes", JSON.stringify(allowedTypes));
+        if (targetType !== "ALL") {
+          formData.append("type", targetType);
+        }
         if (strategy === "FORCED") {
           formData.append("difficulty", forcedDifficulty);
         }
@@ -149,6 +220,7 @@ export function QuestionImportWizard({
           text: pasteText.trim(),
           strategy,
           allowedTypes,
+          type: targetType !== "ALL" ? targetType : undefined,
           difficulty: strategy === "FORCED" ? forcedDifficulty : undefined,
           schoolCategory: unitInfo.schoolCategory,
         };
@@ -498,6 +570,61 @@ export function QuestionImportWizard({
             </button>
           </div>
 
+          {/* Dedicated Type Mode Switcher Tabs */}
+          <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 mb-3 overflow-x-auto">
+            <button
+              type="button"
+              disabled={currentStep > 2}
+              onClick={() => selectTargetType("ALL")}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all whitespace-nowrap cursor-pointer ${
+                targetType === "ALL"
+                  ? "bg-white dark:bg-[#1E293B] text-slate-900 dark:text-white shadow-xs"
+                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900"
+              } ${currentStep > 2 ? "opacity-60 cursor-not-allowed" : ""}`}
+            >
+              <span>✨ استيراد شامل لكافة الأنواع</span>
+            </button>
+
+            <button
+              type="button"
+              disabled={currentStep > 2}
+              onClick={() => selectTargetType("MCQ")}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all whitespace-nowrap cursor-pointer ${
+                targetType === "MCQ"
+                  ? "bg-blue-600 text-white shadow-xs"
+                  : "text-blue-700 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-950/30"
+              } ${currentStep > 2 ? "opacity-60 cursor-not-allowed" : ""}`}
+            >
+              <span>🎯 وضع اختيار من متعدد فقط (MCQ)</span>
+            </button>
+
+            <button
+              type="button"
+              disabled={currentStep > 2}
+              onClick={() => selectTargetType("TRUE_FALSE")}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all whitespace-nowrap cursor-pointer ${
+                targetType === "TRUE_FALSE"
+                  ? "bg-purple-600 text-white shadow-xs"
+                  : "text-purple-700 dark:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-950/30"
+              } ${currentStep > 2 ? "opacity-60 cursor-not-allowed" : ""}`}
+            >
+              <span>⚖️ وضع صواب وخطأ فقط (T/F)</span>
+            </button>
+
+            <button
+              type="button"
+              disabled={currentStep > 2}
+              onClick={() => selectTargetType("ESSAY")}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all whitespace-nowrap cursor-pointer ${
+                targetType === "ESSAY"
+                  ? "bg-amber-600 text-white shadow-xs"
+                  : "text-amber-700 dark:text-amber-300 hover:bg-amber-50 dark:hover:bg-amber-950/30"
+              } ${currentStep > 2 ? "opacity-60 cursor-not-allowed" : ""}`}
+            >
+              <span>📝 وضع الأسئلة المقالية فقط (Essay)</span>
+            </button>
+          </div>
+
           {/* Stepper Progress Bar */}
           <div className="grid grid-cols-4 gap-2 pt-1">
             {/* Step 1 */}
@@ -641,93 +768,155 @@ export function QuestionImportWizard({
                 </p>
               </div>
 
-              {/* 1. Allowed Types */}
+              {/* 1. Allowed Types / Mode Selection */}
               <div className="space-y-3">
-                <label className="text-xs font-bold text-slate-900 dark:text-white block">
-                  1. حدد أنواع الأسئلة المسموح باستيرادها من الملف:
-                </label>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  {/* MCQ */}
-                  <div
-                    onClick={() => toggleAllowedType("MCQ")}
-                    className={`p-4 rounded-2xl border-2 transition-all cursor-pointer flex flex-col justify-between gap-3 ${
-                      allowedTypes.includes("MCQ")
-                        ? "border-blue-600 bg-blue-50/50 dark:bg-blue-950/30 text-blue-900 dark:text-blue-200 shadow-xs"
-                        : "border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F172A] opacity-60"
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="text-xl">🎯</span>
-                      <div
-                        className={`w-5 h-5 rounded-md flex items-center justify-center ${
-                          allowedTypes.includes("MCQ") ? "bg-blue-600 text-white" : "border border-slate-300"
-                        }`}
-                      >
-                        {allowedTypes.includes("MCQ") && <Check className="w-3.5 h-3.5" />}
-                      </div>
-                    </div>
-                    <div>
-                      <h4 className="text-xs font-bold">اختيار من متعدد (MCQ)</h4>
-                      <p className="text-[11px] text-slate-500 mt-0.5">
-                        خيارات متعددة (أ، ب، ج، د) مع تحديد إجابة صحيحة واحدة أو أكثر.
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* True / False */}
-                  <div
-                    onClick={() => toggleAllowedType("TRUE_FALSE")}
-                    className={`p-4 rounded-2xl border-2 transition-all cursor-pointer flex flex-col justify-between gap-3 ${
-                      allowedTypes.includes("TRUE_FALSE")
-                        ? "border-purple-600 bg-purple-50/50 dark:bg-purple-950/30 text-purple-900 dark:text-purple-200 shadow-xs"
-                        : "border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F172A] opacity-60"
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="text-xl">⚖️</span>
-                      <div
-                        className={`w-5 h-5 rounded-md flex items-center justify-center ${
-                          allowedTypes.includes("TRUE_FALSE") ? "bg-purple-600 text-white" : "border border-slate-300"
-                        }`}
-                      >
-                        {allowedTypes.includes("TRUE_FALSE") && <Check className="w-3.5 h-3.5" />}
-                      </div>
-                    </div>
-                    <div>
-                      <h4 className="text-xs font-bold">صح أم خطأ (True / False)</h4>
-                      <p className="text-[11px] text-slate-500 mt-0.5">
-                        عبارات تقييمية مع تحديد (صواب) أو (خطأ) وتفسير السبب.
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Essay */}
-                  <div
-                    onClick={() => toggleAllowedType("ESSAY")}
-                    className={`p-4 rounded-2xl border-2 transition-all cursor-pointer flex flex-col justify-between gap-3 ${
-                      allowedTypes.includes("ESSAY")
-                        ? "border-amber-600 bg-amber-50/50 dark:bg-amber-950/30 text-amber-900 dark:text-amber-200 shadow-xs"
-                        : "border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F172A] opacity-60"
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="text-xl">📝</span>
-                      <div
-                        className={`w-5 h-5 rounded-md flex items-center justify-center ${
-                          allowedTypes.includes("ESSAY") ? "bg-amber-600 text-white" : "border border-slate-300"
-                        }`}
-                      >
-                        {allowedTypes.includes("ESSAY") && <Check className="w-3.5 h-3.5" />}
-                      </div>
-                    </div>
-                    <div>
-                      <h4 className="text-xs font-bold">أسئلة مقالية (Essay)</h4>
-                      <p className="text-[11px] text-slate-500 mt-0.5">
-                        أسئلة علل، اشرح، ما النتائج مع نموذج إجابة وروبـريك.
-                      </p>
-                    </div>
-                  </div>
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold text-slate-900 dark:text-white block">
+                    1. وضع نوع الأسئلة المستهدف:
+                  </label>
+                  {targetType !== "ALL" && (
+                    <button
+                      type="button"
+                      onClick={() => selectTargetType("ALL")}
+                      className="text-xs text-blue-600 font-bold hover:underline cursor-pointer"
+                    >
+                      التحويل إلى استيراد شامل لكافة الأنواع
+                    </button>
+                  )}
                 </div>
+
+                {targetType === "ESSAY" && (
+                  <div className="p-4 rounded-2xl border-2 border-amber-500 bg-amber-50/40 dark:bg-amber-950/20 text-amber-950 dark:text-amber-200 space-y-2">
+                    <div className="flex items-center gap-3">
+                      <span className="text-2xl">📝</span>
+                      <div>
+                        <h4 className="text-xs font-bold text-amber-900 dark:text-amber-100">
+                          أنت الآن في وضع استيراد الأسئلة المقالية فقط (Essay Mode نشط)
+                        </h4>
+                        <p className="text-[11px] text-amber-800/80 dark:text-amber-300/80 mt-0.5 leading-relaxed">
+                          في هذا الوضع، يقوم المحلل بمعالجة كل سؤال أو فقرة كسؤال مقالي تلقائياً، واستخراج نص السؤال، الإجابة النموذجية، التفسير، والدرجات، دون الحاجة لأي خيارات اختيارات (أ، ب، ج، د) أو علامات صح/خطأ.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {targetType === "MCQ" && (
+                  <div className="p-4 rounded-2xl border-2 border-blue-500 bg-blue-50/40 dark:bg-blue-950/20 text-blue-950 dark:text-blue-200 space-y-2">
+                    <div className="flex items-center gap-3">
+                      <span className="text-2xl">🎯</span>
+                      <div>
+                        <h4 className="text-xs font-bold text-blue-900 dark:text-blue-100">
+                          أنت الآن في وضع الاختيار من متعدد فقط (MCQ Mode نشط)
+                        </h4>
+                        <p className="text-[11px] text-blue-800/80 dark:text-blue-300/80 mt-0.5 leading-relaxed">
+                          في هذا الوضع، يتم تحليل الخيارات (أ، ب، ج، د) أو (A, B, C, D) واستخراج الإجابة الصحيحة المحددة بنجمة (*) أو في سطر الإجابة، مع التفسير الكامل.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {targetType === "TRUE_FALSE" && (
+                  <div className="p-4 rounded-2xl border-2 border-purple-500 bg-purple-50/40 dark:bg-purple-950/20 text-purple-950 dark:text-purple-200 space-y-2">
+                    <div className="flex items-center gap-3">
+                      <span className="text-2xl">⚖️</span>
+                      <div>
+                        <h4 className="text-xs font-bold text-purple-900 dark:text-purple-100">
+                          أنت الآن في وضع الصواب والخطأ فقط (True / False Mode نشط)
+                        </h4>
+                        <p className="text-[11px] text-purple-800/80 dark:text-purple-300/80 mt-0.5 leading-relaxed">
+                          في هذا الوضع، يتم تحليل العبارات التقييمية وتحديد الإجابة (صواب أو خطأ) وربط التفسير التعليمي لتصحيح المفاهيم للطالب.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {targetType === "ALL" && (
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    {/* MCQ */}
+                    <div
+                      onClick={() => toggleAllowedType("MCQ")}
+                      className={`p-4 rounded-2xl border-2 transition-all cursor-pointer flex flex-col justify-between gap-3 ${
+                        allowedTypes.includes("MCQ")
+                          ? "border-blue-600 bg-blue-50/50 dark:bg-blue-950/30 text-blue-900 dark:text-blue-200 shadow-xs"
+                          : "border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F172A] opacity-60"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="text-xl">🎯</span>
+                        <div
+                          className={`w-5 h-5 rounded-md flex items-center justify-center ${
+                            allowedTypes.includes("MCQ") ? "bg-blue-600 text-white" : "border border-slate-300"
+                          }`}
+                        >
+                          {allowedTypes.includes("MCQ") && <Check className="w-3.5 h-3.5" />}
+                        </div>
+                      </div>
+                      <div>
+                        <h4 className="text-xs font-bold">اختيار من متعدد (MCQ)</h4>
+                        <p className="text-[11px] text-slate-500 mt-0.5">
+                          خيارات متعددة (أ، ب، ج، د) مع تحديد إجابة صحيحة واحدة أو أكثر.
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* True / False */}
+                    <div
+                      onClick={() => toggleAllowedType("TRUE_FALSE")}
+                      className={`p-4 rounded-2xl border-2 transition-all cursor-pointer flex flex-col justify-between gap-3 ${
+                        allowedTypes.includes("TRUE_FALSE")
+                          ? "border-purple-600 bg-purple-50/50 dark:bg-purple-950/30 text-purple-900 dark:text-purple-200 shadow-xs"
+                          : "border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F172A] opacity-60"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="text-xl">⚖️</span>
+                        <div
+                          className={`w-5 h-5 rounded-md flex items-center justify-center ${
+                            allowedTypes.includes("TRUE_FALSE") ? "bg-purple-600 text-white" : "border border-slate-300"
+                          }`}
+                        >
+                          {allowedTypes.includes("TRUE_FALSE") && <Check className="w-3.5 h-3.5" />}
+                        </div>
+                      </div>
+                      <div>
+                        <h4 className="text-xs font-bold">صح أم خطأ (True / False)</h4>
+                        <p className="text-[11px] text-slate-500 mt-0.5">
+                          عبارات تقييمية مع تحديد (صواب) أو (خطأ) وتفسير السبب.
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Essay */}
+                    <div
+                      onClick={() => toggleAllowedType("ESSAY")}
+                      className={`p-4 rounded-2xl border-2 transition-all cursor-pointer flex flex-col justify-between gap-3 ${
+                        allowedTypes.includes("ESSAY")
+                          ? "border-amber-600 bg-amber-50/50 dark:bg-amber-950/30 text-amber-900 dark:text-amber-200 shadow-xs"
+                          : "border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F172A] opacity-60"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="text-xl">📝</span>
+                        <div
+                          className={`w-5 h-5 rounded-md flex items-center justify-center ${
+                            allowedTypes.includes("ESSAY") ? "bg-amber-600 text-white" : "border border-slate-300"
+                          }`}
+                        >
+                          {allowedTypes.includes("ESSAY") && <Check className="w-3.5 h-3.5" />}
+                        </div>
+                      </div>
+                      <div>
+                        <h4 className="text-xs font-bold">أسئلة مقالية (Essay)</h4>
+                        <p className="text-[11px] text-slate-500 mt-0.5">
+                          أسئلة علل، اشرح، ما النتائج مع نموذج إجابة وروبـريك.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* 2. Difficulty Strategy */}
@@ -950,37 +1139,91 @@ export function QuestionImportWizard({
               ) : (
                 <div className="space-y-3">
                   {/* Template Quick Actions Banner */}
-                  <div className="p-3.5 rounded-2xl bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200/70 dark:border-blue-900/40 space-y-2.5">
+                  <div className={`p-3.5 rounded-2xl border space-y-2.5 ${
+                    targetType === "ESSAY"
+                      ? "bg-amber-50/70 dark:bg-amber-950/30 border-amber-200/70 dark:border-amber-900/40 text-amber-900 dark:text-amber-200"
+                      : targetType === "TRUE_FALSE"
+                      ? "bg-purple-50/70 dark:bg-purple-950/30 border-purple-200/70 dark:border-purple-900/40 text-purple-900 dark:text-purple-200"
+                      : "bg-blue-50/70 dark:bg-blue-950/30 border-blue-200/70 dark:border-blue-900/40 text-blue-900 dark:text-blue-200"
+                  }`}>
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                      <div className="flex items-center gap-1.5 text-xs font-bold text-blue-900 dark:text-blue-200">
-                        <Sparkles className="w-4 h-4 text-blue-600 shrink-0" />
-                        <span>الصيغة النموذجية المعتمدة (مع التفسير لتوضيح أخطاء الطالب):</span>
+                      <div className="flex items-center gap-1.5 text-xs font-bold">
+                        <Sparkles className="w-4 h-4 shrink-0" />
+                        <span>
+                          {targetType === "ESSAY"
+                            ? "الصيغة النموذجية المعتمدة للأسئلة المقالية (سؤال + إجابة نموذجية + تفسير + درجة):"
+                            : targetType === "TRUE_FALSE"
+                            ? "الصيغة النموذجية لأسئلة الصواب والخطأ (عبارة + الإجابة: صواب/خطأ + التفسير):"
+                            : "الصيغة النموذجية المعتمدة (مع التفسير لتوضيح أخطاء الطالب):"}
+                        </span>
                       </div>
-                      <div className="flex items-center gap-2 shrink-0">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const templateEn = `Question 1: ما المقصود بالذكاء الاصطناعي (AI)؟\n\nA) مجال يهدف إلى تطوير أنظمة حاسوبية تستطيع تنفيذ مهام تتطلب عادةً ذكاءً بشريًا\nB) نظام مخصص لتخزين الملفات فقط\nC) وسيلة لتوصيل أجهزة الحاسب بالإنترنت فقط\nD) برنامج يستخدم لإنشاء الصور فقط\n\nCorrect Answer: A\n\nExplanation: الذكاء الاصطناعي مجال يضم أنظمة حاسوبية تستطيع تنفيذ مهام مثل التعلم والتنبؤ والتعرف وتوليد المحتوى واتخاذ القرارات أو دعمها.`;
-                            setPasteText(templateEn);
-                          }}
-                          className="px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-bold cursor-pointer transition-all shadow-xs"
-                        >
-                          إدراج مثال (A, B, C, D)
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const templateAr = `سؤال 1: ما المقصود بالذكاء الاصطناعي (AI)؟\n\nأ) مجال يهدف إلى تطوير أنظمة حاسوبية تستطيع تنفيذ مهام تتطلب عادةً ذكاءً بشريًا\nب) نظام مخصص لتخزين الملفات فقط\nج) وسيلة لتوصيل أجهزة الحاسب بالإنترنت فقط\nد) برنامج يستخدم لإنشاء الصور فقط\n\nالإجابة الصحيحة: أ\n\nالتفسير: الذكاء الاصطناعي مجال يضم أنظمة حاسوبية تستطيع تنفيذ مهام مثل التعلم والتنبؤ والتعرف وتوليد المحتوى واتخاذ القرارات أو دعمها.`;
-                            setPasteText(templateAr);
-                          }}
-                          className="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold cursor-pointer transition-all shadow-xs"
-                        >
-                          إدراج مثال (أ، ب، ج، د)
-                        </button>
+                      <div className="flex items-center gap-2 shrink-0 flex-wrap">
+                        {targetType === "ESSAY" ? (
+                          <>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const essaySample = `[مقالي] [سهل] س1: كيف تطورت تكنولوجيا المعلومات في الفترة من الأربعينيات إلى الستينيات؟\n\nالإجابة النموذجية: ظهرت الحواسيب الإلكترونية مثل ENIAC، وكانت تستخدم الصمامات المفرغة، واستُخدمت أساسًا في الأغراض العسكرية والحسابات العلمية.\n\nالتفسير: كانت الحواسيب الأولى كبيرة الحجم، وكان استخدامها يتركز في العمليات الحسابية والعلمية والعسكرية.\n\nالمفهوم: بداية ظهور الحواسيب الإلكترونية.\nالدرجة: 10\n\n---\n\n[مقالي] [متوسط] س2: اذكر المراحل الخمس الرئيسية لتطور تكنولوجيا المعلومات.\n\nالإجابة النموذجية:\n1. الأربعينيات إلى الستينيات: ظهور الحواسيب الإلكترونية الأولى.\n2. الستينيات والسبعينيات: تطور الحواسيب وظهور المعالجات الدقيقة.\n3. الثمانينيات: انتشار الحواسيب الشخصية واجهات المستخدم الرسومية.\n4. التسعينيات: انطلاق شبكة الإنترنت العالمية والبريد الإلكتروني.\n5. الألفية حتى الآن: الهواتف الذكية والحوسبة السحابية والذكاء الاصطناعي.\n\nالتفسير: يوضح السؤال التدرج التاريخي لأجيال الحواسيب حتى الثورة الرقمية المعاصرة.\nالدرجة: 10`;
+                                setPasteText(essaySample);
+                              }}
+                              className="px-2.5 py-1 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-[11px] font-bold cursor-pointer transition-all shadow-xs"
+                            >
+                              إدراج نموذج مقالي (أسئلة وأجوبة)
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const shortEssay = `[مقالي] [سهل] س1: علل: أهمية استخدام الصمامات المفرغة في الحواسيب الأولى؟\nالإجابة النموذجية: للتحكم في تدفق الإلكترونات وإجراء العمليات الحسابية الإلكترونية الأولى.\nالتفسير: كانت التقنية المتاحة قبل ابتكار الترانزستور.\nالدرجة: 5\n\n---\n\n[مقالي] [صعب] س2: قارن بين معمارية الحواسيب الأولى والحواسيب الحديثة من حيث استهلاك الطاقة والحجم.\nالإجابة النموذجية: الحواسيب الأولى كانت تستهلك طاقة هائلة وتزن أطناناً، بينما الحواسيب الحديثة تعتمد على أشباه الموصلات الميكروية وتستهلك طاقة ضئيلة بحجم الجيب.\nالتفسير: ناتج عن ثورة تصغير الدوائر المتكاملة.\nالدرجة: 10`;
+                                setPasteText(shortEssay);
+                              }}
+                              className="px-2.5 py-1 rounded-lg bg-amber-700 hover:bg-amber-800 text-white text-[11px] font-bold cursor-pointer transition-all shadow-xs"
+                            >
+                              إدراج نموذج مقالي (علل وقارن)
+                            </button>
+                          </>
+                        ) : targetType === "TRUE_FALSE" ? (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const tfSample = `[صح وخطأ] [سهل]\n1. تُعد القاهرة العاصمة الرسمية لجمهورية مصر العربية.\nالإجابة: صواب\nالتفسير: القاهرة هي العاصمة منذ تأسيسها في العصر الفاطمي عام 969م.\n\n---\n\n[صح وخطأ] [متوسط]\n2. يعتمد الحاسب الآلي على النظام العشري فقط في تخزين ومعالجة البيانات.\nالإجابة: خطأ\nالتفسير: يعتمد الحاسب على النظام الثنائي (Binary System) المكون من الصفر والواحد (0 و 1).`;
+                              setPasteText(tfSample);
+                            }}
+                            className="px-2.5 py-1 rounded-lg bg-purple-600 hover:bg-purple-700 text-white text-[11px] font-bold cursor-pointer transition-all shadow-xs"
+                          >
+                            إدراج نموذج صح وخطأ
+                          </button>
+                        ) : (
+                          <>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const templateEn = `Question 1: ما المقصود بالذكاء الاصطناعي (AI)؟\n\nA) مجال يهدف إلى تطوير أنظمة حاسوبية تستطيع تنفيذ مهام تتطلب عادةً ذكاءً بشريًا\nB) نظام مخصص لتخزين الملفات فقط\nC) وسيلة لتوصيل أجهزة الحاسب بالإنترنت فقط\nD) برنامج يستخدم لإنشاء الصور فقط\n\nCorrect Answer: A\n\nExplanation: الذكاء الاصطناعي مجال يضم أنظمة حاسوبية تستطيع تنفيذ مهام مثل التعلم والتنبؤ والتعرف وتوليد المحتوى واتخاذ القرارات أو دعمها.`;
+                                setPasteText(templateEn);
+                              }}
+                              className="px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-bold cursor-pointer transition-all shadow-xs"
+                            >
+                              إدراج مثال (A, B, C, D)
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const templateAr = `سؤال 1: ما المقصود بالذكاء الاصطناعي (AI)؟\n\nأ) مجال يهدف إلى تطوير أنظمة حاسوبية تستطيع تنفيذ مهام تتطلب عادةً ذكاءً بشريًا\nب) نظام مخصص لتخزين الملفات فقط\nج) وسيلة لتوصيل أجهزة الحاسب بالإنترنت فقط\nد) برنامج يستخدم لإنشاء الصور فقط\n\nالإجابة الصحيحة: أ\n\nالتفسير: الذكاء الاصطناعي مجال يضم أنظمة حاسوبية تستطيع تنفيذ مهام مثل التعلم والتنبؤ والتعرف وتوليد المحتوى واتخاذ القرارات أو دعمها.`;
+                                setPasteText(templateAr);
+                              }}
+                              className="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold cursor-pointer transition-all shadow-xs"
+                            >
+                              إدراج مثال (أ، ب، ج، د)
+                            </button>
+                          </>
+                        )}
                       </div>
                     </div>
-                    <p className="text-[11px] text-blue-800/80 dark:text-blue-300/80 leading-relaxed">
-                      عند تضمين <code>Correct Answer</code> و <code>Explanation</code> (أو <code>الإجابة الصحيحة</code> و <code>التفسير</code>)، يقوم النظام تلقائياً بربط الإجابة النموذجية وشرح الحل، بحيث عندما يحل الطالب السؤال ويخطئ، يُعرض له الخيار الخاطئ باللون الأحمر مع الخيار الصحيح بالأخضر والتفسير الكامل لتصحيح المفهوم فوراً.
+                    <p className="text-[11px] opacity-80 leading-relaxed">
+                      {targetType === "ESSAY"
+                        ? "في الأسئلة المقالية، يقوم النظام باستخراج نص السؤال ونموذج الإجابة والتفسير وروبـريك الدرجة بشكل دقيق لتمكين المصحح من وضع الدرجات وإرشاد الطالب."
+                        : targetType === "TRUE_FALSE"
+                        ? "في أسئلة الصواب والخطأ، يتم تحديد العبارة والإجابة والتفسير لعرضها للطالب بشكل تفاعلي فوري."
+                        : "عند تضمين Correct Answer و Explanation (أو الإجابة الصحيحة والتفسير)، يربط النظام الحل بالخيارات لتوجيه الطالب عند الخطأ وتوضيح المفهوم."}
                     </p>
                   </div>
 
@@ -992,7 +1235,13 @@ export function QuestionImportWizard({
                       rows={12}
                       value={pasteText}
                       onChange={(e) => setPasteText(e.target.value)}
-                      placeholder={`Question 1: ما المقصود بالذكاء الاصطناعي (AI)؟\n\nA) مجال يهدف إلى تطوير أنظمة حاسوبية تستطيع تنفيذ مهام تتطلب عادةً ذكاءً بشريًا\nB) نظام مخصص لتخزين الملفات فقط\nC) وسيلة لتوصيل أجهزة الحاسب بالإنترنت فقط\nD) برنامج يستخدم لإنشاء الصور فقط\n\nCorrect Answer: A\n\nExplanation: الذكاء الاصطناعي مجال يضم أنظمة حاسوبية تستطيع تنفيذ مهام مثل التعلم والتنبؤ والتعرف وتوليد المحتوى واتخاذ القرارات أو دعمها.`}
+                      placeholder={
+                        targetType === "ESSAY"
+                          ? `[مقالي] [سهل] س1: اذكر المراحل الرئيسية لتطور الحواسيب؟\nالإجابة النموذجية: 1. الصمامات المفرغة 2. الترانزستور 3. الدوائر المتكاملة...\nالتفسير: يوضح السؤال التدرج التقني لأجيال المعالجة.\nالدرجة: 10`
+                          : targetType === "TRUE_FALSE"
+                          ? `[صح وخطأ] [سهل]\n1. تُعد القاهرة عاصمة جمهورية مصر العربية.\nالإجابة: صواب\nالتفسير: تأسست القاهرة عام 969م.`
+                          : `Question 1: ما المقصود بالذكاء الاصطناعي (AI)؟\n\nA) مجال يهدف إلى تطوير أنظمة ذكية\nB) نظام لتخزين الملفات فقط\nC) متصفح إنترنت\nD) محرك أقراص\n\nCorrect Answer: A\n\nExplanation: الذكاء الاصطناعي يحاكي القدرات الذهنية البشرية.`
+                      }
                       className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-xs font-mono text-slate-900 dark:text-white leading-relaxed resize-none outline-none focus:border-blue-500"
                     />
                   </div>
@@ -1296,14 +1545,137 @@ export function QuestionImportWizard({
                             />
                           </div>
 
-                          {/* Options Section for MCQ & True/False */}
-                          {q.type !== "ESSAY" && (
-                            <div className="space-y-2 pt-1">
-                              <div className="flex items-center justify-between">
-                                <label className="text-[11px] font-bold text-slate-500">
-                                  الخيارات (اضغط على الدائرة الخضراء لتحديد الإجابة الصحيحة):
+                          {/* ── TYPE SPECIFIC DEDICATED CONTENT ── */}
+                          {/* 1. ESSAY DEDICATED VIEW */}
+                          {q.type === "ESSAY" && (
+                            <div className="space-y-3 pt-1">
+                              {/* Model Answer Box */}
+                              <div className="p-3.5 rounded-2xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-300 dark:border-amber-800 space-y-2">
+                                <div className="flex items-center justify-between">
+                                  <label className="text-xs font-bold text-amber-900 dark:text-amber-200 flex items-center gap-1.5">
+                                    <BookOpen className="w-4 h-4 text-amber-600 shrink-0" />
+                                    <span>الإجابة النموذجية المعتمدة (عناصر الحل المقالي):</span>
+                                  </label>
+                                  <div className="flex items-center gap-1.5 text-xs font-bold text-slate-600 dark:text-slate-400">
+                                    <span>الدرجة:</span>
+                                    <input
+                                      type="number"
+                                      min={1}
+                                      max={100}
+                                      value={q.points || 10}
+                                      onChange={(e) =>
+                                        updateStagedQuestion(q.id, {
+                                          points: parseInt(e.target.value) || 10,
+                                        })
+                                      }
+                                      className="w-14 px-2 py-0.5 rounded-lg border border-amber-300 dark:border-amber-700 bg-white dark:bg-slate-900 text-xs font-mono font-bold text-center outline-none"
+                                    />
+                                  </div>
+                                </div>
+                                <textarea
+                                  rows={3}
+                                  value={q.modelAnswer || ""}
+                                  onChange={(e) =>
+                                    updateStagedQuestion(q.id, { modelAnswer: e.target.value })
+                                  }
+                                  placeholder="اكتب خطوات الحل أو الإجابة النموذجية الكاملة..."
+                                  className="w-full p-2.5 rounded-xl bg-white dark:bg-[#0F172A] border border-amber-200 dark:border-amber-800/80 text-xs text-slate-900 dark:text-white leading-relaxed resize-y outline-none focus:border-amber-500"
+                                />
+                              </div>
+
+                              {/* Explanation */}
+                              <div className="space-y-1">
+                                <label className="text-[11px] font-bold text-blue-700 dark:text-blue-300 flex items-center gap-1.5">
+                                  <Sparkles className="w-3.5 h-3.5 text-blue-600" />
+                                  <span>تفسير الإجابة وتوجيهات التصحيح:</span>
                                 </label>
-                                {q.type === "MCQ" && (
+                                <textarea
+                                  rows={2}
+                                  value={q.correctReason || ""}
+                                  onChange={(e) =>
+                                    updateStagedQuestion(q.id, { correctReason: e.target.value })
+                                  }
+                                  placeholder="تفسير سبب الإجابة أو توجيه المصحح..."
+                                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white leading-relaxed resize-y outline-none focus:border-blue-500"
+                                />
+                              </div>
+                            </div>
+                          )}
+
+                          {/* 2. TRUE / FALSE DEDICATED VIEW */}
+                          {q.type === "TRUE_FALSE" && (
+                            <div className="space-y-3 pt-1">
+                              <div className="p-3 rounded-2xl bg-purple-50/50 dark:bg-purple-950/20 border border-purple-200 dark:border-purple-800/60 space-y-2">
+                                <label className="text-xs font-bold text-purple-900 dark:text-purple-200 block">
+                                  حدد الإجابة الصحيحة للعبارة (انقر للاختيار):
+                                </label>
+                                {(() => {
+                                  const isTrueSelected = q.options.some(
+                                    (o) => (o.text.includes("صواب") || o.text.includes("True") || o.text === "صح") && o.isCorrect
+                                  );
+                                  const isFalseSelected = q.options.some(
+                                    (o) => (o.text.includes("خطأ") || o.text.includes("False") || o.text === "غلط") && o.isCorrect
+                                  );
+
+                                  return (
+                                    <div className="grid grid-cols-2 gap-3">
+                                      <button
+                                        type="button"
+                                        onClick={() => handleSetTrueFalseAnswer(q.id, true)}
+                                        className={`py-2.5 px-4 rounded-xl text-xs font-bold flex items-center justify-center gap-2 cursor-pointer transition-all ${
+                                          isTrueSelected
+                                            ? "bg-emerald-600 text-white shadow-sm ring-2 ring-emerald-400"
+                                            : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-emerald-50"
+                                        }`}
+                                      >
+                                        <Check className="w-4 h-4" />
+                                        <span>صواب (True)</span>
+                                      </button>
+
+                                      <button
+                                        type="button"
+                                        onClick={() => handleSetTrueFalseAnswer(q.id, false)}
+                                        className={`py-2.5 px-4 rounded-xl text-xs font-bold flex items-center justify-center gap-2 cursor-pointer transition-all ${
+                                          isFalseSelected
+                                            ? "bg-red-600 text-white shadow-sm ring-2 ring-red-400"
+                                            : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-red-50"
+                                        }`}
+                                      >
+                                        <XCircle className="w-4 h-4" />
+                                        <span>خطأ (False)</span>
+                                      </button>
+                                    </div>
+                                  );
+                                })()}
+                              </div>
+
+                              {/* Explanation */}
+                              <div className="space-y-1">
+                                <label className="text-[11px] font-bold text-blue-700 dark:text-blue-300 flex items-center gap-1.5">
+                                  <Sparkles className="w-3.5 h-3.5 text-blue-600" />
+                                  <span>تفسير الإجابة لتصحيح المفهوم للطالب:</span>
+                                </label>
+                                <textarea
+                                  rows={2}
+                                  value={q.correctReason || ""}
+                                  onChange={(e) =>
+                                    updateStagedQuestion(q.id, { correctReason: e.target.value })
+                                  }
+                                  placeholder="التفسير العلمي للإجابة..."
+                                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white leading-relaxed resize-y outline-none focus:border-blue-500"
+                                />
+                              </div>
+                            </div>
+                          )}
+
+                          {/* 3. MCQ DEDICATED VIEW */}
+                          {q.type === "MCQ" && (
+                            <div className="space-y-3 pt-1">
+                              <div className="space-y-2">
+                                <div className="flex items-center justify-between">
+                                  <label className="text-[11px] font-bold text-slate-500">
+                                    الخيارات (انقر على الحرف لتحديد الإجابة الصحيحة):
+                                  </label>
                                   <button
                                     type="button"
                                     onClick={() => handleAddOption(q.id)}
@@ -1312,95 +1684,62 @@ export function QuestionImportWizard({
                                     <Plus className="w-3 h-3" />
                                     <span>إضافة خيار</span>
                                   </button>
-                                )}
-                              </div>
+                                </div>
 
-                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                {q.options.map((opt, optIdx) => (
-                                  <div
-                                    key={optIdx}
-                                    className={`p-2 rounded-xl border flex items-center gap-2 transition-all ${
-                                      opt.isCorrect
-                                        ? "bg-emerald-50/80 dark:bg-emerald-950/30 border-emerald-400 dark:border-emerald-700 text-emerald-900 dark:text-emerald-200"
-                                        : "bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300"
-                                    }`}
-                                  >
-                                    <button
-                                      type="button"
-                                      onClick={() => handleToggleOptionCorrect(q.id, optIdx)}
-                                      className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-xs font-bold cursor-pointer transition-all ${
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                  {q.options.map((opt, optIdx) => (
+                                    <div
+                                      key={optIdx}
+                                      className={`p-2 rounded-xl border flex items-center gap-2 transition-all ${
                                         opt.isCorrect
-                                          ? "bg-emerald-600 text-white shadow-xs"
-                                          : "border border-slate-300 hover:border-emerald-500 text-slate-400"
+                                          ? "bg-emerald-50/80 dark:bg-emerald-950/30 border-emerald-400 dark:border-emerald-700 text-emerald-900 dark:text-emerald-200"
+                                          : "bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300"
                                       }`}
-                                      title={opt.isCorrect ? "الإجابة الصحيحة" : "اجعلها إجابة صحيحة"}
                                     >
-                                      {opt.isCorrect ? (
-                                        <Check className="w-3.5 h-3.5" />
-                                      ) : (
-                                        String.fromCharCode(65 + optIdx)
-                                      )}
-                                    </button>
-
-                                    <input
-                                      type="text"
-                                      value={opt.text}
-                                      onChange={(e) =>
-                                        handleOptionTextChange(q.id, optIdx, e.target.value)
-                                      }
-                                      className="flex-1 bg-transparent border-none text-xs font-bold outline-none"
-                                    />
-
-                                    {q.type === "MCQ" && q.options.length > 2 && (
                                       <button
                                         type="button"
-                                        onClick={() => handleRemoveOption(q.id, optIdx)}
-                                        className="text-slate-400 hover:text-red-500 p-1"
+                                        onClick={() => handleToggleOptionCorrect(q.id, optIdx)}
+                                        className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-xs font-bold cursor-pointer transition-all ${
+                                          opt.isCorrect
+                                            ? "bg-emerald-600 text-white shadow-xs"
+                                            : "border border-slate-300 hover:border-emerald-500 text-slate-400"
+                                        }`}
+                                        title={opt.isCorrect ? "الإجابة الصحيحة" : "اجعلها إجابة صحيحة"}
                                       >
-                                        ✕
+                                        {opt.isCorrect ? (
+                                          <Check className="w-3.5 h-3.5" />
+                                        ) : (
+                                          String.fromCharCode(65 + optIdx)
+                                        )}
                                       </button>
-                                    )}
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          )}
 
-                          {/* Explanation preview if present when collapsed */}
-                          {!isExpanded && q.correctReason && (
-                            <div className="p-2.5 rounded-xl bg-blue-50/50 dark:bg-blue-950/20 border border-blue-200/50 text-[11px] text-blue-900 dark:text-blue-300 flex items-start gap-2">
-                              <Sparkles className="w-3.5 h-3.5 text-blue-600 shrink-0 mt-0.5" />
-                              <div className="line-clamp-2">
-                                <span className="font-bold">التفسير التعليمي للطالب: </span>
-                                {q.correctReason}
-                              </div>
-                            </div>
-                          )}
+                                      <input
+                                        type="text"
+                                        value={opt.text}
+                                        onChange={(e) =>
+                                          handleOptionTextChange(q.id, optIdx, e.target.value)
+                                        }
+                                        className="flex-1 bg-transparent border-none text-xs font-bold outline-none"
+                                      />
 
-                          {/* Expanded fields: Explanation & Rubric */}
-                          {isExpanded && (
-                            <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-3">
-                              {q.type === "ESSAY" && (
-                                <div className="space-y-1">
-                                  <label className="text-[11px] font-bold text-amber-700 dark:text-amber-300 flex items-center gap-1.5">
-                                    <BookOpen className="w-3.5 h-3.5" />
-                                    <span>نموذج الإجابة للسؤال المقالي:</span>
-                                  </label>
-                                  <textarea
-                                    rows={2}
-                                    value={q.modelAnswer || ""}
-                                    onChange={(e) =>
-                                      updateStagedQuestion(q.id, { modelAnswer: e.target.value })
-                                    }
-                                    placeholder="اكتب خطوات الحل أو الإجابة النموذجية..."
-                                    className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white leading-relaxed resize-y outline-none focus:border-amber-500"
-                                  />
+                                      {q.options.length > 2 && (
+                                        <button
+                                          type="button"
+                                          onClick={() => handleRemoveOption(q.id, optIdx)}
+                                          className="text-slate-400 hover:text-red-500 p-1 cursor-pointer"
+                                        >
+                                          ✕
+                                        </button>
+                                      )}
+                                    </div>
+                                  ))}
                                 </div>
-                              )}
+                              </div>
 
+                              {/* Explanation */}
                               <div className="space-y-1">
                                 <label className="text-[11px] font-bold text-blue-700 dark:text-blue-300 flex items-center gap-1.5">
-                                  <Sparkles className="w-3.5 h-3.5" />
+                                  <Sparkles className="w-3.5 h-3.5 text-blue-600" />
                                   <span>تفسير الإجابة وشرح الحل للطالب:</span>
                                 </label>
                                 <textarea

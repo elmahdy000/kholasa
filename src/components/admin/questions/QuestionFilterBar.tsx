@@ -1,6 +1,6 @@
 "use client";
 
-import { Search, Plus, FileText, X } from "lucide-react";
+import { Search, Plus, FileText, X, Layers, Sparkles, Check } from "lucide-react";
 import { Subject } from "./types";
 
 interface QuestionFilterBarProps {
@@ -20,7 +20,7 @@ interface QuestionFilterBarProps {
   totalQuestions: number;
   filteredCount: number;
   onOpenCreate: () => void;
-  onOpenImport?: () => void;
+  onOpenImport?: (type?: "ALL" | "MCQ" | "TRUE_FALSE" | "ESSAY") => void;
 }
 
 export function QuestionFilterBar({
@@ -170,17 +170,50 @@ export function QuestionFilterBar({
             </div>
           </div>
 
-          {/* Action Buttons: Import & Add Question */}
-          <div className="flex items-center gap-2.5 shrink-0">
+          {/* Action Buttons: Separated Import Types & Add Question */}
+          <div className="flex flex-wrap items-center gap-2 shrink-0">
             {onOpenImport && (
-              <button
-                type="button"
-                onClick={onOpenImport}
-                className="h-10 px-3.5 rounded-xl border border-[#CBD5E1] dark:border-[#475569] bg-[#F8FAFC] dark:bg-[#1E293B] hover:bg-white dark:hover:bg-[#334155] text-[#0F172A] dark:text-white text-[12px] font-bold flex items-center gap-2 cursor-pointer transition-colors shadow-2xs"
-              >
-                <FileText className="w-4 h-4 text-[#800020]" />
-                <span>استيراد ملف (Word / PDF)</span>
-              </button>
+              <div className="flex flex-wrap items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => onOpenImport("ESSAY")}
+                  className="h-10 px-3 rounded-xl bg-amber-500/10 border border-amber-500/30 hover:bg-amber-500/20 text-amber-900 dark:text-amber-200 text-[12px] font-bold flex items-center gap-1.5 cursor-pointer transition-colors shadow-2xs"
+                  title="استيراد أسئلة مقالية منفصلة مع الإجابة النموذجية"
+                >
+                  <FileText className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400" />
+                  <span>📝 استيراد مقالي</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => onOpenImport("MCQ")}
+                  className="h-10 px-3 rounded-xl bg-blue-500/10 border border-blue-500/30 hover:bg-blue-500/20 text-blue-900 dark:text-blue-200 text-[12px] font-bold flex items-center gap-1.5 cursor-pointer transition-colors shadow-2xs"
+                  title="استيراد أسئلة اختيار من متعدد منفصلة"
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-blue-700 dark:text-blue-400" />
+                  <span>🎯 استيراد MCQ</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => onOpenImport("TRUE_FALSE")}
+                  className="h-10 px-3 rounded-xl bg-purple-500/10 border border-purple-500/30 hover:bg-purple-500/20 text-purple-900 dark:text-purple-200 text-[12px] font-bold flex items-center gap-1.5 cursor-pointer transition-colors shadow-2xs"
+                  title="استيراد أسئلة صح وخطأ منفصلة"
+                >
+                  <Check className="w-3.5 h-3.5 text-purple-700 dark:text-purple-400" />
+                  <span>⚖️ استيراد صح وخطأ</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => onOpenImport("ALL")}
+                  className="h-10 px-3 rounded-xl border border-[#CBD5E1] dark:border-[#475569] bg-[#F8FAFC] dark:bg-[#1E293B] hover:bg-white dark:hover:bg-[#334155] text-[#0F172A] dark:text-white text-[12px] font-bold flex items-center gap-1.5 cursor-pointer transition-colors shadow-2xs"
+                  title="استيراد شامل لكافة أنواع الأسئلة معاً"
+                >
+                  <Layers className="w-3.5 h-3.5 text-[#800020] dark:text-[#FB7185]" />
+                  <span>استيراد شامل</span>
+                </button>
+              </div>
             )}
 
             <button

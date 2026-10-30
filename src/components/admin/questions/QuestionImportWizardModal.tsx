@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useMemo } from "react";
+import { useState, useRef, useMemo, useEffect } from "react";
 import {
   FileText,
   Upload,
@@ -38,12 +38,15 @@ import {
   parseQuestionsFromText,
 } from "@/lib/question-parser";
 
+export type ImportTargetType = "ALL" | "MCQ" | "TRUE_FALSE" | "ESSAY";
+
 interface QuestionImportWizardModalProps {
   isOpen: boolean;
   onClose: () => void;
   subjects: Subject[];
   grades?: Grade[];
   initialSubjectId?: string;
+  initialType?: ImportTargetType;
   onSuccess: () => void;
 }
 
@@ -53,10 +56,14 @@ export function QuestionImportWizardModal({
   subjects,
   grades = [],
   initialSubjectId,
+  initialType = "ALL",
   onSuccess,
 }: QuestionImportWizardModalProps) {
   // Stepper: 1 = Settings, 2 = Upload, 3 = Staging Review, 4 = Final Commit
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
+
+  // Dedicated Target Type Mode (Separated Logic per Type)
+  const [targetType, setTargetType] = useState<ImportTargetType>(initialType);
 
   // Stage 1: Target Curriculum & Classification Mode
   const defaultGrade =
@@ -115,6 +122,59 @@ export function QuestionImportWizardModal({
   const [commitSuccess, setCommitSuccess] = useState(false);
   const [committedCount, setCommittedCount] = useState(0);
   const [skippedDuplicates, setSkippedDuplicates] = useState(0);
+
+  // Synchronize targetType and allowedTypes whenever modal opens or initialType changes
+  useEffect(() => {
+    if (isOpen) {
+      const mode = initialType || "ALL";
+      setTargetType(mode);
+      if (mode === "MCQ") {
+        setAllowedTypes(["MCQ"]);
+        setTypeFilter("MCQ");
+      } else if (mode === "TRUE_FALSE") {
+        setAllowedTypes(["TRUE_FALSE"]);
+        setTypeFilter("TRUE_FALSE");
+      } else if (mode === "ESSAY") {
+        setAllowedTypes(["ESSAY"]);
+        setTypeFilter("ESSAY");
+      } else {
+        setAllowedTypes(["MCQ", "TRUE_FALSE", "ESSAY"]);
+        setTypeFilter("ALL");
+      }
+    }
+  }, [isOpen, initialType]);
+
+  const selectTargetType = (type: ImportTargetType) => {
+    setTargetType(type);
+    if (type === "MCQ") {
+      setAllowedTypes(["MCQ"]);
+      setTypeFilter("MCQ");
+    } else if (type === "TRUE_FALSE") {
+      setAllowedTypes(["TRUE_FALSE"]);
+      setTypeFilter("TRUE_FALSE");
+    } else if (type === "ESSAY") {
+      setAllowedTypes(["ESSAY"]);
+      setTypeFilter("ESSAY");
+    } else {
+      setAllowedTypes(["MCQ", "TRUE_FALSE", "ESSAY"]);
+      setTypeFilter("ALL");
+    }
+  };
+
+  // Helper to quickly set True/False answer
+  const handleSetTrueFalseAnswer = (qId: string, answer: "TRUE" | "FALSE") => {
+    const isTrue = answer === "TRUE";
+    const options = [
+      { text: "صواب", isCorrect: isTrue, order: 1 },
+      { text: "خطأ", isCorrect: !isTrue, order: 2 },
+    ];
+    setStagedQuestions((prev) =>
+      prev.map((q) => {
+        if (q.id !== qId) return q;
+        return revalidateQuestion({ ...q, options });
+      })
+    );
+  };
 
   if (!isOpen) return null;
 
@@ -188,6 +248,10 @@ export function QuestionImportWizardModal({
         formData.append("schoolCategory", selectedSchoolCategory);
         formData.append("strategy", strategy);
         formData.append("forcedDifficulty", forcedDifficulty);
+        if (targetType !== "ALL") {
+          formData.append("type", targetType);
+        }
+        formData.append("allowedTypes", JSON.stringify(allowedTypes));
 
         const res = await fetch("/api/admin/questions/parse-docx", {
           method: "POST",
@@ -201,10 +265,27 @@ export function QuestionImportWizardModal({
 
         rawQuestions = data.questions || [];
       } else {
-        // Direct Text Parse
-        rawQuestions = parseQuestionsFromText(pasteText, {
-          forcedDifficulty: strategy === "FORCED" ? forcedDifficulty : undefined,
+        // Direct Text Parse using API with forcedType support
+        const payload = {
+          text: pasteText.trim(),
+          strategy,
+          allowedTypes,
+          type: targetType !== "ALL" ? targetType : undefined,
+          difficulty: strategy === "FORCED" ? forcedDifficulty : undefined,
+          schoolCategory: selectedSchoolCategory,
+        };
+        const res = await fetch("/api/admin/questions/parse-docx", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
         });
+
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.error || "فشل قراءة وتحليل نصوص الأسئلة");
+        }
+
+        rawQuestions = data.questions || [];
       }
 
       if (!rawQuestions || rawQuestions.length === 0) {
@@ -392,8 +473,59 @@ export function QuestionImportWizardModal({
             </button>
           </div>
 
+          {/* Dedicated Target Mode Segmented Control (Mode Isolation) */}
+          <div className="flex flex-wrap items-center gap-1.5 p-1 rounded-xl bg-[#F1F5F9] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] mb-2.5">
+            <span className="text-[11px] font-bold text-[#64748B] dark:text-[#94A3B8] px-2">
+              وضع الاستيراد:
+            </span>
+            <button
+              type="button"
+              onClick={() => selectTargetType("ALL")}
+              className={`px-3 py-1 rounded-lg text-[12px] font-bold transition-all cursor-pointer ${
+                targetType === "ALL"
+                  ? "bg-white dark:bg-[#0F172A] text-[#0F172A] dark:text-white shadow-xs"
+                  : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A]"
+              }`}
+            >
+              ✨ استيراد شامل لكافة الأنواع
+            </button>
+            <button
+              type="button"
+              onClick={() => selectTargetType("MCQ")}
+              className={`px-3 py-1 rounded-lg text-[12px] font-bold transition-all cursor-pointer ${
+                targetType === "MCQ"
+                  ? "bg-blue-600 text-white shadow-xs"
+                  : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A]"
+              }`}
+            >
+              🎯 وضع اختيار من متعدد فقط
+            </button>
+            <button
+              type="button"
+              onClick={() => selectTargetType("TRUE_FALSE")}
+              className={`px-3 py-1 rounded-lg text-[12px] font-bold transition-all cursor-pointer ${
+                targetType === "TRUE_FALSE"
+                  ? "bg-purple-600 text-white shadow-xs"
+                  : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A]"
+              }`}
+            >
+              ⚖️ وضع صواب وخطأ فقط
+            </button>
+            <button
+              type="button"
+              onClick={() => selectTargetType("ESSAY")}
+              className={`px-3 py-1 rounded-lg text-[12px] font-bold transition-all cursor-pointer ${
+                targetType === "ESSAY"
+                  ? "bg-amber-600 text-white shadow-xs"
+                  : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A]"
+              }`}
+            >
+              📝 وضع الأسئلة المقالية فقط
+            </button>
+          </div>
+
           {/* Stepper Progress Bar */}
-          <div className="grid grid-cols-4 gap-2 pt-2">
+          <div className="grid grid-cols-4 gap-2 pt-1">
             {[
               { num: 1, title: "1. الإعدادات والتصنيف" },
               { num: 2, title: "2. رفع المستند والاستخراج" },
@@ -427,6 +559,45 @@ export function QuestionImportWizardModal({
           {/* STEP 1: Settings & Classification */}
           {currentStep === 1 && (
             <div className="space-y-5">
+              {/* Focus Mode Banner */}
+              {targetType !== "ALL" && (
+                <div
+                  className={`p-4 rounded-xl border flex items-center justify-between gap-3 ${
+                    targetType === "ESSAY"
+                      ? "bg-amber-500/10 border-amber-500/30 text-amber-900 dark:text-amber-200"
+                      : targetType === "MCQ"
+                      ? "bg-blue-500/10 border-blue-500/30 text-blue-900 dark:text-blue-200"
+                      : "bg-purple-500/10 border-purple-500/30 text-purple-900 dark:text-purple-200"
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <Sparkles className="w-5 h-5 shrink-0" />
+                    <div>
+                      <h4 className="text-[13px] font-bold">
+                        {targetType === "ESSAY" && "أنت الآن في وضع استيراد الأسئلة المقالية المنفصل"}
+                        {targetType === "MCQ" && "أنت الآن في وضع استيراد اختيار من متعدد (MCQ) المنفصل"}
+                        {targetType === "TRUE_FALSE" && "أنت الآن في وضع استيراد صواب وخطأ المنفصل"}
+                      </h4>
+                      <p className="text-[11px] opacity-90 mt-0.5">
+                        {targetType === "ESSAY" &&
+                          "يتم استخراج نص السؤال، الإجابة النموذجية (عناصر الإجابة)، والتفسير والدرجة بصورة منفصلة دون تداخل مع خيارات MCQ."}
+                        {targetType === "MCQ" &&
+                          "يتم استخراج نصوص الأسئلة مع الخيارات (أ، ب، ج، د) أو (A, B, C, D) وتحديد البديل الصحيح بدقة."}
+                        {targetType === "TRUE_FALSE" &&
+                          "يتم استخراج العبارات وتعيين خياري (صواب / خطأ) تلقائياً مع توفير أزرار تحكم سريعة."}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => selectTargetType("ALL")}
+                    className="text-[11px] font-bold underline shrink-0 hover:opacity-80 cursor-pointer"
+                  >
+                    التبديل إلى استيراد شامل
+                  </button>
+                </div>
+              )}
+
               <div className="p-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] space-y-4">
                 <h4 className="text-[14px] font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
                   <BookOpen className="w-4 h-4 text-[#800020]" />
@@ -724,13 +895,76 @@ export function QuestionImportWizardModal({
                 <div className="space-y-3">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <span className="text-[12px] font-bold text-[#64748B]">
-                      الصق الأسئلة بالتنسيق المدعوم:
+                      {targetType === "ESSAY"
+                        ? "الصق الأسئلة المقالية (سؤال + إجابة نموذجية + تفسير):"
+                        : targetType === "TRUE_FALSE"
+                        ? "الصق أسئلة الصواب والخطأ (عبارة + صواب/خطأ + تفسير):"
+                        : targetType === "MCQ"
+                        ? "الصق أسئلة الاختيار من متعدد مع الخيارات:"
+                        : "الصق الأسئلة بالتنسيق المدعوم:"}
                     </span>
-                    <div className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setPasteText(`Question 1: ما المقصود بالذكاء الاصطناعي (AI)؟
+                    <div className="flex flex-wrap items-center gap-2">
+                      {/* Essay templates */}
+                      {(targetType === "ESSAY" || targetType === "ALL") && (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setPasteText(`[مقالي] [سهل] س1: كيف تطورت تكنولوجيا المعلومات في الفترة من الأربعينيات إلى الستينيات؟
+
+الإجابة النموذجية: ظهرت الحواسيب الإلكترونية مثل ENIAC، وكانت تستخدم الصمامات المفرغة، واستُخدمت أساسًا في الأغراض العسكرية والحسابات العلمية.
+
+التفسير: كانت الحواسيب الأولى كبيرة الحجم، وكان استخدامها يتركز في العمليات الحسابية والعلمية والعسكرية.
+
+المفهوم: بداية ظهور الحواسيب الإلكترونية.
+الدرجة: 10
+
+[مقالي] [متوسط] س2: اذكر المراحل الخمس الرئيسية لتطور تكنولوجيا المعلومات.
+
+الإجابة النموذجية:
+1. الأربعينيات إلى الستينيات: ظهور الحواسيب الإلكترونية الأولى والصمامات المفرغة.
+2. السبعينيات: ظهور المعالجات الدقيقة والحواسيب الشخصية.
+3. الثمانينيات: انتشار الشبكات المحلية والأنظمة المدمجة.
+4. التسعينيات: انطلاق شبكة الإنترنت والويب.
+5. القرن الحادي والعشرون: الحوسبة السحابية والهواتف الذكية والذكاء الاصطناعي.
+
+التفسير: يركز التطور على التدرج من الصمامات المفرغة إلى الذكاء الاصطناعي والحوسبة السحابية.
+
+المفهوم: مراحل تطور تكنولوجيا المعلومات.`);
+                            }}
+                            className="text-[11px] font-bold text-amber-700 dark:text-amber-400 hover:underline cursor-pointer"
+                          >
+                            + إدراج مثال مقالي (س1، س2)
+                          </button>
+                        </>
+                      )}
+
+                      {/* True/False template */}
+                      {(targetType === "TRUE_FALSE" || targetType === "ALL") && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setPasteText(`1. تعتبر الصمامات المفرغة من مكونات الجيل الأول للحواسيب.
+الإجابة: صواب
+التفسير: استخدمت الحواسيب الأولى في الأربعينيات والخمسينيات الصمامات المفرغة في معالجة البيانات.
+
+2. ظهرت الحواسيب الشخصية في فترة الأربعينيات.
+الإجابة: خطأ
+التفسير: ظهرت الحواسيب الشخصية في السبعينيات مع اختراع المعالجات الدقيقة.`);
+                          }}
+                          className="text-[11px] font-bold text-purple-700 dark:text-purple-400 hover:underline cursor-pointer"
+                        >
+                          + إدراج مثال صواب وخطأ
+                        </button>
+                      )}
+
+                      {/* MCQ templates */}
+                      {(targetType === "MCQ" || targetType === "ALL") && (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setPasteText(`Question 1: ما المقصود بالذكاء الاصطناعي (AI)؟
 
 A) مجال يهدف إلى تطوير أنظمة حاسوبية تستطيع تنفيذ مهام تتطلب عادةً ذكاءً بشريًا
 B) نظام مخصص لتخزين الملفات فقط
@@ -740,32 +974,40 @@ D) برنامج يستخدم لإنشاء الصور فقط
 Correct Answer: A
 
 Explanation: الذكاء الاصطناعي مجال يضم أنظمة حاسوبية تستطيع تنفيذ مهام مثل التعلم والتنبؤ والتعرف وتوليد المحتوى واتخاذ القرارات أو دعمها.`);
-                        }}
-                        className="text-[11px] font-bold text-[#800020] hover:underline"
-                      >
-                        + إدراج مثال (A, B, C, D)
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setPasteText(`1. ما هي عاصمة جمهورية مصر العربية؟
+                            }}
+                            className="text-[11px] font-bold text-blue-700 dark:text-blue-400 hover:underline cursor-pointer"
+                          >
+                            + إدراج مثال MCQ (A, B, C, D)
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setPasteText(`1. ما هي عاصمة جمهورية مصر العربية؟
 *أ) القاهرة
 ب) الإسكندرية
 ج) الأقصر
 د) أسوان
 التفسير: القاهرة هي العاصمة السياسية الرسمية.`);
-                        }}
-                        className="text-[11px] font-bold text-[#800020] hover:underline"
-                      >
-                        + إدراج مثال (أ، ب، ج، د)
-                      </button>
+                            }}
+                            className="text-[11px] font-bold text-[#800020] hover:underline cursor-pointer"
+                          >
+                            + إدراج مثال MCQ (أ، ب، ج، د)
+                          </button>
+                        </>
+                      )}
                     </div>
                   </div>
                   <textarea
                     rows={10}
                     value={pasteText}
                     onChange={(e) => setPasteText(e.target.value)}
-                    placeholder="الصق نصوص الأسئلة هنا..."
+                    placeholder={
+                      targetType === "ESSAY"
+                        ? "الصق الأسئلة المقالية مع الإجابة النموذجية والتفسير هنا..."
+                        : targetType === "TRUE_FALSE"
+                        ? "الصق عبارات الصواب والخطأ هنا..."
+                        : "الصق نصوص الأسئلة هنا..."
+                    }
                     className="w-full p-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#800020]"
                   />
                 </div>
@@ -900,8 +1142,103 @@ Explanation: الذكاء الاصطناعي مجال يضم أنظمة حاسو
                             </div>
 
                             <div className="text-[13px] font-bold text-[#0F172A] dark:text-white leading-relaxed">
-                              {q.statement}
+                              <BidiStatement text={q.statement} />
                             </div>
+
+                            {/* Prominent Model Answer Box for Essay Questions */}
+                            {q.type === "ESSAY" && (
+                              <div className="mt-2.5 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-900 dark:text-amber-200">
+                                <div className="text-[11px] font-bold text-amber-700 dark:text-amber-400 mb-1 flex items-center justify-between">
+                                  <span className="flex items-center gap-1.5">
+                                    <FileText className="w-3.5 h-3.5" />
+                                    <span>الإجابة النموذجية (عناصر الحل المقالي):</span>
+                                  </span>
+                                  <span className="text-[10px] font-bold bg-amber-200/50 dark:bg-amber-800/50 px-2 py-0.5 rounded text-amber-800 dark:text-amber-300">
+                                    {q.points || 10} درجات
+                                  </span>
+                                </div>
+                                <div className="text-[12px] whitespace-pre-line leading-relaxed font-medium">
+                                  {q.modelAnswer || (
+                                    <span className="text-amber-600/70 italic">
+                                      لم يتم استخراج إجابة نموذجية تلقائياً (يمكن كتابتها عبر زر التعديل)
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* True / False Instant Quick Pickers */}
+                            {q.type === "TRUE_FALSE" && (
+                              <div className="mt-2.5 flex items-center gap-2">
+                                <span className="text-[11px] font-bold text-[#64748B]">الإجابة المعتمدة:</span>
+                                {(() => {
+                                  const isTrue = q.options?.find(
+                                    (o) =>
+                                      o.text.trim() === "صواب" ||
+                                      o.text.trim() === "صح" ||
+                                      o.text.toLowerCase() === "true"
+                                  )?.isCorrect;
+                                  const isFalse = q.options?.find(
+                                    (o) =>
+                                      o.text.trim() === "خطأ" ||
+                                      o.text.toLowerCase() === "false"
+                                  )?.isCorrect;
+                                  return (
+                                    <div className="inline-flex items-center gap-1.5">
+                                      <button
+                                        type="button"
+                                        onClick={() => handleSetTrueFalseAnswer(q.id, "TRUE")}
+                                        className={`px-3 py-1 rounded-lg text-[11px] font-bold border transition-colors cursor-pointer ${
+                                          isTrue
+                                            ? "bg-emerald-600 text-white border-emerald-600 shadow-xs"
+                                            : "bg-white dark:bg-[#0F172A] border-[#E2E8F0] dark:border-[#334155] text-[#64748B] hover:border-emerald-500"
+                                        }`}
+                                      >
+                                        ✓ صواب (True)
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={() => handleSetTrueFalseAnswer(q.id, "FALSE")}
+                                        className={`px-3 py-1 rounded-lg text-[11px] font-bold border transition-colors cursor-pointer ${
+                                          isFalse
+                                            ? "bg-rose-600 text-white border-rose-600 shadow-xs"
+                                            : "bg-white dark:bg-[#0F172A] border-[#E2E8F0] dark:border-[#334155] text-[#64748B] hover:border-rose-500"
+                                        }`}
+                                      >
+                                        ✗ خطأ (False)
+                                      </button>
+                                    </div>
+                                  );
+                                })()}
+                              </div>
+                            )}
+
+                            {/* MCQ Options Display */}
+                            {q.type === "MCQ" && q.options && q.options.length > 0 && !isExpanded && (
+                              <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                                {q.options.map((opt, oIdx) => (
+                                  <div
+                                    key={oIdx}
+                                    className={`px-2.5 py-1.5 rounded-lg border text-[11px] flex items-center justify-between ${
+                                      opt.isCorrect
+                                        ? "bg-emerald-50/50 dark:bg-emerald-950/30 border-emerald-300 dark:border-emerald-800 font-bold text-emerald-800 dark:text-emerald-300"
+                                        : "bg-[#F8FAFC] dark:bg-[#0F172A] border-[#E2E8F0] dark:border-[#334155] text-[#64748B]"
+                                    }`}
+                                  >
+                                    <span>{opt.text}</span>
+                                    {opt.isCorrect && <Check className="w-3.5 h-3.5 text-emerald-600" />}
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+
+                            {/* Scientific Explanation if exists */}
+                            {q.correctReason && !isExpanded && (
+                              <div className="mt-2 text-[11px] text-[#64748B] dark:text-[#94A3B8] bg-[#F8FAFC] dark:bg-[#0F172A] p-2 rounded-lg border border-[#E2E8F0] dark:border-[#334155]">
+                                <strong className="text-[#0F172A] dark:text-white">التفسير: </strong>
+                                {q.correctReason}
+                              </div>
+                            )}
 
                             {/* Validation Warning Notes */}
                             {q.validationNotes && q.validationNotes.length > 0 && (
@@ -918,18 +1255,104 @@ Explanation: الذكاء الاصطناعي مجال يضم أنظمة حاسو
                                   <label className="block text-[11px] font-bold text-[#64748B] mb-1">
                                     تعديل نص السؤال:
                                   </label>
-                                  <input
-                                    type="text"
+                                  <textarea
+                                    rows={2}
                                     value={q.statement}
                                     onChange={(e) =>
                                       handleUpdateStagedQuestion({ ...q, statement: e.target.value })
                                     }
-                                    className="w-full h-9 px-3 rounded-lg border border-[#E2E8F0] text-[12px] font-bold"
+                                    className="w-full p-2.5 rounded-lg border border-[#E2E8F0] text-[12px] font-bold"
                                   />
                                 </div>
 
-                                {/* Options if MCQ */}
-                                {q.options && q.options.length > 0 && (
+                                {/* Essay Editor Fields */}
+                                {q.type === "ESSAY" && (
+                                  <>
+                                    <div>
+                                      <label className="block text-[11px] font-bold text-amber-700 dark:text-amber-400 mb-1">
+                                        الإجابة النموذجية (عناصر الحل المقالي الكامل):
+                                      </label>
+                                      <textarea
+                                        rows={4}
+                                        value={q.modelAnswer || ""}
+                                        onChange={(e) =>
+                                          handleUpdateStagedQuestion({ ...q, modelAnswer: e.target.value })
+                                        }
+                                        placeholder="اكتب عناصر الإجابة والخطوات النموذجية بالتفصيل..."
+                                        className="w-full p-2.5 rounded-lg border border-amber-300 dark:border-amber-700 bg-amber-50/30 text-[12px] font-medium"
+                                      />
+                                    </div>
+
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                      <div>
+                                        <label className="block text-[11px] font-bold text-[#64748B] mb-1">
+                                          درجة السؤال:
+                                        </label>
+                                        <input
+                                          type="number"
+                                          value={q.points || 10}
+                                          onChange={(e) =>
+                                            handleUpdateStagedQuestion({
+                                              ...q,
+                                              points: Number(e.target.value) || 10,
+                                            })
+                                          }
+                                          className="w-full h-8 px-2.5 rounded-lg border border-[#E2E8F0] text-[12px] font-bold"
+                                        />
+                                      </div>
+                                      <div>
+                                        <label className="block text-[11px] font-bold text-[#64748B] mb-1">
+                                          المفهوم المرتبط (اختياري):
+                                        </label>
+                                        <input
+                                          type="text"
+                                          value={q.concept || ""}
+                                          onChange={(e) =>
+                                            handleUpdateStagedQuestion({ ...q, concept: e.target.value })
+                                          }
+                                          placeholder="اسم المفهوم أو الجزئية..."
+                                          className="w-full h-8 px-2.5 rounded-lg border border-[#E2E8F0] text-[12px]"
+                                        />
+                                      </div>
+                                    </div>
+                                  </>
+                                )}
+
+                                {/* True/False Editor Fields */}
+                                {q.type === "TRUE_FALSE" && (
+                                  <div>
+                                    <label className="block text-[11px] font-bold text-[#64748B] mb-1.5">
+                                      الإجابة الصحيحة للعبارة:
+                                    </label>
+                                    <div className="flex items-center gap-2">
+                                      <button
+                                        type="button"
+                                        onClick={() => handleSetTrueFalseAnswer(q.id, "TRUE")}
+                                        className={`px-4 py-1.5 rounded-lg text-[12px] font-bold border transition-colors cursor-pointer ${
+                                          q.options?.find((o) => o.text === "صواب")?.isCorrect
+                                            ? "bg-emerald-600 text-white border-emerald-600"
+                                            : "bg-white border-[#E2E8F0] text-[#64748B]"
+                                        }`}
+                                      >
+                                        ✓ العبارة صواب (True)
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={() => handleSetTrueFalseAnswer(q.id, "FALSE")}
+                                        className={`px-4 py-1.5 rounded-lg text-[12px] font-bold border transition-colors cursor-pointer ${
+                                          q.options?.find((o) => o.text === "خطأ")?.isCorrect
+                                            ? "bg-rose-600 text-white border-rose-600"
+                                            : "bg-white border-[#E2E8F0] text-[#64748B]"
+                                        }`}
+                                      >
+                                        ✗ العبارة خطأ (False)
+                                      </button>
+                                    </div>
+                                  </div>
+                                )}
+
+                                {/* MCQ Editor Options */}
+                                {q.type === "MCQ" && q.options && q.options.length > 0 && (
                                   <div className="space-y-1.5">
                                     <span className="text-[11px] font-bold text-[#64748B] block">
                                       خيارات الإجابة (حدد الصحيحة):

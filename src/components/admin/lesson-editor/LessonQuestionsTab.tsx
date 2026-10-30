@@ -43,8 +43,14 @@ export function LessonQuestionsTab({
 }: LessonQuestionsTabProps) {
   // Modal states
   const [showImportWizard, setShowImportWizard] = useState(false);
+  const [wizardInitialType, setWizardInitialType] = useState<"ALL" | "MCQ" | "TRUE_FALSE" | "ESSAY">("ALL");
   const [showAddModal, setShowAddModal] = useState(false);
   const [showGuideModal, setShowGuideModal] = useState(false);
+
+  const openImportWizardWithType = (type: "ALL" | "MCQ" | "TRUE_FALSE" | "ESSAY") => {
+    setWizardInitialType(type);
+    setShowImportWizard(true);
+  };
 
   // Filters & Search
   const [searchQuery, setSearchQuery] = useState("");
@@ -360,12 +366,12 @@ export function LessonQuestionsTab({
           </div>
         </div>
 
-        {/* Action Toolbar */}
-        <div className="flex items-center gap-2.5 flex-wrap">
+        {/* Action Toolbar with Dedicated Entry Points */}
+        <div className="flex items-center gap-2 flex-wrap">
           <button
             type="button"
             onClick={openNewQuestionModal}
-            className="h-10 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center gap-2 shadow-xs transition-all active:scale-95 cursor-pointer"
+            className="h-10 px-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all active:scale-95 cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>+ إضافة سؤال</span>
@@ -373,11 +379,42 @@ export function LessonQuestionsTab({
 
           <button
             type="button"
-            onClick={() => setShowImportWizard(true)}
-            className="h-10 px-4 rounded-xl bg-[#0F172A] hover:bg-[#1E293B] text-white text-xs font-bold flex items-center gap-2 shadow-xs transition-all cursor-pointer border border-slate-700"
+            onClick={() => openImportWizardWithType("ESSAY")}
+            className="h-10 px-3.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
+            title="استيراد الأسئلة المقالية فقط من ملف Word أو PDF"
           >
-            <Sparkles className="w-4 h-4 text-blue-400" />
-            <span>معالج استيراد Word (Wizard 4 مراحل)</span>
+            <BookOpen className="w-4 h-4" />
+            <span>📝 استيراد مقالي</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => openImportWizardWithType("MCQ")}
+            className="h-10 px-3.5 rounded-xl bg-blue-700 hover:bg-blue-800 text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
+            title="استيراد أسئلة الاختيار من متعدد فقط"
+          >
+            <CheckCircle2 className="w-4 h-4" />
+            <span>🎯 استيراد MCQ</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => openImportWizardWithType("TRUE_FALSE")}
+            className="h-10 px-3.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
+            title="استيراد أسئلة الصواب والخطأ فقط"
+          >
+            <Layers className="w-4 h-4" />
+            <span>⚖️ استيراد صح وخطأ</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => openImportWizardWithType("ALL")}
+            className="h-10 px-3 rounded-xl bg-[#0F172A] hover:bg-[#1E293B] text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all cursor-pointer border border-slate-700"
+            title="استيراد شامل لكافة الأنواع معاً"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-blue-400" />
+            <span>استيراد شامل</span>
           </button>
 
           <button
@@ -453,6 +490,71 @@ export function LessonQuestionsTab({
             {hardCount + medCount}
           </span>
         </div>
+      </div>
+
+      {/* ─────────────────────────────────────────────────────────────
+          2.5. QUESTIONS CATEGORY TABS (SEPARATED INTERFACE VIEW)
+      ───────────────────────────────────────────────────────────── */}
+      <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-800 shadow-2xs overflow-x-auto">
+        <button
+          type="button"
+          onClick={() => setTypeFilter("ALL")}
+          className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
+            typeFilter === "ALL"
+              ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-xs"
+              : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+          }`}
+        >
+          <span>جميع الأسئلة</span>
+          <span className="px-1.5 py-0.5 rounded-md text-[10px] bg-black/10 dark:bg-white/20 font-mono font-bold">
+            {totalCount}
+          </span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setTypeFilter("MCQ")}
+          className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
+            typeFilter === "MCQ"
+              ? "bg-blue-600 text-white shadow-xs"
+              : "text-blue-700 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-950/30"
+          }`}
+        >
+          <span>🎯 اختيار من متعدد (MCQ)</span>
+          <span className="px-1.5 py-0.5 rounded-md text-[10px] bg-black/10 dark:bg-white/20 font-mono font-bold">
+            {mcqCount}
+          </span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setTypeFilter("TRUE_FALSE")}
+          className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
+            typeFilter === "TRUE_FALSE"
+              ? "bg-purple-600 text-white shadow-xs"
+              : "text-purple-700 dark:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-950/30"
+          }`}
+        >
+          <span>⚖️ صواب وخطأ (True/False)</span>
+          <span className="px-1.5 py-0.5 rounded-md text-[10px] bg-black/10 dark:bg-white/20 font-mono font-bold">
+            {tfCount}
+          </span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setTypeFilter("ESSAY")}
+          className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
+            typeFilter === "ESSAY"
+              ? "bg-amber-600 text-white shadow-xs"
+              : "text-amber-700 dark:text-amber-300 hover:bg-amber-50 dark:hover:bg-amber-950/30"
+          }`}
+        >
+          <span>📝 أسئلة مقالية (Essay)</span>
+          <span className="px-1.5 py-0.5 rounded-md text-[10px] bg-black/10 dark:bg-white/20 font-mono font-bold">
+            {essayCount}
+          </span>
+        </button>
       </div>
 
       {/* ─────────────────────────────────────────────────────────────
@@ -1154,6 +1256,7 @@ export function LessonQuestionsTab({
         onClose={() => setShowImportWizard(false)}
         lessonId={lessonId}
         unitInfo={unitInfo}
+        initialType={wizardInitialType}
         onImportSuccess={() => {
           onRefreshQuestions();
         }}
