@@ -54,7 +54,7 @@ export function LessonQuestionsTab({
 
   // Filters & Search
   const [searchQuery, setSearchQuery] = useState("");
-  const [typeFilter, setTypeFilter] = useState<string>("ALL");
+  const [typeFilter, setTypeFilter] = useState<string>("MCQ");
   const [difficultyFilter, setDifficultyFilter] = useState<string>("ALL");
 
   // Inline editing question ID
@@ -128,9 +128,10 @@ export function LessonQuestionsTab({
   };
 
   // Open Add Single Question Modal
-  const openNewQuestionModal = () => {
+  const openNewQuestionModal = (initialType?: "MCQ" | "TRUE_FALSE" | "ESSAY") => {
     setNewStatement("");
-    setNewType("MCQ");
+    const targetType = initialType || (typeFilter !== "ALL" ? (typeFilter as "MCQ" | "TRUE_FALSE" | "ESSAY") : "MCQ");
+    setNewType(targetType);
     setNewDifficulty("MEDIUM");
     setNewOptions([
       { text: "", isCorrect: true },
@@ -365,81 +366,225 @@ export function LessonQuestionsTab({
   return (
     <div dir="rtl" className="space-y-6 text-right font-sans">
       {/* ─────────────────────────────────────────────────────────────
-          1. TOP HERO & CONTROL TOOLBAR (NAVY & BURGUNDY ACCENTS)
+          1. PRIMARY QUESTION TYPE TABS (SUB-TABS UNDER LESSON QUESTIONS)
+      ───────────────────────────────────────────────────────────── */}
+      <div className="p-2 rounded-2xl bg-slate-100 dark:bg-[#0F172A] border border-slate-200 dark:border-slate-800 shadow-xs flex items-center gap-2 overflow-x-auto">
+        <button
+          type="button"
+          onClick={() => handleTypeFilterChange("MCQ")}
+          className={`px-5 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2.5 transition-all cursor-pointer whitespace-nowrap ${
+            typeFilter === "MCQ"
+              ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
+              : "text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-800/80"
+          }`}
+        >
+          <CheckCircle2 className="w-4 h-4" />
+          <span>اختيار من متعدد (MCQ)</span>
+          <span className={`px-2 py-0.5 rounded-full text-[11px] font-mono font-bold ${
+            typeFilter === "MCQ" ? "bg-white/20 text-white" : "bg-blue-100 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300"
+          }`}>
+            {mcqCount}
+          </span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => handleTypeFilterChange("ESSAY")}
+          className={`px-5 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2.5 transition-all cursor-pointer whitespace-nowrap ${
+            typeFilter === "ESSAY"
+              ? "bg-amber-600 text-white shadow-md shadow-amber-500/20"
+              : "text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-800/80"
+          }`}
+        >
+          <BookOpen className="w-4 h-4" />
+          <span>أسئلة مقالية (Essay)</span>
+          <span className={`px-2 py-0.5 rounded-full text-[11px] font-mono font-bold ${
+            typeFilter === "ESSAY" ? "bg-white/20 text-white" : "bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300"
+          }`}>
+            {essayCount}
+          </span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => handleTypeFilterChange("TRUE_FALSE")}
+          className={`px-5 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2.5 transition-all cursor-pointer whitespace-nowrap ${
+            typeFilter === "TRUE_FALSE"
+              ? "bg-purple-600 text-white shadow-md shadow-purple-500/20"
+              : "text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-800/80"
+          }`}
+        >
+          <Layers className="w-4 h-4" />
+          <span>صواب وخطأ (True / False)</span>
+          <span className={`px-2 py-0.5 rounded-full text-[11px] font-mono font-bold ${
+            typeFilter === "TRUE_FALSE" ? "bg-white/20 text-white" : "bg-purple-100 text-purple-800 dark:bg-purple-950/60 dark:text-purple-300"
+          }`}>
+            {tfCount}
+          </span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => handleTypeFilterChange("ALL")}
+          className={`px-5 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2.5 transition-all cursor-pointer whitespace-nowrap ${
+            typeFilter === "ALL"
+              ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-md shadow-slate-900/20"
+              : "text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-800/80"
+          }`}
+        >
+          <Sparkles className="w-4 h-4" />
+          <span>جميع الأسئلة (الشامل)</span>
+          <span className={`px-2 py-0.5 rounded-full text-[11px] font-mono font-bold ${
+            typeFilter === "ALL" ? "bg-white/20 text-white dark:bg-slate-900/20 dark:text-slate-900" : "bg-slate-200 text-slate-800 dark:bg-slate-800 dark:text-slate-200"
+          }`}>
+            {totalCount}
+          </span>
+        </button>
+      </div>
+
+      {/* ─────────────────────────────────────────────────────────────
+          2. CONTEXT-AWARE HERO HEADER & ACTIONS (DEDICATED PER ACTIVE TAB)
       ───────────────────────────────────────────────────────────── */}
       <div className="p-6 rounded-3xl bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-5">
         <div className="flex items-start sm:items-center gap-4">
-          <div className="w-13 h-13 rounded-2xl bg-[#0F172A] text-white flex items-center justify-center shrink-0 shadow-sm border border-slate-700">
-            <HelpCircle className="w-7 h-7 text-blue-400" />
+          <div className={`w-13 h-13 rounded-2xl text-white flex items-center justify-center shrink-0 shadow-sm border ${
+            typeFilter === "MCQ"
+              ? "bg-blue-600 border-blue-500"
+              : typeFilter === "ESSAY"
+              ? "bg-amber-600 border-amber-500"
+              : typeFilter === "TRUE_FALSE"
+              ? "bg-purple-600 border-purple-500"
+              : "bg-[#0F172A] border-slate-700"
+          }`}>
+            {typeFilter === "MCQ" ? (
+              <CheckCircle2 className="w-7 h-7 text-white" />
+            ) : typeFilter === "ESSAY" ? (
+              <BookOpen className="w-7 h-7 text-white" />
+            ) : typeFilter === "TRUE_FALSE" ? (
+              <Layers className="w-7 h-7 text-white" />
+            ) : (
+              <HelpCircle className="w-7 h-7 text-blue-400" />
+            )}
           </div>
           <div className="space-y-1">
             <div className="flex items-center gap-2.5 flex-wrap">
               <h3 className="text-base sm:text-lg font-bold text-[#0F172A] dark:text-white">
-                بنك أسئلة وتدريبات الدرس
+                {typeFilter === "MCQ"
+                  ? "بنك أسئلة الاختيار من متعدد (MCQ)"
+                  : typeFilter === "ESSAY"
+                  ? "بنك الأسئلة المقالية (Essay)"
+                  : typeFilter === "TRUE_FALSE"
+                  ? "بنك أسئلة الصواب والخطأ (True / False)"
+                  : "بنك الأسئلة الشامل للدرس"}
               </h3>
               <span className="text-xs px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-mono font-bold border border-slate-300 dark:border-slate-700">
-                {totalCount} سؤالاً مسجلاً
+                {typeScopedQuestions.length} سؤالاً مسجلاً
               </span>
               <span className="text-[11px] px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300 font-bold border border-blue-200/60">
                 {unitInfo.schoolCategory === "LANGUAGES" ? "Languages Track" : "مسار عربي"}
               </span>
             </div>
             <p className="text-xs text-slate-500 dark:text-slate-400 max-w-xl leading-relaxed">
-              إدارة بنك الأسئلة للدرس مع دعم استيراد Word الذكي، المراجعة قبل الاعتماد، وتحديد مستويات الصعوبة بدقة.
+              {typeFilter === "MCQ"
+                ? "إدارة أسئلة الاختيار من متعدد مع الخيارات الأربعة، وتحديد الإجابة الصحيحة وتفسير الحل."
+                : typeFilter === "ESSAY"
+                ? "إدارة الأسئلة المقالية، ونماذج الإجابات، والتقييم المفاهيمي وتفسير كل سؤال."
+                : typeFilter === "TRUE_FALSE"
+                ? "إدارة أسئلة صواب وخطأ مع تحديد الحالة (صحيحة/خاطئة) والتعليل النموذجي."
+                : "عرض وإدارة بنك الأسئلة الشامل للدرس مع دعم استيراد Word الذكي وتحديد مستويات الصعوبة."}
             </p>
           </div>
         </div>
 
-        {/* Action Toolbar with Dedicated Entry Points */}
+        {/* Dedicated Actions Per Active Tab */}
         <div className="flex items-center gap-2 flex-wrap">
-          <button
-            type="button"
-            onClick={openNewQuestionModal}
-            className="h-10 px-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all active:scale-95 cursor-pointer"
-          >
-            <Plus className="w-4 h-4" />
-            <span>+ إضافة سؤال</span>
-          </button>
+          {typeFilter === "MCQ" && (
+            <>
+              <button
+                type="button"
+                onClick={() => openNewQuestionModal("MCQ")}
+                className="h-10 px-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all active:scale-95 cursor-pointer"
+              >
+                <Plus className="w-4 h-4" />
+                <span>+ إضافة سؤال MCQ</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => openImportWizardWithType("MCQ")}
+                className="h-10 px-3.5 rounded-xl bg-blue-700 hover:bg-blue-800 text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
+                title="استيراد أسئلة الاختيار من متعدد فقط من ملف Word"
+              >
+                <CheckCircle2 className="w-4 h-4" />
+                <span>🎯 استيراد MCQ من Word</span>
+              </button>
+            </>
+          )}
 
-          <button
-            type="button"
-            onClick={() => openImportWizardWithType("ESSAY")}
-            className="h-10 px-3.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
-            title="استيراد الأسئلة المقالية فقط من ملف Word أو PDF"
-          >
-            <BookOpen className="w-4 h-4" />
-            <span>📝 استيراد مقالي</span>
-          </button>
+          {typeFilter === "ESSAY" && (
+            <>
+              <button
+                type="button"
+                onClick={() => openNewQuestionModal("ESSAY")}
+                className="h-10 px-3.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all active:scale-95 cursor-pointer"
+              >
+                <Plus className="w-4 h-4" />
+                <span>+ إضافة سؤال مقالي</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => openImportWizardWithType("ESSAY")}
+                className="h-10 px-3.5 rounded-xl bg-amber-700 hover:bg-amber-800 text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
+                title="استيراد الأسئلة المقالية فقط من ملف Word"
+              >
+                <BookOpen className="w-4 h-4" />
+                <span>📝 استيراد مقالي من Word</span>
+              </button>
+            </>
+          )}
 
-          <button
-            type="button"
-            onClick={() => openImportWizardWithType("MCQ")}
-            className="h-10 px-3.5 rounded-xl bg-blue-700 hover:bg-blue-800 text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
-            title="استيراد أسئلة الاختيار من متعدد فقط"
-          >
-            <CheckCircle2 className="w-4 h-4" />
-            <span>🎯 استيراد MCQ</span>
-          </button>
+          {typeFilter === "TRUE_FALSE" && (
+            <>
+              <button
+                type="button"
+                onClick={() => openNewQuestionModal("TRUE_FALSE")}
+                className="h-10 px-3.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all active:scale-95 cursor-pointer"
+              >
+                <Plus className="w-4 h-4" />
+                <span>+ إضافة سؤال صح وخطأ</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => openImportWizardWithType("TRUE_FALSE")}
+                className="h-10 px-3.5 rounded-xl bg-purple-700 hover:bg-purple-800 text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
+                title="استيراد أسئلة الصواب والخطأ فقط من ملف Word"
+              >
+                <Layers className="w-4 h-4" />
+                <span>⚖️ استيراد صح وخطأ</span>
+              </button>
+            </>
+          )}
 
-          <button
-            type="button"
-            onClick={() => openImportWizardWithType("TRUE_FALSE")}
-            className="h-10 px-3.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
-            title="استيراد أسئلة الصواب والخطأ فقط"
-          >
-            <Layers className="w-4 h-4" />
-            <span>⚖️ استيراد صح وخطأ</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => openImportWizardWithType("ALL")}
-            className="h-10 px-3 rounded-xl bg-[#0F172A] hover:bg-[#1E293B] text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all cursor-pointer border border-slate-700"
-            title="استيراد شامل لكافة الأنواع معاً"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-blue-400" />
-            <span>استيراد شامل</span>
-          </button>
+          {typeFilter === "ALL" && (
+            <>
+              <button
+                type="button"
+                onClick={() => openNewQuestionModal()}
+                className="h-10 px-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all active:scale-95 cursor-pointer"
+              >
+                <Plus className="w-4 h-4" />
+                <span>+ إضافة سؤال</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => openImportWizardWithType("ALL")}
+                className="h-10 px-3.5 rounded-xl bg-[#0F172A] hover:bg-[#1E293B] text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all cursor-pointer border border-slate-700"
+                title="استيراد شامل لكافة الأنواع"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-blue-400" />
+                <span>استيراد شامل</span>
+              </button>
+            </>
+          )}
 
           <button
             type="button"
@@ -454,260 +599,215 @@ export function LessonQuestionsTab({
       </div>
 
       {/* ─────────────────────────────────────────────────────────────
-          2. KPI METRICS CARDS (TOTAL, TYPES, DIFFICULTIES)
+          3. DEDICATED METRICS CARDS (SCOPED CLEANLY TO ACTIVE TAB)
       ───────────────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2.5">
-        {/* Total */}
-        <div
-          onClick={() => handleTypeFilterChange("ALL")}
-          className={`p-3 rounded-2xl border text-center space-y-0.5 shadow-2xs cursor-pointer transition-all ${
-            typeFilter === "ALL" && difficultyFilter === "ALL"
-              ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900 border-slate-900 dark:border-white shadow-xs"
-              : "bg-white dark:bg-[#1E293B] border-slate-200 dark:border-slate-800 hover:border-slate-300"
-          }`}
-        >
-          <span className={`text-[11px] font-bold block ${typeFilter === "ALL" && difficultyFilter === "ALL" ? "opacity-80" : "text-slate-400"}`}>
-            إجمالي الأسئلة
-          </span>
-          <span className="text-xl font-bold font-mono">
-            {totalCount}
-          </span>
-        </div>
+      {typeFilter === "ALL" ? (
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2.5">
+          {/* Total */}
+          <div
+            onClick={() => setDifficultyFilter("ALL")}
+            className={`p-3 rounded-2xl border text-center space-y-0.5 shadow-2xs cursor-pointer transition-all ${
+              difficultyFilter === "ALL"
+                ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900 border-slate-900 dark:border-white shadow-xs"
+                : "bg-white dark:bg-[#1E293B] border-slate-200 dark:border-slate-800 hover:border-slate-300"
+            }`}
+          >
+            <span className="text-[11px] font-bold block opacity-80">إجمالي الكل</span>
+            <span className="text-xl font-bold font-mono">{totalCount}</span>
+          </div>
 
-        {/* MCQ */}
-        <div
-          onClick={() => handleTypeFilterChange(typeFilter === "MCQ" ? "ALL" : "MCQ")}
-          className={`p-3 rounded-2xl border text-center space-y-0.5 shadow-2xs cursor-pointer transition-all ${
-            typeFilter === "MCQ"
-              ? "bg-blue-600 text-white border-blue-600 shadow-xs"
-              : "bg-blue-50/50 dark:bg-blue-950/20 border-blue-200/60 dark:border-blue-900/40 hover:border-blue-300 text-blue-900 dark:text-blue-100"
-          }`}
-        >
-          <span className={`text-[11px] font-bold block ${typeFilter === "MCQ" ? "text-blue-100" : "text-blue-700 dark:text-blue-300"}`}>
-            🎯 اختيار من متعدد
-          </span>
-          <span className="text-xl font-bold font-mono">
-            {mcqCount}
-          </span>
-        </div>
+          {/* MCQ */}
+          <div
+            onClick={() => handleTypeFilterChange("MCQ")}
+            className="p-3 rounded-2xl border text-center space-y-0.5 shadow-2xs cursor-pointer transition-all bg-blue-50/50 dark:bg-blue-950/20 border-blue-200/60 dark:border-blue-900/40 hover:border-blue-300 text-blue-900 dark:text-blue-100"
+          >
+            <span className="text-[11px] font-bold block text-blue-700 dark:text-blue-300">🎯 اختيار من متعدد</span>
+            <span className="text-xl font-bold font-mono">{mcqCount}</span>
+          </div>
 
-        {/* True/False */}
-        <div
-          onClick={() => handleTypeFilterChange(typeFilter === "TRUE_FALSE" ? "ALL" : "TRUE_FALSE")}
-          className={`p-3 rounded-2xl border text-center space-y-0.5 shadow-2xs cursor-pointer transition-all ${
-            typeFilter === "TRUE_FALSE"
-              ? "bg-purple-600 text-white border-purple-600 shadow-xs"
-              : "bg-purple-50/50 dark:bg-purple-950/20 border-purple-200/60 dark:border-purple-900/40 hover:border-purple-300 text-purple-900 dark:text-purple-100"
-          }`}
-        >
-          <span className={`text-[11px] font-bold block ${typeFilter === "TRUE_FALSE" ? "text-purple-100" : "text-purple-700 dark:text-purple-300"}`}>
-            ⚖️ صح أم خطأ
-          </span>
-          <span className="text-xl font-bold font-mono">
-            {tfCount}
-          </span>
-        </div>
+          {/* True/False */}
+          <div
+            onClick={() => handleTypeFilterChange("TRUE_FALSE")}
+            className="p-3 rounded-2xl border text-center space-y-0.5 shadow-2xs cursor-pointer transition-all bg-purple-50/50 dark:bg-purple-950/20 border-purple-200/60 dark:border-purple-900/40 hover:border-purple-300 text-purple-900 dark:text-purple-100"
+          >
+            <span className="text-[11px] font-bold block text-purple-700 dark:text-purple-300">⚖️ صح أم خطأ</span>
+            <span className="text-xl font-bold font-mono">{tfCount}</span>
+          </div>
 
-        {/* Essay */}
-        <div
-          onClick={() => handleTypeFilterChange(typeFilter === "ESSAY" ? "ALL" : "ESSAY")}
-          className={`p-3 rounded-2xl border text-center space-y-0.5 shadow-2xs cursor-pointer transition-all ${
-            typeFilter === "ESSAY"
-              ? "bg-amber-600 text-white border-amber-600 shadow-xs"
-              : "bg-amber-50/50 dark:bg-amber-950/20 border-amber-200/60 dark:border-amber-900/40 hover:border-amber-300 text-amber-900 dark:text-amber-100"
-          }`}
-        >
-          <span className={`text-[11px] font-bold block ${typeFilter === "ESSAY" ? "text-amber-100" : "text-amber-700 dark:text-amber-300"}`}>
-            📝 مقالي
-          </span>
-          <span className="text-xl font-bold font-mono">
-            {essayCount}
-          </span>
-        </div>
+          {/* Essay */}
+          <div
+            onClick={() => handleTypeFilterChange("ESSAY")}
+            className="p-3 rounded-2xl border text-center space-y-0.5 shadow-2xs cursor-pointer transition-all bg-amber-50/50 dark:bg-amber-950/20 border-amber-200/60 dark:border-amber-900/40 hover:border-amber-300 text-amber-900 dark:text-amber-100"
+          >
+            <span className="text-[11px] font-bold block text-amber-700 dark:text-amber-300">📝 مقالي</span>
+            <span className="text-xl font-bold font-mono">{essayCount}</span>
+          </div>
 
-        {/* Easy */}
-        <div
-          onClick={() => setDifficultyFilter(difficultyFilter === "EASY" ? "ALL" : "EASY")}
-          className={`p-3 rounded-2xl border text-center space-y-0.5 shadow-2xs cursor-pointer transition-all ${
-            difficultyFilter === "EASY"
-              ? "bg-emerald-600 text-white border-emerald-600 shadow-xs"
-              : "bg-emerald-50/50 dark:bg-emerald-950/20 border-emerald-200/60 dark:border-emerald-900/40 hover:border-emerald-300 text-emerald-900 dark:text-emerald-100"
-          }`}
-        >
-          <span className={`text-[11px] font-bold block ${difficultyFilter === "EASY" ? "text-emerald-100" : "text-emerald-700 dark:text-emerald-300"}`}>
-            🟢 سهل
-          </span>
-          <div className="flex items-baseline justify-center gap-1 font-mono font-bold">
-            <span className="text-xl">{scopedEasyCount}</span>
-            {typeFilter !== "ALL" && scopedEasyCount !== globalEasyCount && (
-              <span className={`text-[10px] ${difficultyFilter === "EASY" ? "text-emerald-200" : "text-slate-400"}`}>
-                / {globalEasyCount}
-              </span>
-            )}
+          {/* Easy */}
+          <div
+            onClick={() => setDifficultyFilter(difficultyFilter === "EASY" ? "ALL" : "EASY")}
+            className={`p-3 rounded-2xl border text-center space-y-0.5 shadow-2xs cursor-pointer transition-all ${
+              difficultyFilter === "EASY"
+                ? "bg-emerald-600 text-white border-emerald-600 shadow-xs"
+                : "bg-emerald-50/50 dark:bg-emerald-950/20 border-emerald-200/60 dark:border-emerald-900/40 hover:border-emerald-300 text-emerald-900 dark:text-emerald-100"
+            }`}
+          >
+            <span className="text-[11px] font-bold block">🟢 سهل</span>
+            <span className="text-xl font-bold font-mono">{globalEasyCount}</span>
+          </div>
+
+          {/* Med */}
+          <div
+            onClick={() => setDifficultyFilter(difficultyFilter === "MEDIUM" ? "ALL" : "MEDIUM")}
+            className={`p-3 rounded-2xl border text-center space-y-0.5 shadow-2xs cursor-pointer transition-all ${
+              difficultyFilter === "MEDIUM"
+                ? "bg-amber-600 text-white border-amber-600 shadow-xs"
+                : "bg-amber-50/40 dark:bg-amber-950/15 border-amber-200/50 dark:border-amber-900/30 hover:border-amber-300 text-amber-900 dark:text-amber-100"
+            }`}
+          >
+            <span className="text-[11px] font-bold block">🟡 متوسط</span>
+            <span className="text-xl font-bold font-mono">{globalMedCount}</span>
+          </div>
+
+          {/* Hard */}
+          <div
+            onClick={() => setDifficultyFilter(difficultyFilter === "HARD" ? "ALL" : "HARD")}
+            className={`p-3 rounded-2xl border text-center space-y-0.5 shadow-2xs cursor-pointer transition-all ${
+              difficultyFilter === "HARD"
+                ? "bg-rose-600 text-white border-rose-600 shadow-xs"
+                : "bg-rose-50/50 dark:bg-rose-950/20 border-rose-200/60 dark:border-rose-900/40 hover:border-rose-300 text-rose-900 dark:text-rose-100"
+            }`}
+          >
+            <span className="text-[11px] font-bold block">🔴 صعب</span>
+            <span className="text-xl font-bold font-mono">{globalHardCount}</span>
           </div>
         </div>
+      ) : (
+        /* Dedicated 4 cards strictly for this type */
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {/* Total for this type */}
+          <div
+            onClick={() => setDifficultyFilter("ALL")}
+            className={`p-3.5 rounded-2xl border text-center space-y-1 shadow-2xs cursor-pointer transition-all ${
+              difficultyFilter === "ALL"
+                ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900 border-slate-900 dark:border-white shadow-xs"
+                : "bg-white dark:bg-[#1E293B] border-slate-200 dark:border-slate-800 hover:border-slate-300"
+            }`}
+          >
+            <span className="text-xs font-bold block opacity-80">
+              {typeFilter === "MCQ"
+                ? "إجمالي أسئلة MCQ"
+                : typeFilter === "ESSAY"
+                ? "إجمالي الأسئلة المقالية"
+                : "إجمالي صواب وخطأ"}
+            </span>
+            <span className="text-2xl font-bold font-mono">{typeScopedQuestions.length}</span>
+          </div>
 
-        {/* Medium */}
-        <div
-          onClick={() => setDifficultyFilter(difficultyFilter === "MEDIUM" ? "ALL" : "MEDIUM")}
-          className={`p-3 rounded-2xl border text-center space-y-0.5 shadow-2xs cursor-pointer transition-all ${
-            difficultyFilter === "MEDIUM"
-              ? "bg-amber-600 text-white border-amber-600 shadow-xs"
-              : "bg-amber-50/40 dark:bg-amber-950/15 border-amber-200/50 dark:border-amber-900/30 hover:border-amber-300 text-amber-900 dark:text-amber-100"
-          }`}
-        >
-          <span className={`text-[11px] font-bold block ${difficultyFilter === "MEDIUM" ? "text-amber-100" : "text-amber-700 dark:text-amber-300"}`}>
-            🟡 متوسط
-          </span>
-          <div className="flex items-baseline justify-center gap-1 font-mono font-bold">
-            <span className="text-xl">{scopedMedCount}</span>
-            {typeFilter !== "ALL" && scopedMedCount !== globalMedCount && (
-              <span className={`text-[10px] ${difficultyFilter === "MEDIUM" ? "text-amber-200" : "text-slate-400"}`}>
-                / {globalMedCount}
-              </span>
-            )}
+          {/* Easy */}
+          <div
+            onClick={() => setDifficultyFilter(difficultyFilter === "EASY" ? "ALL" : "EASY")}
+            className={`p-3.5 rounded-2xl border text-center space-y-1 shadow-2xs cursor-pointer transition-all ${
+              difficultyFilter === "EASY"
+                ? "bg-emerald-600 text-white border-emerald-600 shadow-xs"
+                : "bg-emerald-50/50 dark:bg-emerald-950/20 border-emerald-200/60 dark:border-emerald-900/40 hover:border-emerald-300 text-emerald-900 dark:text-emerald-100"
+            }`}
+          >
+            <span className={`text-xs font-bold block ${difficultyFilter === "EASY" ? "text-emerald-100" : "text-emerald-700 dark:text-emerald-300"}`}>
+              🟢 سهل
+            </span>
+            <span className="text-2xl font-bold font-mono">{scopedEasyCount}</span>
+          </div>
+
+          {/* Medium */}
+          <div
+            onClick={() => setDifficultyFilter(difficultyFilter === "MEDIUM" ? "ALL" : "MEDIUM")}
+            className={`p-3.5 rounded-2xl border text-center space-y-1 shadow-2xs cursor-pointer transition-all ${
+              difficultyFilter === "MEDIUM"
+                ? "bg-amber-600 text-white border-amber-600 shadow-xs"
+                : "bg-amber-50/40 dark:bg-amber-950/15 border-amber-200/50 dark:border-amber-900/30 hover:border-amber-300 text-amber-900 dark:text-amber-100"
+            }`}
+          >
+            <span className={`text-xs font-bold block ${difficultyFilter === "MEDIUM" ? "text-amber-100" : "text-amber-700 dark:text-amber-300"}`}>
+              🟡 متوسط
+            </span>
+            <span className="text-2xl font-bold font-mono">{scopedMedCount}</span>
+          </div>
+
+          {/* Hard */}
+          <div
+            onClick={() => setDifficultyFilter(difficultyFilter === "HARD" ? "ALL" : "HARD")}
+            className={`p-3.5 rounded-2xl border text-center space-y-1 shadow-2xs cursor-pointer transition-all ${
+              difficultyFilter === "HARD"
+                ? "bg-rose-600 text-white border-rose-600 shadow-xs"
+                : "bg-rose-50/50 dark:bg-rose-950/20 border-rose-200/60 dark:border-rose-900/40 hover:border-rose-300 text-rose-900 dark:text-rose-100"
+            }`}
+          >
+            <span className={`text-xs font-bold block ${difficultyFilter === "HARD" ? "text-rose-100" : "text-rose-700 dark:text-rose-300"}`}>
+              🔴 صعب
+            </span>
+            <span className="text-2xl font-bold font-mono">{scopedHardCount}</span>
           </div>
         </div>
-
-        {/* Hard */}
-        <div
-          onClick={() => setDifficultyFilter(difficultyFilter === "HARD" ? "ALL" : "HARD")}
-          className={`p-3 rounded-2xl border text-center space-y-0.5 shadow-2xs cursor-pointer transition-all ${
-            difficultyFilter === "HARD"
-              ? "bg-rose-600 text-white border-rose-600 shadow-xs"
-              : "bg-rose-50/50 dark:bg-rose-950/20 border-rose-200/60 dark:border-rose-900/40 hover:border-rose-300 text-rose-900 dark:text-rose-100"
-          }`}
-        >
-          <span className={`text-[11px] font-bold block ${difficultyFilter === "HARD" ? "text-rose-100" : "text-rose-700 dark:text-rose-300"}`}>
-            🔴 صعب
-          </span>
-          <div className="flex items-baseline justify-center gap-1 font-mono font-bold">
-            <span className="text-xl">{scopedHardCount}</span>
-            {typeFilter !== "ALL" && scopedHardCount !== globalHardCount && (
-              <span className={`text-[10px] ${difficultyFilter === "HARD" ? "text-rose-200" : "text-slate-400"}`}>
-                / {globalHardCount}
-              </span>
-            )}
-          </div>
-        </div>
-      </div>
+      )}
 
       {/* ─────────────────────────────────────────────────────────────
-          2.5. QUESTIONS CATEGORY TABS (SEPARATED INTERFACE VIEW)
-      ───────────────────────────────────────────────────────────── */}
-      <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-800 shadow-2xs overflow-x-auto">
-        <button
-          type="button"
-          onClick={() => handleTypeFilterChange("ALL")}
-          className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
-            typeFilter === "ALL"
-              ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-xs"
-              : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
-          }`}
-        >
-          <span>جميع الأسئلة</span>
-          <span className="px-1.5 py-0.5 rounded-md text-[10px] bg-black/10 dark:bg-white/20 font-mono font-bold">
-            {totalCount}
-          </span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => handleTypeFilterChange("MCQ")}
-          className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
-            typeFilter === "MCQ"
-              ? "bg-blue-600 text-white shadow-xs"
-              : "text-blue-700 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-950/30"
-          }`}
-        >
-          <span>🎯 اختيار من متعدد (MCQ)</span>
-          <span className="px-1.5 py-0.5 rounded-md text-[10px] bg-black/10 dark:bg-white/20 font-mono font-bold">
-            {mcqCount}
-          </span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => handleTypeFilterChange("TRUE_FALSE")}
-          className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
-            typeFilter === "TRUE_FALSE"
-              ? "bg-purple-600 text-white shadow-xs"
-              : "text-purple-700 dark:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-950/30"
-          }`}
-        >
-          <span>⚖️ صواب وخطأ (True/False)</span>
-          <span className="px-1.5 py-0.5 rounded-md text-[10px] bg-black/10 dark:bg-white/20 font-mono font-bold">
-            {tfCount}
-          </span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => handleTypeFilterChange("ESSAY")}
-          className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
-            typeFilter === "ESSAY"
-              ? "bg-amber-600 text-white shadow-xs"
-              : "text-amber-700 dark:text-amber-300 hover:bg-amber-50 dark:hover:bg-amber-950/30"
-          }`}
-        >
-          <span>📝 أسئلة مقالية (Essay)</span>
-          <span className="px-1.5 py-0.5 rounded-md text-[10px] bg-black/10 dark:bg-white/20 font-mono font-bold">
-            {essayCount}
-          </span>
-        </button>
-      </div>
-
-      {/* ─────────────────────────────────────────────────────────────
-          3. SEARCH & FILTER BAR
+          4. SEARCH & DIFFICULTY FILTER BAR (NO REDUNDANT TYPE DROPDOWN!)
       ───────────────────────────────────────────────────────────── */}
       <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-[#1E293B]/60 border border-slate-200 dark:border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-3">
         {/* Search */}
-        <div className="relative flex-1 max-w-sm">
+        <div className="relative flex-1 max-w-md">
           <Search className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="ابحث في نص السؤال..."
-            className="w-full pr-9 pl-4 py-1.5 rounded-xl bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-xs outline-none focus:border-blue-500 text-slate-900 dark:text-white"
+            placeholder={
+              typeFilter === "MCQ"
+                ? "ابحث في أسئلة الاختيار من متعدد..."
+                : typeFilter === "ESSAY"
+                ? "ابحث في الأسئلة المقالية..."
+                : typeFilter === "TRUE_FALSE"
+                ? "ابحث في أسئلة الصواب والخطأ..."
+                : "ابحث في جميع أسئلة الدرس..."
+            }
+            className="w-full pr-9 pl-4 py-2 rounded-xl bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-xs outline-none focus:border-blue-500 text-slate-900 dark:text-white"
           />
         </div>
 
-        <div className="flex items-center gap-3 flex-wrap">
-          {/* Type Filter */}
-          <div className="flex items-center gap-1.5">
-            <span className="text-[11px] font-bold text-slate-400">النوع:</span>
-            <select
-              value={typeFilter}
-              onChange={(e) => handleTypeFilterChange(e.target.value)}
-              className="px-2.5 py-1.5 rounded-xl bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-xs font-bold outline-none cursor-pointer"
-            >
-              <option value="ALL">الكل ({totalCount})</option>
-              <option value="MCQ">اختيار من متعدد ({mcqCount})</option>
-              <option value="TRUE_FALSE">صح وخطأ ({tfCount})</option>
-              <option value="ESSAY">مقالي ({essayCount})</option>
-            </select>
-          </div>
-
+        <div className="flex items-center gap-2 flex-wrap">
           {/* Difficulty Filter */}
           <div className="flex items-center gap-1.5">
-            <span className="text-[11px] font-bold text-slate-400">الصعوبة:</span>
+            <span className="text-[11px] font-bold text-slate-400">مستوى الصعوبة:</span>
             <select
               value={difficultyFilter}
               onChange={(e) => setDifficultyFilter(e.target.value)}
-              className="px-2.5 py-1.5 rounded-xl bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-xs font-bold outline-none cursor-pointer"
+              className="px-3 py-2 rounded-xl bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-xs font-bold outline-none cursor-pointer"
             >
               <option value="ALL">جميع المستويات ({typeScopedQuestions.length})</option>
-              <option value="EASY">سهل ({scopedEasyCount})</option>
-              <option value="MEDIUM">متوسط ({scopedMedCount})</option>
-              <option value="HARD">صعب ({scopedHardCount})</option>
+              <option value="EASY">🟢 سهل ({scopedEasyCount})</option>
+              <option value="MEDIUM">🟡 متوسط ({scopedMedCount})</option>
+              <option value="HARD">🔴 صعب ({scopedHardCount})</option>
             </select>
           </div>
+
+          {(difficultyFilter !== "ALL" || searchQuery.trim()) && (
+            <button
+              type="button"
+              onClick={() => {
+                setDifficultyFilter("ALL");
+                setSearchQuery("");
+              }}
+              className="px-2.5 py-2 rounded-xl text-xs font-bold text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 cursor-pointer"
+            >
+              إلغاء الفلتر
+            </button>
+          )}
         </div>
       </div>
 
       {/* ─────────────────────────────────────────────────────────────
-          4. QUESTIONS LIST / EXPANDABLE / EDITABLE CARDS
+          5. QUESTIONS LIST / EXPANDABLE / EDITABLE CARDS
       ───────────────────────────────────────────────────────────── */}
       <div className="space-y-4">
         {isLoadingQuestions ? (
@@ -717,33 +817,85 @@ export function LessonQuestionsTab({
           </div>
         ) : filtered.length === 0 ? (
           <div className="p-12 text-center rounded-3xl bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-800 space-y-4">
-            <div className="w-16 h-16 rounded-2xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 mx-auto flex items-center justify-center">
-              <HelpCircle className="w-8 h-8 opacity-70" />
+            <div className={`w-16 h-16 rounded-2xl mx-auto flex items-center justify-center ${
+              typeFilter === "MCQ"
+                ? "bg-blue-50 dark:bg-blue-950/40 text-blue-600"
+                : typeFilter === "ESSAY"
+                ? "bg-amber-50 dark:bg-amber-950/40 text-amber-600"
+                : typeFilter === "TRUE_FALSE"
+                ? "bg-purple-50 dark:bg-purple-950/40 text-purple-600"
+                : "bg-slate-100 dark:bg-slate-800 text-slate-500"
+            }`}>
+              {typeFilter === "MCQ" ? (
+                <CheckCircle2 className="w-8 h-8" />
+              ) : typeFilter === "ESSAY" ? (
+                <BookOpen className="w-8 h-8" />
+              ) : typeFilter === "TRUE_FALSE" ? (
+                <Layers className="w-8 h-8" />
+              ) : (
+                <HelpCircle className="w-8 h-8 opacity-70" />
+              )}
             </div>
             <div className="space-y-1 max-w-md mx-auto">
               <h4 className="text-sm font-bold text-slate-900 dark:text-white">
-                لا توجد أسئلة مسجلة في هذا التصنيف بعد
+                {typeFilter === "MCQ"
+                  ? "لا توجد أسئلة اختيار من متعدد مسجلة بعد"
+                  : typeFilter === "ESSAY"
+                  ? "لا توجد أسئلة مقالية مسجلة بعد"
+                  : typeFilter === "TRUE_FALSE"
+                  ? "لا توجد أسئلة صواب وخطأ مسجلة بعد"
+                  : "لا توجد أسئلة مسجلة في هذا التصنيف بعد"}
               </h4>
               <p className="text-xs text-slate-500 leading-relaxed">
-                استخدم معالج استيراد Word الذكي لرفع الأسئلة ومراجعتها قبل الحفظ، أو أضف سؤالاً يدوياً الآن.
+                {typeFilter === "MCQ"
+                  ? "يمكنك استيراد أسئلة الاختيار من متعدد مباشرة من ملف Word، أو إضافتها يدوياً."
+                  : typeFilter === "ESSAY"
+                  ? "يمكنك استيراد الأسئلة المقالية ونماذج الإجابة مباشرة من ملف Word، أو إضافتها يدوياً."
+                  : typeFilter === "TRUE_FALSE"
+                  ? "يمكنك استيراد أسئلة الصواب والخطأ من ملف Word، أو إضافتها يدوياً."
+                  : "استخدم معالج استيراد Word الذكي لرفع الأسئلة ومراجعتها قبل الحفظ، أو أضف سؤالاً يدوياً الآن."}
               </p>
             </div>
             <div className="pt-2 flex items-center justify-center gap-3">
               <button
                 type="button"
-                onClick={openNewQuestionModal}
-                className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center gap-1.5 cursor-pointer"
+                onClick={() => openNewQuestionModal(typeFilter !== "ALL" ? (typeFilter as any) : undefined)}
+                className={`px-4 py-2 rounded-xl text-white text-xs font-bold flex items-center gap-1.5 cursor-pointer ${
+                  typeFilter === "MCQ"
+                    ? "bg-blue-600 hover:bg-blue-700"
+                    : typeFilter === "ESSAY"
+                    ? "bg-amber-600 hover:bg-amber-700"
+                    : typeFilter === "TRUE_FALSE"
+                    ? "bg-purple-600 hover:bg-purple-700"
+                    : "bg-slate-900 hover:bg-slate-800"
+                }`}
               >
                 <Plus className="w-4 h-4" />
-                <span>إضافة سؤال يدوياً</span>
+                <span>
+                  {typeFilter === "MCQ"
+                    ? "إضافة سؤال MCQ يدوياً"
+                    : typeFilter === "ESSAY"
+                    ? "إضافة سؤال مقالي يدوياً"
+                    : typeFilter === "TRUE_FALSE"
+                    ? "إضافة سؤال صح وخطأ يدوياً"
+                    : "إضافة سؤال يدوياً"}
+                </span>
               </button>
               <button
                 type="button"
-                onClick={() => setShowImportWizard(true)}
+                onClick={() => openImportWizardWithType(typeFilter !== "ALL" ? (typeFilter as any) : "ALL")}
                 className="px-4 py-2 rounded-xl bg-[#0F172A] hover:bg-[#1E293B] text-white text-xs font-bold flex items-center gap-1.5 cursor-pointer border border-slate-700"
               >
                 <Sparkles className="w-4 h-4 text-blue-400" />
-                <span>معالج استيراد Word</span>
+                <span>
+                  {typeFilter === "MCQ"
+                    ? "معالج استيراد MCQ"
+                    : typeFilter === "ESSAY"
+                    ? "معالج استيراد مقالي"
+                    : typeFilter === "TRUE_FALSE"
+                    ? "معالج استيراد صح وخطأ"
+                    : "معالج استيراد Word"}
+                </span>
               </button>
             </div>
           </div>
