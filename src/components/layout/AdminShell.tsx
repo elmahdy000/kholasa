@@ -19,6 +19,7 @@ export function AdminShell({ children, user }: AdminShellProps) {
   const [isCommandOpen, setIsCommandOpen] = useState(false);
   const [commandQuery, setCommandQuery] = useState("");
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [logoutError, setLogoutError] = useState<string | null>(null);
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   // Filter groups according to user role
@@ -65,12 +66,15 @@ export function AdminShell({ children, user }: AdminShellProps) {
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
+    setLogoutError(null);
     try {
-      await fetch("/api/auth/logout", { method: "POST" });
+      const response = await fetch("/api/auth/logout", { method: "POST" });
+      if (!response.ok) throw new Error("logout failed");
       router.push("/login");
       router.refresh();
     } catch {
       setIsLoggingOut(false);
+      setLogoutError("تعذر تسجيل الخروج. حاول مرة أخرى.");
     }
   };
 
@@ -114,6 +118,7 @@ export function AdminShell({ children, user }: AdminShellProps) {
         />
 
         <main className="flex-1 p-4 sm:p-8 max-w-7xl w-full mx-auto space-y-6">
+          {logoutError && <p role="alert" className="text-sm text-red-600 dark:text-red-400">{logoutError}</p>}
           {children}
         </main>
       </div>
@@ -125,6 +130,7 @@ export function AdminShell({ children, user }: AdminShellProps) {
         commandQuery={commandQuery}
         setCommandQuery={setCommandQuery}
         filteredCommands={filteredCommands}
+        allowedHrefs={allNavItems.map((item) => item.href)}
       />
     </div>
   );

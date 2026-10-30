@@ -34,7 +34,7 @@ export function SubjectModal({
   systemId,
   gradeId,
   gradeName = "البكالوريا",
-  gradeCode = "G11",
+  gradeCode = "bacc_g11",
   schoolCategory,
   selectedTrackId,
   tracks,
@@ -42,12 +42,23 @@ export function SubjectModal({
   onClose,
   onSaved,
 }: SubjectModalProps) {
-  const isG11 = gradeCode === "G11";
+  // G11 / Second Secondary detection (has tracks or code/name match)
+  const isG11 =
+    gradeCode === "G11" ||
+    gradeCode === "bacc_g11" ||
+    gradeCode?.toLowerCase().includes("g11") ||
+    gradeName?.includes("تانية") ||
+    (tracks && tracks.length > 0);
 
   const [name, setName] = useState("");
   const [code, setCode] = useState("");
   const [color, setColor] = useState("#800020");
   const [description, setDescription] = useState("");
+
+  // School Category (Arabic vs Languages)
+  const [category, setCategory] = useState<"ARABIC" | "LANGUAGES">(
+    initialSubject?.schoolCategory || schoolCategory || "ARABIC"
+  );
 
   // G11 Subject classification: Common vs Track-Specific
   const [isCommon, setIsCommon] = useState(true);
@@ -68,6 +79,8 @@ export function SubjectModal({
       setCode(initialSubject.code);
       setColor(initialSubject.color || "#800020");
       setDescription(initialSubject.description || "");
+      setCategory(initialSubject.schoolCategory || schoolCategory || "ARABIC");
+
       if (initialSubject.trackId) {
         setIsCommon(false);
         setTargetTrackId(initialSubject.trackId);
@@ -75,6 +88,7 @@ export function SubjectModal({
         setIsCommon(true);
         setTargetTrackId(selectedTrackId || tracks[0]?.id || "");
       }
+
       setIsElective(Boolean(initialSubject.isElective));
       setElectiveGroup(initialSubject.electiveGroup || "");
     } else {
@@ -82,18 +96,21 @@ export function SubjectModal({
       setCode("");
       setColor("#800020");
       setDescription("");
-      if (selectedTrackId) {
+      setCategory(schoolCategory || "ARABIC");
+
+      if (selectedTrackId && selectedTrackId !== "ALL") {
         setIsCommon(false);
         setTargetTrackId(selectedTrackId);
       } else {
         setIsCommon(true);
         setTargetTrackId(tracks[0]?.id || "");
       }
+
       setIsElective(false);
       setElectiveGroup("");
     }
     setErrorMsg(null);
-  }, [isOpen, initialSubject, selectedTrackId, tracks]);
+  }, [isOpen, initialSubject, selectedTrackId, tracks, schoolCategory]);
 
   if (!isOpen) return null;
 
@@ -107,7 +124,7 @@ export function SubjectModal({
         .replace(/\s+/g, "_")
         .slice(0, 20);
       if (generated) {
-        setCode(`${generated}_${gradeCode.toLowerCase()}_${schoolCategory === "LANGUAGES" ? "lang" : "ar"}`);
+        setCode(`${generated}_${(gradeCode || "g11").toLowerCase()}_${category === "LANGUAGES" ? "lang" : "ar"}`);
       }
     }
   };
@@ -121,7 +138,7 @@ export function SubjectModal({
 
     const finalCode =
       code.trim() ||
-      `sub_${Date.now().toString(36)}_${schoolCategory === "LANGUAGES" ? "lang" : "ar"}`;
+      `sub_${Date.now().toString(36)}_${category === "LANGUAGES" ? "lang" : "ar"}`;
 
     const effectiveTrackId = isG11 && !isCommon ? targetTrackId || null : null;
 
@@ -143,7 +160,7 @@ export function SubjectModal({
               description: description.trim() || null,
               systemId,
               gradeId,
-              schoolCategory,
+              schoolCategory: category,
               trackId: effectiveTrackId,
               isElective,
               electiveGroup: isElective ? electiveGroup.trim() || null : null,
@@ -163,7 +180,7 @@ export function SubjectModal({
           description: description.trim() || null,
           systemId,
           gradeId,
-          schoolCategory,
+          schoolCategory: category,
           trackId: effectiveTrackId,
           isElective,
           electiveGroup: isElective ? electiveGroup.trim() || null : null,
@@ -186,7 +203,7 @@ export function SubjectModal({
               color,
               description: description.trim() || null,
               trackId: effectiveTrackId,
-              schoolCategory,
+              schoolCategory: category,
               isElective,
               electiveGroup: isElective ? electiveGroup.trim() || null : null,
             },
@@ -203,7 +220,7 @@ export function SubjectModal({
           color,
           description: description.trim() || null,
           trackId: effectiveTrackId,
-          schoolCategory,
+          schoolCategory: category,
           isElective,
           electiveGroup: isElective ? electiveGroup.trim() || null : null,
         });
@@ -218,27 +235,27 @@ export function SubjectModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-3 font-sans" dir="rtl">
-      <div className="relative w-full max-w-lg bg-white dark:bg-[#0F172A] rounded-2xl border border-[#E2E8F0] dark:border-[#334155] shadow-xl overflow-hidden flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs font-sans text-right">
+      <div className="w-full max-w-lg rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] shadow-xl overflow-hidden flex flex-col max-h-[90vh]">
         {/* Header */}
-        <div className="p-5 bg-[#F8FAFC] dark:bg-[#1E293B]/60 border-b border-[#E2E8F0] dark:border-[#334155] flex items-center justify-between shrink-0">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#800020]/10 text-[#800020] dark:text-[#FB7185] flex items-center justify-center font-bold">
+        <div className="p-5 border-b border-[#E2E8F0] dark:border-[#334155] flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-xl bg-[#800020]/10 text-[#800020] dark:text-[#FB7185] flex items-center justify-center">
               <BookOpen className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-white">
+              <h3 className="text-base font-bold text-[#0F172A] dark:text-white">
                 {initialSubject ? "تعديل المادة الدراسية" : "إضافة مادة دراسية جديدة"}
               </h3>
-              <p className="text-[12px] text-[#64748B] dark:text-[#94A3B8]">
-                {gradeName} • {schoolCategory === "LANGUAGES" ? "مدارس لغات" : "مدارس عربي"}
+              <p className="text-xs text-[#64748B] dark:text-[#94A3B8]">
+                {gradeName}
               </p>
             </div>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="p-1 rounded-lg text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white hover:bg-[#F1F5F9] dark:hover:bg-[#1E293B] transition-colors"
+            className="p-1 rounded-lg text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white hover:bg-[#F1F5F9] dark:hover:bg-[#1E293B] transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -247,11 +264,42 @@ export function SubjectModal({
         {/* Form Body */}
         <form onSubmit={handleSubmit} className="p-5 space-y-4 overflow-y-auto">
           {errorMsg && (
-            <div className="p-3 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/50 flex items-center gap-2 text-red-600 dark:text-red-400 text-xs">
+            <div className="p-3 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/50 flex items-center gap-2 text-red-600 dark:text-red-400 text-xs font-bold">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{errorMsg}</span>
             </div>
           )}
+
+          {/* School Category (Arabic vs Languages) */}
+          <div>
+            <label className="text-xs font-bold text-[#0F172A] dark:text-[#F8FAFC] block mb-1.5">
+              نوع المدرسة / المنهج <span className="text-red-500">*</span>
+            </label>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => setCategory("ARABIC")}
+                className={`p-2.5 rounded-xl text-xs font-bold border transition-all text-center cursor-pointer ${
+                  category === "ARABIC"
+                    ? "border-[#800020] bg-[#800020]/10 text-[#800020] dark:text-[#FB7185]"
+                    : "border-[#E2E8F0] dark:border-[#334155] text-[#64748B] hover:bg-slate-50 dark:hover:bg-slate-800"
+                }`}
+              >
+                مدارس عربي (Arabic)
+              </button>
+              <button
+                type="button"
+                onClick={() => setCategory("LANGUAGES")}
+                className={`p-2.5 rounded-xl text-xs font-bold border transition-all text-center cursor-pointer ${
+                  category === "LANGUAGES"
+                    ? "border-[#800020] bg-[#800020]/10 text-[#800020] dark:text-[#FB7185]"
+                    : "border-[#E2E8F0] dark:border-[#334155] text-[#64748B] hover:bg-slate-50 dark:hover:bg-slate-800"
+                }`}
+              >
+                مدارس لغات (Languages)
+              </button>
+            </div>
+          </div>
 
           <div>
             <label className="text-xs font-bold text-[#0F172A] dark:text-[#F8FAFC] block mb-1">
@@ -262,7 +310,7 @@ export function SubjectModal({
               value={name}
               onChange={(e) => handleNameChange(e.target.value)}
               required
-              placeholder={schoolCategory === "LANGUAGES" ? "e.g. Pure Mathematics" : "مثال: الرياضيات البحتة"}
+              placeholder={category === "LANGUAGES" ? "e.g. Computer Science" : "مثال: البرمجة والتفكير الحاسوبي"}
               className="w-full h-11 px-3.5 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-transparent text-sm text-[#0F172A] dark:text-white outline-none focus:border-[#800020]"
             />
           </div>
@@ -275,7 +323,7 @@ export function SubjectModal({
               type="text"
               value={code}
               onChange={(e) => setCode(e.target.value)}
-              placeholder="pure_math_g11"
+              placeholder="prog_g11_ar"
               className="w-full h-11 px-3.5 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-transparent text-sm font-mono text-[#0F172A] dark:text-white outline-none focus:border-[#800020]"
               dir="ltr"
             />
@@ -285,27 +333,32 @@ export function SubjectModal({
           {isG11 && (
             <div className="p-3.5 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/40 border border-[#E2E8F0] dark:border-[#334155] space-y-3">
               <span className="text-xs font-bold text-[#0F172A] dark:text-white block">
-                تصنيف المادة في تانية بكالوريا
+                تصنيف المادة (تخصصي لمسار أم عامة مشتركة)
               </span>
               <div className="grid grid-cols-2 gap-2">
                 <button
                   type="button"
                   onClick={() => setIsCommon(true)}
-                  className={`p-2.5 rounded-xl text-xs font-bold border transition-all text-center ${
+                  className={`p-2.5 rounded-xl text-xs font-bold border transition-all text-center cursor-pointer ${
                     isCommon
                       ? "border-[#800020] bg-[#800020]/10 text-[#800020] dark:text-[#FB7185]"
-                      : "border-[#E2E8F0] dark:border-[#334155] text-[#64748B]"
+                      : "border-[#E2E8F0] dark:border-[#334155] text-[#64748B] hover:bg-slate-50 dark:hover:bg-slate-800"
                   }`}
                 >
                   مادة عامة مشتركة لجميع المسارات
                 </button>
                 <button
                   type="button"
-                  onClick={() => setIsCommon(false)}
-                  className={`p-2.5 rounded-xl text-xs font-bold border transition-all text-center ${
+                  onClick={() => {
+                    setIsCommon(false);
+                    if (!targetTrackId && tracks.length > 0) {
+                      setTargetTrackId(selectedTrackId || tracks[0].id);
+                    }
+                  }}
+                  className={`p-2.5 rounded-xl text-xs font-bold border transition-all text-center cursor-pointer ${
                     !isCommon
                       ? "border-[#800020] bg-[#800020]/10 text-[#800020] dark:text-[#FB7185]"
-                      : "border-[#E2E8F0] dark:border-[#334155] text-[#64748B]"
+                      : "border-[#E2E8F0] dark:border-[#334155] text-[#64748B] hover:bg-slate-50 dark:hover:bg-slate-800"
                   }`}
                 >
                   مادة تخصصية لمسار محدد
@@ -320,7 +373,7 @@ export function SubjectModal({
                   <select
                     value={targetTrackId}
                     onChange={(e) => setTargetTrackId(e.target.value)}
-                    className="w-full h-10 px-3 rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] text-xs font-bold text-[#0F172A] dark:text-white outline-none"
+                    className="w-full h-10 px-3 rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] text-xs font-bold text-[#0F172A] dark:text-white outline-none cursor-pointer"
                   >
                     {tracks.map((t) => (
                       <option key={t.id} value={t.id}>
@@ -360,17 +413,17 @@ export function SubjectModal({
 
           {/* Color Picker */}
           <div>
-            <label className="text-xs font-bold text-[#0F172A] dark:text-[#F8FAFC] block mb-1.5">
-              لون هوية المادة
+            <label className="text-xs font-bold text-[#0F172A] dark:text-[#F8FAFC] block mb-2">
+              لون تمييز المادة
             </label>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2.5">
               {COLOR_OPTIONS.map((c) => (
                 <button
                   key={c}
                   type="button"
                   onClick={() => setColor(c)}
-                  className={`w-7 h-7 rounded-full transition-transform ${
-                    color === c ? "scale-110 ring-2 ring-offset-2 ring-[#800020]" : "hover:scale-105"
+                  className={`w-7 h-7 rounded-full transition-transform cursor-pointer ${
+                    color === c ? "scale-125 ring-2 ring-offset-2 ring-[#800020]" : "hover:scale-110"
                   }`}
                   style={{ backgroundColor: c }}
                 />
@@ -380,33 +433,42 @@ export function SubjectModal({
 
           <div>
             <label className="text-xs font-bold text-[#0F172A] dark:text-[#F8FAFC] block mb-1">
-              وصف المادة (اختياري)
+              وصف المادة أو نبذة عنها (اختياري)
             </label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={2}
-              placeholder="وصف مختصر لمحتوى وأهداف المادة..."
-              className="w-full p-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-transparent text-xs text-[#0F172A] dark:text-white outline-none focus:border-[#800020]"
+              placeholder="وصف مختصر لمحتوى المنهج..."
+              className="w-full p-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-transparent text-xs text-[#0F172A] dark:text-white outline-none focus:border-[#800020] resize-none"
             />
           </div>
 
-          <div className="pt-2 flex items-center justify-end gap-2 border-t border-[#E2E8F0] dark:border-[#334155] shrink-0">
+          {/* Footer Submit */}
+          <div className="pt-3 border-t border-[#E2E8F0] dark:border-[#334155] flex items-center justify-end gap-2">
             <button
               type="button"
               onClick={onClose}
-              disabled={isSaving}
-              className="h-11 px-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B] text-xs font-bold text-[#334155] dark:text-[#E2E8F0]"
+              className="h-10 px-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] text-xs font-bold text-[#64748B] hover:text-[#0F172A] dark:hover:text-white hover:bg-[#F1F5F9] dark:hover:bg-[#1E293B] transition-colors cursor-pointer"
             >
               إلغاء
             </button>
             <button
               type="submit"
               disabled={isSaving}
-              className="h-11 px-5 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-xs font-bold flex items-center gap-2 transition-transform active:opacity-80 disabled:opacity-50"
+              className="h-10 px-5 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-xs font-bold flex items-center gap-2 transition-all shadow-xs cursor-pointer disabled:opacity-60"
             >
-              {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-              <span>{initialSubject ? "حفظ التعديلات" : "حفظ المادة"}</span>
+              {isSaving ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>جارٍ الحفظ...</span>
+                </>
+              ) : (
+                <>
+                  <Save className="w-4 h-4" />
+                  <span>{initialSubject ? "حفظ التعديلات" : "إضافة المادة"}</span>
+                </>
+              )}
             </button>
           </div>
         </form>

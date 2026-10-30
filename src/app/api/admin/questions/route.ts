@@ -1,33 +1,58 @@
 import { NextResponse } from "next/server";
-import { getCurrentUser, isStaff } from "@/lib/auth";
-import { QuestionType, Difficulty } from "@prisma/client";
+import { getCurrentUser, canManageQuestions } from "@/lib/auth";
 import { QuestionService } from "@/services/question.service";
+import {
+  QuestionValidationError,
+  isDifficulty,
+  isQuestionType,
+} from "@/services/question/validation";
+
+const MAX_PAGE_SIZE = 100;
 
 export async function GET(req: Request) {
   try {
     const user = await getCurrentUser();
-    if (!user || !isStaff(user.role)) {
+    if (!user || !canManageQuestions(user.role)) {
       return NextResponse.json({ error: "غير مصرح" }, { status: 403 });
     }
 
     const { searchParams } = new URL(req.url);
-    const subjectId = searchParams.get("subjectId") || undefined;
-    const unitId = searchParams.get("unitId") || undefined;
-    const lessonId = searchParams.get("lessonId") || undefined;
-    const rawType = searchParams.get("type");
-    const rawDifficulty = searchParams.get("difficulty");
-    const type = rawType && rawType !== "all" ? (rawType as QuestionType) : undefined;
-    const difficulty = rawDifficulty && rawDifficulty !== "all" ? (rawDifficulty as Difficulty) : undefined;
-    const search = searchParams.get("search") || undefined;
+    const clean = (key: string) => {
+      const value = searchParams.get(key);
+      return value && value !== "all" ? value : undefined;
+    };
+
+    const rawType = clean("type");
+    const rawDifficulty = clean("difficulty");
+    if (rawType && !isQuestionType(rawType)) {
+      return NextResponse.json({ error: "نوع السؤال غير صالح" }, { status: 400 });
+    }
+    if (rawDifficulty && !isDifficulty(rawDifficulty)) {
+      return NextResponse.json({ error: "مستوى الصعوبة غير صالح" }, { status: 400 });
+    }
+
+    const rawCategory = clean("schoolCategory");
+    if (rawCategory && rawCategory !== "ARABIC" && rawCategory !== "LANGUAGES") {
+      return NextResponse.json({ error: "الفئة التعليمية غير صالحة" }, { status: 400 });
+    }
+
+    const page = Math.max(1, Number.parseInt(searchParams.get("page") || "1", 10) || 1);
+    const limit = Math.min(
+      MAX_PAGE_SIZE,
+      Math.max(1, Number.parseInt(searchParams.get("limit") || String(MAX_PAGE_SIZE), 10) || MAX_PAGE_SIZE)
+    );
 
     const { questions, pagination } = await QuestionService.getQuestions({
-      subjectId: subjectId !== "all" ? subjectId : undefined,
-      unitId: unitId !== "all" ? unitId : undefined,
-      lessonId: lessonId !== "all" ? lessonId : undefined,
-      type,
-      difficulty,
-      search,
-      limit: 100,
+      subjectId: clean("subjectId"),
+      gradeId: clean("gradeId"),
+      schoolCategory: rawCategory as "ARABIC" | "LANGUAGES" | undefined,
+      unitId: clean("unitId"),
+      lessonId: clean("lessonId"),
+      type: rawType && isQuestionType(rawType) ? rawType : undefined,
+      difficulty: rawDifficulty && isDifficulty(rawDifficulty) ? rawDifficulty : undefined,
+      search: searchParams.get("search") || undefined,
+      page,
+      limit,
     });
 
     return NextResponse.json({ questions, pagination });
@@ -40,7 +65,7 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const user = await getCurrentUser();
-    if (!user || !isStaff(user.role)) {
+    if (!user || !canManageQuestions(user.role)) {
       return NextResponse.json({ error: "غير مصرح" }, { status: 403 });
     }
 
@@ -59,7 +84,7 @@ export async function POST(req: Request) {
       modelAnswer,
     } = body;
 
-    if (!statement || !subjectId) {
+    if (typeof statement !== "string" || !statement.trim() || typeof subjectId !== "string" || !subjectId) {
       return NextResponse.json(
         { error: "نص السؤال والمادة الدراسية مطلوبان" },
         { status: 400 }
@@ -76,26 +101,26 @@ export async function POST(req: Request) {
       lessonIds: lessonId ? [lessonId] : [],
       options: Array.isArray(options) ? options : [],
       explanation:
-        concept && correctReason
+        typeof correctReason === "string" && correctReason.trim()
           ? {
-              concept: String(concept).trim(),
-              correctReason: String(correctReason).trim(),
+              concept: concept ? String(concept).trim() : "تفسير الإجابة",
+              correctReason: correctReason.trim(),
             }
           : undefined,
       rubric:
-        modelAnswer
+        typeof modelAnswer === "string" && modelAnswer.trim()
           ? {
-              modelAnswer: String(modelAnswer).trim(),
+              modelAnswer: modelAnswer.trim(),
             }
           : undefined,
     });
 
     return NextResponse.json({ success: true, question });
   } catch (error) {
+    if (error instanceof QuestionValidationError) {
+      return NextResponse.json({ error: error.message }, { status: error.status });
+    }
     console.error("Failed to create question:", error);
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : "تعذر إضافة السؤال" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "تعذر إضافة السؤال" }, { status: 500 });
   }
 }

@@ -37,67 +37,55 @@ export default async function ExamResultsPage({
     redirect(`/login?callbackUrl=/exams/${examId}`);
   }
 
-  // Find the attempt — must belong to the current user and to this exam
-  const attempt = attemptId
-    ? await prisma.examAttempt.findFirst({
-        where: {
-          id: attemptId,
-          userId: user.id,
-          examId,
-          isCompleted: true,
+  // Find the attempt — route param `examId` may be an exam ID or directly an attempt ID (from dashboard/profile)
+  const candidateAttemptId = attemptId || (examId && examId !== "all" && examId !== "null" ? examId : undefined);
+
+  const attempt = await prisma.examAttempt.findFirst({
+    where: {
+      userId: user.id,
+      isCompleted: true,
+      OR: [
+        ...(candidateAttemptId ? [{ id: candidateAttemptId }] : []),
+        ...(examId && examId !== "null" && examId !== "all" ? [{ examId }] : []),
+      ],
+    },
+    orderBy: { completedAt: "desc" },
+    include: {
+      exam: {
+        select: {
+          id: true,
+          title: true,
+          subjectId: true,
+          subject: { select: { id: true, name: true, color: true } },
         },
+      },
+      answers: {
         include: {
-          answers: {
+          question: {
             include: {
-              question: {
+              options: { orderBy: { order: "asc" } },
+              explanation: true,
+              rubric: true,
+              lessons: {
                 include: {
-                  options: { orderBy: { order: "asc" } },
-                  explanation: true,
-                  rubric: true,
-                  lessons: {
-                    include: {
-                      lesson: {
-                        select: { id: true, title: true },
-                      },
-                    },
+                  lesson: {
+                    select: { id: true, title: true },
                   },
                 },
               },
             },
           },
         },
-      })
-    : await prisma.examAttempt.findFirst({
-        where: { examId, userId: user.id, isCompleted: true },
-        orderBy: { completedAt: "desc" },
-        include: {
-          answers: {
-            include: {
-              question: {
-                include: {
-                  options: { orderBy: { order: "asc" } },
-                  explanation: true,
-                  rubric: true,
-                  lessons: {
-                    include: {
-                      lesson: {
-                        select: { id: true, title: true },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      });
+      },
+    },
+  });
 
   if (!attempt) {
     notFound();
   }
 
-  const essayAnswers = attempt.answers.filter((a) => a.question.type === "ESSAY");
-  const objectiveAnswers = attempt.answers.filter((a) => a.question.type !== "ESSAY");
+  const essayAnswers = attempt.answers.filter((a) => a.question?.type === "ESSAY");
+  const objectiveAnswers = attempt.answers.filter((a) => a.question?.type !== "ESSAY");
   const correctAnswers = objectiveAnswers.filter((a) => a.isCorrect === true);
   const wrongAnswers = objectiveAnswers.filter((a) => a.isCorrect === false);
   const unansweredCount =

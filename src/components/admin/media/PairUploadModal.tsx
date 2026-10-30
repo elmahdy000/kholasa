@@ -44,8 +44,8 @@ export function PairUploadModal({
   };
 
   const handleSelectPairImage = (file: File) => {
-    if (!file.type.startsWith("image/") && !file.name.match(/\.(png|jpg|jpeg|webp|gif|svg)$/i)) {
-      setPairUploadError("الرجاء اختيار ملف صورة صالح (PNG, JPG, WebP, SVG)");
+    if (!file.type.startsWith("image/") && !file.name.match(/\.(png|jpg|jpeg|webp|gif)$/i)) {
+      setPairUploadError("الرجاء اختيار ملف صورة صالح (PNG, JPG, WebP, GIF)");
       return;
     }
     setPairImageFile(file);
@@ -147,13 +147,13 @@ export function PairUploadModal({
                 <span className="w-5 h-5 rounded-full bg-[#800020] text-white flex items-center justify-center text-[11px] font-mono font-bold">1</span>
                 <span>اختيار صورة الغلاف أو خريطة الشرح</span>
               </label>
-              <span className="text-[11px] text-[#64748B] dark:text-[#94A3B8]">PNG, JPG, WebP, SVG</span>
+              <span className="text-[11px] text-[#64748B] dark:text-[#94A3B8]">PNG, JPG, WebP, GIF</span>
             </div>
 
             <input
               type="file"
               ref={pairImageInputRef}
-              accept="image/png,image/jpeg,image/webp,image/svg+xml,image/*"
+              accept=".png,.jpg,.jpeg,.webp,.gif"
               className="hidden"
               onChange={(e) => {
                 if (e.target.files?.[0]) handleSelectPairImage(e.target.files[0]);

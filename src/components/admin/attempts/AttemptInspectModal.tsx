@@ -2,11 +2,13 @@
 
 import { X, Check } from "lucide-react";
 import type { Attempt } from "./types";
+import { Dialog } from "@/components/ui/Dialog";
 
 interface AttemptInspectModalProps {
   isOpen: boolean;
   attempt?: Attempt;
   loadingDetails: boolean;
+  detailsError?: string | null;
   savingGradeId: string | null;
   onClose: () => void;
   onGradeEssay: (
@@ -21,6 +23,7 @@ export function AttemptInspectModal({
   isOpen,
   attempt,
   loadingDetails,
+  detailsError,
   savingGradeId,
   onClose,
   onGradeEssay,
@@ -28,8 +31,7 @@ export function AttemptInspectModal({
   if (!isOpen || !attempt) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70">
-      <div className="w-full max-w-3xl max-h-[90vh] rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] shadow-sm flex flex-col overflow-hidden text-right">
+    <Dialog open={isOpen} onClose={onClose} ariaLabel="تفاصيل محاولة الطالب" className="w-full max-w-3xl max-h-[90vh] rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] shadow-sm flex flex-col overflow-hidden text-right">
         {/* Modal Header */}
         <div className="flex items-center justify-between p-4 border-b border-[#E2E8F0] dark:border-[#334155] shrink-0 bg-[#F8FAFC] dark:bg-[#1E293B]/50">
           <div>
@@ -46,6 +48,7 @@ export function AttemptInspectModal({
 
           <button
             onClick={onClose}
+            aria-label="إغلاق تفاصيل المحاولة"
             className="p-1 rounded text-[#64748B] hover:text-[#64748B]"
           >
             <X className="w-4 h-4" />
@@ -54,7 +57,7 @@ export function AttemptInspectModal({
 
         {/* Modal Content / Answers List */}
         <div className="p-5 overflow-y-auto space-y-4 flex-1">
-          {loadingDetails ? (
+          {detailsError ? <p role="alert" className="text-sm text-red-600 dark:text-red-400">{detailsError}</p> : loadingDetails ? (
             <div className="py-12 text-center text-[13px] text-[#64748B]">
               جاري تحميل الإجابات والتفسيرات الأكاديمية...
             </div>
@@ -156,7 +159,7 @@ export function AttemptInspectModal({
                       )}
 
                       {/* Manual Grading Action Bar */}
-                      <div className="flex items-center gap-2 pt-2 border-t border-[#E2E8F0] dark:border-[#334155]">
+                      <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-[#E2E8F0] dark:border-[#334155]">
                         <span className="text-[13px] font-semibold text-[#0F172A] dark:text-[#F8FAFC]">
                           تصحيح هذا السؤال:
                         </span>
@@ -169,8 +172,8 @@ export function AttemptInspectModal({
                               attempt.id
                             )
                           }
-                          disabled={savingGradeId === ans.id}
-                          className="h-7 px-3 rounded text-[13px] font-semibold bg-[#059669] hover:bg-[#047857] text-white flex items-center gap-1 transition-colors cursor-pointer"
+                          disabled={savingGradeId !== null || !attempt.isCompleted}
+                          className="min-h-11 px-3 py-2 rounded text-[13px] font-semibold bg-[#059669] hover:bg-[#047857] text-white flex items-center gap-1 transition-colors cursor-pointer"
                         >
                           <Check className="w-3.5 h-3.5" />
                           <span>اعتماد إجابة صحيحة (درجة كاملة)</span>
@@ -184,8 +187,8 @@ export function AttemptInspectModal({
                               attempt.id
                             )
                           }
-                          disabled={savingGradeId === ans.id}
-                          className="h-7 px-3 rounded text-[13px] font-semibold bg-[#DC2626] hover:bg-[#B91C1C] text-white flex items-center gap-1 transition-colors cursor-pointer"
+                          disabled={savingGradeId !== null || !attempt.isCompleted}
+                          className="min-h-11 px-3 py-2 rounded text-[13px] font-semibold bg-[#DC2626] hover:bg-[#B91C1C] text-white flex items-center gap-1 transition-colors cursor-pointer"
                         >
                           <X className="w-3.5 h-3.5" />
                           <span>إجابة خاطئة (0 درجة)</span>
@@ -222,7 +225,6 @@ export function AttemptInspectModal({
             إغلاق
           </button>
         </div>
-      </div>
-    </div>
+    </Dialog>
   );
 }

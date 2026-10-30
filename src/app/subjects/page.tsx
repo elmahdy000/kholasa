@@ -12,6 +12,8 @@ import {
   CheckCircle2,
 } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 export default async function SubjectsPage() {
   const user = await getCurrentUser();
   const scope = getCurriculumScope(user);
@@ -72,72 +74,76 @@ export default async function SubjectsPage() {
         </nav>
 
         {/* Hero Banner Section */}
-        <section className="relative overflow-hidden rounded-3xl p-6 sm:p-10 bg-white dark:bg-[#1E293B] border border-[#E8E9ED] dark:border-[#334155] shadow-xs">
-          <div className="relative z-10 space-y-6">
-            {/* Top Badge & Action Button */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#800020]/8 dark:bg-[#FB7185]/10 border border-[#800020]/15 dark:border-[#FB7185]/20 text-xs font-bold text-[#800020] dark:text-[#FB7185] self-start">
-                <GraduationCap className="w-4 h-4" />
-                <span>المناهج الدراسية الرسمية المعتمدة لعام 2026</span>
-              </div>
-
-              <Link
-                href="/exams/builder"
-                className="h-11 px-5 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-xs self-start sm:self-auto cursor-pointer"
-              >
-                <Target className="w-4 h-4 text-[#FDE047]" />
-                <span>اختبر نفسك في أي مادة</span>
-              </Link>
+        <section className="relative overflow-hidden rounded-3xl p-6 sm:p-8 bg-white dark:bg-[#1E293B] border border-[#E8E9ED] dark:border-[#334155] shadow-xs">
+          <div className="relative z-10 space-y-4">
+            {/* Top Badge */}
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#800020]/8 dark:bg-[#FB7185]/10 border border-[#800020]/15 dark:border-[#FB7185]/20 text-xs font-bold text-[#800020] dark:text-[#FB7185] self-start">
+              <GraduationCap className="w-3.5 h-3.5" />
+              <span>مناهج 2026 المعتمدة</span>
             </div>
 
             {/* Main Headline & Description */}
-            <div className="space-y-3 max-w-2xl">
-              <h1 className="text-2xl sm:text-4xl font-extrabold text-[#12263F] dark:text-white tracking-tight leading-snug">
-                المواد الدراسية والمناهج
-              </h1>
-              <p className="text-sm text-[#64748B] dark:text-[#94A3B8] leading-relaxed font-normal">
-                استعرض موادك، افهم الفصول بالتسلسل السليم، راجع ملخصات "كبسولة الزتونة" المركزة، وحل أسئلة متدرجة من غير تشتيت.
-              </p>
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+              <div className="space-y-1.5 max-w-xl">
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-[#12263F] dark:text-white tracking-tight">
+                  المواد الدراسية
+                </h1>
+                <p className="text-xs sm:text-sm text-[#64748B] dark:text-[#94A3B8] leading-relaxed">
+                  كل موادك ومناهجك في مكان واحد — شرح بسيط، ملخص مركز، وتدريبات على كل درس.
+                </p>
+              </div>
+
+              {formattedSubjects.length > 0 && (
+                <Link
+                  href="/exams/builder"
+                  className="h-10 px-4 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-xs font-bold inline-flex items-center justify-center gap-2 transition-all shadow-xs shrink-0 self-start sm:self-auto cursor-pointer"
+                >
+                  <Target className="w-3.5 h-3.5 text-[#FDE047]" />
+                  <span>اختبر نفسك في أي مادة</span>
+                </Link>
+              )}
             </div>
 
-            {/* Live Stats Row */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
-              <div className="p-4 rounded-2xl bg-[#F7F8FA] dark:bg-[#0F172A] border border-[#E8E9ED] dark:border-[#334155] space-y-1">
-                <span className="text-xl sm:text-2xl font-extrabold text-[#12263F] dark:text-white font-mono block">
-                  {formattedSubjects.length}
-                </span>
-                <span className="text-[11px] font-bold text-[#64748B] dark:text-[#94A3B8] block">
-                  مادة مقررة
-                </span>
-              </div>
+            {/* Live Stats Row — Only when there are subjects */}
+            {formattedSubjects.length > 0 && (
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-3 border-t border-[#E8E9ED]/60 dark:border-[#334155]/60">
+                <div className="p-3.5 rounded-xl bg-[#F7F8FA] dark:bg-[#0F172A] border border-[#E8E9ED] dark:border-[#334155] space-y-0.5">
+                  <span className="text-lg sm:text-xl font-extrabold text-[#12263F] dark:text-white font-mono block">
+                    {formattedSubjects.length}
+                  </span>
+                  <span className="text-[11px] font-bold text-[#64748B] dark:text-[#94A3B8] block">
+                    مادة
+                  </span>
+                </div>
 
-              <div className="p-4 rounded-2xl bg-[#F7F8FA] dark:bg-[#0F172A] border border-[#E8E9ED] dark:border-[#334155] space-y-1">
-                <span className="text-xl sm:text-2xl font-extrabold text-[#800020] dark:text-[#FB7185] font-mono block">
-                  {totalUnits}
-                </span>
-                <span className="text-[11px] font-bold text-[#64748B] dark:text-[#94A3B8] block">
-                  فصل ووحدة
-                </span>
-              </div>
+                <div className="p-3.5 rounded-xl bg-[#F7F8FA] dark:bg-[#0F172A] border border-[#E8E9ED] dark:border-[#334155] space-y-0.5">
+                  <span className="text-lg sm:text-xl font-extrabold text-[#800020] dark:text-[#FB7185] font-mono block">
+                    {totalUnits}
+                  </span>
+                  <span className="text-[11px] font-bold text-[#64748B] dark:text-[#94A3B8] block">
+                    وحدة وفصل
+                  </span>
+                </div>
 
-              <div className="p-4 rounded-2xl bg-[#F7F8FA] dark:bg-[#0F172A] border border-[#E8E9ED] dark:border-[#334155] space-y-1">
-                <span className="text-xl sm:text-2xl font-extrabold text-[#12263F] dark:text-white font-mono block">
-                  {totalLessons}
-                </span>
-                <span className="text-[11px] font-bold text-[#64748B] dark:text-[#94A3B8] block">
-                  درس وكبسولة
-                </span>
-              </div>
+                <div className="p-3.5 rounded-xl bg-[#F7F8FA] dark:bg-[#0F172A] border border-[#E8E9ED] dark:border-[#334155] space-y-0.5">
+                  <span className="text-lg sm:text-xl font-extrabold text-[#12263F] dark:text-white font-mono block">
+                    {totalLessons}
+                  </span>
+                  <span className="text-[11px] font-bold text-[#64748B] dark:text-[#94A3B8] block">
+                    درس
+                  </span>
+                </div>
 
-              <div className="p-4 rounded-2xl bg-[#F7F8FA] dark:bg-[#0F172A] border border-[#E8E9ED] dark:border-[#334155] space-y-1">
-                <span className="text-xl sm:text-2xl font-extrabold text-[#D97706] font-mono block">
-                  {totalQuestions > 0 ? `+${totalQuestions}` : "متجدد"}
-                </span>
-                <span className="text-[11px] font-bold text-[#64748B] dark:text-[#94A3B8] block">
-                  سؤال بالحل والتعليل
-                </span>
+                <div className="p-3.5 rounded-xl bg-[#F7F8FA] dark:bg-[#0F172A] border border-[#E8E9ED] dark:border-[#334155] space-y-0.5">
+                  <span className="text-lg sm:text-xl font-extrabold text-[#D97706] font-mono block">
+                    {totalQuestions > 0 ? `+${totalQuestions}` : "متجدد"}
+                  </span>
+                  <span className="text-[11px] font-bold text-[#64748B] dark:text-[#94A3B8] block">
+                    سؤال وتدريب
+                  </span>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </section>
 

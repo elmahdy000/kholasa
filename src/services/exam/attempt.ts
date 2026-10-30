@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { QuestionType, Prisma } from "@prisma/client";
 import { RecordAnswerInput } from "./types";
+import { badRequest, notFound } from "@/lib/http";
 
 export class ExamAttemptService {
   /**
@@ -450,6 +451,19 @@ export class ExamAttemptService {
     score?: number,
     attemptId?: string
   ) {
+    const answer = await prisma.studentAnswer.findUnique({
+      where: { id: answerId },
+      select: { attemptId: true, attempt: { select: { isCompleted: true } },
+        question: { select: { type: true, rubric: { select: { maxScore: true } } } } },
+    });
+    if (!answer) throw notFound("الإجابة غير موجودة");
+    if (attemptId && attemptId !== answer.attemptId) throw badRequest("الإجابة لا تنتمي إلى المحاولة المحددة");
+    if (!answer.attempt.isCompleted) throw badRequest("لا يمكن تصحيح محاولة قبل تسليمها");
+    if (answer.question.type !== QuestionType.ESSAY) throw badRequest("التصحيح اليدوي متاح للأسئلة المقالية فقط");
+    if (score !== undefined && (!Number.isFinite(score) || score < 0 || score > (answer.question.rubric?.maxScore ?? 10))) {
+      throw badRequest("الدرجة خارج النطاق المسموح لهذا السؤال");
+    }
+    attemptId = answer.attemptId;
     await prisma.studentAnswer.update({
       where: { id: answerId },
       data: {

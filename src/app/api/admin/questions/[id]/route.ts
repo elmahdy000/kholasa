@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
-import { getCurrentUser, isStaff } from "@/lib/auth";
+import { getCurrentUser, canManageQuestions } from "@/lib/auth";
 import { QuestionService } from "@/services/question.service";
+import { QuestionValidationError } from "@/services/question/validation";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -9,7 +10,7 @@ interface RouteParams {
 export async function GET(req: Request, { params }: RouteParams) {
   try {
     const user = await getCurrentUser();
-    if (!user || !isStaff(user.role)) {
+    if (!user || !canManageQuestions(user.role)) {
       return NextResponse.json({ error: "غير مصرح لك بالوصول" }, { status: 403 });
     }
 
@@ -30,7 +31,7 @@ export async function GET(req: Request, { params }: RouteParams) {
 export async function PUT(req: Request, { params }: RouteParams) {
   try {
     const user = await getCurrentUser();
-    if (!user || !isStaff(user.role)) {
+    if (!user || !canManageQuestions(user.role)) {
       return NextResponse.json({ error: "غير مصرح لك بالوصول" }, { status: 403 });
     }
 
@@ -40,6 +41,7 @@ export async function PUT(req: Request, { params }: RouteParams) {
       statement,
       type,
       difficulty,
+      subjectId,
       unitId,
       lessonId,
       imageUrl,
@@ -49,7 +51,7 @@ export async function PUT(req: Request, { params }: RouteParams) {
       modelAnswer,
     } = body;
 
-    if (!statement?.trim()) {
+    if (typeof statement !== "string" || !statement.trim()) {
       return NextResponse.json({ error: "نص السؤال مطلوب" }, { status: 400 });
     }
 
@@ -57,23 +59,26 @@ export async function PUT(req: Request, { params }: RouteParams) {
       statement: statement.trim(),
       type,
       difficulty,
-      unitId,
+      subjectId: typeof subjectId === "string" && subjectId ? subjectId : undefined,
+      unitId: unitId === undefined ? undefined : unitId || null,
       imageUrl: imageUrl !== undefined ? (typeof imageUrl === "string" ? imageUrl.trim() || null : null) : undefined,
       lessonIds: lessonId !== undefined ? (lessonId ? [lessonId] : []) : undefined,
       options: Array.isArray(options) ? options : undefined,
       explanation:
-        concept && correctReason
-          ? {
-              concept: String(concept).trim(),
-              correctReason: String(correctReason).trim(),
-            }
-          : undefined,
+        correctReason === undefined
+          ? undefined
+          : typeof correctReason === "string" && correctReason.trim()
+            ? {
+                concept: concept ? String(concept).trim() : "تفسير الإجابة",
+                correctReason: correctReason.trim(),
+              }
+            : null,
       rubric:
-        modelAnswer !== undefined
-          ? {
-              modelAnswer: String(modelAnswer).trim(),
-            }
-          : undefined,
+        modelAnswer === undefined
+          ? undefined
+          : typeof modelAnswer === "string" && modelAnswer.trim()
+            ? { modelAnswer: modelAnswer.trim() }
+            : null,
     });
 
     return NextResponse.json({
@@ -81,11 +86,11 @@ export async function PUT(req: Request, { params }: RouteParams) {
       question: updated,
     });
   } catch (error) {
+    if (error instanceof QuestionValidationError) {
+      return NextResponse.json({ error: error.message }, { status: error.status });
+    }
     console.error("Failed to update question:", error);
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : "تعذر تحديث السؤال" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "تعذر تحديث السؤال" }, { status: 500 });
   }
 }
 
@@ -94,7 +99,7 @@ export const PATCH = PUT;
 export async function DELETE(req: Request, { params }: RouteParams) {
   try {
     const user = await getCurrentUser();
-    if (!user || !isStaff(user.role)) {
+    if (!user || !canManageQuestions(user.role)) {
       return NextResponse.json({ error: "غير مصرح لك بالوصول" }, { status: 403 });
     }
 

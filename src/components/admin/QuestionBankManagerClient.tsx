@@ -1,8 +1,20 @@
 "use client";
 
-import { useState } from "react";
-import { HelpCircle } from "lucide-react";
-import { QuestionWordImporter } from "@/components/admin/QuestionWordImporter";
+import { useState, useMemo } from "react";
+import {
+  HelpCircle,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+  Maximize2,
+  Minimize2,
+  Sparkles,
+  Layers,
+  CheckCircle2,
+  FileText,
+  Plus,
+} from "lucide-react";
 import {
   Question,
   Subject,
@@ -10,8 +22,9 @@ import {
   QuestionBankManagerClientProps,
 } from "./questions/types";
 import { QuestionFilterBar } from "./questions/QuestionFilterBar";
-import { QuestionCard } from "./questions/QuestionCard";
-import { QuestionFormModal } from "./questions/QuestionFormModal";
+import { QuestionRow } from "./questions/QuestionRow";
+import { QuestionDrawer } from "./questions/QuestionDrawer";
+import { QuestionImportWizardModal } from "./questions/QuestionImportWizardModal";
 import { QuestionBulkActionsBar } from "./questions/QuestionBulkActionsBar";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
 
@@ -25,13 +38,23 @@ export type {
 export function QuestionBankManagerClient({
   initialQuestions,
   subjects,
-  grades,
+  grades = [],
+  openCreate = false,
+  initialSubjectId,
 }: QuestionBankManagerClientProps) {
   const [questions, setQuestions] = useState<Question[]>(initialQuestions);
+  const [importCommitted, setImportCommitted] = useState(false);
 
   // Multi-selection state for Bulk Actions
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isBulkDeleting, setIsBulkDeleting] = useState(false);
+
+  // Accordion Expand/Collapse state
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(25);
 
   // Confirmation dialog state
   const [confirmModal, setConfirmModal] = useState<{
@@ -49,15 +72,24 @@ export function QuestionBankManagerClient({
   // Grade & School Category Primary Hierarchy Filters
   const [selectedGradeCode, setSelectedGradeCode] = useState<string>("all");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
-  const [selectedSubjectId, setSelectedSubjectId] = useState<string>("all");
+  const [selectedSubjectId, setSelectedSubjectId] = useState<string>(
+    subjects.some((subject) => subject.id === initialSubjectId) ? initialSubjectId! : "all"
+  );
   const [selectedType, setSelectedType] = useState<string>("all");
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Modals state
-  const [isWordImportOpen, setIsWordImportOpen] = useState(false);
-  const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [editingQuestion, setEditingQuestion] = useState<Question | null>(null);
+  // Modals & Drawers state
+  const [isImportWizardOpen, setIsImportWizardOpen] = useState(false);
+  const [drawerState, setDrawerState] = useState<{
+    isOpen: boolean;
+    mode: "create" | "edit";
+    question?: Question | null;
+  }>({
+    isOpen: openCreate,
+    mode: "create",
+    question: null,
+  });
 
   // Helper to determine subject school category
   const getSubjectCategory = (subjectId: string): "ARABIC" | "LANGUAGES" => {
@@ -82,6 +114,28 @@ export function QuestionBankManagerClient({
     setSelectedIds(new Set());
   };
 
+  // Toggle expand for a single question
+  const handleToggleExpand = (qId: string) => {
+    setExpandedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(qId)) {
+        next.delete(qId);
+      } else {
+        next.add(qId);
+      }
+      return next;
+    });
+  };
+
+  // Toggle Expand All visible questions
+  const handleToggleExpandAll = () => {
+    if (expandedIds.size === paginatedQuestions.length && paginatedQuestions.length > 0) {
+      setExpandedIds(new Set());
+    } else {
+      setExpandedIds(new Set(paginatedQuestions.map((q) => q.id)));
+    }
+  };
+
   // Delete Single Question
   const handleDeleteQuestion = (qId: string) => {
     setConfirmModal({
@@ -102,6 +156,11 @@ export function QuestionBankManagerClient({
             }
             return prev;
           });
+          setExpandedIds((prev) => {
+            const next = new Set(prev);
+            next.delete(qId);
+            return next;
+          });
           setConfirmModal((prev) => ({ ...prev, isOpen: false }));
         } else {
           throw new Error("تعذر حذف السؤال");
@@ -121,59 +180,105 @@ export function QuestionBankManagerClient({
   };
 
   // Filter available subjects based on active grade & category selection
-  const availableSubjects = subjects.filter((s) => {
-    if (selectedGradeCode !== "all") {
-      const grade = grades?.find((g) => g.code === selectedGradeCode);
-      if (grade && s.gradeId !== grade.id) return false;
-    }
-    if (selectedCategory !== "all") {
-      if (s.schoolCategory !== selectedCategory) return false;
-    }
-    return true;
-  });
+  const availableSubjects = useMemo(() => {
+    return subjects.filter((s) => {
+      if (selectedGradeCode !== "all") {
+        const grade = grades?.find((g) => g.code === selectedGradeCode);
+        if (grade && s.gradeId !== grade.id) return false;
+      }
+      if (selectedCategory !== "all") {
+        if (s.schoolCategory !== selectedCategory) return false;
+      }
+      return true;
+    });
+  }, [subjects, grades, selectedGradeCode, selectedCategory]);
 
-  // Filter questions
-  const filteredQuestions = questions.filter((q) => {
-    if (selectedGradeCode !== "all") {
-      const grade = grades?.find((g) => g.code === selectedGradeCode);
-      if (grade && q.subject?.gradeId !== grade.id) return false;
-    }
-    if (selectedCategory !== "all") {
-      const effectiveCategory =
-        q.schoolCategory || q.subject?.schoolCategory || getSubjectCategory(q.subject.id);
-      if (effectiveCategory !== selectedCategory) return false;
-    }
-    if (selectedSubjectId !== "all" && q.subject.id !== selectedSubjectId)
-      return false;
-    if (selectedType !== "all" && q.type !== selectedType) return false;
-    if (selectedDifficulty !== "all" && q.difficulty !== selectedDifficulty)
-      return false;
-    if (searchQuery.trim()) {
-      const qText = searchQuery.toLowerCase();
-      const matchStatement = q.statement.toLowerCase().includes(qText);
-      const matchConcept = q.explanation?.concept?.toLowerCase().includes(qText);
-      if (!matchStatement && !matchConcept) return false;
-    }
-    return true;
-  });
+  // Filter questions based on criteria
+  const filteredQuestions = useMemo(() => {
+    return questions.filter((q) => {
+      if (selectedGradeCode !== "all") {
+        const grade = grades?.find((g) => g.code === selectedGradeCode);
+        if (grade && q.subject?.gradeId !== grade.id) return false;
+      }
+      if (selectedCategory !== "all") {
+        const effectiveCategory =
+          q.schoolCategory || q.subject?.schoolCategory || getSubjectCategory(q.subject.id);
+        if (effectiveCategory !== selectedCategory) return false;
+      }
+      if (selectedSubjectId !== "all" && q.subject.id !== selectedSubjectId)
+        return false;
+      if (selectedType !== "all" && q.type !== selectedType) return false;
+      if (selectedDifficulty !== "all" && q.difficulty !== selectedDifficulty)
+        return false;
+      if (searchQuery.trim()) {
+        const qText = searchQuery.toLowerCase();
+        const matchStatement = q.statement.toLowerCase().includes(qText);
+        const matchConcept = q.explanation?.concept?.toLowerCase().includes(qText);
+        const matchReason = q.explanation?.correctReason?.toLowerCase().includes(qText);
+        if (!matchStatement && !matchConcept && !matchReason) return false;
+      }
+      return true;
+    });
+  }, [
+    questions,
+    selectedGradeCode,
+    selectedCategory,
+    selectedSubjectId,
+    selectedType,
+    selectedDifficulty,
+    searchQuery,
+    grades,
+  ]);
 
-  // Check if all filtered questions are currently selected
+  // Reset page when filters change
+  const totalFilteredCount = filteredQuestions.length;
+  const totalPages = Math.max(1, Math.ceil(totalFilteredCount / pageSize));
+  const safeCurrentPage = Math.min(currentPage, totalPages);
+
+  // Paginated Slice
+  const paginatedQuestions = useMemo(() => {
+    const start = (safeCurrentPage - 1) * pageSize;
+    return filteredQuestions.slice(start, start + pageSize);
+  }, [filteredQuestions, safeCurrentPage, pageSize]);
+
+  // Global Metric Breakdown
+  const metrics = useMemo(() => {
+    let mcq = 0;
+    let tf = 0;
+    let essay = 0;
+    let arabic = 0;
+    let languages = 0;
+
+    questions.forEach((q) => {
+      if (q.type === "MCQ") mcq++;
+      else if (q.type === "TRUE_FALSE") tf++;
+      else if (q.type === "ESSAY") essay++;
+
+      const cat = q.schoolCategory || q.subject?.schoolCategory;
+      if (cat === "LANGUAGES") languages++;
+      else arabic++;
+    });
+
+    return { mcq, tf, essay, arabic, languages, total: questions.length };
+  }, [questions]);
+
+  // Check if all visible paginated questions are currently selected
   const isAllSelected =
-    filteredQuestions.length > 0 &&
-    filteredQuestions.every((q) => selectedIds.has(q.id));
+    paginatedQuestions.length > 0 &&
+    paginatedQuestions.every((q) => selectedIds.has(q.id));
 
-  // Toggle select all visible filtered questions
+  // Toggle select all visible paginated questions
   const handleToggleSelectAll = () => {
     if (isAllSelected) {
       setSelectedIds((prev) => {
         const next = new Set(prev);
-        filteredQuestions.forEach((q) => next.delete(q.id));
+        paginatedQuestions.forEach((q) => next.delete(q.id));
         return next;
       });
     } else {
       setSelectedIds((prev) => {
         const next = new Set(prev);
-        filteredQuestions.forEach((q) => next.add(q.id));
+        paginatedQuestions.forEach((q) => next.add(q.id));
         return next;
       });
     }
@@ -206,6 +311,11 @@ export function QuestionBankManagerClient({
           const deletedSet = new Set(idsToDelete);
           setQuestions((prev) => prev.filter((q) => !deletedSet.has(q.id)));
           setSelectedIds(new Set());
+          setExpandedIds((prev) => {
+            const next = new Set(prev);
+            idsToDelete.forEach((id) => next.delete(id));
+            return next;
+          });
           setConfirmModal((prev) => ({ ...prev, isOpen: false }));
         } catch (err: unknown) {
           console.error("Bulk delete questions failed:", err);
@@ -218,41 +328,135 @@ export function QuestionBankManagerClient({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5 font-sans text-right">
+      {/* Top Metric Cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+        <div className="p-3.5 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] shadow-xs">
+          <span className="text-[11px] font-bold text-[#64748B] dark:text-[#94A3B8] block">
+            إجمالي بنك الأسئلة
+          </span>
+          <span className="text-[22px] font-bold text-[#0F172A] dark:text-white mt-0.5 block">
+            {metrics.total}
+          </span>
+        </div>
+
+        <div className="p-3.5 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] shadow-xs">
+          <span className="text-[11px] font-bold text-[#64748B] dark:text-[#94A3B8] block">
+            اختيار من متعدد (MCQ)
+          </span>
+          <span className="text-[22px] font-bold text-[#0F172A] dark:text-white mt-0.5 block">
+            {metrics.mcq}
+          </span>
+        </div>
+
+        <div className="p-3.5 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] shadow-xs">
+          <span className="text-[11px] font-bold text-[#64748B] dark:text-[#94A3B8] block">
+            صح أو خطأ (T/F)
+          </span>
+          <span className="text-[22px] font-bold text-[#0F172A] dark:text-white mt-0.5 block">
+            {metrics.tf}
+          </span>
+        </div>
+
+        <div className="p-3.5 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] shadow-xs">
+          <span className="text-[11px] font-bold text-[#64748B] dark:text-[#94A3B8] block">
+            أسئلة مقالية (Essay)
+          </span>
+          <span className="text-[22px] font-bold text-[#0F172A] dark:text-white mt-0.5 block">
+            {metrics.essay}
+          </span>
+        </div>
+
+        <div className="col-span-2 sm:col-span-1 p-3.5 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] shadow-xs flex items-center justify-between sm:block">
+          <span className="text-[11px] font-bold text-[#64748B] dark:text-[#94A3B8] block">
+            توزيع المدارس
+          </span>
+          <div className="flex items-center gap-2 mt-0.5 text-[13px] font-bold">
+            <span className="text-[#0F172A] dark:text-white">{metrics.arabic} عربي</span>
+            <span className="text-[#CBD5E1] dark:text-[#475569]">/</span>
+            <span className="text-blue-600 dark:text-blue-400">{metrics.languages} لغات</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Filter and Search Bar */}
       <QuestionFilterBar
         selectedGradeCode={selectedGradeCode}
-        setSelectedGradeCode={setSelectedGradeCode}
+        setSelectedGradeCode={(v) => {
+          setSelectedGradeCode(v);
+          setCurrentPage(1);
+        }}
         selectedCategory={selectedCategory}
-        setSelectedCategory={setSelectedCategory}
+        setSelectedCategory={(v) => {
+          setSelectedCategory(v);
+          setCurrentPage(1);
+        }}
         selectedSubjectId={selectedSubjectId}
-        setSelectedSubjectId={setSelectedSubjectId}
+        setSelectedSubjectId={(v) => {
+          setSelectedSubjectId(v);
+          setCurrentPage(1);
+        }}
         selectedType={selectedType}
-        setSelectedType={setSelectedType}
+        setSelectedType={(v) => {
+          setSelectedType(v);
+          setCurrentPage(1);
+        }}
         selectedDifficulty={selectedDifficulty}
-        setSelectedDifficulty={setSelectedDifficulty}
+        setSelectedDifficulty={(v) => {
+          setSelectedDifficulty(v);
+          setCurrentPage(1);
+        }}
         searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
+        setSearchQuery={(v) => {
+          setSearchQuery(v);
+          setCurrentPage(1);
+        }}
         availableSubjects={availableSubjects}
         totalQuestions={questions.length}
         filteredCount={filteredQuestions.length}
-        onOpenCreate={() => setIsCreateOpen(true)}
+        onOpenCreate={() =>
+          setDrawerState({ isOpen: true, mode: "create", question: null })
+        }
+        onOpenImport={() => setIsImportWizardOpen(true)}
       />
 
-      {/* Bulk Actions Bar */}
-      <QuestionBulkActionsBar
-        totalCount={filteredQuestions.length}
-        selectedCount={selectedIds.size}
-        isAllSelected={isAllSelected}
-        onToggleSelectAll={handleToggleSelectAll}
-        onClearSelection={handleClearSelection}
-        onDeleteSelected={handleBulkDelete}
-        isDeleting={isBulkDeleting}
-      />
+      {/* Control Strip: Bulk Selection & Expand All */}
+      <div className="flex flex-wrap items-center justify-between gap-3 p-3 px-4 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] text-right">
+        <QuestionBulkActionsBar
+          totalCount={paginatedQuestions.length}
+          selectedCount={selectedIds.size}
+          isAllSelected={isAllSelected}
+          onToggleSelectAll={handleToggleSelectAll}
+          onClearSelection={handleClearSelection}
+          onDeleteSelected={handleBulkDelete}
+          isDeleting={isBulkDeleting}
+        />
 
-      {/* Questions List */}
-      <div className="space-y-4">
-        {filteredQuestions.length === 0 ? (
-          <div className="p-12 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] text-center space-y-3">
+        {paginatedQuestions.length > 0 && (
+          <button
+            type="button"
+            onClick={handleToggleExpandAll}
+            className="text-[12px] font-bold text-[#64748B] hover:text-[#0F172A] dark:hover:text-white flex items-center gap-1.5 cursor-pointer transition-colors"
+          >
+            {expandedIds.size === paginatedQuestions.length ? (
+              <>
+                <Minimize2 className="w-3.5 h-3.5" />
+                <span>طي جميع الأسئلة المعروضة</span>
+              </>
+            ) : (
+              <>
+                <Maximize2 className="w-3.5 h-3.5" />
+                <span>توسيع جميع الأسئلة المعروضة</span>
+              </>
+            )}
+          </button>
+        )}
+      </div>
+
+      {/* Question List: High Density Compact Rows */}
+      <div className="space-y-2">
+        {paginatedQuestions.length === 0 ? (
+          <div className="p-12 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] text-center space-y-3">
             <div className="w-12 h-12 mx-auto rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] text-[#94A3B8] flex items-center justify-center">
               <HelpCircle className="w-6 h-6" />
             </div>
@@ -260,76 +464,148 @@ export function QuestionBankManagerClient({
               لا توجد أسئلة تطابق معايير التصفية المحددة
             </h4>
             <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8] max-w-sm mx-auto">
-              جرب تغيير كلمات البحث أو اختيار مادة أو مرحلة دراسية مختلفة، أو أضف سؤالاً جديداً.
+              جرب تغيير كلمات البحث أو اختيار مادة أو مرحلة دراسية مختلفة، أو أضف سؤالاً جديداً لبنك الأسئلة.
             </p>
           </div>
         ) : (
-          filteredQuestions.map((q, idx) => (
-            <QuestionCard
-              key={q.id}
-              question={q}
-              index={idx}
-              isSelected={selectedIds.has(q.id)}
-              onToggleSelect={() => handleToggleSelect(q.id)}
-              getSubjectCategory={getSubjectCategory}
-              onEdit={(question) => setEditingQuestion(question)}
-              onDelete={handleDeleteQuestion}
-            />
-          ))
+          paginatedQuestions.map((q, idx) => {
+            // Sequential Continuous Question Numbering: (currentPage - 1) * pageSize + idx + 1
+            const globalIndex = (safeCurrentPage - 1) * pageSize + idx + 1;
+            return (
+              <QuestionRow
+                key={q.id}
+                question={q}
+                index={globalIndex}
+                isSelected={selectedIds.has(q.id)}
+                onToggleSelect={() => handleToggleSelect(q.id)}
+                isExpanded={expandedIds.has(q.id)}
+                onToggleExpand={() => handleToggleExpand(q.id)}
+                getSubjectCategory={getSubjectCategory}
+                onEdit={(question) =>
+                  setDrawerState({ isOpen: true, mode: "edit", question })
+                }
+                onDelete={handleDeleteQuestion}
+              />
+            );
+          })
         )}
       </div>
 
-      {/* Create Question Modal */}
-      {isCreateOpen && (
-        <QuestionFormModal
-          isOpen={isCreateOpen}
-          mode="create"
-          subjects={subjects}
-          grades={grades}
-          onClose={() => setIsCreateOpen(false)}
-          onSuccess={handleQuestionSaved}
-        />
-      )}
+      {/* Pagination Controls */}
+      {totalFilteredCount > 0 && (
+        <div className="p-4 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center gap-3 text-[12px] text-[#64748B] dark:text-[#94A3B8]">
+            <span>
+              عرض{" "}
+              <strong className="text-[#0F172A] dark:text-white">
+                {(safeCurrentPage - 1) * pageSize + 1}
+              </strong>{" "}
+              -{" "}
+              <strong className="text-[#0F172A] dark:text-white">
+                {Math.min(safeCurrentPage * pageSize, totalFilteredCount)}
+              </strong>{" "}
+              من إجمالي{" "}
+              <strong className="text-[#0F172A] dark:text-white">
+                {totalFilteredCount}
+              </strong>{" "}
+              سؤال
+            </span>
 
-      {/* Edit Question Modal */}
-      {editingQuestion && (
-        <QuestionFormModal
-          isOpen={Boolean(editingQuestion)}
-          mode="edit"
-          editingQuestion={editingQuestion}
-          subjects={subjects}
-          grades={grades}
-          onClose={() => setEditingQuestion(null)}
-          onSuccess={handleQuestionSaved}
-        />
-      )}
-
-      {/* Word / PDF Import Modal */}
-      {isWordImportOpen && (
-        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4 overflow-y-auto">
-          <div className="w-full max-w-4xl bg-white dark:bg-[#0F172A] rounded-2xl p-6 sm:p-8 space-y-6 text-right shadow-sm border border-[#E2E8F0] dark:border-[#334155] max-h-[92vh] overflow-y-auto font-sans">
-            <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#334155] pb-4">
-              <h3 className="text-base font-bold text-[#0F172A] dark:text-white">
-                استيراد أسئلة ذكي من ملفات Word / PDF
-              </h3>
-              <button
-                type="button"
-                onClick={() => setIsWordImportOpen(false)}
-                className="w-10 h-10 rounded-xl border border-[#E2E8F0] dark:border-[#334155] flex items-center justify-center text-[#94A3B8] hover:text-[#64748B] cursor-pointer"
+            <div className="flex items-center gap-1.5">
+              <span>لكل صفحة:</span>
+              <select
+                value={pageSize}
+                onChange={(e) => {
+                  setPageSize(Number(e.target.value));
+                  setCurrentPage(1);
+                }}
+                className="h-8 px-2 rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[12px] font-bold text-[#0F172A] dark:text-white"
               >
-                ×
-              </button>
+                <option value={10}>10</option>
+                <option value={25}>25</option>
+                <option value={50}>50</option>
+                <option value={100}>100</option>
+              </select>
             </div>
-            <QuestionWordImporter
-              subjects={subjects as any}
-              onImportSuccess={() => {
-                setIsWordImportOpen(false);
-                window.location.reload();
-              }}
-            />
+          </div>
+
+          {/* Navigation Page Buttons */}
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={() => setCurrentPage(1)}
+              disabled={safeCurrentPage === 1}
+              className="w-8 h-8 rounded-lg border border-[#E2E8F0] dark:border-[#334155] flex items-center justify-center text-[#64748B] disabled:opacity-40 hover:bg-[#F8FAFC] dark:hover:bg-[#1E293B] cursor-pointer"
+              title="الصفحة الأولى"
+            >
+              <ChevronsRight className="w-4 h-4" />
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              disabled={safeCurrentPage === 1}
+              className="h-8 px-2.5 rounded-lg border border-[#E2E8F0] dark:border-[#334155] flex items-center gap-1 text-[12px] font-bold text-[#64748B] disabled:opacity-40 hover:bg-[#F8FAFC] dark:hover:bg-[#1E293B] cursor-pointer"
+            >
+              <ChevronRight className="w-4 h-4" />
+              <span>السابق</span>
+            </button>
+
+            <span className="px-3 text-[12px] font-bold text-[#0F172A] dark:text-white">
+              {safeCurrentPage} / {totalPages}
+            </span>
+
+            <button
+              type="button"
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+              disabled={safeCurrentPage === totalPages}
+              className="h-8 px-2.5 rounded-lg border border-[#E2E8F0] dark:border-[#334155] flex items-center gap-1 text-[12px] font-bold text-[#64748B] disabled:opacity-40 hover:bg-[#F8FAFC] dark:hover:bg-[#1E293B] cursor-pointer"
+            >
+              <span>التالي</span>
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setCurrentPage(totalPages)}
+              disabled={safeCurrentPage === totalPages}
+              className="w-8 h-8 rounded-lg border border-[#E2E8F0] dark:border-[#334155] flex items-center justify-center text-[#64748B] disabled:opacity-40 hover:bg-[#F8FAFC] dark:hover:bg-[#1E293B] cursor-pointer"
+              title="الصفحة الأخيرة"
+            >
+              <ChevronsLeft className="w-4 h-4" />
+            </button>
           </div>
         </div>
       )}
+
+      {/* Side Drawer for Add / Edit Question */}
+      <QuestionDrawer
+        isOpen={drawerState.isOpen}
+        mode={drawerState.mode}
+        editingQuestion={drawerState.question}
+        subjects={subjects}
+        grades={grades}
+        onClose={() =>
+          setDrawerState({ isOpen: false, mode: "create", question: null })
+        }
+        onSuccess={handleQuestionSaved}
+      />
+
+      {/* Dedicated 4-Step Import Wizard Modal */}
+      <QuestionImportWizardModal
+        isOpen={isImportWizardOpen}
+        onClose={() => {
+          setIsImportWizardOpen(false);
+          if (importCommitted) {
+            setImportCommitted(false);
+            window.location.reload();
+          }
+        }}
+        subjects={subjects}
+        grades={grades}
+        initialSubjectId={selectedSubjectId !== "all" ? selectedSubjectId : undefined}
+        onSuccess={() => setImportCommitted(true)}
+      />
 
       {/* Confirmation Dialog */}
       <ConfirmModal

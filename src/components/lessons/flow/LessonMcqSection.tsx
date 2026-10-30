@@ -30,14 +30,14 @@ export function LessonMcqSection({
           <div>
             <div className="flex items-center gap-2">
               <span className="text-[11px] font-bold uppercase tracking-wider text-[#800020] dark:text-[#FB7185] bg-[#800020]/15 px-2 py-0.5 rounded-md">
-                المحطة الثالثة
+                تدريب تفاعلي
               </span>
               <h2 className="text-lg font-bold text-[#0F172A] dark:text-white">
-                3. أسئلة اختيار من متعدد
+                أسئلة اختيار من متعدد
               </h2>
             </div>
             <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8] mt-0.5">
-              اختر الإجابة بلمسة واحدة لتحصل على التصحيح اللحظي مع الشرح التفكيكي لكل خيار
+              اختر الإجابة وشوف النتيجة لحظياً مع شرح تفصيلي وتوضيح لكل خيار
             </p>
           </div>
         </div>
@@ -153,7 +153,7 @@ export function LessonMcqSection({
                     {/* Per-option explanations */}
                     <div className="pt-2 border-t border-[#E2E8F0]/60 dark:border-[#334155]/60 space-y-1.5">
                       <span className="text-[12px] font-bold text-[#64748B] dark:text-[#94A3B8] block">
-                        تفكيك الخيارات:
+                        تفسير الخيارات:
                       </span>
                       {question.options.map((opt) => {
                         const revealedOpt = state.reveal?.options?.find((o) => o.id === opt.id);

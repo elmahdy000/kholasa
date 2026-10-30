@@ -1,5 +1,20 @@
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
+import { randomInt } from "crypto";
+import { z } from "zod";
+import { badRequest } from "@/lib/http";
+
+const officialExamSchema = z.object({
+  title: z.string().trim().min(1).max(200),
+  description: z.string().trim().max(5000).nullable().optional(),
+  subjectId: z.string().min(1),
+  durationMinutes: z.number().int().min(1).max(1440).default(30),
+  isPractice: z.boolean().default(false),
+  questionIds: z.array(z.string().min(1)).max(500).default([]),
+  randomQuestionsCount: z.number().int().min(0).max(500).default(0),
+  unitId: z.string().min(1).nullable().optional(),
+  lessonId: z.string().min(1).nullable().optional(),
+});
 
 export class ExamCoreService {
   /**
@@ -71,9 +86,32 @@ export class ExamCoreService {
       randomQuestionsCount = 0,
       unitId,
       lessonId,
-    } = input;
+    } = officialExamSchema.parse(input);
 
-    let selectedQuestionIds: string[] = Array.isArray(questionIds) ? questionIds : [];
+    let selectedQuestionIds = [...new Set(questionIds)];
+    if (selectedQuestionIds.length === 0 && randomQuestionsCount === 0) {
+      throw badRequest("يجب اختيار سؤال واحد على الأقل أو تحديد عدد الأسئلة العشوائية");
+    }
+    if (unitId && !await prisma.unit.findFirst({ where: { id: unitId, subjectId }, select: { id: true } })) {
+      throw badRequest("الوحدة المختارة لا تتبع المادة المحددة");
+    }
+    if (lessonId && !await prisma.lesson.findFirst({
+      where: { id: lessonId, unit: { subjectId }, ...(unitId ? { unitId } : {}) }, select: { id: true },
+    })) {
+      throw badRequest("الدرس المختار لا يتبع المادة أو الوحدة المحددة");
+    }
+    const questionWhere: Prisma.QuestionWhereInput = {
+      subjectId, status: "PUBLISHED",
+      ...(unitId ? { unitId } : {}),
+      ...(lessonId ? { lessons: { some: { lessonId } } } : {}),
+    };
+
+    if (selectedQuestionIds.length > 0) {
+      const matchingCount = await prisma.question.count({ where: { ...questionWhere, id: { in: selectedQuestionIds } } });
+      if (matchingCount !== selectedQuestionIds.length) {
+        throw badRequest("بعض الأسئلة غير منشورة أو لا تنتمي إلى نطاق الامتحان المحدد");
+      }
+    }
 
     if (selectedQuestionIds.length === 0 && Number(randomQuestionsCount) > 0) {
       const questionWhere: Prisma.QuestionWhereInput = {
@@ -92,9 +130,15 @@ export class ExamCoreService {
       const availableQuestions = await prisma.question.findMany({
         where: questionWhere,
         select: { id: true },
-        take: Number(randomQuestionsCount),
       });
-      selectedQuestionIds = availableQuestions.map((q) => q.id);
+      if (availableQuestions.length < randomQuestionsCount) {
+        throw badRequest(`عدد الأسئلة المتاحة (${availableQuestions.length}) أقل من العدد المطلوب (${randomQuestionsCount})`);
+      }
+      for (let i = availableQuestions.length - 1; i > 0; i--) {
+        const j = randomInt(i + 1);
+        [availableQuestions[i], availableQuestions[j]] = [availableQuestions[j], availableQuestions[i]];
+      }
+      selectedQuestionIds = availableQuestions.slice(0, randomQuestionsCount).map((q) => q.id);
     }
 
     return prisma.exam.create({

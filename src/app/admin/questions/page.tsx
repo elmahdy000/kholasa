@@ -4,7 +4,10 @@ import { getCurrentUser, isStaff } from "@/lib/auth";
 import { AdminShell } from "@/components/layout/AdminShell";
 import { QuestionBankManagerClient } from "@/components/admin/QuestionBankManagerClient";
 
-export default async function AdminQuestionsPage() {
+export default async function AdminQuestionsPage({ searchParams }: {
+  searchParams: Promise<{ action?: string; subjectId?: string }>;
+}) {
+  const params = await searchParams;
   const user = await getCurrentUser();
 
   if (!user || !isStaff(user.role)) {
@@ -78,6 +81,8 @@ export default async function AdminQuestionsPage() {
           initialQuestions={questions as any}
           subjects={subjects as any}
           grades={grades as any}
+          openCreate={params.action === "create"}
+          initialSubjectId={params.subjectId}
         />
       </div>
     </AdminShell>

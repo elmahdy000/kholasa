@@ -5,11 +5,13 @@ import type { RecentAttemptItem, SubjectStatItem } from "./types";
 interface AdminRecentActivityProps {
   recentAttempts: RecentAttemptItem[];
   subjectsWithStats: SubjectStatItem[];
+  canReviewAttempts: boolean;
 }
 
 export function AdminRecentActivity({
   recentAttempts,
   subjectsWithStats,
+  canReviewAttempts,
 }: AdminRecentActivityProps) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -20,13 +22,13 @@ export function AdminRecentActivity({
             <CheckCircle2 className="w-4 h-4 text-[#64748B]" />
             <span>أحدث محاولات الطلاب المكتملة</span>
           </h3>
-          <Link
+          {canReviewAttempts && <Link
             href="/admin/attempts"
             className="text-[13px] text-[#64748B] hover:text-[#0F172A] dark:hover:text-white flex items-center gap-1 font-medium"
           >
             <span>عرض الكل</span>
             <ChevronLeft className="w-3.5 h-3.5" />
-          </Link>
+          </Link>}
         </div>
 
         {recentAttempts.length === 0 ? (
@@ -61,12 +63,12 @@ export function AdminRecentActivity({
                   >
                     {attempt.percentage}%
                   </span>
-                  <Link
+                  {canReviewAttempts && <Link
                     href="/admin/attempts"
                     className="text-[13px] text-[#64748B] hover:text-[#64748B]"
                   >
                     مراجعة
-                  </Link>
+                  </Link>}
                 </div>
               </div>
             ))}

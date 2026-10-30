@@ -29,8 +29,8 @@ export async function POST(req: Request) {
     const user = await requireStaffUser();
 
     const declared = Number(req.headers.get("content-length") || 0);
-    if (declared > MAX_BYTES + 1024 * 1024) {
-      throw badRequest("حجم الملف يتجاوز الحد الأقصى المسموح به (50 ميجابايت)");
+    if (declared > 2 * MAX_BYTES + 1024 * 1024) {
+      throw badRequest("حجم الطلب يتجاوز الحد الأقصى المسموح به (50 ميجابايت لكل ملف)");
     }
 
     const formData = await req.formData();
@@ -43,13 +43,7 @@ export async function POST(req: Request) {
         throw badRequest("حجم أحد الملفات يتجاوز الحد الأقصى المسموح به (50 ميجابايت)");
       }
 
-      // Save Image
-      const imgBuffer = Buffer.from(await imageFile.arrayBuffer());
-      const uploadedImage = await MediaService.saveUploadedBuffer(imgBuffer, imageFile.name, imageFile.type);
-
-      // Save Audio
-      const audioBuffer = Buffer.from(await audioFile.arrayBuffer());
-      const uploadedAudio = await MediaService.saveUploadedBuffer(audioBuffer, audioFile.name, audioFile.type);
+      const { image: uploadedImage, audio: uploadedAudio } = await MediaService.saveUploadedPair(imageFile, audioFile);
 
       await AnalyticsService.logAuditAction(user.id, "UPLOAD", "media", uploadedImage.filename, {
         size: uploadedImage.size,
@@ -67,6 +61,10 @@ export async function POST(req: Request) {
         imageUrl: uploadedImage.url,
         audioUrl: uploadedAudio.url,
       });
+    }
+
+    if (audioFile !== null || imageFile !== null) {
+      throw badRequest("يجب تحديد الصورة والملف الصوتي معاً");
     }
 
     // Case 2: Single File Upload (standard)

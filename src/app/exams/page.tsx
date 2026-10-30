@@ -14,6 +14,8 @@ import {
   History,
 } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 export default async function ExamsHubPage() {
   const user = await getCurrentUser();
   const scope = getCurriculumScope(user);
@@ -215,7 +217,11 @@ export default async function ExamsHubPage() {
                     </div>
 
                     <Link
-                      href={`/exams/${attempt.examId}/results?attemptId=${attempt.id}`}
+                      href={
+                        attempt.examId
+                          ? `/exams/${attempt.examId}/results?attemptId=${attempt.id}`
+                          : `/exams/${attempt.id}/results`
+                      }
                       className="h-11 px-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] hover:border-[#800020] hover:text-[#800020] dark:hover:border-[#E11D48] dark:hover:text-[#FB7185] text-[13px] font-bold text-[#0F172A] dark:text-white flex items-center justify-center gap-2 transition-colors shrink-0 self-stretch sm:self-center"
                     >
                       <span>راجع إجاباتك</span>

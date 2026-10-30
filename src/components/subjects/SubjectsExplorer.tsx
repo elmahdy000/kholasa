@@ -91,6 +91,33 @@ export function SubjectsExplorer({ subjects }: SubjectsExplorerProps) {
     });
   }, [subjects, searchQuery, selectedFilter]);
 
+  if (subjects.length === 0) {
+    return (
+      <div className="p-8 sm:p-14 text-center rounded-3xl bg-white dark:bg-[#1E293B] border border-[#E8E9ED] dark:border-[#334155] shadow-xs space-y-4">
+        <div className="w-14 h-14 rounded-2xl bg-[#800020]/10 text-[#800020] dark:text-[#FB7185] flex items-center justify-center mx-auto">
+          <BookOpen className="w-7 h-7" />
+        </div>
+        <div className="space-y-1.5 max-w-md mx-auto">
+          <h3 className="text-lg font-bold text-[#12263F] dark:text-white">
+            لسه مفيش مواد مضافة
+          </h3>
+          <p className="text-xs sm:text-sm text-[#64748B] dark:text-[#94A3B8] leading-relaxed">
+            المسارات والصفوف جاهزة ومتظبطة، وتقدر تبدأ تضيف المواد والوحدات والدروس من لوحة التحكم.
+          </p>
+        </div>
+        <div className="pt-2">
+          <Link
+            href="/admin/curriculum"
+            className="inline-flex items-center gap-2 h-10 px-5 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-xs font-bold transition-all shadow-xs"
+          >
+            <span>إضافة مادة من لوحة التحكم</span>
+            <ArrowLeft className="w-4 h-4" />
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-8">
       {/* Search Bar & Filters */}
@@ -182,7 +209,7 @@ export function SubjectsExplorer({ subjects }: SubjectsExplorerProps) {
                     </h3>
                     <p className="text-xs text-[#64748B] dark:text-[#94A3B8] leading-relaxed font-normal break-words">
                       {subj.description ||
-                        "شرح كامل لوحدات المنهج، كبسولة الزتونة المركزة، وبنك أسئلة متدرج."}
+                        "شرح كامل لوحدات المنهج، ملخص مركز، وأسئلة لكل درس."}
                     </p>
                   </div>
 
@@ -190,11 +217,11 @@ export function SubjectsExplorer({ subjects }: SubjectsExplorerProps) {
                   <div className="flex flex-wrap items-center gap-2 pt-1 text-[11px] font-medium text-[#64748B] dark:text-[#94A3B8]">
                     <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#F7F8FA] dark:bg-[#081426] border border-[#E8E9ED] dark:border-[#22364F]">
                       <Layers className="w-3.5 h-3.5 text-[#800020] dark:text-[#A30D36]" />
-                      <span>{subj.unitsCount} وحدات وفصول</span>
+                      <span>{subj.unitsCount} وحدات</span>
                     </span>
                     <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#F7F8FA] dark:bg-[#081426] border border-[#E8E9ED] dark:border-[#22364F]">
                       <BookmarkCheck className="w-3.5 h-3.5 text-[#D97706] dark:text-[#E59A18]" />
-                      <span>{subj.lessonsCount} درس وكبسولة</span>
+                      <span>{subj.lessonsCount} درس</span>
                     </span>
                   </div>
                 </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { CheckCircle2 } from "lucide-react";
 import type { AttemptsManagerClientProps, Attempt, Answer } from "./attempts/types";
 import { AttemptFilterBar } from "./attempts/AttemptFilterBar";
@@ -23,13 +23,19 @@ export function AttemptsManagerClient({
   }>({ isOpen: false, loadingDetails: false });
 
   const [savingGradeId, setSavingGradeId] = useState<string | null>(null);
+  const [detailsError, setDetailsError] = useState<string | null>(null);
+  const inspectRequest = useRef(0);
 
   const handleOpenInspect = async (attempt: Attempt) => {
+    const request = ++inspectRequest.current;
+    setDetailsError(null);
     setInspectModal({ isOpen: true, attempt, loadingDetails: true });
 
     try {
       const res = await fetch(`/api/admin/attempts?id=${attempt.id}`);
       const data = await res.json();
+      if (request !== inspectRequest.current) return;
+      if (!res.ok || !data.attempt) throw new Error(data.error || "تعذر تحميل تفاصيل المحاولة");
       if (data.attempt) {
         setInspectModal({
           isOpen: true,
@@ -38,7 +44,8 @@ export function AttemptsManagerClient({
         });
       }
     } catch (err) {
-      console.error("Failed to load attempt details:", err);
+      if (request !== inspectRequest.current) return;
+      setDetailsError(err instanceof Error ? err.message : "تعذر تحميل تفاصيل المحاولة");
       setInspectModal((prev) => ({ ...prev, loadingDetails: false }));
     }
   };
@@ -150,8 +157,12 @@ export function AttemptsManagerClient({
         isOpen={inspectModal.isOpen}
         attempt={inspectModal.attempt}
         loadingDetails={inspectModal.loadingDetails}
+        detailsError={detailsError}
         savingGradeId={savingGradeId}
-        onClose={() => setInspectModal({ isOpen: false, loadingDetails: false })}
+        onClose={() => {
+          inspectRequest.current++;
+          setInspectModal({ isOpen: false, loadingDetails: false });
+        }}
         onGradeEssay={handleGradeEssay}
       />
     </div>

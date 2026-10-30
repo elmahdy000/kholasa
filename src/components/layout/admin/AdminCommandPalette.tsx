@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { Search, X, ArrowUpRight, Award, HelpCircle, HardDrive, Upload, Layers, Compass, BookOpen } from "lucide-react";
 import type { AdminNavItem } from "./types";
+import { Dialog } from "@/components/ui/Dialog";
 
 interface AdminCommandPaletteProps {
   isOpen: boolean;
@@ -10,6 +11,7 @@ interface AdminCommandPaletteProps {
   commandQuery: string;
   setCommandQuery: (q: string) => void;
   filteredCommands: AdminNavItem[];
+  allowedHrefs: string[];
 }
 
 export function AdminCommandPalette({
@@ -18,25 +20,27 @@ export function AdminCommandPalette({
   commandQuery,
   setCommandQuery,
   filteredCommands,
+  allowedHrefs,
 }: AdminCommandPaletteProps) {
   const router = useRouter();
 
   if (!isOpen) return null;
 
   const quickActions = [
-    { label: "إنشاء امتحان رسمي جديد", href: "/admin/exams?action=create", icon: Award },
+    { label: "إنشاء امتحان رسمي جديد", href: "/admin/exams/create", icon: Award },
     { label: "إضافة سؤال لبنك الأسئلة", href: "/admin/questions?action=create", icon: HelpCircle },
     { label: "رفع ملفات وسائط وبودكاست", href: "/admin/media", icon: HardDrive },
-    { label: "استيراد بنك أسئلة CSV/JSON", href: "/admin/questions/import", icon: Upload },
+    { label: "استيراد أسئلة Word/PDF", href: "/admin/questions/import", icon: Upload },
     { label: "إدارة المناهج والهيكل الأكاديمي", href: "/admin/curriculum", icon: BookOpen },
     { label: "معاينة واجهة الطالب الحية", href: "/dashboard", icon: Compass, external: true },
-  ].filter((a) => a.label.includes(commandQuery));
+  ].filter((a) => a.label.includes(commandQuery) &&
+    (a.external || allowedHrefs.includes(a.href.split("?")[0]) ||
+      (a.href === "/admin/exams/create" && allowedHrefs.includes("/admin/exams"))));
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 p-4 bg-black/60 animate-in fade-in duration-150">
-      <div
+    <Dialog open={isOpen} onClose={onClose} ariaLabel="البحث في خدمات الإدارة"
+      overlayClassName="fixed inset-0 z-50 flex items-start justify-center pt-20 p-4 bg-black/60"
         className="w-full max-w-xl rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] shadow-sm overflow-hidden text-right"
-        onClick={(e) => e.stopPropagation()}
       >
         {/* Search Input Box */}
         <div className="flex items-center gap-3 px-4 py-3 border-b border-[#E2E8F0] dark:border-[#334155]">
@@ -44,6 +48,7 @@ export function AdminCommandPalette({
           <input
             type="text"
             autoFocus
+            aria-label="البحث في خدمات الإدارة"
             value={commandQuery}
             onChange={(e) => setCommandQuery(e.target.value)}
             placeholder="ابحث عن صفحة، خدمة، مادة أو إجراء سريع..."
@@ -51,7 +56,8 @@ export function AdminCommandPalette({
           />
           <button
             onClick={onClose}
-            className="p-1 rounded text-[#64748B] hover:text-[#64748B] dark:hover:text-[#F8FAFC]"
+            aria-label="إغلاق البحث"
+            className="min-h-11 min-w-11 flex items-center justify-center rounded text-[#64748B] hover:text-[#64748B] dark:hover:text-[#F8FAFC]"
           >
             <X className="w-4 h-4" />
           </button>
@@ -136,7 +142,6 @@ export function AdminCommandPalette({
           </div>
           <span>EL KHOLASA ADMIN ENGINE</span>
         </div>
-      </div>
-    </div>
+    </Dialog>
   );
 }

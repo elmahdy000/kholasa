@@ -1,6 +1,15 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser, canGradeAttempts } from "@/lib/auth";
 import { ExamService } from "@/services";
+import { z } from "zod";
+import { parseJson, jsonError } from "@/lib/http";
+
+const gradeSchema = z.object({
+  answerId: z.string().min(1),
+  isCorrect: z.boolean().optional(),
+  score: z.number().finite().min(0).optional(),
+  attemptId: z.string().min(1).optional(),
+}).refine((value) => value.isCorrect !== undefined || value.score !== undefined);
 
 // GET: Return student exam attempts with optional filters (examId, userId, search)
 export async function GET(req: Request) {
@@ -48,7 +57,7 @@ export async function PATCH(req: Request) {
       return NextResponse.json({ error: "غير مصرح" }, { status: 403 });
     }
 
-    const body = await req.json().catch(() => ({}));
+    const body = await parseJson(req, gradeSchema);
     const { answerId, isCorrect, score, attemptId } = body;
 
     if (!answerId) {
@@ -64,10 +73,6 @@ export async function PATCH(req: Request) {
 
     return NextResponse.json({ success: true, updatedAttempt });
   } catch (error) {
-    console.error("Failed to update student grade:", error);
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : "تعذر تحديث الدرجة" },
-      { status: 500 }
-    );
+    return jsonError(error);
   }
 }

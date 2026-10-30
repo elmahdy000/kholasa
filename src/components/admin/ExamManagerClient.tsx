@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Layers } from "lucide-react";
 import { Subject, ExamItem } from "./exams/types";
 import { ExamFilterBar } from "./exams/ExamFilterBar";
@@ -24,6 +24,8 @@ export function ExamManagerClient({
   const [selectedSubjectId, setSelectedSubjectId] = useState("all");
   const [selectedType, setSelectedType] = useState("all");
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [toggleError, setToggleError] = useState<string | null>(null);
+  const pendingToggles = useRef(new Set<string>());
 
   // Confirmation dialog state
   const [confirmModal, setConfirmModal] = useState<{
@@ -40,6 +42,9 @@ export function ExamManagerClient({
 
   // Toggle Exam Mode (Official Exam vs Practice)
   const handleTogglePractice = async (examId: string, currentIsPractice: boolean) => {
+    if (pendingToggles.current.has(examId)) return;
+    pendingToggles.current.add(examId);
+    setToggleError(null);
     try {
       setExams((prev) =>
         prev.map((e) =>
@@ -54,18 +59,18 @@ export function ExamManagerClient({
       });
 
       if (!res.ok) {
-        setExams((prev) =>
-          prev.map((e) =>
-            e.id === examId ? { ...e, isPractice: currentIsPractice } : e
-          )
-        );
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || "تعذر تغيير وضع الامتحان");
       }
-    } catch {
+    } catch (error) {
+      setToggleError(error instanceof Error ? error.message : "تعذر تغيير وضع الامتحان. حاول مرة أخرى.");
       setExams((prev) =>
         prev.map((e) =>
           e.id === examId ? { ...e, isPractice: currentIsPractice } : e
         )
       );
+    } finally {
+      pendingToggles.current.delete(examId);
     }
   };
 
@@ -111,6 +116,7 @@ export function ExamManagerClient({
 
   return (
     <div className="space-y-6">
+      {toggleError && <p role="alert" className="text-sm text-red-600 dark:text-red-400">{toggleError}</p>}
       <ExamFilterBar
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}

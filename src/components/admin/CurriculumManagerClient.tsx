@@ -163,7 +163,7 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
       if (subjectFilterTab === "COMMON") return !subject.trackId;
       // If filtering tab is "TRACK", only show this track
       if (subjectFilterTab === "TRACK") return subject.trackId === selectedTrackId;
-      // Tab is "ALL" with a specific track selected: show common + track specific
+      // Tab is "ALL" with a specific track selected: show common + this track specific
       return !subject.trackId || subject.trackId === selectedTrackId;
     }
 
@@ -778,7 +778,7 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
                       type="button"
                       onClick={() => {
                         setSelectedTrackId(track.id);
-                        setSubjectFilterTab("ALL");
+                        setSubjectFilterTab("TRACK");
                       }}
                       className="px-3 py-1.5 flex items-center gap-1.5 cursor-pointer"
                     >
@@ -865,42 +865,82 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
           </div>
         </div>
 
-        {/* Filter Tabs for G11 (All / Common / Track Specific) */}
+        {/* Filter Tabs for G11 (Track Specific / Common / All) */}
         {isG11 && (
-          <div className="flex items-center gap-2 p-1.5 rounded-xl bg-[#F1F5F9] dark:bg-[#1E293B] w-fit">
-            <button
-              type="button"
-              onClick={() => setSubjectFilterTab("ALL")}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                subjectFilterTab === "ALL"
-                  ? "bg-white dark:bg-[#0F172A] text-[#800020] dark:text-[#FB7185] shadow-xs"
-                  : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
-              }`}
-            >
-              جميع المواد ({filteredSubjects.length})
-            </button>
-            <button
-              type="button"
-              onClick={() => setSubjectFilterTab("COMMON")}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                subjectFilterTab === "COMMON"
-                  ? "bg-white dark:bg-[#0F172A] text-[#800020] dark:text-[#FB7185] shadow-xs"
-                  : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
-              }`}
-            >
-              المواد العامة المشتركة ({allGradeSubjects.filter((s) => !s.trackId).length})
-            </button>
-            <button
-              type="button"
-              onClick={() => setSubjectFilterTab("TRACK")}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                subjectFilterTab === "TRACK"
-                  ? "bg-white dark:bg-[#0F172A] text-[#800020] dark:text-[#FB7185] shadow-xs"
-                  : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
-              }`}
-            >
-              المواد التخصصية ({allGradeSubjects.filter((s) => Boolean(s.trackId)).length})
-            </button>
+          <div className="flex items-center gap-2 p-1.5 rounded-xl bg-[#F1F5F9] dark:bg-[#1E293B] w-fit flex-wrap">
+            {selectedTrackId !== "ALL" ? (
+              <>
+                <button
+                  type="button"
+                  onClick={() => setSubjectFilterTab("TRACK")}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    subjectFilterTab === "TRACK"
+                      ? "bg-white dark:bg-[#0F172A] text-[#800020] dark:text-[#FB7185] shadow-xs"
+                      : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
+                  }`}
+                >
+                  مواد المسار ({allGradeSubjects.filter((s) => s.trackId === selectedTrackId).length})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSubjectFilterTab("COMMON")}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    subjectFilterTab === "COMMON"
+                      ? "bg-white dark:bg-[#0F172A] text-[#800020] dark:text-[#FB7185] shadow-xs"
+                      : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
+                  }`}
+                >
+                  المواد العامة المشتركة ({allGradeSubjects.filter((s) => !s.trackId).length})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSubjectFilterTab("ALL")}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    subjectFilterTab === "ALL"
+                      ? "bg-white dark:bg-[#0F172A] text-[#800020] dark:text-[#FB7185] shadow-xs"
+                      : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
+                  }`}
+                >
+                  الكل (المسار + العامة) ({allGradeSubjects.filter((s) => !s.trackId || s.trackId === selectedTrackId).length})
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  onClick={() => setSubjectFilterTab("ALL")}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    subjectFilterTab === "ALL"
+                      ? "bg-white dark:bg-[#0F172A] text-[#800020] dark:text-[#FB7185] shadow-xs"
+                      : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
+                  }`}
+                >
+                  جميع المواد ({allGradeSubjects.length})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSubjectFilterTab("COMMON")}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    subjectFilterTab === "COMMON"
+                      ? "bg-white dark:bg-[#0F172A] text-[#800020] dark:text-[#FB7185] shadow-xs"
+                      : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
+                  }`}
+                >
+                  المواد العامة المشتركة ({allGradeSubjects.filter((s) => !s.trackId).length})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSubjectFilterTab("TRACK")}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    subjectFilterTab === "TRACK"
+                      ? "bg-white dark:bg-[#0F172A] text-[#800020] dark:text-[#FB7185] shadow-xs"
+                      : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
+                  }`}
+                >
+                  كافة المواد التخصصية ({allGradeSubjects.filter((s) => Boolean(s.trackId)).length})
+                </button>
+              </>
+            )}
           </div>
         )}
 
@@ -928,7 +968,7 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
             </div>
           ) : (
             filteredSubjects.map((subject) => {
-              const track = eligibleTracks.find((t) => t.id === subject.trackId);
+              const track = activeTracks.find((t) => t.id === subject.trackId);
               return (
                 <SubjectCard
                   key={subject.id}
@@ -1003,7 +1043,7 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
           gradeCode={selectedGrade?.code}
           schoolCategory={selectedCategory}
           selectedTrackId={selectedTrackId !== "ALL" ? selectedTrackId : undefined}
-          tracks={eligibleTracks}
+          tracks={activeTracks}
           initialSubject={subjectModalState.initialSubject}
           onClose={() => setSubjectModalState({ isOpen: false, initialSubject: null })}
           onSaved={handleSubjectSaved}

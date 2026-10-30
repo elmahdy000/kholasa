@@ -10,6 +10,8 @@ WORKDIR /app
 RUN apk add --no-cache libc6-compat openssl
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+ENV DATABASE_URL="postgresql://postgres:postgres@localhost:5432/kholasa?schema=public"
+ENV NEXT_TELEMETRY_DISABLED=1
 RUN npx prisma generate && npm run build
 
 FROM node:24-alpine AS runner

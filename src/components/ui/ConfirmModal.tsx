@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useId } from "react";
 import { AlertTriangle, Trash2, Info, Loader2, X } from "lucide-react";
 import { Dialog } from "./Dialog";
 
@@ -28,16 +28,26 @@ export function ConfirmModal({
   isLoading = false,
 }: ConfirmModalProps) {
   const [internalLoading, setInternalLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const titleId = useId();
   const cancelBtnRef = useRef<HTMLButtonElement>(null);
+
+  const [wasOpen, setWasOpen] = useState(open);
+  if (wasOpen !== open) {
+    setWasOpen(open);
+    setError(null);
+  }
 
   const loading = isLoading || internalLoading;
 
   const handleConfirm = async () => {
+    if (loading) return;
     try {
+      setError(null);
       setInternalLoading(true);
       await onConfirm();
     } catch (err) {
-      console.error("Confirmation action failed:", err);
+      setError(err instanceof Error ? err.message : "تعذر تنفيذ العملية. حاول مرة أخرى.");
     } finally {
       setInternalLoading(false);
     }
@@ -72,6 +82,7 @@ export function ConfirmModal({
   return (
     <Dialog
       open={open}
+      labelledBy={titleId}
       onClose={loading ? () => {} : onClose}
       initialFocusRef={cancelBtnRef}
       className="relative w-full max-w-md bg-white dark:bg-[#0F172A] rounded-2xl border border-[#E2E8F0] dark:border-[#334155] shadow-xl overflow-hidden p-6 text-right animate-in fade-in zoom-in-95 duration-150"
@@ -79,7 +90,7 @@ export function ConfirmModal({
       <div className="flex items-start gap-4">
         <div className={`p-3 rounded-2xl shrink-0 ${iconBg}`}>{icon}</div>
         <div className="flex-1 min-w-0">
-          <h3 className="text-base font-bold text-[#0F172A] dark:text-white leading-6 mb-1">
+          <h3 id={titleId} className="text-base font-bold text-[#0F172A] dark:text-white leading-6 mb-1">
             {title}
           </h3>
           <p className="text-sm text-[#64748B] dark:text-[#94A3B8] leading-relaxed">
@@ -90,12 +101,14 @@ export function ConfirmModal({
           type="button"
           onClick={onClose}
           disabled={loading}
-          className="p-1 rounded-lg text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white hover:bg-[#F1F5F9] dark:hover:bg-[#1E293B] transition-colors disabled:opacity-40"
+          className="min-h-11 min-w-11 flex items-center justify-center rounded-lg text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white hover:bg-[#F1F5F9] dark:hover:bg-[#1E293B] transition-colors disabled:opacity-40"
           aria-label="إغلاق"
         >
           <X className="w-4 h-4" />
         </button>
       </div>
+
+      {error && <p role="alert" className="mt-4 text-sm text-red-600 dark:text-red-400">{error}</p>}
 
       <div className="mt-6 flex items-center justify-end gap-3">
         <button

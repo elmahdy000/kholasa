@@ -32,14 +32,14 @@ export function LessonTrueFalseSection({
           <div>
             <div className="flex items-center gap-2">
               <span className="text-[11px] font-bold uppercase tracking-wider text-[#0284C7] bg-[#0284C7]/15 px-2 py-0.5 rounded-md">
-                المحطة السادسة
+                تحدي الفهم السريع
               </span>
               <h2 className="text-lg font-bold text-[#0F172A] dark:text-white">
-                6. أسئلة صح وغلط (تحدي السرعة)
+                أسئلة صح وغلط
               </h2>
             </div>
             <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8] mt-0.5">
-              اختبر دقة معلوماتك وتفريقك بين المفاهيم المتشابهة في ثوانٍ معدودة
+              اختبر دقة تركيزك وتفريقك بين المفاهيم في ثوانٍ معدودة
             </p>
           </div>
         </div>

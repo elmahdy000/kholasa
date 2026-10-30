@@ -130,6 +130,28 @@ export class MediaService {
     };
   }
 
+  /** Validate both files before writing; remove the new cover if the audio save fails. */
+  static async saveUploadedPair(imageFile: File, audioFile: File) {
+    const imageRule = this.validate(imageFile.size, imageFile.type, imageFile.name);
+    const audioRule = this.validate(audioFile.size, audioFile.type, audioFile.name);
+    if (imageRule.category !== "images" || audioRule.category !== "audio") {
+      throw badRequest("يجب اختيار صورة وملف صوتي بالنوع الصحيح");
+    }
+    const imageBuffer = Buffer.from(await imageFile.arrayBuffer());
+    const audioBuffer = Buffer.from(await audioFile.arrayBuffer());
+    if (!sniffMatches(imageRule.ext, imageBuffer) || !sniffMatches(audioRule.ext, audioBuffer)) {
+      throw badRequest("محتوى أحد الملفات لا يطابق نوعه");
+    }
+    const image = await this.saveUploadedBuffer(imageBuffer, imageFile.name, imageFile.type);
+    try {
+      const audio = await this.saveUploadedBuffer(audioBuffer, audioFile.name, audioFile.type);
+      return { image, audio };
+    } catch (error) {
+      await this.deleteMediaFile(image.filename);
+      throw error;
+    }
+  }
+
   private static typeForExt(ext: string): MediaType {
     if ([".mp3", ".wav", ".ogg", ".m4a", ".aac"].includes(ext)) return "audio";
     if ([".png", ".jpg", ".jpeg", ".webp", ".svg", ".gif"].includes(ext)) return "image";

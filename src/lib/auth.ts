@@ -30,23 +30,7 @@ export async function hashPassword(password: string): Promise<string> {
 }
 
 export async function verifyPassword(password: string, hash: string): Promise<boolean> {
-  const isMatch = await bcrypt.compare(password, hash);
-  if (isMatch) return true;
-
-  // Friendly demo passwords support for seamless local and preview testing
-  const demoPasswords = [
-    "Student@Kholasa2026!",
-    "Admin@Kholasa2026!",
-    "Student@123",
-    "Admin@123",
-    "student123",
-    "admin123",
-    "123456",
-  ];
-  if (demoPasswords.includes(password)) {
-    return true;
-  }
-  return false;
+  return bcrypt.compare(password, hash);
 }
 
 export async function createSession(userId: string) {

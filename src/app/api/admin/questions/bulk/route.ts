@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
-import { getCurrentUser, canManageCurriculum } from "@/lib/auth";
+import { getCurrentUser, canManageQuestions } from "@/lib/auth";
 import { QuestionService } from "@/services";
+import { QuestionValidationError } from "@/services/question/validation";
 
 export async function POST(req: Request) {
   try {
     const user = await getCurrentUser();
-    if (!user || !canManageCurriculum(user.role)) {
+    if (!user || !canManageQuestions(user.role)) {
       return NextResponse.json({ error: "غير مصرح" }, { status: 403 });
     }
 
@@ -23,22 +24,23 @@ export async function POST(req: Request) {
 
     return NextResponse.json({
       success: true,
-      importedCount: typeof result === "number" ? result : result.count,
-      batchId: typeof result === "object" ? result.batchId : undefined,
+      importedCount: result.count,
+      skippedDuplicates: result.skippedDuplicates,
+      batchId: result.batchId,
     });
   } catch (error) {
+    if (error instanceof QuestionValidationError) {
+      return NextResponse.json({ error: error.message }, { status: error.status });
+    }
     console.error("Bulk import failed:", error);
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : "حدث خطأ أثناء استيراد الأسئلة" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "حدث خطأ أثناء استيراد الأسئلة" }, { status: 500 });
   }
 }
 
 export async function DELETE(req: Request) {
   try {
     const user = await getCurrentUser();
-    if (!user || !canManageCurriculum(user.role)) {
+    if (!user || !canManageQuestions(user.role)) {
       return NextResponse.json({ error: "غير مصرح لك بالوصول" }, { status: 403 });
     }
 

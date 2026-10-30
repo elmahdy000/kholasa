@@ -44,12 +44,53 @@ export interface LessonData {
   } | null;
 }
 
-export type LessonEditorTabType = "media" | "mindmap" | "content" | "summary";
+export type LessonEditorTabType =
+  | "mindmap"
+  | "definitions"
+  | "questions"
+  | "info"
+  | "media"
+  | "content"
+  | "summary";
 
 export interface UnitInfo {
+  unitId?: string;
   unitTitle: string;
+  subjectId?: string;
   subjectName: string;
   subjectColor?: string | null;
+  schoolCategory?: "ARABIC" | "LANGUAGES";
+  gradeId?: string;
+  gradeName?: string;
+  trackId?: string;
+  trackName?: string;
+}
+
+export interface DefinitionItem {
+  term: string;
+  meaning: string;
+}
+
+export interface LessonQuestionOption {
+  id?: string;
+  text: string;
+  isCorrect: boolean;
+  explanation?: string | null;
+}
+
+export interface LessonQuestionItem {
+  id: string;
+  statement: string;
+  type: "MCQ" | "TRUE_FALSE" | "ESSAY";
+  difficulty: "EASY" | "MEDIUM" | "HARD";
+  options?: LessonQuestionOption[];
+  explanation?: {
+    concept?: string;
+    correctReason?: string;
+  } | null;
+  rubric?: {
+    modelAnswer?: string;
+  } | null;
 }
 
 export interface CommonMistakeItem {

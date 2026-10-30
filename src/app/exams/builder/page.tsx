@@ -13,6 +13,8 @@ interface ExamBuilderPageProps {
   }>;
 }
 
+export const dynamic = "force-dynamic";
+
 export default async function ExamBuilderPage({
   searchParams,
 }: ExamBuilderPageProps) {

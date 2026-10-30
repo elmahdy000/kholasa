@@ -70,21 +70,30 @@ describe("Question Bank — Image Support and Bulk Actions Tests", () => {
       statement: "سؤال الحذف المجمع رقم 1",
       subjectId: subject!.id,
       type: "MCQ",
-      options: [{ text: "خيار 1", isCorrect: true }],
+      options: [
+        { text: "خيار 1", isCorrect: true },
+        { text: "خيار خاطئ", isCorrect: false },
+      ],
     });
 
     const q2 = await QuestionService.createQuestion({
       statement: "سؤال الحذف المجمع رقم 2",
       subjectId: subject!.id,
       type: "MCQ",
-      options: [{ text: "خيار 2", isCorrect: true }],
+      options: [
+        { text: "خيار 2", isCorrect: true },
+        { text: "خيار خاطئ", isCorrect: false },
+      ],
     });
 
     const q3 = await QuestionService.createQuestion({
       statement: "سؤال لن يتم حذفه",
       subjectId: subject!.id,
       type: "MCQ",
-      options: [{ text: "خيار 3", isCorrect: true }],
+      options: [
+        { text: "خيار 3", isCorrect: true },
+        { text: "خيار خاطئ", isCorrect: false },
+      ],
     });
 
     // Bulk delete q1 and q2

@@ -12,12 +12,14 @@ import {
   ArrowUpRight,
 } from "lucide-react";
 import type { AdminDashboardMetrics } from "./types";
+import { rawNavigationGroups } from "@/components/layout/admin/navigation";
 
 interface AdminServicesMatrixProps {
   metrics: AdminDashboardMetrics;
+  role: string;
 }
 
-export function AdminServicesMatrix({ metrics }: AdminServicesMatrixProps) {
+export function AdminServicesMatrix({ metrics, role }: AdminServicesMatrixProps) {
   const {
     studentsCount,
     subjectsCount,
@@ -45,10 +47,10 @@ export function AdminServicesMatrix({ metrics }: AdminServicesMatrixProps) {
     },
     {
       title: "استيراد الأسئلة المجمع",
-      desc: "رفع بنوك أسئلة كاملة عبر ملفات CSV أو لصق نصي",
+      desc: "استيراد الأسئلة من ملفات Word أو PDF أو النصوص",
       href: "/admin/questions/import",
       icon: Upload,
-      stat: "CSV / JSON",
+      stat: "Word / PDF",
     },
     {
       title: "إدارة الامتحانات الرسمية",
@@ -85,7 +87,8 @@ export function AdminServicesMatrix({ metrics }: AdminServicesMatrixProps) {
       icon: Activity,
       stat: `${avgScore}% معدل`,
     },
-  ];
+  ].filter((service) => rawNavigationGroups.flatMap((group) => group.items)
+    .some((item) => item.href === service.href && item.allowedRoles.includes(role)));
 
   return (
     <div className="space-y-3">
@@ -94,7 +97,7 @@ export function AdminServicesMatrix({ metrics }: AdminServicesMatrixProps) {
           الخدمات والعمليات الإدارية المتكاملة
         </h2>
         <span className="text-[13px] font-mono text-[#64748B]">
-          9 خدمات نشطة
+          {administrativeServices.length} خدمات متاحة
         </span>
       </div>
 

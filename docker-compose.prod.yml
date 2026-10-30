@@ -1,0 +1,51 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: kholasa-prod-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-kholasa_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-kholasa_prod}
+    volumes:
+      - kholasa_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-kholasa_user} -d $${POSTGRES_DB:-kholasa_prod}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - kholasa-net
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: kholasa-prod-app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-kholasa_user}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-kholasa_prod}?schema=public
+      APP_URL: ${APP_URL:-https://el-kholasa.online}
+      OTP_DELIVERY: ${OTP_DELIVERY:-console}
+      OTP_DEV_ECHO: ${OTP_DEV_ECHO:-false}
+      UPLOAD_DIR: /app/storage/uploads
+    ports:
+      # Bound strictly to localhost on port 3025 to avoid any collision with existing PM2 apps
+      - "127.0.0.1:3025:3000"
+    volumes:
+      - kholasa_uploads:/app/storage/uploads
+    networks:
+      - kholasa-net
+
+volumes:
+  kholasa_pgdata:
+    name: kholasa_prod_pgdata
+  kholasa_uploads:
+    name: kholasa_prod_uploads
+
+networks:
+  kholasa-net:
+    name: kholasa_prod_network

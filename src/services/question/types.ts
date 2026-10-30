@@ -80,6 +80,7 @@ export interface QuestionCreateInput {
 
 export interface QuestionUpdateInput {
   statement?: string;
+  subjectId?: string;
   unitId?: string | null;
   lessonIds?: string[];
   type?: QuestionType;
@@ -98,10 +99,10 @@ export interface QuestionUpdateInput {
     concept: string;
     correctReason: string;
     sectionId?: string | null;
-  };
+  } | null;
   rubric?: {
     modelAnswer: string;
     criteria?: Prisma.InputJsonValue;
     maxScore?: number;
-  };
+  } | null;
 }

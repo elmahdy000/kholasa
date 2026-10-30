@@ -3,7 +3,7 @@ import { BrandLogo } from "@/components/ui/BrandLogo";
 
 export function SiteFooter() {
   return (
-    <footer className="bg-[#12263F] text-white py-16 sm:py-20 border-t border-[#1E3A5F]">
+    <footer className="bg-[#12263F] text-white pt-12 pb-28 sm:py-20 border-t border-[#1E3A5F]">
       <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-12 text-right">
           {/* Brand Column */}

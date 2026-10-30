@@ -34,7 +34,8 @@ export function AdminMobileHeader({
           <ThemeToggle className="h-11 w-11" />
           <button
             onClick={() => setIsCommandOpen(true)}
-            className="p-2 rounded-lg text-[#64748B] hover:text-[#0F172A] dark:hover:text-white"
+            aria-label="البحث في خدمات الإدارة"
+            className="min-h-11 min-w-11 flex items-center justify-center rounded-lg text-[#64748B] hover:text-[#0F172A] dark:hover:text-white"
           >
             <Search className="w-4 h-4" />
           </button>
@@ -42,6 +43,7 @@ export function AdminMobileHeader({
             onClick={() => setMobileMenuOpen((prev) => !prev)}
             className="p-2 rounded-lg bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[#0F172A] dark:text-[#F8FAFC]"
             aria-label="القائمة"
+            aria-expanded={mobileMenuOpen}
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>

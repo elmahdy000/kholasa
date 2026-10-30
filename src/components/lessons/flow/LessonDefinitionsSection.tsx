@@ -39,14 +39,14 @@ export function LessonDefinitionsSection({
           <div>
             <div className="flex items-center gap-2">
               <span className="text-[11px] font-bold uppercase tracking-wider text-[#059669] bg-[#059669]/15 px-2 py-0.5 rounded-md">
-                المحطة الثانية
+                قاموس المفاهيم
               </span>
               <h2 className="text-lg font-bold text-[#0F172A] dark:text-white">
-                2. التعريفات والمصطلحات المهمة
+                التعريفات والمصطلحات المهمة
               </h2>
             </div>
             <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8] mt-0.5">
-              قاموس المصطلحات والمفاهيم العلمية الأساسية مع إمكانية البحث والنسخ السريع
+              أهم المفاهيم اللي محتاج تفهمها وتحفظها كويس، تقدر تبحث فيهم وتنسخ أي تعريف بضغطة واحدة
             </p>
           </div>
         </div>

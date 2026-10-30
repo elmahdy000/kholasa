@@ -84,11 +84,12 @@ export class QuestionQueriesService {
     return prisma.question.findUnique({
       where: { id },
       include: {
-        subject: { select: { id: true, name: true, color: true } },
+        subject: { select: { id: true, name: true, color: true, schoolCategory: true, gradeId: true } },
         unit: { select: { id: true, title: true } },
         options: { orderBy: { order: "asc" } },
         explanation: true,
         rubric: true,
+        batch: { select: { id: true, fileName: true, fileType: true } },
         lessons: {
           include: {
             lesson: { select: { id: true, title: true } },

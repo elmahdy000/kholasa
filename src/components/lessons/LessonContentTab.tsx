@@ -31,23 +31,28 @@ export function LessonContentTab({
         </div>
       )}
 
-      {/* Learning Objectives */}
+      {/* Friendly Learning Points */}
       {content?.objectives && content.objectives.length > 0 && (
         <div className="p-6 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] space-y-4">
-          <h3 className="text-base font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
-            <Target className="w-5 h-5 text-[#800020]" />
-            <span>أهداف ومخرجات التعلم</span>
-          </h3>
+          <div>
+            <h3 className="text-base font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
+              <Target className="w-5 h-5 text-[#800020]" />
+              <span>هتتعلم إيه في الدرس دا؟</span>
+            </h3>
+            <p className="text-[12px] sm:text-[13px] text-[#64748B] dark:text-[#94A3B8] mt-1">
+              أهم النقاط والأفكار الأساسية اللي هتفهمها وتركز عليها النهاردة:
+            </p>
+          </div>
           <ul className="space-y-2">
             {content.objectives.map((obj, i) => (
               <li
                 key={i}
                 className="flex items-start gap-3 text-[13px] sm:text-sm font-medium text-[#0F172A] dark:text-[#F8FAFC] font-content"
               >
-                <div className="w-4 h-4 rounded bg-[#800020]/10 text-[#800020] flex items-center justify-center shrink-0 mt-1 text-[13px] font-bold">
+                <div className="w-5 h-5 rounded-full bg-[#800020]/10 text-[#800020] flex items-center justify-center shrink-0 mt-0.5 text-[12px] font-bold">
                   {i + 1}
                 </div>
-                <span>{obj}</span>
+                <span className="leading-relaxed">{obj}</span>
               </li>
             ))}
           </ul>
@@ -64,13 +69,13 @@ export function LessonContentTab({
               </div>
               <div>
                 <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-[#800020]/15 text-[#800020] dark:text-[#FB7185]">
-                  ملف الشرح والمذكرة الرسمية
+                  مذكرة الشرح الرسمية
                 </span>
                 <h3 className="text-base font-bold text-[#0F172A] dark:text-white mt-1">
-                  ملزمة الشرح وماتريال الدرس (PDF)
+                  مذكرة وملزمة الدرس (PDF)
                 </h3>
                 <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8] mt-0.5">
-                  تحتوي على التوضيحات التحريرية الشاملة والأمثلة المحلولة لدرس اليوم
+                  شرح مبسط ومرتب مع أهم الأمثلة التوضيحية لدرس اليوم، تقدر تقرأها مباشرة أو تنزلها
                 </p>
               </div>
             </div>

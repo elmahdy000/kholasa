@@ -334,6 +334,10 @@ export function QuestionWordImporter({
               modelAnswer: type === "ESSAY" ? cells[1] : undefined,
               isValid: statement.length > 3,
               validationNotes: [],
+              classificationConfidence: 1.0,
+              classificationReason: "استيراد جدولي صريح",
+              difficultyReason: "محدد من إعدادات الاستيراد",
+              reviewStatus: "APPROVED",
             });
           });
 

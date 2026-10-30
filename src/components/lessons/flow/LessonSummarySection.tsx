@@ -127,14 +127,14 @@ export function LessonSummarySection({
           <div>
             <div className="flex items-center gap-2">
               <span className="text-[11px] font-bold uppercase tracking-wider text-[#D97706] bg-[#D97706]/15 px-2 py-0.5 rounded-md">
-                المحطة الأولى
+                كبسولة المراجعة
               </span>
               <h2 className="text-lg font-bold text-[#0F172A] dark:text-white">
-                1. كبسولة الزتونة المركزة
+                أهم تريكات ونقاط الامتحان
               </h2>
             </div>
             <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8] mt-0.5">
-              أهم المفاهيم، البطاقات المصورة، وثيقة PDF، والتنبيهات الامتحانية الحاسمة في كبسولة سريعة
+              كبسولة مركزة للمفاهيم السريعة، المقارنات، والقوانين وتنبيهات الأخطاء الشائعة
             </p>
           </div>
         </div>

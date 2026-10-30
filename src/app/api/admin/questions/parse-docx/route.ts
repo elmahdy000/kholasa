@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getCurrentUser, canManageCurriculum } from "@/lib/auth";
+import { getCurrentUser, canManageQuestions } from "@/lib/auth";
 import {
   parseDocxBuffer,
   parsePdfBuffer,
@@ -12,7 +12,7 @@ import {
 export async function POST(req: Request) {
   try {
     const user = await getCurrentUser();
-    if (!user || !canManageCurriculum(user.role)) {
+    if (!user || !canManageQuestions(user.role)) {
       return NextResponse.json({ error: "غير مصرح لك باستيراد الأسئلة" }, { status: 403 });
     }
 
@@ -24,15 +24,50 @@ export async function POST(req: Request) {
       const textFallback = formData.get("text") as string | null;
 
       // Extract optional parsing parameters
+      const strategy = (formData.get("strategy") as "AUTO" | "MANUAL_REVIEW" | "FORCED") || undefined;
+      let allowedTypes: QuestionType[] | undefined;
+      const allowedTypesRaw = formData.get("allowedTypes") as string | null;
+      if (allowedTypesRaw) {
+        try {
+          const parsed = JSON.parse(allowedTypesRaw);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            allowedTypes = parsed.filter((t: any) => ["MCQ", "TRUE_FALSE", "ESSAY"].includes(t));
+          }
+        } catch {
+          // If comma-separated
+          const parts = allowedTypesRaw.split(",").map(s => s.trim().toUpperCase()) as QuestionType[];
+          allowedTypes = parts.filter(t => ["MCQ", "TRUE_FALSE", "ESSAY"].includes(t));
+        }
+      }
+
       const forcedType = (formData.get("type") as QuestionType) || undefined;
       const forcedDifficulty = (formData.get("difficulty") as QuestionDifficulty | "MIXED") || undefined;
       const schoolCategory = (formData.get("schoolCategory") as "ARABIC" | "LANGUAGES") || undefined;
 
       const parseOptions: ParseOptions = {
+        strategy: strategy && ["AUTO", "MANUAL_REVIEW", "FORCED"].includes(strategy) ? strategy : undefined,
+        allowedTypes: allowedTypes && allowedTypes.length > 0 ? allowedTypes : undefined,
         forcedType: forcedType && ["MCQ", "TRUE_FALSE", "ESSAY"].includes(forcedType) ? forcedType : undefined,
         forcedDifficulty: forcedDifficulty && ["EASY", "MEDIUM", "HARD", "MIXED"].includes(forcedDifficulty) ? forcedDifficulty : undefined,
         schoolCategory: schoolCategory && ["ARABIC", "LANGUAGES"].includes(schoolCategory) ? schoolCategory : undefined,
       };
+
+      const calculateStats = (questions: any[]) => ({
+        total: questions.length,
+        valid: questions.filter((q) => q.isValid).length,
+        invalid: questions.filter((q) => !q.isValid).length,
+        approved: questions.filter((q) => q.reviewStatus === "APPROVED").length,
+        needsChanges: questions.filter((q) => q.reviewStatus === "NEEDS_CHANGES").length,
+        pending: questions.filter((q) => q.reviewStatus === "PENDING").length,
+        excluded: questions.filter((q) => q.reviewStatus === "EXCLUDED").length,
+        duplicates: questions.filter((q) => q.isDuplicate).length,
+        mcq: questions.filter((q) => q.type === "MCQ").length,
+        trueFalse: questions.filter((q) => q.type === "TRUE_FALSE").length,
+        essay: questions.filter((q) => q.type === "ESSAY").length,
+        easy: questions.filter((q) => q.difficulty === "EASY").length,
+        medium: questions.filter((q) => q.difficulty === "MEDIUM").length,
+        hard: questions.filter((q) => q.difficulty === "HARD").length,
+      });
 
       if (file && file.size > 0) {
         const fileName = file.name.toLowerCase();
@@ -61,14 +96,7 @@ export async function POST(req: Request) {
             ? await parseDocxBuffer(buffer, parseOptions)
             : await parsePdfBuffer(buffer, parseOptions);
 
-          const stats = {
-            total: questions.length,
-            valid: questions.filter((q) => q.isValid).length,
-            invalid: questions.filter((q) => !q.isValid).length,
-            mcq: questions.filter((q) => q.type === "MCQ").length,
-            trueFalse: questions.filter((q) => q.type === "TRUE_FALSE").length,
-            essay: questions.filter((q) => q.type === "ESSAY").length,
-          };
+          const stats = calculateStats(questions);
 
           return NextResponse.json({
             success: true,
@@ -91,14 +119,7 @@ export async function POST(req: Request) {
         }
       } else if (textFallback && textFallback.trim().length > 0) {
         const questions = parseQuestionsFromText(textFallback, parseOptions);
-        const stats = {
-          total: questions.length,
-          valid: questions.filter((q) => q.isValid).length,
-          invalid: questions.filter((q) => !q.isValid).length,
-          mcq: questions.filter((q) => q.type === "MCQ").length,
-          trueFalse: questions.filter((q) => q.type === "TRUE_FALSE").length,
-          essay: questions.filter((q) => q.type === "ESSAY").length,
-        };
+        const stats = calculateStats(questions);
 
         return NextResponse.json({
           success: true,
@@ -120,6 +141,8 @@ export async function POST(req: Request) {
     const body = await req.json().catch(() => ({}));
     if (body.text) {
       const parseOptions: ParseOptions = {
+        strategy: body.strategy,
+        allowedTypes: Array.isArray(body.allowedTypes) ? body.allowedTypes : undefined,
         forcedType: body.type,
         forcedDifficulty: body.difficulty,
         schoolCategory: body.schoolCategory,
@@ -130,9 +153,17 @@ export async function POST(req: Request) {
         total: questions.length,
         valid: questions.filter((q) => q.isValid).length,
         invalid: questions.filter((q) => !q.isValid).length,
+        approved: questions.filter((q) => q.reviewStatus === "APPROVED").length,
+        needsChanges: questions.filter((q) => q.reviewStatus === "NEEDS_CHANGES").length,
+        pending: questions.filter((q) => q.reviewStatus === "PENDING").length,
+        excluded: questions.filter((q) => q.reviewStatus === "EXCLUDED").length,
+        duplicates: questions.filter((q) => q.isDuplicate).length,
         mcq: questions.filter((q) => q.type === "MCQ").length,
         trueFalse: questions.filter((q) => q.type === "TRUE_FALSE").length,
         essay: questions.filter((q) => q.type === "ESSAY").length,
+        easy: questions.filter((q) => q.difficulty === "EASY").length,
+        medium: questions.filter((q) => q.difficulty === "MEDIUM").length,
+        hard: questions.filter((q) => q.difficulty === "HARD").length,
       };
 
       return NextResponse.json({

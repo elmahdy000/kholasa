@@ -54,7 +54,11 @@ export class UserMutationsService {
         systemId: systemId || null,
         gradeId: gradeId || null,
       },
-      include: {
+      select: {
+        id: true, name: true, phone: true, email: true, role: true,
+        systemId: true, gradeId: true, createdAt: true,
+        attempts: { select: { id: true, score: true, percentage: true } },
+        progress: { select: { id: true, isCompleted: true } },
         system: { select: { id: true, name: true } },
         grade: { select: { id: true, name: true } },
       },
@@ -119,7 +123,9 @@ export class UserMutationsService {
         ...(data.systemId !== undefined ? { systemId: data.systemId || null } : {}),
         ...(data.gradeId !== undefined ? { gradeId: data.gradeId || null } : {}),
       },
-      include: {
+      select: {
+        id: true, name: true, phone: true, email: true, role: true,
+        systemId: true, gradeId: true, createdAt: true,
         system: { select: { id: true, name: true } },
         grade: { select: { id: true, name: true } },
       },

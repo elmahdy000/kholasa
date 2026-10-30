@@ -87,7 +87,7 @@ export function LessonEditorFooter({
           type="button"
           onClick={onSave}
           disabled={isSaving || isLoading}
-          className="h-11 px-5 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] font-bold flex items-center gap-2 shadow-sm transition-transform active:opacity-80 disabled:opacity-50 cursor-pointer"
+          className="h-11 px-5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-[13px] font-bold flex items-center gap-2 shadow-sm transition-transform active:opacity-80 disabled:opacity-50 cursor-pointer"
         >
           <Save className="w-4 h-4" />
           <span>حفظ كافة التعديلات</span>

@@ -65,6 +65,8 @@ export interface Subject {
 }
 
 export interface QuestionBankManagerClientProps {
+  openCreate?: boolean;
+  initialSubjectId?: string;
   initialQuestions: Question[];
   subjects: Subject[];
   grades?: Grade[];

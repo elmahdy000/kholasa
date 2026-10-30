@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser, canManageExams } from "@/lib/auth";
 import { ExamService } from "@/services";
+import { jsonError } from "@/lib/http";
 
 export async function GET(req: Request) {
   try {
@@ -46,7 +47,7 @@ export async function POST(req: Request) {
         ? Number(body.randomQuestionCount)
         : 0;
 
-    if (!title?.trim() || !subjectId) {
+    if (typeof title !== "string" || !title.trim() || typeof subjectId !== "string" || !subjectId) {
       return NextResponse.json(
         { error: "يرجى تحديد عنوان الامتحان والمادة الدراسية" },
         { status: 400 }
@@ -81,7 +82,6 @@ export async function POST(req: Request) {
       },
     });
   } catch (error) {
-    console.error("Failed to create exam:", error);
-    return NextResponse.json({ error: "تعذر إنشاء الامتحان" }, { status: 500 });
+    return jsonError(error);
   }
 }

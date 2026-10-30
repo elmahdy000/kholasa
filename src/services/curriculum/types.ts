@@ -50,11 +50,11 @@ export interface LessonUpdateInput {
     pdfUrl?: string | null;
     images?: string[];
     keyConcepts?: string[];
-    definitions?: string[];
-    formulas?: string[];
-    comparisons?: string[];
+    definitions?: unknown;
+    formulas?: unknown;
+    comparisons?: unknown;
     examTips?: string[];
-    commonMistakes?: string[];
-    checklist?: string[];
+    commonMistakes?: unknown;
+    checklist?: unknown;
   };
 }

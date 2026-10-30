@@ -68,7 +68,7 @@ export function AdminSidebar({
                 </div>
                 <span className="text-[11px] font-medium text-[#059669] flex items-center gap-1 mt-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#059669] animate-pulse" />
-                  <span>النظام متصل</span>
+                  <span>مساحة الإدارة</span>
                 </span>
               </div>
             )}
@@ -85,6 +85,7 @@ export function AdminSidebar({
 
           {/* Close Mobile Menu Button */}
           <button
+            aria-label="إغلاق القائمة"
             onClick={() => setMobileMenuOpen(false)}
             className="md:hidden p-2 rounded-md text-[#64748B] hover:text-[#64748B]"
           >

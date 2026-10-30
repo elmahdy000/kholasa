@@ -1,8 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import type { LessonData, LessonEditorTabType, UnitInfo, CommonMistakeItem } from "./types";
+import type {
+  LessonData,
+  LessonEditorTabType,
+  UnitInfo,
+  DefinitionItem,
+  LessonQuestionItem,
+  CommonMistakeItem,
+} from "./types";
 
 interface UseLessonEditorProps {
   lessonId: string;
@@ -20,7 +27,7 @@ export function useLessonEditor({
   onLessonDeleted,
 }: UseLessonEditorProps) {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<LessonEditorTabType>("media");
+  const [activeTab, setActiveTab] = useState<LessonEditorTabType>("mindmap");
 
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -36,9 +43,12 @@ export function useLessonEditor({
   const [order, setOrder] = useState<number>(0);
   const [durationMinutes, setDurationMinutes] = useState<number>(15);
   const [isPublished, setIsPublished] = useState(true);
-  const [unitInfo, setUnitInfo] = useState<UnitInfo>({ unitTitle: "", subjectName: "" });
+  const [unitInfo, setUnitInfo] = useState<UnitInfo>({
+    unitTitle: "",
+    subjectName: "",
+  });
 
-  // Media State
+  // Media & Video State
   const [videoUrl, setVideoUrl] = useState("");
   const [audioUrl, setAudioUrl] = useState("");
   const [contentPdfUrl, setContentPdfUrl] = useState("");
@@ -53,6 +63,13 @@ export function useLessonEditor({
   const [mindMapImages, setMindMapImages] = useState<string[]>([]);
   const [newImageUrl, setNewImageUrl] = useState("");
   const [previewLightboxImage, setPreviewLightboxImage] = useState<string | null>(null);
+
+  // Definitions State (المصطلحات والتعريفات)
+  const [definitions, setDefinitions] = useState<DefinitionItem[]>([]);
+
+  // Questions State (أسئلة الدرس)
+  const [questions, setQuestions] = useState<LessonQuestionItem[]>([]);
+  const [isLoadingQuestions, setIsLoadingQuestions] = useState(false);
 
   // Content & Objectives State
   const [bodyText, setBodyText] = useState("");
@@ -71,6 +88,32 @@ export function useLessonEditor({
   const [newMistake, setNewMistake] = useState("");
   const [newCorrection, setNewCorrection] = useState("");
 
+  // Fetch Questions for this lesson
+  const fetchLessonQuestions = useCallback(() => {
+    if (!lessonId) return;
+    setIsLoadingQuestions(true);
+    fetch(`/api/admin/questions?lessonId=${lessonId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data.questions)) {
+          setQuestions(
+            data.questions.map((q: any) => ({
+              id: q.id,
+              statement: q.statement,
+              type: q.type,
+              difficulty: q.difficulty,
+              options: q.options || [],
+              explanation: q.explanation || null,
+              rubric: q.rubric || null,
+            }))
+          );
+        }
+      })
+      .catch((err) => console.error("Error fetching lesson questions:", err))
+      .finally(() => setIsLoadingQuestions(false));
+  }, [lessonId]);
+
+  // Load complete lesson data on mount
   useEffect(() => {
     if (!lessonId) return;
 
@@ -100,9 +143,16 @@ export function useLessonEditor({
 
         if (data.unit) {
           setUnitInfo({
+            unitId: data.unit.id || data.unitId,
             unitTitle: data.unit.title || "الوحدة",
+            subjectId: data.unit.subject?.id,
             subjectName: data.unit.subject?.name || "المادة",
             subjectColor: data.unit.subject?.color,
+            schoolCategory: data.unit.subject?.schoolCategory,
+            gradeId: data.unit.subject?.grade?.id,
+            gradeName: data.unit.subject?.grade?.name,
+            trackId: data.unit.subject?.track?.id,
+            trackName: data.unit.subject?.track?.name,
           });
         }
 
@@ -116,6 +166,7 @@ export function useLessonEditor({
         setMindMapDescription(data.mindMap?.description || "");
         setMindMapImages(Array.isArray(data.mindMap?.images) ? data.mindMap.images : []);
 
+        // Load Definitions from summary
         if (data.summary) {
           setSummaryPdfUrl(data.summary.pdfUrl || "");
           setSummaryImages(Array.isArray(data.summary.images) ? data.summary.images : []);
@@ -124,6 +175,42 @@ export function useLessonEditor({
           setCommonMistakes(
             Array.isArray(data.summary.commonMistakes) ? data.summary.commonMistakes : []
           );
+
+          if (Array.isArray(data.summary.definitions)) {
+            const formatted = data.summary.definitions
+              .map((d: any) => {
+                if (typeof d === "string") {
+                  const parts = d.split(":");
+                  return { term: parts[0]?.trim() || "", meaning: parts.slice(1).join(":")?.trim() || "" };
+                }
+                if (d && (d.term || d.meaning)) {
+                  return { term: String(d.term || "").trim(), meaning: String(d.meaning || "").trim() };
+                }
+                return null;
+              })
+              .filter(Boolean) as DefinitionItem[];
+            setDefinitions(formatted);
+          }
+        }
+
+        // Load Questions from lesson include or via fetch
+        if (Array.isArray(data.questions) && data.questions.length > 0) {
+          setQuestions(
+            data.questions
+              .map((ql: any) => ql.question)
+              .filter(Boolean)
+              .map((q: any) => ({
+                id: q.id,
+                statement: q.statement,
+                type: q.type,
+                difficulty: q.difficulty,
+                options: q.options || [],
+                explanation: q.explanation || null,
+                rubric: q.rubric || null,
+              }))
+          );
+        } else {
+          fetchLessonQuestions();
         }
 
         setIsLoading(false);
@@ -139,7 +226,7 @@ export function useLessonEditor({
       isMounted = false;
       clearTimeout(timer);
     };
-  }, [lessonId]);
+  }, [lessonId, fetchLessonQuestions]);
 
   const handleMediaUpload = async (
     file: File,
@@ -182,6 +269,7 @@ export function useLessonEditor({
     }
   };
 
+  // Mindmap Handlers
   const handleAddImage = () => {
     const trimmed = newImageUrl.trim();
     if (!trimmed) return;
@@ -205,6 +293,35 @@ export function useLessonEditor({
     });
   };
 
+  // Definitions Handlers
+  const handleAddDefinition = (newTerm: string, newMeaning: string) => {
+    if (!newTerm.trim() || !newMeaning.trim()) return;
+    setDefinitions((prev) => [...prev, { term: newTerm.trim(), meaning: newMeaning.trim() }]);
+  };
+
+  const handleRemoveDefinition = (index: number) => {
+    setDefinitions((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleUpdateDefinition = (index: number, updatedTerm: string, updatedMeaning: string) => {
+    setDefinitions((prev) =>
+      prev.map((item, i) => (i === index ? { term: updatedTerm, meaning: updatedMeaning } : item))
+    );
+  };
+
+  // Content Objectives Handlers
+  const handleAddObjective = () => {
+    const trimmed = newObjective.trim();
+    if (!trimmed) return;
+    setObjectives((prev) => [...prev, trimmed]);
+    setNewObjective("");
+  };
+
+  const handleRemoveObjective = (index: number) => {
+    setObjectives((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  // Summary Handlers
   const handleAddSummaryImage = () => {
     const trimmed = newSummaryImageUrl.trim();
     if (!trimmed) return;
@@ -226,17 +343,6 @@ export function useLessonEditor({
       copy[targetIndex] = temp;
       return copy;
     });
-  };
-
-  const handleAddObjective = () => {
-    const trimmed = newObjective.trim();
-    if (!trimmed) return;
-    setObjectives((prev) => [...prev, trimmed]);
-    setNewObjective("");
-  };
-
-  const handleRemoveObjective = (index: number) => {
-    setObjectives((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleAddKeyConcept = () => {
@@ -275,6 +381,7 @@ export function useLessonEditor({
     setCommonMistakes((prev) => prev.filter((_, i) => i !== index));
   };
 
+  // Main Save Handler
   const handleSave = async () => {
     if (!title.trim()) {
       setStatusMessage({ type: "error", text: "عنوان الدرس مطلوب" });
@@ -305,6 +412,7 @@ export function useLessonEditor({
         pdfUrl: summaryPdfUrl.trim() || null,
         images: summaryImages,
         keyConcepts,
+        definitions, // Saved directly to database
         examTips,
         commonMistakes,
       },
@@ -322,7 +430,7 @@ export function useLessonEditor({
         throw new Error(data.error || "فشل حفظ الدرس");
       }
 
-      setStatusMessage({ type: "success", text: "تم حفظ كافة التعديلات بنجاح" });
+      setStatusMessage({ type: "success", text: "تم حفظ الخريطة الذهنية والتعريفات ومحتوى الدرس بنجاح! ✨" });
       if (data.lesson && onLessonUpdated) {
         onLessonUpdated(data.lesson);
       }
@@ -340,10 +448,9 @@ export function useLessonEditor({
     }
   };
 
+  // Delete Lesson Handler
   const handleDelete = async () => {
     setIsDeleting(true);
-    setStatusMessage(null);
-
     try {
       const res = await fetch(`/api/admin/lessons/${lessonId}`, {
         method: "DELETE",
@@ -351,7 +458,7 @@ export function useLessonEditor({
 
       const data = await res.json();
       if (!res.ok || data.error) {
-        throw new Error(data.error || "فشل حذف الدرس");
+        throw new Error(data.error || "تعذر حذف الدرس");
       }
 
       if (onLessonDeleted) {
@@ -364,13 +471,10 @@ export function useLessonEditor({
         onClose();
       }
     } catch (err) {
-      console.error(err);
-      setStatusMessage({
-        type: "error",
-        text: err instanceof Error ? err.message : "حدث خطأ أثناء حذف الدرس",
-      });
+      alert(err instanceof Error ? err.message : "فشل حذف الدرس");
     } finally {
       setIsDeleting(false);
+      setShowDeleteConfirm(false);
     }
   };
 
@@ -410,6 +514,12 @@ export function useLessonEditor({
     setNewImageUrl,
     previewLightboxImage,
     setPreviewLightboxImage,
+    definitions,
+    setDefinitions,
+    questions,
+    setQuestions,
+    isLoadingQuestions,
+    fetchLessonQuestions,
     bodyText,
     setBodyText,
     objectives,
@@ -441,6 +551,9 @@ export function useLessonEditor({
     handleAddImage,
     handleRemoveImage,
     handleMoveImage,
+    handleAddDefinition,
+    handleRemoveDefinition,
+    handleUpdateDefinition,
     handleAddObjective,
     handleRemoveObjective,
     handleAddKeyConcept,

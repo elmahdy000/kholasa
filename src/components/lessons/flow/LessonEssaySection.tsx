@@ -38,14 +38,14 @@ export function LessonEssaySection({
           <div>
             <div className="flex items-center gap-2">
               <span className="text-[11px] font-bold uppercase tracking-wider text-[#7C3AED] bg-[#7C3AED]/15 px-2 py-0.5 rounded-md">
-                المحطة الرابعة
+                تدريب كتابي
               </span>
               <h2 className="text-lg font-bold text-[#0F172A] dark:text-white">
-                4. أسئلة مقالي وتفكير تحليلي
+                الأسئلة المقالية
               </h2>
             </div>
             <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8] mt-0.5">
-              درب نفسك على صياغة الإجابة المنهجية ثم قارنها بنموذج التصحيح ومعايير الدرجات
+              درب نفسك واكتب إجابتك هنا، وقارنها فوراً بنموذج الإجابة الرسمي وتوزيع الدرجات
             </p>
           </div>
         </div>

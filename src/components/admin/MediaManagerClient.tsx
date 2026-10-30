@@ -20,6 +20,7 @@ export function MediaManagerClient({ initialFiles }: MediaManagerClientProps) {
   const [filterType, setFilterType] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [dragActive, setDragActive] = useState(false);
   const [copiedUrl, setCopiedUrl] = useState<string | null>(null);
   const [playingAudio, setPlayingAudio] = useState<string | null>(null);
@@ -42,14 +43,19 @@ export function MediaManagerClient({ initialFiles }: MediaManagerClientProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  const handleCopy = (url: string) => {
-    const fullUrl = window.location.origin + url;
-    navigator.clipboard.writeText(fullUrl);
-    setCopiedUrl(url);
-    setTimeout(() => setCopiedUrl(null), 2000);
+  const handleCopy = async (url: string) => {
+    try {
+      await navigator.clipboard.writeText(new URL(url, window.location.origin).href);
+      setCopiedUrl(url);
+      setTimeout(() => setCopiedUrl(null), 2000);
+    } catch {
+      setError("تعذر نسخ الرابط. تحقق من إذن الحافظة وحاول مرة أخرى.");
+    }
   };
 
   const handleFileUpload = async (selectedFile: File) => {
+    if (uploading) return;
+    setError(null);
     setUploading(true);
     try {
       const formData = new FormData();
@@ -66,11 +72,12 @@ export function MediaManagerClient({ initialFiles }: MediaManagerClientProps) {
       // Refresh files list
       const listRes = await fetch("/api/admin/upload");
       const listData = await listRes.json();
+      if (!listRes.ok) throw new Error(listData.error || "تم الرفع، لكن تعذر تحديث قائمة الملفات. أعد تحميل الصفحة.");
       if (listData.files) {
         setFiles(listData.files);
       }
     } catch (err: any) {
-      alert(err.message || "فشل رفع الملف");
+      setError(err.message || "فشل رفع الملف");
     } finally {
       setUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
@@ -98,15 +105,20 @@ export function MediaManagerClient({ initialFiles }: MediaManagerClientProps) {
     });
   };
 
-  const toggleAudio = (url: string) => {
+  const toggleAudio = async (url: string) => {
     if (playingAudio === url) {
       audioRef.current?.pause();
       setPlayingAudio(null);
     } else {
       if (audioRef.current) {
         audioRef.current.src = url;
-        audioRef.current.play();
-        setPlayingAudio(url);
+        try {
+          await audioRef.current.play();
+          setPlayingAudio(url);
+        } catch {
+          setPlayingAudio(null);
+          setError("تعذر تشغيل الملف الصوتي. تحقق من الملف وحاول مرة أخرى.");
+        }
       }
     }
   };
@@ -141,6 +153,7 @@ export function MediaManagerClient({ initialFiles }: MediaManagerClientProps) {
         <div className="flex items-center gap-2.5 flex-wrap">
           <input
             type="file"
+            accept=".png,.jpg,.jpeg,.webp,.gif,.mp3,.m4a,.aac,.ogg,.wav,.pdf,.docx"
             ref={fileInputRef}
             onChange={(e) => {
               if (e.target.files?.[0]) handleFileUpload(e.target.files[0]);
@@ -171,8 +184,19 @@ export function MediaManagerClient({ initialFiles }: MediaManagerClientProps) {
       </div>
 
       {/* Drag & Drop Upload Zone */}
+      {error && <p role="alert" className="text-sm text-red-600 dark:text-red-400">{error}</p>}
       <div
-        onClick={() => fileInputRef.current?.click()}
+        role="button"
+        tabIndex={uploading ? -1 : 0}
+        aria-disabled={uploading}
+        aria-label="رفع ملف"
+        onClick={() => !uploading && fileInputRef.current?.click()}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            if (!uploading) fileInputRef.current?.click();
+          }
+        }}
         onDragOver={(e) => {
           e.preventDefault();
           setDragActive(true);
@@ -199,7 +223,7 @@ export function MediaManagerClient({ initialFiles }: MediaManagerClientProps) {
           انقر هنا لرفع ملف أو اسحبه وأفلته مباشرة
         </h3>
         <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8] mt-1 font-mono">
-          يدعم MP3, M4A, WAV (صوتيات) · PNG, JPG, WEBP, SVG (خرائط وصور) · PDF (ملخصات) · MP4, WebM (فيديو) · الحد الأقصى 50MB
+          يدعم MP3, M4A, AAC, OGG, WAV (صوتيات) · PNG, JPG, WEBP, GIF (صور) · PDF, DOCX (مستندات) · الحد الأقصى 50MB
         </p>
       </div>
 

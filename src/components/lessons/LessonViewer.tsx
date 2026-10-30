@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { BookOpen, Graph, BookmarkSimple } from "@phosphor-icons/react";
+import { BookOpen, Graph, BookmarkSimple, CheckCircle } from "@phosphor-icons/react";
 import {
   LessonViewerProps,
   FlowFilterType,
@@ -43,11 +43,18 @@ export function LessonViewer({
   initialIsCompleted,
   userId,
 }: LessonViewerProps) {
-  // Navigation & Filter Tabs
+  // 4 Main Student Navigation Tabs
   const [activeTab, setActiveTab] = useState<
-    "summary" | "content" | "mindmap" | "questions"
-  >("summary");
-  const [flowFilter, setFlowFilter] = useState<FlowFilterType>("all");
+    "content" | "mindmap" | "definitions" | "questions"
+  >("content");
+
+  // Question Filters (Difficulty & Type)
+  const [difficultyFilter, setDifficultyFilter] = useState<
+    "ALL" | "EASY" | "MEDIUM" | "HARD"
+  >("ALL");
+  const [questionTypeFilter, setQuestionTypeFilter] = useState<
+    "ALL" | "MCQ" | "TRUE_FALSE" | "ESSAY"
+  >("ALL");
 
   // Definitions Search & Copy
   const [definitionSearch, setDefinitionSearch] = useState("");
@@ -87,10 +94,21 @@ export function LessonViewer({
     (lesson.summary?.checklist as ChecklistItem[]) || []
   );
 
-  // Categorized Question Lists for Fast 6-Step Flow
-  const mcqQuestions = lesson.questions.filter((q) => q.question.type === "MCQ");
-  const tfQuestions = lesson.questions.filter((q) => q.question.type === "TRUE_FALSE");
-  const essayQuestions = lesson.questions.filter((q) => q.question.type === "ESSAY");
+  // Total Question Counts for Badges & Filters
+  const totalQuestionsCount = lesson.questions.length;
+  const easyCount = lesson.questions.filter((q) => q.question.difficulty === "EASY").length;
+  const mediumCount = lesson.questions.filter((q) => q.question.difficulty === "MEDIUM").length;
+  const hardCount = lesson.questions.filter((q) => q.question.difficulty === "HARD").length;
+
+  // Questions filtered by active difficulty level
+  const filteredByDifficulty = lesson.questions.filter((q) => {
+    if (difficultyFilter === "ALL") return true;
+    return q.question.difficulty === difficultyFilter;
+  });
+
+  const mcqQuestions = filteredByDifficulty.filter((q) => q.question.type === "MCQ");
+  const tfQuestions = filteredByDifficulty.filter((q) => q.question.type === "TRUE_FALSE");
+  const essayQuestions = filteredByDifficulty.filter((q) => q.question.type === "ESSAY");
   const definitions = (lesson.summary?.definitions as Definition[]) || [];
   const keyConcepts = (lesson.summary?.keyConcepts as string[]) || [];
   const objectivesList =
@@ -303,30 +321,34 @@ export function LessonViewer({
         }}
       />
 
-      {/* 3. Main Navigation Tabs */}
+      {/* 3. Main Navigation Tabs (4 Clear Student Tabs) */}
       <div className="p-1 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/80 border border-[#E2E8F0]/80 dark:border-[#334155]/80 flex items-center gap-1 overflow-x-auto scrollbar-none">
         {[
+          { id: "content", label: "شرح الدرس", icon: BookOpen },
+          { id: "mindmap", label: "الملخص الذهني", icon: Graph },
           {
-            id: "summary",
-            label: "الزتونة وبنك الأسئلة السريع",
+            id: "definitions",
+            label: "التعريفات المهمة",
             icon: BookmarkSimple,
-            badge: "سريع ومميز",
+            badge: definitions.length > 0 ? `${definitions.length}` : undefined,
           },
-          { id: "content", label: "الشرح والتفكيك", icon: BookOpen },
-          { id: "mindmap", label: "خريطة المفاهيم", icon: Graph },
+          {
+            id: "questions",
+            label: "تدريبات وبنك الأسئلة",
+            icon: CheckCircle,
+            badge: totalQuestionsCount > 0 ? `${totalQuestionsCount}` : undefined,
+          },
         ].map((tab) => {
-          const isSelected =
-            activeTab === tab.id ||
-            (tab.id === "summary" && activeTab === "questions");
+          const isSelected = activeTab === tab.id;
           const Icon = tab.icon;
           return (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`flex-1 min-w-[140px] py-2.5 px-3 rounded-lg text-[13px] sm:text-sm font-bold flex items-center justify-center gap-2 transition-all ${
+              className={`flex-1 min-w-[130px] sm:min-w-[140px] py-2.5 px-3 rounded-lg text-[13px] sm:text-sm font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
                 isSelected
                   ? "bg-[#800020] text-white shadow-sm"
-                  : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
+                  : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white hover:bg-white/50 dark:hover:bg-[#334155]/50"
               }`}
             >
               <Icon
@@ -334,12 +356,12 @@ export function LessonViewer({
                 weight={isSelected ? "fill" : "bold"}
               />
               <span>{tab.label}</span>
-              {"badge" in tab && (
+              {"badge" in tab && tab.badge && (
                 <span
-                  className={`text-[11px] px-1.5 py-0.5 rounded-full font-bold ${
+                  className={`text-[11px] px-1.5 py-0.5 rounded-full font-bold font-mono ${
                     isSelected
                       ? "bg-white/20 text-white"
-                      : "bg-[#059669]/10 text-[#059669]"
+                      : "bg-[#800020]/10 text-[#800020] dark:bg-[#FB7185]/20 dark:text-[#FB7185]"
                   }`}
                 >
                   {tab.badge}
@@ -350,7 +372,7 @@ export function LessonViewer({
         })}
       </div>
 
-      {/* TAB 1: CONTENT (الشرح والتفكيك) */}
+      {/* TAB 1: CONTENT (شرح الدرس) */}
       {activeTab === "content" && (
         <LessonContentTab
           content={lesson.content}
@@ -359,106 +381,200 @@ export function LessonViewer({
         />
       )}
 
-      {/* TAB 2: UNIFIED 6-STEP FAST LEARNING FLOW (الزتونة وبنك الأسئلة السريع) */}
-      {(activeTab === "summary" || activeTab === "questions") && (
+      {/* TAB 2: MIND MAP (الملخص الذهني) */}
+      {activeTab === "mindmap" && (
+        <LessonMindMapTab mindMap={lesson.mindMap} />
+      )}
+
+      {/* TAB 3: DEFINITIONS & SUMMARY CAPSULE (التعريفات والمفاهيم المهمة) */}
+      {activeTab === "definitions" && (
         <div className="space-y-8 print-content">
-          {/* Quick-Jump Navigation Dock */}
-          <LessonFlowDock
-            flowFilter={flowFilter}
-            definitionsCount={definitions.length}
-            mcqCount={mcqQuestions.length}
-            essayCount={essayQuestions.length}
-            objectivesCount={objectivesList.length}
-            tfCount={tfQuestions.length}
-            onFilterChange={setFlowFilter}
+          <LessonDefinitionsSection
+            definitions={definitions}
+            filteredDefinitions={filteredDefinitions}
+            definitionSearch={definitionSearch}
+            copiedDefinition={copiedDefinition}
+            onSearchChange={setDefinitionSearch}
+            onClearSearch={() => setDefinitionSearch("")}
+            onCopyDefinition={handleCopyDefinition}
           />
 
-          {/* 1. الزتونة (The Golden Core Summary) */}
-          {(flowFilter === "all" || flowFilter === "summary") && (
-            <LessonSummarySection
-              summary={lesson.summary}
-              keyConcepts={keyConcepts}
-              formulas={formulas}
-              comparisons={comparisons}
-              examTips={examTips}
-              commonMistakes={commonMistakes}
-              checklist={checklist}
-              onToggleChecklistItem={toggleChecklistItem}
-            />
-          )}
-
-          {/* 2. التعريفات المهمة (Essential Definitions & Glossary) */}
-          {(flowFilter === "all" || flowFilter === "definitions") && (
-            <LessonDefinitionsSection
-              definitions={definitions}
-              filteredDefinitions={filteredDefinitions}
-              definitionSearch={definitionSearch}
-              copiedDefinition={copiedDefinition}
-              onSearchChange={setDefinitionSearch}
-              onClearSearch={() => setDefinitionSearch("")}
-              onCopyDefinition={handleCopyDefinition}
-            />
-          )}
-
-          {/* 3. أسئلة اختيار من متعدد (Multiple Choice Questions - MCQ) */}
-          {(flowFilter === "all" || flowFilter === "mcq") && (
-            <LessonMcqSection
-              questions={mcqQuestions}
-              questionAnswers={questionAnswers}
-              onSelectOption={handleSelectOption}
-            />
-          )}
-
-          {/* 4. أسئلة مقالي (Essay & Analytical Questions) */}
-          {(flowFilter === "all" || flowFilter === "essay") && (
-            <LessonEssaySection
-              questions={essayQuestions}
-              essayDrafts={essayDrafts}
-              revealedEssays={revealedEssays}
-              essaySelfScores={essaySelfScores}
-              onDraftChange={(qId, draft) =>
-                setEssayDrafts((prev) => ({ ...prev, [qId]: draft }))
-              }
-              onToggleReveal={(qId) =>
-                setRevealedEssays((prev) => ({
-                  ...prev,
-                  [qId]: !prev[qId],
-                }))
-              }
-              onSelectScore={(qId, score) =>
-                setEssaySelfScores((prev) => ({ ...prev, [qId]: score }))
-              }
-            />
-          )}
-
-          {/* 5. أسئلة تقييمات (Self-Assessment & Mastery Ratings) */}
-          {(flowFilter === "all" || flowFilter === "assessments") && (
-            <LessonAssessmentSection
-              objectivesList={objectivesList}
-              masteryRatings={masteryRatings}
-              readinessPercentage={readinessPercentage}
-              masteredCount={masteredCount}
-              reviewCount={reviewCount}
-              onRatingChange={(idx, rating) =>
-                setMasteryRatings((prev) => ({ ...prev, [idx]: rating }))
-              }
-            />
-          )}
-
-          {/* 6. أسئلة صح وغلط (True / False Fast Sprint) */}
-          {(flowFilter === "all" || flowFilter === "true_false") && (
-            <LessonTrueFalseSection
-              questions={tfQuestions}
-              questionAnswers={questionAnswers}
-              onSelectOption={handleSelectOption}
-            />
-          )}
+          <LessonSummarySection
+            summary={lesson.summary}
+            keyConcepts={keyConcepts}
+            formulas={formulas}
+            comparisons={comparisons}
+            examTips={examTips}
+            commonMistakes={commonMistakes}
+            checklist={checklist}
+            onToggleChecklistItem={toggleChecklistItem}
+          />
         </div>
       )}
 
-      {/* TAB 3: MIND MAP (الخرائط الذهنية المصورة) */}
-      {activeTab === "mindmap" && (
-        <LessonMindMapTab mindMap={lesson.mindMap} />
+      {/* TAB 4: PRACTICE QUESTIONS WITH DIFFICULTY FILTER (تدريبات وبنك أسئلة الدرس) */}
+      {activeTab === "questions" && (
+        <div className="space-y-6 print-content">
+          {/* Difficulty & Type Filter Dock */}
+          <div className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] shadow-sm space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#E2E8F0]/80 dark:border-[#334155]/80 pb-4">
+              <div>
+                <h3 className="text-base sm:text-lg font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
+                  <CheckCircle className="w-5 h-5 text-[#800020] dark:text-[#FB7185]" weight="fill" />
+                  <span>تدريبات وبنك أسئلة الدرس</span>
+                </h3>
+                <p className="text-[12px] sm:text-[13px] text-[#64748B] dark:text-[#94A3B8] mt-0.5">
+                  تدرج في الحل من المباشر للمتقدم، وجرب كل أنواع الأسئلة مع التصحيح الفوري
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2 self-start sm:self-auto">
+                <span className="px-3 py-1 rounded-xl bg-[#800020]/10 text-[#800020] dark:bg-[#800020]/30 dark:text-[#FB7185] text-xs font-bold font-mono">
+                  {filteredByDifficulty.length} من {totalQuestionsCount} سؤال
+                </span>
+              </div>
+            </div>
+
+            {/* Filter by Difficulty */}
+            <div className="space-y-2">
+              <span className="text-[12px] font-bold text-[#64748B] dark:text-[#94A3B8] block">
+                مستوى الصعوبة:
+              </span>
+              <div className="flex flex-wrap items-center gap-2">
+                {[
+                  { id: "ALL", label: "كل المستويات", count: totalQuestionsCount },
+                  { id: "EASY", label: "سهل ومباشر", count: easyCount },
+                  { id: "MEDIUM", label: "متوسط", count: mediumCount },
+                  { id: "HARD", label: "متقدم وللتفوق", count: hardCount },
+                ].map((item) => {
+                  const isActive = difficultyFilter === item.id;
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => setDifficultyFilter(item.id as any)}
+                      className={`px-3 py-1.5 rounded-xl text-xs sm:text-[13px] font-bold transition-all flex items-center gap-2 border cursor-pointer ${
+                        isActive
+                          ? "bg-[#800020] text-white border-[#800020] shadow-sm"
+                          : "bg-[#F8FAFC] dark:bg-[#1E293B] text-[#64748B] dark:text-[#94A3B8] border-[#E2E8F0] dark:border-[#334155] hover:border-[#800020]/40"
+                      }`}
+                    >
+                      <span>{item.label}</span>
+                      <span
+                        className={`text-[11px] px-1.5 py-0.5 rounded-md font-mono ${
+                          isActive
+                            ? "bg-white/20 text-white"
+                            : "bg-black/5 dark:bg-white/10 text-inherit"
+                        }`}
+                      >
+                        {item.count}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Filter by Question Type */}
+            <div className="space-y-2 pt-1">
+              <span className="text-[12px] font-bold text-[#64748B] dark:text-[#94A3B8] block">
+                نوع السؤال:
+              </span>
+              <div className="flex flex-wrap items-center gap-2">
+                {[
+                  { id: "ALL", label: "جميع الأنواع", count: filteredByDifficulty.length },
+                  { id: "MCQ", label: "اختيار من متعدد", count: mcqQuestions.length },
+                  { id: "TRUE_FALSE", label: "صح وغلط", count: tfQuestions.length },
+                  { id: "ESSAY", label: "أسئلة مقالية", count: essayQuestions.length },
+                ].map((item) => {
+                  const isActive = questionTypeFilter === item.id;
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => setQuestionTypeFilter(item.id as any)}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 border cursor-pointer ${
+                        isActive
+                          ? "bg-[#0F172A] text-white dark:bg-white dark:text-[#0F172A] border-transparent shadow-sm"
+                          : "bg-white dark:bg-[#0F172A] text-[#64748B] dark:text-[#94A3B8] border-[#E2E8F0] dark:border-[#334155] hover:text-[#0F172A] dark:hover:text-white"
+                      }`}
+                    >
+                      <span>{item.label}</span>
+                      <span className="text-[11px] font-mono opacity-80">({item.count})</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          {/* Questions Rendered */}
+          {filteredByDifficulty.length === 0 ? (
+            <div className="py-14 px-6 rounded-2xl bg-white dark:bg-[#0F172A] border border-dashed border-[#E2E8F0] dark:border-[#334155] text-center space-y-3">
+              <div className="w-12 h-12 rounded-full bg-[#800020]/10 text-[#800020] flex items-center justify-center mx-auto">
+                <CheckCircle className="w-6 h-6" />
+              </div>
+              <h4 className="text-base font-bold text-[#0F172A] dark:text-white">
+                لا توجد أسئلة بهذا المستوى حالياً
+              </h4>
+              <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8] max-w-md mx-auto">
+                مفيش أسئلة بالمستوى دا حالياً، جرب تختار مستوى تاني أو (كل المستويات) علشان تتدرب أكتر
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  setDifficultyFilter("ALL");
+                  setQuestionTypeFilter("ALL");
+                }}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-[#800020] text-white hover:bg-[#660019] transition-all cursor-pointer"
+              >
+                عرض كل الأسئلة
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-8">
+              {/* MCQ Section */}
+              {(questionTypeFilter === "ALL" || questionTypeFilter === "MCQ") && mcqQuestions.length > 0 && (
+                <LessonMcqSection
+                  questions={mcqQuestions}
+                  questionAnswers={questionAnswers}
+                  onSelectOption={handleSelectOption}
+                />
+              )}
+
+              {/* True / False Section */}
+              {(questionTypeFilter === "ALL" || questionTypeFilter === "TRUE_FALSE") && tfQuestions.length > 0 && (
+                <LessonTrueFalseSection
+                  questions={tfQuestions}
+                  questionAnswers={questionAnswers}
+                  onSelectOption={handleSelectOption}
+                />
+              )}
+
+              {/* Essay Section */}
+              {(questionTypeFilter === "ALL" || questionTypeFilter === "ESSAY") && essayQuestions.length > 0 && (
+                <LessonEssaySection
+                  questions={essayQuestions}
+                  essayDrafts={essayDrafts}
+                  revealedEssays={revealedEssays}
+                  essaySelfScores={essaySelfScores}
+                  onDraftChange={(qId, draft) =>
+                    setEssayDrafts((prev) => ({ ...prev, [qId]: draft }))
+                  }
+                  onToggleReveal={(qId) =>
+                    setRevealedEssays((prev) => ({
+                      ...prev,
+                      [qId]: !prev[qId],
+                    }))
+                  }
+                  onSelectScore={(qId, score) =>
+                    setEssaySelfScores((prev) => ({ ...prev, [qId]: score }))
+                  }
+                />
+              )}
+            </div>
+          )}
+        </div>
       )}
 
       {/* Sibling Lessons Navigation Footer */}

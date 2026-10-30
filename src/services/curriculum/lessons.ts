@@ -14,7 +14,15 @@ export class CurriculumLessonsService {
         unit: {
           include: {
             subject: {
-              select: { id: true, name: true, color: true, icon: true },
+              select: {
+                id: true,
+                name: true,
+                color: true,
+                icon: true,
+                schoolCategory: true,
+                grade: { select: { id: true, name: true } },
+                track: { select: { id: true, name: true } },
+              },
             },
           },
         },
@@ -27,6 +35,7 @@ export class CurriculumLessonsService {
               include: {
                 options: { orderBy: { order: "asc" } },
                 explanation: true,
+                rubric: true,
               },
             },
           },
@@ -220,23 +229,23 @@ export class CurriculumLessonsService {
           pdfUrl: data.summary.pdfUrl !== undefined ? (data.summary.pdfUrl?.trim() || null) : null,
           images: Array.isArray(data.summary.images) ? data.summary.images : [],
           keyConcepts: data.summary.keyConcepts || [],
-          definitions: data.summary.definitions || [],
-          formulas: data.summary.formulas || [],
-          comparisons: data.summary.comparisons || [],
+          definitions: (data.summary.definitions as any) || [],
+          formulas: (data.summary.formulas as any) || [],
+          comparisons: (data.summary.comparisons as any) || [],
           examTips: data.summary.examTips || [],
-          commonMistakes: data.summary.commonMistakes || [],
-          checklist: data.summary.checklist || [],
+          commonMistakes: (data.summary.commonMistakes as any) || [],
+          checklist: (data.summary.checklist as any) || [],
         },
         update: {
           pdfUrl: data.summary.pdfUrl !== undefined ? (data.summary.pdfUrl?.trim() || null) : undefined,
           images: data.summary.images !== undefined ? (Array.isArray(data.summary.images) ? data.summary.images : []) : undefined,
           keyConcepts: data.summary.keyConcepts !== undefined ? data.summary.keyConcepts : undefined,
-          definitions: data.summary.definitions !== undefined ? data.summary.definitions : undefined,
-          formulas: data.summary.formulas !== undefined ? data.summary.formulas : undefined,
-          comparisons: data.summary.comparisons !== undefined ? data.summary.comparisons : undefined,
+          definitions: data.summary.definitions !== undefined ? (data.summary.definitions as any) : undefined,
+          formulas: data.summary.formulas !== undefined ? (data.summary.formulas as any) : undefined,
+          comparisons: data.summary.comparisons !== undefined ? (data.summary.comparisons as any) : undefined,
           examTips: data.summary.examTips !== undefined ? data.summary.examTips : undefined,
-          commonMistakes: data.summary.commonMistakes !== undefined ? data.summary.commonMistakes : undefined,
-          checklist: data.summary.checklist !== undefined ? data.summary.checklist : undefined,
+          commonMistakes: data.summary.commonMistakes !== undefined ? (data.summary.commonMistakes as any) : undefined,
+          checklist: data.summary.checklist !== undefined ? (data.summary.checklist as any) : undefined,
         },
       });
     }
