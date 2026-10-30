@@ -22,12 +22,15 @@ export function extractAnswerPoints(rawText: string | null | undefined): {
   points: FormattedPoint[];
 } | null {
   if (!rawText) return null;
-  const text = rawText.trim();
+  // Sanitize invisible directional control characters often present in Word/PDF documents
+  const text = rawText
+    .replace(/[\u200B-\u200F\uFEFF\u202A-\u202E]/g, "")
+    .trim();
   if (!text || text.length < 5) return null;
 
   // 1. Check for numbered or bullet markers (either on newlines or inline like " 2. ")
   const markerRegex =
-    /(?:^|[\n\r]+|(?<=\s))(?:\(([0-9]{1,2}|[٠-٩]{1,2})\)|([0-9]{1,2}|[٠-٩]{1,2})[.\-):]|([أ-يA-Za-z])[.\-)]|[•*⁃\-])\s+/g;
+    /(?:^|[\n\r]+|(?<=\s))(?:\(([0-9]{1,2}|[٠-٩]{1,2})\)|([0-9]{1,2}|[٠-٩]{1,2})\s*[.\-):]|([أ-يA-Za-z])\s*[.\-)]|[•*⁃\-])\s+/g;
 
   const rawMatches: { index: number; length: number; badge: string }[] = [];
   let m: RegExpExecArray | null;
@@ -116,7 +119,7 @@ export function extractAnswerPoints(rawText: string | null | undefined): {
       // Clean leading digit or bullet if any
       const cleaned = line
         .replace(
-          /^(?:\([0-9٠-٩]+\)|[0-9٠-٩]+[.\-):]|[أ-يA-Za-z][.\-)]|[•*⁃\-])\s*/,
+          /^(?:\([0-9٠-٩]+\)|[0-9٠-٩]+\s*[.\-):]|[أ-يA-Za-z]\s*[.\-)]|[•*⁃\-])\s*/,
           ""
         )
         .trim();

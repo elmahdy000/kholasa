@@ -17,6 +17,7 @@ import {
   FileCheck2,
 } from "lucide-react";
 import { BidiStatement } from "@/components/ui/BidiStatement";
+import { FormattedAnswerView } from "@/components/ui/FormattedAnswerView";
 import { Question } from "./types";
 
 interface QuestionRowProps {
@@ -337,9 +338,10 @@ export function QuestionRow({
                   الدرجة القصوى: {q.rubric.maxScore || 10} درجات
                 </span>
               </div>
-              <p className="text-[13px] leading-relaxed text-[#1E293B] dark:text-[#E2E8F0] whitespace-pre-wrap font-medium">
-                {q.rubric.modelAnswer}
-              </p>
+              <FormattedAnswerView
+                text={q.rubric.modelAnswer}
+                colorScheme="burgundy"
+              />
             </div>
           )}
 
@@ -354,9 +356,10 @@ export function QuestionRow({
                     : "تفسير الإجابة الصحيحة:"}
                 </span>
               </div>
-              <p className="text-[13px] leading-relaxed text-[#475569] dark:text-[#CBD5E1] whitespace-pre-wrap">
-                {q.explanation.correctReason}
-              </p>
+              <FormattedAnswerView
+                text={q.explanation.correctReason}
+                colorScheme="blue"
+              />
             </div>
           )}
         </div>

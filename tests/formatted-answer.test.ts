@@ -66,4 +66,21 @@ describe("extractAnswerPoints", () => {
     expect(result!.points[2].badge).toBe("3");
     expect(result!.points[3].badge).toBe("4");
   });
+
+  it("handles invisible bidi marks and eastern arabic digits", () => {
+    const raw =
+      "\u200F١. \u200Eالنقطة الأولى: شرح المفهوم الأول. \u200F٢. النقطة الثانية: شرح المفهوم الثاني.";
+    const result = extractAnswerPoints(raw);
+    expect(result).not.toBeNull();
+    expect(result!.points.length).toBe(2);
+    expect(result!.points[0].title).toBe("النقطة الأولى:");
+    expect(result!.points[1].title).toBe("النقطة الثانية:");
+  });
+
+  it("handles numbers with spaces before delimiters like 1 - or 2 .", () => {
+    const raw = "1 - الخطوة الأولى لتحليل النظام 2 - الخطوة الثانية للتصميم";
+    const result = extractAnswerPoints(raw);
+    expect(result).not.toBeNull();
+    expect(result!.points.length).toBe(2);
+  });
 });
