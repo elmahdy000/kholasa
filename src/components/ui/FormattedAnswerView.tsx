@@ -29,16 +29,28 @@ export function extractAnswerPoints(rawText: string | null | undefined): {
   const markerRegex =
     /(?:^|[\n\r]+|(?<=\s))(?:\(([0-9]{1,2}|[٠-٩]{1,2})\)|([0-9]{1,2}|[٠-٩]{1,2})[.\-):]|([أ-يA-Za-z])[.\-)]|[•*⁃\-])\s+/g;
 
-  const matches: { index: number; length: number; badge: string }[] = [];
+  const rawMatches: { index: number; length: number; badge: string }[] = [];
   let m: RegExpExecArray | null;
 
   while ((m = markerRegex.exec(text)) !== null) {
     const badge = m[1] || m[2] || m[3] || "•";
-    matches.push({
+    rawMatches.push({
       index: m.index,
       length: m[0].length,
       badge,
     });
+  }
+
+  // Filter out spurious markers (e.g. "إما 0 أو 1." where "1." is the end of a sentence right before " 2. ")
+  const matches: { index: number; length: number; badge: string }[] = [];
+  for (let i = 0; i < rawMatches.length; i++) {
+    const cur = rawMatches[i];
+    const nextIdx =
+      i + 1 < rawMatches.length ? rawMatches[i + 1].index : text.length;
+    const sliceLen = nextIdx - (cur.index + cur.length);
+    if (sliceLen >= 2) {
+      matches.push(cur);
+    }
   }
 
   // If at least 2 structured points were matched

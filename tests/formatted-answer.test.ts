@@ -51,4 +51,19 @@ describe("extractAnswerPoints", () => {
     const result = extractAnswerPoints(raw);
     expect(result).toBeNull();
   });
+
+  it("extracts points from classical bit and qubit answer (second screenshot)", () => {
+    const raw =
+      "1. البت الكلاسيكي: يحمل حالة محددة واحدة في كل وقت، إما 0 أو 1. 2. الكيوبت: يستخدم مبدأ التراكب الكمومي، ويمكن أن يكون في تراكب من الحالتين 0 و1. 3. يمثل ذلك اختلافًا أساسيًا في طريقة تمثيل المعلومات. 4. رغم هذا الاختلاف، قد تحقق الحوسبة الكمومية تفوقًا في فئات محددة من المسائل فقط، ولا تسرّع جميع الحسابات.";
+
+    const result = extractAnswerPoints(raw);
+    expect(result).not.toBeNull();
+    expect(result!.points.length).toBe(4);
+    expect(result!.points[0].title).toBe("البت الكلاسيكي:");
+    expect(result!.points[0].body).toContain("إما 0 أو 1.");
+    expect(result!.points[1].title).toBe("الكيوبت:");
+    expect(result!.points[1].body).toContain("تراكب من الحالتين 0 و1.");
+    expect(result!.points[2].badge).toBe("3");
+    expect(result!.points[3].badge).toBe("4");
+  });
 });
