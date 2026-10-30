@@ -51,4 +51,26 @@ describe("Question Document Parser", () => {
     expect(correct?.text).toContain("نيوتن");
     expect(parsed.correctReason).toContain("النيوتن هو وحدة قياس القوة");
   });
+
+  it("parses multiple essay questions with combined tags and model answers without merging", () => {
+    const rawEssay = `[مقالي] [سهل] س1: كيف تطورت تكنولوجيا المعلومات؟
+الإجابة النموذجية: ظهرت الحواسيب مثل ENIAC.
+التفسير: كانت الحواسيب الأولى كبيرة الحجم.
+المفهوم: بداية ظهور الحواسيب.
+
+[مقالي] [سهل] س2: اذكر المراحل الخمس الرئيسية؟
+الإجابة النموذجية:
+1. الأربعينيات: الحواسيب الإلكترونية.
+2. السبعينيات: الحواسيب الشخصية.
+التفسير: تطورت تكنولوجيا المعلومات عبر مراحل.
+المفهوم: المراحل التاريخية.`;
+
+    const questions = parseQuestionsFromText(rawEssay);
+    expect(questions.length).toBe(2);
+    expect(questions[0].type).toBe("ESSAY");
+    expect(questions[0].difficulty).toBe("EASY");
+    expect(questions[0].modelAnswer).toContain("ENIAC");
+    expect(questions[1].type).toBe("ESSAY");
+    expect(questions[1].modelAnswer).toContain("الحواسيب الإلكترونية");
+  });
 });

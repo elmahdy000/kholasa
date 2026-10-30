@@ -114,8 +114,8 @@ export function isQuestionStart(line: string): boolean {
   let trimmed = line.trim();
   if (!trimmed) return false;
 
-  // Strip leading tags like [سهل], [صعب], [اختياري], [مقالي] etc.
-  trimmed = trimmed.replace(/^\[[^\]]+\]\s*/, "").trim();
+  // Strip all leading bracket tags like [مقالي], [سهل], [مقالي] [سهل] etc.
+  trimmed = trimmed.replace(/^(?:\[[^\]]+\]\s*)+/, "").trim();
   if (!trimmed) return false;
 
   // Pattern 1: Question indicator like "س1:", "س:", "سؤال 1:", "السؤال الأول:"
@@ -136,7 +136,7 @@ export function isQuestionStart(line: string): boolean {
   }
 
   // Pattern 4: Explicit essay prompt keywords at line start
-  const essayKeywords = /^(?:علل|فسر|وضح|اشرح|قارن بين|ما النتائج المترتبة على|ما المقصود بـ|عرف|أثبت أن|بين سبب|لماذا)(?:[:\s\-\.]|$)/;
+  const essayKeywords = /^(?:علل|فسر|وضح|اشرح|قارن بين|ما النتائج المترتبة على|ما المقصود بـ|عرف|أثبت أن|بين سبب|لماذا|اذكر|ما أثر|ما الفرق بين|كيف|ما التحديات)(?:[:\s\-\.]|$)/;
   if (essayKeywords.test(trimmed)) return true;
 
   return false;
@@ -308,9 +308,12 @@ export function parseQuestionsFromText(
       inAnswerBlock = true;
     }
 
-    // Explicit question indicator that overrides inAnswerBlock (e.g. [مقالي] 2., س2:, Question 2:)
+    // Explicit question indicator that overrides inAnswerBlock (e.g. [مقالي] 2., [مقالي] [سهل] س2:, س2:, Question 2:)
+    const hasQuestionTags = /^\[\s*(?:مقالي|سؤال مقالي|اختياري|اختيار من متعدد|صح وخطأ|صواب وخطأ|mcq|essay|true[_\s\/\-]false|سهل|متوسط|صعب|easy|medium|hard)\b/i.test(line);
+
     const isExplicitQStart =
-      /^\[[^\]]+\]\s*(?:س|سؤال|السؤال|Question|Q|\d+[\.\-\)])/i.test(line) ||
+      hasQuestionTags ||
+      /^(?:\[[^\]]+\]\s*)+(?:س|سؤال|السؤال|Question|Q|\d+[\.\-\)])/i.test(line) ||
       /^(?:س|سؤال|السؤال)\s*(?:[0-9]+|[٠-٩]+|[الأول|الثاني|الثالث|الرابع|الخامس|السادس|السابع|الثامن|التاسع|العاشر]+)?\s*[:\-\.\)\/]/i.test(line) ||
       /^(?:Question|Q)\s*[0-9]*\s*[:\-\.\)\/]/i.test(line);
 
