@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import type { LessonQuestionItem, UnitInfo, LessonQuestionOption } from "./types";
 import { QuestionImportWizard } from "./QuestionImportWizard";
+import { FormattedAnswerView } from "@/components/ui/FormattedAnswerView";
 
 interface LessonQuestionsTabProps {
   lessonId: string;
@@ -1201,27 +1202,29 @@ export function LessonQuestionsTab({
 
                     {/* Explanation */}
                     {q.explanation?.correctReason && (
-                      <div className="p-3.5 rounded-2xl bg-blue-50/60 dark:bg-blue-950/20 border border-blue-200/60 dark:border-blue-900/40 text-xs text-blue-900 dark:text-blue-200 space-y-1">
-                        <span className="font-bold flex items-center gap-1.5">
+                      <div className="p-4 rounded-2xl bg-blue-50/60 dark:bg-blue-950/20 border border-blue-200/60 dark:border-blue-900/40 text-xs text-blue-900 dark:text-blue-200 space-y-2">
+                        <span className="font-bold flex items-center gap-1.5 text-xs text-blue-700 dark:text-blue-300">
                           <Sparkles className="w-3.5 h-3.5 text-blue-600" />
                           <span>توضيح وتفسير الإجابة الصحيحة:</span>
                         </span>
-                        <p className="leading-relaxed whitespace-pre-wrap break-words">
-                          {q.explanation.correctReason}
-                        </p>
+                        <FormattedAnswerView
+                          text={q.explanation.correctReason}
+                          colorScheme="blue"
+                        />
                       </div>
                     )}
 
                     {/* Essay Rubric */}
                     {(q as any).rubric?.modelAnswer && (
-                      <div className="p-3.5 rounded-2xl bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200/60 dark:border-amber-900/40 text-xs text-amber-900 dark:text-amber-200 space-y-1">
-                        <span className="font-bold flex items-center gap-1.5">
+                      <div className="p-4 rounded-2xl bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200/60 dark:border-amber-900/40 text-xs text-amber-900 dark:text-amber-200 space-y-2">
+                        <span className="font-bold flex items-center gap-1.5 text-xs text-amber-800 dark:text-amber-300">
                           <BookOpen className="w-3.5 h-3.5 text-amber-600" />
                           <span>نموذج الإجابة للسؤال المقالي:</span>
                         </span>
-                        <p className="leading-relaxed whitespace-pre-wrap break-words">
-                          {(q as any).rubric.modelAnswer}
-                        </p>
+                        <FormattedAnswerView
+                          text={(q as any).rubric.modelAnswer}
+                          colorScheme="amber"
+                        />
                       </div>
                     )}
                   </div>

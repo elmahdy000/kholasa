@@ -6,6 +6,7 @@ import {
   Star,
 } from "@phosphor-icons/react";
 import { BidiStatement } from "@/components/ui/BidiStatement";
+import { FormattedAnswerView } from "@/components/ui/FormattedAnswerView";
 import { Question, RubricCriterion } from "../types";
 
 interface LessonEssaySectionProps {
@@ -128,17 +129,19 @@ export function LessonEssaySection({
                 {isRevealed && (
                   <div className="space-y-4 pt-3 border-t border-[#E2E8F0] dark:border-[#334155] animate-in fade-in duration-200">
                     {/* Model Answer Box */}
-                    <div className="p-4 rounded-xl bg-[#7C3AED]/5 border border-[#7C3AED]/20 space-y-2">
-                      <span className="text-[12px] font-bold uppercase tracking-wider text-[#7C3AED] block">
-                        النموذج المعتمد للإجابة:
+                    <div className="p-4 sm:p-5 rounded-2xl bg-[#7C3AED]/5 border border-[#7C3AED]/20 space-y-3">
+                      <span className="text-[12px] font-bold uppercase tracking-wider text-[#7C3AED] flex items-center gap-1.5">
+                        <Sparkle className="w-3.5 h-3.5" weight="fill" />
+                        <span>النموذج المعتمد للإجابة:</span>
                       </span>
-                      <p className="text-[13px] sm:text-sm text-[#0F172A] dark:text-[#F8FAFC] leading-relaxed font-content font-medium">
-                        {String(
+                      <FormattedAnswerView
+                        text={
                           question.rubric?.modelAnswer ||
-                            question.explanation?.correctReason ||
-                            "الإجابة المعتمدة تركز على الخطوات والشرح المنهجي لمفاهيم السؤال."
-                        )}
-                      </p>
+                          question.explanation?.correctReason ||
+                          "الإجابة المعتمدة تركز على الخطوات والشرح المنهجي لمفاهيم السؤال."
+                        }
+                        colorScheme="purple"
+                      />
                     </div>
 
                     {/* Rubric Criteria */}

@@ -10,6 +10,7 @@ import {
   PaperPlaneTilt,
 } from "@phosphor-icons/react";
 import { BidiStatement } from "@/components/ui/BidiStatement";
+import { FormattedAnswerView } from "@/components/ui/FormattedAnswerView";
 import { Question, UserAnswerState, RevealedAnswer } from "./types";
 
 interface ExamQuestionCardProps {
@@ -192,14 +193,15 @@ export function ExamQuestionCard({
           />
 
           {initialMode === "PRACTICE" && currentAnswer.practiceRevealed && revealedAnswer?.modelAnswer && (
-            <div className="p-5 rounded-xl bg-[#800020]/10 dark:bg-[#1E293B] border border-[#E2E8F0]/60 dark:border-[#E11D48]/60 space-y-3">
+            <div className="p-5 rounded-2xl bg-[#800020]/10 dark:bg-[#1E293B] border border-[#E2E8F0]/60 dark:border-[#E11D48]/60 space-y-3">
               <h4 className="text-[13px] font-bold text-[#800020] dark:text-[#FB7185] flex items-center gap-2">
                 <Sparkle className="w-4 h-4" weight="fill" />
                 <span>نموذج الإجابة ومعايير التقييم</span>
               </h4>
-              <p className="text-[13px] text-[#0F172A] dark:text-[#F8FAFC] leading-relaxed font-bold font-content">
-                {revealedAnswer.modelAnswer}
-              </p>
+              <FormattedAnswerView
+                text={revealedAnswer.modelAnswer}
+                colorScheme="burgundy"
+              />
             </div>
           )}
         </div>
@@ -227,14 +229,15 @@ export function ExamQuestionCard({
             </button>
           ) : (
             revealedAnswer?.explanation && (
-              <div className="p-5 rounded-xl bg-[#800020]/10 dark:bg-[#1E293B] border border-[#E2E8F0]/60 dark:border-[#E11D48]/60 space-y-3">
+              <div className="p-5 rounded-2xl bg-[#800020]/10 dark:bg-[#1E293B] border border-[#E2E8F0]/60 dark:border-[#E11D48]/60 space-y-3">
                 <div className="flex items-center gap-2 text-[13px] font-bold text-[#800020] dark:text-[#FB7185]">
                   <Lightbulb className="w-4 h-4" weight="fill" />
                   <span>الفكرة الأساسية: {revealedAnswer.explanation.concept}</span>
                 </div>
-                <p className="text-[13px] text-[#0F172A] dark:text-[#F8FAFC] leading-relaxed font-bold font-content">
-                  {revealedAnswer.explanation.correctReason}
-                </p>
+                <FormattedAnswerView
+                  text={revealedAnswer.explanation.correctReason}
+                  colorScheme="burgundy"
+                />
 
                 {/* Per-option breakdown */}
                 <div className="pt-2 border-t border-[#E2E8F0]/40 dark:border-[#E11D48]/40 space-y-2">
