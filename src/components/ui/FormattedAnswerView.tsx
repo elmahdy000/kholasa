@@ -9,34 +9,43 @@ export interface FormattedPoint {
 }
 
 /**
- * Extracts structured points from raw educational answer text.
+ * Extracts structured points from raw educational answer text (Arabic & English).
  * Supports:
- * - Numbered lists: 1. 2. 3. or 1- 2- or 1) or (1)
- * - Arabic digits: ١. ٢. ٣.
- * - Arabic letters: أ) ب) ج)
- * - Bullet characters: •, -, *, ⁃
- * - Multi-line separated paragraphs
+ * - Numbered lists: 1. 2. 3. or 1- 2- or 1) or (1) or 1:
+ * - English letters: A. B. C. or a) b) c) or (a) (b) (c)
+ * - Roman numerals: i. ii. iii. or (i) (ii) (iii) or I. II. III.
+ * - Arabic digits & letters: ١. ٢. ٣. or أ) ب) ج) or (أ)
+ * - Keyword prefixes: Step 1:, Part 1:, المرحلة الأولى:
+ * - Bullet characters: •, -, *, ⁃, –, —
+ * - Multi-line separated paragraphs with or without explicit markers
  */
 export function extractAnswerPoints(rawText: string | null | undefined): {
   intro?: string;
   points: FormattedPoint[];
 } | null {
   if (!rawText) return null;
+
   // Sanitize invisible directional control characters often present in Word/PDF documents
   const text = rawText
     .replace(/[\u200B-\u200F\uFEFF\u202A-\u202E]/g, "")
     .trim();
   if (!text || text.length < 5) return null;
 
-  // 1. Check for numbered or bullet markers (either on newlines or inline like " 2. ")
+  // 1. Check for numbered or bullet markers (either on newlines or inline like " 2. " or " (b) " or "Step 1 - ")
   const markerRegex =
-    /(?:^|[\n\r]+|(?<=\s))(?:\(([0-9]{1,2}|[٠-٩]{1,2})\)|([0-9]{1,2}|[٠-٩]{1,2})\s*[.\-):]|([أ-يA-Za-z])\s*[.\-)]|[•*⁃\-])\s+/g;
+    /(?:^|[\n\r]+|(?<=\s))(?:(?:Step|Part|Point|Phase|المرحلة|الخطوة|النقطة)\s+)?(?:\(((?:[0-9]{1,2}|[٠-٩]{1,2}|[a-zA-Z]|[أ-ي]|[ivxIVX]{1,4}))\)|(?:[0-9]{1,2}|[٠-٩]{1,2})\s*[.\-):]|(?:[a-zA-Z]|[أ-ي])\s*[.\-)]|(?:[ivxIVX]{1,4})\s*[.\-)]|[•*⁃\–\—\-])\s+/gi;
 
   const rawMatches: { index: number; length: number; badge: string }[] = [];
   let m: RegExpExecArray | null;
 
   while ((m = markerRegex.exec(text)) !== null) {
-    const badge = m[1] || m[2] || m[3] || "•";
+    const rawMatched = m[0].trim();
+    const badge =
+      m[1] ||
+      rawMatched
+        .replace(/^(?:Step|Part|Point|Phase|المرحلة|الخطوة|النقطة)\s+/i, "")
+        .replace(/[\s.\-):()]/g, "") ||
+      "•";
     rawMatches.push({
       index: m.index,
       length: m[0].length,
@@ -44,7 +53,7 @@ export function extractAnswerPoints(rawText: string | null | undefined): {
     });
   }
 
-  // Filter out spurious markers (e.g. "إما 0 أو 1." where "1." is the end of a sentence right before " 2. ")
+  // Filter out spurious markers (e.g. "0 or 1." where "1." is the end of a sentence right before " 2. ")
   const matches: { index: number; length: number; badge: string }[] = [];
   for (let i = 0; i < rawMatches.length; i++) {
     const cur = rawMatches[i];
@@ -75,8 +84,10 @@ export function extractAnswerPoints(rawText: string | null | undefined): {
       const fullPointText = text.substring(start, end).trim();
 
       if (fullPointText) {
-        // Check if point has a title prefix e.g. "القيادة الذاتية: تستخدم..."
-        const titleMatch = fullPointText.match(/^([^\n:]{2,40}):\s+([\s\S]*)$/);
+        // Check if point has a title prefix e.g. "Supervised Learning: Uses..." or "القيادة الذاتية: تستخدم..."
+        const titleMatch = fullPointText.match(
+          /^([^\n:\-–—]{2,50})(?:\s*:\s+|\s+[\-–—]\s+)([\s\S]*)$/
+        );
         if (titleMatch) {
           points.push({
             badge: current.badge,
@@ -108,7 +119,7 @@ export function extractAnswerPoints(rawText: string | null | undefined): {
     let intro: string | undefined = undefined;
     let startIdx = 0;
 
-    // If first line ends with a colon, treat it as intro (e.g. "المراحل الخمس لتطور الحاسوب:")
+    // If first line ends with a colon, treat it as intro (e.g. "Key differences:" or "المراحل الخمس:")
     if (lines[0].endsWith(":") && lines.length >= 3) {
       intro = lines[0];
       startIdx = 1;
@@ -116,15 +127,17 @@ export function extractAnswerPoints(rawText: string | null | undefined): {
 
     for (let i = startIdx; i < lines.length; i++) {
       const line = lines[i];
-      // Clean leading digit or bullet if any
+      // Clean leading digit, letter, step keyword, or bullet if any
       const cleaned = line
         .replace(
-          /^(?:\([0-9٠-٩]+\)|[0-9٠-٩]+\s*[.\-):]|[أ-يA-Za-z]\s*[.\-)]|[•*⁃\-])\s*/,
+          /^(?:(?:Step|Part|Point|Phase|المرحلة|الخطوة|النقطة)\s*(?:[0-9٠-٩]+|[a-zA-Z]|[ivxIVX]+)\s*[:.\-)]|\((?:[0-9٠-٩a-zA-Zأ-يivxIVX]+)\)|(?:[0-9٠-٩]+|[a-zA-Z]|[أ-ي]|[ivxIVX]+)\s*[.\-):]|[•*⁃\–\—\-])\s*/i,
           ""
         )
         .trim();
 
-      const titleMatch = cleaned.match(/^([^\n:]{2,40}):\s+([\s\S]*)$/);
+      const titleMatch = cleaned.match(
+        /^([^\n:\-–—]{2,50})(?:\s*:\s+|\s+[\-–—]\s+)([\s\S]*)$/
+      );
       if (titleMatch) {
         points.push({
           badge: String(points.length + 1),
@@ -200,16 +213,31 @@ const colorStyles = {
 export function FormattedAnswerView({
   text,
   colorScheme = "purple",
-  emptyFallback = "الإجابة المعتمدة تركز على الخطوات والشرح المنهجي لمفاهيم السؤال.",
+  emptyFallback,
   className = "",
 }: FormattedAnswerViewProps) {
   const parsed = useMemo(() => extractAnswerPoints(text), [text]);
   const styles = colorStyles[colorScheme] || colorStyles.purple;
 
+  // Language & Direction detection (Arabic vs English)
+  const isArabic = useMemo(() => /[\u0600-\u06FF]/.test(text || ""), [text]);
+  const dir = isArabic ? "rtl" : "ltr";
+  const alignClass = isArabic ? "text-right" : "text-left";
+  const titleMargin = isArabic ? "ml-1.5" : "mr-1.5";
+
+  const fallback =
+    emptyFallback ||
+    (isArabic
+      ? "الإجابة المعتمدة تركز على الخطوات والشرح المنهجي لمفاهيم السؤال."
+      : "The approved model answer focuses on step-by-step methodology and curriculum concepts.");
+
   if (!text || !text.trim()) {
     return (
-      <p className={`text-[13px] sm:text-sm font-content leading-relaxed ${styles.body} ${className}`}>
-        {emptyFallback}
+      <p
+        className={`text-[13px] sm:text-sm font-content leading-relaxed ${alignClass} ${styles.body} ${className}`}
+        dir={dir}
+      >
+        {fallback}
       </p>
     );
   }
@@ -217,9 +245,11 @@ export function FormattedAnswerView({
   // If points were detected, render them in a clean, vertical points list
   if (parsed && parsed.points.length > 0) {
     return (
-      <div className={`space-y-2.5 ${className}`} dir="rtl">
+      <div className={`space-y-2.5 ${alignClass} ${className}`} dir={dir}>
         {parsed.intro && (
-          <p className={`text-[13px] sm:text-sm font-bold font-content leading-relaxed ${styles.intro}`}>
+          <p
+            className={`text-[13px] sm:text-sm font-bold font-content leading-relaxed ${styles.intro}`}
+          >
             {parsed.intro}
           </p>
         )}
@@ -235,9 +265,11 @@ export function FormattedAnswerView({
               >
                 {pt.badge}
               </div>
-              <div className={`text-[13px] sm:text-sm leading-relaxed font-content ${styles.body} flex-1`}>
+              <div
+                className={`text-[13px] sm:text-sm leading-relaxed font-content ${styles.body} flex-1`}
+              >
                 {pt.title && (
-                  <strong className={`font-bold ml-1.5 ${styles.title}`}>
+                  <strong className={`font-bold ${titleMargin} ${styles.title}`}>
                     {pt.title}
                   </strong>
                 )}
@@ -253,8 +285,8 @@ export function FormattedAnswerView({
   // Single paragraph fallback with proper line breaks
   return (
     <p
-      className={`text-[13px] sm:text-sm leading-relaxed font-content font-medium whitespace-pre-wrap break-words ${styles.body} ${className}`}
-      dir="rtl"
+      className={`text-[13px] sm:text-sm leading-relaxed font-content font-medium whitespace-pre-wrap break-words ${alignClass} ${styles.body} ${className}`}
+      dir={dir}
     >
       {text}
     </p>

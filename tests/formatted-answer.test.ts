@@ -83,4 +83,55 @@ describe("extractAnswerPoints", () => {
     expect(result).not.toBeNull();
     expect(result!.points.length).toBe(2);
   });
+
+  it("extracts English inline points with titles and colon", () => {
+    const raw =
+      "1. Supervised Learning: Uses labeled training data to infer a mapping function. 2. Unsupervised Learning: Discovers hidden patterns or clusters in unlabeled data. 3. Reinforcement Learning: Learns optimal policies through trial-and-error rewards.";
+    const result = extractAnswerPoints(raw);
+    expect(result).not.toBeNull();
+    expect(result!.points.length).toBe(3);
+    expect(result!.points[0].badge).toBe("1");
+    expect(result!.points[0].title).toBe("Supervised Learning:");
+    expect(result!.points[0].body).toContain("labeled training data");
+    expect(result!.points[1].title).toBe("Unsupervised Learning:");
+    expect(result!.points[2].title).toBe("Reinforcement Learning:");
+  });
+
+  it("extracts English points with letter markers in parentheses", () => {
+    const raw =
+      "(a) Classical Bit: Can only exist in state 0 or 1. (b) Qubit: Exists in quantum superposition of states. (c) Quantum Advantage: Demonstrates superior performance on specific problems.";
+    const result = extractAnswerPoints(raw);
+    expect(result).not.toBeNull();
+    expect(result!.points.length).toBe(3);
+    expect(result!.points[0].badge).toBe("a");
+    expect(result!.points[0].title).toBe("Classical Bit:");
+    expect(result!.points[1].badge).toBe("b");
+    expect(result!.points[2].badge).toBe("c");
+  });
+
+  it("extracts English points with Roman numerals", () => {
+    const raw =
+      "i. Primary Storage: Volatile RAM with low latency. ii. Secondary Storage: Non-volatile SSDs/HDDs. iii. Tertiary Storage: Offline archival media.";
+    const result = extractAnswerPoints(raw);
+    expect(result).not.toBeNull();
+    expect(result!.points.length).toBe(3);
+    expect(result!.points[0].badge).toBe("i");
+    expect(result!.points[0].title).toBe("Primary Storage:");
+    expect(result!.points[1].badge).toBe("ii");
+    expect(result!.points[2].badge).toBe("iii");
+  });
+
+  it("extracts multiline English points with intro and dash separators", () => {
+    const raw = `Key stages of system analysis:
+Step 1 - Data Gathering: Collecting user stories and functional requirements.
+Step 2 - Feasibility Study: Assessing technical and economic viability.
+Step 3 - Architecture Design: Defining database schema and API contracts.`;
+    const result = extractAnswerPoints(raw);
+    expect(result).not.toBeNull();
+    expect(result!.intro).toBe("Key stages of system analysis:");
+    expect(result!.points.length).toBe(3);
+    expect(result!.points[0].title).toBe("Data Gathering:");
+    expect(result!.points[1].title).toBe("Feasibility Study:");
+    expect(result!.points[2].title).toBe("Architecture Design:");
+  });
 });
