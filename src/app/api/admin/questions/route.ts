@@ -7,7 +7,7 @@ import {
   isQuestionType,
 } from "@/services/question/validation";
 
-const MAX_PAGE_SIZE = 100;
+const MAX_PAGE_SIZE = 1000;
 
 export async function GET(req: Request) {
   try {

@@ -88,16 +88,18 @@ export function useLessonEditor({
   const [newMistake, setNewMistake] = useState("");
   const [newCorrection, setNewCorrection] = useState("");
 
-  // Fetch Questions for this lesson
+  // Fetch Questions for this lesson (full relation without pagination limits)
   const fetchLessonQuestions = useCallback(() => {
     if (!lessonId) return;
     setIsLoadingQuestions(true);
-    fetch(`/api/admin/questions?lessonId=${lessonId}`)
+    fetch(`/api/admin/lessons/${lessonId}`)
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data.questions)) {
-          setQuestions(
-            data.questions.map((q: any) => ({
+          const mapped = data.questions
+            .map((item: any) => item.question || item)
+            .filter(Boolean)
+            .map((q: any) => ({
               id: q.id,
               statement: q.statement,
               type: q.type,
@@ -105,8 +107,8 @@ export function useLessonEditor({
               options: q.options || [],
               explanation: q.explanation || null,
               rubric: q.rubric || null,
-            }))
-          );
+            }));
+          setQuestions(mapped);
         }
       })
       .catch((err) => console.error("Error fetching lesson questions:", err))

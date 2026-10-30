@@ -1510,6 +1510,9 @@ export function LessonQuestionsTab({
         unitInfo={unitInfo}
         initialType={wizardInitialType}
         onImportSuccess={() => {
+          if (wizardInitialType !== "ALL") {
+            handleTypeFilterChange(wizardInitialType);
+          }
           onRefreshQuestions();
         }}
       />

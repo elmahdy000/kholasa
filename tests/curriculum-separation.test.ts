@@ -308,11 +308,13 @@ describe("EL KHOLASA — Mandatory Curriculum Separation (12 Criteria Verificati
 
     const targetLessonTitle = unit.lessons[0]?.title || "درس تجريبي للاختبار";
 
+    const uniqueSuffix = Date.now();
+
     // First import into the lesson
     const import1 = await QuestionService.bulkCreateQuestions(
       [
         {
-          statement: "سؤال الاستيراد الأول — الخوارزميات",
+          statement: `سؤال الاستيراد الأول — الخوارزميات ${uniqueSuffix}`,
           type: "MCQ",
           difficulty: "MEDIUM",
           subjectId: arSubject!.id,
@@ -339,7 +341,7 @@ describe("EL KHOLASA — Mandatory Curriculum Separation (12 Criteria Verificati
     const import2 = await QuestionService.bulkCreateQuestions(
       [
         {
-          statement: "سؤال الاستيراد الثاني — الخوارزميات المتقدمة",
+          statement: `سؤال الاستيراد الثاني — الخوارزميات المتقدمة ${uniqueSuffix}`,
           type: "TRUE_FALSE",
           difficulty: "HARD",
           subjectId: arSubject!.id,

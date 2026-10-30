@@ -189,10 +189,11 @@ export function cleanQuestionStatement(statement: string): string {
 
   // Strip brackets first so that [سهل] 1. -> 1. -> stripped number
   cleaned = cleaned
+    .replace(/^(?:\[[^\]]+\]\s*)+/, "")
     .replace(/\[\s*(?:صعوبة|مستوى|difficulty)?\s*[:\-\=]?\s*(?:سهل|متوسط|صعب|easy|medium|hard)\s*\]/gi, "")
     .replace(/\(\s*(?:صعوبة|مستوى|difficulty)?\s*[:\-\=]?\s*(?:سهل|متوسط|صعب|easy|medium|hard)\s*\)/gi, "")
-    .replace(/\[\s*(?:نوع|type)?\s*[:\-\=]?\s*(?:اختياري|اختيار من متعدد|صح وخطأ|صح أو خطأ|صواب وخطأ|مقالي|سؤال مقالي|mcq|true[_\s\/\-]false|essay)\s*\]/gi, "")
-    .replace(/\(\s*(?:نوع|type)?\s*[:\-\=]?\s*(?:اختياري|اختيار من متعدد|صح وخطأ|صح أو خطأ|صواب وخطأ|مقالي|سؤال مقالي|mcq|true[_\s\/\-]false|essay)\s*\)/gi, "")
+    .replace(/\[\s*(?:نوع|type)?\s*[:\-\=]?\s*(?:اختياري|اختيار من متعدد|صح وخطأ|صح أو خطأ|صح أم خطأ|صواب وخطأ|صواب أو خطأ|صواب أم خطأ|مقالي|سؤال مقالي|mcq|true[_\s\/\-]false|essay)\s*\]/gi, "")
+    .replace(/\(\s*(?:نوع|type)?\s*[:\-\=]?\s*(?:اختياري|اختيار من متعدد|صح وخطأ|صح أو خطأ|صح أم خطأ|صواب وخطأ|صواب أو خطأ|صواب أم خطأ|مقالي|سؤال مقالي|mcq|true[_\s\/\-]false|essay)\s*\)/gi, "")
     .trim();
 
   cleaned = cleaned
@@ -297,14 +298,14 @@ export function parseQuestionsFromText(
   for (let i = 0; i < rawLines.length; i++) {
     const line = rawLines[i];
 
-    // Filter noise lines (student dotted lines, page numbers, Ministry headers)
-    if (isNoiseLine(line)) {
+    // Explicit divider line (e.g. ---, ===, ___, _________________) - MUST be checked before noise line filter
+    if (/^[\-\=_]{3,}$/.test(line) || /^[\-_—–=\s]{4,}$/.test(line)) {
+      flushBlock();
       continue;
     }
 
-    // Explicit divider line (e.g. ---, ===, ___)
-    if (/^[\-\=_]{3,}$/.test(line)) {
-      flushBlock();
+    // Filter noise lines (student dotted lines, page numbers, Ministry headers)
+    if (isNoiseLine(line)) {
       continue;
     }
 
@@ -320,6 +321,11 @@ export function parseQuestionsFromText(
         activeSectionContext = "ESSAY";
         continue;
       }
+      if (/صح وخطأ|صح أو خطأ|صح أم خطأ|صواب وخطأ|صواب أم خطأ|true\s*[\/\-]\s*false/i.test(line)) {
+        flushBlock();
+        activeSectionContext = "TRUE_FALSE";
+        continue;
+      }
     }
 
     // Check if line indicates a section header that we should skip or use as context
@@ -333,19 +339,29 @@ export function parseQuestionsFromText(
       inAnswerBlock = true;
     }
 
-    // Explicit question indicator that overrides inAnswerBlock (e.g. [مقالي] 2., [مقالي] [سهل] س2:, س2:, Question 2:)
-    const hasQuestionTags = /^\[\s*(?:مقالي|سؤال مقالي|اختياري|اختيار من متعدد|صح وخطأ|صواب وخطأ|mcq|essay|true[_\s\/\-]false|سهل|متوسط|صعب|easy|medium|hard)\b/i.test(line);
+    // Explicit question indicator that overrides inAnswerBlock (e.g. [مقالي] 2., [مقالي] [سهل] س2:, [صح وخطأ] [سهل], س2:, Question 2:)
+    const hasQuestionTags =
+      /^\[\s*(?:مقالي|سؤال مقالي|اختياري|اختيار من متعدد|صح وخطأ|صح أو خطأ|صح أم خطأ|صواب وخطأ|صواب أو خطأ|صواب أم خطأ|mcq|essay|true[_\s\/\-]false|سهل|متوسط|صعب|easy|medium|hard)(?:\s|\]|$)/i.test(line) ||
+      /^\[[^\]]+\]\s*\[[^\]]+\]/.test(line);
 
     const isExplicitQStart =
       hasQuestionTags ||
-      /^(?:\[[^\]]+\]\s*)+(?:س|سؤال|السؤال|Question|Q|\d+[\.\-\)])/i.test(line) ||
-      /^(?:س|سؤال|السؤال)\s*(?:[0-9]+|[٠-٩]+|[الأول|الثاني|الثالث|الرابع|الخامس|السادس|السابع|الثامن|التاسع|العاشر]+)?\s*[:\-\.\)\/]/i.test(line) ||
-      /^(?:Question|Q)\s*[0-9]*\s*[:\-\.\)\/]/i.test(line);
+      /^(?:\[[^\]]+\]\s*)*(?:س|سؤال|السؤال)\s*(?:[0-9]+|[٠-٩]+|[الأول|الثاني|الثالث|الرابع|الخامس|السادس|السابع|الثامن|التاسع|العاشر]+)?\s*[:\-\.\)\/]/i.test(line) ||
+      /^(?:\[[^\]]+\]\s*)*(?:Question|Q)\s*[0-9]*\s*[:\-\.\)\/]/i.test(line);
 
     const isStarting = isExplicitQStart || (!inAnswerBlock && isQuestionStart(line));
 
+    // Check if the current accumulated block contains ONLY bracket tags/metadata lines
+    const isBlockOnlyTags = currentBlock.length > 0 && currentBlock.every((l) => {
+      const t = l.trim();
+      return (
+        /^\[[^\]]+\](?:\s*\[[^\]]+\])*$/.test(t) ||
+        /^(?:\[\s*(?:مقالي|سؤال مقالي|اختياري|اختيار من متعدد|صح وخطأ|صح أو خطأ|صح أم خطأ|صواب وخطأ|صواب أو خطأ|صواب أم خطأ|mcq|essay|true[_\s\/\-]false|سهل|متوسط|صعب|easy|medium|hard)\s*\]\s*)+$/i.test(t)
+      );
+    });
+
     if (isStarting) {
-      if (currentBlock.length > 0) {
+      if (currentBlock.length > 0 && !isBlockOnlyTags) {
         flushBlock();
       }
       currentBlock.push(line);
