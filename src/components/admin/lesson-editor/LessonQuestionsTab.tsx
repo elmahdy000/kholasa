@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   HelpCircle,
   Plus,
@@ -319,14 +319,38 @@ export function LessonQuestionsTab({
     }
   };
 
-  // Metrics
+  // Metrics - overall
   const totalCount = questions.length;
   const mcqCount = questions.filter((q) => q.type === "MCQ").length;
   const tfCount = questions.filter((q) => q.type === "TRUE_FALSE").length;
   const essayCount = questions.filter((q) => q.type === "ESSAY").length;
-  const easyCount = questions.filter((q) => q.difficulty === "EASY").length;
-  const medCount = questions.filter((q) => q.difficulty === "MEDIUM").length;
-  const hardCount = questions.filter((q) => q.difficulty === "HARD").length;
+
+  // Global difficulties across all questions in lesson
+  const globalEasyCount = questions.filter((q) => q.difficulty === "EASY").length;
+  const globalMedCount = questions.filter((q) => q.difficulty === "MEDIUM").length;
+  const globalHardCount = questions.filter((q) => q.difficulty === "HARD").length;
+
+  // Difficulty counts strictly scoped to currently active typeFilter
+  const typeScopedQuestions = useMemo<LessonQuestionItem[]>(() => {
+    if (typeFilter === "ALL") return questions;
+    return questions.filter((q: LessonQuestionItem) => q.type === typeFilter);
+  }, [questions, typeFilter]);
+
+  const scopedEasyCount = typeScopedQuestions.filter((q: LessonQuestionItem) => q.difficulty === "EASY").length;
+  const scopedMedCount = typeScopedQuestions.filter((q: LessonQuestionItem) => q.difficulty === "MEDIUM").length;
+  const scopedHardCount = typeScopedQuestions.filter((q: LessonQuestionItem) => q.difficulty === "HARD").length;
+
+  // Handle switching question type filter and auto-resetting difficulty filter if needed
+  const handleTypeFilterChange = (newType: string) => {
+    setTypeFilter(newType);
+    if (difficultyFilter !== "ALL") {
+      const candidates = newType === "ALL" ? questions : questions.filter((q) => q.type === newType);
+      const exists = candidates.some((q) => q.difficulty === difficultyFilter);
+      if (!exists) {
+        setDifficultyFilter("ALL");
+      }
+    }
+  };
 
   // Filtered
   const filtered = questions.filter((q) => {
@@ -432,63 +456,139 @@ export function LessonQuestionsTab({
       {/* ─────────────────────────────────────────────────────────────
           2. KPI METRICS CARDS (TOTAL, TYPES, DIFFICULTIES)
       ───────────────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2.5">
         {/* Total */}
-        <div className="p-3.5 rounded-2xl bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-800 text-center space-y-0.5 shadow-2xs">
-          <span className="text-[11px] text-slate-400 font-bold block">إجمالي الأسئلة</span>
-          <span className="text-xl font-bold font-mono text-slate-900 dark:text-white">
+        <div
+          onClick={() => handleTypeFilterChange("ALL")}
+          className={`p-3 rounded-2xl border text-center space-y-0.5 shadow-2xs cursor-pointer transition-all ${
+            typeFilter === "ALL" && difficultyFilter === "ALL"
+              ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900 border-slate-900 dark:border-white shadow-xs"
+              : "bg-white dark:bg-[#1E293B] border-slate-200 dark:border-slate-800 hover:border-slate-300"
+          }`}
+        >
+          <span className={`text-[11px] font-bold block ${typeFilter === "ALL" && difficultyFilter === "ALL" ? "opacity-80" : "text-slate-400"}`}>
+            إجمالي الأسئلة
+          </span>
+          <span className="text-xl font-bold font-mono">
             {totalCount}
           </span>
         </div>
 
         {/* MCQ */}
-        <div className="p-3.5 rounded-2xl bg-blue-50/50 dark:bg-blue-950/20 border border-blue-200/60 dark:border-blue-900/40 text-center space-y-0.5 shadow-2xs">
-          <span className="text-[11px] text-blue-700 dark:text-blue-300 font-bold block">
+        <div
+          onClick={() => handleTypeFilterChange(typeFilter === "MCQ" ? "ALL" : "MCQ")}
+          className={`p-3 rounded-2xl border text-center space-y-0.5 shadow-2xs cursor-pointer transition-all ${
+            typeFilter === "MCQ"
+              ? "bg-blue-600 text-white border-blue-600 shadow-xs"
+              : "bg-blue-50/50 dark:bg-blue-950/20 border-blue-200/60 dark:border-blue-900/40 hover:border-blue-300 text-blue-900 dark:text-blue-100"
+          }`}
+        >
+          <span className={`text-[11px] font-bold block ${typeFilter === "MCQ" ? "text-blue-100" : "text-blue-700 dark:text-blue-300"}`}>
             🎯 اختيار من متعدد
           </span>
-          <span className="text-xl font-bold font-mono text-blue-800 dark:text-blue-200">
+          <span className="text-xl font-bold font-mono">
             {mcqCount}
           </span>
         </div>
 
         {/* True/False */}
-        <div className="p-3.5 rounded-2xl bg-purple-50/50 dark:bg-purple-950/20 border border-purple-200/60 dark:border-purple-900/40 text-center space-y-0.5 shadow-2xs">
-          <span className="text-[11px] text-purple-700 dark:text-purple-300 font-bold block">
+        <div
+          onClick={() => handleTypeFilterChange(typeFilter === "TRUE_FALSE" ? "ALL" : "TRUE_FALSE")}
+          className={`p-3 rounded-2xl border text-center space-y-0.5 shadow-2xs cursor-pointer transition-all ${
+            typeFilter === "TRUE_FALSE"
+              ? "bg-purple-600 text-white border-purple-600 shadow-xs"
+              : "bg-purple-50/50 dark:bg-purple-950/20 border-purple-200/60 dark:border-purple-900/40 hover:border-purple-300 text-purple-900 dark:text-purple-100"
+          }`}
+        >
+          <span className={`text-[11px] font-bold block ${typeFilter === "TRUE_FALSE" ? "text-purple-100" : "text-purple-700 dark:text-purple-300"}`}>
             ⚖️ صح أم خطأ
           </span>
-          <span className="text-xl font-bold font-mono text-purple-800 dark:text-purple-200">
+          <span className="text-xl font-bold font-mono">
             {tfCount}
           </span>
         </div>
 
         {/* Essay */}
-        <div className="p-3.5 rounded-2xl bg-amber-50/50 dark:bg-amber-950/20 border border-amber-200/60 dark:border-amber-900/40 text-center space-y-0.5 shadow-2xs">
-          <span className="text-[11px] text-amber-700 dark:text-amber-300 font-bold block">
+        <div
+          onClick={() => handleTypeFilterChange(typeFilter === "ESSAY" ? "ALL" : "ESSAY")}
+          className={`p-3 rounded-2xl border text-center space-y-0.5 shadow-2xs cursor-pointer transition-all ${
+            typeFilter === "ESSAY"
+              ? "bg-amber-600 text-white border-amber-600 shadow-xs"
+              : "bg-amber-50/50 dark:bg-amber-950/20 border-amber-200/60 dark:border-amber-900/40 hover:border-amber-300 text-amber-900 dark:text-amber-100"
+          }`}
+        >
+          <span className={`text-[11px] font-bold block ${typeFilter === "ESSAY" ? "text-amber-100" : "text-amber-700 dark:text-amber-300"}`}>
             📝 مقالي
           </span>
-          <span className="text-xl font-bold font-mono text-amber-800 dark:text-amber-200">
+          <span className="text-xl font-bold font-mono">
             {essayCount}
           </span>
         </div>
 
         {/* Easy */}
-        <div className="p-3.5 rounded-2xl bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-200/60 dark:border-emerald-900/40 text-center space-y-0.5 shadow-2xs">
-          <span className="text-[11px] text-emerald-700 dark:text-emerald-300 font-bold block">
+        <div
+          onClick={() => setDifficultyFilter(difficultyFilter === "EASY" ? "ALL" : "EASY")}
+          className={`p-3 rounded-2xl border text-center space-y-0.5 shadow-2xs cursor-pointer transition-all ${
+            difficultyFilter === "EASY"
+              ? "bg-emerald-600 text-white border-emerald-600 shadow-xs"
+              : "bg-emerald-50/50 dark:bg-emerald-950/20 border-emerald-200/60 dark:border-emerald-900/40 hover:border-emerald-300 text-emerald-900 dark:text-emerald-100"
+          }`}
+        >
+          <span className={`text-[11px] font-bold block ${difficultyFilter === "EASY" ? "text-emerald-100" : "text-emerald-700 dark:text-emerald-300"}`}>
             🟢 سهل
           </span>
-          <span className="text-xl font-bold font-mono text-emerald-800 dark:text-emerald-200">
-            {easyCount}
-          </span>
+          <div className="flex items-baseline justify-center gap-1 font-mono font-bold">
+            <span className="text-xl">{scopedEasyCount}</span>
+            {typeFilter !== "ALL" && scopedEasyCount !== globalEasyCount && (
+              <span className={`text-[10px] ${difficultyFilter === "EASY" ? "text-emerald-200" : "text-slate-400"}`}>
+                / {globalEasyCount}
+              </span>
+            )}
+          </div>
         </div>
 
-        {/* Hard / Med */}
-        <div className="p-3.5 rounded-2xl bg-rose-50/50 dark:bg-rose-950/20 border border-rose-200/60 dark:border-rose-900/40 text-center space-y-0.5 shadow-2xs">
-          <span className="text-[11px] text-rose-700 dark:text-rose-300 font-bold block">
-            🔴 صعب ({hardCount}) / 🟡 ({medCount})
+        {/* Medium */}
+        <div
+          onClick={() => setDifficultyFilter(difficultyFilter === "MEDIUM" ? "ALL" : "MEDIUM")}
+          className={`p-3 rounded-2xl border text-center space-y-0.5 shadow-2xs cursor-pointer transition-all ${
+            difficultyFilter === "MEDIUM"
+              ? "bg-amber-600 text-white border-amber-600 shadow-xs"
+              : "bg-amber-50/40 dark:bg-amber-950/15 border-amber-200/50 dark:border-amber-900/30 hover:border-amber-300 text-amber-900 dark:text-amber-100"
+          }`}
+        >
+          <span className={`text-[11px] font-bold block ${difficultyFilter === "MEDIUM" ? "text-amber-100" : "text-amber-700 dark:text-amber-300"}`}>
+            🟡 متوسط
           </span>
-          <span className="text-xl font-bold font-mono text-rose-800 dark:text-rose-200">
-            {hardCount + medCount}
+          <div className="flex items-baseline justify-center gap-1 font-mono font-bold">
+            <span className="text-xl">{scopedMedCount}</span>
+            {typeFilter !== "ALL" && scopedMedCount !== globalMedCount && (
+              <span className={`text-[10px] ${difficultyFilter === "MEDIUM" ? "text-amber-200" : "text-slate-400"}`}>
+                / {globalMedCount}
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Hard */}
+        <div
+          onClick={() => setDifficultyFilter(difficultyFilter === "HARD" ? "ALL" : "HARD")}
+          className={`p-3 rounded-2xl border text-center space-y-0.5 shadow-2xs cursor-pointer transition-all ${
+            difficultyFilter === "HARD"
+              ? "bg-rose-600 text-white border-rose-600 shadow-xs"
+              : "bg-rose-50/50 dark:bg-rose-950/20 border-rose-200/60 dark:border-rose-900/40 hover:border-rose-300 text-rose-900 dark:text-rose-100"
+          }`}
+        >
+          <span className={`text-[11px] font-bold block ${difficultyFilter === "HARD" ? "text-rose-100" : "text-rose-700 dark:text-rose-300"}`}>
+            🔴 صعب
           </span>
+          <div className="flex items-baseline justify-center gap-1 font-mono font-bold">
+            <span className="text-xl">{scopedHardCount}</span>
+            {typeFilter !== "ALL" && scopedHardCount !== globalHardCount && (
+              <span className={`text-[10px] ${difficultyFilter === "HARD" ? "text-rose-200" : "text-slate-400"}`}>
+                / {globalHardCount}
+              </span>
+            )}
+          </div>
         </div>
       </div>
 
@@ -498,7 +598,7 @@ export function LessonQuestionsTab({
       <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-800 shadow-2xs overflow-x-auto">
         <button
           type="button"
-          onClick={() => setTypeFilter("ALL")}
+          onClick={() => handleTypeFilterChange("ALL")}
           className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
             typeFilter === "ALL"
               ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-xs"
@@ -513,7 +613,7 @@ export function LessonQuestionsTab({
 
         <button
           type="button"
-          onClick={() => setTypeFilter("MCQ")}
+          onClick={() => handleTypeFilterChange("MCQ")}
           className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
             typeFilter === "MCQ"
               ? "bg-blue-600 text-white shadow-xs"
@@ -528,7 +628,7 @@ export function LessonQuestionsTab({
 
         <button
           type="button"
-          onClick={() => setTypeFilter("TRUE_FALSE")}
+          onClick={() => handleTypeFilterChange("TRUE_FALSE")}
           className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
             typeFilter === "TRUE_FALSE"
               ? "bg-purple-600 text-white shadow-xs"
@@ -543,7 +643,7 @@ export function LessonQuestionsTab({
 
         <button
           type="button"
-          onClick={() => setTypeFilter("ESSAY")}
+          onClick={() => handleTypeFilterChange("ESSAY")}
           className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
             typeFilter === "ESSAY"
               ? "bg-amber-600 text-white shadow-xs"
@@ -579,8 +679,8 @@ export function LessonQuestionsTab({
             <span className="text-[11px] font-bold text-slate-400">النوع:</span>
             <select
               value={typeFilter}
-              onChange={(e) => setTypeFilter(e.target.value)}
-              className="px-2.5 py-1.5 rounded-xl bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-xs font-bold outline-none"
+              onChange={(e) => handleTypeFilterChange(e.target.value)}
+              className="px-2.5 py-1.5 rounded-xl bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-xs font-bold outline-none cursor-pointer"
             >
               <option value="ALL">الكل ({totalCount})</option>
               <option value="MCQ">اختيار من متعدد ({mcqCount})</option>
@@ -595,12 +695,12 @@ export function LessonQuestionsTab({
             <select
               value={difficultyFilter}
               onChange={(e) => setDifficultyFilter(e.target.value)}
-              className="px-2.5 py-1.5 rounded-xl bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-xs font-bold outline-none"
+              className="px-2.5 py-1.5 rounded-xl bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 text-xs font-bold outline-none cursor-pointer"
             >
-              <option value="ALL">جميع المستويات</option>
-              <option value="EASY">سهل ({easyCount})</option>
-              <option value="MEDIUM">متوسط ({medCount})</option>
-              <option value="HARD">صعب ({hardCount})</option>
+              <option value="ALL">جميع المستويات ({typeScopedQuestions.length})</option>
+              <option value="EASY">سهل ({scopedEasyCount})</option>
+              <option value="MEDIUM">متوسط ({scopedMedCount})</option>
+              <option value="HARD">صعب ({scopedHardCount})</option>
             </select>
           </div>
         </div>
