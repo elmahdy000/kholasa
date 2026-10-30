@@ -73,4 +73,21 @@ describe("Question Document Parser", () => {
     expect(questions[1].type).toBe("ESSAY");
     expect(questions[1].modelAnswer).toContain("الحواسيب الإلكترونية");
   });
+
+  it("formats inline essay answers to split points across newlines", () => {
+    const rawInline =
+      "1. الحواسيب الإلكترونية: استخدمت في الأغراض العسكرية. 2. الحواسيب الشخصية: أتاحت بداية استخدام الأفراد. 3. الإنترنت والويب: ساهما في انتشار الوصول.";
+    const rawEssay = `[مقالي] س3: وضح المراحل؟\nالإجابة النموذجية: ${rawInline}`;
+
+    const questions = parseQuestionsFromText(rawEssay);
+    expect(questions.length).toBe(1);
+    const modelAns = questions[0].modelAnswer;
+    expect(modelAns).toBeDefined();
+    // Verify each point starts on a separate line
+    const lines = modelAns!.split("\n").map((l) => l.trim()).filter(Boolean);
+    expect(lines.length).toBe(3);
+    expect(lines[0]).toContain("1. الحواسيب الإلكترونية");
+    expect(lines[1]).toContain("2. الحواسيب الشخصية");
+    expect(lines[2]).toContain("3. الإنترنت والويب");
+  });
 });

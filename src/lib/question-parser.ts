@@ -240,6 +240,31 @@ export function parseOptionItem(rawOption: string): ParsedQuestionOption {
 }
 
 /**
+ * Automatically format model answers so that numbered items (1. 2. 3. or 1- 2- or • -)
+ * are placed on separate lines under each other instead of running together on one line.
+ */
+export function formatModelAnswer(text: string): string {
+  if (!text) return "";
+  let formatted = text.trim();
+
+  // If there are run-on numbered items like " 2. " or " 3) " or " 2- " or " (2) "
+  // Replace space before digit+punct with newline so items appear under each other
+  formatted = formatted.replace(
+    /(?:^|\s+)((?:[0-9]+|[٠-٩]+)[\.\-\)\:]|\([0-9]+|[٠-٩]+\)|[أ-دA-Da-d][\.\-\)])\s+/g,
+    (match, prefix, offset) => {
+      return offset === 0 ? `${prefix} ` : `\n${prefix} `;
+    }
+  );
+
+  // Also split bullet points: " • " or " - " or " * "
+  formatted = formatted.replace(/\s+([•\-–—\*])\s+/g, "\n$1 ");
+
+  // Normalize multiple consecutive newlines to at most 2
+  formatted = formatted.replace(/\n{3,}/g, "\n\n").trim();
+  return formatted;
+}
+
+/**
  * Main parser function: converts text into structured ParsedQuestion array
  */
 export function parseQuestionsFromText(
@@ -462,7 +487,7 @@ function processQuestionBlock(
       if (readingStatement) {
         statementLines.push(line);
       } else {
-        modelAnswerText = (modelAnswerText ? modelAnswerText + " " : "") + line;
+        modelAnswerText = (modelAnswerText ? modelAnswerText + "\n" : "") + line;
       }
       continue;
     }
@@ -488,7 +513,7 @@ function processQuestionBlock(
     } else {
       // If we already saw options or answers, append line to explanation or model answer
       if (detectedType === "ESSAY" || modelAnswerText) {
-        modelAnswerText = (modelAnswerText ? modelAnswerText + " " : "") + line;
+        modelAnswerText = (modelAnswerText ? modelAnswerText + "\n" : "") + line;
       } else if (explanationText) {
         explanationText += " " + line;
       }
@@ -724,7 +749,7 @@ function processQuestionBlock(
     type: detectedType,
     difficulty: finalDifficulty,
     options: parsedOptions,
-    modelAnswer: modelAnswerText || undefined,
+    modelAnswer: modelAnswerText ? formatModelAnswer(modelAnswerText) : undefined,
     concept: conceptText || undefined,
     correctReason: explanationText || undefined,
     sourceReference: sourceReference || undefined,

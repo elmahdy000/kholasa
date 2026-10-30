@@ -36,6 +36,7 @@ import {
   QuestionDifficulty,
   QuestionReviewStatus,
   parseQuestionsFromText,
+  formatModelAnswer,
 } from "@/lib/question-parser";
 
 export type ImportTargetType = "ALL" | "MCQ" | "TRUE_FALSE" | "ESSAY";
@@ -1269,17 +1270,35 @@ Explanation: الذكاء الاصطناعي مجال يضم أنظمة حاسو
                                 {q.type === "ESSAY" && (
                                   <>
                                     <div>
-                                      <label className="block text-[11px] font-bold text-amber-700 dark:text-amber-400 mb-1">
-                                        الإجابة النموذجية (عناصر الحل المقالي الكامل):
-                                      </label>
+                                      <div className="flex items-center justify-between gap-2 mb-1">
+                                        <label className="text-[11px] font-bold text-amber-700 dark:text-amber-400">
+                                          الإجابة النموذجية (عناصر الحل المقالي الكامل):
+                                        </label>
+                                        {q.modelAnswer && (
+                                          <button
+                                            type="button"
+                                            onClick={() =>
+                                              handleUpdateStagedQuestion({
+                                                ...q,
+                                                modelAnswer: formatModelAnswer(q.modelAnswer || ""),
+                                              })
+                                            }
+                                            title="إعادة تنظيم وترتيب النقاط تلقائياً لتظهر كل نقطة في سطر منفصل"
+                                            className="text-[10px] font-bold text-amber-800 hover:text-amber-950 dark:text-amber-300 dark:hover:text-amber-100 bg-amber-200/70 hover:bg-amber-300/80 dark:bg-amber-900/40 px-2 py-0.5 rounded border border-amber-300 dark:border-amber-700 transition-colors flex items-center gap-1 cursor-pointer"
+                                          >
+                                            <Sparkles className="w-3 h-3 text-amber-600" />
+                                            <span>ترتيب النقاط أسطر تحت بعض</span>
+                                          </button>
+                                        )}
+                                      </div>
                                       <textarea
-                                        rows={4}
+                                        rows={5}
                                         value={q.modelAnswer || ""}
                                         onChange={(e) =>
                                           handleUpdateStagedQuestion({ ...q, modelAnswer: e.target.value })
                                         }
-                                        placeholder="اكتب عناصر الإجابة والخطوات النموذجية بالتفصيل..."
-                                        className="w-full p-2.5 rounded-lg border border-amber-300 dark:border-amber-700 bg-amber-50/30 text-[12px] font-medium"
+                                        placeholder="اكتب عناصر الإجابة والخطوات النموذجية بالتفصيل (ستظهر كل نقطة في سطر مستقل)..."
+                                        className="w-full p-2.5 rounded-lg border border-amber-300 dark:border-amber-700 bg-amber-50/30 text-[12px] font-medium leading-relaxed whitespace-pre-wrap font-sans"
                                       />
                                     </div>
 

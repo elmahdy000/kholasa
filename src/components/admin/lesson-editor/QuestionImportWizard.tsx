@@ -27,11 +27,12 @@ import {
   Plus,
 } from "lucide-react";
 import type { UnitInfo } from "./types";
-import type {
+import {
   ParsedQuestion,
   QuestionType,
   QuestionDifficulty,
   QuestionReviewStatus,
+  formatModelAnswer,
 } from "@/lib/question-parser";
 
 export type ImportTargetType = "ALL" | "MCQ" | "TRUE_FALSE" | "ESSAY";
@@ -1551,35 +1552,52 @@ export function QuestionImportWizard({
                             <div className="space-y-3 pt-1">
                               {/* Model Answer Box */}
                               <div className="p-3.5 rounded-2xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-300 dark:border-amber-800 space-y-2">
-                                <div className="flex items-center justify-between">
+                                <div className="flex items-center justify-between gap-2">
                                   <label className="text-xs font-bold text-amber-900 dark:text-amber-200 flex items-center gap-1.5">
                                     <BookOpen className="w-4 h-4 text-amber-600 shrink-0" />
                                     <span>الإجابة النموذجية المعتمدة (عناصر الحل المقالي):</span>
                                   </label>
-                                  <div className="flex items-center gap-1.5 text-xs font-bold text-slate-600 dark:text-slate-400">
-                                    <span>الدرجة:</span>
-                                    <input
-                                      type="number"
-                                      min={1}
-                                      max={100}
-                                      value={q.points || 10}
-                                      onChange={(e) =>
-                                        updateStagedQuestion(q.id, {
-                                          points: parseInt(e.target.value) || 10,
-                                        })
-                                      }
-                                      className="w-14 px-2 py-0.5 rounded-lg border border-amber-300 dark:border-amber-700 bg-white dark:bg-slate-900 text-xs font-mono font-bold text-center outline-none"
-                                    />
+                                  <div className="flex items-center gap-2">
+                                    {q.modelAnswer && (
+                                      <button
+                                        type="button"
+                                        onClick={() =>
+                                          updateStagedQuestion(q.id, {
+                                            modelAnswer: formatModelAnswer(q.modelAnswer || ""),
+                                          })
+                                        }
+                                        title="إعادة تنظيم وترتيب النقاط تلقائياً لتظهر كل نقطة في سطر منفصل"
+                                        className="text-[11px] font-bold text-amber-800 hover:text-amber-950 dark:text-amber-300 dark:hover:text-amber-100 bg-amber-200/70 hover:bg-amber-300/80 dark:bg-amber-900/40 px-2 py-0.5 rounded-lg border border-amber-300 dark:border-amber-700 transition-colors flex items-center gap-1 shadow-xs cursor-pointer"
+                                      >
+                                        <Sparkles className="w-3 h-3 text-amber-600" />
+                                        <span>ترتيب النقاط أسطر تحت بعض</span>
+                                      </button>
+                                    )}
+                                    <div className="flex items-center gap-1.5 text-xs font-bold text-slate-600 dark:text-slate-400">
+                                      <span>الدرجة:</span>
+                                      <input
+                                        type="number"
+                                        min={1}
+                                        max={100}
+                                        value={q.points || 10}
+                                        onChange={(e) =>
+                                          updateStagedQuestion(q.id, {
+                                            points: parseInt(e.target.value) || 10,
+                                          })
+                                        }
+                                        className="w-14 px-2 py-0.5 rounded-lg border border-amber-300 dark:border-amber-700 bg-white dark:bg-slate-900 text-xs font-mono font-bold text-center outline-none"
+                                      />
+                                    </div>
                                   </div>
                                 </div>
                                 <textarea
-                                  rows={3}
+                                  rows={5}
                                   value={q.modelAnswer || ""}
                                   onChange={(e) =>
                                     updateStagedQuestion(q.id, { modelAnswer: e.target.value })
                                   }
-                                  placeholder="اكتب خطوات الحل أو الإجابة النموذجية الكاملة..."
-                                  className="w-full p-2.5 rounded-xl bg-white dark:bg-[#0F172A] border border-amber-200 dark:border-amber-800/80 text-xs text-slate-900 dark:text-white leading-relaxed resize-y outline-none focus:border-amber-500"
+                                  placeholder="اكتب خطوات الحل أو الإجابة النموذجية الكاملة (ستظهر كل نقطة في سطر مستقل)..."
+                                  className="w-full p-2.5 rounded-xl bg-white dark:bg-[#0F172A] border border-amber-200 dark:border-amber-800/80 text-xs font-medium text-slate-900 dark:text-white leading-relaxed resize-y outline-none focus:border-amber-500 whitespace-pre-wrap font-sans"
                                 />
                               </div>
 
