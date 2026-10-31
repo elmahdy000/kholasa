@@ -59,6 +59,10 @@ export default async function ExamResultsPage({
           title: true,
           subjectId: true,
           subject: { select: { id: true, name: true, color: true } },
+          questions: {
+            select: { questionId: true, order: true },
+            orderBy: { order: "asc" },
+          },
         },
       },
       answers: {
@@ -86,8 +90,19 @@ export default async function ExamResultsPage({
     notFound();
   }
 
-  const essayAnswers = attempt.answers.filter((a) => a.question?.type === "ESSAY");
-  const objectiveAnswers = attempt.answers.filter((a) => a.question?.type !== "ESSAY");
+  // Guarantee questions are reviewed in the exact sequential order the student saw during the exam
+  const questionOrderMap = new Map<string, number>(
+    attempt.exam?.questions?.map((eq) => [eq.questionId, eq.order]) || []
+  );
+
+  const sortedAnswers = [...attempt.answers].sort((a, b) => {
+    const orderA = questionOrderMap.get(a.questionId) ?? 9999;
+    const orderB = questionOrderMap.get(b.questionId) ?? 9999;
+    return orderA - orderB;
+  });
+
+  const essayAnswers = sortedAnswers.filter((a) => a.question?.type === "ESSAY");
+  const objectiveAnswers = sortedAnswers.filter((a) => a.question?.type !== "ESSAY");
   const correctAnswers = objectiveAnswers.filter((a) => a.isCorrect === true);
   const wrongAnswers = objectiveAnswers.filter((a) => a.isCorrect === false);
   const unansweredCount =
@@ -261,7 +276,7 @@ export default async function ExamResultsPage({
           </h2>
 
           <div className="space-y-4">
-            {attempt.answers.map((ans, idx) => {
+            {sortedAnswers.map((ans, idx) => {
               const q = ans.question;
               const isCorrect = ans.isCorrect;
               const relatedLesson = q.lessons[0]?.lesson;

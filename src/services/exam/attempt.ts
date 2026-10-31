@@ -90,10 +90,11 @@ export class ExamAttemptService {
         exam: {
           include: {
             questions: {
+              orderBy: { order: "asc" },
               include: {
                 question: {
                   include: {
-                    options: true,
+                    options: { orderBy: { order: "asc" } },
                     explanation: true,
                     rubric: true,
                   },

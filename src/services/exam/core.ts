@@ -49,6 +49,7 @@ export class ExamCoreService {
               include: {
                 options: {
                   select: { id: true, text: true, order: true },
+                  orderBy: { order: "asc" },
                 },
                 explanation: true,
                 rubric: {
