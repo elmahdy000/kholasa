@@ -12,10 +12,10 @@ import {
   ChevronLeft,
   ChevronRight,
   X,
-  Rocket,
   Brain,
   Target,
   Trophy,
+  Check,
 } from "lucide-react";
 import { ConfettiCanvas } from "@/components/ui/ConfettiCanvas";
 
@@ -42,87 +42,87 @@ const TOUR_STEPS: TourStep[] = [
   {
     id: "capsules",
     badge: "الخطوة ١ من ٥",
-    title: "كبسولات الدروس والملخصات المركزة",
+    title: "كبسولة الدرس (الزتونة)",
     description:
-      "كل درس في منهج البكالوريا تم تحويله إلى كبسولة مكثفة؛ تمنحك جوهر المفاهيم في دقائق معدودة، بدون حشو أو تشتيت، مع أهم إرشادات الامتحانات.",
+      "كل درس معمول في كبسولة سريعة تديك المفيد في دقايق، من غير رغي ولا حشو، ومركزة على النقط اللي بتيجي في الامتحان.",
     icon: BookOpen,
     iconColor: "text-[#800020] dark:text-[#FB7185]",
     iconBg: "bg-[#800020]/10 dark:bg-[#800020]/25",
-    previewTitle: "مميزات كبسولة الدرس:",
+    previewTitle: "كبسولة الدرس بتوفرلك إيه؟",
     previewHighlights: [
-      { icon: Sparkles, text: "شرح مختصر ومباشر لكل عنصر بالدرس" },
-      { icon: Target, text: "تنبيهات لأهم تكات الامتحانات والأسئلة الشائعة" },
-      { icon: CheckCircle2, text: "قائمة مصطلحات وتعريفات معزولة باللغتين" },
+      { icon: Sparkles, text: "شرح مباشر وسريع لكل فكرة في الدرس" },
+      { icon: Target, text: "تكات الامتحانات وأكتر الأسئلة اللي بتكرر" },
+      { icon: CheckCircle2, text: "المصطلحات المهمة مترجمة ومتلخصة" },
     ],
-    tagline: "⚡ اختصر ساعات الحشو وافهم في دقائق",
+    tagline: "وفر وقتك وافهم الزتونة في دقايق",
   },
   {
     id: "mindmaps",
     badge: "الخطوة ٢ من ٥",
-    title: "الخرائط الذهنية التفاعلية",
+    title: "الخرائط الذهنية",
     description:
-      "لا مزيد من حفظ النصوص الصماء! شاشات الخرائط الذهنية تربط عناصر الدرس كاملة كشبكة معرفية بصرية واضحة، تساعدك على استرجاع المعلومات بسهولة في الامتحان.",
+      "انسى الحفظ الصم! الخريطة بتلم أفكار الدرس كله في شاشة واحدة تفاعلية، تكبر وتصغر وتربط النقط ببعضها عشان متنساش.",
     icon: Brain,
     iconColor: "text-[#2563EB] dark:text-[#60A5FA]",
     iconBg: "bg-[#2563EB]/10 dark:bg-[#2563EB]/25",
-    previewTitle: "كيف تفيدك الخريطة الذهنية؟",
+    previewTitle: "الخريطة هتفيدك في إيه؟",
     previewHighlights: [
-      { icon: GitFork, text: "رؤية شاملة للدرس وعلاقات الأفكار ببعضها" },
-      { icon: Sparkles, text: "تحريك وتكبير بصري فائق السلاسة" },
-      { icon: CheckCircle2, text: "تثبيت دائم للمعلومات في الذاكرة الصورية" },
+      { icon: GitFork, text: "بتشوف الدرس كله مترتب قدام عينك" },
+      { icon: Sparkles, text: "سهل تكبر وتشوف تفاصيل كل فرع" },
+      { icon: CheckCircle2, text: "المعلومة بتثبت في الذاكرة ومبتطيرش" },
     ],
-    tagline: "🧠 افهم الصورة الكاملة قبل التفاصيل",
+    tagline: "افهم الصورة الكاملة للدرس الأول",
   },
   {
     id: "questions",
     badge: "الخطوة ٣ من ٥",
-    title: "بنك الأسئلة والتدريبات التفاعلية",
+    title: "بنك الأسئلة والتدريبات",
     description:
-      "تدرب على مئات الأسئلة المقننة لكل درس (اختيار من متعدد، صواب وخطأ، وأسئلة مقالية) مع تصحيح فوري ونماذج إجابة وتفسير تفصيلي لكل حل.",
+      "حل واتدرب على كل درس براحتك؛ أسئلة اختيار من متعدد ومقالي، وهتعرف إجابتك صح ولا غلط فوراً مع التفسير المعتمد.",
     icon: Target,
     iconColor: "text-[#059669] dark:text-[#34D399]",
     iconBg: "bg-[#059669]/10 dark:bg-[#059669]/25",
-    previewTitle: "أدوات التدريب الذكية:",
+    previewTitle: "نظام التدريب الذكي:",
     previewHighlights: [
-      { icon: CheckCircle2, text: "تصحيح لحظي مع بيان سبب صحة أو خطأ كل خيار" },
-      { icon: Sparkles, text: "نماذج إجابة رسمية ومعايير تصحيح للأسئلة المقالية" },
-      { icon: Target, text: "تدريبات مقسمة حسب الصعوبة (سهل، متوسط، صعب)" },
+      { icon: CheckCircle2, text: "تصحيح فوري وتفسير كامل للإجابة الصح" },
+      { icon: Sparkles, text: "إجابات نموذجية وطريقة التوزيع للأسئلة المقالية" },
+      { icon: Target, text: "أسئلة متدرجة من البسيط لحد المستويات العليا" },
     ],
-    tagline: "🎯 تدرب كأنك في الامتحان الحقيقي",
+    tagline: "اتدرب كأنك جوه لجنة الامتحان بالضبط",
   },
   {
     id: "mistakes",
     badge: "الخطوة ٤ من ٥",
-    title: "دفتر الأخطاء التلقائي الذكي",
+    title: "دفتر أخطائك الذكي",
     description:
-      "أقوى ميزة للتفوق! أي سؤال تخطئ فيه في أي تدريب يُحفظ تلقائياً في دفتر أخطائك، لتعيد التدرب عليه لاحقاً حتى تتقنه بنسبة 100%.",
+      "أقوى حاجة هتوصلك للدرجة النهائية! أي سؤال تغلط فيه في التدريبات بيتحوش لوحده هنا، عشان ترجعله وتعيده لحد ما تقفله.",
     icon: BookmarkCheck,
     iconColor: "text-[#D97706] dark:text-[#FBBF24]",
     iconBg: "bg-[#D97706]/10 dark:bg-[#D97706]/25",
-    previewTitle: "لماذا دفتر الأخطاء سريّ في تفوقك؟",
+    previewTitle: "ليه دفتر الأخطاء مهم؟",
     previewHighlights: [
-      { icon: CheckCircle2, text: "يحدد نقاط ضعفك تلقائياً بدون مجهود منك" },
-      { icon: Sparkles, text: "إمكانية إعادة حل السؤال فوراً ومحو الخطأ بعد الإتقان" },
-      { icon: Target, text: "مراجعة مركزة ليلة الامتحان لأهم ما تعثرت فيه" },
+      { icon: CheckCircle2, text: "بيعرفك إنت بتغلط في إيه من غير ما تدور" },
+      { icon: Sparkles, text: "تقدر تعيد السؤال وتصلح درجتك فوراً" },
+      { icon: Target, text: "أفضل مراجعة مركزة تراجعها قبل الامتحان" },
     ],
-    tagline: "🛡️ حوّل كل خطأ إلى درجة مضمونة في الامتحان",
+    tagline: "كل غلطة بتتعلم منها درجة مضمونة في جيبك",
   },
   {
     id: "streak",
     badge: "الخطوة ٥ من ٥",
-    title: "التحدي اليومي ولوحة الصدارة",
+    title: "التحدي اليومي وسلسلة المذاكرة",
     description:
-      "سؤال يومي واحد فقط يبقيك مستعداً ومتفاعلاً! حافظ على شعلة الالتزام اليومي (Streak 🔥) واكسب نقاط الخبرة لتتصدر لوحة الشرف مع زملائك.",
+      "سؤال واحد خفيف كل يوم يخليك فايق ومتابع، ويحافظ على شعلة التزامك (Streak) عشان تعلى في الترتيب بين زمايلك.",
     icon: Flame,
     iconColor: "text-[#E11D48] dark:text-[#FB7185]",
     iconBg: "bg-[#E11D48]/10 dark:bg-[#E11D48]/25",
-    previewTitle: "قواعد التحدي والتنافس:",
+    previewTitle: "إزاي تكسب نقاط التحدي؟",
     previewHighlights: [
-      { icon: Flame, text: "حل سؤال التحدي يومياً للحفاظ على شعلتك المستمرة" },
-      { icon: Trophy, text: "نقاط إضافية ترفع ترتيبك في لوحة المتصدرين" },
-      { icon: Sparkles, text: "مكافآت وشارات تميز للطلاب الأكثر التزاماً" },
+      { icon: Flame, text: "حل سؤال التحدي كل يوم وحافظ على شعلتك" },
+      { icon: Trophy, text: "اجمع نقاط ترفع اسمك في لوحة الأوائل" },
+      { icon: Sparkles, text: "أوسمة وشارات تشجيع للملتزمين" },
     ],
-    tagline: "🔥 الاستمرار اليومي هو السر الحقيقي للدرجات النهائية",
+    tagline: "الاستمرار البسيط كل يوم هو سر التقفيل",
   },
 ];
 
@@ -188,16 +188,16 @@ export function ProductTourModal({ isOpen, onClose, userName }: ProductTourModal
           {/* Top Bar with Dismiss */}
           <div className="p-4 sm:p-5 border-b border-[#F1F5F9] dark:border-[#1E293B] flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#800020] dark:bg-[#FB7185] animate-pulse" />
+              <span className="w-2.5 h-2.5 rounded-full bg-[#800020] dark:bg-[#FB7185]" />
               <span className="text-xs sm:text-[13px] font-bold text-[#800020] dark:text-[#FB7185]">
-                جولة استكشاف الخلاصة
+                جولة سريعة في المنصة
               </span>
             </div>
             <button
               type="button"
               onClick={handleSkip}
               className="p-1.5 rounded-xl text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white hover:bg-[#F1F5F9] dark:hover:bg-[#1E293B] transition-colors"
-              title="إغلاق الجولة"
+              title="إغلاق"
             >
               <X className="w-5 h-5" />
             </button>
@@ -309,8 +309,8 @@ export function ProductTourModal({ isOpen, onClose, userName }: ProductTourModal
               >
                 {isLast ? (
                   <>
-                    <Rocket className="w-4 h-4 animate-bounce" />
-                    <span>ابدأ رحلتك الآن</span>
+                    <span>يلا نبدأ المذاكرة</span>
+                    <Check className="w-4 h-4 stroke-[3]" />
                   </>
                 ) : (
                   <>

@@ -61,7 +61,7 @@ export function DashboardHero({ userName, studentMeta, continueLesson, onStartTo
               className="h-10 px-3.5 sm:px-4 rounded-xl bg-gradient-to-r from-amber-50 to-amber-100/70 dark:from-amber-950/40 dark:to-amber-900/20 border border-amber-200/80 dark:border-amber-700/50 text-amber-900 dark:text-amber-200 hover:border-amber-300 dark:hover:border-amber-600 text-[13px] sm:text-sm font-bold flex items-center justify-center gap-1.5 transition-all active:scale-[0.98] shadow-xs cursor-pointer"
               title="جولة في مميزات الخلاصة"
             >
-              <Sparkles className="w-4 h-4 text-amber-500 fill-amber-500 animate-pulse" />
+              <Sparkles className="w-4 h-4 text-amber-500 fill-amber-500" />
               <span>جولة المنصة</span>
             </button>
           )}

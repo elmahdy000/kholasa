@@ -56,7 +56,7 @@ export default async function SetupPage({ searchParams }: SetupPageProps) {
 
         {/* Footer Guarantee */}
         <div className="text-center text-[11px] sm:text-xs text-[#94A3B8] flex items-center justify-center gap-2">
-          <span>🔒 بياناتك التعليمية مشفرة ومحمية بالكامل ومخصصة لمنهج البكالوريا</span>
+          <span>بياناتك واختياراتك بتتحفظ بأمان ومخصصة لمنهج البكالوريا</span>
         </div>
       </div>
     </div>

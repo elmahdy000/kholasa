@@ -2,12 +2,11 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   ChevronLeft,
   ChevronRight,
   Loader2,
-  CheckCircle2,
   Sparkles,
   BookOpen,
   Brain,
@@ -15,7 +14,7 @@ import {
   BookmarkCheck,
   Flame,
   Clock,
-  Rocket,
+  ArrowRight,
   GraduationCap,
   Languages,
   Check,
@@ -52,62 +51,62 @@ interface SetupFormProps {
 const SUPERPOWERS = [
   {
     icon: Sparkles,
-    title: "كبسولات مكثفة للدروس",
-    description: "شرح مبسط ومكثف بدون حشو، مركز على نقاط الامتحانات والمفاهيم الجوهرية.",
-    accent: "from-amber-500/10 to-amber-500/5 text-amber-600 dark:text-amber-400 border-amber-500/20",
+    title: "كبسولة الدرس (الزتونة)",
+    description: "شرح مركز بيجيبلك المفيد في دقايق، ومن غير رغي ولا تضييع وقت.",
+    accent: "from-amber-500/10 to-amber-500/5 text-amber-700 dark:text-amber-300 border-amber-500/20",
   },
   {
     icon: Brain,
-    title: "خرائط ذهنية تفاعلية",
-    description: "تلخيص بصري يربط عناصر الدرس في شاشة واحدة لتثبيت العلاقات بالذاكرة.",
-    accent: "from-blue-500/10 to-blue-500/5 text-blue-600 dark:text-blue-400 border-blue-500/20",
+    title: "خريطة ذهنية تلم الدرس",
+    description: "رسمة بصرية تفاعلية تفهم منها العلاقات وترتب أفكارك قبل ما تحفظ.",
+    accent: "from-blue-500/10 to-blue-500/5 text-blue-700 dark:text-blue-300 border-blue-500/20",
   },
   {
     icon: Target,
-    title: "بنك تدريبات وتصحيح ذكي",
-    description: "تدريبات مقننة بنماذج إجابة رسمية وتفسير تفصيلي لكل خيار.",
-    accent: "from-emerald-500/10 to-emerald-500/5 text-emerald-600 dark:text-emerald-400 border-emerald-500/20",
+    title: "تدريب فوري مع التفسير",
+    description: "حل وجرب إيدك، وهتعرف إجابتك صح ولا لأ فوراً مع الشرح المعتمد.",
+    accent: "from-emerald-500/10 to-emerald-500/5 text-emerald-700 dark:text-emerald-300 border-emerald-500/20",
   },
   {
     icon: BookmarkCheck,
-    title: "دفتر الأخطاء التلقائي",
-    description: "كل سؤال تخطئ فيه يُحفظ تلقائياً لتتدرب عليه مجدداً حتى تتقنه تماماً.",
-    accent: "from-rose-500/10 to-rose-500/5 text-rose-600 dark:text-rose-400 border-rose-500/20",
+    title: "دفتر أخطائك الذكي",
+    description: "أي سؤال يقع منك بيتحفظ لوحده، عشان تراجعه تاني لغاية ما تقفل درجته.",
+    accent: "from-rose-500/10 to-rose-500/5 text-rose-700 dark:text-rose-300 border-rose-500/20",
   },
 ];
 
 const DAILY_GOALS = [
   {
     minutes: 15,
-    title: "١٥ دقيقة / يومياً",
-    subtitle: "انطلاقة سريعة وخفيفة",
-    badge: "بداية سهلة 🚀",
-    description: "حل كبسولة درس وسؤال التحدي اليومي لضمان الاستمرارية بدون إرهاق.",
+    title: "١٥ دقيقة في اليوم",
+    subtitle: "على الماشي",
+    badge: "بداية خفيفة",
+    description: "كبسولة سريعة وسؤال التحدي عشان تفضل إيدك في المادة.",
   },
   {
     minutes: 30,
-    title: "٣٠ دقيقة / يومياً",
-    subtitle: "المعدل الموصى به",
-    badge: "الأكثر شيوعاً ⭐",
-    description: "التوازن المثالي بين دراسة المفاهيم وحل تدريبات بنك الأسئلة ومراجعة الأخطاء.",
+    title: "٣٠ دقيقة في اليوم",
+    subtitle: "المعدل المظبوط",
+    badge: "الموصى به",
+    description: "الوقت المثالي تلم فيه الشرح وتحل شوية أسئلة تظبط الفهم.",
   },
   {
     minutes: 45,
-    title: "٤٥ دقيقة / يومياً",
-    subtitle: "طموح الدرجات النهائية",
-    badge: "متقدم 🔥",
-    description: "مذاكرة متعمقة مع حل امتحانات واختبارات قياس مستوى شاملة.",
+    title: "٤٥ دقيقة في اليوم",
+    subtitle: "لو ناوي تقفل",
+    badge: "مستوى متقدم",
+    description: "مذاكرة مركزة مع حل اختبارات وامتحانات شاملة على الدروس.",
   },
   {
     minutes: 60,
-    title: "٦٠ دقيقة / يومياً",
-    subtitle: "بطل البكالوريا",
-    badge: "تحدي الأبطال 🏆",
-    description: "أقصى درجات التركيز والتفوق لضمان الصدارة في المدارس وعلى مستوى الجمهورية.",
+    title: "ساعة كاملة في اليوم",
+    subtitle: "مذاكرة الأبطال",
+    badge: "تحدي عالي",
+    description: "أعلى درجات الالتزام عشان تكون في صدارة أوائل مدرستك.",
   },
 ];
 
-export function SetupForm({ systems, userName }: SetupFormProps) {
+export function SetupForm({ systems }: SetupFormProps) {
   const router = useRouter();
 
   // Active step: 1 (Welcome & Superpowers), 2 (Grade), 3 (Category & Track), 4 (Daily Goal), 5 (Celebration)
@@ -158,10 +157,10 @@ export function SetupForm({ systems, userName }: SetupFormProps) {
         setStep(5);
       } else {
         const data = await res.json();
-        setError(data.error || "تعذر حفظ البيانات، حاول مرة أخرى");
+        setError(data.error || "حصلت مشكلة في حفظ البيانات، جرب تاني");
       }
     } catch {
-      setError("حدث خطأ في الاتصال بالخادم، تأكد من الاتصال وجرب مجددًا");
+      setError("في مشكلة في الاتصال بالسيرفر، اتأكد من النت وجرب تاني");
     } finally {
       setIsSubmitting(false);
     }
@@ -172,23 +171,22 @@ export function SetupForm({ systems, userName }: SetupFormProps) {
   };
 
   const stepsMeta = [
-    { num: 1, title: "مرحباً بك" },
-    { num: 2, title: "الصف الدراسي" },
+    { num: 1, title: "مرحباً بيك" },
+    { num: 2, title: "سنتك الدراسية" },
     { num: 3, title: "نوع المدرسة" },
-    { num: 4, title: "الهدف اليومي" },
+    { num: 4, title: "هدفك اليومي" },
   ];
 
   return (
     <div className="space-y-6 sm:space-y-8 text-right font-sans">
       {/* Confetti on celebration step */}
-      {step === 5 && <ConfettiCanvas duration={4000} />}
+      {step === 5 && <ConfettiCanvas duration={3500} />}
 
       {/* Stepper Progress Bar (visible on steps 1-4) */}
       {step <= 4 && (
         <div className="space-y-3 pb-3 border-b border-[#E2E8F0] dark:border-[#334155]">
           <div className="flex items-center justify-between text-xs font-bold text-[#64748B] dark:text-[#94A3B8]">
             <span className="flex items-center gap-1.5 text-[#800020] dark:text-[#FB7185]">
-              <span className="w-2 h-2 rounded-full bg-current animate-ping" />
               الخطوة {step} من ٤
             </span>
             <span>{stepsMeta[step - 1]?.title}</span>
@@ -240,15 +238,15 @@ export function SetupForm({ systems, userName }: SetupFormProps) {
           className="space-y-6"
         >
           <div className="text-center space-y-2 max-w-lg mx-auto">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#800020]/10 text-[#800020] dark:text-[#FB7185] text-xs font-bold border border-[#800020]/20">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#800020]/10 text-[#800020] dark:text-[#FB7185] text-xs font-bold border border-[#800020]/20">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>منصة الخلاصة التعليمية الذكية</span>
+              <span>منور في منصة الخلاصة</span>
             </div>
             <h2 className="text-xl sm:text-2xl font-bold text-[#0F172A] dark:text-white">
-              طريقك المختصر للتفوق في البكالوريا
+              طريقك الأسهل لمذاكرة البكالوريا
             </h2>
             <p className="text-xs sm:text-sm text-[#64748B] dark:text-[#94A3B8] leading-relaxed">
-              صممنا لك تجربة دراسية استثنائية تختصر وقتك وتضاعف استيعابك من خلال ٤ مزايا حصرية:
+              مكان معمول مخصوص عشان يظبطلك المذاكرة ويجيبلك المفيد من غير لف ولا تشتيت:
             </p>
           </div>
 
@@ -282,7 +280,7 @@ export function SetupForm({ systems, userName }: SetupFormProps) {
             onClick={() => setStep(2)}
             className="w-full h-12 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 shadow-sm transition-all active:scale-[0.99] cursor-pointer"
           >
-            <span>ابدأ تخصيص خطتك الدراسية</span>
+            <span>يلا نبدأ نجهز خطتك</span>
             <ChevronLeft className="w-4 h-4" />
           </button>
         </motion.div>
@@ -303,10 +301,10 @@ export function SetupForm({ systems, userName }: SetupFormProps) {
           <div className="space-y-1">
             <h2 className="text-lg sm:text-xl font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
               <GraduationCap className="w-5 h-5 text-[#800020] dark:text-[#FB7185]" />
-              <span>اختر صفك الدراسي الحالي</span>
+              <span>أنت في سنة كام دلوقتي؟</span>
             </h2>
             <p className="text-xs text-[#64748B] dark:text-[#94A3B8]">
-              نظام البكالوريا المصرية يغطي الصفين الأول والثاني الثانوي بمناهج معتمدة ومطابقة لمواصفات الوزارة.
+              اختار سنتك الدراسية عشان نظهرلك المواد والمناهج المعتمدة الخاصة بيك:
             </p>
           </div>
 
@@ -330,7 +328,7 @@ export function SetupForm({ systems, userName }: SetupFormProps) {
                   }`}
                 >
                   <div className="flex items-start justify-between gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-[#800020]/10 dark:bg-[#800020]/30 text-[#800020] dark:text-[#FB7185] flex items-center justify-center font-bold text-sm shrink-0">
+                    <div className="w-9 h-9 rounded-xl bg-[#800020]/10 dark:bg-[#800020]/30 text-[#800020] dark:text-[#FB7185] flex items-center justify-center font-bold text-sm shrink-0 font-mono">
                       {isG10 ? "١٠" : "١١"}
                     </div>
 
@@ -351,8 +349,8 @@ export function SetupForm({ systems, userName }: SetupFormProps) {
                     </h3>
                     <p className="text-[11px] sm:text-xs text-[#64748B] dark:text-[#94A3B8] leading-relaxed">
                       {isG10
-                        ? "الصف الأول الثانوي — منهج عام تأسيسي لمواد العلوم والتكنولوجيا واللغات."
-                        : "الصف الثاني الثانوي — يتضمن المسارات التخصصية (علمي، أدبي، وحاسب)."}
+                        ? "الصف الأول الثانوي — سنة عامة وتأسيسية لمواد العلوم والتكنولوجيا واللغات."
+                        : "الصف الثاني الثانوي — سنة التخصص واختيار الشعبة (علمي، أدبي، أو حاسب)."}
                     </p>
                   </div>
                 </button>
@@ -376,7 +374,7 @@ export function SetupForm({ systems, userName }: SetupFormProps) {
               disabled={!gradeId}
               className="px-6 h-11 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-xs sm:text-sm font-bold flex items-center gap-2 shadow-sm transition-all disabled:opacity-40 cursor-pointer"
             >
-              <span>التالي: نوع المدرسة</span>
+              <span>التالي: نوع مدرستك</span>
               <ChevronLeft className="w-4 h-4" />
             </button>
           </div>
@@ -400,10 +398,10 @@ export function SetupForm({ systems, userName }: SetupFormProps) {
             <div className="space-y-1">
               <h2 className="text-lg sm:text-xl font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
                 <Languages className="w-5 h-5 text-[#800020] dark:text-[#FB7185]" />
-                <span>اختر نوع مدرستك (لغة المنهج)</span>
+                <span>بتدرس في مدرسة إيه؟ (لغة المنهج)</span>
               </h2>
               <p className="text-xs text-[#64748B] dark:text-[#94A3B8]">
-                يضمن هذا الخيار عزل المنهج وبنك الأسئلة والمصطلحات بدقة تامة طبقاً للغة دراستك.
+                عشان نفصل المنهج والأسئلة والمصطلحات باللغة اللي بتدرس بيها في مدرستك:
               </p>
             </div>
 
@@ -435,10 +433,10 @@ export function SetupForm({ systems, userName }: SetupFormProps) {
 
                 <div className="space-y-1">
                   <h3 className="text-xs sm:text-sm font-bold text-[#0F172A] dark:text-white">
-                    مدارس عربي (Arabic Schools)
+                    مدارس عربي
                   </h3>
                   <p className="text-[11px] sm:text-xs text-[#64748B] dark:text-[#94A3B8] leading-relaxed">
-                    الشرح وبنك الأسئلة والتفسيرات باللغة العربية مع إيضاح المصطلحات.
+                    الشرح وبنك الأسئلة والمصطلحات كلها باللغة العربية.
                   </p>
                 </div>
               </button>
@@ -470,10 +468,10 @@ export function SetupForm({ systems, userName }: SetupFormProps) {
 
                 <div className="space-y-1">
                   <h3 className="text-xs sm:text-sm font-bold text-[#0F172A] dark:text-white">
-                    مدارس لغات ورسمية (Languages)
+                    مدارس لغات ورسمية
                   </h3>
                   <p className="text-[11px] sm:text-xs text-[#64748B] dark:text-[#94A3B8] leading-relaxed">
-                    Curriculum, questions, and model answers are tailored in English.
+                    المناهج والأسئلة ونماذج الإجابة مجهزة بالإنجليزي.
                   </p>
                 </div>
               </button>
@@ -485,10 +483,10 @@ export function SetupForm({ systems, userName }: SetupFormProps) {
             <div className="space-y-3 pt-3 border-t border-[#E2E8F0] dark:border-[#334155]">
               <div className="space-y-1">
                 <label className="block text-xs sm:text-sm font-bold text-[#0F172A] dark:text-white">
-                  الشعبة أو المسار التخصصي (للصف الثاني الثانوي)
+                  اختار شعبتك (لتانية ثانوي):
                 </label>
                 <p className="text-xs text-[#64748B] dark:text-[#94A3B8]">
-                  اختر مسارك لتحميل موادك التخصصية المقررة بدقة.
+                  عشان نظهرلك المواد الخاصة بتخصصك بس:
                 </p>
               </div>
 
@@ -538,7 +536,7 @@ export function SetupForm({ systems, userName }: SetupFormProps) {
               onClick={() => setStep(4)}
               className="px-6 h-11 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-xs sm:text-sm font-bold flex items-center gap-2 shadow-sm transition-all cursor-pointer"
             >
-              <span>التالي: تحديد الهدف اليومي</span>
+              <span>التالي: وقت مذاكرتك اليومي</span>
               <ChevronLeft className="w-4 h-4" />
             </button>
           </div>
@@ -559,13 +557,13 @@ export function SetupForm({ systems, userName }: SetupFormProps) {
         >
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <Flame className="w-5 h-5 text-amber-500 animate-pulse" />
+              <Clock className="w-5 h-5 text-amber-600 dark:text-amber-400" />
               <h2 className="text-lg sm:text-xl font-bold text-[#0F172A] dark:text-white">
-                حدد هدف المذاكرة اليومي وسلسلة الالتزام
+                ناوي تذاكر كام دقيقة في اليوم؟
               </h2>
             </div>
             <p className="text-xs text-[#64748B] dark:text-[#94A3B8]">
-              الالتزام اليومي البسيط يصنع الفارق الأكبر في نتائج البكالوريا؛ اختر المعدل الذي يناسب طاقتك.
+              الالتزام كل يوم حتى لو بوقت قليل هو اللي بيفرق في البكالوريا، اختار اللي يناسبك:
             </p>
           </div>
 
@@ -587,7 +585,7 @@ export function SetupForm({ systems, userName }: SetupFormProps) {
                     <span
                       className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold ${
                         isSelected
-                          ? "bg-amber-500/20 text-amber-600 dark:text-amber-400"
+                          ? "bg-amber-500/20 text-amber-700 dark:text-amber-300"
                           : "bg-[#F1F5F9] dark:bg-[#1E293B] text-[#64748B] dark:text-[#94A3B8]"
                       }`}
                     >
@@ -607,7 +605,6 @@ export function SetupForm({ systems, userName }: SetupFormProps) {
 
                   <div className="space-y-1">
                     <div className="flex items-center gap-1.5 font-bold text-sm text-[#0F172A] dark:text-white">
-                      <Clock className="w-4 h-4 text-amber-500" />
                       <span>{goal.title}</span>
                     </div>
                     <p className="text-[11px] text-[#64748B] dark:text-[#94A3B8] leading-relaxed">
@@ -620,16 +617,16 @@ export function SetupForm({ systems, userName }: SetupFormProps) {
           </div>
 
           {/* Motivational Preview Box */}
-          <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-500/10 via-rose-500/10 to-amber-500/10 border border-amber-500/20 flex items-center gap-3.5">
-            <div className="w-10 h-10 rounded-xl bg-white dark:bg-[#0F172A] flex items-center justify-center text-amber-500 shrink-0 shadow-xs">
-              <Flame className="w-6 h-6 fill-current" />
+          <div className="p-4 rounded-2xl bg-amber-500/5 dark:bg-amber-500/10 border border-amber-500/20 flex items-center gap-3.5">
+            <div className="w-9 h-9 rounded-xl bg-amber-500/10 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+              <Flame className="w-5 h-5 fill-current" />
             </div>
             <div className="text-xs space-y-0.5">
               <div className="font-bold text-[#0F172A] dark:text-white">
-                شعلة الالتزام اليومية (Streak 🔥)
+                شعلة الالتزام اليومي (Streak)
               </div>
               <p className="text-[#64748B] dark:text-[#94A3B8]">
-                بمجرد إكمال هدفك اليومي، تشتعل شعلتك وترتفع نقاطك للمنافسة على صدارة مدرستك.
+                كل يوم تذاكر فيه وتسجل حضورك، شعلتك بتكبر ونقاطك بتزيد في ترتيب مدرستك.
               </p>
             </div>
           </div>
@@ -654,17 +651,17 @@ export function SetupForm({ systems, userName }: SetupFormProps) {
               type="button"
               onClick={handleFinalSubmit}
               disabled={isSubmitting}
-              className="px-6 h-12 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-xs sm:text-sm font-bold flex items-center gap-2 shadow-md transition-all active:scale-[0.99] cursor-pointer disabled:opacity-50"
+              className="px-6 h-12 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-xs sm:text-sm font-bold flex items-center gap-2 shadow-sm transition-all active:scale-[0.99] cursor-pointer disabled:opacity-50"
             >
               {isSubmitting ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>جارٍ تجهيز خطتك الدراسية...</span>
+                  <span>بنجهز خطتك الدراسية...</span>
                 </>
               ) : (
                 <>
-                  <Rocket className="w-4 h-4" />
-                  <span>اعتماد الخطة والانطلاق</span>
+                  <span>حفظ الخطة ويلا بينا</span>
+                  <ArrowRight className="w-4 h-4" />
                 </>
               )}
             </button>
@@ -678,36 +675,36 @@ export function SetupForm({ systems, userName }: SetupFormProps) {
       {step === 5 && (
         <motion.div
           key="step5"
-          initial={{ opacity: 0, scale: 0.95 }}
+          initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.35, ease: "easeOut" }}
-          className="text-center space-y-6 py-4"
+          transition={{ duration: 0.25, ease: "easeOut" }}
+          className="text-center space-y-6 py-3"
         >
-          <div className="relative mx-auto w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-emerald-500/10 border-2 border-emerald-500/30 flex items-center justify-center">
-            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-lg animate-pulse">
-              <Check className="w-8 h-8 sm:w-9 sm:h-9 stroke-[3]" />
+          <div className="mx-auto w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center">
+            <div className="w-11 h-11 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-md">
+              <Check className="w-6 h-6 stroke-[3]" />
             </div>
           </div>
 
-          <div className="space-y-2 max-w-md mx-auto">
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#0F172A] dark:text-white">
-              أهلاً بك يا بطل! 🎓
+          <div className="space-y-1.5 max-w-md mx-auto">
+            <h2 className="text-xl sm:text-2xl font-bold text-[#0F172A] dark:text-white">
+              كده تمام، كل حاجة جاهزة!
             </h2>
             <p className="text-xs sm:text-sm text-[#64748B] dark:text-[#94A3B8] leading-relaxed">
-              تم إعداد خطتك الدراسية المخصصة بنجاح. جهزنا لك كبسولات الدروس وبنك الأسئلة والخرائط الذهنية المتوافقة تماماً مع خياراتك.
+              ظبطنالك خطتك وموادك وبنك الأسئلة حسب اختياراتك بالضبط، تقدر تبدأ دلوقتي.
             </p>
           </div>
 
           {/* Tailored Plan Summary Capsule */}
-          <div className="p-5 rounded-2xl bg-[#F8FAFC] dark:bg-[#1E293B]/70 border border-[#E2E8F0] dark:border-[#334155] max-w-md mx-auto text-xs space-y-3">
+          <div className="p-4 sm:p-5 rounded-2xl bg-[#F8FAFC] dark:bg-[#1E293B]/70 border border-[#E2E8F0] dark:border-[#334155] max-w-md mx-auto text-xs space-y-3">
             <div className="font-bold text-[#0F172A] dark:text-white pb-2 border-b border-[#E2E8F0] dark:border-[#334155] flex items-center justify-between">
-              <span>ملخص خطتك الدراسية</span>
-              <span className="text-emerald-600 dark:text-emerald-400">جاهزة الآن ✓</span>
+              <span>ملخص اختياراتك</span>
+              <span className="text-emerald-600 dark:text-emerald-400">جاهزة ✓</span>
             </div>
 
             <div className="grid grid-cols-2 gap-2 text-right">
               <div className="space-y-0.5">
-                <span className="text-[#94A3B8] text-[11px] block">الصف الدراسي:</span>
+                <span className="text-[#94A3B8] text-[11px] block">السنة الدراسية:</span>
                 <span className="font-bold text-[#0F172A] dark:text-white">
                   {selectedGrade?.name || "شهادة البكالوريا"}
                 </span>
@@ -730,10 +727,10 @@ export function SetupForm({ systems, userName }: SetupFormProps) {
               )}
 
               <div className="space-y-0.5 col-span-2 pt-1 border-t border-[#E2E8F0] dark:border-[#334155]/60 flex items-center justify-between">
-                <span className="text-[#94A3B8] text-[11px]">الهدف اليومي الموصى به:</span>
-                <span className="font-bold text-amber-600 dark:text-amber-400 flex items-center gap-1">
+                <span className="text-[#94A3B8] text-[11px]">وقت المذاكرة اليومي:</span>
+                <span className="font-bold text-amber-700 dark:text-amber-300 flex items-center gap-1">
                   <Clock className="w-3.5 h-3.5" />
-                  <span>{dailyGoalMinutes} دقيقة / يومياً</span>
+                  <span>{dailyGoalMinutes} دقيقة في اليوم</span>
                 </span>
               </div>
             </div>
@@ -743,10 +740,10 @@ export function SetupForm({ systems, userName }: SetupFormProps) {
             <button
               type="button"
               onClick={handleLaunchDashboard}
-              className="w-full h-13 rounded-2xl bg-[#800020] hover:bg-[#66001A] text-white text-sm sm:text-base font-bold flex items-center justify-center gap-2.5 shadow-xl transition-all cursor-pointer active:scale-98"
+              className="w-full h-12 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-sm sm:text-base font-bold flex items-center justify-center gap-2 shadow-md transition-all cursor-pointer active:scale-98"
             >
-              <Rocket className="w-5 h-5 animate-bounce" />
-              <span>انطلق للوحة التحكم وجولة المنصة</span>
+              <span>ادخل على لوحة التحكم</span>
+              <ChevronLeft className="w-4 h-4" />
             </button>
           </div>
         </motion.div>
