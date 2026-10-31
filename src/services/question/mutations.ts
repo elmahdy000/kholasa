@@ -577,36 +577,125 @@ export class QuestionMutationsService {
       await assertCurriculumLinks(prisma, subject.id, undefined, [lessonId]);
     }
 
-    // Duplicate detection against the subject bank and inside the batch
-    // Strictly isolate by question type and difficulty: Essay is NEVER compared against MCQ,
-    // and each difficulty level is maintained as a distinct question.
-    const existingStatements = await prisma.question.findMany({
-      where: { subjectId: subject.id },
-      select: {
-        id: true,
-        statement: true,
-        type: true,
-        difficulty: true,
-        explanation: { select: { id: true } },
-        rubric: { select: { id: true } },
-      },
-    });
-    const existingByKey = new Map<string, (typeof existingStatements)[number]>();
-    for (const r of existingStatements) {
-      const key = `${r.type}:${r.difficulty}:${normalizeStatement(r.statement)}`;
-      if (!existingByKey.has(key)) existingByKey.set(key, r);
+    // Determine the target lesson for each question up-front to ensure strict lesson-level isolation.
+    // If effectiveLessonId is provided (e.g. importing into a specific lesson), EVERY question belongs
+    // exclusively to effectiveLessonId, and duplicate detection is strictly scoped to that lesson.
+    // Cross-lesson matching or auto-linking is completely prohibited so questions from different lessons
+    // never mix, share records, or conflict with each other.
+
+    // 1. Resolve target lesson IDs across the batch
+    const targetLessonIds = new Set<string>();
+    if (effectiveLessonId) {
+      targetLessonIds.add(effectiveLessonId);
+    } else {
+      for (const q of questions) {
+        if (q.lessonId) targetLessonIds.add(q.lessonId);
+      }
     }
+
+    // Also resolve existing lessons referenced by questionLesson title inside a unit
+    const lessonTitleMap = new Map<string, string>();
+    for (const q of questions) {
+      if (!effectiveLessonId && !q.lessonId && q.questionLesson) {
+        const qUnitId = effectiveUnitId || q.unitId;
+        if (qUnitId) {
+          const title = q.questionLesson.trim();
+          const mapKey = `${qUnitId}:${title}`;
+          if (!lessonTitleMap.has(mapKey)) {
+            const found = await prisma.lesson.findFirst({
+              where: { unitId: qUnitId, title },
+              select: { id: true },
+            });
+            if (found) {
+              lessonTitleMap.set(mapKey, found.id);
+              targetLessonIds.add(found.id);
+            }
+          }
+        }
+      }
+    }
+
+    type ExistingQ = {
+      id: string;
+      statement: string;
+      type: QuestionType;
+      difficulty: Difficulty;
+      explanation: { id: string } | null;
+      rubric: { id: string } | null;
+    };
+    const existingByKey = new Map<string, ExistingQ>();
+
+    if (targetLessonIds.size > 0) {
+      const existingLessonRecords = await prisma.questionLesson.findMany({
+        where: {
+          lessonId: { in: Array.from(targetLessonIds) },
+        },
+        select: {
+          lessonId: true,
+          question: {
+            select: {
+              id: true,
+              statement: true,
+              type: true,
+              difficulty: true,
+              explanation: { select: { id: true } },
+              rubric: { select: { id: true } },
+            },
+          },
+        },
+      });
+      for (const rec of existingLessonRecords) {
+        const key = `${rec.lessonId}:${rec.question.type}:${rec.question.difficulty}:${normalizeStatement(rec.question.statement)}`;
+        if (!existingByKey.has(key)) existingByKey.set(key, rec.question);
+      }
+    }
+
+    // If there are questions with no lesson at all (subject-level bank questions),
+    // scope their duplicate detection only against unattached subject questions.
+    const hasUnattachedQuestions = questions.some(
+      (q) => !effectiveLessonId && !q.lessonId && !(q.questionLesson && (effectiveUnitId || q.unitId))
+    );
+    if (hasUnattachedQuestions) {
+      const existingSubjectBank = await prisma.question.findMany({
+        where: {
+          subjectId: subject.id,
+          lessons: { none: {} },
+        },
+        select: {
+          id: true,
+          statement: true,
+          type: true,
+          difficulty: true,
+          explanation: { select: { id: true } },
+          rubric: { select: { id: true } },
+        },
+      });
+      for (const r of existingSubjectBank) {
+        const key = `global:${r.type}:${r.difficulty}:${normalizeStatement(r.statement)}`;
+        if (!existingByKey.has(key)) existingByKey.set(key, r);
+      }
+    }
+
     const seenInBatch = new Set<string>();
     const uniqueQuestions: ParsedQuestionImportItem[] = [];
     const duplicateMatches: Array<{
       item: ParsedQuestionImportItem;
-      existing: (typeof existingStatements)[number];
+      existing: ExistingQ;
     }> = [];
     let skippedDuplicates = 0;
+
     for (const q of questions) {
       const qType = q.type || batchMeta?.questionType || "MCQ";
       const qDiff = q.difficulty || batchMeta?.difficulty || "MEDIUM";
-      const key = `${qType}:${qDiff}:${normalizeStatement(q.statement)}`;
+      const qUnitId = effectiveUnitId || q.unitId;
+      const targetLesson =
+        effectiveLessonId ||
+        q.lessonId ||
+        (q.questionLesson && qUnitId ? lessonTitleMap.get(`${qUnitId}:${q.questionLesson.trim()}`) : null) ||
+        null;
+      const scopeKey = targetLesson ? targetLesson : "global";
+      const key = `${scopeKey}:${qType}:${qDiff}:${normalizeStatement(q.statement)}`;
+
       const existing = existingByKey.get(key);
       if (existing) {
         skippedDuplicates++;
@@ -621,22 +710,12 @@ export class QuestionMutationsService {
       uniqueQuestions.push(q);
     }
 
-    // Questions already in the subject bank may be invisible in the target lesson
-    // (linked to another lesson, or imported before explanations were parsed).
-    // Attach them to the target lesson and fill in any missing explanation / model answer.
-    let linkedExisting = 0;
+    // For questions already in this specific lesson, enrich any missing explanation or model answer.
+    // Note: NEVER link questions across lessons (no cross-lesson QuestionLesson creation).
     let enrichedExisting = 0;
     if (duplicateMatches.length > 0) {
       await prisma.$transaction(async (tx) => {
         for (const { item, existing } of duplicateMatches) {
-          const targetLessonId = effectiveLessonId || item.lessonId || null;
-          if (targetLessonId) {
-            const linked = await tx.questionLesson.createMany({
-              data: [{ questionId: existing.id, lessonId: targetLessonId }],
-              skipDuplicates: true,
-            });
-            linkedExisting += linked.count;
-          }
           if (item.correctReason?.trim() && !existing.explanation) {
             await tx.questionExplanation.create({
               data: {
@@ -662,7 +741,7 @@ export class QuestionMutationsService {
     }
 
     if (uniqueQuestions.length === 0) {
-      if (linkedExisting > 0 || enrichedExisting > 0) {
+      if (enrichedExisting > 0) {
         const auditBatch = await prisma.importBatch.create({
           data: {
             fileName: batchMeta?.fileName || "استيراد مباشر",
@@ -685,12 +764,14 @@ export class QuestionMutationsService {
           count: 0,
           batchId: auditBatch.id,
           skippedDuplicates,
-          linkedExisting,
+          linkedExisting: 0,
           enrichedExisting,
         };
       }
       throw new QuestionValidationError(
-        `جميع الأسئلة (${skippedDuplicates}) مكررة وموجودة بالفعل في الدرس ولا توجد بيانات جديدة لإضافتها`,
+        effectiveLessonId
+          ? `جميع الأسئلة (${skippedDuplicates}) موجودة بالفعل في هذا الدرس ولا توجد بيانات جديدة لإضافتها`
+          : `جميع الأسئلة (${skippedDuplicates}) مكررة وموجودة بالفعل ولا توجد بيانات جديدة لإضافتها`,
         409
       );
     }
@@ -802,6 +883,6 @@ export class QuestionMutationsService {
       return { count, batchId: batch.id };
     }, BULK_TRANSACTION_OPTIONS);
 
-    return { ...result, skippedDuplicates, linkedExisting, enrichedExisting };
+    return { ...result, skippedDuplicates, linkedExisting: 0, enrichedExisting };
   }
 }
