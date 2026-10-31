@@ -517,29 +517,115 @@ export class QuestionMutationsService {
     // and each difficulty level is maintained as a distinct question.
     const existingStatements = await prisma.question.findMany({
       where: { subjectId: subject.id },
-      select: { statement: true, type: true, difficulty: true },
+      select: {
+        id: true,
+        statement: true,
+        type: true,
+        difficulty: true,
+        explanation: { select: { id: true } },
+        rubric: { select: { id: true } },
+      },
     });
-    const seen = new Set(
-      existingStatements.map(
-        (r) => `${r.type}:${r.difficulty}:${normalizeStatement(r.statement)}`
-      )
-    );
+    const existingByKey = new Map<string, (typeof existingStatements)[number]>();
+    for (const r of existingStatements) {
+      const key = `${r.type}:${r.difficulty}:${normalizeStatement(r.statement)}`;
+      if (!existingByKey.has(key)) existingByKey.set(key, r);
+    }
+    const seenInBatch = new Set<string>();
     const uniqueQuestions: ParsedQuestionImportItem[] = [];
+    const duplicateMatches: Array<{
+      item: ParsedQuestionImportItem;
+      existing: (typeof existingStatements)[number];
+    }> = [];
     let skippedDuplicates = 0;
     for (const q of questions) {
       const qType = q.type || batchMeta?.questionType || "MCQ";
       const qDiff = q.difficulty || batchMeta?.difficulty || "MEDIUM";
       const key = `${qType}:${qDiff}:${normalizeStatement(q.statement)}`;
-      if (seen.has(key)) {
+      const existing = existingByKey.get(key);
+      if (existing) {
+        skippedDuplicates++;
+        duplicateMatches.push({ item: q, existing });
+        continue;
+      }
+      if (seenInBatch.has(key)) {
         skippedDuplicates++;
         continue;
       }
-      seen.add(key);
+      seenInBatch.add(key);
       uniqueQuestions.push(q);
     }
+
+    // Questions already in the subject bank may be invisible in the target lesson
+    // (linked to another lesson, or imported before explanations were parsed).
+    // Attach them to the target lesson and fill in any missing explanation / model answer.
+    let linkedExisting = 0;
+    let enrichedExisting = 0;
+    if (duplicateMatches.length > 0) {
+      await prisma.$transaction(async (tx) => {
+        for (const { item, existing } of duplicateMatches) {
+          const targetLessonId = effectiveLessonId || item.lessonId || null;
+          if (targetLessonId) {
+            const linked = await tx.questionLesson.createMany({
+              data: [{ questionId: existing.id, lessonId: targetLessonId }],
+              skipDuplicates: true,
+            });
+            linkedExisting += linked.count;
+          }
+          if (item.correctReason?.trim() && !existing.explanation) {
+            await tx.questionExplanation.create({
+              data: {
+                questionId: existing.id,
+                concept: item.concept?.trim() || "تفسير الإجابة",
+                correctReason: item.correctReason.trim(),
+              },
+            });
+            enrichedExisting++;
+          }
+          if (existing.type === "ESSAY" && item.modelAnswer?.trim() && !existing.rubric) {
+            await tx.essayRubric.create({
+              data: {
+                questionId: existing.id,
+                modelAnswer: item.modelAnswer.trim(),
+                maxScore: Number(item.points || 10),
+              },
+            });
+            enrichedExisting++;
+          }
+        }
+      }, BULK_TRANSACTION_OPTIONS);
+    }
+
     if (uniqueQuestions.length === 0) {
+      if (linkedExisting > 0 || enrichedExisting > 0) {
+        const auditBatch = await prisma.importBatch.create({
+          data: {
+            fileName: batchMeta?.fileName || "استيراد مباشر",
+            fileType: batchMeta?.fileType || "DOCX",
+            questionType:
+              batchMeta?.questionType ||
+              (duplicateMatches[0]?.existing.type as QuestionType) ||
+              "MCQ",
+            difficulty: batchMeta?.difficulty || null,
+            schoolCategory: effectiveSchoolCategory,
+            gradeId: effectiveGradeId,
+            subjectId: subject.id,
+            unitId: effectiveUnitId,
+            lessonId: effectiveLessonId,
+            trackId: effectiveTrackId,
+            importedCount: 0,
+          },
+        });
+        return {
+          count: 0,
+          batchId: auditBatch.id,
+          skippedDuplicates,
+          linkedExisting,
+          enrichedExisting,
+        };
+      }
       throw new QuestionValidationError(
-        `جميع الأسئلة (${skippedDuplicates}) مكررة وموجودة بالفعل في بنك هذه المادة`,
+        `جميع الأسئلة (${skippedDuplicates}) مكررة وموجودة بالفعل في الدرس ولا توجد بيانات جديدة لإضافتها`,
         409
       );
     }
@@ -651,6 +737,6 @@ export class QuestionMutationsService {
       return { count, batchId: batch.id };
     }, BULK_TRANSACTION_OPTIONS);
 
-    return { ...result, skippedDuplicates };
+    return { ...result, skippedDuplicates, linkedExisting, enrichedExisting };
   }
 }

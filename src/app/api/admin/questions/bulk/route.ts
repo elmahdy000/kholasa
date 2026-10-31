@@ -27,6 +27,8 @@ export async function POST(req: Request) {
       importedCount: result.count,
       skippedDuplicates: result.skippedDuplicates,
       batchId: result.batchId,
+      linkedExisting: result.linkedExisting,
+      enrichedExisting: result.enrichedExisting,
     });
   } catch (error) {
     if (error instanceof QuestionValidationError) {
