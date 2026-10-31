@@ -32,6 +32,7 @@ export default async function ExamPage({ params, searchParams }: ExamPageProps) 
               statement: true,
               type: true,
               difficulty: true,
+              imageUrl: true,
               options: {
                 select: { id: true, text: true, order: true },
                 orderBy: { order: "asc" },

@@ -12,6 +12,8 @@ import {
 } from "@phosphor-icons/react";
 import { BidiStatement } from "@/components/ui/BidiStatement";
 
+import { QuestionImageAttachment } from "@/components/ui/QuestionImageAttachment";
+
 interface Option {
   id: string;
   text: string;
@@ -23,6 +25,7 @@ interface DailyQuestion {
   statement: string;
   type: string;
   difficulty: string;
+  imageUrl?: string | null;
   subject: { id: string; name: string };
   unit?: { id: string; title: string } | null;
   options: Option[];
@@ -139,12 +142,13 @@ export function DailyChallengeCard({
         </div>
 
         {/* Question Statement */}
-        <div className="text-right">
+        <div className="text-right space-y-3">
           <BidiStatement
             as="p"
             text={question.statement}
             className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-[#F8FAFC] leading-relaxed font-content"
           />
+          <QuestionImageAttachment imageUrl={question.imageUrl} />
         </div>
 
         {/* Options */}

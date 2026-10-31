@@ -16,6 +16,7 @@ export interface Question {
   statement: string;
   type: string;
   difficulty: string;
+  imageUrl?: string | null;
   subject: { id: string; name: string };
   unit?: { id: string; title: string } | null;
   options: QuestionOption[];

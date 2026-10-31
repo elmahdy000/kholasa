@@ -167,6 +167,7 @@ export default async function DashboardPage() {
         statement: true,
         type: true,
         difficulty: true,
+        imageUrl: true,
         subject: { select: { id: true, name: true } },
         unit: { select: { id: true, title: true } },
         options: {
@@ -190,6 +191,7 @@ export default async function DashboardPage() {
         statement: true,
         type: true,
         difficulty: true,
+        imageUrl: true,
         subject: { select: { id: true, name: true } },
         unit: { select: { id: true, title: true } },
         options: {

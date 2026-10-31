@@ -44,6 +44,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
               statement: true,
               type: true,
               difficulty: true,
+              imageUrl: true,
               options: {
                 select: { id: true, text: true, order: true },
                 orderBy: { order: "asc" },

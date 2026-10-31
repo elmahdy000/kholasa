@@ -12,6 +12,7 @@ import {
 import { BidiStatement } from "@/components/ui/BidiStatement";
 import { FormattedAnswerView } from "@/components/ui/FormattedAnswerView";
 import { QuestionExplanationBox } from "@/components/ui/QuestionExplanationBox";
+import { QuestionImageAttachment } from "@/components/ui/QuestionImageAttachment";
 import { Question, UserAnswerState, RevealedAnswer } from "./types";
 
 interface ExamQuestionCardProps {
@@ -86,20 +87,23 @@ export function ExamQuestionCard({
       </div>
 
       {/* Statement */}
-      {isLanguages ? (
-        <h2
-          dir="ltr"
-          className="text-base sm:text-lg font-semibold text-[#0F172A] dark:text-white leading-relaxed font-sans text-left"
-        >
-          {currentQ.statement}
-        </h2>
-      ) : (
-        <BidiStatement
-          as="h2"
-          text={currentQ.statement}
-          className="text-base sm:text-lg font-bold text-[#0F172A] dark:text-white leading-relaxed font-content"
-        />
-      )}
+      <div className="space-y-4">
+        {isLanguages ? (
+          <h2
+            dir="ltr"
+            className="text-base sm:text-lg font-semibold text-[#0F172A] dark:text-white leading-relaxed font-sans text-left"
+          >
+            {currentQ.statement}
+          </h2>
+        ) : (
+          <BidiStatement
+            as="h2"
+            text={currentQ.statement}
+            className="text-base sm:text-lg font-bold text-[#0F172A] dark:text-white leading-relaxed font-content"
+          />
+        )}
+        <QuestionImageAttachment imageUrl={currentQ.imageUrl} />
+      </div>
 
       {/* MCQ / TRUE_FALSE Options */}
       {(currentQ.type === "MCQ" || currentQ.type === "TRUE_FALSE") && (

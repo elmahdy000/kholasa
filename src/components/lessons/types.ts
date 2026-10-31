@@ -110,6 +110,7 @@ export interface Question {
   statement: string;
   type: string;
   difficulty: string;
+  imageUrl?: string | null;
   options: QuestionOption[];
   rubric?: QuestionRubric | null;
   explanation?: QuestionExplanation | null;

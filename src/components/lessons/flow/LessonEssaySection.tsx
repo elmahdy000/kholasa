@@ -7,6 +7,7 @@ import {
 } from "@phosphor-icons/react";
 import { BidiStatement } from "@/components/ui/BidiStatement";
 import { FormattedAnswerView } from "@/components/ui/FormattedAnswerView";
+import { QuestionImageAttachment } from "@/components/ui/QuestionImageAttachment";
 import { Question, RubricCriterion } from "../types";
 
 interface LessonEssaySectionProps {
@@ -89,6 +90,8 @@ export function LessonEssaySection({
                   text={question.statement}
                   className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-white leading-relaxed font-content"
                 />
+
+                <QuestionImageAttachment imageUrl={question.imageUrl} />
 
                 {/* Student Drafting Box */}
                 <div className="space-y-2">

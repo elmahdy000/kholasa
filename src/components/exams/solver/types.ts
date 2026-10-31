@@ -35,6 +35,7 @@ export interface Question {
   statement: string;
   type: string;
   difficulty: string;
+  imageUrl?: string | null;
   options: QuestionOption[];
   schoolCategory?: string;
 }

@@ -6,6 +6,7 @@ import {
 } from "@phosphor-icons/react";
 import { BidiStatement } from "@/components/ui/BidiStatement";
 import { QuestionExplanationBox } from "@/components/ui/QuestionExplanationBox";
+import { QuestionImageAttachment } from "@/components/ui/QuestionImageAttachment";
 import { Question, QuestionAnswerState } from "../types";
 
 interface LessonMcqSectionProps {
@@ -81,6 +82,8 @@ export function LessonMcqSection({
                   text={question.statement}
                   className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-white leading-relaxed font-content"
                 />
+
+                <QuestionImageAttachment imageUrl={question.imageUrl} />
 
                 {/* Options */}
                 <div className="space-y-3">

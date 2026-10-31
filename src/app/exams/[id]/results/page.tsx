@@ -18,6 +18,7 @@ import {
 import { BidiStatement } from "@/components/ui/BidiStatement";
 import { ExamResultActions } from "@/components/exams/ExamResultActions";
 import { QuestionExplanationBox } from "@/components/ui/QuestionExplanationBox";
+import { QuestionImageAttachment } from "@/components/ui/QuestionImageAttachment";
 
 const ARABIC_LETTERS = ["أ", "ب", "ج", "د", "هـ", "و"];
 
@@ -327,6 +328,8 @@ export default async function ExamResultsPage({
                     text={q.statement}
                     className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-white leading-relaxed"
                   />
+
+                  <QuestionImageAttachment imageUrl={q.imageUrl} />
 
                   {/* Essay or MCQ Options comparison */}
                   {q.type === "ESSAY" ? (
