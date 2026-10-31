@@ -418,6 +418,71 @@ export class QuestionMutationsService {
   }
 
   /**
+   * Delete all questions belonging to a specific lesson, optionally filtered by QuestionType.
+   * Completely purges the questions and cascades to options, explanations, and rubrics.
+   */
+  static async deleteLessonQuestions(lessonId: string, options?: { type?: QuestionType }) {
+    return prisma.$transaction(async (tx) => {
+      const qlRecords = await tx.questionLesson.findMany({
+        where: { lessonId },
+        select: {
+          questionId: true,
+          question: { select: { type: true } },
+        },
+      });
+
+      const qlTargetIds = qlRecords
+        .filter((r) => !options?.type || r.question.type === options.type)
+        .map((r) => r.questionId);
+
+      const batchQuestions = await tx.question.findMany({
+        where: {
+          batch: { lessonId },
+          ...(options?.type ? { type: options.type } : {}),
+        },
+        select: { id: true },
+      });
+
+      const allIds = Array.from(new Set([...qlTargetIds, ...batchQuestions.map((q) => q.id)]));
+
+      if (allIds.length === 0) {
+        return { count: 0 };
+      }
+
+      const deleted = await tx.question.deleteMany({
+        where: { id: { in: allIds } },
+      });
+
+      return { count: deleted.count };
+    });
+  }
+
+  /**
+   * Purge orphaned questions (questions with no lesson links and no student/exam references)
+   */
+  static async cleanupOrphanedQuestions() {
+    const orphaned = await prisma.question.findMany({
+      where: {
+        lessons: { none: {} },
+        examQuestions: { none: {} },
+        studentAnswers: { none: {} },
+      },
+      select: { id: true },
+    });
+
+    if (orphaned.length === 0) {
+      return { count: 0 };
+    }
+
+    const ids = orphaned.map((q) => q.id);
+    const res = await prisma.question.deleteMany({
+      where: { id: { in: ids } },
+    });
+
+    return { count: res.count };
+  }
+
+  /**
    * Bulk import questions in an atomic database transaction with ImportBatch audit.
    *
    * Server-side guarantees (independent of the client wizard):

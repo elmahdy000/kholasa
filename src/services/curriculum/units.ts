@@ -113,11 +113,69 @@ export class CurriculumUnitsService {
   }
 
   /**
-   * Delete a unit
+   * Delete a unit and purge all questions, batches, and lessons completely from database
    */
   static async deleteUnit(id: string) {
-    return prisma.unit.delete({
-      where: { id },
+    return prisma.$transaction(async (tx) => {
+      // 1. Find all lessons belonging to this unit
+      const lessons = await tx.lesson.findMany({
+        where: { unitId: id },
+        select: { id: true },
+      });
+      const lessonIds = lessons.map((l) => l.id);
+
+      // 2. Find all questions linked to these lessons, or directly to this unit
+      const [qlRecords, batchQuestions, unitQuestions] = await Promise.all([
+        lessonIds.length > 0
+          ? tx.questionLesson.findMany({
+              where: { lessonId: { in: lessonIds } },
+              select: { questionId: true },
+            })
+          : Promise.resolve([]),
+        tx.question.findMany({
+          where: {
+            OR: [
+              ...(lessonIds.length > 0 ? [{ batch: { lessonId: { in: lessonIds } } }] : []),
+              { batch: { unitId: id } },
+            ],
+          },
+          select: { id: true },
+        }),
+        tx.question.findMany({
+          where: { unitId: id },
+          select: { id: true },
+        }),
+      ]);
+
+      const questionIds = Array.from(
+        new Set([
+          ...qlRecords.map((r) => r.questionId),
+          ...batchQuestions.map((q) => q.id),
+          ...unitQuestions.map((q) => q.id),
+        ])
+      );
+
+      // 3. Delete all those questions completely from the database
+      if (questionIds.length > 0) {
+        await tx.question.deleteMany({
+          where: { id: { in: questionIds } },
+        });
+      }
+
+      // 4. Delete any ImportBatch records for this unit or its lessons
+      await tx.importBatch.deleteMany({
+        where: {
+          OR: [
+            ...(lessonIds.length > 0 ? [{ lessonId: { in: lessonIds } }] : []),
+            { unitId: id },
+          ],
+        },
+      });
+
+      // 5. Delete the unit (cascades to lessons)
+      return tx.unit.delete({
+        where: { id },
+      });
     });
   }
 

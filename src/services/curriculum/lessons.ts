@@ -254,11 +254,47 @@ export class CurriculumLessonsService {
   }
 
   /**
-   * Delete lesson and cascade related data
+   * Delete lesson and purge all its questions and batches completely from database
    */
   static async deleteLesson(lessonId: string) {
-    return prisma.lesson.delete({
-      where: { id: lessonId },
+    return prisma.$transaction(async (tx) => {
+      // 1. Find all question IDs linked to this lesson (via QuestionLesson or ImportBatch)
+      const [qlRecords, batchQuestions] = await Promise.all([
+        tx.questionLesson.findMany({
+          where: { lessonId },
+          select: { questionId: true },
+        }),
+        tx.question.findMany({
+          where: {
+            batch: { lessonId },
+          },
+          select: { id: true },
+        }),
+      ]);
+
+      const questionIds = Array.from(
+        new Set([
+          ...qlRecords.map((r) => r.questionId),
+          ...batchQuestions.map((q) => q.id),
+        ])
+      );
+
+      // 2. Completely delete all questions associated with this lesson from the database
+      if (questionIds.length > 0) {
+        await tx.question.deleteMany({
+          where: { id: { in: questionIds } },
+        });
+      }
+
+      // 3. Delete any ImportBatch associated with this lesson
+      await tx.importBatch.deleteMany({
+        where: { lessonId },
+      });
+
+      // 4. Delete the lesson itself (cascades to content, summary, mindmap, etc.)
+      return tx.lesson.delete({
+        where: { id: lessonId },
+      });
     });
   }
 

@@ -26,4 +26,6 @@ export class QuestionService {
   static deleteQuestion = QuestionMutationsService.deleteQuestion;
   static bulkDeleteQuestions = QuestionMutationsService.bulkDeleteQuestions;
   static bulkCreateQuestions = QuestionMutationsService.bulkCreateQuestions;
+  static deleteLessonQuestions = QuestionMutationsService.deleteLessonQuestions;
+  static cleanupOrphanedQuestions = QuestionMutationsService.cleanupOrphanedQuestions;
 }

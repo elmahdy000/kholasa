@@ -90,6 +90,15 @@ export function LessonQuestionsTab({
   // Expanded cards (by default all open or toggled)
   const [expandedCards, setExpandedCards] = useState<Record<string, boolean>>({});
 
+  // Multi-selection state for Bulk Delete
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [isBulkDeleting, setIsBulkDeleting] = useState(false);
+
+  // Purge modal state
+  const [showPurgeModal, setShowPurgeModal] = useState(false);
+  const [isPurging, setIsPurging] = useState(false);
+  const [purgeError, setPurgeError] = useState<string | null>(null);
+
   // Deleting state
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [copySuccess, setCopySuccess] = useState(false);
@@ -314,10 +323,80 @@ export function LessonQuestionsTab({
         throw new Error(err.error || "فشل حذف السؤال");
       }
       setQuestions((prev) => prev.filter((q) => q.id !== questionId));
+      setSelectedIds((prev) => {
+        const next = new Set(prev);
+        next.delete(questionId);
+        return next;
+      });
+      onRefreshQuestions();
     } catch (err: any) {
       alert(err.message || "حدث خطأ أثناء حذف السؤال");
     } finally {
       setDeletingId(null);
+    }
+  };
+
+  // Toggle selection for a single question
+  const handleToggleSelect = (qId: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(qId)) next.delete(qId);
+      else next.add(qId);
+      return next;
+    });
+  };
+
+  // Delete Selected Questions
+  const handleDeleteSelected = async () => {
+    const ids = Array.from(selectedIds);
+    if (ids.length === 0) return;
+    if (!confirm(`هل أنت متأكد من حذف ${ids.length} سؤال محدد نهائياً من قاعدة البيانات؟`)) return;
+
+    setIsBulkDeleting(true);
+    try {
+      const res = await fetch(`/api/admin/lessons/${lessonId}/questions`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "فشل حذف الأسئلة المحددة");
+
+      const deletedSet = new Set(ids);
+      setQuestions((prev) => prev.filter((q) => !deletedSet.has(q.id)));
+      setSelectedIds(new Set());
+      onRefreshQuestions();
+    } catch (err: any) {
+      alert(err.message || "حدث خطأ أثناء حذف الأسئلة");
+    } finally {
+      setIsBulkDeleting(false);
+    }
+  };
+
+  // Purge all questions or all questions of current active type
+  const handlePurgeQuestions = async (targetType?: string) => {
+    setIsPurging(true);
+    setPurgeError(null);
+    try {
+      const query = targetType && targetType !== "ALL" ? `?type=${targetType}` : "?all=true";
+      const res = await fetch(`/api/admin/lessons/${lessonId}/questions${query}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "فشل مسح الأسئلة");
+
+      if (targetType && targetType !== "ALL") {
+        setQuestions((prev) => prev.filter((q) => q.type !== targetType));
+      } else {
+        setQuestions([]);
+      }
+      setSelectedIds(new Set());
+      setShowPurgeModal(false);
+      onRefreshQuestions();
+    } catch (err: any) {
+      setPurgeError(err.message || "حدث خطأ أثناء حذف الأسئلة");
+    } finally {
+      setIsPurging(false);
     }
   };
 
@@ -363,6 +442,23 @@ export function LessonQuestionsTab({
     if (difficultyFilter !== "ALL" && q.difficulty !== difficultyFilter) return false;
     return true;
   });
+
+  const isAllFilteredSelected = filtered.length > 0 && filtered.every((q) => selectedIds.has(q.id));
+  const handleToggleSelectAll = () => {
+    if (isAllFilteredSelected) {
+      setSelectedIds((prev) => {
+        const next = new Set(prev);
+        filtered.forEach((q) => next.delete(q.id));
+        return next;
+      });
+    } else {
+      setSelectedIds((prev) => {
+        const next = new Set(prev);
+        filtered.forEach((q) => next.add(q.id));
+        return next;
+      });
+    }
+  };
 
   return (
     <div dir="rtl" className="space-y-6 text-right font-sans">
@@ -587,6 +683,18 @@ export function LessonQuestionsTab({
             </>
           )}
 
+          {questions.length > 0 && (
+            <button
+              type="button"
+              onClick={() => setShowPurgeModal(true)}
+              className="h-10 px-3.5 rounded-xl border border-red-200 dark:border-red-900/60 bg-red-50/80 hover:bg-red-100 dark:bg-red-950/30 dark:hover:bg-red-950/50 text-red-700 dark:text-red-300 text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-2xs"
+              title="خيارات تفريغ وحذف أسئلة الدرس من قاعدة البيانات"
+            >
+              <Trash2 className="w-4 h-4 text-red-600 dark:text-red-400" />
+              <span>حذف الأسئلة...</span>
+            </button>
+          )}
+
           <button
             type="button"
             onClick={() => setShowGuideModal(true)}
@@ -791,6 +899,22 @@ export function LessonQuestionsTab({
               <option value="HARD">🔴 صعب ({scopedHardCount})</option>
             </select>
           </div>
+
+          {/* Multi-selection toggle */}
+          {filtered.length > 0 && (
+            <button
+              type="button"
+              onClick={handleToggleSelectAll}
+              className={`px-3 py-2 rounded-xl text-xs font-bold border transition-colors flex items-center gap-1.5 cursor-pointer ${
+                isAllFilteredSelected
+                  ? "bg-blue-600 text-white border-blue-600 shadow-xs"
+                  : "bg-white dark:bg-[#0F172A] border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50"
+              }`}
+            >
+              <span>{isAllFilteredSelected ? "إلغاء تحديد الكل" : "تحديد الكل"}</span>
+              <span className="text-[10px] font-mono opacity-80">({filtered.length})</span>
+            </button>
+          )}
 
           {(difficultyFilter !== "ALL" || searchQuery.trim()) && (
             <button
@@ -1087,11 +1211,23 @@ export function LessonQuestionsTab({
             return (
               <div
                 key={q.id}
-                className="p-5 rounded-3xl bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-800 shadow-2xs space-y-3.5 hover:border-slate-300 dark:hover:border-slate-700 transition-colors"
+                className={`p-5 rounded-3xl bg-white dark:bg-[#0F172A] border shadow-2xs space-y-3.5 transition-colors ${
+                  selectedIds.has(q.id)
+                    ? "border-blue-500 ring-2 ring-blue-500/20 bg-blue-50/10 dark:bg-blue-950/10"
+                    : "border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700"
+                }`}
               >
                 {/* Header */}
                 <div className="flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-2 flex-wrap">
+                  <div className="flex items-center gap-2.5 flex-wrap">
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.has(q.id)}
+                      onChange={() => handleToggleSelect(q.id)}
+                      className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer accent-blue-600 shrink-0"
+                      title="تحديد السؤال للحذف أو المعالجة الجماعية"
+                    />
+
                     <span className="text-xs font-mono font-bold px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
                       #{idx + 1}
                     </span>
@@ -1249,6 +1385,40 @@ export function LessonQuestionsTab({
           })
         )}
       </div>
+
+      {/* ─────────────────────────────────────────────────────────────
+          STICKY BULK ACTIONS BAR (WHEN QUESTIONS ARE SELECTED)
+      ───────────────────────────────────────────────────────────── */}
+      {selectedIds.size > 0 && (
+        <div className="sticky bottom-4 z-40 p-4 rounded-2xl bg-slate-900/95 dark:bg-[#0F172A]/95 text-white backdrop-blur-md border border-slate-700 shadow-2xl flex items-center justify-between gap-4 animate-slideUp">
+          <div className="flex items-center gap-3">
+            <span className="w-7 h-7 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center font-mono">
+              {selectedIds.size}
+            </span>
+            <span className="text-xs font-bold">
+              تم تحديد {selectedIds.size} {selectedIds.size === 1 ? "سؤال" : "أسئلة"}
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setSelectedIds(new Set())}
+              className="px-3 py-1.5 rounded-lg border border-slate-600 hover:bg-slate-800 text-slate-300 text-xs font-bold cursor-pointer transition-colors"
+            >
+              إلغاء التحديد
+            </button>
+            <button
+              type="button"
+              disabled={isBulkDeleting}
+              onClick={handleDeleteSelected}
+              className="px-4 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm disabled:opacity-50 cursor-pointer transition-all"
+            >
+              {isBulkDeleting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+              <span>حذف الأسئلة المحددة</span>
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* ─────────────────────────────────────────────────────────────
           MODAL 1: ADD SINGLE QUESTION
@@ -1629,6 +1799,110 @@ export function LessonQuestionsTab({
               >
                 فهمت، حسناً
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ─────────────────────────────────────────────────────────────
+          MODAL 4: PURGE LESSON QUESTIONS MODAL
+      ───────────────────────────────────────────────────────────── */}
+      {showPurgeModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs font-sans text-right">
+          <div className="w-full max-w-lg rounded-3xl bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden flex flex-col">
+            <div className="p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-red-600/10 text-red-600 flex items-center justify-center">
+                  <Trash2 className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="text-base font-bold text-slate-900 dark:text-white">
+                    حذف وتفريغ أسئلة الدرس من قاعدة البيانات
+                  </h4>
+                  <p className="text-[11px] text-slate-500">{unitInfo.unitTitle}</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowPurgeModal(false)}
+                className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="p-6 space-y-4">
+              {purgeError && (
+                <div className="p-3.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 text-xs font-bold flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                  <span>{purgeError}</span>
+                </div>
+              )}
+
+              <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                اختر العملية التي ترغب في تنفيذها. سيتم حذف الأسئلة نهائياً من قاعدة البيانات مع كافة خياراتها وشروحاتها ونماذج إجاباتها:
+              </p>
+
+              <div className="space-y-3">
+                {typeFilter !== "ALL" && typeScopedQuestions.length > 0 && (
+                  <button
+                    type="button"
+                    disabled={isPurging}
+                    onClick={() => handlePurgeQuestions(typeFilter)}
+                    className="w-full p-4 rounded-2xl border border-amber-200 dark:border-amber-900/50 bg-amber-50/50 dark:bg-amber-950/20 hover:bg-amber-100/70 dark:hover:bg-amber-950/40 text-right space-y-1 transition-all cursor-pointer disabled:opacity-50"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-amber-900 dark:text-amber-200 flex items-center gap-1.5">
+                        <Trash2 className="w-4 h-4 text-amber-600" />
+                        حذف أسئلة {typeFilter === "MCQ" ? "الاختيار من متعدد" : typeFilter === "ESSAY" ? "المقالي" : "صح أم خطأ"} فقط
+                      </span>
+                      <span className="text-xs font-mono font-bold px-2 py-0.5 rounded-full bg-amber-200 dark:bg-amber-800/80 text-amber-900 dark:text-amber-200">
+                        {typeScopedQuestions.length} سؤال
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-amber-700/80 dark:text-amber-300/80">
+                      حذف كافة أسئلة القسم النشط حالياً والإبقاء على باقي أنواع الأسئلة الأخرى في الدرس.
+                    </p>
+                  </button>
+                )}
+
+                <button
+                  type="button"
+                  disabled={isPurging}
+                  onClick={() => handlePurgeQuestions("ALL")}
+                  className="w-full p-4 rounded-2xl border border-red-200 dark:border-red-900/50 bg-red-50/50 dark:bg-red-950/20 hover:bg-red-100/70 dark:hover:bg-red-950/40 text-right space-y-1 transition-all cursor-pointer disabled:opacity-50"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-red-900 dark:text-red-200 flex items-center gap-1.5">
+                      <Trash2 className="w-4 h-4 text-red-600" />
+                      حذف جميع أسئلة الدرس بالكامل
+                    </span>
+                    <span className="text-xs font-mono font-bold px-2 py-0.5 rounded-full bg-red-200 dark:bg-red-800/80 text-red-900 dark:text-red-200">
+                      {totalCount} سؤال
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-red-700/80 dark:text-red-300/80">
+                    تفريغ ومسح كافة أسئلة هذا الدرس (MCQ، مقالي، صح وخطأ) بالكامل من بنك الأسئلة وقاعدة البيانات.
+                  </p>
+                </button>
+              </div>
+            </div>
+
+            <div className="p-4 bg-slate-50 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex items-center justify-end gap-2">
+              <button
+                type="button"
+                disabled={isPurging}
+                onClick={() => setShowPurgeModal(false)}
+                className="px-4 py-2 rounded-xl border text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+              >
+                إلغاء
+              </button>
+              {isPurging && (
+                <div className="flex items-center gap-2 text-xs font-bold text-red-600">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>جارٍ الحذف من قاعدة البيانات...</span>
+                </div>
+              )}
             </div>
           </div>
         </div>
