@@ -27,8 +27,9 @@ export function MistakeHubClient({
     if (selectedSubjectId !== "all" && m.question.subject.id !== selectedSubjectId) {
       return false;
     }
-    if (filterStatus === "unresolved" && m.isResolved) return false;
-    if (filterStatus === "resolved" && !m.isResolved) return false;
+    const hasJustAnswered = !!activeAnswers[m.questionId];
+    if (filterStatus === "unresolved" && m.isResolved && !hasJustAnswered) return false;
+    if (filterStatus === "resolved" && !m.isResolved && !hasJustAnswered) return false;
     return true;
   });
 
@@ -70,6 +71,14 @@ export function MistakeHubClient({
         setMistakes((prev) =>
           prev.map((m) =>
             m.questionId === questionId ? { ...m, isResolved: true } : m
+          )
+        );
+      } else {
+        setMistakes((prev) =>
+          prev.map((m) =>
+            m.questionId === questionId
+              ? { ...m, isResolved: false, wrongCount: m.wrongCount + 1 }
+              : m
           )
         );
       }

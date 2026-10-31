@@ -38,7 +38,7 @@ export function MistakeCard({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#E2E8F0] dark:border-[#334155] pb-4">
         <div className="flex flex-wrap items-center gap-2">
           <span className="px-3 py-1 rounded-lg bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] text-[13px] font-bold border border-[#E2E8F0]/50 dark:border-[#E11D48]/50">
-            <BidiStatement as="span" text={q.subject.name} />
+            <BidiStatement as="span" text={q.subject?.name || ""} />
           </span>
           {mistake.wrongCount > 1 && (
             <span className="px-2 py-1 rounded-lg bg-[#DC2626]/10 dark:bg-[#1E293B] text-[#DC2626] text-[13px] font-bold border border-[#E2E8F0]/50 dark:border-[#F87171]/50">
