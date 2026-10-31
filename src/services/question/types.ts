@@ -2,7 +2,7 @@ import { QuestionType, Difficulty, PublishStatus, SchoolCategory, Prisma } from 
 
 export interface ParsedQuestionImportItem {
   statement: string;
-  subjectId: string;
+  subjectId?: string;
   unitId?: string | null;
   lessonId?: string | null;
   questionLesson?: string | null;

@@ -2,17 +2,23 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { SetupForm } from "./SetupForm";
+import { BrandLogo } from "@/components/ui/BrandLogo";
 
-export default async function SetupPage() {
+interface SetupPageProps {
+  searchParams: Promise<{ reset?: string }>;
+}
+
+export default async function SetupPage({ searchParams }: SetupPageProps) {
   const user = await getCurrentUser();
 
   if (!user) {
     redirect("/login");
   }
 
-  // If user already has system and grade set, skip setup
-  // If user already has system, grade, and schoolCategory set, skip setup
-  if (user.systemId && user.gradeId && user.schoolCategory) {
+  const { reset } = await searchParams;
+
+  // If user already has system, grade, and schoolCategory set (and didn't ask to reset), skip setup
+  if (reset !== "true" && user.systemId && user.gradeId && user.schoolCategory) {
     redirect("/dashboard");
   }
 
@@ -31,26 +37,26 @@ export default async function SetupPage() {
   });
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0F172A] text-[#0F172A] dark:text-[#F8FAFC] flex items-center justify-center p-4 relative font-sans">
-      <div className="absolute inset-0 bg-grid-pattern opacity-60 pointer-events-none" />
+    <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#090D16] text-[#0F172A] dark:text-[#F8FAFC] flex items-center justify-center p-3 sm:p-5 relative font-sans overflow-hidden">
+      {/* Ambient background mesh & subtle glowing brand orbs */}
+      <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] rounded-full bg-[#800020]/10 dark:bg-[#800020]/20 blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] rounded-full bg-blue-600/10 dark:bg-blue-600/15 blur-[120px] pointer-events-none" />
+      <div className="absolute inset-0 bg-grid-pattern opacity-40 dark:opacity-20 pointer-events-none" />
 
-      <div className="w-full max-w-2xl space-y-8 relative z-10">
-        {/* Header */}
-        <div className="text-center space-y-3">
-          <div className="w-12 h-12 rounded-xl bg-[#800020] flex items-center justify-center text-white  mx-auto text-xl font-bold">
-            خ
-          </div>
-          <h1 className="text-2xl sm:text-2xl sm:text-3xl font-bold tracking-tight text-[#0F172A] dark:text-white">
-            مرحباً بك في منصة الخلاصة
-          </h1>
-          <p className="text-[13px] sm:text-sm text-[#64748B] dark:text-[#94A3B8] max-w-md mx-auto leading-relaxed">
-            لتخصيص خطتك الدراسية ومحتوى المنهج بدقة، يرجى تحديد النظام التعليمي والصف الدراسي الحالي.
-          </p>
+      <div className="w-full max-w-2xl space-y-6 sm:space-y-7 relative z-10 my-6">
+        {/* Top Logo & Welcome */}
+        <div className="flex flex-col items-center text-center space-y-2">
+          <BrandLogo variant="combined" size="lg" glow showSubtitle subtitleText="منصة البكالوريا الذكية" />
         </div>
 
-        {/* Setup Form Card */}
-        <div className="p-6 sm:p-8 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] ">
-          <SetupForm systems={systems} userId={user.id} />
+        {/* Setup Form Glassmorphic Card */}
+        <div className="p-5 sm:p-8 rounded-3xl bg-white/95 dark:bg-[#0F172A]/90 backdrop-blur-md border border-[#E2E8F0] dark:border-[#334155] shadow-2xl shadow-black/5 dark:shadow-black/40">
+          <SetupForm systems={systems} userId={user.id} userName={user.name} />
+        </div>
+
+        {/* Footer Guarantee */}
+        <div className="text-center text-[11px] sm:text-xs text-[#94A3B8] flex items-center justify-center gap-2">
+          <span>🔒 بياناتك التعليمية مشفرة ومحمية بالكامل ومخصصة لمنهج البكالوريا</span>
         </div>
       </div>
     </div>

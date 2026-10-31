@@ -9,6 +9,7 @@ import { DashboardStatsGrid } from "./DashboardStatsGrid";
 import { QuickActionsGrid } from "./QuickActionsGrid";
 import { SubjectsGrid } from "./SubjectsGrid";
 import { RecentExamsList } from "./RecentExamsList";
+import { ProductTourModal } from "./ProductTourModal";
 import type { DashboardClientProps } from "./types";
 
 export type { DashboardClientProps, ContinueLessonItem, SubjectItem, RecentExamItem, StudentMeta } from "./types";
@@ -30,6 +31,29 @@ export function DashboardClient({
 }: DashboardClientProps) {
   const [currentStreakDays, setCurrentStreakDays] = useState(streakDays);
   const [isTodayCompletedState, setIsTodayCompletedState] = useState(isTodayCompleted);
+  const [isTourOpen, setIsTourOpen] = useState(false);
+
+  // Check if tour should auto-launch (e.g. redirected from onboarding with ?tour=true or first time)
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const forceTour = params.get("tour") === "true";
+      const tourDone = localStorage.getItem("kholasa_tour_completed");
+
+      if (forceTour) {
+        setIsTourOpen(true);
+        // Clean URL parameter without reloading page
+        const newUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, newUrl);
+      } else if (!tourDone) {
+        // First time entering the dashboard: gentle 600ms delay for nice entrance
+        const timer = setTimeout(() => {
+          setIsTourOpen(true);
+        }, 600);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     const handleStreakUpdate = (e: Event) => {
@@ -54,6 +78,14 @@ export function DashboardClient({
         userName={userName}
         studentMeta={studentMeta}
         continueLesson={continueLesson}
+        onStartTour={() => setIsTourOpen(true)}
+      />
+
+      {/* Product Tour Modal */}
+      <ProductTourModal
+        isOpen={isTourOpen}
+        onClose={() => setIsTourOpen(false)}
+        userName={userName}
       />
 
       {/* 2. Streak Timeline */}
