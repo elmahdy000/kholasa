@@ -2,10 +2,10 @@
 
 import {
   CheckCircle,
-  Lightbulb,
   Check,
 } from "@phosphor-icons/react";
 import { BidiStatement } from "@/components/ui/BidiStatement";
+import { QuestionExplanationBox } from "@/components/ui/QuestionExplanationBox";
 import { Question, QuestionAnswerState } from "../types";
 
 interface LessonMcqSectionProps {
@@ -139,43 +139,12 @@ export function LessonMcqSection({
                   })}
                 </div>
 
-                {/* Detailed Explanation Reveal */}
+                {/* Approved Model Explanation (Rendered after student answers) */}
                 {state?.revealed && state.reveal?.explanation && (
-                  <div className="p-4 rounded-xl bg-[#800020]/5 dark:bg-[#1E293B] border border-[#800020]/20 dark:border-[#FB7185]/20 space-y-2 mt-3 animate-in fade-in duration-200">
-                    <div className="flex items-center gap-2 text-[13px] font-bold text-[#800020] dark:text-[#FB7185]">
-                      <Lightbulb className="w-4 h-4" weight="fill" />
-                      <span>الفكرة الأساسية: {state.reveal.explanation.concept}</span>
-                    </div>
-                    <p className="text-[13px] text-[#0F172A] dark:text-[#F8FAFC] leading-relaxed font-content">
-                      {state.reveal.explanation.correctReason}
-                    </p>
-
-                    {/* Per-option explanations */}
-                    <div className="pt-2 border-t border-[#E2E8F0]/60 dark:border-[#334155]/60 space-y-1.5">
-                      <span className="text-[12px] font-bold text-[#64748B] dark:text-[#94A3B8] block">
-                        تفسير الخيارات:
-                      </span>
-                      {question.options.map((opt) => {
-                        const revealedOpt = state.reveal?.options?.find((o) => o.id === opt.id);
-                        return (
-                          <div
-                            key={opt.id}
-                            className="text-[12px] text-[#64748B] dark:text-[#94A3B8] flex items-start gap-2 font-content"
-                          >
-                            <span className="font-bold shrink-0">
-                              • <BidiStatement as="span" text={opt.text} />:
-                            </span>
-                            <span>
-                              {revealedOpt?.explanation ||
-                                (revealedOpt?.isCorrect
-                                  ? "الإجابة الصحيحة والدقيقة"
-                                  : "غير دقيقة في سياق هذا السؤال")}
-                            </span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
+                  <QuestionExplanationBox
+                    concept={state.reveal.explanation.concept}
+                    correctReason={state.reveal.explanation.correctReason}
+                  />
                 )}
               </div>
             );

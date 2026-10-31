@@ -11,6 +11,7 @@ import {
 } from "@phosphor-icons/react";
 import { BidiStatement } from "@/components/ui/BidiStatement";
 import { FormattedAnswerView } from "@/components/ui/FormattedAnswerView";
+import { QuestionExplanationBox } from "@/components/ui/QuestionExplanationBox";
 import { Question, UserAnswerState, RevealedAnswer } from "./types";
 
 interface ExamQuestionCardProps {
@@ -229,44 +230,10 @@ export function ExamQuestionCard({
             </button>
           ) : (
             revealedAnswer?.explanation && (
-              <div className="p-5 rounded-2xl bg-[#800020]/10 dark:bg-[#1E293B] border border-[#E2E8F0]/60 dark:border-[#E11D48]/60 space-y-3">
-                <div className="flex items-center gap-2 text-[13px] font-bold text-[#800020] dark:text-[#FB7185]">
-                  <Lightbulb className="w-4 h-4" weight="fill" />
-                  <span>الفكرة الأساسية: {revealedAnswer.explanation.concept}</span>
-                </div>
-                <FormattedAnswerView
-                  text={revealedAnswer.explanation.correctReason}
-                  colorScheme="burgundy"
-                />
-
-                {/* Per-option breakdown */}
-                <div className="pt-2 border-t border-[#E2E8F0]/40 dark:border-[#E11D48]/40 space-y-2">
-                  <span className="text-[13px] font-bold text-[#64748B] dark:text-[#94A3B8] block">
-                    ليه ده صح وده غلط؟
-                  </span>
-                  {currentQ.options.map((opt) => {
-                    const revealedOpt = revealedAnswer.options?.find(
-                      (o) => o.id === opt.id
-                    );
-                    return (
-                      <div
-                        key={opt.id}
-                        className="text-[13px] text-[#64748B] dark:text-[#94A3B8] flex items-start gap-2 font-content"
-                      >
-                        <span className="font-bold shrink-0">
-                          • <BidiStatement as="span" text={opt.text} />:
-                        </span>
-                        <span>
-                          {revealedOpt?.explanation ||
-                            (revealedOpt?.isCorrect
-                              ? "ده الخيار الدقيق والمظبوط"
-                              : "مش مظبوط في الحالة دي")}
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
+              <QuestionExplanationBox
+                concept={revealedAnswer.explanation.concept}
+                correctReason={revealedAnswer.explanation.correctReason}
+              />
             )
           )}
         </div>

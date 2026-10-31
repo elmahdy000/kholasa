@@ -8,6 +8,7 @@ import {
   XCircle,
 } from "@phosphor-icons/react";
 import { BidiStatement } from "@/components/ui/BidiStatement";
+import { QuestionExplanationBox } from "@/components/ui/QuestionExplanationBox";
 import { Question, QuestionAnswerState } from "../types";
 
 interface LessonTrueFalseSectionProps {
@@ -129,26 +130,13 @@ export function LessonTrueFalseSection({
 
                 {/* Result & Explanation */}
                 {state?.revealed && (
-                  <div className="p-4 rounded-xl bg-[#0284C7]/5 dark:bg-[#1E293B] border border-[#0284C7]/20 space-y-2 mt-2 animate-in fade-in duration-200">
-                    <div className="flex items-center gap-2 text-[13px] font-bold">
-                      {state.isCorrect ? (
-                        <span className="text-[#059669] flex items-center gap-1.5">
-                          <CheckCircle className="w-4 h-4" weight="fill" />
-                          <span>إجابة صحيحة ومضبوطة! 👏</span>
-                        </span>
-                      ) : (
-                        <span className="text-[#DC2626] flex items-center gap-1.5">
-                          <XCircle className="w-4 h-4" weight="fill" />
-                          <span>إجابة غير صحيحة، راجع الشرح أدناه 💡</span>
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-[13px] text-[#0F172A] dark:text-[#F8FAFC] leading-relaxed font-content">
-                      {state.reveal?.explanation?.correctReason ||
-                        state.reveal?.options?.find((o) => o.isCorrect)?.explanation ||
-                        "العبارة تخضع لمفاهيم الدرس الأساسية الموضحة في كبسولة الزتونة."}
-                    </p>
-                  </div>
+                  <QuestionExplanationBox
+                    concept={state.reveal?.explanation?.concept}
+                    correctReason={
+                      state.reveal?.explanation?.correctReason ||
+                      state.reveal?.options?.find((o) => o.isCorrect)?.explanation
+                    }
+                  />
                 )}
               </div>
             );

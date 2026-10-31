@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { BidiStatement } from "@/components/ui/BidiStatement";
 import { ExamResultActions } from "@/components/exams/ExamResultActions";
+import { QuestionExplanationBox } from "@/components/ui/QuestionExplanationBox";
 
 const ARABIC_LETTERS = ["أ", "ب", "ج", "د", "هـ", "و"];
 
@@ -408,17 +409,10 @@ export default async function ExamResultsPage({
 
                   {/* Explanation card */}
                   {q.explanation && (
-                    <div className="p-4 rounded-xl bg-[#800020]/10 dark:bg-[#1E293B] border border-[#800020]/20 space-y-2">
-                      <div className="flex items-center gap-2 text-[13px] font-bold text-[#800020] dark:text-[#FB7185]">
-                        <Lightbulb className="w-4 h-4" />
-                        <span>
-                          الفكرة الأساسية: {q.explanation.concept}
-                        </span>
-                      </div>
-                      <p className="text-[13px] text-[#0F172A] dark:text-[#F8FAFC] leading-relaxed font-medium">
-                        {q.explanation.correctReason}
-                      </p>
-                    </div>
+                    <QuestionExplanationBox
+                      concept={q.explanation.concept}
+                      correctReason={q.explanation.correctReason}
+                    />
                   )}
                 </div>
               );

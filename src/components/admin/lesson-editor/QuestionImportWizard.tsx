@@ -502,7 +502,7 @@ export function QuestionImportWizard({
           unitId: unitInfo.unitId,
           lessonId: lessonId,
           options: q.options || [],
-          concept: q.concept || "تفسير الحل",
+          concept: q.concept || undefined,
           correctReason: q.correctReason || undefined,
           modelAnswer: q.modelAnswer || undefined,
           points: q.points || (q.type === "ESSAY" ? 10 : 1),

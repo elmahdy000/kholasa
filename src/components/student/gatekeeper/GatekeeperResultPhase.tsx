@@ -9,6 +9,7 @@ import {
   Lightbulb,
 } from "lucide-react";
 import { BidiStatement } from "@/components/ui/BidiStatement";
+import { QuestionExplanationBox } from "@/components/ui/QuestionExplanationBox";
 import { ExamResult } from "./types";
 
 interface GatekeeperResultPhaseProps {
@@ -155,23 +156,10 @@ export function GatekeeperResultPhase({
 
             {/* Concept & Educational Explanation */}
             {(q.concept || q.correctReason) && (
-              <div className="p-3 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/80 border border-[#E2E8F0]/80 dark:border-[#334155] space-y-1 text-[13px]">
-                <div className="flex items-center gap-2 text-[#800020] font-bold text-[13px]">
-                  <Lightbulb className="w-3.5 h-3.5" />
-                  <span>التفسير التعليمي والمفهوم:</span>
-                </div>
-                {q.concept && (
-                  <div className="text-[#64748B] dark:text-[#F8FAFC]">
-                    <span className="font-bold">المفهوم: </span>
-                    {q.concept}
-                  </div>
-                )}
-                {q.correctReason && (
-                  <p className="text-[#64748B] dark:text-[#94A3B8] leading-relaxed text-[13px]">
-                    {q.correctReason}
-                  </p>
-                )}
-              </div>
+              <QuestionExplanationBox
+                concept={q.concept}
+                correctReason={q.correctReason}
+              />
             )}
           </div>
         ))}

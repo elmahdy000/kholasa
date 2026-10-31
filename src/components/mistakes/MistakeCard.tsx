@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { BookOpen, Check, ArrowLeft, Lightbulb } from "lucide-react";
+import { BookOpen, Check, ArrowLeft } from "lucide-react";
 import { BidiStatement } from "@/components/ui/BidiStatement";
+import { QuestionExplanationBox } from "@/components/ui/QuestionExplanationBox";
 import type { MistakeItem, ActiveAnswerState } from "./types";
 
 interface MistakeCardProps {
@@ -128,15 +129,10 @@ export function MistakeCard({
 
       {/* Explanation */}
       {q.explanation && (
-        <div className="p-4 rounded-xl bg-[#D97706]/10 dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#FBBF24]/40 space-y-2 mt-2">
-          <div className="flex items-center gap-2 text-[13px] font-bold text-[#D97706] dark:text-[#FBBF24]">
-            <Lightbulb className="w-3.5 h-3.5 text-[#D97706]" />
-            <span>المفهوم: {q.explanation.concept}</span>
-          </div>
-          <p className="text-[13px] text-[#0F172A] dark:text-[#F8FAFC] leading-relaxed font-medium">
-            {q.explanation.correctReason}
-          </p>
-        </div>
+        <QuestionExplanationBox
+          concept={q.explanation.concept}
+          correctReason={q.explanation.correctReason}
+        />
       )}
     </div>
   );
