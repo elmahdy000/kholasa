@@ -1044,22 +1044,37 @@ export function LessonQuestionsTab({
                     </div>
                   )}
 
-                  {/* Explanation / Model Answer */}
+                  {/* Model Answer (for Essay) */}
+                  {editForm.type === "ESSAY" && (
+                    <div className="space-y-1">
+                      <label className="text-[11px] font-bold text-amber-700 dark:text-amber-400">
+                        نموذج الإجابة للسؤال المقالي (عناصر الحل):
+                      </label>
+                      <textarea
+                        rows={3}
+                        value={editForm.modelAnswer}
+                        onChange={(e) =>
+                          setEditForm({ ...editForm, modelAnswer: e.target.value })
+                        }
+                        placeholder="اكتب عناصر الإجابة والخطوات النموذجية..."
+                        className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border text-xs outline-none focus:border-amber-500 leading-relaxed font-sans"
+                      />
+                    </div>
+                  )}
+
+                  {/* Explanation (for all question types) */}
                   <div className="space-y-1">
-                    <label className="text-[11px] font-bold text-slate-500">
-                      {editForm.type === "ESSAY" ? "نموذج الإجابة للسؤال المقالي:" : "تفسير وشرح الحل:"}
+                    <label className="text-[11px] font-bold text-blue-700 dark:text-blue-400">
+                      {editForm.type === "ESSAY" ? "تفسير الإجابة وتوجيهات التصحيح:" : "تفسير وشرح الحل:"}
                     </label>
                     <textarea
                       rows={2}
-                      value={editForm.type === "ESSAY" ? editForm.modelAnswer : editForm.correctReason}
-                      onChange={(e) => {
-                        if (editForm.type === "ESSAY") {
-                          setEditForm({ ...editForm, modelAnswer: e.target.value });
-                        } else {
-                          setEditForm({ ...editForm, correctReason: e.target.value });
-                        }
-                      }}
-                      className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border text-xs outline-none focus:border-blue-500 leading-relaxed"
+                      value={editForm.correctReason}
+                      onChange={(e) =>
+                        setEditForm({ ...editForm, correctReason: e.target.value })
+                      }
+                      placeholder="تفسير سبب الإجابة وتوضيح المفهوم للطالب..."
+                      className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border text-xs outline-none focus:border-blue-500 leading-relaxed font-sans"
                     />
                   </div>
                 </div>

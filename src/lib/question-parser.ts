@@ -334,7 +334,7 @@ export function parseQuestionsFromText(
     }
 
     // Track if this line introduces an answer/explanation/rubric
-    const isAnswerHeader = /^(?:نموذج الإجابة|الإجابة النموذجية|التفسير|الشرح|الإجابة|الدرجة|Model Answer|Explanation|Rubric)\s*[:\-]/i.test(line);
+    const isAnswerHeader = /^(?:نموذج الإجابة|الإجابة النموذجية|الاجابة النموذجية|عناصر الإجابة|التفسير|تفسير|التوضيح|توضيح|الشرح|شرح|التعليل|تعليل|تفسير الإجابة|توضيح الإجابة|شرح الإجابة|شرح الحل|تفسير الحل|سبب الإجابة|سبب الاختيار|السبب|سبب|المفهوم|الدرس|الوحدة|الإجابة|الاجابة|الجواب|الحل|الدرجة|Model Answer|Sample Answer|Explanation|Reason|Rationale|Rubric|Concept)\s*[:\-\=—–]/i.test(line);
     if (isAnswerHeader) {
       inAnswerBlock = true;
     }
@@ -461,40 +461,80 @@ function processQuestionBlock(
   statement = lines[0];
   const statementLines = [lines[0]];
   let readingStatement = true;
+  let currentSection: "STATEMENT" | "OPTIONS" | "ANSWER" | "MODEL_ANSWER" | "EXPLANATION" | "CONCEPT" = "STATEMENT";
 
   for (let i = 1; i < lines.length; i++) {
     const line = lines[i];
 
     // Check for Answer Indicator line
-    const answerMatch = line.match(/^(?:الإجابة الصحيحة|الإجابة|الجواب|الحل|Answer|Correct Answer)\s*[:\-\=]\s*(.*)$/i);
+    const answerMatch = line.match(
+      /^(?:\[|\()?(?:الإجابة الصحيحة|الاجابة الصحيحة|الإجابة|الاجابة|الجواب|الحل الصحيح|الحل|Answer|Correct Answer)(?:\]|\))?\s*[:\-\=—–]\s*(.*)$/i
+    );
     if (answerMatch) {
       readingStatement = false;
+      currentSection = "ANSWER";
       answerLine = answerMatch[1].trim();
       continue;
     }
 
     // Check for Model Answer (for Essay)
-    const modelAnswerMatch = line.match(/^(?:الإجابة النموذجية|نموذج الإجابة|Model Answer)\s*[:\-\=]\s*(.*)$/i);
+    const modelAnswerMatch = line.match(
+      /^(?:\[|\()?(?:الإجابة النموذجية|الاجابة النموذجية|نموذج الإجابة|نموذج الاجابة|عناصر الإجابة|عناصر الاجابة|الإجابة المقترحة|Model Answer|Sample Answer|Rubric)(?:\]|\))?\s*[:\-\=—–]\s*(.*)$/i
+    );
     if (modelAnswerMatch) {
       readingStatement = false;
-      modelAnswerText = modelAnswerMatch[1].trim();
+      currentSection = "MODEL_ANSWER";
+      const val = modelAnswerMatch[1].trim();
+      if (val) {
+        modelAnswerText = modelAnswerText ? modelAnswerText + "\n" + val : val;
+      }
       if (!options?.forcedType) detectedType = "ESSAY";
       continue;
     }
 
     // Check for Explanation / Reason line
-    const expMatch = line.match(/^(?:التفسير|التعليل|سبب الإجابة|تفسير الإجابة|Explanation)\s*[:\-\=]\s*(.*)$/i);
+    const expMatch = line.match(
+      /^(?:\[|\()?(?:التفسير|تفسير|التوضيح|توضيح|الشرح|شرح|التعليل|تعليل|تفسير الإجابة|توضيح الإجابة|شرح الإجابة|شرح الحل|تفسير الحل|سبب الإجابة|سبب الاختيار|السبب|سبب|فكرة الحل|Explanation|Reason|Rationale|Note)(?:\]|\))?\s*[:\-\=—–]\s*(.*)$/i
+    );
     if (expMatch) {
       readingStatement = false;
-      explanationText = expMatch[1].trim();
+      currentSection = "EXPLANATION";
+      const val = expMatch[1].trim();
+      if (val) {
+        explanationText = explanationText ? explanationText + "\n" + val : val;
+      }
       continue;
     }
 
     // Check for Concept line
-    const conceptMatch = line.match(/^(?:المفهوم|المفهوم التعليمي|الدرس|الوحدة|Concept)\s*[:\-\=]\s*(.*)$/i);
+    const conceptMatch = line.match(
+      /^(?:\[|\()?(?:المفهوم|المفهوم التعليمي|الدرس|الوحدة|الفكرة الأساسية|Concept|Topic)(?:\]|\))?\s*[:\-\=—–]\s*(.*)$/i
+    );
     if (conceptMatch) {
       readingStatement = false;
-      conceptText = conceptMatch[1].trim();
+      currentSection = "CONCEPT";
+      const val = conceptMatch[1].trim();
+      if (val) {
+        conceptText = conceptText ? conceptText + " " + val : val;
+      }
+      continue;
+    }
+
+    // If currently accumulating explanation lines (until another section header or question boundary)
+    if (currentSection === "EXPLANATION") {
+      explanationText = (explanationText ? explanationText + "\n" : "") + line;
+      continue;
+    }
+
+    // If currently accumulating concept lines
+    if (currentSection === "CONCEPT") {
+      conceptText = (conceptText ? conceptText + " " : "") + line;
+      continue;
+    }
+
+    // If currently accumulating model answer lines
+    if (currentSection === "MODEL_ANSWER") {
+      modelAnswerText = (modelAnswerText ? modelAnswerText + "\n" : "") + line;
       continue;
     }
 
@@ -512,6 +552,7 @@ function processQuestionBlock(
     const inlineChoices = extractInlineChoices(line);
     if (inlineChoices.length >= 2) {
       readingStatement = false;
+      currentSection = "OPTIONS";
       rawOptionLines.push(...inlineChoices);
       continue;
     }
@@ -519,6 +560,7 @@ function processQuestionBlock(
     // Check if line is an option
     if (isOptionLine(line)) {
       readingStatement = false;
+      currentSection = "OPTIONS";
       rawOptionLines.push(line);
       continue;
     }
@@ -527,11 +569,15 @@ function processQuestionBlock(
     if (readingStatement) {
       statementLines.push(line);
     } else {
-      // If we already saw options or answers, append line to explanation or model answer
-      if (detectedType === "ESSAY" || modelAnswerText) {
+      // If we already saw options or answers, append line according to current context
+      if (currentSection === "OPTIONS" && rawOptionLines.length > 0) {
+        rawOptionLines[rawOptionLines.length - 1] += " " + line;
+      } else if (currentSection === "ANSWER") {
+        answerLine = (answerLine ? answerLine + " " : "") + line;
+      } else if (detectedType === "ESSAY" || modelAnswerText) {
         modelAnswerText = (modelAnswerText ? modelAnswerText + "\n" : "") + line;
       } else if (explanationText) {
-        explanationText += " " + line;
+        explanationText += "\n" + line;
       }
     }
   }

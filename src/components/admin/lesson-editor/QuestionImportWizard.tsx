@@ -1617,6 +1617,22 @@ export function QuestionImportWizard({
                                   className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white leading-relaxed resize-y outline-none focus:border-blue-500"
                                 />
                               </div>
+
+                              {/* Concept */}
+                              <div className="space-y-1">
+                                <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400 block">
+                                  المفهوم المرتبط (اختياري):
+                                </label>
+                                <input
+                                  type="text"
+                                  value={q.concept || ""}
+                                  onChange={(e) =>
+                                    updateStagedQuestion(q.id, { concept: e.target.value })
+                                  }
+                                  placeholder="المفهوم العلمي المرتبط بالسؤال..."
+                                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white outline-none focus:border-blue-500"
+                                />
+                              </div>
                             </div>
                           )}
 
@@ -1681,6 +1697,22 @@ export function QuestionImportWizard({
                                   }
                                   placeholder="التفسير العلمي للإجابة..."
                                   className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white leading-relaxed resize-y outline-none focus:border-blue-500"
+                                />
+                              </div>
+
+                              {/* Concept */}
+                              <div className="space-y-1">
+                                <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400 block">
+                                  المفهوم المرتبط (اختياري):
+                                </label>
+                                <input
+                                  type="text"
+                                  value={q.concept || ""}
+                                  onChange={(e) =>
+                                    updateStagedQuestion(q.id, { concept: e.target.value })
+                                  }
+                                  placeholder="المفهوم العلمي المرتبط بالسؤال..."
+                                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white outline-none focus:border-blue-500"
                                 />
                               </div>
                             </div>
@@ -1768,6 +1800,22 @@ export function QuestionImportWizard({
                                   }
                                   placeholder="التفسير العلمي للإجابة..."
                                   className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white leading-relaxed resize-y outline-none focus:border-blue-500"
+                                />
+                              </div>
+
+                              {/* Concept */}
+                              <div className="space-y-1">
+                                <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400 block">
+                                  المفهوم المرتبط (اختياري):
+                                </label>
+                                <input
+                                  type="text"
+                                  value={q.concept || ""}
+                                  onChange={(e) =>
+                                    updateStagedQuestion(q.id, { concept: e.target.value })
+                                  }
+                                  placeholder="المفهوم العلمي المرتبط بالسؤال..."
+                                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white outline-none focus:border-blue-500"
                                 />
                               </div>
                             </div>
