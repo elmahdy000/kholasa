@@ -325,7 +325,15 @@ export function LessonViewer({
       <div className="p-1 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/80 border border-[#E2E8F0]/80 dark:border-[#334155]/80 flex items-center gap-1 overflow-x-auto scrollbar-none">
         {[
           { id: "content", label: "شرح الدرس", icon: BookOpen },
-          { id: "mindmap", label: "الملخص الذهني", icon: Graph },
+          {
+            id: "mindmap",
+            label: "الملخص الذهني",
+            icon: Graph,
+            badge:
+              lesson.mindMap?.images && lesson.mindMap.images.length > 1
+                ? `${lesson.mindMap.images.length}`
+                : undefined,
+          },
           {
             id: "definitions",
             label: "التعريفات المهمة",
