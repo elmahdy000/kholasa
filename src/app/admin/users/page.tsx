@@ -15,7 +15,7 @@ export default async function AdminUsersPage() {
     prisma.user.findMany({
       orderBy: { createdAt: "desc" },
       select: {
-        id: true, name: true, email: true, phone: true, role: true, createdAt: true,
+        id: true, name: true, email: true, phone: true, loginCode: true, role: true, schoolCategory: true, createdAt: true,
         maxDevices: true, boundDevices: true,
         system: { select: { id: true, name: true } },
         grade: { select: { id: true, name: true } },

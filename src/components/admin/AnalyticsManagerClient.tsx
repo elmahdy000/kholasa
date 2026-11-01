@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   Activity,
   Database,
@@ -14,6 +15,15 @@ import {
   CheckCircle2,
   AlertCircle,
   HardDrive,
+  Smartphone,
+  KeyRound,
+  GraduationCap,
+  Check,
+  Copy,
+  Send,
+  Sparkles,
+  ExternalLink,
+  Trophy,
 } from "lucide-react";
 
 interface AnalyticsData {
@@ -29,6 +39,37 @@ interface AnalyticsData {
     completedAttemptsCount: number;
     avgScore: number;
     avgDurationMinutes: number;
+  };
+  studentCohort?: {
+    totalStudents: number;
+    activeStudents: number;
+    inactiveStudents: number;
+    arabicStudents: number;
+    languagesStudents: number;
+    oneDeviceStudents: number;
+    twoDevicesStudents: number;
+    completedLessons: number;
+    totalMistakes: number;
+    resolvedMistakes: number;
+    topStudents: {
+      id: string;
+      name: string;
+      phone: string;
+      loginCode: string;
+      schoolCategory: "ARABIC" | "LANGUAGES";
+      attemptsCount: number;
+      completedLessons: number;
+      averageScore: number;
+      boundDevicesCount: number;
+    }[];
+    pendingStudents: {
+      id: string;
+      name: string;
+      phone: string;
+      loginCode: string;
+      schoolCategory: "ARABIC" | "LANGUAGES";
+      createdAt: string;
+    }[];
   };
   difficultyDistribution: {
     easy: number;
@@ -71,8 +112,56 @@ interface AnalyticsManagerClientProps {
 }
 
 export function AnalyticsManagerClient({ data }: AnalyticsManagerClientProps) {
-  const { overview, difficultyDistribution, questionTypes, scoreBrackets, auditLogs, recentAttempts } =
-    data;
+  const {
+    overview,
+    studentCohort,
+    difficultyDistribution,
+    questionTypes,
+    scoreBrackets,
+    auditLogs,
+    recentAttempts,
+  } = data;
+
+  const [copiedCodeId, setCopiedCodeId] = useState<string | null>(null);
+
+  const handleCopyInvite = (student: { name: string; loginCode: string }) => {
+    const text = `مرحباً بك يا ${student.name} في منصة "الخلاصة" التعليمية! 🎉\n\nكود الدخول الحصري الخاص بك هو: ${student.loginCode}\n\n🔗 رابط المنصة للدخول المباشر:\nhttps://kholasa.com/login\n\nيرجى الدخول من جهازك المعتمد لحل الاختبارات ومتابعة دروسك. بالتوفيق والنجاح! 🚀`;
+    navigator.clipboard.writeText(text);
+    setCopiedCodeId(student.loginCode);
+    setTimeout(() => setCopiedCodeId(null), 2000);
+  };
+
+  const handleSendWhatsAppInvite = (student: { name: string; loginCode: string; phone: string }) => {
+    let phoneNum = (student.phone || "").replace(/\D/g, "");
+    if (phoneNum.startsWith("0")) {
+      phoneNum = "2" + phoneNum;
+    } else if (!phoneNum.startsWith("20") && phoneNum.length === 10) {
+      phoneNum = "20" + phoneNum;
+    }
+    const text = `مرحباً بك يا ${student.name} في منصة "الخلاصة" التعليمية! 🎉\n\nكود الدخول الحصري الخاص بك هو: *${student.loginCode}*\n\n🔗 رابط المنصة للدخول المباشر:\nhttps://kholasa.com/login\n\nيرجى الدخول من جهازك المعتمد لحل الاختبارات ومتابعة دروسك. بالتوفيق والنجاح! 🚀`;
+    window.open(`https://wa.me/${phoneNum}?text=${encodeURIComponent(text)}`, "_blank");
+  };
+
+  const cohort = studentCohort || {
+    totalStudents: overview.studentsCount,
+    activeStudents: 0,
+    inactiveStudents: overview.studentsCount,
+    arabicStudents: 0,
+    languagesStudents: 0,
+    oneDeviceStudents: overview.studentsCount,
+    twoDevicesStudents: 0,
+    completedLessons: 0,
+    totalMistakes: 0,
+    resolvedMistakes: 0,
+    topStudents: [],
+    pendingStudents: [],
+  };
+
+  const totalCohort = cohort.totalStudents || 1;
+  const activePercent = Math.round((cohort.activeStudents / totalCohort) * 100);
+  const inactivePercent = 100 - activePercent;
+  const arabicPercent = Math.round((cohort.arabicStudents / totalCohort) * 100);
+  const languagesPercent = Math.round((cohort.languagesStudents / totalCohort) * 100);
 
   const totalQuestions =
     difficultyDistribution.easy +
@@ -177,6 +266,246 @@ export function AnalyticsManagerClient({ data }: AnalyticsManagerClientProps) {
           <span className="text-[13px] text-[#800020] font-mono mt-2">
             {questionTypes.mcq} اختيار من متعدد · {questionTypes.essay} مقالي
           </span>
+        </div>
+      </div>
+
+      {/* 5. Dedicated Student Cohort Telemetry Section */}
+      <div className="p-6 rounded-2xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#E2E8F0] dark:border-[#334155]">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#800020] animate-ping" />
+              <h2 className="text-base font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
+                <GraduationCap className="w-5 h-5 text-[#800020] dark:text-[#FB7185]" />
+                <span>إحصائيات دفعة الطلاب وحالة الدخول والأجهزة (Student Cohort Telemetry)</span>
+              </h2>
+            </div>
+            <p className="text-xs text-[#64748B] dark:text-[#94A3B8] mt-1">
+              متابعة دقيقة لحالة تفعيل الأكواد، نسبة الطلاب النشطين، الأجهزة المعتمدة، والتواصل الفوري
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <a
+              href="/admin/users"
+              className="h-9 px-3.5 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] hover:bg-[#F8FAFC] dark:hover:bg-[#1E293B] text-xs font-bold text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white flex items-center gap-1.5 transition-colors"
+            >
+              <span>إدارة ملفات الطلاب</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+            <a
+              href="/api/admin/users/export"
+              download
+              className="h-9 px-3.5 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-xs font-bold flex items-center gap-1.5 transition-colors"
+            >
+              <span>تصدير كشف Excel</span>
+            </a>
+          </div>
+        </div>
+
+        {/* 4 Cards Grid for Student Cohort */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          {/* Card 1: Total Students & School Category Breakdown */}
+          <div className="p-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/30 border border-[#E2E8F0] dark:border-[#334155] flex flex-col justify-between">
+            <span className="text-[11px] font-mono uppercase text-[#64748B]">إجمالي طلاب الدفعة</span>
+            <div className="my-2">
+              <span className="text-2xl font-mono font-bold text-[#0F172A] dark:text-white">
+                {cohort.totalStudents}
+              </span>
+              <span className="text-xs text-[#64748B] mr-1">طالب مسجل</span>
+            </div>
+            <div className="space-y-1 pt-1">
+              <div className="flex items-center justify-between text-[11px] text-[#64748B]">
+                <span>عربي: {cohort.arabicStudents} ({arabicPercent}%)</span>
+                <span>لغات: {cohort.languagesStudents} ({languagesPercent}%)</span>
+              </div>
+              <div className="h-1.5 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden flex">
+                <div className="bg-[#800020] h-full" style={{ width: `${arabicPercent}%` }} />
+                <div className="bg-amber-500 h-full" style={{ width: `${languagesPercent}%` }} />
+              </div>
+            </div>
+          </div>
+
+          {/* Card 2: Active vs Inactive / Pending Login */}
+          <div className="p-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/30 border border-[#E2E8F0] dark:border-[#334155] flex flex-col justify-between">
+            <span className="text-[11px] font-mono uppercase text-[#64748B]">حالة تفعيل الأكواد والأجهزة</span>
+            <div className="my-2 flex items-baseline gap-2">
+              <span className="text-2xl font-mono font-bold text-emerald-600 dark:text-emerald-400">
+                {cohort.activeStudents}
+              </span>
+              <span className="text-xs text-[#64748B]">نشط</span>
+              <span className="text-xs text-[#94A3B8]">/</span>
+              <span className="text-base font-mono font-bold text-amber-600 dark:text-amber-400">
+                {cohort.inactiveStudents}
+              </span>
+              <span className="text-xs text-[#64748B]">قيد الانتظار</span>
+            </div>
+            <div className="space-y-1 pt-1">
+              <div className="flex items-center justify-between text-[11px] text-[#64748B]">
+                <span className="text-emerald-600 font-bold">نشط {activePercent}%</span>
+                <span className="text-amber-600 font-bold">بانتظار الدخول {inactivePercent}%</span>
+              </div>
+              <div className="h-1.5 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden flex">
+                <div className="bg-emerald-500 h-full" style={{ width: `${activePercent}%` }} />
+                <div className="bg-amber-400 h-full" style={{ width: `${inactivePercent}%` }} />
+              </div>
+            </div>
+          </div>
+
+          {/* Card 3: Device Binding Policy Enforcement */}
+          <div className="p-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/30 border border-[#E2E8F0] dark:border-[#334155] flex flex-col justify-between">
+            <span className="text-[11px] font-mono uppercase text-[#64748B]">حماية الأجهزة (Device Binding)</span>
+            <div className="my-2">
+              <span className="text-2xl font-mono font-bold text-[#800020] dark:text-[#FB7185]">
+                {cohort.oneDeviceStudents}
+              </span>
+              <span className="text-xs text-[#64748B] mr-1">طالب (جهاز واحد)</span>
+            </div>
+            <div className="flex items-center justify-between text-[11px] text-[#64748B] pt-1">
+              <span>استثناء جهازين: <strong className="text-blue-600 font-mono">{cohort.twoDevicesStudents}</strong></span>
+              <span className="text-emerald-600 font-bold">أمان 100%</span>
+            </div>
+          </div>
+
+          {/* Card 4: Academic Progress & Mistakes Mastery */}
+          <div className="p-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/30 border border-[#E2E8F0] dark:border-[#334155] flex flex-col justify-between">
+            <span className="text-[11px] font-mono uppercase text-[#64748B]">إنجاز المنهج وبنك الأخطاء</span>
+            <div className="my-2">
+              <span className="text-2xl font-mono font-bold text-[#0F172A] dark:text-white">
+                {cohort.completedLessons}
+              </span>
+              <span className="text-xs text-[#64748B] mr-1">درس مكتمل</span>
+            </div>
+            <div className="flex items-center justify-between text-[11px] text-[#64748B] pt-1">
+              <span>أخطاء عولجت: <strong className="text-emerald-600 font-mono">{cohort.resolvedMistakes}</strong></span>
+              <span>إجمالي: {cohort.totalMistakes}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Dual Lists: Top Active Students & Pending Students Outreach */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {/* List 1: Top Active Students */}
+          <div className="p-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC]/50 dark:bg-[#1E293B]/20 space-y-3">
+            <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#334155] pb-2.5">
+              <h3 className="font-bold text-xs text-[#0F172A] dark:text-white flex items-center gap-1.5">
+                <Trophy className="w-4 h-4 text-amber-500" />
+                <span>الطلاب الأنشط والمتصدرون للاختبارات</span>
+              </h3>
+              <span className="text-[11px] text-[#64748B] font-mono">حسب المحاولات</span>
+            </div>
+
+            {cohort.topStudents.length === 0 ? (
+              <p className="text-xs text-[#64748B] py-6 text-center">
+                لم تسجل محاولات مكتملة بعد، بانتظار بدء الطلاب في حل الامتحانات.
+              </p>
+            ) : (
+              <div className="space-y-2">
+                {cohort.topStudents.map((s, idx) => (
+                  <div
+                    key={s.id}
+                    className="p-2.5 rounded-lg bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] flex items-center justify-between text-xs"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="w-5 h-5 rounded-full bg-[#800020]/10 text-[#800020] dark:text-[#FB7185] font-bold text-[10px] flex items-center justify-center font-mono">
+                        #{idx + 1}
+                      </span>
+                      <div>
+                        <span className="font-bold text-[#0F172A] dark:text-white block">
+                          {s.name}
+                        </span>
+                        <div className="flex items-center gap-2 text-[10px] text-[#64748B] font-mono">
+                          <span>كود: {s.loginCode}</span>
+                          <span>• {s.schoolCategory === "LANGUAGES" ? "لغات" : "عربي"}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <span className="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 font-mono font-bold text-[11px]">
+                        {s.averageScore}%
+                      </span>
+                      <span className="text-[11px] text-[#64748B] font-mono">
+                        {s.attemptsCount} امتحان
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* List 2: Pending Students Outreach with 1-click WhatsApp */}
+          <div className="p-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC]/50 dark:bg-[#1E293B]/20 space-y-3">
+            <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#334155] pb-2.5">
+              <h3 className="font-bold text-xs text-[#0F172A] dark:text-white flex items-center gap-1.5">
+                <KeyRound className="w-4 h-4 text-[#800020] dark:text-[#FB7185]" />
+                <span>متابعة الطلاب قيد الانتظار وتفعيل الأكواد</span>
+              </h3>
+              <span className="text-[11px] text-amber-600 font-bold font-mono">
+                {cohort.inactiveStudents} طالب لم يدخل بعد
+              </span>
+            </div>
+
+            {cohort.pendingStudents.length === 0 ? (
+              <p className="text-xs text-emerald-600 py-6 text-center font-bold">
+                جميع الطلاب قاموا بالدخول وتفعيل أجهزتهم بنجاح! 🎉
+              </p>
+            ) : (
+              <div className="space-y-2">
+                {cohort.pendingStudents.map((s) => (
+                  <div
+                    key={s.id}
+                    className="p-2.5 rounded-lg bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] flex items-center justify-between text-xs"
+                  >
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-[#0F172A] dark:text-white">
+                          {s.name}
+                        </span>
+                        <span className="px-1.5 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold">
+                          {s.schoolCategory === "LANGUAGES" ? "لغات" : "عربي"}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 text-[10px] text-[#64748B] font-mono mt-0.5">
+                        <span className="font-bold text-[#800020] dark:text-[#FB7185]">
+                          كود: {s.loginCode}
+                        </span>
+                        {s.phone && <span>• {s.phone}</span>}
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => handleCopyInvite(s)}
+                        className="p-1.5 rounded-lg border border-[#E2E8F0] dark:border-[#334155] hover:bg-slate-50 dark:hover:bg-[#1E293B] text-[#64748B] transition-colors cursor-pointer"
+                        title="نسخ رسالة الترحيب والكود للطالب"
+                      >
+                        {copiedCodeId === s.loginCode ? (
+                          <Check className="w-3.5 h-3.5 text-emerald-600" />
+                        ) : (
+                          <Copy className="w-3.5 h-3.5" />
+                        )}
+                      </button>
+
+                      {s.phone && (
+                        <button
+                          type="button"
+                          onClick={() => handleSendWhatsAppInvite(s)}
+                          className="h-7 px-2.5 rounded-lg bg-[#25D366] hover:bg-[#20BD5A] text-white text-[11px] font-bold flex items-center gap-1 transition-colors cursor-pointer"
+                          title="إرسال الكود ورابط المنصة للطالب عبر واتساب فوراً"
+                        >
+                          <Send className="w-3 h-3" />
+                          <span>إرسال</span>
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

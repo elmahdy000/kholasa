@@ -36,7 +36,7 @@ export function UserFilterBar({
           <Search className="w-4 h-4 text-[#94A3B8] absolute right-3 top-1/2 -translate-y-1/2" />
           <input
             type="text"
-            placeholder="ابحث بالاسم، رقم الهاتف، أو البريد..."
+            placeholder="ابحث بالاسم، كود الطالب، رقم الهاتف، أو البريد..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full h-11 pr-9 pl-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold text-[#0F172A] dark:text-white placeholder:text-[#94A3B8] focus:outline-none focus:border-[#800020]"

@@ -190,6 +190,74 @@ export class UserQueriesService {
           )
         : 0;
 
+    // Compute subject-by-subject statistics for this student
+    const subjectMap = new Map<string, {
+      subjectName: string;
+      attemptsCount: number;
+      totalPercentage: number;
+      completedLessons: number;
+      totalMistakes: number;
+    }>();
+
+    for (const att of user.attempts) {
+      const subName = att.exam?.subject?.name || "عام";
+      const existing = subjectMap.get(subName) || {
+        subjectName: subName,
+        attemptsCount: 0,
+        totalPercentage: 0,
+        completedLessons: 0,
+        totalMistakes: 0,
+      };
+      if (att.isCompleted) {
+        existing.attemptsCount++;
+        existing.totalPercentage += att.percentage;
+      }
+      subjectMap.set(subName, existing);
+    }
+
+    for (const prog of user.progress) {
+      const subName = prog.lesson?.unit?.subject?.name || "عام";
+      const existing = subjectMap.get(subName) || {
+        subjectName: subName,
+        attemptsCount: 0,
+        totalPercentage: 0,
+        completedLessons: 0,
+        totalMistakes: 0,
+      };
+      if (prog.isCompleted) {
+        existing.completedLessons++;
+      }
+      subjectMap.set(subName, existing);
+    }
+
+    for (const mist of user.mistakes) {
+      const subName = mist.question?.subject?.name || "عام";
+      const existing = subjectMap.get(subName) || {
+        subjectName: subName,
+        attemptsCount: 0,
+        totalPercentage: 0,
+        completedLessons: 0,
+        totalMistakes: 0,
+      };
+      existing.totalMistakes += mist.wrongCount;
+      subjectMap.set(subName, existing);
+    }
+
+    const subjectStats = Array.from(subjectMap.values()).map((s) => ({
+      subjectName: s.subjectName,
+      attemptsCount: s.attemptsCount,
+      averageScore: s.attemptsCount > 0 ? Math.round(s.totalPercentage / s.attemptsCount) : 0,
+      completedLessons: s.completedLessons,
+      totalMistakes: s.totalMistakes,
+    }));
+
+    const totalTimeSpentMinutes = Math.round(
+      user.attempts.reduce((sum, a) => sum + (a.timeSpentSeconds || 0), 0) / 60
+    );
+
+    const lastActiveAt =
+      user.sessions[0]?.createdAt || user.attempts[0]?.startedAt || user.progress[0]?.lastAccessedAt || null;
+
     return {
       ...user,
       stats: {
@@ -199,6 +267,9 @@ export class UserQueriesService {
         totalMistakes: user._count.mistakes,
         resolvedMistakes: user.mistakes.filter((m) => m.isResolved).length,
         activeDevicesCount: user.boundDevices.length,
+        totalTimeSpentMinutes,
+        lastActiveAt,
+        subjectStats,
       },
     };
   }

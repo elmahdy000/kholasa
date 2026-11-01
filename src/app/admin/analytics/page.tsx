@@ -28,6 +28,17 @@ export default async function AdminAnalyticsPage() {
     mcqQuestions,
     auditLogs,
     recentAttempts,
+    activeStudentsCount,
+    inactiveStudentsCount,
+    arabicStudentsCount,
+    languagesStudentsCount,
+    oneDeviceCount,
+    twoDevicesCount,
+    completedLessonsCount,
+    totalMistakesCount,
+    resolvedMistakesCount,
+    topStudentsData,
+    pendingStudentsData,
   ] = await Promise.all([
     prisma.user.count(),
     prisma.user.count({ where: { role: "STUDENT" } }),
@@ -63,6 +74,46 @@ export default async function AdminAnalyticsPage() {
         exam: { select: { title: true } },
       },
     }),
+    prisma.user.count({ where: { role: "STUDENT", boundDevices: { isEmpty: false } } }),
+    prisma.user.count({ where: { role: "STUDENT", boundDevices: { isEmpty: true } } }),
+    prisma.user.count({ where: { role: "STUDENT", schoolCategory: "ARABIC" } }),
+    prisma.user.count({ where: { role: "STUDENT", schoolCategory: "LANGUAGES" } }),
+    prisma.user.count({ where: { role: "STUDENT", maxDevices: 1 } }),
+    prisma.user.count({ where: { role: "STUDENT", maxDevices: { gte: 2 } } }),
+    prisma.studentProgress.count({ where: { isCompleted: true } }),
+    prisma.mistakeReview.count(),
+    prisma.mistakeReview.count({ where: { isResolved: true } }),
+    prisma.user.findMany({
+      where: { role: "STUDENT", attempts: { some: {} } },
+      take: 6,
+      orderBy: { attempts: { _count: "desc" } },
+      select: {
+        id: true,
+        name: true,
+        phone: true,
+        loginCode: true,
+        schoolCategory: true,
+        boundDevices: true,
+        _count: { select: { attempts: true, progress: true } },
+        attempts: {
+          where: { isCompleted: true },
+          select: { percentage: true },
+        },
+      },
+    }),
+    prisma.user.findMany({
+      where: { role: "STUDENT", boundDevices: { isEmpty: true } },
+      take: 6,
+      orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        name: true,
+        phone: true,
+        loginCode: true,
+        schoolCategory: true,
+        createdAt: true,
+      },
+    }),
   ]);
 
   let scoreHigh = 0;
@@ -91,6 +142,36 @@ export default async function AdminAnalyticsPage() {
       ? Math.round(totalTime / completedAttempts.length / 60)
       : 0;
 
+  const topStudents = topStudentsData.map((s) => {
+    const avg =
+      s.attempts.length > 0
+        ? Math.round(
+            s.attempts.reduce((acc, a) => acc + (a.percentage || 0), 0) /
+              s.attempts.length
+          )
+        : 0;
+    return {
+      id: s.id,
+      name: s.name || "طالب بدون اسم",
+      phone: s.phone || "—",
+      loginCode: s.loginCode || "—",
+      schoolCategory: s.schoolCategory || ("ARABIC" as const),
+      attemptsCount: s._count.attempts,
+      completedLessons: s._count.progress,
+      averageScore: avg,
+      boundDevicesCount: s.boundDevices.length,
+    };
+  });
+
+  const pendingStudents = pendingStudentsData.map((s) => ({
+    id: s.id,
+    name: s.name || "طالب",
+    phone: s.phone || "—",
+    loginCode: s.loginCode || "—",
+    schoolCategory: s.schoolCategory || ("ARABIC" as const),
+    createdAt: s.createdAt.toISOString(),
+  }));
+
   const analyticsData = {
     overview: {
       usersCount,
@@ -104,6 +185,20 @@ export default async function AdminAnalyticsPage() {
       completedAttemptsCount: completedAttempts.length,
       avgScore,
       avgDurationMinutes,
+    },
+    studentCohort: {
+      totalStudents: studentsCount,
+      activeStudents: activeStudentsCount,
+      inactiveStudents: inactiveStudentsCount,
+      arabicStudents: arabicStudentsCount,
+      languagesStudents: languagesStudentsCount,
+      oneDeviceStudents: oneDeviceCount,
+      twoDevicesStudents: twoDevicesCount,
+      completedLessons: completedLessonsCount,
+      totalMistakes: totalMistakesCount,
+      resolvedMistakes: resolvedMistakesCount,
+      topStudents,
+      pendingStudents,
     },
     difficultyDistribution: {
       easy: easyQuestions,

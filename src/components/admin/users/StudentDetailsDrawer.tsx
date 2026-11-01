@@ -22,6 +22,14 @@ import {
   Check,
   Copy,
   RefreshCw,
+  BarChart3,
+  Printer,
+  Send,
+  Share2,
+  Award,
+  TrendingUp,
+  Sparkles,
+  FileText,
 } from "lucide-react";
 import type { EducationalSystem, Grade } from "./types";
 
@@ -54,6 +62,15 @@ interface DetailedStudent {
     totalMistakes: number;
     resolvedMistakes: number;
     activeDevicesCount: number;
+    totalTimeSpentMinutes?: number;
+    lastActiveAt?: string | null;
+    subjectStats?: Array<{
+      subjectName: string;
+      attemptsCount: number;
+      averageScore: number;
+      completedLessons: number;
+      totalMistakes: number;
+    }>;
   };
   attempts: Array<{
     id: string;
@@ -116,7 +133,8 @@ export function StudentDetailsDrawer({
 }: StudentDetailsDrawerProps) {
   const [student, setStudent] = useState<DetailedStudent | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState<"overview" | "exams" | "mistakes" | "lessons" | "security">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "analytics" | "exams" | "mistakes" | "lessons" | "security">("overview");
+  const [copiedReport, setCopiedReport] = useState(false);
 
   // Edit basic info state
   const [name, setName] = useState("");
@@ -278,6 +296,95 @@ export function StudentDetailsDrawer({
     }
   };
 
+  const generateWhatsAppReportText = (s: DetailedStudent) => {
+    const avg = s.stats.averageScore;
+    const rating =
+      avg >= 85
+        ? "ممتاز 🌟"
+        : avg >= 70
+        ? "جيد جداً 📈"
+        : avg >= 50
+        ? "جيد (يحتاج لمزيد من التدريب) 💡"
+        : "يحتاج لمتابعة وتكثيف المذاكرة ⚠️";
+
+    const hours = Math.floor((s.stats.totalTimeSpentMinutes || 0) / 60);
+    const mins = (s.stats.totalTimeSpentMinutes || 0) % 60;
+    const timeStr = hours > 0 ? `${hours} ساعة و ${mins} دقيقة` : `${mins} دقيقة`;
+
+    let subjectLines = "";
+    if (s.stats.subjectStats && s.stats.subjectStats.length > 0) {
+      subjectLines = s.stats.subjectStats
+        .map(
+          (sub) =>
+            `▪️ *${sub.subjectName}*: متوسط ${sub.averageScore}% (${sub.attemptsCount} امتحانات | ${sub.completedLessons} دروس)`
+        )
+        .join("\n");
+    } else {
+      subjectLines = "▪️ جاري تسجيل المحاولات الأولى في المواد المقررة.";
+    }
+
+    return `*📊 تقرير المتابعة الأكاديمية - منصة الخلاصة*
+
+*👤 بيانات الطالب:*
+• الاسم: ${s.name || "طالب"}
+• كود المنصة: ${s.loginCode || "—"}
+• نوع المدرسة: ${s.schoolCategory === "LANGUAGES" ? "لغات (Languages)" : "عربي"}
+• الصف: ${s.grade?.name || "الصف الثاني الثانوي"}
+
+*📈 ملخص الأداء والتحصيل:*
+• التقييم التراكمي العام: *${avg}%* (${rating})
+• عدد الامتحانات المنجزة: *${s.stats.totalAttempts}* امتحان
+• الدروس المكتملة: *${s.stats.completedLessons}* درس
+• إجمالي وقت التدريب: *${timeStr}*
+• بنك الأخطاء المعالجة: *${s.stats.resolvedMistakes}* من *${s.stats.totalMistakes}*
+
+*📚 تفصيل أداء المواد:*
+${subjectLines}
+
+*🔐 الأجهزة المعتمدة:*
+• ${s.boundDevices.length} من أصل ${s.maxDevices} جهاز مسموح به.
+
+*💡 توصيات المشرف الأكاديمي:*
+${
+  avg >= 80
+    ? "مستوى متميز والتزام مستمر، نوصي بالمحافظة على جدول الامتحانات الأسبوعي."
+    : s.stats.totalAttempts > 0
+    ? "الطالب يتفاعل بشكل إيجابي، ويُنصح بمراجعة بنك الأخطاء وتكرار حل الأسئلة غير المتقنة."
+    : "تم تفعيل كود الطالب بنجاح، ويُرجى توجيهه للبدء في حل الامتحانات المتاحة على المنصة."
+}
+
+_منصة الخلاصة التعليمية - رفيقكم نحو التفوق_ 🎓`;
+  };
+
+  const handleCopyReport = async () => {
+    if (!student) return;
+    const text = generateWhatsAppReportText(student);
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedReport(true);
+      setTimeout(() => setCopiedReport(false), 2500);
+    } catch {
+      alert("تعذر نسخ النص تلقائياً");
+    }
+  };
+
+  const handleSendWhatsApp = () => {
+    if (!student) return;
+    const text = generateWhatsAppReportText(student);
+    let phoneNum = (student.phone || "").replace(/\D/g, "");
+    if (phoneNum.startsWith("0")) {
+      phoneNum = "2" + phoneNum;
+    } else if (!phoneNum.startsWith("20") && phoneNum.length === 10) {
+      phoneNum = "20" + phoneNum;
+    }
+    const url = `https://wa.me/${phoneNum}?text=${encodeURIComponent(text)}`;
+    window.open(url, "_blank");
+  };
+
+  const handlePrintReport = () => {
+    window.print();
+  };
+
   return (
     <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex justify-end">
       <div
@@ -380,6 +487,17 @@ export function StudentDetailsDrawer({
             }`}
           >
             البيانات والتحكم
+          </button>
+          <button
+            onClick={() => setActiveTab("analytics")}
+            className={`py-3.5 border-b-2 transition-colors whitespace-nowrap flex items-center gap-1.5 ${
+              activeTab === "analytics"
+                ? "border-[#800020] text-[#800020] dark:border-[#FB7185] dark:text-[#FB7185]"
+                : "border-transparent text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A]"
+            }`}
+          >
+            <BarChart3 className="w-4 h-4" />
+            <span>تقرير وإحصائيات الطالب 📊</span>
           </button>
           <button
             onClick={() => setActiveTab("exams")}
@@ -632,7 +750,245 @@ export function StudentDetailsDrawer({
                 </div>
               )}
 
-              {/* TAB 2: EXAMS HISTORY */}
+              {/* TAB 2: STUDENT ANALYTICS & REPORT CARD */}
+              {activeTab === "analytics" && (
+                <div className="space-y-6">
+                  {/* Action Bar */}
+                  <div className="flex flex-wrap items-center justify-between gap-3 p-4 rounded-2xl bg-gradient-to-r from-[#800020]/10 via-[#800020]/5 to-transparent border border-[#800020]/20">
+                    <div>
+                      <h3 className="font-bold text-sm text-[#0F172A] dark:text-white flex items-center gap-2">
+                        <Sparkles className="w-4 h-4 text-[#800020] dark:text-[#FB7185]" />
+                        <span>كشف درجات وتقرير ولي الأمر المعتمد</span>
+                      </h3>
+                      <p className="text-xs text-[#64748B] dark:text-[#94A3B8] mt-0.5">
+                        تقرير أكاديمي مخصص وجاهز للمشاركة المباشرة عبر واتساب أو الطباعة الورقية
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={handleCopyReport}
+                        className={`h-9 px-3.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer ${
+                          copiedReport
+                            ? "bg-emerald-600 text-white"
+                            : "bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] text-[#0F172A] dark:text-white hover:bg-slate-50 dark:hover:bg-[#1E293B]"
+                        }`}
+                        title="نسخ تقرير ولي الأمر إلى الحافظة"
+                      >
+                        {copiedReport ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5 text-[#800020] dark:text-[#FB7185]" />}
+                        <span>{copiedReport ? "تم نسخ التقرير!" : "نسخ التقرير"}</span>
+                      </button>
+
+                      {student.phone && (
+                        <button
+                          type="button"
+                          onClick={handleSendWhatsApp}
+                          className="h-9 px-3.5 rounded-xl text-xs font-bold bg-[#25D366] hover:bg-[#20BD5A] text-white flex items-center gap-1.5 transition-colors cursor-pointer"
+                          title="فتح واتساب وإرسال التقرير لولي الأمر فوراً"
+                        >
+                          <Send className="w-3.5 h-3.5" />
+                          <span>إرسال واتساب</span>
+                        </button>
+                      )}
+
+                      <button
+                        type="button"
+                        onClick={handlePrintReport}
+                        className="h-9 px-3.5 rounded-xl text-xs font-bold bg-[#800020] hover:bg-[#66001A] text-white flex items-center gap-1.5 transition-colors cursor-pointer"
+                        title="طباعة كشف الدرجات الرسمي"
+                      >
+                        <Printer className="w-3.5 h-3.5" />
+                        <span>طباعة الكشف</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* 4 Main Analytics Cards */}
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-right">
+                    <div className="p-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/40 border border-[#E2E8F0] dark:border-[#334155] flex flex-col justify-between">
+                      <span className="text-[11px] font-bold text-[#64748B] dark:text-[#94A3B8]">متوسط النسبة العامة</span>
+                      <div className="my-2">
+                        <span className="text-2xl font-bold font-mono text-[#0F172A] dark:text-white">
+                          {student.stats.averageScore}%
+                        </span>
+                      </div>
+                      <span
+                        className={`text-[10px] font-bold px-2 py-0.5 rounded-md inline-block w-fit ${
+                          student.stats.averageScore >= 85
+                            ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400"
+                            : student.stats.averageScore >= 70
+                            ? "bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400"
+                            : student.stats.averageScore >= 50
+                            ? "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400"
+                            : "bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-400"
+                        }`}
+                      >
+                        {student.stats.averageScore >= 85
+                          ? "ممتاز 🌟"
+                          : student.stats.averageScore >= 70
+                          ? "جيد جداً 📈"
+                          : student.stats.averageScore >= 50
+                          ? "جيد (يحتاج دعم) 💡"
+                          : "يحتاج تكثيف المذاكرة ⚠️"}
+                      </span>
+                    </div>
+
+                    <div className="p-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/40 border border-[#E2E8F0] dark:border-[#334155] flex flex-col justify-between">
+                      <span className="text-[11px] font-bold text-[#64748B] dark:text-[#94A3B8]">إجمالي وقت التدريب</span>
+                      <div className="my-2">
+                        <span className="text-2xl font-bold font-mono text-[#0F172A] dark:text-white">
+                          {student.stats.totalTimeSpentMinutes || 0}
+                        </span>
+                        <span className="text-xs text-[#64748B] mr-1">دقيقة</span>
+                      </div>
+                      <span className="text-[10px] text-[#64748B] font-mono">
+                        عبر {student.stats.totalAttempts} امتحانات منفذة
+                      </span>
+                    </div>
+
+                    <div className="p-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/40 border border-[#E2E8F0] dark:border-[#334155] flex flex-col justify-between">
+                      <span className="text-[11px] font-bold text-[#64748B] dark:text-[#94A3B8]">الدروس المنجزة</span>
+                      <div className="my-2">
+                        <span className="text-2xl font-bold font-mono text-[#0F172A] dark:text-white">
+                          {student.stats.completedLessons}
+                        </span>
+                        <span className="text-xs text-[#64748B] mr-1">درس</span>
+                      </div>
+                      <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">
+                        إتقان 100% للشروحات
+                      </span>
+                    </div>
+
+                    <div className="p-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/40 border border-[#E2E8F0] dark:border-[#334155] flex flex-col justify-between">
+                      <span className="text-[11px] font-bold text-[#64748B] dark:text-[#94A3B8]">بنك الأخطاء والإتقان</span>
+                      <div className="my-2">
+                        <span className="text-2xl font-bold font-mono text-rose-600 dark:text-rose-400">
+                          {student.stats.totalMistakes - student.stats.resolvedMistakes}
+                        </span>
+                        <span className="text-xs text-[#64748B] mr-1">متبقي</span>
+                      </div>
+                      <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-mono font-bold">
+                        تم تصحيح {student.stats.resolvedMistakes} من {student.stats.totalMistakes}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Subject-by-Subject Breakdown Table */}
+                  <div className="bg-[#F8FAFC] dark:bg-[#1E293B]/30 p-5 rounded-2xl border border-[#E2E8F0] dark:border-[#334155] space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h4 className="font-bold text-sm text-[#0F172A] dark:text-white flex items-center gap-2">
+                        <BookOpen className="w-4 h-4 text-[#800020] dark:text-[#FB7185]" />
+                        <span>تحليل وإحصائيات المواد الدراسية بالتفصيل</span>
+                      </h4>
+                      <span className="text-xs text-[#64748B] dark:text-[#94A3B8]">
+                        {student.stats.subjectStats?.length || 0} مواد نشطة
+                      </span>
+                    </div>
+
+                    {!student.stats.subjectStats || student.stats.subjectStats.length === 0 ? (
+                      <div className="text-center py-8 text-xs text-[#64748B] dark:text-[#94A3B8] border border-dashed border-[#E2E8F0] dark:border-[#334155] rounded-xl">
+                        لم يتم تسجيل أي محاولات امتحانية أو تفاعل دروس في المواد حتى الآن.
+                      </div>
+                    ) : (
+                      <div className="rounded-xl border border-[#E2E8F0] dark:border-[#334155] overflow-hidden bg-white dark:bg-[#0F172A]">
+                        <table className="w-full text-right text-xs">
+                          <thead className="bg-[#F8FAFC] dark:bg-[#1E293B] text-[#64748B] font-bold border-b border-[#E2E8F0] dark:border-[#334155]">
+                            <tr>
+                              <th className="p-3">المادة الدراسية</th>
+                              <th className="p-3">الامتحانات</th>
+                              <th className="p-3">متوسط الدرجة</th>
+                              <th className="p-3">الدروس المنجزة</th>
+                              <th className="p-3">الأخطاء</th>
+                              <th className="p-3">مستوى الطالب</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-[#E2E8F0] dark:divide-[#334155]/60 font-bold">
+                            {student.stats.subjectStats.map((sub) => (
+                              <tr key={sub.subjectName} className="hover:bg-[#F8FAFC]/50 dark:hover:bg-[#1E293B]/20">
+                                <td className="p-3 text-[#0F172A] dark:text-white flex items-center gap-2">
+                                  <span className="w-2 h-2 rounded-full bg-[#800020]" />
+                                  <span>{sub.subjectName}</span>
+                                </td>
+                                <td className="p-3 font-mono text-[#64748B]">
+                                  {sub.attemptsCount}
+                                </td>
+                                <td className="p-3">
+                                  <div className="flex items-center gap-2">
+                                    <span className="font-mono text-[11px] min-w-[36px]">
+                                      {sub.averageScore}%
+                                    </span>
+                                    <div className="w-16 h-1.5 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
+                                      <div
+                                        className={`h-full rounded-full ${
+                                          sub.averageScore >= 85
+                                            ? "bg-emerald-500"
+                                            : sub.averageScore >= 70
+                                            ? "bg-blue-500"
+                                            : sub.averageScore >= 50
+                                            ? "bg-amber-500"
+                                            : "bg-rose-500"
+                                        }`}
+                                        style={{ width: `${sub.averageScore}%` }}
+                                      />
+                                    </div>
+                                  </div>
+                                </td>
+                                <td className="p-3 font-mono text-emerald-600 dark:text-emerald-400">
+                                  {sub.completedLessons}
+                                </td>
+                                <td className="p-3 font-mono text-rose-600 dark:text-rose-400">
+                                  {sub.totalMistakes}
+                                </td>
+                                <td className="p-3">
+                                  <span
+                                    className={`px-2 py-0.5 rounded-md text-[10px] ${
+                                      sub.averageScore >= 85
+                                        ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400"
+                                        : sub.averageScore >= 70
+                                        ? "bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400"
+                                        : sub.averageScore >= 50
+                                        ? "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400"
+                                        : "bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-400"
+                                    }`}
+                                  >
+                                    {sub.averageScore >= 85
+                                      ? "متميز"
+                                      : sub.averageScore >= 70
+                                      ? "جيد جداً"
+                                      : sub.averageScore >= 50
+                                      ? "متوسط"
+                                      : "بحاجة لتحسين"}
+                                  </span>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* WhatsApp Parent Report Card Live Box */}
+                  <div className="bg-[#F8FAFC] dark:bg-[#1E293B]/30 p-5 rounded-2xl border border-[#E2E8F0] dark:border-[#334155] space-y-3">
+                    <div className="flex items-center justify-between">
+                      <h4 className="font-bold text-sm text-[#0F172A] dark:text-white flex items-center gap-2">
+                        <FileText className="w-4 h-4 text-[#800020] dark:text-[#FB7185]" />
+                        <span>معاينة نص تقرير ولي الأمر (واتساب)</span>
+                      </h4>
+                      <span className="text-[11px] text-[#64748B] font-mono">
+                        جاهز للمشاركة المباشرة
+                      </span>
+                    </div>
+
+                    <div className="p-4 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] font-sans text-xs leading-relaxed text-[#334155] dark:text-[#CBD5E1] whitespace-pre-wrap select-all">
+                      {generateWhatsAppReportText(student)}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 3: EXAMS HISTORY */}
               {activeTab === "exams" && (
                 <div className="space-y-4">
                   {student.attempts.length === 0 ? (

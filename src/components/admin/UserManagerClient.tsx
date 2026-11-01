@@ -222,7 +222,8 @@ export function UserManagerClient({
       const matchName = u.name?.toLowerCase().includes(q) || false;
       const matchEmail = u.email?.toLowerCase().includes(q) || false;
       const matchPhone = u.phone?.toLowerCase().includes(q) || false;
-      if (!matchName && !matchEmail && !matchPhone) return false;
+      const matchCode = u.loginCode?.toLowerCase().includes(q) || false;
+      if (!matchName && !matchEmail && !matchPhone && !matchCode) return false;
     }
     return true;
   });
