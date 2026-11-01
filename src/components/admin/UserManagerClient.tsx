@@ -28,11 +28,15 @@ export function UserManagerClient({
     isOpen: boolean;
     title: string;
     description: string;
+    confirmText?: string;
+    variant?: "danger" | "warning";
     onConfirm: () => Promise<void>;
   }>({
     isOpen: false,
     title: "",
     description: "",
+    confirmText: "تأكيد",
+    variant: "danger",
     onConfirm: async () => {},
   });
 
@@ -143,6 +147,8 @@ export function UserManagerClient({
       isOpen: true,
       title: "حذف المستخدم",
       description: `هل أنت متأكد من حذف المستخدم "${userName || "هذا الحساب"}" نهائياً؟ لا يمكن التراجع عن هذا الإجراء.`,
+      confirmText: "تأكيد الحذف",
+      variant: "danger",
       onConfirm: async () => {
         const res = await fetch(`/api/admin/users/${userId}`, {
           method: "DELETE",
@@ -164,6 +170,8 @@ export function UserManagerClient({
       isOpen: true,
       title: "إعادة ضبط أجهزة الطالب",
       description: `هل أنت متأكد من فك ربط أجهزة الطالب "${userName || "المستخدم"}"؟ سيتم مسح الأجهزة المسجلة فوراً وتسجيل خروج الطالب ليتمكن من ربط جهازه الجديد.`,
+      confirmText: "تأكيد فك الأجهزة",
+      variant: "warning",
       onConfirm: async () => {
         const res = await fetch(`/api/admin/users/${userId}/reset-devices`, {
           method: "POST",
@@ -278,9 +286,9 @@ export function UserManagerClient({
         description={confirmModal.description}
         onClose={() => setConfirmModal((prev) => ({ ...prev, isOpen: false }))}
         onConfirm={confirmModal.onConfirm}
-        confirmText="تأكيد الحذف"
+        confirmText={confirmModal.confirmText || "تأكيد"}
         cancelText="إلغاء"
-        variant="danger"
+        variant={confirmModal.variant || "danger"}
       />
     </div>
   );
