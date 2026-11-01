@@ -151,6 +151,29 @@ export function UserManagerClient({
     });
   };
 
+  const handleResetDevices = (userId: string, userName: string) => {
+    setConfirmModal({
+      isOpen: true,
+      title: "إعادة ضبط أجهزة الطالب",
+      description: `هل أنت متأكد من فك ربط أجهزة الطالب "${userName || "المستخدم"}"؟ سيتم مسح الأجهزة المسجلة فوراً وتسجيل خروج الطالب ليتمكن من ربط جهازه الجديد.`,
+      onConfirm: async () => {
+        const res = await fetch(`/api/admin/users/${userId}/reset-devices`, {
+          method: "POST",
+        });
+
+        if (res.ok) {
+          setUsers((prev) =>
+            prev.map((u) => (u.id === userId ? { ...u, boundDevices: [] } : u))
+          );
+          setConfirmModal((prev) => ({ ...prev, isOpen: false }));
+        } else {
+          const data = await res.json();
+          throw new Error(data.error || "تعذر إعادة ضبط الأجهزة");
+        }
+      },
+    });
+  };
+
   const filteredUsers = users.filter((u) => {
     if (selectedRole !== "all" && u.role !== selectedRole) return false;
     if (selectedSystemId !== "all" && u.system?.id !== selectedSystemId)
@@ -196,6 +219,7 @@ export function UserManagerClient({
           setNewRole(u.role);
         }}
         onDeleteUser={handleDeleteUser}
+        onResetDevices={handleResetDevices}
       />
 
       {/* 4. Edit Role Modal */}

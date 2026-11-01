@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 
 import { BrandLogo } from "@/components/ui/BrandLogo";
+import { getOrCreateDeviceId } from "@/lib/device";
 
 interface Grade {
   id: string;
@@ -112,6 +113,7 @@ export default function RegisterPage() {
           password,
           systemId: selectedSystemId || undefined,
           gradeId: selectedGradeId || undefined,
+          deviceId: getOrCreateDeviceId(),
         }),
       });
 

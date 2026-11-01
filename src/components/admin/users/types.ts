@@ -19,6 +19,8 @@ export interface UserItem {
   grade?: { id: string; name: string } | null;
   attempts: { id: string; score: number; percentage?: number }[];
   progress: { id: string; isCompleted: boolean }[];
+  maxDevices?: number;
+  boundDevices?: string[];
   createdAt: string | Date;
 }
 

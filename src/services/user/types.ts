@@ -26,6 +26,7 @@ export interface UpdateUserInput {
   role?: Role;
   systemId?: string | null;
   gradeId?: string | null;
+  maxDevices?: number;
 }
 
 export interface StudentProfileUpdateInput {
@@ -43,4 +44,5 @@ export interface RegisterStudentInput {
   password: string;
   systemId?: string | null;
   gradeId?: string | null;
+  deviceId?: string | null;
 }

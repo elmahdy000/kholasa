@@ -1,6 +1,6 @@
 "use client";
 
-import { Shield, Trash2 } from "lucide-react";
+import { Shield, Trash2, Smartphone, RotateCcw } from "lucide-react";
 import type { UserItem } from "./types";
 
 interface UserTableProps {
@@ -8,6 +8,7 @@ interface UserTableProps {
   currentUserId: string;
   onSelectUserToEdit: (user: UserItem) => void;
   onDeleteUser: (userId: string, userName: string) => void;
+  onResetDevices: (userId: string, userName: string) => void;
 }
 
 export function UserTable({
@@ -15,6 +16,7 @@ export function UserTable({
   currentUserId,
   onSelectUserToEdit,
   onDeleteUser,
+  onResetDevices,
 }: UserTableProps) {
   return (
     <div className="rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0]/80 dark:border-[#334155]/80 overflow-hidden">
@@ -26,6 +28,7 @@ export function UserTable({
               <th className="p-4">بيانات الاتصال</th>
               <th className="p-4">النظام والصف الدراسي</th>
               <th className="p-4">الرتبة والصلاحية</th>
+              <th className="p-4">الأجهزة</th>
               <th className="p-4">الدروس المنجزة</th>
               <th className="p-4">الامتحانات</th>
               <th className="p-4 text-center">الإجراءات</th>
@@ -98,6 +101,31 @@ export function UserTable({
                     </span>
                   </td>
 
+                  {/* Bound Devices */}
+                  <td className="p-4">
+                    {u.role === "STUDENT" ? (
+                      <div className="flex items-center gap-1.5">
+                        <span
+                          className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold ${
+                            (u.boundDevices?.length || 0) >= (u.maxDevices || 2)
+                              ? "bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-400 border border-rose-200 dark:border-rose-800"
+                              : (u.boundDevices?.length || 0) > 0
+                              ? "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400 border border-amber-200 dark:border-amber-800"
+                              : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400"
+                          }`}
+                          title={`الأجهزة المسجلة: ${u.boundDevices?.length || 0} من أصل ${u.maxDevices || 2}`}
+                        >
+                          <Smartphone className="w-3 h-3" />
+                          <span>
+                            {u.boundDevices?.length || 0} / {u.maxDevices || 2}
+                          </span>
+                        </span>
+                      </div>
+                    ) : (
+                      <span className="text-[#94A3B8] text-xs font-medium">غير مقيد</span>
+                    )}
+                  </td>
+
                   {/* Progress */}
                   <td className="p-4">
                     <span className="text-[13px] font-bold text-[#64748B] dark:text-[#F8FAFC]">
@@ -115,6 +143,17 @@ export function UserTable({
                   {/* Actions */}
                   <td className="p-4 text-center">
                     <div className="flex items-center justify-center gap-2">
+                      {u.role === "STUDENT" && (
+                        <button
+                          onClick={() => onResetDevices(u.id, u.name || "")}
+                          className="h-11 px-2.5 rounded-lg bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/30 dark:hover:bg-amber-900/50 text-[13px] font-bold text-amber-700 dark:text-amber-400 flex items-center gap-1 transition-colors"
+                          title="فك ربط الأجهزة المسجلة وإلغاء الجلسات"
+                        >
+                          <RotateCcw className="w-3.5 h-3.5" />
+                          <span className="hidden sm:inline">فك الأجهزة</span>
+                        </button>
+                      )}
+
                       <button
                         onClick={() => onSelectUserToEdit(u)}
                         className="h-11 px-3 rounded-lg bg-[#F8FAFC] hover:bg-[#E2E8F0] dark:bg-[#1E293B] dark:hover:bg-[#1E293B] text-[13px] font-bold text-[#800020] dark:text-[#FB7185] flex items-center gap-1 transition-colors"

@@ -8,6 +8,7 @@ import { AcademicSetupCard } from "./AcademicSetupCard";
 import { PasswordChangeCard } from "./PasswordChangeCard";
 import { ProfileStatsGrid } from "./ProfileStatsGrid";
 import { BookmarksListCard } from "./BookmarksListCard";
+import { DeviceSecurityCard } from "./DeviceSecurityCard";
 
 export type { ProfileViewProps, Grade, EducationalSystem, BookmarkItem } from "./types";
 
@@ -138,7 +139,15 @@ export function ProfileView({
         onLogout={handleLogout}
       />
 
-      {/* 2. Academic Setup */}
+      {/* 2. Device Security Status (Students) */}
+      {user.role === "STUDENT" && (
+        <DeviceSecurityCard
+          maxDevices={user.maxDevices || 2}
+          boundDevicesCount={user.boundDevices?.length || 0}
+        />
+      )}
+
+      {/* 3. Academic Setup */}
       <AcademicSetupCard
         userSystemName={user.system?.name}
         userGradeName={user.grade?.name}

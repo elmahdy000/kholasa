@@ -38,6 +38,8 @@ export class UserQueriesService {
           role: true,
           avatar: true,
           createdAt: true,
+          maxDevices: true,
+          boundDevices: true,
           grade: { select: { id: true, name: true } },
           system: { select: { id: true, name: true } },
           _count: { select: { attempts: true, progress: true } },

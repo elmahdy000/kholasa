@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 
 import { BrandLogo } from "@/components/ui/BrandLogo";
+import { getOrCreateDeviceId } from "@/lib/device";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -31,7 +32,7 @@ export default function LoginPage() {
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ identifier: id, password: pass }),
+        body: JSON.stringify({ identifier: id, password: pass, deviceId: getOrCreateDeviceId() }),
       });
 
       const data = await res.json();

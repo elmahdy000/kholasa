@@ -122,10 +122,12 @@ export class UserMutationsService {
         ...(data.role !== undefined ? { role: data.role } : {}),
         ...(data.systemId !== undefined ? { systemId: data.systemId || null } : {}),
         ...(data.gradeId !== undefined ? { gradeId: data.gradeId || null } : {}),
+        ...(typeof data.maxDevices === "number" && data.maxDevices > 0 ? { maxDevices: data.maxDevices } : {}),
       },
       select: {
         id: true, name: true, phone: true, email: true, role: true,
         systemId: true, gradeId: true, createdAt: true,
+        maxDevices: true, boundDevices: true,
         system: { select: { id: true, name: true } },
         grade: { select: { id: true, name: true } },
       },
@@ -253,10 +255,37 @@ export class UserMutationsService {
   }
 
   /**
+   * Reset bound devices for a student and purge active sessions
+   */
+  static async resetUserDevices(targetUserId: string, actorRole: string) {
+    if (actorRole !== Role.SUPER_ADMIN && actorRole !== Role.ADMIN) {
+      throw new Error("غير مصرح لك بالوصول");
+    }
+
+    const targetUser = await prisma.user.findUnique({ where: { id: targetUserId } });
+    if (!targetUser) throw new Error("المستخدم غير موجود");
+
+    const updated = await prisma.user.update({
+      where: { id: targetUserId },
+      data: { boundDevices: [] },
+      select: {
+        id: true,
+        name: true,
+        maxDevices: true,
+        boundDevices: true,
+      },
+    });
+
+    await prisma.session.deleteMany({ where: { userId: targetUserId } });
+
+    return updated;
+  }
+
+  /**
    * Register a new student user
    */
   static async registerStudent(data: RegisterStudentInput) {
-    const { name, phone, email, password, systemId, gradeId } = data;
+    const { name, phone, email, password, systemId, gradeId, deviceId } = data;
 
     const cleanPhone = phone && phone.trim() ? phone.trim() : null;
     const cleanEmail = email && email.trim() ? email.trim().toLowerCase() : null;
@@ -312,6 +341,7 @@ export class UserMutationsService {
         systemId: resolvedSystemId,
         gradeId: gradeId || null,
         role: Role.STUDENT,
+        boundDevices: deviceId ? [deviceId] : [],
       },
       select: {
         id: true,
@@ -321,6 +351,8 @@ export class UserMutationsService {
         role: true,
         systemId: true,
         gradeId: true,
+        maxDevices: true,
+        boundDevices: true,
       },
     });
   }

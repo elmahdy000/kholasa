@@ -30,4 +30,5 @@ export class UserService {
   static updateStudentProfile = UserMutationsService.updateStudentProfile;
   static deleteUser = UserMutationsService.deleteUser;
   static registerStudent = UserMutationsService.registerStudent;
+  static resetUserDevices = UserMutationsService.resetUserDevices;
 }

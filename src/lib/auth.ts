@@ -33,7 +33,7 @@ export async function verifyPassword(password: string, hash: string): Promise<bo
   return bcrypt.compare(password, hash);
 }
 
-export async function createSession(userId: string) {
+export async function createSession(userId: string, deviceId?: string) {
   const token = randomBytes(32).toString("base64url");
   const expires = new Date(Date.now() + SESSION_TTL_MS);
 
@@ -41,7 +41,7 @@ export async function createSession(userId: string) {
   await prisma.session.deleteMany({ where: { userId, expires: { lt: new Date() } } });
 
   await prisma.session.create({
-    data: { sessionToken: token, userId, expires },
+    data: { sessionToken: token, userId, expires, deviceId: deviceId || null },
   });
 
   const cookieStore = await cookies();
@@ -89,6 +89,8 @@ export async function getCurrentUser() {
             systemId: true,
             trackId: true,
             schoolCategory: true,
+            maxDevices: true,
+            boundDevices: true,
             system: { select: { id: true, name: true, code: true } },
             grade: { select: { id: true, name: true, code: true } },
             track: { select: { id: true, name: true, code: true } },
@@ -98,6 +100,16 @@ export async function getCurrentUser() {
     });
 
     if (!session || session.expires < new Date()) {
+      return null;
+    }
+
+    // Device binding check: ensure student's device is still authorized
+    if (
+      session.user.role === Role.STUDENT &&
+      session.deviceId &&
+      !session.user.boundDevices.includes(session.deviceId)
+    ) {
+      await prisma.session.delete({ where: { id: session.id } }).catch(() => {});
       return null;
     }
 

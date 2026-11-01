@@ -30,6 +30,8 @@ export interface ProfileViewProps {
     email?: string | null;
     phone?: string | null;
     role: string;
+    maxDevices?: number;
+    boundDevices?: string[];
     system?: { id: string; name: string } | null;
     grade?: { id: string; name: string } | null;
   };

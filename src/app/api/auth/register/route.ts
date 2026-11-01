@@ -14,6 +14,7 @@ const registerSchema = z
     password: passwordSchema,
     systemId: z.string().optional(),
     gradeId: z.string().optional(),
+    deviceId: z.string().trim().max(128).optional(),
   })
   .refine((data) => (data.email && data.email.length > 0) || (data.phone && data.phone.length > 0), {
     message: "يرجى إدخال البريد الإلكتروني أو رقم الهاتف",
@@ -23,11 +24,11 @@ const registerSchema = z
 export async function POST(req: Request) {
   try {
     rateLimit(`register:ip:${getClientIp(req)}`, 5, 60 * 60 * 1000);
-    const { name, email, phone, password, systemId, gradeId } = await parseJson(req, registerSchema);
+    const { name, email, phone, password, systemId, gradeId, deviceId } = await parseJson(req, registerSchema);
 
     let user;
     try {
-      user = await UserService.registerStudent({ name, email, phone, password, systemId, gradeId });
+      user = await UserService.registerStudent({ name, email, phone, password, systemId, gradeId, deviceId });
     } catch (error) {
       if (error instanceof Error && error.message.includes("مسجل بالفعل")) {
         throw conflict(error.message);
@@ -35,7 +36,7 @@ export async function POST(req: Request) {
       throw error;
     }
 
-    await createSession(user.id);
+    await createSession(user.id, deviceId);
 
     return NextResponse.json({
       success: true,

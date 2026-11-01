@@ -16,6 +16,7 @@ export default async function AdminUsersPage() {
       orderBy: { createdAt: "desc" },
       select: {
         id: true, name: true, email: true, phone: true, role: true, createdAt: true,
+        maxDevices: true, boundDevices: true,
         system: { select: { id: true, name: true } },
         grade: { select: { id: true, name: true } },
         attempts: {
