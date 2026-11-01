@@ -104,10 +104,11 @@ export async function getCurrentUser() {
     }
 
     // Device binding check: ensure student's device is still authorized
+    const boundDevices = session.user.boundDevices || [];
     if (
       session.user.role === Role.STUDENT &&
       session.deviceId &&
-      !session.user.boundDevices.includes(session.deviceId)
+      !boundDevices.includes(session.deviceId)
     ) {
       await prisma.session.delete({ where: { id: session.id } }).catch(() => {});
       return null;

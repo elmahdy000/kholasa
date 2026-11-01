@@ -13,8 +13,12 @@ export function getOrCreateDeviceId(): string {
   try {
     let deviceId = localStorage.getItem(DEVICE_STORAGE_KEY);
     if (!deviceId || deviceId.trim().length < 8) {
-      const entropy = `${Date.now()}_${Math.random().toString(36).slice(2)}_${window.screen?.width || 0}x${window.screen?.height || 0}_${navigator.userAgent.slice(0, 40)}`;
-      deviceId = "dev_" + btoa(entropy).replace(/[^a-zA-Z0-9]/g, "").slice(0, 32);
+      if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+        deviceId = "dev_" + crypto.randomUUID().replace(/-/g, "");
+      } else {
+        const rand = Math.random().toString(36).substring(2) + Math.random().toString(36).substring(2);
+        deviceId = "dev_" + Date.now().toString(36) + rand;
+      }
       localStorage.setItem(DEVICE_STORAGE_KEY, deviceId);
     }
 

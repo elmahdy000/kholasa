@@ -74,7 +74,7 @@ describe("Device Binding & Student Account Protection", () => {
       expect(data.success).toBe(true);
       expect(mockPrisma.user.update).toHaveBeenCalledWith({
         where: { id: "student-1" },
-        data: { boundDevices: { push: "dev_device_1" } },
+        data: { boundDevices: ["dev_device_1"] },
       });
     });
 
@@ -138,7 +138,7 @@ describe("Device Binding & Student Account Protection", () => {
       expect(data.success).toBe(true);
       expect(mockPrisma.user.update).toHaveBeenCalledWith({
         where: { id: "student-1" },
-        data: { boundDevices: { push: "dev_device_2" } },
+        data: { boundDevices: ["dev_device_1", "dev_device_2"] },
       });
     });
 

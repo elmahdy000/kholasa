@@ -39,6 +39,7 @@ export function UserManagerClient({
   // Edit Role Modal State
   const [selectedUser, setSelectedUser] = useState<UserItem | null>(null);
   const [newRole, setNewRole] = useState("STUDENT");
+  const [newMaxDevices, setNewMaxDevices] = useState(2);
   const [isUpdating, setIsUpdating] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -106,7 +107,10 @@ export function UserManagerClient({
       const res = await fetch(`/api/admin/users/${selectedUser.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ role: newRole }),
+        body: JSON.stringify({
+          role: newRole,
+          maxDevices: newRole === "STUDENT" ? newMaxDevices : undefined,
+        }),
       });
 
       const data = await res.json();
@@ -115,7 +119,11 @@ export function UserManagerClient({
       }
 
       setUsers((prev) =>
-        prev.map((u) => (u.id === selectedUser.id ? { ...u, role: newRole } : u))
+        prev.map((u) =>
+          u.id === selectedUser.id
+            ? { ...u, role: newRole, maxDevices: newRole === "STUDENT" ? newMaxDevices : u.maxDevices }
+            : u
+        )
       );
       setSelectedUser(null);
     } catch (err: any) {
@@ -217,6 +225,7 @@ export function UserManagerClient({
         onSelectUserToEdit={(u) => {
           setSelectedUser(u);
           setNewRole(u.role);
+          setNewMaxDevices(u.maxDevices || 2);
         }}
         onDeleteUser={handleDeleteUser}
         onResetDevices={handleResetDevices}
@@ -227,6 +236,8 @@ export function UserManagerClient({
         user={selectedUser}
         newRole={newRole}
         setNewRole={setNewRole}
+        maxDevices={newMaxDevices}
+        setMaxDevices={setNewMaxDevices}
         isUpdating={isUpdating}
         errorMsg={errorMsg}
         currentUserRole={currentUserRole}

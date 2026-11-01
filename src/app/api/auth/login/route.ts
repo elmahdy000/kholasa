@@ -51,7 +51,7 @@ export async function POST(req: Request) {
         await prisma.user.update({
           where: { id: user.id },
           data: {
-            boundDevices: { push: resolvedDeviceId },
+            boundDevices: Array.from(new Set([...bound, resolvedDeviceId])),
           },
         });
       }
