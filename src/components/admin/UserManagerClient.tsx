@@ -7,6 +7,7 @@ import { UserFilterBar } from "./users/UserFilterBar";
 import { UserTable } from "./users/UserTable";
 import { EditRoleModal } from "./users/EditRoleModal";
 import { CreateUserModal } from "./users/CreateUserModal";
+import { StudentDetailsDrawer } from "./users/StudentDetailsDrawer";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
 
 export type { UserManagerClientProps, UserItem, EducationalSystem, Grade } from "./users/types";
@@ -22,6 +23,7 @@ export function UserManagerClient({
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedRole, setSelectedRole] = useState("all");
   const [selectedSystemId, setSelectedSystemId] = useState("all");
+  const [inspectUserId, setInspectUserId] = useState<string | null>(null);
 
   // Confirmation modal state
   const [confirmModal, setConfirmModal] = useState<{
@@ -237,6 +239,7 @@ export function UserManagerClient({
         }}
         onDeleteUser={handleDeleteUser}
         onResetDevices={handleResetDevices}
+        onInspectUser={(id) => setInspectUserId(id)}
       />
 
       {/* 4. Edit Role Modal */}
@@ -289,6 +292,22 @@ export function UserManagerClient({
         confirmText={confirmModal.confirmText || "تأكيد"}
         cancelText="إلغاء"
         variant={confirmModal.variant || "danger"}
+      />
+
+      {/* 6. Comprehensive Student Details Drawer */}
+      <StudentDetailsDrawer
+        userId={inspectUserId}
+        systems={systems}
+        grades={grades}
+        onClose={() => setInspectUserId(null)}
+        onUserUpdated={() => {
+          void fetch("/api/admin/users")
+            .then((res) => res.json())
+            .then((data) => {
+              if (data.users) setUsers(data.users);
+            })
+            .catch(() => {});
+        }}
       />
     </div>
   );

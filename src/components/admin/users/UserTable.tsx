@@ -1,6 +1,6 @@
 "use client";
 
-import { Shield, Trash2, Smartphone, RotateCcw } from "lucide-react";
+import { Shield, Trash2, Smartphone, RotateCcw, Eye } from "lucide-react";
 import type { UserItem } from "./types";
 
 interface UserTableProps {
@@ -9,6 +9,7 @@ interface UserTableProps {
   onSelectUserToEdit: (user: UserItem) => void;
   onDeleteUser: (userId: string, userName: string) => void;
   onResetDevices: (userId: string, userName: string) => void;
+  onInspectUser?: (userId: string) => void;
 }
 
 export function UserTable({
@@ -17,6 +18,7 @@ export function UserTable({
   onSelectUserToEdit,
   onDeleteUser,
   onResetDevices,
+  onInspectUser,
 }: UserTableProps) {
   return (
     <div className="rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0]/80 dark:border-[#334155]/80 overflow-hidden">
@@ -49,9 +51,13 @@ export function UserTable({
                         {(u.name || "م").charAt(0)}
                       </div>
                       <div>
-                        <span className="font-bold text-[#0F172A] dark:text-white block">
+                        <button
+                          type="button"
+                          onClick={() => onInspectUser?.(u.id)}
+                          className="font-bold text-[#0F172A] dark:text-white block hover:text-[#800020] dark:hover:text-[#FB7185] transition-colors text-right cursor-pointer"
+                        >
                           {u.name || "مستخدم بدون اسم"}
-                        </span>
+                        </button>
                         <span className="text-[13px] text-[#94A3B8] font-mono block">
                           {new Date(u.createdAt).toLocaleDateString("ar-EG")}
                         </span>
@@ -143,6 +149,15 @@ export function UserTable({
                   {/* Actions */}
                   <td className="p-4 text-center">
                     <div className="flex items-center justify-center gap-2">
+                      <button
+                        onClick={() => onInspectUser?.(u.id)}
+                        className="h-11 px-3 rounded-lg bg-[#800020]/10 hover:bg-[#800020]/20 text-[#800020] dark:text-[#FB7185] text-[13px] font-bold flex items-center gap-1 transition-colors"
+                        title="عرض الملف الشامل للطالب"
+                      >
+                        <Eye className="w-3.5 h-3.5" />
+                        <span className="hidden sm:inline">تفاصيل</span>
+                      </button>
+
                       {u.role === "STUDENT" && (
                         <button
                           onClick={() => onResetDevices(u.id, u.name || "")}

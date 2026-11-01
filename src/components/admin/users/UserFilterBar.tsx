@@ -1,6 +1,6 @@
 "use client";
 
-import { Search, Plus } from "lucide-react";
+import { Search, Plus, Download } from "lucide-react";
 import type { EducationalSystem } from "./types";
 
 interface UserFilterBarProps {
@@ -73,9 +73,18 @@ export function UserFilterBar({
       </div>
 
       <div className="flex items-center gap-3 shrink-0">
-        <span className="text-[13px] font-bold text-[#94A3B8]">
+        <span className="text-[13px] font-bold text-[#94A3B8] hidden lg:inline">
           عرض {totalFilteredCount} من أصل {totalUsersCount} مستخدم
         </span>
+        <a
+          href="/api/admin/users/export"
+          download
+          className="h-11 px-3.5 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] hover:bg-[#F8FAFC] dark:hover:bg-[#1E293B] text-[13px] font-bold text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white flex items-center gap-1.5 transition-colors"
+          title="تصدير كشف بيانات الطلاب إلى ملف Excel / CSV"
+        >
+          <Download className="w-4 h-4 text-[#800020] dark:text-[#FB7185]" />
+          <span className="hidden sm:inline">تصدير CSV</span>
+        </a>
         <button
           onClick={onOpenCreate}
           className="h-11 px-4 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] font-bold flex items-center gap-2 cursor-pointer transition-colors"

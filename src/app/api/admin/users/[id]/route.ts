@@ -6,6 +6,27 @@ interface RouteParams {
   params: Promise<{ id: string }>;
 }
 
+export async function GET(req: Request, { params }: RouteParams) {
+  try {
+    const currentUser = await getCurrentUser();
+    if (!currentUser || (currentUser.role !== "ADMIN" && currentUser.role !== "SUPER_ADMIN")) {
+      return NextResponse.json({ error: "غير مصرح لك بالوصول" }, { status: 403 });
+    }
+
+    const { id } = await params;
+    const user = await UserService.getUserDetailedProfile(id);
+
+    if (!user) {
+      return NextResponse.json({ error: "المستخدم غير موجود" }, { status: 404 });
+    }
+
+    return NextResponse.json({ success: true, user });
+  } catch (error) {
+    console.error("Failed to fetch user details:", error);
+    return NextResponse.json({ error: "تعذر جلب تفاصيل المستخدم" }, { status: 500 });
+  }
+}
+
 export async function PATCH(req: Request, { params }: RouteParams) {
   try {
     const currentUser = await getCurrentUser();

@@ -74,6 +74,132 @@ export class UserQueriesService {
   }
 
   /**
+   * Get exhaustive user/student profile with progress, attempts, mistakes, and devices
+   */
+  static async getUserDetailedProfile(id: string) {
+    const user = await prisma.user.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        role: true,
+        avatar: true,
+        schoolCategory: true,
+        maxDevices: true,
+        boundDevices: true,
+        createdAt: true,
+        updatedAt: true,
+        system: { select: { id: true, name: true, code: true } },
+        grade: { select: { id: true, name: true, code: true } },
+        track: { select: { id: true, name: true, code: true } },
+        sessions: {
+          orderBy: { createdAt: "desc" },
+          take: 10,
+          select: { id: true, deviceId: true, expires: true, createdAt: true },
+        },
+        attempts: {
+          orderBy: { startedAt: "desc" },
+          take: 50,
+          select: {
+            id: true,
+            title: true,
+            score: true,
+            percentage: true,
+            timeSpentSeconds: true,
+            isCompleted: true,
+            startedAt: true,
+            completedAt: true,
+            mode: true,
+            exam: {
+              select: {
+                id: true,
+                title: true,
+                isPractice: true,
+                subject: { select: { name: true } },
+              },
+            },
+          },
+        },
+        progress: {
+          orderBy: { lastAccessedAt: "desc" },
+          take: 50,
+          select: {
+            id: true,
+            isCompleted: true,
+            progressPercent: true,
+            lastAccessedAt: true,
+            lesson: {
+              select: {
+                id: true,
+                title: true,
+                unit: {
+                  select: {
+                    title: true,
+                    subject: { select: { name: true } },
+                  },
+                },
+              },
+            },
+          },
+        },
+        mistakes: {
+          orderBy: { lastAttemptAt: "desc" },
+          take: 50,
+          select: {
+            id: true,
+            wrongCount: true,
+            isResolved: true,
+            lastAttemptAt: true,
+            question: {
+              select: {
+                id: true,
+                statement: true,
+                type: true,
+                difficulty: true,
+                subject: { select: { name: true } },
+              },
+            },
+          },
+        },
+        _count: {
+          select: {
+            attempts: true,
+            progress: true,
+            mistakes: true,
+            sessions: true,
+          },
+        },
+      },
+    });
+
+    if (!user) return null;
+
+    const completedLessons = user.progress.filter((p) => p.isCompleted).length;
+    const completedAttempts = user.attempts.filter((a) => a.isCompleted);
+    const averageScore =
+      completedAttempts.length > 0
+        ? Math.round(
+            completedAttempts.reduce((sum, a) => sum + a.percentage, 0) /
+              completedAttempts.length
+          )
+        : 0;
+
+    return {
+      ...user,
+      stats: {
+        completedLessons,
+        totalAttempts: user._count.attempts,
+        averageScore,
+        totalMistakes: user._count.mistakes,
+        resolvedMistakes: user.mistakes.filter((m) => m.isResolved).length,
+        activeDevicesCount: user.boundDevices.length,
+      },
+    };
+  }
+
+  /**
    * Find user by email or phone (case-insensitive for email)
    */
   static async findByIdentifier(identifier: string) {

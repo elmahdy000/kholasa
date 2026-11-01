@@ -113,28 +113,40 @@ export class UserMutationsService {
       if (existingEmail) throw new Error("البريد الإلكتروني مسجل بالفعل لمستخدم آخر");
     }
 
+    let hashedPassword: string | undefined = undefined;
+    if (data.password !== undefined && data.password.trim()) {
+      if (data.password.length < 8) {
+        throw new Error("كلمة المرور يجب أن لا تقل عن 8 أحرف");
+      }
+      hashedPassword = await bcrypt.hash(data.password, 12);
+    }
+
     const updated = await prisma.user.update({
       where: { id },
       data: {
         ...(data.name !== undefined ? { name: data.name.trim() } : {}),
         ...(data.phone !== undefined ? { phone: data.phone.trim() } : {}),
         ...(data.email !== undefined ? { email: data.email.trim().toLowerCase() } : {}),
+        ...(hashedPassword ? { password: hashedPassword } : {}),
         ...(data.role !== undefined ? { role: data.role } : {}),
         ...(data.systemId !== undefined ? { systemId: data.systemId || null } : {}),
         ...(data.gradeId !== undefined ? { gradeId: data.gradeId || null } : {}),
+        ...(data.trackId !== undefined ? { trackId: data.trackId || null } : {}),
+        ...(data.schoolCategory !== undefined ? { schoolCategory: data.schoolCategory } : {}),
         ...(typeof data.maxDevices === "number" && data.maxDevices > 0 ? { maxDevices: data.maxDevices } : {}),
       },
       select: {
         id: true, name: true, phone: true, email: true, role: true,
-        systemId: true, gradeId: true, createdAt: true,
+        systemId: true, gradeId: true, trackId: true, schoolCategory: true, createdAt: true,
         maxDevices: true, boundDevices: true,
         system: { select: { id: true, name: true } },
         grade: { select: { id: true, name: true } },
+        track: { select: { id: true, name: true } },
       },
     });
 
-    // A role change must not keep old privileges alive in existing sessions.
-    if (data.role !== undefined && data.role !== targetUser.role) {
+    // A role or password change must purge existing sessions.
+    if ((data.role !== undefined && data.role !== targetUser.role) || hashedPassword) {
       await prisma.session.deleteMany({ where: { userId: id } });
     }
 

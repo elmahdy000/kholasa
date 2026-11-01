@@ -21,6 +21,7 @@ export class UserService {
   // Queries
   static getUsers = UserQueriesService.getUsers;
   static getUserById = UserQueriesService.getUserById;
+  static getUserDetailedProfile = UserQueriesService.getUserDetailedProfile;
   static findByIdentifier = UserQueriesService.findByIdentifier;
 
   // Mutations

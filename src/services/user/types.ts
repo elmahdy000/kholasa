@@ -1,4 +1,4 @@
-import type { Role } from "@prisma/client";
+import type { Role, SchoolCategory } from "@prisma/client";
 
 export interface UserFilterParams {
   role?: Role | "ALL";
@@ -23,9 +23,12 @@ export interface UpdateUserInput {
   name?: string;
   phone?: string;
   email?: string;
+  password?: string;
   role?: Role;
   systemId?: string | null;
   gradeId?: string | null;
+  trackId?: string | null;
+  schoolCategory?: SchoolCategory;
   maxDevices?: number;
 }
 
