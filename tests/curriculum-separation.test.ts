@@ -19,7 +19,7 @@ describe("EL KHOLASA — Mandatory Curriculum Separation (12 Criteria Verificati
     if (!g10 || !g11) return;
 
     // 1. Ensure G10 Arabic has at least one subject with unit and lesson
-    let g10Ar = await prisma.subject.findFirst({
+    const g10Ar = await prisma.subject.findFirst({
       where: { gradeId: g10.id, schoolCategory: "ARABIC" },
       include: { units: { include: { lessons: true } } },
     });
@@ -41,7 +41,7 @@ describe("EL KHOLASA — Mandatory Curriculum Separation (12 Criteria Verificati
     }
 
     // 2. Ensure G10 Languages has at least one subject with unit and lesson
-    let g10En = await prisma.subject.findFirst({
+    const g10En = await prisma.subject.findFirst({
       where: { gradeId: g10.id, schoolCategory: "LANGUAGES" },
       include: { units: { include: { lessons: true } } },
     });
@@ -63,7 +63,7 @@ describe("EL KHOLASA — Mandatory Curriculum Separation (12 Criteria Verificati
     }
 
     // 3. Ensure G11 Arabic
-    let g11Ar = await prisma.subject.findFirst({
+    const g11Ar = await prisma.subject.findFirst({
       where: { gradeId: g11.id, schoolCategory: "ARABIC" },
     });
     if (!g11Ar) {
@@ -78,7 +78,7 @@ describe("EL KHOLASA — Mandatory Curriculum Separation (12 Criteria Verificati
     }
 
     // 4. Ensure G11 Languages
-    let g11En = await prisma.subject.findFirst({
+    const g11En = await prisma.subject.findFirst({
       where: { gradeId: g11.id, schoolCategory: "LANGUAGES" },
     });
     if (!g11En) {
