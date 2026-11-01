@@ -134,7 +134,7 @@ async function main() {
             schoolCategory,
             systemId: system.id,
             gradeId: grade?.id || null,
-            maxDevices: 2,
+            maxDevices: 1,
             boundDevices: [],
           },
         });
