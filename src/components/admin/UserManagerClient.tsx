@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
 import type { UserManagerClientProps, UserItem } from "./users/types";
 import { UserMetricsStrip } from "./users/UserMetricsStrip";
 import { UserFilterBar } from "./users/UserFilterBar";
@@ -24,6 +25,10 @@ export function UserManagerClient({
   const [selectedRole, setSelectedRole] = useState("all");
   const [selectedSystemId, setSelectedSystemId] = useState("all");
   const [inspectUserId, setInspectUserId] = useState<string | null>(null);
+
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(25);
 
   // Confirmation modal state
   const [confirmModal, setConfirmModal] = useState<{
@@ -213,20 +218,29 @@ export function UserManagerClient({
     });
   };
 
-  const filteredUsers = users.filter((u) => {
-    if (selectedRole !== "all" && u.role !== selectedRole) return false;
-    if (selectedSystemId !== "all" && u.system?.id !== selectedSystemId)
-      return false;
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
-      const matchName = u.name?.toLowerCase().includes(q) || false;
-      const matchEmail = u.email?.toLowerCase().includes(q) || false;
-      const matchPhone = u.phone?.toLowerCase().includes(q) || false;
-      const matchCode = u.loginCode?.toLowerCase().includes(q) || false;
-      if (!matchName && !matchEmail && !matchPhone && !matchCode) return false;
-    }
-    return true;
-  });
+  const filteredUsers = useMemo(() => {
+    return users.filter((u) => {
+      if (selectedRole !== "all" && u.role !== selectedRole) return false;
+      if (selectedSystemId !== "all" && u.system?.id !== selectedSystemId)
+        return false;
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        const matchName = u.name?.toLowerCase().includes(q) || false;
+        const matchEmail = u.email?.toLowerCase().includes(q) || false;
+        const matchPhone = u.phone?.toLowerCase().includes(q) || false;
+        const matchCode = u.loginCode?.toLowerCase().includes(q) || false;
+        if (!matchName && !matchEmail && !matchPhone && !matchCode) return false;
+      }
+      return true;
+    });
+  }, [users, selectedRole, selectedSystemId, searchQuery]);
+
+  // Pagination calculation
+  const totalFilteredCount = filteredUsers.length;
+  const totalPages = Math.max(1, Math.ceil(totalFilteredCount / pageSize));
+  const safeCurrentPage = Math.min(currentPage, totalPages);
+  const start = (safeCurrentPage - 1) * pageSize;
+  const paginatedUsers = filteredUsers.slice(start, start + pageSize);
 
   return (
     <div className="space-y-6">
@@ -236,13 +250,22 @@ export function UserManagerClient({
       {/* 2. Filter and Search Bar */}
       <UserFilterBar
         searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
+        setSearchQuery={(q) => {
+          setSearchQuery(q);
+          setCurrentPage(1);
+        }}
         selectedRole={selectedRole}
-        setSelectedRole={setSelectedRole}
+        setSelectedRole={(r) => {
+          setSelectedRole(r);
+          setCurrentPage(1);
+        }}
         selectedSystemId={selectedSystemId}
-        setSelectedSystemId={setSelectedSystemId}
+        setSelectedSystemId={(s) => {
+          setSelectedSystemId(s);
+          setCurrentPage(1);
+        }}
         systems={systems}
-        totalFilteredCount={filteredUsers.length}
+        totalFilteredCount={totalFilteredCount}
         totalUsersCount={users.length}
         onOpenCreate={() => {
           handleOpenCreateModal();
@@ -252,17 +275,100 @@ export function UserManagerClient({
 
       {/* 3. Users Table */}
       <UserTable
-        users={filteredUsers}
+        users={paginatedUsers}
         currentUserId={currentUserId}
         onSelectUserToEdit={(u) => {
           setSelectedUser(u);
           setNewRole(u.role);
-          setNewMaxDevices(u.maxDevices || 2);
+          setNewMaxDevices(u.maxDevices || 1);
         }}
         onDeleteUser={handleDeleteUser}
         onResetDevices={handleResetDevices}
         onInspectUser={(id) => setInspectUserId(id)}
       />
+
+      {/* Pagination Footer */}
+      {totalFilteredCount > 0 && (
+        <div className="p-4 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] shadow-xs flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center gap-2 text-xs font-bold text-[#64748B] dark:text-[#94A3B8]">
+            <span>عرض</span>
+            <span className="font-mono text-[#0F172A] dark:text-white">
+              {start + 1} - {Math.min(start + pageSize, totalFilteredCount)}
+            </span>
+            <span>من إجمالي</span>
+            <span className="font-mono text-[#0F172A] dark:text-white">{totalFilteredCount}</span>
+            <span>مستخدم</span>
+          </div>
+
+          <div className="flex items-center gap-3">
+            {/* Page Size Selector */}
+            <div className="flex items-center gap-1.5 text-xs text-[#64748B] dark:text-[#94A3B8] font-bold">
+              <span>لكل صفحة:</span>
+              <select
+                value={pageSize}
+                onChange={(e) => {
+                  setPageSize(Number(e.target.value));
+                  setCurrentPage(1);
+                }}
+                className="h-8 px-2 rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-xs font-bold text-[#0F172A] dark:text-white"
+              >
+                <option value={25}>25</option>
+                <option value={50}>50</option>
+                <option value={100}>100</option>
+              </select>
+            </div>
+
+            {/* Navigation Buttons */}
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => setCurrentPage(1)}
+                disabled={safeCurrentPage === 1}
+                className="h-8 w-8 rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] hover:bg-[#E2E8F0] dark:hover:bg-[#334155] text-[#0F172A] dark:text-white flex items-center justify-center transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                title="الصفحة الأولى"
+              >
+                <ChevronsRight className="w-4 h-4" />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={safeCurrentPage === 1}
+                className="h-8 px-2.5 rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] hover:bg-[#E2E8F0] dark:hover:bg-[#334155] text-xs font-bold text-[#0F172A] dark:text-white flex items-center gap-1 transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                title="الصفحة السابقة"
+              >
+                <ChevronRight className="w-3.5 h-3.5" />
+                <span>السابق</span>
+              </button>
+
+              <div className="px-2.5 text-xs font-mono font-bold text-[#0F172A] dark:text-white">
+                {safeCurrentPage} / {totalPages}
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                disabled={safeCurrentPage === totalPages}
+                className="h-8 px-2.5 rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] hover:bg-[#E2E8F0] dark:hover:bg-[#334155] text-xs font-bold text-[#0F172A] dark:text-white flex items-center gap-1 transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                title="الصفحة التالية"
+              >
+                <span>التالي</span>
+                <ChevronLeft className="w-3.5 h-3.5" />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setCurrentPage(totalPages)}
+                disabled={safeCurrentPage === totalPages}
+                className="h-8 w-8 rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] hover:bg-[#E2E8F0] dark:hover:bg-[#334155] text-[#0F172A] dark:text-white flex items-center justify-center transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                title="الصفحة الأخيرة"
+              >
+                <ChevronsLeft className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 4. Edit Role Modal */}
       <EditRoleModal

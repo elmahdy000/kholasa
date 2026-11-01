@@ -55,16 +55,16 @@ export function QuestionRow({
 
   return (
     <div
-      className={`rounded-xl border transition-all text-right font-sans ${
+      className={`rounded-2xl border transition-all text-right font-sans shadow-xs ${
         isSelected
-          ? "border-[#800020] bg-[#800020]/[0.02] shadow-sm"
+          ? "border-[#800020] bg-[#800020]/[0.02]"
           : "border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] hover:border-[#CBD5E1] dark:hover:border-[#475569]"
       }`}
     >
-      {/* Main Compact Row */}
-      <div className="p-3.5 sm:p-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
-        {/* Leading: Checkbox + Number + Statement */}
-        <div className="flex items-start gap-3 flex-1 min-w-0">
+      {/* Question Card Content */}
+      <div className="p-4 sm:p-5 space-y-3">
+        {/* Tier 1: Question Header (Checkbox + Number + Full Statement) */}
+        <div className="flex items-start gap-3">
           {onToggleSelect && (
             <button
               type="button"
@@ -79,13 +79,13 @@ export function QuestionRow({
               {isSelected ? (
                 <CheckSquare className="w-4 h-4 text-[#800020]" />
               ) : (
-                <Square className="w-4 h-4" />
+                <Square className="w-4 h-4 text-[#94A3B8]" />
               )}
             </button>
           )}
 
           {/* Sequential Question Number */}
-          <span className="mt-0.5 px-2 py-0.5 rounded-md bg-[#F1F5F9] dark:bg-[#1E293B] text-[12px] font-bold text-[#0F172A] dark:text-[#E2E8F0] shrink-0 border border-[#E2E8F0] dark:border-[#334155]">
+          <span className="mt-0.5 px-2 py-0.5 rounded-md bg-[#F1F5F9] dark:bg-[#1E293B] text-[11px] font-mono font-bold text-[#475569] dark:text-[#E2E8F0] shrink-0 border border-[#E2E8F0] dark:border-[#334155]">
             #{idx}
           </span>
 
@@ -112,26 +112,28 @@ export function QuestionRow({
           </div>
         </div>
 
-        {/* Trailing: Metadata Badges & Quick Actions */}
-        <div className="flex flex-wrap items-center justify-between md:justify-end gap-2 shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-[#F1F5F9] dark:border-[#1E293B]">
+        {/* Tier 2: Metadata Badges & Action Toolbar */}
+        <div className="pt-2.5 border-t border-[#F1F5F9] dark:border-[#1E293B] flex flex-wrap items-center justify-between gap-3">
+          {/* Right: Badges */}
           <div className="flex flex-wrap items-center gap-1.5">
-            {/* Image Indicator */}
-            {q.imageUrl && (
-              <span
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setIsImageModalOpen(true);
-                }}
-                className="px-2 py-0.5 rounded-md bg-[#EEF2FF] text-[#4F46E5] dark:bg-[#312E81]/30 dark:text-[#A5B4FC] text-[11px] font-bold flex items-center gap-1 cursor-pointer hover:underline"
-                title="يحتوي على رسم توضيحي"
-              >
-                <ImageIcon className="w-3 h-3" />
-                <span>صورة</span>
-              </span>
-            )}
+            {/* Subject Tag */}
+            <span className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[11px] font-bold">
+              {q.subject?.name}
+            </span>
+
+            {/* School Track Tag */}
+            <span
+              className={`px-2 py-0.5 rounded-md text-[11px] font-bold border ${
+                isLanguageSchool
+                  ? "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-800"
+                  : "bg-slate-50 text-slate-700 border-slate-200 dark:bg-slate-800/80 dark:text-slate-300 dark:border-slate-700"
+              }`}
+            >
+              {isLanguageSchool ? "لغات" : "عربي"}
+            </span>
 
             {/* Question Type */}
-            <span className="px-2.5 py-0.5 rounded-md bg-[#F8FAFC] dark:bg-[#1E293B] text-[11px] font-bold text-[#475569] dark:text-[#94A3B8] border border-[#E2E8F0] dark:border-[#334155]">
+            <span className="px-2 py-0.5 rounded-md bg-[#F8FAFC] dark:bg-[#1E293B] text-[11px] font-bold text-[#475569] dark:text-[#94A3B8] border border-[#E2E8F0] dark:border-[#334155]">
               {q.type === "MCQ"
                 ? "اختيار من متعدد"
                 : q.type === "TRUE_FALSE"
@@ -156,25 +158,29 @@ export function QuestionRow({
                 : "متقدم"}
             </span>
 
-            {/* School Track Tag */}
-            <span
-              className={`px-2 py-0.5 rounded-md text-[11px] font-bold ${
-                isLanguageSchool
-                  ? "bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400"
-                  : "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300"
-              }`}
-            >
-              {isLanguageSchool ? "لغات" : "عربي"}
-            </span>
+            {/* Image Indicator */}
+            {q.imageUrl && (
+              <span
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsImageModalOpen(true);
+                }}
+                className="px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 text-[11px] font-bold flex items-center gap-1 cursor-pointer hover:underline"
+                title="يحتوي على رسم توضيحي"
+              >
+                <ImageIcon className="w-3 h-3" />
+                <span>رسم توضيحي</span>
+              </span>
+            )}
           </div>
 
-          {/* Action Buttons: Expand Toggle, Edit, Delete */}
-          <div className="flex items-center gap-1">
+          {/* Left: Actions (Expand / Edit / Delete) */}
+          <div className="flex items-center gap-1.5 mr-auto">
             {onToggleExpand && (
               <button
                 type="button"
                 onClick={onToggleExpand}
-                className={`h-8 px-2 rounded-lg border text-[12px] font-bold flex items-center gap-1 transition-colors cursor-pointer ${
+                className={`h-7.5 px-2.5 rounded-lg border text-[11px] font-bold flex items-center gap-1 transition-colors cursor-pointer ${
                   isExpanded
                     ? "bg-[#800020] text-white border-[#800020]"
                     : "border-[#E2E8F0] dark:border-[#334155] text-[#64748B] hover:text-[#0F172A] dark:hover:text-white bg-[#F8FAFC] dark:bg-[#1E293B]"
@@ -183,7 +189,7 @@ export function QuestionRow({
               >
                 <span>{isExpanded ? "طي" : "عرض"}</span>
                 <ChevronDown
-                  className={`w-3.5 h-3.5 transition-transform duration-200 ${
+                  className={`w-3 h-3 transition-transform duration-200 ${
                     isExpanded ? "rotate-180" : ""
                   }`}
                 />
@@ -193,17 +199,17 @@ export function QuestionRow({
             <button
               type="button"
               onClick={() => onEdit(q)}
-              className="h-8 w-8 rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B] hover:bg-[#F8FAFC] dark:hover:bg-[#334155] text-[#0F172A] dark:text-white flex items-center justify-center transition-colors cursor-pointer"
+              className="h-7.5 w-7.5 rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B] hover:bg-[#F8FAFC] dark:hover:bg-[#334155] text-[#0F172A] dark:text-white flex items-center justify-center transition-colors cursor-pointer"
               title="تعديل السؤال"
               aria-label="تعديل السؤال"
             >
-              <Edit2 className="w-3.5 h-3.5 text-[#800020]" />
+              <Edit2 className="w-3.5 h-3.5 text-[#800020] dark:text-[#FB7185]" />
             </button>
 
             <button
               type="button"
               onClick={() => onDelete(q.id)}
-              className="h-8 w-8 rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B] hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/30 text-[#94A3B8] flex items-center justify-center transition-colors cursor-pointer"
+              className="h-7.5 w-7.5 rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B] hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/30 text-[#94A3B8] flex items-center justify-center transition-colors cursor-pointer"
               title="حذف السؤال"
               aria-label="حذف السؤال"
             >
@@ -215,12 +221,12 @@ export function QuestionRow({
 
       {/* Expanded Details Area */}
       {isExpanded && (
-        <div className="border-t border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC]/90 dark:bg-[#0B1120]/60 p-4 sm:p-5 rounded-b-xl space-y-4">
+        <div className="border-t border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC]/90 dark:bg-[#0B1120]/60 p-4 sm:p-5 rounded-b-2xl space-y-4">
           {/* Secondary Academic Hierarchy & Source Metadata */}
           <div className="flex flex-wrap items-center gap-2 text-[12px] text-[#64748B] dark:text-[#94A3B8] pb-3 border-b border-[#E2E8F0]/70 dark:border-[#334155]/70">
             <span className="flex items-center gap-1 font-bold text-[#0F172A] dark:text-white">
               <BookOpen className="w-3.5 h-3.5 text-[#800020]" />
-              <span>المادة: {q.subject.name}</span>
+              <span>المادة: {q.subject?.name}</span>
             </span>
 
             {q.unit && (

@@ -1,6 +1,7 @@
 "use client";
 
-import { Search, Plus, FileText, X, Layers, Sparkles, Check } from "lucide-react";
+import { useState } from "react";
+import { Search, Plus, FileText, X, Layers, Sparkles, Check, ChevronDown, Upload } from "lucide-react";
 import { Subject } from "./types";
 
 interface QuestionFilterBarProps {
@@ -42,6 +43,8 @@ export function QuestionFilterBar({
   onOpenCreate,
   onOpenImport,
 }: QuestionFilterBarProps) {
+  const [importMenuOpen, setImportMenuOpen] = useState(false);
+
   const hasActiveFilters =
     selectedGradeCode !== "all" ||
     selectedCategory !== "all" ||
@@ -59,15 +62,19 @@ export function QuestionFilterBar({
     setSearchQuery("");
   };
 
+  const handleSelectImport = (type: "ALL" | "MCQ" | "TRUE_FALSE" | "ESSAY") => {
+    setImportMenuOpen(false);
+    onOpenImport?.(type);
+  };
+
   return (
     <div className="space-y-3 font-sans text-right">
-      {/* Top Filter Card */}
       <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] shadow-xs space-y-4">
-        {/* Row 1: Primary Academic Hierarchy (Grade & Category) & Action Buttons */}
+        {/* Tier 1: Academic Hierarchy Controls & Action Buttons */}
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-[#E2E8F0] dark:border-[#334155]">
-          {/* Grade & School Category Tabs */}
-          <div className="flex flex-wrap items-center gap-4">
-            {/* Grade Segmented Control */}
+          {/* Right: Grade & Category Segmented Controls */}
+          <div className="flex flex-wrap items-center gap-3">
+            {/* Grade Selector */}
             <div className="flex items-center gap-2">
               <span className="text-[12px] font-bold text-[#64748B] dark:text-[#94A3B8] shrink-0">
                 الصف:
@@ -79,7 +86,7 @@ export function QuestionFilterBar({
                     setSelectedGradeCode("all");
                     setSelectedSubjectId("all");
                   }}
-                  className={`px-3 py-1.5 rounded-lg text-[12px] font-bold transition-colors cursor-pointer ${
+                  className={`px-3 py-1.5 rounded-lg text-[12px] font-bold transition-all cursor-pointer ${
                     selectedGradeCode === "all"
                       ? "bg-white dark:bg-[#0F172A] text-[#0F172A] dark:text-white shadow-xs"
                       : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A]"
@@ -93,13 +100,13 @@ export function QuestionFilterBar({
                     setSelectedGradeCode("bacc_g10");
                     setSelectedSubjectId("all");
                   }}
-                  className={`px-3 py-1.5 rounded-lg text-[12px] font-bold transition-colors cursor-pointer ${
+                  className={`px-3 py-1.5 rounded-lg text-[12px] font-bold transition-all cursor-pointer ${
                     selectedGradeCode === "bacc_g10"
                       ? "bg-[#800020] text-white shadow-xs"
                       : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A]"
                   }`}
                 >
-                  أولى بكالوريا (G10)
+                  أولى بكالوريا
                 </button>
                 <button
                   type="button"
@@ -107,18 +114,18 @@ export function QuestionFilterBar({
                     setSelectedGradeCode("bacc_g11");
                     setSelectedSubjectId("all");
                   }}
-                  className={`px-3 py-1.5 rounded-lg text-[12px] font-bold transition-colors cursor-pointer ${
+                  className={`px-3 py-1.5 rounded-lg text-[12px] font-bold transition-all cursor-pointer ${
                     selectedGradeCode === "bacc_g11"
                       ? "bg-[#800020] text-white shadow-xs"
                       : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A]"
                   }`}
                 >
-                  تانية بكالوريا (G11)
+                  تانية بكالوريا
                 </button>
               </div>
             </div>
 
-            {/* School Category Segmented Control */}
+            {/* School Category Selector */}
             <div className="flex items-center gap-2">
               <span className="text-[12px] font-bold text-[#64748B] dark:text-[#94A3B8] shrink-0">
                 الفئة:
@@ -130,7 +137,7 @@ export function QuestionFilterBar({
                     setSelectedCategory("all");
                     setSelectedSubjectId("all");
                   }}
-                  className={`px-3 py-1.5 rounded-lg text-[12px] font-bold transition-colors cursor-pointer ${
+                  className={`px-3 py-1.5 rounded-lg text-[12px] font-bold transition-all cursor-pointer ${
                     selectedCategory === "all"
                       ? "bg-white dark:bg-[#0F172A] text-[#0F172A] dark:text-white shadow-xs"
                       : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A]"
@@ -144,13 +151,13 @@ export function QuestionFilterBar({
                     setSelectedCategory("ARABIC");
                     setSelectedSubjectId("all");
                   }}
-                  className={`px-3 py-1.5 rounded-lg text-[12px] font-bold transition-colors cursor-pointer ${
+                  className={`px-3 py-1.5 rounded-lg text-[12px] font-bold transition-all cursor-pointer ${
                     selectedCategory === "ARABIC"
                       ? "bg-slate-800 text-white dark:bg-slate-200 dark:text-slate-900 shadow-xs"
                       : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A]"
                   }`}
                 >
-                  مدارس عربي
+                  عربي
                 </button>
                 <button
                   type="button"
@@ -158,68 +165,102 @@ export function QuestionFilterBar({
                     setSelectedCategory("LANGUAGES");
                     setSelectedSubjectId("all");
                   }}
-                  className={`px-3 py-1.5 rounded-lg text-[12px] font-bold transition-colors cursor-pointer ${
+                  className={`px-3 py-1.5 rounded-lg text-[12px] font-bold transition-all cursor-pointer ${
                     selectedCategory === "LANGUAGES"
                       ? "bg-blue-600 text-white shadow-xs"
                       : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A]"
                   }`}
                 >
-                  مدارس لغات
+                  لغات
                 </button>
               </div>
             </div>
           </div>
 
-          {/* Action Buttons: Separated Import Types & Add Question */}
-          <div className="flex flex-wrap items-center gap-2 shrink-0">
+          {/* Left: Action Buttons (Unified Import Dropdown + Create Question) */}
+          <div className="flex items-center gap-2.5 shrink-0">
             {onOpenImport && (
-              <div className="flex flex-wrap items-center gap-1.5">
+              <div className="relative">
                 <button
                   type="button"
-                  onClick={() => onOpenImport("ESSAY")}
-                  className="h-10 px-3 rounded-xl bg-amber-500/10 border border-amber-500/30 hover:bg-amber-500/20 text-amber-900 dark:text-amber-200 text-[12px] font-bold flex items-center gap-1.5 cursor-pointer transition-colors shadow-2xs"
-                  title="استيراد أسئلة مقالية منفصلة مع الإجابة النموذجية"
+                  onClick={() => setImportMenuOpen(!importMenuOpen)}
+                  className="h-10 px-3.5 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] hover:bg-[#F1F5F9] dark:hover:bg-[#334155] text-[12px] font-bold text-[#0F172A] dark:text-white flex items-center gap-2 cursor-pointer transition-colors shadow-2xs"
+                  title="استيراد الأسئلة من ملفات Word"
                 >
-                  <FileText className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400" />
-                  <span>📝 استيراد مقالي</span>
+                  <Upload className="w-4 h-4 text-[#800020] dark:text-[#FB7185]" />
+                  <span>استيراد أسئلة Word</span>
+                  <ChevronDown className={`w-3.5 h-3.5 transition-transform ${importMenuOpen ? "rotate-180" : ""}`} />
                 </button>
 
-                <button
-                  type="button"
-                  onClick={() => onOpenImport("MCQ")}
-                  className="h-10 px-3 rounded-xl bg-blue-500/10 border border-blue-500/30 hover:bg-blue-500/20 text-blue-900 dark:text-blue-200 text-[12px] font-bold flex items-center gap-1.5 cursor-pointer transition-colors shadow-2xs"
-                  title="استيراد أسئلة اختيار من متعدد منفصلة"
-                >
-                  <Sparkles className="w-3.5 h-3.5 text-blue-700 dark:text-blue-400" />
-                  <span>🎯 استيراد MCQ</span>
-                </button>
+                {importMenuOpen && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-20"
+                      onClick={() => setImportMenuOpen(false)}
+                    />
+                    <div className="absolute left-0 mt-1.5 w-60 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] shadow-lg py-1 z-30 divide-y divide-[#F1F5F9] dark:divide-[#1E293B]">
+                      <div className="px-3 py-2 text-[11px] font-bold text-[#94A3B8]">
+                        اختر طريقة الاستيراد من ملف Word (.docx):
+                      </div>
+                      <div className="py-1">
+                        <button
+                          type="button"
+                          onClick={() => handleSelectImport("ALL")}
+                          className="w-full px-3 py-2 text-right text-xs font-bold text-[#0F172A] dark:text-white hover:bg-[#F8FAFC] dark:hover:bg-[#1E293B] flex items-center gap-2 cursor-pointer"
+                        >
+                          <Layers className="w-4 h-4 text-[#800020] dark:text-[#FB7185]" />
+                          <div>
+                            <div>استيراد شامل (كافة الأنواع)</div>
+                            <div className="text-[10px] text-[#94A3B8] font-normal">استيراد بنك أسئلة متكامل دفعة واحدة</div>
+                          </div>
+                        </button>
 
-                <button
-                  type="button"
-                  onClick={() => onOpenImport("TRUE_FALSE")}
-                  className="h-10 px-3 rounded-xl bg-purple-500/10 border border-purple-500/30 hover:bg-purple-500/20 text-purple-900 dark:text-purple-200 text-[12px] font-bold flex items-center gap-1.5 cursor-pointer transition-colors shadow-2xs"
-                  title="استيراد أسئلة صح وخطأ منفصلة"
-                >
-                  <Check className="w-3.5 h-3.5 text-purple-700 dark:text-purple-400" />
-                  <span>⚖️ استيراد صح وخطأ</span>
-                </button>
+                        <button
+                          type="button"
+                          onClick={() => handleSelectImport("MCQ")}
+                          className="w-full px-3 py-2 text-right text-xs font-bold text-[#0F172A] dark:text-white hover:bg-[#F8FAFC] dark:hover:bg-[#1E293B] flex items-center gap-2 cursor-pointer"
+                        >
+                          <Sparkles className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                          <div>
+                            <div>اختيار من متعدد (MCQ)</div>
+                            <div className="text-[10px] text-[#94A3B8] font-normal">ملف يحتوي على أسئلة MCQ منفصلة</div>
+                          </div>
+                        </button>
 
-                <button
-                  type="button"
-                  onClick={() => onOpenImport("ALL")}
-                  className="h-10 px-3 rounded-xl border border-[#CBD5E1] dark:border-[#475569] bg-[#F8FAFC] dark:bg-[#1E293B] hover:bg-white dark:hover:bg-[#334155] text-[#0F172A] dark:text-white text-[12px] font-bold flex items-center gap-1.5 cursor-pointer transition-colors shadow-2xs"
-                  title="استيراد شامل لكافة أنواع الأسئلة معاً"
-                >
-                  <Layers className="w-3.5 h-3.5 text-[#800020] dark:text-[#FB7185]" />
-                  <span>استيراد شامل</span>
-                </button>
+                        <button
+                          type="button"
+                          onClick={() => handleSelectImport("TRUE_FALSE")}
+                          className="w-full px-3 py-2 text-right text-xs font-bold text-[#0F172A] dark:text-white hover:bg-[#F8FAFC] dark:hover:bg-[#1E293B] flex items-center gap-2 cursor-pointer"
+                        >
+                          <Check className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                          <div>
+                            <div>صواب وخطأ (T/F)</div>
+                            <div className="text-[10px] text-[#94A3B8] font-normal">ملف يحتوي على أسئلة صح وخطأ</div>
+                          </div>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => handleSelectImport("ESSAY")}
+                          className="w-full px-3 py-2 text-right text-xs font-bold text-[#0F172A] dark:text-white hover:bg-[#F8FAFC] dark:hover:bg-[#1E293B] flex items-center gap-2 cursor-pointer"
+                        >
+                          <FileText className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                          <div>
+                            <div>أسئلة مقالية (Essay)</div>
+                            <div className="text-[10px] text-[#94A3B8] font-normal">ملف أسئلة مقالية مع الإجابة النموذجية</div>
+                          </div>
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
             )}
 
             <button
               type="button"
               onClick={onOpenCreate}
-              className="h-10 px-4 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[12px] font-bold flex items-center gap-2 cursor-pointer transition-colors shadow-xs active:scale-[0.98]"
+              className="h-10 px-4 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[12px] font-bold flex items-center gap-1.5 cursor-pointer transition-colors shadow-2xs active:scale-[0.98]"
             >
               <Plus className="w-4 h-4" />
               <span>إضافة سؤال جديد</span>
@@ -227,7 +268,7 @@ export function QuestionFilterBar({
           </div>
         </div>
 
-        {/* Row 2: Secondary Dropdowns and Search Bar */}
+        {/* Tier 2: Search Input and Secondary Dropdowns */}
         <div className="flex flex-wrap items-center gap-2.5">
           {/* Search Input with Clear Button */}
           <div className="relative min-w-[240px] flex-1 max-w-sm">
@@ -298,28 +339,11 @@ export function QuestionFilterBar({
               إعادة ضبط الفلاتر
             </button>
           )}
-        </div>
-      </div>
 
-      {/* Counter & Status Header */}
-      <div className="flex flex-wrap items-center justify-between text-[12px] font-bold text-[#64748B] dark:text-[#94A3B8] px-1">
-        <div>
-          <span>عرض <strong className="text-[#0F172A] dark:text-white">{filteredCount}</strong> سؤال من إجمالي <strong className="text-[#0F172A] dark:text-white">{totalQuestions}</strong> في البنك</span>
-        </div>
-
-        {hasActiveFilters && (
-          <div className="flex items-center gap-2 text-[11px] text-[#800020]">
-            <span>
-              الفلاتر النشطة:{" "}
-              {selectedGradeCode !== "all" && (selectedGradeCode === "bacc_g10" ? "أولى بكالوريا • " : "تانية بكالوريا • ")}
-              {selectedCategory !== "all" && (selectedCategory === "ARABIC" ? "مدارس عربي • " : "مدارس لغات • ")}
-              {selectedSubjectId !== "all" && "مادة محددة • "}
-              {selectedType !== "all" && "نوع محدد • "}
-              {selectedDifficulty !== "all" && "صعوبة محددة • "}
-              {searchQuery && `بحث: "${searchQuery}"`}
-            </span>
+          <div className="mr-auto text-[12px] text-[#94A3B8] font-bold hidden lg:block">
+            عرض {filteredCount} من {totalQuestions} سؤال
           </div>
-        )}
+        </div>
       </div>
     </div>
   );

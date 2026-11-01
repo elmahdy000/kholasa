@@ -1,6 +1,7 @@
 "use client";
 
-import { Shield, Trash2, Smartphone, RotateCcw, Eye, Copy, KeyRound } from "lucide-react";
+import { useState } from "react";
+import { Shield, Trash2, Smartphone, RotateCcw, Eye, Copy, KeyRound, Check } from "lucide-react";
 import type { UserItem } from "./types";
 
 interface UserTableProps {
@@ -20,192 +21,233 @@ export function UserTable({
   onResetDevices,
   onInspectUser,
 }: UserTableProps) {
+  const [copiedCode, setCopiedCode] = useState<string | null>(null);
+
+  const handleCopyCode = (code: string) => {
+    navigator.clipboard.writeText(code);
+    setCopiedCode(code);
+    setTimeout(() => {
+      setCopiedCode((prev) => (prev === code ? null : prev));
+    }, 2000);
+  };
+
   return (
-    <div className="rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0]/80 dark:border-[#334155]/80 overflow-hidden">
+    <div className="rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] shadow-xs overflow-hidden">
       <div className="overflow-x-auto">
-        <table className="w-full text-right text-[13px]">
-          <thead className="bg-[#F8FAFC] dark:bg-[#1E293B]/80 border-b border-[#E2E8F0]/80 dark:border-[#334155]/80 text-[#64748B] font-bold">
+        <table className="w-full text-right text-[13px] border-collapse">
+          <thead className="bg-[#F8FAFC] dark:bg-[#1E293B]/90 border-b border-[#E2E8F0] dark:border-[#334155] text-[#64748B] dark:text-[#94A3B8] font-bold">
             <tr>
-              <th className="p-4">المستخدم</th>
-              <th className="p-4">بيانات الاتصال</th>
-              <th className="p-4">النظام والصف الدراسي</th>
-              <th className="p-4">الرتبة والصلاحية</th>
-              <th className="p-4">الأجهزة</th>
-              <th className="p-4">الدروس المنجزة</th>
-              <th className="p-4">الامتحانات</th>
-              <th className="p-4 text-center">الإجراءات</th>
+              <th className="py-3.5 px-4 whitespace-nowrap min-w-[220px]">المستخدم والكود</th>
+              <th className="py-3.5 px-4 whitespace-nowrap">بيانات الاتصال</th>
+              <th className="py-3.5 px-4 whitespace-nowrap">الصف الدراسي</th>
+              <th className="py-3.5 px-4 whitespace-nowrap">الصلاحية</th>
+              <th className="py-3.5 px-4 whitespace-nowrap text-center">الأجهزة</th>
+              <th className="py-3.5 px-4 whitespace-nowrap text-center">الدروس</th>
+              <th className="py-3.5 px-4 whitespace-nowrap text-center">الامتحانات</th>
+              <th className="py-3.5 px-4 whitespace-nowrap text-center min-w-[210px]">الإجراءات</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#E2E8F0] dark:divide-[#334155]/60 font-bold text-[#0F172A] dark:text-[#F8FAFC]">
+          <tbody className="divide-y divide-[#E2E8F0] dark:divide-[#334155]/60 text-[#0F172A] dark:text-[#F8FAFC]">
             {users.map((u) => {
-              const completedLessons = u.progress.filter((p) => p.isCompleted).length;
+              const completedLessons = u.progress?.filter((p) => p.isCompleted).length || 0;
+              const isCopied = copiedCode === u.loginCode;
+
               return (
                 <tr
                   key={u.id}
-                  className="hover:bg-[#F8FAFC] dark:hover:bg-[#334155]/20 transition-colors"
+                  className="hover:bg-[#F8FAFC]/80 dark:hover:bg-[#1E293B]/40 transition-colors"
                 >
-                  {/* User info */}
-                  <td className="p-4">
+                  {/* 1. User & Code info */}
+                  <td className="py-3.5 px-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-11 h-11 rounded-xl bg-[#800020] text-white flex items-center justify-center font-bold text-[13px] shrink-0">
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#800020] to-[#500014] text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-2xs">
                         {(u.name || "م").charAt(0)}
                       </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <button
-                            type="button"
-                            onClick={() => onInspectUser?.(u.id)}
-                            className="font-bold text-[#0F172A] dark:text-white block hover:text-[#800020] dark:hover:text-[#FB7185] transition-colors text-right cursor-pointer"
-                          >
-                            {u.name || "مستخدم بدون اسم"}
-                          </button>
+                      <div className="min-w-0">
+                        <button
+                          type="button"
+                          onClick={() => onInspectUser?.(u.id)}
+                          className="font-bold text-[13px] sm:text-sm text-[#0F172A] dark:text-white hover:text-[#800020] dark:hover:text-[#FB7185] transition-colors text-right block truncate max-w-[210px] cursor-pointer"
+                          title={u.name || "مستخدم بدون اسم"}
+                        >
+                          {u.name || "مستخدم بدون اسم"}
+                        </button>
+                        <div className="flex items-center gap-1.5 mt-1 flex-wrap">
                           {u.loginCode && (
                             <button
                               type="button"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                navigator.clipboard.writeText(u.loginCode!);
-                                alert(`تم نسخ كود الطالب: ${u.loginCode}`);
+                                handleCopyCode(u.loginCode!);
                               }}
                               title="انقر لنسخ كود الطالب"
-                              className="px-2 py-0.5 rounded-md bg-[#800020]/10 hover:bg-[#800020]/20 text-[#800020] dark:text-[#FB7185] font-mono text-xs font-bold transition-colors inline-flex items-center gap-1 cursor-pointer"
+                              className={`px-2 py-0.5 rounded-md font-mono text-[11px] font-bold transition-all inline-flex items-center gap-1 cursor-pointer shrink-0 border ${
+                                isCopied
+                                  ? "bg-emerald-500 text-white border-emerald-600 dark:bg-emerald-600"
+                                  : "bg-[#800020]/10 hover:bg-[#800020]/20 text-[#800020] dark:text-[#FB7185] border-[#800020]/20"
+                              }`}
                             >
-                              <KeyRound className="w-3 h-3 text-[#800020] dark:text-[#FB7185]" />
-                              <span>{u.loginCode}</span>
-                              <Copy className="w-3 h-3 opacity-60" />
+                              {isCopied ? (
+                                <>
+                                  <Check className="w-3 h-3 text-white" />
+                                  <span>تم النسخ!</span>
+                                </>
+                              ) : (
+                                <>
+                                  <KeyRound className="w-3 h-3 text-[#800020] dark:text-[#FB7185]" />
+                                  <span>{u.loginCode}</span>
+                                  <Copy className="w-2.5 h-2.5 opacity-60" />
+                                </>
+                              )}
                             </button>
                           )}
-                        </div>
-                        <div className="flex items-center gap-2 text-[12px] text-[#94A3B8] font-mono mt-0.5">
-                          <span>{new Date(u.createdAt).toLocaleDateString("ar-EG")}</span>
+                          <span className="text-[11px] text-[#94A3B8] font-mono whitespace-nowrap">
+                            {new Date(u.createdAt).toLocaleDateString("ar-EG")}
+                          </span>
                           {u.schoolCategory && (
-                            <span>• {u.schoolCategory === "LANGUAGES" ? "لغات" : "عربي"}</span>
+                            <span
+                              className={`text-[10px] px-1.5 py-0.5 rounded-md font-bold whitespace-nowrap ${
+                                u.schoolCategory === "LANGUAGES"
+                                  ? "bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300 border border-blue-200 dark:border-blue-800"
+                                  : "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300"
+                              }`}
+                            >
+                              {u.schoolCategory === "LANGUAGES" ? "لغات" : "عربي"}
+                            </span>
                           )}
                         </div>
                       </div>
                     </div>
                   </td>
 
-                  {/* Contact */}
-                  <td className="p-4 font-mono text-[13px] text-[#64748B]" dir="ltr">
+                  {/* 2. Contact */}
+                  <td className="py-3.5 px-4 font-mono text-[12px] text-[#64748B] dark:text-[#94A3B8] whitespace-nowrap" dir="ltr">
                     {u.phone || u.email || "—"}
                   </td>
 
-                  {/* Educational Info */}
-                  <td className="p-4">
-                    {u.system?.name ? (
-                      <div className="space-y-1">
-                        <span className="text-[13px] font-bold block">{u.system.name}</span>
-                        <span className="text-[13px] text-[#94A3B8] font-medium">
-                          {u.grade?.name || "الصف غير محدد"}
+                  {/* 3. Educational Info */}
+                  <td className="py-3.5 px-4 whitespace-nowrap">
+                    {u.grade?.name ? (
+                      <div className="flex flex-col">
+                        <span className="text-[12px] font-bold text-[#0F172A] dark:text-white">
+                          {u.grade.name.includes("الصف الثاني")
+                            ? "تانية ثانوي (بكالوريا)"
+                            : u.grade.name.includes("الصف الأول")
+                            ? "أولى ثانوي (بكالوريا)"
+                            : u.grade.name}
+                        </span>
+                        <span className="text-[11px] text-[#94A3B8]">
+                          {u.system?.name ? "البكالوريا المصرية" : "—"}
                         </span>
                       </div>
                     ) : (
-                      <span className="text-[#94A3B8] text-[13px]">غير محدد</span>
+                      <span className="text-[#94A3B8] text-[12px]">غير محدد</span>
                     )}
                   </td>
 
-                  {/* Role Badge */}
-                  <td className="p-4">
+                  {/* 4. Role Badge */}
+                  <td className="py-3.5 px-4 whitespace-nowrap">
                     <span
-                      className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-[13px] font-bold ${
+                      className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${
                         u.role === "SUPER_ADMIN"
-                          ? "bg-[#800020]/10 text-[#800020] border border-[#800020]/20"
+                          ? "bg-[#800020]/10 text-[#800020] border-[#800020]/30"
                           : u.role === "ADMIN"
-                          ? "bg-[#D97706]/10 text-[#D97706] border border-[#D97706]/20"
+                          ? "bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/30"
                           : u.role === "TEACHER"
-                          ? "bg-[#800020]/10 text-[#800020] border border-[#800020]/20"
-                          : "bg-[#800020]/10 text-[#800020] border border-[#800020]/20"
+                          ? "bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-500/30"
+                          : "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border-slate-200 dark:border-slate-700"
                       }`}
                     >
                       {u.role === "SUPER_ADMIN"
-                        ? "مشرف عام أعلى"
+                        ? "مشرف أعلى"
                         : u.role === "ADMIN"
-                        ? "مسؤول نظام"
+                        ? "مسؤول"
                         : u.role === "TEACHER"
                         ? "معلم"
                         : "طالب"}
                     </span>
                   </td>
 
-                  {/* Bound Devices */}
-                  <td className="p-4">
+                  {/* 5. Bound Devices */}
+                  <td className="py-3.5 px-4 whitespace-nowrap text-center">
                     {u.role === "STUDENT" ? (
-                      <div className="flex items-center gap-1.5">
-                        <span
-                          className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold ${
-                            (u.boundDevices?.length || 0) >= (u.maxDevices || 2)
-                              ? "bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-400 border border-rose-200 dark:border-rose-800"
-                              : (u.boundDevices?.length || 0) > 0
-                              ? "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400 border border-amber-200 dark:border-amber-800"
-                              : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400"
-                          }`}
-                          title={`الأجهزة المسجلة: ${u.boundDevices?.length || 0} من أصل ${u.maxDevices || 2}`}
-                        >
-                          <Smartphone className="w-3 h-3" />
-                          <span>
-                            {u.boundDevices?.length || 0} / {u.maxDevices || 2}
-                          </span>
+                      <span
+                        className={`inline-flex items-center justify-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold whitespace-nowrap border ${
+                          (u.boundDevices?.length || 0) >= (u.maxDevices || 1)
+                            ? "bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-400 border-rose-200 dark:border-rose-800"
+                            : (u.boundDevices?.length || 0) > 0
+                            ? "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400 border-amber-200 dark:border-amber-800"
+                            : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 border-slate-200 dark:border-slate-700"
+                        }`}
+                        title={`الأجهزة المسجلة: ${u.boundDevices?.length || 0} من أصل ${u.maxDevices || 1}`}
+                      >
+                        <Smartphone className="w-3 h-3 shrink-0" />
+                        <span className="font-mono">
+                          {u.boundDevices?.length || 0} / {u.maxDevices || 1}
                         </span>
-                      </div>
+                      </span>
                     ) : (
-                      <span className="text-[#94A3B8] text-xs font-medium">غير مقيد</span>
+                      <span className="text-[#94A3B8] text-[11px]">غير مقيد</span>
                     )}
                   </td>
 
-                  {/* Progress */}
-                  <td className="p-4">
-                    <span className="text-[13px] font-bold text-[#64748B] dark:text-[#F8FAFC]">
-                      {completedLessons} درس
+                  {/* 6. Completed Lessons */}
+                  <td className="py-3.5 px-4 whitespace-nowrap text-center">
+                    <span className="text-[12px] font-bold text-[#64748B] dark:text-[#94A3B8] bg-[#F1F5F9] dark:bg-[#1E293B] px-2 py-0.5 rounded-md font-mono">
+                      {completedLessons}
                     </span>
                   </td>
 
-                  {/* Attempts */}
-                  <td className="p-4">
-                    <span className="text-[13px] font-bold text-[#64748B] dark:text-[#F8FAFC]">
-                      {u.attempts.length} اختبار
+                  {/* 7. Exams Attempts */}
+                  <td className="py-3.5 px-4 whitespace-nowrap text-center">
+                    <span className="text-[12px] font-bold text-[#64748B] dark:text-[#94A3B8] bg-[#F1F5F9] dark:bg-[#1E293B] px-2 py-0.5 rounded-md font-mono">
+                      {u.attempts?.length || 0}
                     </span>
                   </td>
 
-                  {/* Actions */}
-                  <td className="p-4 text-center">
-                    <div className="flex items-center justify-center gap-2">
+                  {/* 8. Actions */}
+                  <td className="py-3.5 px-4 whitespace-nowrap text-center">
+                    <div className="inline-flex items-center justify-center gap-1.5">
                       <button
+                        type="button"
                         onClick={() => onInspectUser?.(u.id)}
-                        className="h-11 px-3 rounded-lg bg-[#800020]/10 hover:bg-[#800020]/20 text-[#800020] dark:text-[#FB7185] text-[13px] font-bold flex items-center gap-1 transition-colors"
+                        className="h-8 px-2.5 rounded-lg bg-[#800020]/10 hover:bg-[#800020]/20 text-[#800020] dark:text-[#FB7185] text-xs font-bold inline-flex items-center gap-1 transition-colors cursor-pointer"
                         title="عرض الملف الشامل للطالب"
                       >
                         <Eye className="w-3.5 h-3.5" />
-                        <span className="hidden sm:inline">تفاصيل</span>
+                        <span>تفاصيل</span>
                       </button>
 
                       {u.role === "STUDENT" && (
                         <button
+                          type="button"
                           onClick={() => onResetDevices(u.id, u.name || "")}
-                          className="h-11 px-2.5 rounded-lg bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/30 dark:hover:bg-amber-900/50 text-[13px] font-bold text-amber-700 dark:text-amber-400 flex items-center gap-1 transition-colors"
-                          title="فك ربط الأجهزة المسجلة وإلغاء الجلسات"
+                          className="h-8 px-2.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-400 text-xs font-bold inline-flex items-center gap-1 transition-colors cursor-pointer border border-amber-500/20"
+                          title="فك ربط الأجهزة المسجلة لإتاحة الدخول من جهاز جديد"
                         >
                           <RotateCcw className="w-3.5 h-3.5" />
-                          <span className="hidden sm:inline">فك الأجهزة</span>
+                          <span>فك الأجهزة</span>
                         </button>
                       )}
 
                       <button
+                        type="button"
                         onClick={() => onSelectUserToEdit(u)}
-                        className="h-11 px-3 rounded-lg bg-[#F8FAFC] hover:bg-[#E2E8F0] dark:bg-[#1E293B] dark:hover:bg-[#1E293B] text-[13px] font-bold text-[#800020] dark:text-[#FB7185] flex items-center gap-1 transition-colors"
-                        title="تعديل الرتبة"
+                        className="h-8 px-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-[#1E293B] dark:hover:bg-[#334155] text-slate-700 dark:text-slate-300 text-xs font-bold inline-flex items-center gap-1 transition-colors cursor-pointer"
+                        title="تعديل الرتبة أو عدد الأجهزة"
                       >
-                        <Shield className="w-3.5 h-3.5" />
+                        <Shield className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
                         <span>الرتبة</span>
                       </button>
 
                       <button
+                        type="button"
                         onClick={() => onDeleteUser(u.id, u.name || "")}
                         disabled={u.id === currentUserId}
-                        className="p-2 rounded-lg text-[#94A3B8] hover:text-[#DC2626] hover:bg-[#DC2626]/10 dark:hover:bg-[#1E293B] transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                        className="h-8 w-8 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 inline-flex items-center justify-center transition-colors disabled:opacity-20 disabled:cursor-not-allowed cursor-pointer"
                         title="حذف المستخدم"
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   </td>
