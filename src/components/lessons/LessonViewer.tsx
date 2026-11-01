@@ -100,11 +100,67 @@ export function LessonViewer({
   const mediumCount = lesson.questions.filter((q) => q.question.difficulty === "MEDIUM").length;
   const hardCount = lesson.questions.filter((q) => q.question.difficulty === "HARD").length;
 
-  // Questions filtered by active difficulty level
-  const filteredByDifficulty = lesson.questions.filter((q) => {
-    if (difficultyFilter === "ALL") return true;
-    return q.question.difficulty === difficultyFilter;
-  });
+  // Deduplicate questions by ID and normalized statement to guarantee zero repetition
+  const deduplicateLessonQuestions = <T extends { question: { id: string; statement: string } }>(
+    items: T[]
+  ): T[] => {
+    const seenIds = new Set<string>();
+    const seenStatements = new Set<string>();
+    const result: T[] = [];
+
+    for (const item of items) {
+      if (!item?.question) continue;
+      const qId = item.question.id;
+      const norm = item.question.statement.trim().toLowerCase();
+      if (!seenIds.has(qId) && !seenStatements.has(norm)) {
+        seenIds.add(qId);
+        seenStatements.add(norm);
+        result.push(item);
+      }
+    }
+
+    return result;
+  };
+
+  // Check if medium fallback is currently active
+  const isMediumFallback =
+    difficultyFilter === "MEDIUM" && mediumCount === 0 && easyCount + hardCount > 0;
+
+  // Questions filtered by active difficulty level with fallback rule:
+  // "ولو مفيش اسئلة متوسطة نعرض من السهل والصعب بدون تكرار"
+  let filteredByDifficulty: typeof lesson.questions = [];
+  if (difficultyFilter === "ALL") {
+    filteredByDifficulty = deduplicateLessonQuestions(lesson.questions);
+  } else if (difficultyFilter === "MEDIUM") {
+    const mediumOnly = lesson.questions.filter(
+      (q) => q.question.difficulty === "MEDIUM"
+    );
+    if (mediumOnly.length > 0) {
+      filteredByDifficulty = deduplicateLessonQuestions(mediumOnly);
+    } else {
+      // Fallback rule: display from EASY and HARD without duplicates
+      const easyQuestions = deduplicateLessonQuestions(
+        lesson.questions.filter((q) => q.question.difficulty === "EASY")
+      );
+      const hardQuestions = deduplicateLessonQuestions(
+        lesson.questions.filter((q) => q.question.difficulty === "HARD")
+      );
+
+      // Interleave easy and hard questions for a balanced progressive learning experience
+      const combined: typeof lesson.questions = [];
+      const maxLen = Math.max(easyQuestions.length, hardQuestions.length);
+      for (let i = 0; i < maxLen; i++) {
+        if (i < easyQuestions.length) combined.push(easyQuestions[i]);
+        if (i < hardQuestions.length) combined.push(hardQuestions[i]);
+      }
+
+      filteredByDifficulty = deduplicateLessonQuestions(combined);
+    }
+  } else {
+    filteredByDifficulty = deduplicateLessonQuestions(
+      lesson.questions.filter((q) => q.question.difficulty === difficultyFilter)
+    );
+  }
 
   const mcqQuestions = filteredByDifficulty.filter((q) => q.question.type === "MCQ");
   const tfQuestions = filteredByDifficulty.filter((q) => q.question.type === "TRUE_FALSE");
@@ -452,7 +508,16 @@ export function LessonViewer({
                 {[
                   { id: "ALL", label: "كل المستويات", count: totalQuestionsCount },
                   { id: "EASY", label: "سهل ومباشر", count: easyCount },
-                  { id: "MEDIUM", label: "متوسط", count: mediumCount },
+                  {
+                    id: "MEDIUM",
+                    label: "متوسط",
+                    count:
+                      mediumCount > 0
+                        ? mediumCount
+                        : easyCount + hardCount > 0
+                        ? `${easyCount + hardCount} (بديل)`
+                        : 0,
+                  },
                   { id: "HARD", label: "متقدم وللتفوق", count: hardCount },
                 ].map((item) => {
                   const isActive = difficultyFilter === item.id;
@@ -541,6 +606,18 @@ export function LessonViewer({
             </div>
           ) : (
             <div className="space-y-8">
+              {/* Fallback Notice for Medium questions */}
+              {isMediumFallback && (
+                <div className="p-4 rounded-xl bg-amber-500/10 dark:bg-amber-500/15 border border-amber-500/30 text-amber-900 dark:text-amber-200 text-xs sm:text-[13px] font-semibold flex items-center gap-3">
+                  <span className="w-6 h-6 rounded-lg bg-amber-500/20 text-amber-700 dark:text-amber-300 flex items-center justify-center shrink-0 font-bold text-sm">
+                    !
+                  </span>
+                  <span className="leading-relaxed">
+                    لا توجد أسئلة مصنفة كـ (متوسط) في هذا الدرس حالياً — تم عرض تشكيلة متوازنة من الأسئلة السهلة والصعبة بدون تكرار لتثبيت واستيعاب المفاهيم.
+                  </span>
+                </div>
+              )}
+
               {/* MCQ Section */}
               {(questionTypeFilter === "ALL" || questionTypeFilter === "MCQ") && mcqQuestions.length > 0 && (
                 <LessonMcqSection

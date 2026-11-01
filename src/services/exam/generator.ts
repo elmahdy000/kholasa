@@ -112,8 +112,45 @@ export class ExamGeneratorService {
       // 2. Fetch candidate questions
       const availableQuestions = await prisma.question.findMany({
         where: questionWhere,
-        select: { id: true, type: true, statement: true },
+        select: { id: true, type: true, statement: true, difficulty: true },
       });
+
+      // Fallback rule: if student requested MEDIUM difficulty but no medium questions exist (or fewer than questionCount):
+      // "ولو مفيش اسئلة متوسطة نعرض من السهل والصعب بدون تكرار"
+      if (difficulty === "MEDIUM" && availableQuestions.length < questionCount) {
+        const fallbackWhere: Prisma.QuestionWhereInput = {
+          ...questionWhere,
+          difficulty: { in: [Difficulty.EASY, Difficulty.HARD] },
+        };
+        const supplementary = await prisma.question.findMany({
+          where: fallbackWhere,
+          select: { id: true, type: true, statement: true, difficulty: true },
+        });
+
+        // Interleave easy & hard questions so the student gets a balanced progression
+        const easySupplement = supplementary.filter((q) => q.difficulty === Difficulty.EASY);
+        const hardSupplement = supplementary.filter((q) => q.difficulty === Difficulty.HARD);
+        const maxLen = Math.max(easySupplement.length, hardSupplement.length);
+        const balancedSupplement: typeof supplementary = [];
+        for (let i = 0; i < maxLen; i++) {
+          if (i < easySupplement.length) balancedSupplement.push(easySupplement[i]);
+          if (i < hardSupplement.length) balancedSupplement.push(hardSupplement[i]);
+        }
+
+        const seenIds = new Set(availableQuestions.map((q) => q.id));
+        const seenStatements = new Set(
+          availableQuestions.map((q) => q.statement.trim().toLowerCase())
+        );
+
+        for (const sq of balancedSupplement) {
+          const norm = sq.statement.trim().toLowerCase();
+          if (!seenIds.has(sq.id) && !seenStatements.has(norm)) {
+            seenIds.add(sq.id);
+            seenStatements.add(norm);
+            availableQuestions.push(sq);
+          }
+        }
+      }
 
       if (availableQuestions.length === 0) {
         throw new Error("لا توجد أسئلة كافية مطابقة لمعايير الامتحان المحددة في هذا المسار المدرسي");
@@ -235,6 +272,17 @@ export class ExamGeneratorService {
       where.difficulty = difficulty as Difficulty;
     }
 
-    return prisma.question.count({ where });
+    let count = await prisma.question.count({ where });
+
+    // Fallback: if student selected MEDIUM but count is 0, count available EASY + HARD questions without blocking
+    if (difficulty === "MEDIUM" && count === 0) {
+      const fallbackWhere: Prisma.QuestionWhereInput = {
+        ...where,
+        difficulty: { in: [Difficulty.EASY, Difficulty.HARD] },
+      };
+      count = await prisma.question.count({ where: fallbackWhere });
+    }
+
+    return count;
   }
 }
