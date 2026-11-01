@@ -11,12 +11,14 @@ export interface UserFilterParams {
 
 export interface CreateUserInput {
   name: string;
-  phone: string;
+  phone?: string | null;
   email?: string | null;
-  password: string;
+  password?: string;
+  loginCode?: string;
   role?: Role;
   systemId?: string | null;
   gradeId?: string | null;
+  schoolCategory?: SchoolCategory;
 }
 
 export interface UpdateUserInput {
@@ -24,6 +26,7 @@ export interface UpdateUserInput {
   phone?: string;
   email?: string;
   password?: string;
+  loginCode?: string;
   role?: Role;
   systemId?: string | null;
   gradeId?: string | null;

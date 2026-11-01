@@ -82,10 +82,10 @@ export function HowItWorks() {
         {/* Compact CTA */}
         <div className="text-center pt-2">
           <Link
-            href="/register"
+            href="/login"
             className="inline-flex items-center gap-2 h-11 px-7 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-sm font-bold transition-all shadow-xs active:scale-[0.99]"
           >
-            <span>ابدأ المذاكرة بالطريقة دي</span>
+            <span>ابدأ المذاكرة بكود الطالب</span>
             <ArrowLeft className="w-3.5 h-3.5" />
           </Link>
         </div>

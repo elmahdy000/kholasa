@@ -19,6 +19,7 @@ export class UserQueriesService {
         { name: { contains: search.trim(), mode: "insensitive" } },
         { email: { contains: search.trim(), mode: "insensitive" } },
         { phone: { contains: search.trim() } },
+        { loginCode: { contains: search.trim().toUpperCase(), mode: "insensitive" } },
       ];
     }
 
@@ -35,8 +36,10 @@ export class UserQueriesService {
           name: true,
           email: true,
           phone: true,
+          loginCode: true,
           role: true,
           avatar: true,
+          schoolCategory: true,
           createdAt: true,
           maxDevices: true,
           boundDevices: true,
@@ -84,6 +87,7 @@ export class UserQueriesService {
         name: true,
         email: true,
         phone: true,
+        loginCode: true,
         role: true,
         avatar: true,
         schoolCategory: true,
@@ -200,7 +204,20 @@ export class UserQueriesService {
   }
 
   /**
-   * Find user by email or phone (case-insensitive for email)
+   * Find user by student login code
+   */
+  static async findByLoginCode(code: string) {
+    const clean = code.trim().toUpperCase();
+    if (!clean) return null;
+    return prisma.user.findFirst({
+      where: {
+        loginCode: { equals: clean, mode: "insensitive" },
+      },
+    });
+  }
+
+  /**
+   * Find user by email, phone, or login code (case-insensitive for email and code)
    */
   static async findByIdentifier(identifier: string) {
     const clean = identifier.trim();
@@ -209,6 +226,7 @@ export class UserQueriesService {
         OR: [
           { phone: clean },
           { email: { equals: clean.toLowerCase(), mode: "insensitive" } },
+          { loginCode: { equals: clean.toUpperCase(), mode: "insensitive" } },
         ],
       },
     });

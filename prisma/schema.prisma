@@ -59,6 +59,7 @@ model User {
   email          String?        @unique
   phone          String?        @unique
   password       String?
+  loginCode      String?        @unique
   role           Role           @default(STUDENT)
   avatar         String?
   gradeId        String?

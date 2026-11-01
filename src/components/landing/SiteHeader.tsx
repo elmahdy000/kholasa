@@ -56,16 +56,9 @@ export function SiteHeader() {
 
           <Link
             href="/login"
-            className="h-10 px-4 rounded-xl text-sm font-semibold text-[#12263F] dark:text-[#F5F7FB] border border-[#E8E9ED] dark:border-[#22364F] bg-white dark:bg-[#10233A] hover:bg-[#F7F8FA] hover:border-[#800020] hover:text-[#800020] dark:hover:bg-[#132945] dark:hover:border-[#A30D36] dark:hover:text-white transition-colors shadow-xs flex items-center justify-center"
-          >
-            تسجيل الدخول
-          </Link>
-
-          <Link
-            href="/register"
             className="h-10 px-5 rounded-xl bg-[#800020] hover:bg-[#66001A] dark:bg-[#A30D36] dark:hover:bg-[#BD123F] text-white text-sm font-bold flex items-center gap-2 transition-all shadow-xs active:scale-[0.99]"
           >
-            <span>ابدأ مجانًا</span>
+            <span>دخول بكود الطالب</span>
             <ArrowLeft className="w-3.5 h-3.5" />
           </Link>
         </div>
@@ -110,20 +103,13 @@ export function SiteHeader() {
             </Link>
           </nav>
 
-          <div className="pt-3 border-t border-[#E8E9ED] dark:border-[#22364F] grid grid-cols-2 gap-2.5">
+          <div className="pt-3 border-t border-[#E8E9ED] dark:border-[#22364F]">
             <Link
               href="/login"
               onClick={() => setIsMobileMenuOpen(false)}
-              className="h-10 rounded-xl border border-[#E8E9ED] dark:border-[#22364F] bg-white dark:bg-[#10233A] text-sm font-semibold text-center flex items-center justify-center text-[#12263F] dark:text-[#F5F7FB] hover:bg-[#F7F8FA] hover:text-[#800020] hover:border-[#800020] dark:hover:bg-[#132945] dark:hover:text-white dark:hover:border-[#A30D36] active:scale-[0.99] transition-colors shadow-xs"
+              className="w-full h-11 rounded-xl bg-[#800020] hover:bg-[#66001A] dark:bg-[#A30D36] dark:hover:bg-[#BD123F] text-white text-sm font-bold text-center flex items-center justify-center gap-1.5 shadow-xs"
             >
-              تسجيل الدخول
-            </Link>
-            <Link
-              href="/register"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="h-10 rounded-xl bg-[#800020] hover:bg-[#66001A] dark:bg-[#A30D36] dark:hover:bg-[#BD123F] text-white text-sm font-bold text-center flex items-center justify-center gap-1.5 shadow-xs"
-            >
-              <span>ابدأ مجانًا</span>
+              <span>تسجيل دخول الطالب (بالكود)</span>
               <ArrowLeft className="w-3.5 h-3.5" />
             </Link>
           </div>

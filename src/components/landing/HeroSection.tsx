@@ -39,10 +39,10 @@ export function HeroSection() {
             {/* 4) CTA buttons */}
             <div className="flex flex-wrap items-center gap-3.5 pt-1">
               <Link
-                href="/register"
+                href="/login"
                 className="h-12 px-7 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-sm font-bold flex items-center gap-2.5 transition-all shadow-xs active:scale-[0.99]"
               >
-                <span>ابدأ مذاكرتك مجانًا</span>
+                <span>دخول بكود الطالب</span>
                 <ArrowLeft className="w-4 h-4" />
               </Link>
 

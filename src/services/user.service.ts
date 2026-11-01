@@ -23,6 +23,7 @@ export class UserService {
   static getUserById = UserQueriesService.getUserById;
   static getUserDetailedProfile = UserQueriesService.getUserDetailedProfile;
   static findByIdentifier = UserQueriesService.findByIdentifier;
+  static findByLoginCode = UserQueriesService.findByLoginCode;
 
   // Mutations
   static createUser = UserMutationsService.createUser;

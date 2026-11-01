@@ -63,10 +63,10 @@ export function SiteFooter() {
             <h4 className="text-sm font-bold text-white">الحساب والدخول</h4>
             <nav className="flex flex-col gap-2.5">
               <Link href="/login" className="text-sm text-[#94A3B8] hover:text-white transition-colors">
-                تسجيل الدخول
+                تسجيل الدخول (كود الطالب)
               </Link>
               <Link href="/register" className="text-sm text-[#94A3B8] hover:text-white transition-colors">
-                إنشاء حساب جديد
+                الحصول على كود المنصة
               </Link>
               <Link href="/admin" className="text-sm text-[#94A3B8] hover:text-white transition-colors">
                 بوابة الإدارة

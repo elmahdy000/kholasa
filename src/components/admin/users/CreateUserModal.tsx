@@ -1,6 +1,6 @@
 "use client";
 
-import { Plus } from "lucide-react";
+import { Plus, RefreshCw, KeyRound } from "lucide-react";
 import type { EducationalSystem, Grade } from "./types";
 
 interface CreateUserModalProps {
@@ -14,6 +14,10 @@ interface CreateUserModalProps {
   setCreateEmail: (v: string) => void;
   createPassword: string;
   setCreatePassword: (v: string) => void;
+  createLoginCode: string;
+  setCreateLoginCode: (v: string) => void;
+  createSchoolCategory: "ARABIC" | "LANGUAGES";
+  setCreateSchoolCategory: (v: "ARABIC" | "LANGUAGES") => void;
   createRole: string;
   setCreateRole: (v: string) => void;
   createSystemId: string;
@@ -25,6 +29,7 @@ interface CreateUserModalProps {
   systems: EducationalSystem[];
   grades: Grade[];
   currentUserRole: string;
+  onGenerateCode: () => void;
   onSubmit: (e: React.FormEvent) => void;
 }
 
@@ -39,6 +44,10 @@ export function CreateUserModal({
   setCreateEmail,
   createPassword,
   setCreatePassword,
+  createLoginCode,
+  setCreateLoginCode,
+  createSchoolCategory,
+  setCreateSchoolCategory,
   createRole,
   setCreateRole,
   createSystemId,
@@ -50,6 +59,7 @@ export function CreateUserModal({
   systems,
   grades,
   currentUserRole,
+  onGenerateCode,
   onSubmit,
 }: CreateUserModalProps) {
   if (!isOpen) return null;
@@ -128,20 +138,6 @@ export function CreateUserModal({
 
           <div>
             <label className="block text-[13px] font-bold text-[#64748B] mb-1">
-              كلمة المرور * (6 أحرف على الأقل)
-            </label>
-            <input
-              type="password"
-              required
-              value={createPassword}
-              onChange={(e) => setCreatePassword(e.target.value)}
-              placeholder="••••••••"
-              className="w-full h-11 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold text-[#0F172A] dark:text-white"
-            />
-          </div>
-
-          <div>
-            <label className="block text-[13px] font-bold text-[#64748B] mb-1">
               الرتبة / نوع الحساب *
             </label>
             <select
@@ -149,7 +145,7 @@ export function CreateUserModal({
               onChange={(e) => setCreateRole(e.target.value)}
               className="w-full h-11 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold text-[#0F172A] dark:text-white"
             >
-              <option value="STUDENT">طالب (STUDENT) - حساب طالب اعتيادي</option>
+              <option value="STUDENT">طالب (STUDENT) - حساب طالب اعتيادي (دخول بالكود)</option>
               <option value="TEACHER">معلم (TEACHER) - Subadmin لمتابعة وتصحيح الامتحانات</option>
               <option value="EDITOR">محرر محتوى (EDITOR) - Subadmin لإدارة المناهج والأسئلة والوسائط</option>
               <option value="ADMIN">مسؤول (ADMIN) - مشرف كامل الصلاحيات</option>
@@ -157,6 +153,67 @@ export function CreateUserModal({
                 <option value="SUPER_ADMIN">مشرف عام أعلى (SUPER_ADMIN)</option>
               )}
             </select>
+          </div>
+
+          {createRole === "STUDENT" && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3.5 rounded-xl bg-[#800020]/5 dark:bg-[#800020]/10 border border-[#800020]/20">
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="text-[13px] font-bold text-[#800020] dark:text-[#FB7185] flex items-center gap-1">
+                    <KeyRound className="w-3.5 h-3.5" />
+                    <span>كود الدخول المباشر *</span>
+                  </label>
+                  <button
+                    type="button"
+                    onClick={onGenerateCode}
+                    className="text-[11px] font-bold text-[#800020] dark:text-[#FB7185] hover:underline flex items-center gap-1 cursor-pointer"
+                  >
+                    <RefreshCw className="w-3 h-3" />
+                    <span>توليد كود</span>
+                  </button>
+                </div>
+                <input
+                  type="text"
+                  required
+                  value={createLoginCode}
+                  onChange={(e) => setCreateLoginCode(e.target.value.toUpperCase())}
+                  placeholder="مثال: J9KFQY"
+                  maxLength={12}
+                  className="w-full h-10 px-3 rounded-xl border border-[#800020]/30 bg-white dark:bg-[#0F172A] text-sm font-bold font-mono text-center tracking-widest text-[#800020] dark:text-[#FB7185]"
+                  dir="ltr"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[13px] font-bold text-[#64748B] mb-1">
+                  نوع المدرسة / المسار
+                </label>
+                <select
+                  value={createSchoolCategory}
+                  onChange={(e) => setCreateSchoolCategory(e.target.value as "ARABIC" | "LANGUAGES")}
+                  className="w-full h-10 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] text-[13px] font-bold text-[#0F172A] dark:text-white"
+                >
+                  <option value="ARABIC">مدارس عربي (Arabic)</option>
+                  <option value="LANGUAGES">مدارس لغات (Languages)</option>
+                </select>
+              </div>
+            </div>
+          )}
+
+          <div>
+            <label className="block text-[13px] font-bold text-[#64748B] mb-1">
+              {createRole === "STUDENT"
+                ? "كلمة المرور (اختيارية للطالب - يمكنه الدخول بالكود فقط)"
+                : "كلمة المرور * (6 أحرف على الأقل)"}
+            </label>
+            <input
+              type="password"
+              required={createRole !== "STUDENT"}
+              value={createPassword}
+              onChange={(e) => setCreatePassword(e.target.value)}
+              placeholder={createRole === "STUDENT" ? "اتركها فارغة لاستخدام الكود" : "••••••••"}
+              className="w-full h-11 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold text-[#0F172A] dark:text-white"
+            />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

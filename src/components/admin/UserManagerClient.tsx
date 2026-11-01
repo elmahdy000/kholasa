@@ -55,11 +55,27 @@ export function UserManagerClient({
   const [createPhone, setCreatePhone] = useState("");
   const [createEmail, setCreateEmail] = useState("");
   const [createPassword, setCreatePassword] = useState("");
+  const [createLoginCode, setCreateLoginCode] = useState("");
+  const [createSchoolCategory, setCreateSchoolCategory] = useState<"ARABIC" | "LANGUAGES">("ARABIC");
   const [createRole, setCreateRole] = useState("STUDENT");
   const [createSystemId, setCreateSystemId] = useState("");
   const [createGradeId, setCreateGradeId] = useState("");
   const [isCreating, setIsCreating] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
+
+  const generateRandomCode = () => {
+    const chars = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ";
+    let res = "";
+    for (let i = 0; i < 6; i++) {
+      res += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return res;
+  };
+
+  const handleOpenCreateModal = () => {
+    setCreateLoginCode(generateRandomCode());
+    setIsCreateOpen(true);
+  };
 
   const handleCreateUser = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -72,9 +88,11 @@ export function UserManagerClient({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: createName.trim(),
-          phone: createPhone.trim(),
+          phone: createPhone.trim() || undefined,
           email: createEmail.trim() || undefined,
-          password: createPassword,
+          password: createPassword || undefined,
+          loginCode: createRole === "STUDENT" ? (createLoginCode.trim().toUpperCase() || undefined) : undefined,
+          schoolCategory: createSchoolCategory,
           role: createRole,
           systemId: createSystemId || undefined,
           gradeId: createGradeId || undefined,
@@ -92,6 +110,7 @@ export function UserManagerClient({
       setCreatePhone("");
       setCreateEmail("");
       setCreatePassword("");
+      setCreateLoginCode("");
       setCreateRole("STUDENT");
       setCreateSystemId("");
       setCreateGradeId("");
@@ -223,7 +242,7 @@ export function UserManagerClient({
         totalFilteredCount={filteredUsers.length}
         totalUsersCount={users.length}
         onOpenCreate={() => {
-          setIsCreateOpen(true);
+          handleOpenCreateModal();
           setCreateError(null);
         }}
       />
@@ -268,6 +287,10 @@ export function UserManagerClient({
         setCreateEmail={setCreateEmail}
         createPassword={createPassword}
         setCreatePassword={setCreatePassword}
+        createLoginCode={createLoginCode}
+        setCreateLoginCode={setCreateLoginCode}
+        createSchoolCategory={createSchoolCategory}
+        setCreateSchoolCategory={setCreateSchoolCategory}
         createRole={createRole}
         setCreateRole={setCreateRole}
         createSystemId={createSystemId}
@@ -279,6 +302,7 @@ export function UserManagerClient({
         systems={systems}
         grades={grades}
         currentUserRole={currentUserRole}
+        onGenerateCode={() => setCreateLoginCode(generateRandomCode())}
         onSubmit={handleCreateUser}
       />
 

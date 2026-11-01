@@ -1,146 +1,23 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import {
-  Lock,
-  Mail,
-  Phone,
-  User,
-  Eye,
-  EyeOff,
   ArrowRight,
-  AlertCircle,
-  GraduationCap,
-  Loader2,
+  KeyRound,
+  MessageCircle,
+  ShieldCheck,
   CheckCircle2,
+  LogIn,
+  Headphones,
 } from "lucide-react";
-
 import { BrandLogo } from "@/components/ui/BrandLogo";
-import { getOrCreateDeviceId } from "@/lib/device";
-
-interface Grade {
-  id: string;
-  name: string;
-  code: string;
-}
-
-interface EducationalSystem {
-  id: string;
-  name: string;
-  code: string;
-  grades: Grade[];
-}
 
 export default function RegisterPage() {
-  const router = useRouter();
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-
-  const [systems, setSystems] = useState<EducationalSystem[]>([]);
-  const [selectedSystemId, setSelectedSystemId] = useState("");
-  const [selectedGradeId, setSelectedGradeId] = useState("");
-
-  const [isLoading, setIsLoading] = useState(false);
-  const [isFetchingSystems, setIsFetchingSystems] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    async function loadSystems() {
-      try {
-        const res = await fetch("/api/systems");
-        if (res.ok) {
-          const data = await res.json();
-          setSystems(data.systems || []);
-          if (data.systems && data.systems.length > 0) {
-            setSelectedSystemId(data.systems[0].id);
-            if (data.systems[0].grades.length > 0) {
-              setSelectedGradeId(data.systems[0].grades[0].id);
-            }
-          }
-        }
-      } catch (err) {
-        console.error("Failed to load systems", err);
-      } finally {
-        setIsFetchingSystems(false);
-      }
-    }
-    loadSystems();
-  }, []);
-
-  const currentGrades =
-    systems.find((s) => s.id === selectedSystemId)?.grades || [];
-
-  const handleSystemChange = (sysId: string) => {
-    setSelectedSystemId(sysId);
-    const target = systems.find((s) => s.id === sysId);
-    if (target && target.grades.length > 0) {
-      setSelectedGradeId(target.grades[0].id);
-    } else {
-      setSelectedGradeId("");
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-
-    if (password !== confirmPassword) {
-      setError("كلمتا المرور غير متطابقتين");
-      return;
-    }
-
-    if (!email && !phone) {
-      setError("يرجى إدخال البريد الإلكتروني أو رقم الهاتف");
-      return;
-    }
-
-    setIsLoading(true);
-
-    try {
-      const res = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name,
-          email: email.trim() || undefined,
-          phone: phone.trim() || undefined,
-          password,
-          systemId: selectedSystemId || undefined,
-          gradeId: selectedGradeId || undefined,
-          deviceId: getOrCreateDeviceId(),
-        }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || "فشل إنشاء الحساب");
-      }
-
-      router.push("/dashboard");
-      router.refresh();
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError("حدث خطأ أثناء إنشاء الحساب");
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0F172A] text-[#0F172A] dark:text-[#F8FAFC] flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 text-right font-sans relative">
       <div className="absolute inset-0 bg-grid-pattern opacity-60 pointer-events-none" />
 
-      <div className="sm:mx-auto sm:w-full sm:max-w-lg relative z-10">
+      <div className="w-full sm:mx-auto sm:w-full sm:max-w-lg relative z-10">
         {/* Brand Header */}
         <div className="flex flex-col items-center text-center mb-6">
           <BrandLogo
@@ -152,233 +29,93 @@ export default function RegisterPage() {
             className="mb-4"
           />
           <h2 className="text-xl sm:text-2xl font-bold text-[#0F172A] dark:text-white tracking-tight">
-            إنشاء حساب طالب جديد
+            الانضمام إلى منصة الخلاصة
           </h2>
           <p className="mt-1 text-[13px] sm:text-sm text-[#64748B] dark:text-[#94A3B8]">
-            ابدأ رحلة التفوق مع كبسولات الخلاصة وبنك الأسئلة والخرائط التفاعلية
+            نظام الدخول المعتمد بكود الطالب الشخصي
           </p>
         </div>
 
-        {/* Card */}
-        <div className="bg-white dark:bg-[#0F172A] py-8 px-6 sm:px-8  border border-[#E2E8F0] dark:border-[#334155] rounded-xl">
-          {error && (
-            <div className="mb-6 p-4 rounded-xl bg-[#DC2626]/10 dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#F87171]/40 flex items-start gap-3 text-right">
-              <AlertCircle className="w-5 h-5 text-[#DC2626] shrink-0 mt-1" />
-              <p className="text-[13px] sm:text-sm font-bold text-[#DC2626] dark:text-[#F87171]">
-                {error}
+        {/* Informational Card */}
+        <div className="bg-white dark:bg-[#0F172A] p-6 sm:p-8 border border-[#E2E8F0] dark:border-[#334155] rounded-2xl shadow-sm space-y-6">
+          <div className="p-4 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/40 text-amber-800 dark:text-amber-300 text-xs sm:text-sm leading-relaxed flex items-start gap-3">
+            <KeyRound className="w-5 h-5 shrink-0 mt-0.5 text-amber-600 dark:text-amber-400" />
+            <div>
+              <p className="font-bold mb-1">التسجيل عبر المساعد أو الإدارة فقط</p>
+              <p className="text-xs opacity-90">
+                للحفاظ على جودة الخدمة وربط الأجهزة المعتمدة، يتم إصدار كود دخول فريد لكل طالب من خلال فريق العمل مباشرة دون الحاجة لملء استمارات تسجيل.
               </p>
             </div>
-          )}
+          </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Name */}
-            <div>
-              <label
-                htmlFor="name"
-                className="block text-[13px] sm:text-sm font-bold text-[#0F172A] dark:text-[#F8FAFC] mb-2"
-              >
-                الاسم الكامل <span className="text-[#DC2626]">*</span>
-              </label>
-              <div className="relative">
-                <input
-                  id="name"
-                  type="text"
-                  required
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="محمد أحمد"
-                  className="w-full h-11 pr-11 pl-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B]/50 text-[#0F172A] dark:text-white placeholder:text-[#94A3B8] text-[13px] sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#800020] transition-all"
-                />
-                <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#94A3B8] pointer-events-none">
-                  <User className="w-4 h-4" />
+          <div className="space-y-3">
+            <h3 className="text-xs font-bold text-[#64748B] dark:text-[#94A3B8] uppercase tracking-wider">
+              خطوات الحصول على كود المنصة والبدء:
+            </h3>
+
+            <div className="space-y-2.5 text-xs sm:text-sm">
+              <div className="flex items-start gap-3 p-3 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/40 border border-[#E2E8F0] dark:border-[#334155]">
+                <div className="w-6 h-6 rounded-full bg-[#800020] text-white flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
+                  1
                 </div>
-              </div>
-            </div>
-
-            {/* Email & Phone in 2 columns */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label
-                  htmlFor="email"
-                  className="block text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC] mb-2"
-                >
-                  البريد الإلكتروني
-                </label>
-                <div className="relative">
-                  <input
-                    id="email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="student@example.com"
-                    className="w-full h-11 pr-10 pl-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B]/50 text-[#0F172A] dark:text-white placeholder:text-[#94A3B8] text-[13px] focus:outline-none focus:ring-2 focus:ring-[#800020] transition-all"
-                    dir="ltr"
-                  />
-                  <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[#94A3B8] pointer-events-none">
-                    <Mail className="w-4 h-4" />
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <label
-                  htmlFor="phone"
-                  className="block text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC] mb-2"
-                >
-                  رقم الهاتف (واتساب)
-                </label>
-                <div className="relative">
-                  <input
-                    id="phone"
-                    type="tel"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    placeholder="01012345678"
-                    className="w-full h-11 pr-10 pl-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B]/50 text-[#0F172A] dark:text-white placeholder:text-[#94A3B8] text-[13px] focus:outline-none focus:ring-2 focus:ring-[#800020] transition-all"
-                    dir="ltr"
-                  />
-                  <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[#94A3B8] pointer-events-none">
-                    <Phone className="w-4 h-4" />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Academic System & Grade */}
-            <div className="p-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/50 border border-[#E2E8F0] dark:border-[#334155] space-y-3">
-              <div className="flex items-center gap-2 text-[13px] font-bold text-[#800020] dark:text-[#FB7185]">
-                <GraduationCap className="w-4 h-4" />
-                <span>المسار والصف الدراسي</span>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[13px] font-bold text-[#64748B] dark:text-[#94A3B8] mb-1">
-                    النظام التعليمي
-                  </label>
-                  <select
-                    value={selectedSystemId}
-                    onChange={(e) => handleSystemChange(e.target.value)}
-                    disabled={isFetchingSystems}
-                    className="w-full h-11 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#800020]"
-                  >
-                    {systems.map((s) => (
-                      <option key={s.id} value={s.id}>
-                        {s.name}
-                      </option>
-                    ))}
-                  </select>
+                  <span className="font-bold text-[#0F172A] dark:text-white block">
+                    تواصل مع المساعد أو الإدارة
+                  </span>
+                  <span className="text-xs text-[#64748B] dark:text-[#94A3B8]">
+                    أرسل اسمك وبيانات صفك الدراسي عبر الواتساب لتفعيل اشتراكك.
+                  </span>
                 </div>
+              </div>
 
+              <div className="flex items-start gap-3 p-3 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/40 border border-[#E2E8F0] dark:border-[#334155]">
+                <div className="w-6 h-6 rounded-full bg-[#800020] text-white flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
+                  2
+                </div>
                 <div>
-                  <label className="block text-[13px] font-bold text-[#64748B] dark:text-[#94A3B8] mb-1">
-                    الصف الدراسي
-                  </label>
-                  <select
-                    value={selectedGradeId}
-                    onChange={(e) => setSelectedGradeId(e.target.value)}
-                    disabled={isFetchingSystems || currentGrades.length === 0}
-                    className="w-full h-11 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#800020]"
-                  >
-                    {currentGrades.map((g) => (
-                      <option key={g.id} value={g.id}>
-                        {g.name}
-                      </option>
-                    ))}
-                  </select>
+                  <span className="font-bold text-[#0F172A] dark:text-white block">
+                    استلم كود الدخول الخاص بك (Login Code)
+                  </span>
+                  <span className="text-xs text-[#64748B] dark:text-[#94A3B8]">
+                    ستحصل على كود فوري مخصص لك (مثال: <code className="font-mono font-bold text-[#800020] dark:text-[#FB7185]">J9KFQY</code>).
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3 p-3 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/40 border border-[#E2E8F0] dark:border-[#334155]">
+                <div className="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
+                  3
+                </div>
+                <div>
+                  <span className="font-bold text-[#0F172A] dark:text-white block">
+                    سجّل الدخول فوراً بدون كلمة مرور
+                  </span>
+                  <span className="text-xs text-[#64748B] dark:text-[#94A3B8]">
+                    ادخل الكود في صفحة الدخول، وسيتم توثيق جهازك والبدء في المذاكرة والامتحانات مباشرة.
+                  </span>
                 </div>
               </div>
             </div>
+          </div>
 
-            {/* Password & Confirm */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label
-                  htmlFor="password"
-                  className="block text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC] mb-2"
-                >
-                  كلمة المرور <span className="text-[#DC2626]">*</span>
-                </label>
-                <div className="relative">
-                  <input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className="w-full h-11 pr-10 pl-10 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B]/50 text-[#0F172A] dark:text-white placeholder:text-[#94A3B8] text-[13px] focus:outline-none focus:ring-2 focus:ring-[#800020] transition-all"
-                    dir="ltr"
-                  />
-                  <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[#94A3B8] pointer-events-none">
-                    <Lock className="w-4 h-4" />
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 text-[#94A3B8] hover:text-[#64748B] dark:hover:text-[#94A3B8]"
-                  >
-                    {showPassword ? (
-                      <EyeOff className="w-4 h-4" />
-                    ) : (
-                      <Eye className="w-4 h-4" />
-                    )}
-                  </button>
-                </div>
-              </div>
-
-              <div>
-                <label
-                  htmlFor="confirmPassword"
-                  className="block text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC] mb-2"
-                >
-                  تأكيد كلمة المرور <span className="text-[#DC2626]">*</span>
-                </label>
-                <div className="relative">
-                  <input
-                    id="confirmPassword"
-                    type={showPassword ? "text" : "password"}
-                    required
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className="w-full h-11 pr-10 pl-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B]/50 text-[#0F172A] dark:text-white placeholder:text-[#94A3B8] text-[13px] focus:outline-none focus:ring-2 focus:ring-[#800020] transition-all"
-                    dir="ltr"
-                  />
-                  <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[#94A3B8] pointer-events-none">
-                    <Lock className="w-4 h-4" />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full h-11 mt-4 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white font-bold text-[13px] sm:text-sm  flex items-center justify-center gap-2 transition-colors disabled:opacity-50 interactive-tap"
+          {/* Action CTAs */}
+          <div className="space-y-3 pt-2">
+            <a
+              href="https://wa.me/201000000000?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%D8%8C%20%D8%A3%D8%B1%D9%8A%D8%AF%20%D8%A7%D9%84%D8%AD%D8%B5%D9%88%D9%84%20%D8%B9%D9%84%D9%89%20%D9%83%D9%88%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B4%D8%AA%D8%B1%D8%A7%D9%83%20%D9%81%D9%8A%20%D9%85%D9%86%D8%B5%D8%A9%20%D8%A7%D9%84%D8%AE%D9%84%D8%A7%D8%B5%D8%A9"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full h-11 rounded-xl bg-[#25D366] hover:bg-[#20BD5A] text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-colors shadow-sm"
             >
-              {isLoading ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>جارٍ إنشاء الحساب...</span>
-                </>
-              ) : (
-                <>
-                  <CheckCircle2 className="w-4 h-4" />
-                  <span>إنشاء الحساب والبدء الآن</span>
-                </>
-              )}
-            </button>
-          </form>
+              <MessageCircle className="w-4 h-4" />
+              <span>تواصل مع المساعد عبر واتساب للحصول على الكود</span>
+            </a>
 
-          {/* Footer Navigation */}
-          <div className="mt-6 text-center text-[13px] text-[#64748B] dark:text-[#94A3B8]">
-            <span>لديك حساب بالفعل؟ </span>
             <Link
               href="/login"
-              className="font-bold text-[#800020] dark:text-[#FB7185] hover:underline"
+              className="w-full h-11 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-colors"
             >
-              سجّل الدخول الآن
+              <LogIn className="w-4 h-4" />
+              <span>معك كود بالفعل؟ ادخل إلى حسابك الآن</span>
             </Link>
           </div>
         </div>

@@ -14,7 +14,9 @@ export interface UserItem {
   name?: string | null;
   email?: string | null;
   phone?: string | null;
+  loginCode?: string | null;
   role: string;
+  schoolCategory?: "ARABIC" | "LANGUAGES";
   system?: { id: string; name: string } | null;
   grade?: { id: string; name: string } | null;
   attempts: { id: string; score: number; percentage?: number }[];

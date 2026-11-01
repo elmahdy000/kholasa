@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { Role } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import { generateUniqueLoginCode } from "@/lib/auth";
 import type {
   CreateUserInput,
   UpdateUserInput,
@@ -17,11 +18,9 @@ export class UserMutationsService {
       throw new Error("غير مصرح لك بإنشاء مستخدمين");
     }
 
-    const { name, phone, email, password, role = Role.STUDENT, systemId, gradeId } = data;
+    const { name, phone, email, password, role = Role.STUDENT, systemId, gradeId, schoolCategory } = data;
 
     if (!name?.trim()) throw new Error("اسم المستخدم مطلوب");
-    if (!phone?.trim()) throw new Error("رقم الهاتف مطلوب");
-    if (!password || password.length < 8) throw new Error("كلمة المرور يجب أن لا تقل عن 8 أحرف");
 
     // Only a SUPER_ADMIN may create administrative accounts.
     if (
@@ -31,9 +30,12 @@ export class UserMutationsService {
       throw new Error("فقط المشرف العام يمكنه إنشاء حسابات المسؤولين");
     }
 
-    const cleanPhone = phone.trim();
-    const existingPhone = await prisma.user.findUnique({ where: { phone: cleanPhone } });
-    if (existingPhone) throw new Error("رقم الهاتف مسجل بالفعل لمستخدم آخر");
+    let cleanPhone: string | undefined = undefined;
+    if (phone && phone.trim()) {
+      cleanPhone = phone.trim();
+      const existingPhone = await prisma.user.findUnique({ where: { phone: cleanPhone } });
+      if (existingPhone) throw new Error("رقم الهاتف مسجل بالفعل لمستخدم آخر");
+    }
 
     let cleanEmail: string | undefined = undefined;
     if (email && typeof email === "string" && email.trim()) {
@@ -42,21 +44,32 @@ export class UserMutationsService {
       if (existingEmail) throw new Error("البريد الإلكتروني مسجل بالفعل لمستخدم آخر");
     }
 
-    const hashedPassword = await bcrypt.hash(password, 12);
+    let finalLoginCode = data.loginCode?.trim().toUpperCase();
+    if (!finalLoginCode && role === Role.STUDENT) {
+      finalLoginCode = await generateUniqueLoginCode();
+    } else if (finalLoginCode) {
+      const existingCode = await prisma.user.findUnique({ where: { loginCode: finalLoginCode } });
+      if (existingCode) throw new Error("كود الدخول هذا مسجل بالفعل لطالب آخر");
+    }
+
+    const rawPassword = password || finalLoginCode || "Kholasa@2026";
+    const hashedPassword = await bcrypt.hash(rawPassword, 12);
 
     return prisma.user.create({
       data: {
         name: name.trim(),
-        phone: cleanPhone,
+        phone: cleanPhone || null,
         email: cleanEmail || null,
         password: hashedPassword,
+        loginCode: finalLoginCode || null,
         role,
         systemId: systemId || null,
         gradeId: gradeId || null,
+        schoolCategory: schoolCategory || "ARABIC",
       },
       select: {
-        id: true, name: true, phone: true, email: true, role: true,
-        systemId: true, gradeId: true, createdAt: true,
+        id: true, name: true, phone: true, email: true, loginCode: true, role: true,
+        schoolCategory: true, systemId: true, gradeId: true, createdAt: true,
         attempts: { select: { id: true, score: true, percentage: true } },
         progress: { select: { id: true, isCompleted: true } },
         system: { select: { id: true, name: true } },
@@ -113,6 +126,16 @@ export class UserMutationsService {
       if (existingEmail) throw new Error("البريد الإلكتروني مسجل بالفعل لمستخدم آخر");
     }
 
+    if (data.loginCode !== undefined) {
+      const cleanCode = data.loginCode.trim().toUpperCase() || null;
+      if (cleanCode) {
+        const existingCode = await prisma.user.findFirst({
+          where: { loginCode: cleanCode, NOT: { id } },
+        });
+        if (existingCode) throw new Error("كود الدخول هذا مسجل بالفعل لطالب آخر");
+      }
+    }
+
     let hashedPassword: string | undefined = undefined;
     if (data.password !== undefined && data.password.trim()) {
       if (data.password.length < 8) {
@@ -127,6 +150,7 @@ export class UserMutationsService {
         ...(data.name !== undefined ? { name: data.name.trim() } : {}),
         ...(data.phone !== undefined ? { phone: data.phone.trim() } : {}),
         ...(data.email !== undefined ? { email: data.email.trim().toLowerCase() } : {}),
+        ...(data.loginCode !== undefined ? { loginCode: data.loginCode.trim().toUpperCase() || null } : {}),
         ...(hashedPassword ? { password: hashedPassword } : {}),
         ...(data.role !== undefined ? { role: data.role } : {}),
         ...(data.systemId !== undefined ? { systemId: data.systemId || null } : {}),
@@ -136,7 +160,7 @@ export class UserMutationsService {
         ...(typeof data.maxDevices === "number" && data.maxDevices > 0 ? { maxDevices: data.maxDevices } : {}),
       },
       select: {
-        id: true, name: true, phone: true, email: true, role: true,
+        id: true, name: true, phone: true, email: true, loginCode: true, role: true,
         systemId: true, gradeId: true, trackId: true, schoolCategory: true, createdAt: true,
         maxDevices: true, boundDevices: true,
         system: { select: { id: true, name: true } },

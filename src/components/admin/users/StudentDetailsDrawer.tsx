@@ -20,6 +20,8 @@ import {
   Loader2,
   Save,
   Check,
+  Copy,
+  RefreshCw,
 } from "lucide-react";
 import type { EducationalSystem, Grade } from "./types";
 
@@ -36,6 +38,7 @@ interface DetailedStudent {
   name: string | null;
   email: string | null;
   phone: string | null;
+  loginCode: string | null;
   role: string;
   schoolCategory: "ARABIC" | "LANGUAGES";
   maxDevices: number;
@@ -119,12 +122,22 @@ export function StudentDetailsDrawer({
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
+  const [loginCode, setLoginCode] = useState("");
   const [systemId, setSystemId] = useState("");
   const [gradeId, setGradeId] = useState("");
   const [schoolCategory, setSchoolCategory] = useState<"ARABIC" | "LANGUAGES">("ARABIC");
   const [maxDevices, setMaxDevices] = useState(2);
   const [isSavingInfo, setIsSavingInfo] = useState(false);
   const [infoMessage, setInfoMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+
+  const generateRandomCode = () => {
+    const chars = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ";
+    let res = "";
+    for (let i = 0; i < 6; i++) {
+      res += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    setLoginCode(res);
+  };
 
   // Password reset state
   const [newPassword, setNewPassword] = useState("");
@@ -152,6 +165,7 @@ export function StudentDetailsDrawer({
           setName(u.name || "");
           setPhone(u.phone || "");
           setEmail(u.email || "");
+          setLoginCode(u.loginCode || "");
           setSystemId(u.system?.id || "");
           setGradeId(u.grade?.id || "");
           setSchoolCategory(u.schoolCategory || "ARABIC");
@@ -188,6 +202,7 @@ export function StudentDetailsDrawer({
           name: name.trim(),
           phone: phone.trim() || undefined,
           email: email.trim() || undefined,
+          loginCode: loginCode.trim().toUpperCase() || undefined,
           systemId: systemId || undefined,
           gradeId: gradeId || undefined,
           schoolCategory,
@@ -286,6 +301,21 @@ export function StudentDetailsDrawer({
                 <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
                   {student?.schoolCategory === "LANGUAGES" ? "لغات" : "عربي"}
                 </span>
+                {student?.loginCode && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard.writeText(student.loginCode!);
+                      alert(`تم نسخ كود الطالب: ${student.loginCode}`);
+                    }}
+                    title="انقر لنسخ كود الدخول"
+                    className="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-[#800020]/10 hover:bg-[#800020]/20 text-[#800020] dark:text-[#FB7185] border border-[#800020]/20 inline-flex items-center gap-1.5 cursor-pointer transition-colors"
+                  >
+                    <KeyRound className="w-3 h-3" />
+                    <span>كود: {student.loginCode}</span>
+                    <Copy className="w-3 h-3 opacity-60" />
+                  </button>
+                )}
               </div>
               <div className="flex items-center gap-3 text-xs text-[#64748B] dark:text-[#94A3B8] mt-1 font-mono">
                 <span>{student?.phone || "بدون هاتف"}</span>
@@ -457,6 +487,29 @@ export function StudentDetailsDrawer({
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             className="w-full h-10 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] text-left"
+                            dir="ltr"
+                          />
+                        </div>
+
+                        <div>
+                          <div className="flex items-center justify-between mb-1.5">
+                            <label className="text-[#64748B]">كود الدخول المباشر (Login Code)</label>
+                            <button
+                              type="button"
+                              onClick={generateRandomCode}
+                              className="text-[11px] font-bold text-[#800020] dark:text-[#FB7185] hover:underline flex items-center gap-1 cursor-pointer"
+                            >
+                              <RefreshCw className="w-3 h-3" />
+                              <span>توليد كود</span>
+                            </button>
+                          </div>
+                          <input
+                            type="text"
+                            value={loginCode}
+                            onChange={(e) => setLoginCode(e.target.value.toUpperCase())}
+                            maxLength={12}
+                            placeholder="مثال: J9KFQY"
+                            className="w-full h-10 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] font-mono font-bold text-center tracking-widest text-[#800020] dark:text-[#FB7185]"
                             dir="ltr"
                           />
                         </div>

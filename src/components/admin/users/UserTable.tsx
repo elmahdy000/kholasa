@@ -1,6 +1,6 @@
 "use client";
 
-import { Shield, Trash2, Smartphone, RotateCcw, Eye } from "lucide-react";
+import { Shield, Trash2, Smartphone, RotateCcw, Eye, Copy, KeyRound } from "lucide-react";
 import type { UserItem } from "./types";
 
 interface UserTableProps {
@@ -51,16 +51,37 @@ export function UserTable({
                         {(u.name || "م").charAt(0)}
                       </div>
                       <div>
-                        <button
-                          type="button"
-                          onClick={() => onInspectUser?.(u.id)}
-                          className="font-bold text-[#0F172A] dark:text-white block hover:text-[#800020] dark:hover:text-[#FB7185] transition-colors text-right cursor-pointer"
-                        >
-                          {u.name || "مستخدم بدون اسم"}
-                        </button>
-                        <span className="text-[13px] text-[#94A3B8] font-mono block">
-                          {new Date(u.createdAt).toLocaleDateString("ar-EG")}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() => onInspectUser?.(u.id)}
+                            className="font-bold text-[#0F172A] dark:text-white block hover:text-[#800020] dark:hover:text-[#FB7185] transition-colors text-right cursor-pointer"
+                          >
+                            {u.name || "مستخدم بدون اسم"}
+                          </button>
+                          {u.loginCode && (
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                navigator.clipboard.writeText(u.loginCode!);
+                                alert(`تم نسخ كود الطالب: ${u.loginCode}`);
+                              }}
+                              title="انقر لنسخ كود الطالب"
+                              className="px-2 py-0.5 rounded-md bg-[#800020]/10 hover:bg-[#800020]/20 text-[#800020] dark:text-[#FB7185] font-mono text-xs font-bold transition-colors inline-flex items-center gap-1 cursor-pointer"
+                            >
+                              <KeyRound className="w-3 h-3 text-[#800020] dark:text-[#FB7185]" />
+                              <span>{u.loginCode}</span>
+                              <Copy className="w-3 h-3 opacity-60" />
+                            </button>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-2 text-[12px] text-[#94A3B8] font-mono mt-0.5">
+                          <span>{new Date(u.createdAt).toLocaleDateString("ar-EG")}</span>
+                          {u.schoolCategory && (
+                            <span>• {u.schoolCategory === "LANGUAGES" ? "لغات" : "عربي"}</span>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </td>

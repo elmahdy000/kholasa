@@ -16,6 +16,7 @@ export async function GET() {
         name: true,
         phone: true,
         email: true,
+        loginCode: true,
         role: true,
         schoolCategory: true,
         maxDevices: true,
@@ -36,6 +37,7 @@ export async function GET() {
     // Generate CSV string with UTF-8 BOM so Excel opens Arabic correctly
     const headers = [
       "المعرف (ID)",
+      "كود الدخول (Login Code)",
       "اسم الطالب",
       "رقم الهاتف",
       "البريد الإلكتروني",
@@ -59,6 +61,7 @@ export async function GET() {
 
     const rows = students.map((s) => [
       escapeCsv(s.id),
+      escapeCsv(s.loginCode || "—"),
       escapeCsv(s.name || "بدون اسم"),
       escapeCsv(s.phone || "—"),
       escapeCsv(s.email || "—"),

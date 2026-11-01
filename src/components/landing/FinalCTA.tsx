@@ -19,10 +19,10 @@ export function FinalCTA() {
 
             <div className="pt-2 flex items-center justify-center">
               <Link
-                href="/register"
+                href="/login"
                 className="h-12 px-8 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-sm font-bold flex items-center gap-2 transition-all shadow-xs active:scale-[0.99]"
               >
-                <span>ابدأ دلوقتي مجانًا</span>
+                <span>دخول بكود الطالب</span>
                 <ArrowLeft className="w-4 h-4" />
               </Link>
             </div>

@@ -83,6 +83,7 @@ export async function getCurrentUser() {
             name: true,
             email: true,
             phone: true,
+            loginCode: true,
             role: true,
             avatar: true,
             gradeId: true,
@@ -212,4 +213,22 @@ export async function requireAdmin() {
 
 export async function requireStaff() {
   return requireRole(STAFF_ROLES);
+}
+
+const LOGIN_CODE_CHARS = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ"; // 32 unambiguous chars
+
+export async function generateUniqueLoginCode(): Promise<string> {
+  for (let attempt = 0; attempt < 10; attempt++) {
+    const bytes = randomBytes(6);
+    let code = "";
+    for (let i = 0; i < 6; i++) {
+      code += LOGIN_CODE_CHARS[bytes[i] % LOGIN_CODE_CHARS.length];
+    }
+    const exists = await prisma.user.findUnique({
+      where: { loginCode: code },
+      select: { id: true },
+    });
+    if (!exists) return code;
+  }
+  return randomBytes(4).toString("hex").toUpperCase().slice(0, 6);
 }
