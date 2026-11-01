@@ -18,6 +18,8 @@ interface CreateUserModalProps {
   setCreateLoginCode: (v: string) => void;
   createSchoolCategory: "ARABIC" | "LANGUAGES";
   setCreateSchoolCategory: (v: "ARABIC" | "LANGUAGES") => void;
+  createMaxDevices: number;
+  setCreateMaxDevices: (v: number) => void;
   createRole: string;
   setCreateRole: (v: string) => void;
   createSystemId: string;
@@ -48,6 +50,8 @@ export function CreateUserModal({
   setCreateLoginCode,
   createSchoolCategory,
   setCreateSchoolCategory,
+  createMaxDevices,
+  setCreateMaxDevices,
   createRole,
   setCreateRole,
   createSystemId,
@@ -195,6 +199,21 @@ export function CreateUserModal({
                 >
                   <option value="ARABIC">مدارس عربي (Arabic)</option>
                   <option value="LANGUAGES">مدارس لغات (Languages)</option>
+                </select>
+              </div>
+
+              <div className="sm:col-span-2">
+                <label className="block text-[13px] font-bold text-[#64748B] mb-1">
+                  الحد الأقصى للأجهزة المصرح بها للطالب
+                </label>
+                <select
+                  value={createMaxDevices}
+                  onChange={(e) => setCreateMaxDevices(Number(e.target.value))}
+                  className="w-full h-10 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] text-[13px] font-bold text-[#0F172A] dark:text-white"
+                >
+                  <option value={1}>جهاز واحد فقط (الافتراضي - حظر مشاركة الحساب تماماً)</option>
+                  <option value={2}>جهازين (تصريح إضافي مثلاً: موبايل + لابتوب)</option>
+                  <option value={3}>3 أجهزة (استثناء خاص)</option>
                 </select>
               </div>
             </div>

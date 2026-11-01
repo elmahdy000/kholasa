@@ -19,6 +19,7 @@ export interface CreateUserInput {
   systemId?: string | null;
   gradeId?: string | null;
   schoolCategory?: SchoolCategory;
+  maxDevices?: number;
 }
 
 export interface UpdateUserInput {

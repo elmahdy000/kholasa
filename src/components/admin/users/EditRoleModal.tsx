@@ -87,19 +87,15 @@ export function EditRoleModal({
               <label className="block text-[13px] font-bold text-[#64748B] mb-2">
                 الحد الأقصى للأجهزة المصرح بها
               </label>
-              <div className="flex items-center gap-3">
-                <input
-                  type="number"
-                  min={1}
-                  max={10}
-                  value={maxDevices}
-                  onChange={(e) => setMaxDevices(Math.max(1, parseInt(e.target.value) || 1))}
-                  className="w-24 h-11 px-3 text-center rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold"
-                />
-                <span className="text-xs text-[#64748B] dark:text-[#94A3B8]">
-                  أجهزة كحد أقصى (الافتراضي: 2)
-                </span>
-              </div>
+              <select
+                value={maxDevices}
+                onChange={(e) => setMaxDevices(Number(e.target.value))}
+                className="w-full h-11 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold"
+              >
+                <option value={1}>جهاز واحد فقط (افتراضي - منع مشاركة الحساب)</option>
+                <option value={2}>جهازين (سماح إضافي للطالب)</option>
+                <option value={3}>3 أجهزة (استثناء خاص)</option>
+              </select>
             </div>
           )}
 

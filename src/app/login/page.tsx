@@ -176,9 +176,10 @@ export default function LoginPage() {
                     <KeyRound className="w-4 h-4 text-[#800020]" />
                   </div>
                 </div>
-                <p className="mt-1.5 text-[11px] text-[#64748B] dark:text-[#94A3B8]">
-                  الكود المكون من 6 خانات المسلم لك من الإدارة أو المساعد
-                </p>
+                <div className="mt-2 flex items-center gap-1.5 text-[11px] text-[#64748B] dark:text-[#94A3B8]">
+                  <Shield className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                  <span>يقترن الحساب بجهازك الشخصي المعتمد تلقائياً (جهاز واحد فقط).</span>
+                </div>
               </div>
 
               <button

@@ -70,8 +70,9 @@ export async function POST(req: Request) {
 
       if (!isAlreadyBound) {
         if (bound.length >= user.maxDevices) {
+          const devLimitText = user.maxDevices === 1 ? "جهاز واحد فقط" : `${user.maxDevices} أجهزة`;
           throw forbidden(
-            `عذراً، هذا الحساب مسجل بالفعل على الحد الأقصى من الأجهزة المصرح بها (${user.maxDevices} أجهزة). يرجى تسجيل الدخول من جهازك المعتمد أو التواصل مع الإدارة لإعادة ضبط أجهزتك.`
+            `عذراً، هذا الحساب وصل إلى الحد الأقصى من الأجهزة المصرح بها ومقترن بـ (${devLimitText}). لا يمكن تسجيل الدخول من هذا الجهاز الجديد إلا بعد موافقة الإدارة أو فك ربط أجهزتك القديمة.`
           );
         }
 

@@ -126,7 +126,7 @@ export function StudentDetailsDrawer({
   const [systemId, setSystemId] = useState("");
   const [gradeId, setGradeId] = useState("");
   const [schoolCategory, setSchoolCategory] = useState<"ARABIC" | "LANGUAGES">("ARABIC");
-  const [maxDevices, setMaxDevices] = useState(2);
+  const [maxDevices, setMaxDevices] = useState(1);
   const [isSavingInfo, setIsSavingInfo] = useState(false);
   const [infoMessage, setInfoMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
@@ -563,14 +563,15 @@ export function StudentDetailsDrawer({
 
                         <div>
                           <label className="block text-[#64748B] mb-1.5">الحد الأقصى للأجهزة المصرح بها</label>
-                          <input
-                            type="number"
-                            min={1}
-                            max={10}
+                          <select
                             value={maxDevices}
-                            onChange={(e) => setMaxDevices(Math.max(1, parseInt(e.target.value) || 1))}
-                            className="w-full h-10 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A]"
-                          />
+                            onChange={(e) => setMaxDevices(Number(e.target.value))}
+                            className="w-full h-10 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] font-bold"
+                          >
+                            <option value={1}>جهاز واحد فقط (الافتراضي - منع مشاركة الحساب)</option>
+                            <option value={2}>جهازين (تصريح إضافي للطالب)</option>
+                            <option value={3}>3 أجهزة (استثناء خاص)</option>
+                          </select>
                         </div>
                       </div>
 

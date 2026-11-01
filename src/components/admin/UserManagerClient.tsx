@@ -57,6 +57,7 @@ export function UserManagerClient({
   const [createPassword, setCreatePassword] = useState("");
   const [createLoginCode, setCreateLoginCode] = useState("");
   const [createSchoolCategory, setCreateSchoolCategory] = useState<"ARABIC" | "LANGUAGES">("ARABIC");
+  const [createMaxDevices, setCreateMaxDevices] = useState(1);
   const [createRole, setCreateRole] = useState("STUDENT");
   const [createSystemId, setCreateSystemId] = useState("");
   const [createGradeId, setCreateGradeId] = useState("");
@@ -93,6 +94,7 @@ export function UserManagerClient({
           password: createPassword || undefined,
           loginCode: createRole === "STUDENT" ? (createLoginCode.trim().toUpperCase() || undefined) : undefined,
           schoolCategory: createSchoolCategory,
+          maxDevices: createRole === "STUDENT" ? createMaxDevices : 1,
           role: createRole,
           systemId: createSystemId || undefined,
           gradeId: createGradeId || undefined,
@@ -291,6 +293,8 @@ export function UserManagerClient({
         setCreateLoginCode={setCreateLoginCode}
         createSchoolCategory={createSchoolCategory}
         setCreateSchoolCategory={setCreateSchoolCategory}
+        createMaxDevices={createMaxDevices}
+        setCreateMaxDevices={setCreateMaxDevices}
         createRole={createRole}
         setCreateRole={setCreateRole}
         createSystemId={createSystemId}

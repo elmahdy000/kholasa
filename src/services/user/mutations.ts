@@ -54,6 +54,7 @@ export class UserMutationsService {
 
     const rawPassword = password || finalLoginCode || "Kholasa@2026";
     const hashedPassword = await bcrypt.hash(rawPassword, 12);
+    const initialMaxDevices = typeof data.maxDevices === "number" && data.maxDevices > 0 ? data.maxDevices : 1;
 
     return prisma.user.create({
       data: {
@@ -66,6 +67,7 @@ export class UserMutationsService {
         systemId: systemId || null,
         gradeId: gradeId || null,
         schoolCategory: schoolCategory || "ARABIC",
+        maxDevices: initialMaxDevices,
       },
       select: {
         id: true, name: true, phone: true, email: true, loginCode: true, role: true,
