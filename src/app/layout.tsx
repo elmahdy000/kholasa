@@ -1,13 +1,7 @@
 import type { Metadata, Viewport } from "next";
-import { Cairo } from "next/font/google";
+
 import "./globals.css";
 
-const cairo = Cairo({
-  subsets: ["arabic", "latin"],
-  weight: ["300", "400", "500", "600", "700", "800", "900"],
-  variable: "--font-cairo",
-  display: "swap",
-});
 
 export const viewport: Viewport = {
   themeColor: [
@@ -67,10 +61,19 @@ export default async function RootLayout({
     <html
       lang="ar"
       dir="rtl"
-      className={`${cairo.variable}`}
+      className="font-sans"
       suppressHydrationWarning
       data-scroll-behavior="smooth"
     >
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+
       <body
         suppressHydrationWarning
         className="min-h-screen font-sans bg-[#FFFFFF] dark:bg-[#0F172A] text-[#12263F] dark:text-[#F8FAFC] antialiased selection:bg-[#800020]/15 dark:selection:bg-[#E11D48]/20 selection:text-[#800020] dark:selection:text-[#FB7185]"
