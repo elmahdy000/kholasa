@@ -2,16 +2,18 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { BookOpen, Check, ArrowLeft, Eye, EyeOff } from "lucide-react";
+import { BookOpen, Check, ArrowLeft, Eye, EyeOff, Sparkle, PencilLine } from "lucide-react";
 import { BidiStatement } from "@/components/ui/BidiStatement";
 import { QuestionExplanationBox } from "@/components/ui/QuestionExplanationBox";
 import { QuestionImageAttachment } from "@/components/ui/QuestionImageAttachment";
-import type { MistakeItem, ActiveAnswerState } from "./types";
+import { FormattedAnswerView } from "@/components/ui/FormattedAnswerView";
+import type { MistakeItem, ActiveAnswerState, RubricCriterion } from "./types";
 
 interface MistakeCardProps {
   mistake: MistakeItem;
   answerState?: ActiveAnswerState;
   onRetakeAnswer: (questionId: string, optionId: string) => void;
+  onResolveMistake?: (questionId: string) => Promise<void> | void;
 }
 
 const ARABIC_LETTERS = ["أ", "ب", "ج", "د", "هـ"];
@@ -20,11 +22,29 @@ export function MistakeCard({
   mistake,
   answerState,
   onRetakeAnswer,
+  onResolveMistake,
 }: MistakeCardProps) {
   const [showExplanation, setShowExplanation] = useState(false);
+  const [showEssayModel, setShowEssayModel] = useState(false);
+  const [isResolving, setIsResolving] = useState(false);
+
   const q = mistake.question;
+  const isEssay = q.type === "ESSAY" || (!q.options || q.options.length === 0);
   const relatedLesson = q.lessons?.[0]?.lesson;
   const isChecked = !!answerState?.result;
+
+  const handleResolve = async () => {
+    if (!onResolveMistake || isResolving) return;
+    setIsResolving(true);
+    try {
+      await onResolveMistake(q.id);
+    } finally {
+      setIsResolving(false);
+    }
+  };
+
+  const hasExplanationOrModel =
+    Boolean(q.explanation?.concept || q.explanation?.correctReason || q.rubric?.modelAnswer);
 
   return (
     <div
@@ -40,6 +60,12 @@ export function MistakeCard({
           <span className="px-3 py-1 rounded-lg bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] text-[13px] font-bold border border-[#E2E8F0]/50 dark:border-[#E11D48]/50">
             <BidiStatement as="span" text={q.subject?.name || ""} />
           </span>
+          {isEssay && (
+            <span className="px-2.5 py-1 rounded-lg bg-[#7C3AED]/10 text-[#7C3AED] text-[13px] font-bold border border-[#7C3AED]/20 flex items-center gap-1.5">
+              <PencilLine className="w-3.5 h-3.5" />
+              <span>سؤال مقالي</span>
+            </span>
+          )}
           {mistake.wrongCount > 1 && (
             <span className="px-2 py-1 rounded-lg bg-[#DC2626]/10 dark:bg-[#1E293B] text-[#DC2626] text-[13px] font-bold border border-[#E2E8F0]/50 dark:border-[#F87171]/50">
               اتكرر الغلط {mistake.wrongCount} مرات
@@ -76,8 +102,8 @@ export function MistakeCard({
 
       <QuestionImageAttachment imageUrl={q.imageUrl} />
 
-      {/* Inline Options to Retake */}
-      {q.options && q.options.length > 0 && (
+      {/* 1. Objective Questions (MCQ / TRUE_FALSE): Inline Options to Retake */}
+      {!isEssay && q.options && q.options.length > 0 && (
         <div className="space-y-3">
           <span className="text-[13px] font-bold text-[#64748B] dark:text-[#94A3B8] block mb-1">
             جرب تحلها تاني دلوقتي وافهم الصح عشان متغلطش فيها:
@@ -137,8 +163,88 @@ export function MistakeCard({
         </div>
       )}
 
-      {/* Manual toggle to view explanation if not yet answered/resolved */}
-      {!mistake.isResolved && !isChecked && q.explanation && (
+      {/* 2. Essay Questions: Model Answer & Mastery Confirmation */}
+      {isEssay && (
+        <div className="space-y-4 pt-1">
+          {/* Action Row for Essay Questions */}
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setShowEssayModel((prev) => !prev)}
+              className={`h-10 px-4 rounded-xl text-[13px] font-bold flex items-center gap-2 transition-all cursor-pointer ${
+                showEssayModel || mistake.isResolved
+                  ? "bg-[#7C3AED]/15 text-[#7C3AED] border border-[#7C3AED]/30"
+                  : "bg-[#7C3AED] hover:bg-[#6D28D9] text-white shadow-sm"
+              }`}
+            >
+              <Sparkle className="w-4 h-4" />
+              <span>
+                {showEssayModel || mistake.isResolved
+                  ? "إخفاء نموذج الإجابة"
+                  : "عرض نموذج الإجابة المعتمد"}
+              </span>
+            </button>
+
+            {!mistake.isResolved && onResolveMistake && (
+              <button
+                type="button"
+                onClick={handleResolve}
+                disabled={isResolving}
+                className="h-10 px-4 rounded-xl text-[13px] font-bold bg-[#059669] hover:bg-[#047857] text-white flex items-center gap-2 transition-colors disabled:opacity-60 cursor-pointer shadow-sm"
+              >
+                <Check className="w-4 h-4" />
+                <span>{isResolving ? "جاري الحفظ..." : "فهمتها خلاص"}</span>
+              </button>
+            )}
+          </div>
+
+          {/* Essay Model Answer & Rubric Criteria Display */}
+          {(showEssayModel || mistake.isResolved) && (
+            <div className="space-y-4 pt-3 border-t border-[#E2E8F0] dark:border-[#334155] animate-in fade-in duration-200">
+              <div className="p-4 sm:p-5 rounded-2xl bg-[#7C3AED]/5 border border-[#7C3AED]/20 space-y-3">
+                <span className="text-[12px] font-bold uppercase tracking-wider text-[#7C3AED] flex items-center gap-1.5">
+                  <Sparkle className="w-3.5 h-3.5" />
+                  <span>النموذج المعتمد للإجابة:</span>
+                </span>
+                <FormattedAnswerView
+                  text={
+                    q.rubric?.modelAnswer ||
+                    q.explanation?.correctReason ||
+                    "الإجابة المعتمدة تركز على الخطوات والشرح المنهجي لمفاهيم السؤال."
+                  }
+                  colorScheme="purple"
+                />
+              </div>
+
+              {Array.isArray(q.rubric?.criteria) && q.rubric.criteria.length > 0 && (
+                <div className="p-4 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] space-y-2">
+                  <span className="text-[12px] font-bold text-[#64748B] dark:text-[#94A3B8] block">
+                    معايير توزيع الدرجات:
+                  </span>
+                  <div className="space-y-1.5">
+                    {(q.rubric.criteria as RubricCriterion[]).map((c, cIdx) => (
+                      <div
+                        key={cIdx}
+                        className="flex items-center justify-between text-[13px] py-1 border-b border-[#E2E8F0]/40 dark:border-[#334155]/40 last:border-0"
+                      >
+                        <span className="text-[#0F172A] dark:text-white font-medium">
+                          {c.criterion}
+                        </span>
+                        <span className="font-mono text-[#7C3AED] font-bold shrink-0">
+                          {c.points} درجات
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Manual toggle to view explanation for objective questions if not yet answered/resolved */}
+      {!isEssay && !mistake.isResolved && !isChecked && hasExplanationOrModel && (
         <div className="pt-1">
           <button
             type="button"
@@ -160,8 +266,8 @@ export function MistakeCard({
         </div>
       )}
 
-      {/* Explanation - shown once resolved, or student answered, or manually revealed */}
-      {(mistake.isResolved || isChecked || showExplanation) && q.explanation && (
+      {/* Explanation for objective questions - shown once resolved, or student answered, or manually revealed */}
+      {!isEssay && (mistake.isResolved || isChecked || showExplanation) && q.explanation && (
         <div className="animate-in fade-in duration-200">
           <QuestionExplanationBox
             concept={q.explanation.concept}

@@ -23,23 +23,36 @@ export async function GET(req: Request) {
     const examId = searchParams.get("examId") || undefined;
     const userId = searchParams.get("userId") || undefined;
     const search = searchParams.get("search") || undefined;
+    const mode = searchParams.get("mode") || undefined;
+    const page = parseInt(searchParams.get("page") || "1", 10);
+    const pageSize = parseInt(searchParams.get("pageSize") || "20", 10);
     const id = searchParams.get("id") || undefined;
 
     if (id) {
       const singleAttempt = await ExamService.getAdminAttemptsList({ id });
-      if (!singleAttempt || Array.isArray(singleAttempt)) {
+      if (!singleAttempt || Array.isArray(singleAttempt) || "attempts" in singleAttempt) {
         return NextResponse.json({ error: "المحاولة غير موجودة" }, { status: 404 });
       }
       return NextResponse.json({ attempt: singleAttempt });
     }
 
-    const attempts = await ExamService.getAdminAttemptsList({
+    const result = await ExamService.getAdminAttemptsList({
       examId,
       userId,
       search,
+      mode,
+      page,
+      pageSize,
     });
 
-    return NextResponse.json({ attempts });
+    if (result && "attempts" in result) {
+      return NextResponse.json({
+        attempts: result.attempts,
+        pagination: result.pagination,
+      });
+    }
+
+    return NextResponse.json({ attempts: result });
   } catch (error) {
     console.error("Failed to fetch student attempts:", error);
     return NextResponse.json(

@@ -243,10 +243,8 @@ export function QuestionBankManagerClient({
   const safeCurrentPage = Math.min(currentPage, totalPages);
 
   // Paginated Slice
-  const paginatedQuestions = useMemo(() => {
-    const start = (safeCurrentPage - 1) * pageSize;
-    return filteredQuestions.slice(start, start + pageSize);
-  }, [filteredQuestions, safeCurrentPage, pageSize]);
+  const start = (safeCurrentPage - 1) * pageSize;
+  const paginatedQuestions = filteredQuestions.slice(start, start + pageSize);
 
   // Global Metric Breakdown
   const metrics = useMemo(() => {

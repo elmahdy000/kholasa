@@ -1,14 +1,23 @@
 "use client";
 
-import { Eye } from "lucide-react";
-import type { Attempt } from "./types";
+import { Eye, ChevronRight, ChevronLeft } from "lucide-react";
+import type { Attempt, PaginationInfo } from "./types";
 
 interface AttemptTableProps {
   attempts: Attempt[];
   onOpenInspect: (attempt: Attempt) => void;
+  pagination?: PaginationInfo;
+  onPageChange?: (page: number) => void;
+  isLoading?: boolean;
 }
 
-export function AttemptTable({ attempts, onOpenInspect }: AttemptTableProps) {
+export function AttemptTable({
+  attempts,
+  onOpenInspect,
+  pagination,
+  onPageChange,
+  isLoading,
+}: AttemptTableProps) {
   return (
     <div className="rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] overflow-hidden">
       <div className="overflow-x-auto">
@@ -24,7 +33,7 @@ export function AttemptTable({ attempts, onOpenInspect }: AttemptTableProps) {
               <th className="py-3 px-4 text-center">الإجراءات</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#E2E8F0] dark:divide-[#334155]/80">
+          <tbody className={`divide-y divide-[#E2E8F0] dark:divide-[#334155]/80 transition-opacity ${isLoading ? "opacity-50" : "opacity-100"}`}>
             {attempts.length === 0 ? (
               <tr>
                 <td colSpan={7} className="py-12 text-center text-[#64748B]">
@@ -133,6 +142,53 @@ export function AttemptTable({ attempts, onOpenInspect }: AttemptTableProps) {
           </tbody>
         </table>
       </div>
+
+      {/* Pagination Footer */}
+      {pagination && pagination.totalCount > 0 && (
+        <div className="p-4 border-t border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC]/50 dark:bg-[#1E293B]/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-[13px]">
+          <div className="text-[#64748B] dark:text-[#94A3B8]">
+            عرض{" "}
+            <span className="font-bold font-mono text-[#0F172A] dark:text-white">
+              {(pagination.page - 1) * pagination.pageSize + 1}
+            </span>{" "}
+            إلى{" "}
+            <span className="font-bold font-mono text-[#0F172A] dark:text-white">
+              {Math.min(pagination.page * pagination.pageSize, pagination.totalCount)}
+            </span>{" "}
+            من إجمالي{" "}
+            <span className="font-bold font-mono text-[#0F172A] dark:text-white">
+              {pagination.totalCount}
+            </span>{" "}
+            محاولة
+          </div>
+
+          <div className="flex items-center gap-2 self-center sm:self-auto">
+            <button
+              type="button"
+              disabled={pagination.page <= 1 || isLoading}
+              onClick={() => onPageChange?.(pagination.page - 1)}
+              className="h-8 px-3 rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] text-[#0F172A] dark:text-white font-medium flex items-center gap-1 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#F8FAFC] dark:hover:bg-[#1E293B] transition-colors"
+            >
+              <ChevronRight className="w-4 h-4" />
+              <span>السابق</span>
+            </button>
+
+            <span className="px-3 py-1 font-mono font-bold text-[#0F172A] dark:text-white text-[12px]">
+              {pagination.page} / {pagination.totalPages || 1}
+            </span>
+
+            <button
+              type="button"
+              disabled={pagination.page >= pagination.totalPages || isLoading}
+              onClick={() => onPageChange?.(pagination.page + 1)}
+              className="h-8 px-3 rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] text-[#0F172A] dark:text-white font-medium flex items-center gap-1 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#F8FAFC] dark:hover:bg-[#1E293B] transition-colors"
+            >
+              <span>التالي</span>
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

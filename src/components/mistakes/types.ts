@@ -11,6 +11,17 @@ export interface QuestionExplanation {
   correctReason: string;
 }
 
+export interface RubricCriterion {
+  criterion: string;
+  points: number;
+}
+
+export interface QuestionRubric {
+  modelAnswer?: string | null;
+  criteria?: RubricCriterion[] | any;
+  maxScore?: number | null;
+}
+
 export interface Question {
   id: string;
   statement: string;
@@ -21,6 +32,7 @@ export interface Question {
   unit?: { id: string; title: string } | null;
   options: QuestionOption[];
   explanation?: QuestionExplanation | null;
+  rubric?: QuestionRubric | null;
   lessons: { lesson: { id: string; title: string } }[];
 }
 

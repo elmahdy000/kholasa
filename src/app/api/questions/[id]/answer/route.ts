@@ -22,7 +22,7 @@ export async function POST(
 
     const { id: questionId } = await params;
     const body = await req.json().catch(() => ({}));
-    const { selectedOptionId, isDailyChallenge } = body;
+    const { selectedOptionId, isDailyChallenge, resolve } = body;
 
     const question = await QuestionService.getQuestionById(questionId);
 
@@ -31,6 +31,16 @@ export async function POST(
         { error: "السؤال غير موجود" },
         { status: 404 }
       );
+    }
+
+    if (resolve) {
+      await MistakeService.resolveMistake(user.id, questionId);
+      return NextResponse.json({
+        success: true,
+        isResolved: true,
+        explanation: question.explanation,
+        modelAnswer: question.rubric?.modelAnswer,
+      });
     }
 
     // Check MCQ or TRUE_FALSE

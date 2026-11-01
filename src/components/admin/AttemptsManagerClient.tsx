@@ -1,21 +1,33 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { CheckCircle2 } from "lucide-react";
-import type { AttemptsManagerClientProps, Attempt, Answer } from "./attempts/types";
+import type { AttemptsManagerClientProps, Attempt, Answer, PaginationInfo } from "./attempts/types";
 import { AttemptFilterBar } from "./attempts/AttemptFilterBar";
 import { AttemptTable } from "./attempts/AttemptTable";
 import { AttemptInspectModal } from "./attempts/AttemptInspectModal";
 
-export type { AttemptsManagerClientProps, Attempt, Answer } from "./attempts/types";
+export type { AttemptsManagerClientProps, Attempt, Answer, PaginationInfo } from "./attempts/types";
 
 export function AttemptsManagerClient({
   initialAttempts,
+  initialPagination,
   subjects,
 }: AttemptsManagerClientProps) {
   const [attempts, setAttempts] = useState<Attempt[]>(initialAttempts);
+  const [pagination, setPagination] = useState<PaginationInfo>(
+    initialPagination || {
+      page: 1,
+      pageSize: 20,
+      totalCount: initialAttempts.length,
+      totalPages: Math.max(1, Math.ceil(initialAttempts.length / 20)),
+    }
+  );
+  const [isLoadingAttempts, setIsLoadingAttempts] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [modeFilter, setModeFilter] = useState<string>("all");
+  const isFirstRender = useRef(true);
+
   const [inspectModal, setInspectModal] = useState<{
     isOpen: boolean;
     attempt?: Attempt;
@@ -25,6 +37,44 @@ export function AttemptsManagerClient({
   const [savingGradeId, setSavingGradeId] = useState<string | null>(null);
   const [detailsError, setDetailsError] = useState<string | null>(null);
   const inspectRequest = useRef(0);
+
+  const fetchAttempts = useCallback(async (page: number, mode: string, search: string) => {
+    setIsLoadingAttempts(true);
+    try {
+      const params = new URLSearchParams({
+        page: page.toString(),
+        pageSize: "20",
+      });
+      if (mode !== "all") params.set("mode", mode);
+      if (search.trim()) params.set("search", search.trim());
+
+      const res = await fetch(`/api/admin/attempts?${params.toString()}`);
+      const data = await res.json();
+      if (res.ok && data.attempts) {
+        setAttempts(data.attempts);
+        if (data.pagination) {
+          setPagination(data.pagination);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to fetch attempts:", err);
+    } finally {
+      setIsLoadingAttempts(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      fetchAttempts(1, modeFilter, searchQuery);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery, modeFilter, fetchAttempts]);
 
   const handleOpenInspect = async (attempt: Attempt) => {
     const request = ++inspectRequest.current;
@@ -109,20 +159,6 @@ export function AttemptsManagerClient({
     }
   };
 
-  const filteredAttempts = attempts.filter((att) => {
-    const matchesSearch =
-      (att.user.name || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (att.user.phone || "").includes(searchQuery) ||
-      (att.exam?.title || att.title).toLowerCase().includes(searchQuery.toLowerCase());
-
-    const matchesMode =
-      modeFilter === "all" ||
-      (modeFilter === "PRACTICE" && att.mode === "PRACTICE") ||
-      (modeFilter === "EXAM" && att.mode === "EXAM");
-
-    return matchesSearch && matchesMode;
-  });
-
   return (
     <div className="space-y-6">
       {/* 1. Header */}
@@ -146,10 +182,13 @@ export function AttemptsManagerClient({
         setSearchQuery={setSearchQuery}
       />
 
-      {/* 3. Attempts Table */}
+      {/* 3. Attempts Table with Pagination */}
       <AttemptTable
-        attempts={filteredAttempts}
+        attempts={attempts}
         onOpenInspect={handleOpenInspect}
+        pagination={pagination}
+        onPageChange={(newPage) => fetchAttempts(newPage, modeFilter, searchQuery)}
+        isLoading={isLoadingAttempts}
       />
 
       {/* 4. Inspect and Grade Modal */}

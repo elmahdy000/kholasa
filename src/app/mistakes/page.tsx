@@ -34,12 +34,28 @@ export default async function MistakesPage() {
     },
   });
 
-  // Fetch student's enrolled subjects for the filter
+  // Fetch student's enrolled subjects matching their grade & category, plus any subjects with mistakes
+  const subjectWhere: any = { isPublished: true };
+  if (user.gradeId) subjectWhere.gradeId = user.gradeId;
+  if (user.schoolCategory) subjectWhere.schoolCategory = user.schoolCategory;
+
   const subjects = await prisma.subject.findMany({
-    where: { isPublished: true },
+    where: subjectWhere,
     select: { id: true, name: true },
     orderBy: { order: "asc" },
   });
+
+  const subjectsMap = new Map<string, string>();
+  subjects.forEach((s) => subjectsMap.set(s.id, s.name));
+  mistakes.forEach((m) => {
+    if (m.question?.subject?.id && !subjectsMap.has(m.question.subject.id)) {
+      subjectsMap.set(m.question.subject.id, m.question.subject.name);
+    }
+  });
+  const filterSubjects = Array.from(subjectsMap.entries()).map(([id, name]) => ({
+    id,
+    name,
+  }));
 
   return (
     <StudentShell user={user}>
@@ -59,7 +75,7 @@ export default async function MistakesPage() {
 
         <MistakeHubClient
           initialMistakes={mistakes as any}
-          subjects={subjects}
+          subjects={filterSubjects}
         />
       </div>
     </StudentShell>

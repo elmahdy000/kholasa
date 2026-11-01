@@ -56,7 +56,15 @@ export interface Attempt {
   };
 }
 
+export interface PaginationInfo {
+  page: number;
+  pageSize: number;
+  totalCount: number;
+  totalPages: number;
+}
+
 export interface AttemptsManagerClientProps {
   initialAttempts: Attempt[];
+  initialPagination?: PaginationInfo;
   subjects: { id: string; name: string }[];
 }

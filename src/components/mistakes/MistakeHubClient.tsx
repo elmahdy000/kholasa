@@ -87,9 +87,41 @@ export function MistakeHubClient({
     }
   };
 
+  const handleResolveMistake = async (questionId: string) => {
+    try {
+      const res = await fetch(`/api/questions/${questionId}/answer`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ resolve: true }),
+      });
+      if (res.ok) {
+        setMistakes((prev) =>
+          prev.map((m) =>
+            m.questionId === questionId ? { ...m, isResolved: true } : m
+          )
+        );
+      }
+    } catch (err) {
+      console.error("Failed to resolve mistake:", err);
+    }
+  };
+
   const handleGenerateExamFromMistakes = async () => {
     const targetMistakes = filteredMistakes.filter((m) => !m.isResolved);
     if (targetMistakes.length === 0) return;
+
+    const distinctSubjectIds = Array.from(
+      new Set(targetMistakes.map((m) => m.question.subject?.id).filter(Boolean))
+    );
+
+    if (selectedSubjectId === "all" && distinctSubjectIds.length > 1) {
+      setGenerationError(
+        "أخطاؤك موزعة على أكثر من مادة. حدد المادة من الفلتر فوق عشان نجهّز لك امتحان مركز عليها."
+      );
+      return;
+    }
+
+    const examSubjectId = selectedSubjectId !== "all" ? selectedSubjectId : distinctSubjectIds[0];
 
     setIsGeneratingExam(true);
     setGenerationError(null);
@@ -102,7 +134,7 @@ export function MistakeHubClient({
           mode: "PRACTICE",
           durationMinutes: Math.max(10, Math.min(60, targetMistakes.length * 2)),
           questionIds: targetMistakes.map((m) => m.questionId),
-          subjectId: selectedSubjectId !== "all" ? selectedSubjectId : undefined,
+          subjectId: examSubjectId,
         }),
       });
 
@@ -173,6 +205,7 @@ export function MistakeHubClient({
               mistake={mistake}
               answerState={activeAnswers[mistake.question.id]}
               onRetakeAnswer={handleRetakeAnswer}
+              onResolveMistake={handleResolveMistake}
             />
           ))}
         </div>

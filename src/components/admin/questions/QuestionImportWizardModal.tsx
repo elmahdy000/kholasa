@@ -177,8 +177,6 @@ export function QuestionImportWizardModal({
     );
   };
 
-  if (!isOpen) return null;
-
   // Toggle allowed question types in Step 1
   const toggleAllowedType = (type: QuestionType) => {
     setAllowedTypes((prev) => {
@@ -443,6 +441,8 @@ export function QuestionImportWizardModal({
       return true;
     });
   }, [stagedQuestions, statusFilter, typeFilter, searchQuery]);
+
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-3 sm:p-4 overflow-y-auto font-sans">

@@ -378,9 +378,12 @@ export class ExamAttemptService {
     examId?: string;
     userId?: string;
     search?: string;
+    mode?: string;
     id?: string;
+    page?: number;
+    pageSize?: number;
   }) {
-    const { examId, userId, search, id } = params;
+    const { examId, userId, search, mode, id } = params;
 
     if (id) {
       return prisma.examAttempt.findUnique({
@@ -401,7 +404,7 @@ export class ExamAttemptService {
             include: {
               question: {
                 include: {
-                  options: true,
+                  options: { orderBy: { order: "asc" } },
                   explanation: true,
                   rubric: true,
                 },
@@ -412,35 +415,62 @@ export class ExamAttemptService {
       });
     }
 
+    const page = Math.max(1, params.page || 1);
+    const pageSize = Math.min(100, Math.max(1, params.pageSize || 20));
+    const skip = (page - 1) * pageSize;
+
     const where: Prisma.ExamAttemptWhereInput = {};
     if (examId) where.examId = examId;
     if (userId) where.userId = userId;
-    if (search) {
+    if (mode && mode !== "all") {
+      where.mode = mode as any;
+    }
+    if (search && search.trim()) {
+      const q = search.trim();
       where.OR = [
-        { title: { contains: search, mode: "insensitive" } },
-        { user: { name: { contains: search, mode: "insensitive" } } },
-        { user: { phone: { contains: search } } },
+        { title: { contains: q, mode: "insensitive" } },
+        { user: { name: { contains: q, mode: "insensitive" } } },
+        { user: { phone: { contains: q } } },
+        { user: { email: { contains: q, mode: "insensitive" } } },
+        { exam: { title: { contains: q, mode: "insensitive" } } },
       ];
     }
 
-    return prisma.examAttempt.findMany({
-      where,
-      take: 50,
-      orderBy: { startedAt: "desc" },
-      include: {
-        user: { select: { id: true, name: true, phone: true } },
-        exam: {
-          select: {
-            id: true,
-            title: true,
-            subject: { select: { id: true, name: true, color: true } },
+    const [totalCount, attempts] = await Promise.all([
+      prisma.examAttempt.count({ where }),
+      prisma.examAttempt.findMany({
+        where,
+        skip,
+        take: pageSize,
+        orderBy: { startedAt: "desc" },
+        include: {
+          user: { select: { id: true, name: true, phone: true, email: true } },
+          exam: {
+            select: {
+              id: true,
+              title: true,
+              durationMinutes: true,
+              subject: { select: { id: true, name: true, color: true } },
+            },
+          },
+          _count: {
+            select: { answers: true },
           },
         },
-        _count: {
-          select: { answers: true },
-        },
+      }),
+    ]);
+
+    const totalPages = Math.ceil(totalCount / pageSize);
+
+    return {
+      attempts,
+      pagination: {
+        page,
+        pageSize,
+        totalCount,
+        totalPages,
       },
-    });
+    };
   }
 
   /**
@@ -464,35 +494,39 @@ export class ExamAttemptService {
     if (score !== undefined && (!Number.isFinite(score) || score < 0 || score > (answer.question.rubric?.maxScore ?? 10))) {
       throw badRequest("الدرجة خارج النطاق المسموح لهذا السؤال");
     }
-    attemptId = answer.attemptId;
-    await prisma.studentAnswer.update({
-      where: { id: answerId },
-      data: {
-        isCorrect: isCorrect !== undefined ? Boolean(isCorrect) : undefined,
-        score: score !== undefined ? Number(score) : undefined,
-      },
-    });
+    const targetAttemptId = answer.attemptId;
 
-    if (attemptId) {
-      const allAnswers = await prisma.studentAnswer.findMany({
-        where: { attemptId },
+    const executeGrading = async (tx: any) => {
+      await tx.studentAnswer.update({
+        where: { id: answerId },
+        data: {
+          isCorrect: isCorrect !== undefined ? Boolean(isCorrect) : undefined,
+          score: score !== undefined ? Number(score) : undefined,
+        },
+      });
+
+      const allAnswers = await tx.studentAnswer.findMany({
+        where: { attemptId: targetAttemptId },
         select: { isCorrect: true, score: true },
       });
 
-      const scorableAnswers = allAnswers.filter((a) => a.isCorrect !== null);
-      const totalCorrect = scorableAnswers.filter((a) => a.isCorrect === true).length;
+      const scorableAnswers = allAnswers.filter((a: any) => a.isCorrect !== null);
+      const totalCorrect = scorableAnswers.filter((a: any) => a.isCorrect === true).length;
       const totalDenominator = scorableAnswers.length || 1;
       const percentage = Math.round((totalCorrect / totalDenominator) * 100);
 
-      return prisma.examAttempt.update({
-        where: { id: attemptId },
+      return tx.examAttempt.update({
+        where: { id: targetAttemptId },
         data: {
           score: totalCorrect,
           percentage,
         },
       });
-    }
+    };
 
-    return null;
+    if (typeof (prisma as any).$transaction === "function") {
+      return (prisma as any).$transaction(async (tx: any) => executeGrading(tx));
+    }
+    return executeGrading(prisma);
   }
 }
