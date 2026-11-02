@@ -44,7 +44,7 @@ export function UserTable({
               <th className="py-3.5 px-4 whitespace-nowrap text-center">الأجهزة</th>
               <th className="py-3.5 px-4 whitespace-nowrap text-center">الدروس</th>
               <th className="py-3.5 px-4 whitespace-nowrap text-center">الامتحانات</th>
-              <th className="sticky left-0 bg-[#F8FAFC] dark:bg-[#1E293B] shadow-[-6px_0_12px_rgba(0,0,0,0.06)] dark:shadow-[-6px_0_12px_rgba(0,0,0,0.3)] border-r border-[#E2E8F0] dark:border-[#334155] py-3.5 px-4 whitespace-nowrap text-center min-w-[220px] z-10">
+              <th className="sticky left-0 bg-[#F8FAFC] dark:bg-[#1E293B] shadow-[-6px_0_12px_rgba(0,0,0,0.06)] dark:shadow-[-6px_0_12px_rgba(0,0,0,0.3)] border-r border-[#E2E8F0] dark:border-[#334155] py-3.5 px-4 whitespace-nowrap text-center min-w-[295px] z-10">
                 الإجراءات
               </th>
             </tr>
@@ -208,7 +208,7 @@ export function UserTable({
                   </td>
 
                   {/* 8. Sticky Actions Column */}
-                  <td className="sticky left-0 bg-white group-hover:bg-[#F8FAFC] dark:bg-[#0F172A] dark:group-hover:bg-[#1E293B] shadow-[-6px_0_12px_rgba(0,0,0,0.06)] dark:shadow-[-6px_0_12px_rgba(0,0,0,0.3)] border-r border-[#E2E8F0] dark:border-[#334155] py-3.5 px-4 whitespace-nowrap text-center z-10 transition-colors">
+                  <td className="sticky left-0 bg-white group-hover:bg-[#F8FAFC] dark:bg-[#0F172A] dark:group-hover:bg-[#1E293B] shadow-[-6px_0_12px_rgba(0,0,0,0.06)] dark:shadow-[-6px_0_12px_rgba(0,0,0,0.3)] border-r border-[#E2E8F0] dark:border-[#334155] py-3.5 px-4 whitespace-nowrap text-center min-w-[295px] z-10 transition-colors">
                     <div className="inline-flex items-center justify-center gap-1.5">
                       <button
                         type="button"

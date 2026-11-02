@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { HelpCircle, AlertCircle, CheckCircle2, X } from "lucide-react";
+import { HelpCircle, AlertCircle, CheckCircle2, X, CheckSquare, FileText, Scale } from "lucide-react";
 import type { Question, Subject, Grade } from "./types";
 import { QuestionCurriculumSelector } from "./QuestionCurriculumSelector";
 import { QuestionTypeOptionsEditor, type FormOption } from "./QuestionTypeOptionsEditor";
@@ -274,35 +274,79 @@ export function QuestionDrawer({
               />
 
               {/* Type and Difficulty Selectors */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="space-y-3.5">
+                {/* Question Type Segmented Control */}
                 <div className="space-y-1.5">
                   <label className="block text-[12px] font-bold text-[#64748B] dark:text-[#94A3B8]">
                     نوع السؤال *
                   </label>
-                  <select
-                    value={type}
-                    onChange={(e) => setType(e.target.value as any)}
-                    className="w-full h-10 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold text-[#0F172A] dark:text-white"
-                  >
-                    <option value="MCQ">اختيار من متعدد (MCQ)</option>
-                    <option value="TRUE_FALSE">صح أو خطأ</option>
-                    <option value="ESSAY">سؤال مقالي</option>
-                  </select>
+                  <div className="grid grid-cols-3 gap-2 p-1 bg-[#F1F5F9] dark:bg-[#1E293B] rounded-xl border border-[#E2E8F0] dark:border-[#334155]">
+                    <button
+                      type="button"
+                      onClick={() => setType("MCQ")}
+                      className={`h-10 px-2 rounded-lg text-[12px] font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                        type === "MCQ"
+                          ? "bg-[#800020] text-white shadow-xs"
+                          : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
+                      }`}
+                    >
+                      <CheckSquare className="w-4 h-4 shrink-0" />
+                      <span>اختيار من متعدد</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setType("TRUE_FALSE")}
+                      className={`h-10 px-2 rounded-lg text-[12px] font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                        type === "TRUE_FALSE"
+                          ? "bg-[#800020] text-white shadow-xs"
+                          : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
+                      }`}
+                    >
+                      <Scale className="w-4 h-4 shrink-0" />
+                      <span>صواب أو خطأ</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setType("ESSAY")}
+                      className={`h-10 px-2 rounded-lg text-[12px] font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                        type === "ESSAY"
+                          ? "bg-[#800020] text-white shadow-xs"
+                          : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
+                      }`}
+                    >
+                      <FileText className="w-4 h-4 shrink-0" />
+                      <span>سؤال مقالي</span>
+                    </button>
+                  </div>
                 </div>
 
+                {/* Difficulty Segmented Control */}
                 <div className="space-y-1.5">
                   <label className="block text-[12px] font-bold text-[#64748B] dark:text-[#94A3B8]">
                     مستوى الصعوبة *
                   </label>
-                  <select
-                    value={difficulty}
-                    onChange={(e) => setDifficulty(e.target.value as any)}
-                    className="w-full h-10 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold text-[#0F172A] dark:text-white"
-                  >
-                    <option value="EASY">سهل</option>
-                    <option value="MEDIUM">متوسط</option>
-                    <option value="HARD">متقدم</option>
-                  </select>
+                  <div className="grid grid-cols-3 gap-2 p-1 bg-[#F1F5F9] dark:bg-[#1E293B] rounded-xl border border-[#E2E8F0] dark:border-[#334155]">
+                    {[
+                      { id: "EASY", label: "سهل" },
+                      { id: "MEDIUM", label: "متوسط" },
+                      { id: "HARD", label: "متقدم" },
+                    ].map((d) => (
+                      <button
+                        key={d.id}
+                        type="button"
+                        onClick={() => setDifficulty(d.id as any)}
+                        className={`h-9 rounded-lg text-[12px] font-bold transition-all flex items-center justify-center cursor-pointer ${
+                          difficulty === d.id
+                            ? "bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900 shadow-xs"
+                            : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
+                        }`}
+                      >
+                        {d.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
 

@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { BookOpen, Layers, GraduationCap, School, Compass, HelpCircle, ChevronDown } from "lucide-react";
+import { BookOpen, Layers, GraduationCap, School, Compass, HelpCircle, ChevronDown, CheckCircle2 } from "lucide-react";
 import { GradeItem, TrackItem, SubjectItem, UnitItem } from "./types";
 import { QuestionType, QuestionDifficulty } from "@/lib/question-parser";
 
@@ -67,6 +67,27 @@ export function HierarchySelector({
     activeGrade?.code === "bacc_g10" ||
     (!activeGrade && (selectedGradeId.includes("g10") || !selectedGradeId));
   const isG11 = activeGrade?.code === "bacc_g11" || selectedGradeId.includes("g11");
+
+  // Smart Lesson Change: Auto-detects parent unit if not already selected
+  const handleSmartLessonChange = (newLessonId: string) => {
+    onLessonChange(newLessonId);
+    if (!newLessonId) return;
+
+    if (activeSubject?.units) {
+      for (const u of activeSubject.units) {
+        if (u.lessons?.some((l) => l.id === newLessonId)) {
+          if (selectedUnitId !== u.id) {
+            onUnitChange(u.id);
+          }
+          break;
+        }
+      }
+    }
+  };
+
+  const activeLesson = activeSubject?.units
+    ?.flatMap((u) => u.lessons || [])
+    ?.find((l) => l.id === selectedLessonId);
 
   return (
     <div className="space-y-4">
@@ -276,16 +297,28 @@ export function HierarchySelector({
               <div className="relative">
                 <select
                   value={selectedLessonId}
-                  onChange={(e) => onLessonChange(e.target.value)}
-                  disabled={!selectedUnitId || !activeUnit?.lessons?.length}
+                  onChange={(e) => handleSmartLessonChange(e.target.value)}
+                  disabled={!activeSubject || !activeSubject.units?.some((u) => u.lessons?.length)}
                   className="w-full h-10 pr-9 pl-9 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 text-[13px] font-bold text-slate-900 dark:text-white disabled:opacity-50 appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#800020]/20 focus:border-[#800020] dark:[&>option]:bg-slate-900 dark:[&>option]:text-white"
                 >
-                  <option value="">-- اختر الدرس المستهدف --</option>
-                  {activeUnit?.lessons?.map((l) => (
-                    <option key={l.id} value={l.id}>
-                      {l.title}
-                    </option>
-                  ))}
+                  <option value="">-- اختر الدرس (أو اختر الوحدة أولاً) --</option>
+                  {selectedUnitId && activeUnit ? (
+                    activeUnit.lessons?.map((l) => (
+                      <option key={l.id} value={l.id}>
+                        {l.title}
+                      </option>
+                    ))
+                  ) : (
+                    activeSubject?.units?.map((u) => (
+                      <optgroup key={u.id} label={u.title}>
+                        {u.lessons?.map((l) => (
+                          <option key={l.id} value={l.id}>
+                            {l.title}
+                          </option>
+                        ))}
+                      </optgroup>
+                    ))
+                  )}
                 </select>
                 <GraduationCap className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                 <ChevronDown className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -303,6 +336,40 @@ export function HierarchySelector({
               </div>
             )}
           </div>
+        </div>
+
+        {/* Real-time Academic Path Confirmation Breadcrumb */}
+        <div className="flex flex-wrap items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800 text-[11px] font-bold text-slate-600 dark:text-slate-300">
+          <span className="text-[#800020] dark:text-[#FB7185] flex items-center gap-1 shrink-0">
+            <CheckCircle2 className="w-3.5 h-3.5" />
+            المسار المعتمد للأسئلة:
+          </span>
+          <span>{activeGrade ? activeGrade.name : isG10 ? "أولى بكالوريا" : "تانية بكالوريا"}</span>
+          <span className="text-slate-400">•</span>
+          <span>{selectedSchoolCategory === "LANGUAGES" ? "مدارس لغات" : "مدارس عربي"}</span>
+          {activeSubject && (
+            <>
+              <span className="text-slate-400">›</span>
+              <span className="text-slate-900 dark:text-white font-extrabold">{activeSubject.name}</span>
+            </>
+          )}
+          {activeUnit && (
+            <>
+              <span className="text-slate-400">›</span>
+              <span>{activeUnit.title}</span>
+            </>
+          )}
+          {selectedScope === "LESSON" && activeLesson && (
+            <>
+              <span className="text-slate-400">›</span>
+              <span className="text-[#800020] dark:text-[#FB7185]">{activeLesson.title}</span>
+            </>
+          )}
+          {selectedScope === "UNIT" && activeUnit && (
+            <span className="px-1.5 py-0.5 rounded bg-[#800020]/10 text-[#800020] dark:text-[#FB7185] text-[10px]">
+              (كامل دروس الوحدة)
+            </span>
+          )}
         </div>
       </div>
 

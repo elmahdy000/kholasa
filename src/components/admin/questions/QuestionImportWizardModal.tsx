@@ -30,6 +30,7 @@ import {
 } from "lucide-react";
 import { BidiStatement } from "@/components/ui/BidiStatement";
 import type { Subject, Grade } from "./types";
+import { QuestionCurriculumSelector } from "./QuestionCurriculumSelector";
 import {
   ParsedQuestion,
   QuestionType,
@@ -599,159 +600,73 @@ export function QuestionImportWizardModal({
                 </div>
               )}
 
-              <div className="p-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] space-y-4">
-                <h4 className="text-[14px] font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
+              {/* Curriculum Hierarchy Selector */}
+              <div className="p-4 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] space-y-3">
+                <h4 className="text-[13px] font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
                   <BookOpen className="w-4 h-4 text-[#800020]" />
                   <span>تحديد المنهج والمكان الأكاديمي للأسئلة</span>
                 </h4>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-[12px] font-bold text-[#64748B] mb-1">
-                      الصف الدراسي *
-                    </label>
-                    <select
-                      value={selectedGradeId}
-                      onChange={(e) => {
-                        setSelectedGradeId(e.target.value);
-                        setSelectedSubjectId("");
-                      }}
-                      className="w-full h-10 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] text-[13px] font-bold text-[#0F172A] dark:text-white"
-                    >
-                      {grades.map((g) => (
-                        <option key={g.id} value={g.id}>
-                          {g.name} ({g.code})
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-[12px] font-bold text-[#64748B] mb-1">
-                      نوع المدرسة *
-                    </label>
-                    <select
-                      value={selectedSchoolCategory}
-                      onChange={(e) => {
-                        setSelectedSchoolCategory(e.target.value as "ARABIC" | "LANGUAGES");
-                        setSelectedSubjectId("");
-                      }}
-                      className="w-full h-10 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] text-[13px] font-bold text-[#0F172A] dark:text-white"
-                    >
-                      <option value="ARABIC">مدارس عربي (عربي)</option>
-                      <option value="LANGUAGES">مدارس لغات (Languages)</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <div>
-                    <label className="block text-[12px] font-bold text-[#64748B] mb-1">
-                      المادة الدراسية *
-                    </label>
-                    <select
-                      value={selectedSubjectId}
-                      onChange={(e) => {
-                        setSelectedSubjectId(e.target.value);
-                        setSelectedUnitId("");
-                        setSelectedLessonId("");
-                      }}
-                      className="w-full h-10 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] text-[13px] font-bold text-[#0F172A] dark:text-white"
-                    >
-                      {eligibleSubjects.length === 0 ? (
-                        <option value="">لا توجد مواد مطابقة للفلتر</option>
-                      ) : (
-                        eligibleSubjects.map((s) => (
-                          <option key={s.id} value={s.id}>
-                            {s.name}
-                          </option>
-                        ))
-                      )}
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-[12px] font-bold text-[#64748B] mb-1">
-                      الوحدة الدراسية (اختياري)
-                    </label>
-                    <select
-                      value={selectedUnitId}
-                      onChange={(e) => {
-                        setSelectedUnitId(e.target.value);
-                        setSelectedLessonId("");
-                      }}
-                      className="w-full h-10 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] text-[13px] font-bold text-[#0F172A] dark:text-white"
-                    >
-                      <option value="">بدون وحدة محددة</option>
-                      {activeSubject?.units.map((u) => (
-                        <option key={u.id} value={u.id}>
-                          {u.title}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-[12px] font-bold text-[#64748B] mb-1">
-                      الدرس المرتبط (اختياري)
-                    </label>
-                    <select
-                      value={selectedLessonId}
-                      onChange={(e) => setSelectedLessonId(e.target.value)}
-                      disabled={!selectedUnitId}
-                      className="w-full h-10 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] text-[13px] font-bold text-[#0F172A] dark:text-white disabled:opacity-50"
-                    >
-                      <option value="">بدون درس محدد</option>
-                      {activeSubject?.units
-                        .find((u) => u.id === selectedUnitId)
-                        ?.lessons?.map((l) => (
-                          <option key={l.id} value={l.id}>
-                            {l.title}
-                          </option>
-                        ))}
-                    </select>
-                  </div>
-                </div>
+                <QuestionCurriculumSelector
+                  grades={grades}
+                  gradeId={selectedGradeId}
+                  setGradeId={setSelectedGradeId}
+                  schoolCategory={selectedSchoolCategory}
+                  setSchoolCategory={setSelectedSchoolCategory}
+                  subjects={subjects}
+                  subjectId={selectedSubjectId}
+                  setSubjectId={setSelectedSubjectId}
+                  unitId={selectedUnitId}
+                  setUnitId={setSelectedUnitId}
+                  lessonId={selectedLessonId}
+                  setLessonId={setSelectedLessonId}
+                />
               </div>
 
-              {/* Allowed Question Types */}
-              <div className="p-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] space-y-3">
-                <label className="block text-[13px] font-bold text-[#0F172A] dark:text-white">
-                  أنواع الأسئلة المراد استيرادها:
-                </label>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-                  {[
-                    { id: "MCQ" as QuestionType, title: "اختيار من متعدد (MCQ)" },
-                    { id: "TRUE_FALSE" as QuestionType, title: "صح أو خطأ (True / False)" },
-                    { id: "ESSAY" as QuestionType, title: "أسئلة مقالية (Essay)" },
-                  ].map((t) => {
-                    const isSelected = allowedTypes.includes(t.id);
-                    return (
-                      <button
-                        key={t.id}
-                        type="button"
-                        onClick={() => toggleAllowedType(t.id)}
-                        className={`p-3 rounded-xl border text-[13px] font-bold flex items-center justify-between cursor-pointer transition-colors ${
-                          isSelected
-                            ? "bg-[#800020]/10 border-[#800020] text-[#800020] dark:text-[#FB7185]"
-                            : "bg-white dark:bg-[#0F172A] border-[#E2E8F0] dark:border-[#334155] text-[#64748B]"
-                        }`}
-                      >
-                        <span>{t.title}</span>
-                        <div
-                          className={`w-4 h-4 rounded flex items-center justify-center border ${
+              {/* Allowed Question Types (Only needed if in ALL mode, otherwise clearly isolated) */}
+              {targetType === "ALL" ? (
+                <div className="p-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] space-y-3">
+                  <div className="flex items-center justify-between">
+                    <label className="block text-[13px] font-bold text-[#0F172A] dark:text-white">
+                      أنواع الأسئلة المقبولة في الاستيراد الشامل:
+                    </label>
+                    <span className="text-[11px] text-[#64748B] dark:text-[#94A3B8]">
+                      (يمكنك استبعاد أي نوع بإلغاء تحديده)
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                    {[
+                      { id: "MCQ" as QuestionType, title: "اختيار من متعدد (MCQ)" },
+                      { id: "TRUE_FALSE" as QuestionType, title: "صح أو خطأ (T/F)" },
+                      { id: "ESSAY" as QuestionType, title: "أسئلة مقالية (Essay)" },
+                    ].map((t) => {
+                      const isSelected = allowedTypes.includes(t.id);
+                      return (
+                        <button
+                          key={t.id}
+                          type="button"
+                          onClick={() => toggleAllowedType(t.id)}
+                          className={`p-3 rounded-xl border text-[12px] font-bold flex items-center justify-between cursor-pointer transition-colors ${
                             isSelected
-                              ? "bg-[#800020] border-[#800020] text-white"
-                              : "border-[#CBD5E1]"
+                              ? "bg-[#800020]/10 border-[#800020] text-[#800020] dark:text-[#FB7185]"
+                              : "bg-white dark:bg-[#0F172A] border-[#E2E8F0] dark:border-[#334155] text-[#64748B]"
                           }`}
                         >
-                          {isSelected && <Check className="w-3 h-3" />}
-                        </div>
-                      </button>
-                    );
-                  })}
+                          <span>{t.title}</span>
+                          <div
+                            className={`w-4 h-4 rounded flex items-center justify-center border ${
+                              isSelected
+                                ? "bg-[#800020] border-[#800020] text-white"
+                                : "border-[#CBD5E1]"
+                            }`}
+                          >
+                            {isSelected && <Check className="w-3 h-3" />}
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
+              ) : null}
 
               {/* Difficulty Classification Strategy */}
               <div className="p-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] space-y-3">

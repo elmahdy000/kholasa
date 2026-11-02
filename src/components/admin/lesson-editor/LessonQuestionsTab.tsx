@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import {
   HelpCircle,
   Plus,
+  Upload,
   Trash2,
   Edit3,
   FileText,
@@ -630,93 +631,40 @@ export function LessonQuestionsTab({
 
         {/* Dedicated Actions Per Active Tab */}
         <div className="flex items-center gap-2 flex-wrap">
-          {typeFilter === "MCQ" && (
-            <>
-              <button
-                type="button"
-                onClick={() => openNewQuestionModal("MCQ")}
-                className="h-10 px-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all active:scale-95 cursor-pointer"
-              >
-                <Plus className="w-4 h-4" />
-                <span>+ إضافة سؤال MCQ</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => openImportWizardWithType("MCQ")}
-                className="h-10 px-3.5 rounded-xl bg-blue-700 hover:bg-blue-800 text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
-                title="استيراد أسئلة الاختيار من متعدد فقط من ملف Word"
-              >
-                <CheckCircle2 className="w-4 h-4" />
-                <span>🎯 استيراد MCQ من Word</span>
-              </button>
-            </>
-          )}
+          <button
+            type="button"
+            onClick={() => openNewQuestionModal(typeFilter === "ALL" ? undefined : (typeFilter as any))}
+            className="h-10 px-4 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all active:scale-95 cursor-pointer"
+          >
+            <Plus className="w-4 h-4" />
+            <span>
+              {typeFilter === "MCQ"
+                ? "إضافة سؤال MCQ"
+                : typeFilter === "ESSAY"
+                ? "إضافة سؤال مقالي"
+                : typeFilter === "TRUE_FALSE"
+                ? "إضافة سؤال صح وخطأ"
+                : "إضافة سؤال جديد"}
+            </span>
+          </button>
 
-          {typeFilter === "ESSAY" && (
-            <>
-              <button
-                type="button"
-                onClick={() => openNewQuestionModal("ESSAY")}
-                className="h-10 px-3.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all active:scale-95 cursor-pointer"
-              >
-                <Plus className="w-4 h-4" />
-                <span>+ إضافة سؤال مقالي</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => openImportWizardWithType("ESSAY")}
-                className="h-10 px-3.5 rounded-xl bg-amber-700 hover:bg-amber-800 text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
-                title="استيراد الأسئلة المقالية فقط من ملف Word"
-              >
-                <BookOpen className="w-4 h-4" />
-                <span>📝 استيراد مقالي من Word</span>
-              </button>
-            </>
-          )}
-
-          {typeFilter === "TRUE_FALSE" && (
-            <>
-              <button
-                type="button"
-                onClick={() => openNewQuestionModal("TRUE_FALSE")}
-                className="h-10 px-3.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all active:scale-95 cursor-pointer"
-              >
-                <Plus className="w-4 h-4" />
-                <span>+ إضافة سؤال صح وخطأ</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => openImportWizardWithType("TRUE_FALSE")}
-                className="h-10 px-3.5 rounded-xl bg-purple-700 hover:bg-purple-800 text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
-                title="استيراد أسئلة الصواب والخطأ فقط من ملف Word"
-              >
-                <Layers className="w-4 h-4" />
-                <span>⚖️ استيراد صح وخطأ</span>
-              </button>
-            </>
-          )}
-
-          {typeFilter === "ALL" && (
-            <>
-              <button
-                type="button"
-                onClick={() => openNewQuestionModal()}
-                className="h-10 px-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all active:scale-95 cursor-pointer"
-              >
-                <Plus className="w-4 h-4" />
-                <span>+ إضافة سؤال</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => openImportWizardWithType("ALL")}
-                className="h-10 px-3.5 rounded-xl bg-[#0F172A] hover:bg-[#1E293B] text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all cursor-pointer border border-slate-700"
-                title="استيراد شامل لكافة الأنواع"
-              >
-                <Sparkles className="w-3.5 h-3.5 text-blue-400" />
-                <span>استيراد شامل</span>
-              </button>
-            </>
-          )}
+          <button
+            type="button"
+            onClick={() => openImportWizardWithType(typeFilter === "ALL" ? "ALL" : (typeFilter as any))}
+            className="h-10 px-3.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#1E293B] hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 text-xs font-bold flex items-center gap-1.5 shadow-2xs transition-all cursor-pointer"
+            title="استيراد الأسئلة من ملف Word"
+          >
+            <Upload className="w-4 h-4 text-[#800020] dark:text-[#FB7185]" />
+            <span>
+              {typeFilter === "MCQ"
+                ? "استيراد أسئلة MCQ من Word"
+                : typeFilter === "ESSAY"
+                ? "استيراد مقالي من Word"
+                : typeFilter === "TRUE_FALSE"
+                ? "استيراد صح وخطأ من Word"
+                : "استيراد أسئلة Word"}
+            </span>
+          </button>
 
           {questions.length > 0 && (
             <button
