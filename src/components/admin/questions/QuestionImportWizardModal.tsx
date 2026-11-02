@@ -125,9 +125,36 @@ export function QuestionImportWizardModal({
   const [committedCount, setCommittedCount] = useState(0);
   const [skippedDuplicates, setSkippedDuplicates] = useState(0);
 
+  // Complete reset function to prevent unit/lesson/staged state from getting stuck
+  const resetAllWizardState = () => {
+    setCurrentStep(1);
+    setSelectedUnitId("");
+    setSelectedLessonId("");
+    setSelectedFile(null);
+    setPasteText("");
+    setIsAnalyzing(false);
+    setAnalysisError(null);
+    setStagedQuestions([]);
+    setSearchQuery("");
+    setStatusFilter("ALL");
+    setExpandedQuestionId(null);
+    setApprovedQuestionIds(new Set());
+    setIsCommitting(false);
+    setCommitError(null);
+    setCommitSuccess(false);
+    setCommittedCount(0);
+    setSkippedDuplicates(0);
+  };
+
+  const handleModalClose = () => {
+    resetAllWizardState();
+    onClose();
+  };
+
   // Synchronize targetType and allowedTypes whenever modal opens or initialType changes
   useEffect(() => {
     if (isOpen) {
+      resetAllWizardState();
       const mode = initialType || "ALL";
       setTargetType(mode);
       if (mode === "MCQ") {
@@ -467,7 +494,7 @@ export function QuestionImportWizardModal({
 
             <button
               type="button"
-              onClick={onClose}
+              onClick={handleModalClose}
               className="w-9 h-9 rounded-xl border border-[#E2E8F0] dark:border-[#334155] flex items-center justify-center text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white cursor-pointer transition-colors"
               aria-label="إغلاق"
             >
@@ -1382,7 +1409,7 @@ Explanation: الذكاء الاصطناعي مجال يضم أنظمة حاسو
                   )}
                   <button
                     type="button"
-                    onClick={onClose}
+                    onClick={handleModalClose}
                     className="h-10 px-6 rounded-xl bg-emerald-700 text-white text-[13px] font-bold hover:bg-emerald-800 cursor-pointer transition-colors"
                   >
                     إغلاق المعالج والعودة للبنك
@@ -1461,7 +1488,7 @@ Explanation: الذكاء الاصطناعي مجال يضم أنظمة حاسو
           <div className="flex items-center gap-2">
             <button
               type="button"
-              onClick={onClose}
+              onClick={handleModalClose}
               className="h-10 px-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-bold text-[#64748B] hover:text-[#0F172A] dark:hover:text-white cursor-pointer transition-colors"
             >
               إلغاء

@@ -255,7 +255,11 @@ export function HierarchySelector({
             <div className="relative">
               <select
                 value={selectedUnitId}
-                onChange={(e) => onUnitChange(e.target.value)}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  onUnitChange(val);
+                  if (!val) onLessonChange("");
+                }}
                 disabled={!activeSubject || !activeSubject.units?.length}
                 className="w-full h-10 pr-9 pl-9 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 text-[13px] font-bold text-slate-900 dark:text-white disabled:opacity-50 appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#800020]/20 focus:border-[#800020] dark:[&>option]:bg-slate-900 dark:[&>option]:text-white"
               >
@@ -303,11 +307,14 @@ export function HierarchySelector({
                 >
                   <option value="">-- اختر الدرس (أو اختر الوحدة أولاً) --</option>
                   {selectedUnitId && activeUnit ? (
-                    activeUnit.lessons?.map((l) => (
-                      <option key={l.id} value={l.id}>
-                        {l.title}
-                      </option>
-                    ))
+                    <>
+                      {activeUnit.lessons?.map((l) => (
+                        <option key={l.id} value={l.id}>
+                          {l.title}
+                        </option>
+                      ))}
+                      <option value="__CLEAR_ALL__">↺ إظهار كافة وحدات ودروس المادة...</option>
+                    </>
                   ) : (
                     activeSubject?.units?.map((u) => (
                       <optgroup key={u.id} label={u.title}>
@@ -369,6 +376,19 @@ export function HierarchySelector({
             <span className="px-1.5 py-0.5 rounded bg-[#800020]/10 text-[#800020] dark:text-[#FB7185] text-[10px]">
               (كامل دروس الوحدة)
             </span>
+          )}
+          {(selectedUnitId || selectedLessonId) && (
+            <button
+              type="button"
+              onClick={() => {
+                onUnitChange("");
+                onLessonChange("");
+              }}
+              className="text-[11px] font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-950/60 px-2 py-0.5 rounded-md border border-rose-200 dark:border-rose-900/50 cursor-pointer transition-colors mr-auto shrink-0"
+              title="إلغاء التحديد والتراجع عن اختيار الوحدة والدرس"
+            >
+              تفريغ التحديد ✕
+            </button>
           )}
         </div>
       </div>
