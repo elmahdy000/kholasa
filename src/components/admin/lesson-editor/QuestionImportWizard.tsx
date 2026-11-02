@@ -90,11 +90,13 @@ export function QuestionImportWizard({
   const [isCommitting, setIsCommitting] = useState(false);
   const [commitError, setCommitError] = useState<string | null>(null);
   const [commitSuccess, setCommitSuccess] = useState(false);
+  const commitSuccessRef = useRef(false);
   const [isCloseConfirmOpen, setIsCloseConfirmOpen] = useState(false);
 
   // Synchronize targetType and allowedTypes whenever modal opens or initialType changes
   useEffect(() => {
     if (isOpen) {
+      commitSuccessRef.current = false;
       const mode = initialType || "ALL";
       setTargetType(mode);
       if (mode === "MCQ") {
@@ -132,7 +134,8 @@ export function QuestionImportWizard({
 
   // Reset or close modal
   const handleClose = () => {
-    if (stagedQuestions.length > 0 && !commitSuccess) {
+    // If questions were already successfully committed, close immediately without warning
+    if (stagedQuestions.length > 0 && !commitSuccess && !commitSuccessRef.current) {
       setIsCloseConfirmOpen(true);
       return;
     }
@@ -140,6 +143,7 @@ export function QuestionImportWizard({
   };
 
   const executeClose = () => {
+    commitSuccessRef.current = false;
     setIsCloseConfirmOpen(false);
     setCurrentStep(1);
     setSelectedFile(null);
@@ -525,10 +529,11 @@ export function QuestionImportWizard({
         throw new Error(data.error || "فشل حفظ الأسئلة في بنك الدرس");
       }
 
+      commitSuccessRef.current = true;
       setCommitSuccess(true);
       setTimeout(() => {
         onImportSuccess();
-        handleClose();
+        executeClose();
       }, 1500);
     } catch (err: any) {
       setCommitError(err.message || "حدث خطأ غير متوقع أثناء الحفظ");
@@ -569,7 +574,7 @@ export function QuestionImportWizard({
 
             <button
               type="button"
-              onClick={handleClose}
+              onClick={() => (commitSuccess || commitSuccessRef.current ? executeClose() : handleClose())}
               className="w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
             >
               ✕
@@ -1980,11 +1985,11 @@ export function QuestionImportWizard({
           <div className="flex items-center gap-2">
             <button
               type="button"
-              onClick={handleClose}
+              onClick={() => (commitSuccess || commitSuccessRef.current ? executeClose() : handleClose())}
               disabled={isCommitting}
               className="px-4 py-2 rounded-xl text-xs font-bold text-slate-500 hover:text-slate-700 cursor-pointer"
             >
-              إلغاء
+              {commitSuccess ? "إغلاق" : "إلغاء"}
             </button>
 
             {currentStep === 1 && (
