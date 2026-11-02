@@ -32,6 +32,8 @@ import {
   FileText,
 } from "lucide-react";
 import type { EducationalSystem, Grade } from "./types";
+import { useToast } from "@/components/ui/Toast";
+import { ConfirmModal } from "@/components/ui/ConfirmModal";
 
 interface StudentDetailsDrawerProps {
   userId: string | null;
@@ -135,6 +137,8 @@ export function StudentDetailsDrawer({
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<"overview" | "analytics" | "exams" | "mistakes" | "lessons" | "security">("overview");
   const [copiedReport, setCopiedReport] = useState(false);
+  const { toast } = useToast();
+  const [isResetConfirmOpen, setIsResetConfirmOpen] = useState(false);
 
   // Edit basic info state
   const [name, setName] = useState("");
@@ -275,9 +279,11 @@ export function StudentDetailsDrawer({
     }
   };
 
-  const handleResetDevices = async () => {
-    if (!confirm("هل أنت متأكد من فك ربط جميع أجهزة هذا الطالب؟")) return;
+  const handleResetDevices = () => {
+    setIsResetConfirmOpen(true);
+  };
 
+  const executeResetDevices = async () => {
     setIsResettingDevices(true);
     try {
       const res = await fetch(`/api/admin/users/${userId}/reset-devices`, {
@@ -288,9 +294,10 @@ export function StudentDetailsDrawer({
 
       setStudent((prev) => (prev ? { ...prev, boundDevices: [], stats: { ...prev.stats, activeDevicesCount: 0 } } : prev));
       onUserUpdated();
-      alert("تم فك ربط أجهزة الطالب بنجاح");
+      toast.success("تم فك ربط أجهزة الطالب بنجاح");
+      setIsResetConfirmOpen(false);
     } catch (err) {
-      alert(err instanceof Error ? err.message : "حدث خطأ أثناء فك الأجهزة");
+      toast.error(err instanceof Error ? err.message : "حدث خطأ أثناء فك الأجهزة");
     } finally {
       setIsResettingDevices(false);
     }
@@ -362,9 +369,10 @@ _منصة الخلاصة التعليمية - رفيقكم نحو التفوق_ 
     try {
       await navigator.clipboard.writeText(text);
       setCopiedReport(true);
+      toast.success("تم نسخ تقرير المتابعة بنجاح");
       setTimeout(() => setCopiedReport(false), 2500);
     } catch {
-      alert("تعذر نسخ النص تلقائياً");
+      toast.error("تعذر نسخ النص تلقائياً");
     }
   };
 
@@ -413,7 +421,7 @@ _منصة الخلاصة التعليمية - رفيقكم نحو التفوق_ 
                     type="button"
                     onClick={() => {
                       navigator.clipboard.writeText(student.loginCode!);
-                      alert(`تم نسخ كود الطالب: ${student.loginCode}`);
+                      toast.success(`تم نسخ كود الطالب: ${student.loginCode}`);
                     }}
                     title="انقر لنسخ كود الدخول"
                     className="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-[#800020]/10 hover:bg-[#800020]/20 text-[#800020] dark:text-[#FB7185] border border-[#800020]/20 inline-flex items-center gap-1.5 cursor-pointer transition-colors"
@@ -1233,6 +1241,18 @@ _منصة الخلاصة التعليمية - رفيقكم نحو التفوق_ 
           )}
         </div>
       </div>
+      <ConfirmModal
+        isOpen={isResetConfirmOpen}
+        onClose={() => setIsResetConfirmOpen(false)}
+        onConfirm={executeResetDevices}
+        title="تأكيد فك ربط الأجهزة"
+        description="هل أنت متأكد من فك ربط جميع أجهزة هذا الطالب؟ سيتمكن الطالب من تسجيل الدخول من جهاز جديد فوراً."
+        confirmText="فك الأجهزة"
+        cancelText="إلغاء"
+        variant="warning"
+        itemHighlight={student?.name || undefined}
+        isLoading={isResettingDevices}
+      />
     </div>
   );
 }

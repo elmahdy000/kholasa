@@ -44,7 +44,9 @@ export function UserTable({
               <th className="py-3.5 px-4 whitespace-nowrap text-center">الأجهزة</th>
               <th className="py-3.5 px-4 whitespace-nowrap text-center">الدروس</th>
               <th className="py-3.5 px-4 whitespace-nowrap text-center">الامتحانات</th>
-              <th className="py-3.5 px-4 whitespace-nowrap text-center min-w-[210px]">الإجراءات</th>
+              <th className="sticky left-0 bg-[#F8FAFC] dark:bg-[#1E293B] shadow-[-6px_0_12px_rgba(0,0,0,0.06)] dark:shadow-[-6px_0_12px_rgba(0,0,0,0.3)] border-r border-[#E2E8F0] dark:border-[#334155] py-3.5 px-4 whitespace-nowrap text-center min-w-[220px] z-10">
+                الإجراءات
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-[#E2E8F0] dark:divide-[#334155]/60 text-[#0F172A] dark:text-[#F8FAFC]">
@@ -55,12 +57,12 @@ export function UserTable({
               return (
                 <tr
                   key={u.id}
-                  className="hover:bg-[#F8FAFC]/80 dark:hover:bg-[#1E293B]/40 transition-colors"
+                  className="group hover:bg-[#F8FAFC]/80 dark:hover:bg-[#1E293B]/40 transition-colors"
                 >
                   {/* 1. User & Code info */}
                   <td className="py-3.5 px-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#800020] to-[#500014] text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-2xs">
+                      <div className="w-9 h-9 rounded-xl bg-[#800020] text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-2xs">
                         {(u.name || "م").charAt(0)}
                       </div>
                       <div className="min-w-0">
@@ -83,7 +85,7 @@ export function UserTable({
                               title="انقر لنسخ كود الطالب"
                               className={`px-2 py-0.5 rounded-md font-mono text-[11px] font-bold transition-all inline-flex items-center gap-1 cursor-pointer shrink-0 border ${
                                 isCopied
-                                  ? "bg-emerald-500 text-white border-emerald-600 dark:bg-emerald-600"
+                                  ? "bg-emerald-600 text-white border-emerald-700"
                                   : "bg-[#800020]/10 hover:bg-[#800020]/20 text-[#800020] dark:text-[#FB7185] border-[#800020]/20"
                               }`}
                             >
@@ -108,7 +110,7 @@ export function UserTable({
                             <span
                               className={`text-[10px] px-1.5 py-0.5 rounded-md font-bold whitespace-nowrap ${
                                 u.schoolCategory === "LANGUAGES"
-                                  ? "bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300 border border-blue-200 dark:border-blue-800"
+                                  ? "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border border-slate-200 dark:border-slate-700"
                                   : "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300"
                               }`}
                             >
@@ -148,14 +150,14 @@ export function UserTable({
                   {/* 4. Role Badge */}
                   <td className="py-3.5 px-4 whitespace-nowrap">
                     <span
-                      className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${
+                      className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${
                         u.role === "SUPER_ADMIN"
-                          ? "bg-[#800020]/10 text-[#800020] border-[#800020]/30"
+                          ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900 border-transparent"
                           : u.role === "ADMIN"
-                          ? "bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/30"
+                          ? "bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200 border-slate-300 dark:border-slate-600"
                           : u.role === "TEACHER"
-                          ? "bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-500/30"
-                          : "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border-slate-200 dark:border-slate-700"
+                          ? "bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200 border-slate-300 dark:border-slate-600"
+                          : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300 border-slate-200 dark:border-slate-700"
                       }`}
                     >
                       {u.role === "SUPER_ADMIN"
@@ -172,16 +174,16 @@ export function UserTable({
                   <td className="py-3.5 px-4 whitespace-nowrap text-center">
                     {u.role === "STUDENT" ? (
                       <span
-                        className={`inline-flex items-center justify-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold whitespace-nowrap border ${
+                        className={`inline-flex items-center justify-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium whitespace-nowrap border ${
                           (u.boundDevices?.length || 0) >= (u.maxDevices || 1)
                             ? "bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-400 border-rose-200 dark:border-rose-800"
                             : (u.boundDevices?.length || 0) > 0
-                            ? "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400 border-amber-200 dark:border-amber-800"
-                            : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 border-slate-200 dark:border-slate-700"
+                            ? "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border-slate-200 dark:border-slate-700"
+                            : "bg-slate-50 text-slate-500 dark:bg-slate-800/60 dark:text-slate-400 border-slate-200 dark:border-slate-700"
                         }`}
                         title={`الأجهزة المسجلة: ${u.boundDevices?.length || 0} من أصل ${u.maxDevices || 1}`}
                       >
-                        <Smartphone className="w-3 h-3 shrink-0" />
+                        <Smartphone className="w-3 h-3 shrink-0 opacity-70" />
                         <span className="font-mono">
                           {u.boundDevices?.length || 0} / {u.maxDevices || 1}
                         </span>
@@ -193,28 +195,28 @@ export function UserTable({
 
                   {/* 6. Completed Lessons */}
                   <td className="py-3.5 px-4 whitespace-nowrap text-center">
-                    <span className="text-[12px] font-bold text-[#64748B] dark:text-[#94A3B8] bg-[#F1F5F9] dark:bg-[#1E293B] px-2 py-0.5 rounded-md font-mono">
+                    <span className="text-[12px] font-semibold text-[#64748B] dark:text-[#94A3B8] bg-[#F1F5F9] dark:bg-[#1E293B] px-2 py-0.5 rounded-md font-mono">
                       {completedLessons}
                     </span>
                   </td>
 
                   {/* 7. Exams Attempts */}
                   <td className="py-3.5 px-4 whitespace-nowrap text-center">
-                    <span className="text-[12px] font-bold text-[#64748B] dark:text-[#94A3B8] bg-[#F1F5F9] dark:bg-[#1E293B] px-2 py-0.5 rounded-md font-mono">
+                    <span className="text-[12px] font-semibold text-[#64748B] dark:text-[#94A3B8] bg-[#F1F5F9] dark:bg-[#1E293B] px-2 py-0.5 rounded-md font-mono">
                       {u.attempts?.length || 0}
                     </span>
                   </td>
 
-                  {/* 8. Actions */}
-                  <td className="py-3.5 px-4 whitespace-nowrap text-center">
+                  {/* 8. Sticky Actions Column */}
+                  <td className="sticky left-0 bg-white group-hover:bg-[#F8FAFC] dark:bg-[#0F172A] dark:group-hover:bg-[#1E293B] shadow-[-6px_0_12px_rgba(0,0,0,0.06)] dark:shadow-[-6px_0_12px_rgba(0,0,0,0.3)] border-r border-[#E2E8F0] dark:border-[#334155] py-3.5 px-4 whitespace-nowrap text-center z-10 transition-colors">
                     <div className="inline-flex items-center justify-center gap-1.5">
                       <button
                         type="button"
                         onClick={() => onInspectUser?.(u.id)}
-                        className="h-8 px-2.5 rounded-lg bg-[#800020]/10 hover:bg-[#800020]/20 text-[#800020] dark:text-[#FB7185] text-xs font-bold inline-flex items-center gap-1 transition-colors cursor-pointer"
+                        className="h-8 px-2.5 rounded-lg bg-slate-100 hover:bg-[#800020] hover:text-white dark:bg-[#1E293B] dark:hover:bg-[#800020] text-slate-700 dark:text-slate-200 text-xs font-semibold inline-flex items-center gap-1.5 transition-colors cursor-pointer"
                         title="عرض الملف الشامل للطالب"
                       >
-                        <Eye className="w-3.5 h-3.5" />
+                        <Eye className="w-3.5 h-3.5 opacity-70" />
                         <span>تفاصيل</span>
                       </button>
 
@@ -222,10 +224,10 @@ export function UserTable({
                         <button
                           type="button"
                           onClick={() => onResetDevices(u.id, u.name || "")}
-                          className="h-8 px-2.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-400 text-xs font-bold inline-flex items-center gap-1 transition-colors cursor-pointer border border-amber-500/20"
+                          className="h-8 px-2.5 rounded-lg bg-slate-100 hover:bg-amber-500/15 text-slate-700 hover:text-amber-800 dark:bg-[#1E293B] dark:text-slate-300 dark:hover:text-amber-300 text-xs font-semibold inline-flex items-center gap-1.5 transition-colors cursor-pointer border border-transparent hover:border-amber-300/40"
                           title="فك ربط الأجهزة المسجلة لإتاحة الدخول من جهاز جديد"
                         >
-                          <RotateCcw className="w-3.5 h-3.5" />
+                          <RotateCcw className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
                           <span>فك الأجهزة</span>
                         </button>
                       )}
@@ -233,10 +235,10 @@ export function UserTable({
                       <button
                         type="button"
                         onClick={() => onSelectUserToEdit(u)}
-                        className="h-8 px-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-[#1E293B] dark:hover:bg-[#334155] text-slate-700 dark:text-slate-300 text-xs font-bold inline-flex items-center gap-1 transition-colors cursor-pointer"
+                        className="h-8 px-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-[#1E293B] dark:hover:bg-[#334155] text-slate-600 dark:text-slate-300 text-xs font-semibold inline-flex items-center gap-1.5 transition-colors cursor-pointer"
                         title="تعديل الرتبة أو عدد الأجهزة"
                       >
-                        <Shield className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
+                        <Shield className="w-3.5 h-3.5 text-slate-400" />
                         <span>الرتبة</span>
                       </button>
 

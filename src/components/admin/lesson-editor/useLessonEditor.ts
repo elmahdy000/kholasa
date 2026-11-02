@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/components/ui/Toast";
 import type {
   LessonData,
   LessonEditorTabType,
@@ -27,6 +28,7 @@ export function useLessonEditor({
   onLessonDeleted,
 }: UseLessonEditorProps) {
   const router = useRouter();
+  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<LessonEditorTabType>("mindmap");
 
   const [isLoading, setIsLoading] = useState(true);
@@ -265,7 +267,9 @@ export function useLessonEditor({
       setStatusMessage({ type: "success", text: "تم رفع الملف بنجاح وتعيينه" });
       setTimeout(() => setStatusMessage(null), 3000);
     } catch (err) {
-      alert(err instanceof Error ? err.message : "تعذر رفع الملف");
+      const msg = err instanceof Error ? err.message : "تعذر رفع الملف";
+      setStatusMessage({ type: "error", text: msg });
+      toast.error(msg);
     } finally {
       setUploadingMedia(null);
     }
@@ -473,7 +477,9 @@ export function useLessonEditor({
         onClose();
       }
     } catch (err) {
-      alert(err instanceof Error ? err.message : "فشل حذف الدرس");
+      const msg = err instanceof Error ? err.message : "فشل حذف الدرس";
+      setStatusMessage({ type: "error", text: msg });
+      toast.error(msg);
     } finally {
       setIsDeleting(false);
       setShowDeleteConfirm(false);

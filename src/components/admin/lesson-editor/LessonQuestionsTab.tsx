@@ -24,6 +24,8 @@ import {
 import type { LessonQuestionItem, UnitInfo, LessonQuestionOption } from "./types";
 import { QuestionImportWizard } from "./QuestionImportWizard";
 import { FormattedAnswerView } from "@/components/ui/FormattedAnswerView";
+import { useToast } from "@/components/ui/Toast";
+import { ConfirmModal } from "@/components/ui/ConfirmModal";
 
 interface LessonQuestionsTabProps {
   lessonId: string;
@@ -93,6 +95,20 @@ export function LessonQuestionsTab({
   // Multi-selection state for Bulk Delete
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [isBulkDeleting, setIsBulkDeleting] = useState(false);
+  const { toast } = useToast();
+  const [questionConfirmModal, setQuestionConfirmModal] = useState<{
+    isOpen: boolean;
+    title: string;
+    description: string;
+    onConfirm: () => Promise<void>;
+    itemHighlight?: string;
+    variant?: "danger" | "warning";
+  }>({
+    isOpen: false,
+    title: "",
+    description: "",
+    onConfirm: async () => {},
+  });
 
   // Purge modal state
   const [showPurgeModal, setShowPurgeModal] = useState(false);
@@ -309,31 +325,41 @@ export function LessonQuestionsTab({
     }
   };
 
-  // Delete Question
-  const handleDeleteQuestion = async (questionId: string) => {
-    if (!confirm("هل أنت متأكد من حذف هذا السؤال من بنك أسئلة الدرس نهائياً؟")) return;
-    setDeletingId(questionId);
-
-    try {
-      const res = await fetch(`/api/admin/questions/${questionId}`, {
-        method: "DELETE",
-      });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.error || "فشل حذف السؤال");
-      }
-      setQuestions((prev) => prev.filter((q) => q.id !== questionId));
-      setSelectedIds((prev) => {
-        const next = new Set(prev);
-        next.delete(questionId);
-        return next;
-      });
-      onRefreshQuestions();
-    } catch (err: any) {
-      alert(err.message || "حدث خطأ أثناء حذف السؤال");
-    } finally {
-      setDeletingId(null);
-    }
+  // Delete Question with ConfirmModal
+  const handleDeleteQuestion = (questionId: string) => {
+    const targetQ = questions.find((q) => q.id === questionId);
+    setQuestionConfirmModal({
+      isOpen: true,
+      title: "تأكيد حذف السؤال",
+      description: "هل أنت متأكد من حذف هذا السؤال من بنك أسئلة الدرس نهائياً؟ لا يمكن التراجع عن هذا الإجراء.",
+      variant: "danger",
+      itemHighlight: targetQ?.statement ? (targetQ.statement.slice(0, 70) + (targetQ.statement.length > 70 ? "..." : "")) : undefined,
+      onConfirm: async () => {
+        setDeletingId(questionId);
+        try {
+          const res = await fetch(`/api/admin/questions/${questionId}`, {
+            method: "DELETE",
+          });
+          if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.error || "فشل حذف السؤال");
+          }
+          setQuestions((prev) => prev.filter((q) => q.id !== questionId));
+          setSelectedIds((prev) => {
+            const next = new Set(prev);
+            next.delete(questionId);
+            return next;
+          });
+          onRefreshQuestions();
+          toast.success("تم حذف السؤال بنجاح");
+          setQuestionConfirmModal((prev) => ({ ...prev, isOpen: false }));
+        } catch (err: any) {
+          toast.error(err.message || "حدث خطأ أثناء حذف السؤال");
+        } finally {
+          setDeletingId(null);
+        }
+      },
+    });
   };
 
   // Toggle selection for a single question
@@ -346,31 +372,40 @@ export function LessonQuestionsTab({
     });
   };
 
-  // Delete Selected Questions
-  const handleDeleteSelected = async () => {
+  // Delete Selected Questions with ConfirmModal
+  const handleDeleteSelected = () => {
     const ids = Array.from(selectedIds);
     if (ids.length === 0) return;
-    if (!confirm(`هل أنت متأكد من حذف ${ids.length} سؤال محدد نهائياً من قاعدة البيانات؟`)) return;
 
-    setIsBulkDeleting(true);
-    try {
-      const res = await fetch(`/api/admin/lessons/${lessonId}/questions`, {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ids }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "فشل حذف الأسئلة المحددة");
+    setQuestionConfirmModal({
+      isOpen: true,
+      title: "تأكيد حذف الأسئلة المحددة",
+      description: `هل أنت متأكد من حذف ${ids.length} سؤال محدد نهائياً من قاعدة البيانات؟ لا يمكن التراجع عن هذا الإجراء.`,
+      variant: "danger",
+      onConfirm: async () => {
+        setIsBulkDeleting(true);
+        try {
+          const res = await fetch(`/api/admin/lessons/${lessonId}/questions`, {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ ids }),
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || "فشل حذف الأسئلة المحددة");
 
-      const deletedSet = new Set(ids);
-      setQuestions((prev) => prev.filter((q) => !deletedSet.has(q.id)));
-      setSelectedIds(new Set());
-      onRefreshQuestions();
-    } catch (err: any) {
-      alert(err.message || "حدث خطأ أثناء حذف الأسئلة");
-    } finally {
-      setIsBulkDeleting(false);
-    }
+          const deletedSet = new Set(ids);
+          setQuestions((prev) => prev.filter((q) => !deletedSet.has(q.id)));
+          setSelectedIds(new Set());
+          onRefreshQuestions();
+          toast.success(`تم حذف ${ids.length} سؤال بنجاح`);
+          setQuestionConfirmModal((prev) => ({ ...prev, isOpen: false }));
+        } catch (err: any) {
+          toast.error(err.message || "حدث خطأ أثناء حذف الأسئلة");
+        } finally {
+          setIsBulkDeleting(false);
+        }
+      },
+    });
   };
 
   // Purge all questions or all questions of current active type
@@ -1907,6 +1942,17 @@ export function LessonQuestionsTab({
           </div>
         </div>
       )}
+      <ConfirmModal
+        isOpen={questionConfirmModal.isOpen}
+        onClose={() => setQuestionConfirmModal((prev) => ({ ...prev, isOpen: false }))}
+        onConfirm={questionConfirmModal.onConfirm}
+        title={questionConfirmModal.title}
+        description={questionConfirmModal.description}
+        variant={questionConfirmModal.variant || "danger"}
+        itemHighlight={questionConfirmModal.itemHighlight}
+        confirmText="تأكيد الحذف"
+        cancelText="إلغاء"
+      />
     </div>
   );
 }

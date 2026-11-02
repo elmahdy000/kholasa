@@ -13,6 +13,7 @@ import {
   Broadcast,
 } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/components/ui/Toast";
 
 export interface InAppNotificationItem {
   id: string;
@@ -52,31 +53,31 @@ function getNotificationVisuals(type: string, isUrgent?: boolean) {
     case "DAILY_EXAM":
       return {
         icon: Flame,
-        bg: "bg-[#FFF8E6] dark:bg-[#3D2C10]/40",
-        border: "border-[#FDE68A] dark:border-[#78350F]",
-        text: "text-[#B45309] dark:text-[#FCD34D]",
+        bg: "bg-amber-50 dark:bg-amber-950/30",
+        border: "border-amber-200 dark:border-amber-900/40",
+        text: "text-amber-700 dark:text-amber-400",
       };
     case "MISTAKES":
       return {
         icon: WarningCircle,
-        bg: "bg-[#FFF1F2] dark:bg-[#3E141B]/40",
-        border: "border-[#FECDD3] dark:border-[#881337]",
-        text: "text-[#BE123C] dark:text-[#FDA4AF]",
+        bg: "bg-rose-50 dark:bg-rose-950/30",
+        border: "border-rose-200 dark:border-rose-900/40",
+        text: "text-rose-700 dark:text-rose-400",
       };
     case "PROGRESS":
       return {
         icon: BookOpen,
-        bg: "bg-[#F0FDF4] dark:bg-[#0E2F1B]/40",
-        border: "border-[#BBF7D0] dark:border-[#14532D]",
-        text: "text-[#15803D] dark:text-[#86EFAC]",
+        bg: "bg-emerald-50 dark:bg-emerald-950/30",
+        border: "border-emerald-200 dark:border-emerald-900/40",
+        text: "text-emerald-700 dark:text-emerald-400",
       };
     case "ANNOUNCEMENT":
     default:
       return {
         icon: Megaphone,
-        bg: isUrgent ? "bg-[#FFF1F2] dark:bg-[#3E141B]/40" : "bg-[#F8FAFC] dark:bg-[#1E293B]",
-        border: isUrgent ? "border-[#FECDD3] dark:border-[#881337]" : "border-[#E2E8F0] dark:border-[#334155]",
-        text: isUrgent ? "text-[#BE123C] dark:text-[#FDA4AF]" : "text-[#475569] dark:text-[#94A3B8]",
+        bg: isUrgent ? "bg-rose-50 dark:bg-rose-950/30" : "bg-slate-100 dark:bg-slate-800",
+        border: isUrgent ? "border-rose-200 dark:border-rose-900/40" : "border-slate-200 dark:border-slate-700",
+        text: isUrgent ? "text-rose-700 dark:text-rose-400" : "text-slate-600 dark:text-slate-300",
       };
   }
 }
@@ -94,7 +95,9 @@ function urlBase64ToUint8Array(base64String: string) {
 }
 
 export function NotificationBell() {
+  const { toast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<"all" | "unread">("all");
   const [notifications, setNotifications] = useState<InAppNotificationItem[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -159,40 +162,41 @@ export function NotificationBell() {
         await fetch("/api/notifications", {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ markAll: true }),
+          body: JSON.stringify({ all: true }),
         });
         setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
         setUnreadCount(0);
+        toast.success("تم تحديد كافة الإشعارات كمقروءة");
       } catch (err) {
         console.error("Failed to mark all as read:", err);
       }
     });
   };
 
-  // Mark single as read when clicking link
+  // Mark single item as read on click
   const handleItemClick = async (notif: InAppNotificationItem) => {
-    if (!notif.isRead) {
+    setIsOpen(false);
+    if (!notif.isRead && notif.isPersisted) {
       try {
-        await fetch("/api/notifications", {
+        await fetch(`/api/notifications`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ notificationId: notif.id }),
+          body: JSON.stringify({ id: notif.id }),
         });
         setNotifications((prev) =>
           prev.map((n) => (n.id === notif.id ? { ...n, isRead: true } : n))
         );
-        setUnreadCount((c) => Math.max(0, c - 1));
+        setUnreadCount((prev) => Math.max(0, prev - 1));
       } catch (err) {
-        console.error("Failed to mark notification as read:", err);
+        console.error("Failed to mark notification read:", err);
       }
     }
-    setIsOpen(false);
   };
 
   // Request browser push notification permission and register service worker
   const handleEnablePush = async () => {
     if (typeof window === "undefined" || !("Notification" in window) || !("serviceWorker" in navigator)) {
-      alert("متصفحك لا يدعم إشعارات الويب.");
+      toast.warning("متصفحك لا يدعم إشعارات الويب");
       return;
     }
 
@@ -227,16 +231,22 @@ export function NotificationBell() {
             userAgent: navigator.userAgent,
           }),
         });
+
+        toast.success("تم تفعيل إشعارات المتصفح بنجاح!");
+      } else {
+        toast.warning("تم رفض إذن الإشعارات من إعدادات المتصفح");
       }
     } catch (err) {
       console.error("Web push enablement error:", err);
-      alert("حدث خطأ أثناء تفعيل إشعارات المتصفح، تأكد من إعطاء الصلاحية في إعدادات المتصفح.");
+      toast.error("حدث خطأ أثناء تفعيل إشعارات المتصفح، يرجى مراجعة إعدادات الأذونات");
     } finally {
       setIsSubscribing(false);
     }
   };
 
   const hasUrgent = notifications.some((n) => n.isUrgent && !n.isRead);
+  const displayedNotifications =
+    activeTab === "unread" ? notifications.filter((n) => !n.isRead) : notifications;
 
   return (
     <div className="relative inline-block text-right" ref={dropdownRef}>
@@ -245,18 +255,21 @@ export function NotificationBell() {
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
-          "relative w-9 h-9 sm:w-10 sm:h-10 rounded-lg border border-[#E8E9ED] dark:border-[#22364F] bg-white dark:bg-[#10233A] flex items-center justify-center text-[#64748B] dark:text-[#94A3B8] hover:text-[#12263F] dark:hover:text-[#F5F7FB] hover:border-[#800020]/40 dark:hover:border-[#A30D36]/60 transition-colors cursor-pointer",
-          isOpen && "border-[#800020] dark:border-[#A30D36] text-[#800020] dark:text-[#F5F7FB]"
+          "relative w-9 h-9 sm:w-10 sm:h-10 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#1E293B] flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:border-slate-300 dark:hover:border-slate-700 transition-colors cursor-pointer shadow-2xs",
+          isOpen && "border-[#800020] dark:border-[#FB7185] text-[#800020] dark:text-[#FB7185]"
         )}
         title="الإشعارات والتنبيهات"
         aria-label="الإشعارات"
         aria-expanded={isOpen}
       >
-        <Bell className={cn("w-4 h-4", hasUrgent && "text-[#800020] dark:text-[#FDA4AF]")} weight={unreadCount > 0 ? "fill" : "bold"} />
+        <Bell
+          className={cn("w-4 h-4", hasUrgent && "text-[#800020] dark:text-[#FB7185]")}
+          weight={unreadCount > 0 ? "fill" : "bold"}
+        />
 
         {/* Unread Counter Badge */}
         {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-[#800020] dark:bg-[#A30D36] text-white text-[10px] font-bold rounded-full flex items-center justify-center ring-2 ring-white dark:ring-[#081426] shadow-xs">
+          <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-[#800020] text-white text-[10px] font-bold rounded-full flex items-center justify-center ring-2 ring-white dark:ring-[#0F172A] shadow-xs">
             {unreadCount > 9 ? "+9" : unreadCount}
           </span>
         )}
@@ -264,26 +277,24 @@ export function NotificationBell() {
 
       {/* Flyout Dropdown Menu */}
       {isOpen && (
-        <div className="absolute left-0 sm:left-auto sm:right-0 mt-2 w-[calc(100vw-2rem)] sm:w-[400px] max-w-[420px] bg-white dark:bg-[#0D1B2E] border border-[#E8E9ED] dark:border-[#22364F] rounded-2xl shadow-2xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+        <div className="absolute left-0 sm:left-auto sm:right-0 mt-2 w-[calc(100vw-2rem)] sm:w-[380px] max-w-[400px] bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
           {/* Header */}
-          <div className="px-4 py-3.5 border-b border-[#E8E9ED] dark:border-[#22364F] flex items-center justify-between bg-[#F7F8FA] dark:bg-[#10233A]">
+          <div className="px-4 py-3.5 border-b border-slate-100 dark:border-slate-800/80 flex items-center justify-between bg-slate-50/70 dark:bg-slate-900/40">
             <div className="flex items-center gap-2">
-              <span className="font-bold text-sm text-[#12263F] dark:text-[#F5F7FB]">الإشعارات</span>
-              {unreadCount > 0 ? (
-                <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-[#800020]/10 dark:bg-[#A30D36]/20 text-[#800020] dark:text-[#FDA4AF]">
+              <span className="font-bold text-sm text-slate-900 dark:text-white">الإشعارات والتنبيهات</span>
+              {unreadCount > 0 && (
+                <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-[#800020]/10 text-[#800020] dark:text-[#FB7185]">
                   {unreadCount} جديد
                 </span>
-              ) : (
-                <span className="text-xs text-[#64748B] dark:text-[#94A3B8]">لا توجد غير مقروءة</span>
               )}
             </div>
 
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1.5">
               {unreadCount > 0 && (
                 <button
                   type="button"
                   onClick={handleMarkAllAsRead}
-                  className="px-2 py-1 text-xs text-[#800020] dark:text-[#FDA4AF] hover:bg-[#800020]/5 dark:hover:bg-[#A30D36]/10 rounded-md font-semibold transition-colors flex items-center gap-1 cursor-pointer"
+                  className="px-2 py-1 text-xs text-[#800020] dark:text-[#FB7185] hover:bg-[#800020]/10 rounded-lg font-bold transition-colors flex items-center gap-1 cursor-pointer"
                   title="تحديد الكل كمقروء"
                 >
                   <Checks className="w-3.5 h-3.5" weight="bold" />
@@ -293,7 +304,7 @@ export function NotificationBell() {
               <button
                 type="button"
                 onClick={() => setIsOpen(false)}
-                className="p-1 rounded-md text-[#64748B] hover:text-[#12263F] dark:text-[#94A3B8] dark:hover:text-[#F5F7FB] transition-colors cursor-pointer"
+                className="p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors cursor-pointer"
                 aria-label="إغلاق"
               >
                 <X className="w-4 h-4" />
@@ -301,20 +312,48 @@ export function NotificationBell() {
             </div>
           </div>
 
+          {/* Filter Tabs (الكل / غير المقروءة) */}
+          <div className="flex items-center gap-1 p-1.5 px-3 bg-slate-50/40 dark:bg-slate-900/20 border-b border-slate-100 dark:border-slate-800 text-xs">
+            <button
+              type="button"
+              onClick={() => setActiveTab("all")}
+              className={cn(
+                "px-3 py-1 rounded-lg font-bold text-xs transition-all cursor-pointer",
+                activeTab === "all"
+                  ? "bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-2xs border border-slate-200/60 dark:border-slate-700/60"
+                  : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200"
+              )}
+            >
+              الكل ({notifications.length})
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab("unread")}
+              className={cn(
+                "px-3 py-1 rounded-lg font-bold text-xs transition-all cursor-pointer",
+                activeTab === "unread"
+                  ? "bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-2xs border border-slate-200/60 dark:border-slate-700/60"
+                  : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200"
+              )}
+            >
+              غير المقروءة ({unreadCount})
+            </button>
+          </div>
+
           {/* Web Push Prompt Banner */}
           {pushStatus === "default" && (
-            <div className="p-3 bg-linear-to-r from-[#FFF8E6] to-[#FEF3C7] dark:from-[#2B1D0C] dark:to-[#1C1307] border-b border-[#FDE68A] dark:border-[#78350F] flex items-center justify-between gap-3 text-xs">
+            <div className="p-3 bg-amber-50/80 dark:bg-amber-950/20 border-b border-amber-200/60 dark:border-amber-900/40 flex items-center justify-between gap-3 text-xs">
               <div className="flex items-center gap-2">
-                <Broadcast className="w-4 h-4 text-[#D97706] shrink-0" weight="fill" />
-                <span className="text-[#92400E] dark:text-[#FDE68A] font-medium leading-tight">
-                  فعّل إشعارات المتصفح ليصلك تنبيه التحدي اليومي والمذاكرة
+                <Broadcast className="w-4 h-4 text-amber-700 dark:text-amber-400 shrink-0" weight="fill" />
+                <span className="text-amber-900 dark:text-amber-200 font-medium leading-tight text-[11px]">
+                  فعّل إشعارات المتصفح للتنبيه عند نزول الامتحانات والمراجعات
                 </span>
               </div>
               <button
                 type="button"
                 onClick={handleEnablePush}
                 disabled={isSubscribing}
-                className="px-2.5 py-1 bg-[#800020] hover:bg-[#600018] text-white rounded-lg text-[11px] font-bold shrink-0 transition-colors cursor-pointer disabled:opacity-50"
+                className="px-2.5 py-1 bg-[#800020] hover:bg-[#66001A] text-white rounded-lg text-[11px] font-bold shrink-0 transition-colors cursor-pointer disabled:opacity-50"
               >
                 {isSubscribing ? "جاري..." : "تفعيل"}
               </button>
@@ -322,23 +361,25 @@ export function NotificationBell() {
           )}
 
           {/* Notifications Scrollable List */}
-          <div className="max-h-[380px] overflow-y-auto divide-y divide-[#E8E9ED]/70 dark:divide-[#22364F]/70">
+          <div className="max-h-[360px] overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800/60">
             {isLoading ? (
-              <div className="py-10 text-center text-xs text-[#64748B] dark:text-[#94A3B8]">
+              <div className="py-10 text-center text-xs text-slate-500 dark:text-slate-400">
                 جاري تحميل الإشعارات...
               </div>
-            ) : notifications.length === 0 ? (
+            ) : displayedNotifications.length === 0 ? (
               <div className="py-12 px-6 text-center">
-                <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-[#F7F8FA] dark:bg-[#10233A] flex items-center justify-center text-[#64748B] dark:text-[#94A3B8]">
-                  <Bell className="w-6 h-6" />
+                <div className="w-10 h-10 mx-auto mb-2.5 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400">
+                  <Bell className="w-5 h-5" />
                 </div>
-                <h4 className="font-bold text-sm text-[#12263F] dark:text-[#F5F7FB]">لا توجد إشعارات حالياً</h4>
-                <p className="text-xs text-[#64748B] dark:text-[#94A3B8] mt-1">
-                  أنت على اطلاع بكل جديد ودروسك وتحدياتك اليومية محدثة.
+                <h4 className="font-bold text-sm text-slate-900 dark:text-slate-100">
+                  {activeTab === "unread" ? "لا توجد إشعارات غير مقروءة" : "لا توجد إشعارات حالياً"}
+                </h4>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                  أنت على اطلاع دائم بجميع تحديثات المنصة والدروس.
                 </p>
               </div>
             ) : (
-              notifications.map((notif) => {
+              displayedNotifications.map((notif) => {
                 const visual = getNotificationVisuals(notif.type, notif.isUrgent);
                 const Icon = visual.icon;
 
@@ -348,21 +389,21 @@ export function NotificationBell() {
                     href={notif.link}
                     onClick={() => handleItemClick(notif)}
                     className={cn(
-                      "block p-3.5 transition-colors hover:bg-[#F7F8FA] dark:hover:bg-[#10233A] relative",
-                      !notif.isRead && "bg-[#800020]/[0.02] dark:bg-[#A30D36]/[0.04]"
+                      "block p-3.5 transition-colors hover:bg-slate-50/80 dark:hover:bg-slate-800/40 relative",
+                      !notif.isRead && "bg-slate-50/50 dark:bg-slate-800/20"
                     )}
                   >
                     <div className="flex items-start gap-3">
                       {/* Icon */}
                       <div
                         className={cn(
-                          "w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border",
+                          "w-8 h-8 rounded-xl flex items-center justify-center shrink-0 border",
                           visual.bg,
                           visual.border,
                           visual.text
                         )}
                       >
-                        <Icon className="w-5 h-5" weight={notif.isUrgent ? "fill" : "bold"} />
+                        <Icon className="w-4 h-4" weight={notif.isUrgent ? "fill" : "bold"} />
                       </div>
 
                       {/* Content */}
@@ -372,25 +413,25 @@ export function NotificationBell() {
                             className={cn(
                               "text-xs truncate",
                               !notif.isRead
-                                ? "font-bold text-[#12263F] dark:text-[#F5F7FB]"
-                                : "font-medium text-[#475569] dark:text-[#94A3B8]"
+                                ? "font-bold text-slate-900 dark:text-slate-100"
+                                : "font-medium text-slate-600 dark:text-slate-400"
                             )}
                           >
                             {notif.title}
                           </h5>
-                          <span className="text-[10px] text-[#94A3B8] shrink-0 font-sans">
+                          <span className="text-[10px] text-slate-400 shrink-0 font-sans">
                             {formatRelativeArabicTime(notif.createdAt)}
                           </span>
                         </div>
 
-                        <p className="text-[11px] text-[#64748B] dark:text-[#94A3B8] line-clamp-2 mt-0.5 leading-relaxed">
+                        <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-2 mt-0.5 leading-relaxed">
                           {notif.message}
                         </p>
                       </div>
 
                       {/* Unread dot */}
                       {!notif.isRead && (
-                        <span className="w-2 h-2 rounded-full bg-[#800020] dark:bg-[#A30D36] shrink-0 mt-1" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#800020] dark:bg-[#FB7185] shrink-0 mt-1" />
                       )}
                     </div>
                   </Link>
@@ -400,15 +441,15 @@ export function NotificationBell() {
           </div>
 
           {/* Footer Actions */}
-          <div className="p-2.5 bg-[#F7F8FA] dark:bg-[#10233A] border-t border-[#E8E9ED] dark:border-[#22364F] flex items-center justify-between text-xs">
+          <div className="p-2.5 px-4 bg-slate-50/70 dark:bg-slate-900/40 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs">
             <Link
               href="/dashboard"
               onClick={() => setIsOpen(false)}
-              className="text-[11px] font-semibold text-[#800020] dark:text-[#FDA4AF] hover:underline"
+              className="text-[11px] font-bold text-[#800020] dark:text-[#FB7185] hover:underline"
             >
               الانتقال للوحة الطالب ←
             </Link>
-            <span className="text-[10px] text-[#94A3B8]">منصة الخلاصة التعليمية</span>
+            <span className="text-[10px] text-slate-400">منصة الخلاصة</span>
           </div>
         </div>
       )}

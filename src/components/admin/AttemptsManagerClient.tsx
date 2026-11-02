@@ -6,6 +6,7 @@ import type { AttemptsManagerClientProps, Attempt, Answer, PaginationInfo } from
 import { AttemptFilterBar } from "./attempts/AttemptFilterBar";
 import { AttemptTable } from "./attempts/AttemptTable";
 import { AttemptInspectModal } from "./attempts/AttemptInspectModal";
+import { useToast } from "@/components/ui/Toast";
 
 export type { AttemptsManagerClientProps, Attempt, Answer, PaginationInfo } from "./attempts/types";
 
@@ -14,6 +15,7 @@ export function AttemptsManagerClient({
   initialPagination,
   subjects,
 }: AttemptsManagerClientProps) {
+  const { toast } = useToast();
   const [attempts, setAttempts] = useState<Attempt[]>(initialAttempts);
   const [pagination, setPagination] = useState<PaginationInfo>(
     initialPagination || {
@@ -120,7 +122,7 @@ export function AttemptsManagerClient({
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
+      if (!res.ok) throw new Error(data.error || "فشل تحديث الدرجة");
 
       // Update local attempt in modal and list
       if (data.updatedAttempt) {
@@ -151,9 +153,11 @@ export function AttemptsManagerClient({
               : a
           )
         );
+
+        toast.success("تم تحديث الدرجة واعتمادها بنجاح");
       }
     } catch (err: any) {
-      alert(err.message || "فشل تحديث الدرجة");
+      toast.error(err.message || "فشل تحديث الدرجة");
     } finally {
       setSavingGradeId(null);
     }

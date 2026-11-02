@@ -10,6 +10,7 @@ import { EditRoleModal } from "./users/EditRoleModal";
 import { CreateUserModal } from "./users/CreateUserModal";
 import { StudentDetailsDrawer } from "./users/StudentDetailsDrawer";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
+import { useToast } from "@/components/ui/Toast";
 
 export type { UserManagerClientProps, UserItem, EducationalSystem, Grade } from "./users/types";
 
@@ -20,6 +21,7 @@ export function UserManagerClient({
   currentUserId,
   currentUserRole,
 }: UserManagerClientProps) {
+  const { toast } = useToast();
   const [users, setUsers] = useState<UserItem[]>(initialUsers);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedRole, setSelectedRole] = useState("all");
@@ -35,6 +37,7 @@ export function UserManagerClient({
     isOpen: boolean;
     title: string;
     description: string;
+    itemHighlight?: string;
     confirmText?: string;
     variant?: "danger" | "warning";
     onConfirm: () => Promise<void>;
@@ -121,6 +124,7 @@ export function UserManagerClient({
       setCreateRole("STUDENT");
       setCreateSystemId("");
       setCreateGradeId("");
+      toast.success("تم إنشاء الحساب بنجاح");
     } catch (err: any) {
       setCreateError(err.message || "حدث خطأ أثناء إنشاء المستخدم");
     } finally {
@@ -158,6 +162,7 @@ export function UserManagerClient({
         )
       );
       setSelectedUser(null);
+      toast.success("تم تحديث صلاحيات الحساب بنجاح");
     } catch (err: any) {
       setErrorMsg(err.message || "حدث خطأ أثناء التحديث");
     } finally {
@@ -167,14 +172,15 @@ export function UserManagerClient({
 
   const handleDeleteUser = (userId: string, userName: string) => {
     if (userId === currentUserId) {
-      alert("لا يمكنك حذف حسابك الحالي المسجل به الآن.");
+      toast.warning("لا يمكنك حذف حسابك الحالي المسجل به الآن.");
       return;
     }
 
     setConfirmModal({
       isOpen: true,
       title: "حذف المستخدم",
-      description: `هل أنت متأكد من حذف المستخدم "${userName || "هذا الحساب"}" نهائياً؟ لا يمكن التراجع عن هذا الإجراء.`,
+      description: `هل أنت متأكد من حذف هذا الحساب نهائياً؟ لا يمكن التراجع عن هذا الإجراء.`,
+      itemHighlight: userName ? `الحساب المستهدف: ${userName}` : undefined,
       confirmText: "تأكيد الحذف",
       variant: "danger",
       onConfirm: async () => {
@@ -185,6 +191,7 @@ export function UserManagerClient({
         if (res.ok) {
           setUsers((prev) => prev.filter((u) => u.id !== userId));
           setConfirmModal((prev) => ({ ...prev, isOpen: false }));
+          toast.success("تم حذف المستخدم بنجاح");
         } else {
           const data = await res.json();
           throw new Error(data.error || "تعذر حذف المستخدم");
@@ -197,7 +204,8 @@ export function UserManagerClient({
     setConfirmModal({
       isOpen: true,
       title: "إعادة ضبط أجهزة الطالب",
-      description: `هل أنت متأكد من فك ربط أجهزة الطالب "${userName || "المستخدم"}"؟ سيتم مسح الأجهزة المسجلة فوراً وتسجيل خروج الطالب ليتمكن من ربط جهازه الجديد.`,
+      description: `سيتم مسح الأجهزة المسجلة فوراً وإلغاء الجلسات النشطة ليتمكن الطالب من تسجيل جهازه الجديد.`,
+      itemHighlight: userName ? `الطالب المستهدف: ${userName}` : undefined,
       confirmText: "تأكيد فك الأجهزة",
       variant: "warning",
       onConfirm: async () => {
@@ -210,6 +218,7 @@ export function UserManagerClient({
             prev.map((u) => (u.id === userId ? { ...u, boundDevices: [] } : u))
           );
           setConfirmModal((prev) => ({ ...prev, isOpen: false }));
+          toast.success("تم فك ربط أجهزة الطالب بنجاح");
         } else {
           const data = await res.json();
           throw new Error(data.error || "تعذر إعادة ضبط الأجهزة");
@@ -422,6 +431,7 @@ export function UserManagerClient({
         open={confirmModal.isOpen}
         title={confirmModal.title}
         description={confirmModal.description}
+        itemHighlight={confirmModal.itemHighlight}
         onClose={() => setConfirmModal((prev) => ({ ...prev, isOpen: false }))}
         onConfirm={confirmModal.onConfirm}
         confirmText={confirmModal.confirmText || "تأكيد"}

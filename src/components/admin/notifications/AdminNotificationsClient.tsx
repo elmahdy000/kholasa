@@ -14,6 +14,8 @@ import {
   Radio,
   CheckCircle,
 } from "lucide-react";
+import { ConfirmModal } from "@/components/ui/ConfirmModal";
+import { useToast } from "@/components/ui/Toast";
 
 interface GradeOption {
   id: string;
@@ -47,11 +49,23 @@ export function AdminNotificationsClient({
   grades,
   pushSubscribersCount,
 }: AdminNotificationsClientProps) {
+  const { toast } = useToast();
   const [announcements, setAnnouncements] = useState<AnnouncementItem[]>(initialAnnouncements);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [successBanner, setSuccessBanner] = useState<string | null>(null);
+
+  // Confirmation Modal State
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean;
+    announcementId: string;
+    announcementTitle: string;
+  }>({
+    isOpen: false,
+    announcementId: "",
+    announcementTitle: "",
+  });
 
   // Form State
   const [title, setTitle] = useState("");
@@ -111,34 +125,43 @@ export function AdminNotificationsClient({
       setTargetSchoolCategory("");
       setIsModalOpen(false);
 
-      setSuccessBanner(
-        sendPush
-          ? "تم إرسال الإشعار وحفظه بنجاح وبثه للمشتركين عبر إشعارات المتصفح!"
-          : "تم حفظ الإشعار ونشره للطلاب بنجاح!"
-      );
+      const successText = sendPush
+        ? "تم إرسال الإشعار وبثه عبر إشعارات المتصفح بنجاح!"
+        : "تم حفظ الإشعار ونشره للطلاب بنجاح!";
+      setSuccessBanner(successText);
+      toast.success(successText);
       setTimeout(() => setSuccessBanner(null), 5000);
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "حدث خطأ أثناء إرسال الإشعار";
-      alert(message);
+      const msg = err instanceof Error ? err.message : "حدث خطأ أثناء إرسال الإشعار";
+      toast.error(msg);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("هل أنت متأكد من حذف هذا الإعلان؟")) return;
+  const handleDeleteClick = (id: string, itemTitle: string) => {
+    setConfirmModal({
+      isOpen: true,
+      announcementId: id,
+      announcementTitle: itemTitle,
+    });
+  };
 
+  const handleConfirmDelete = async () => {
+    const id = confirmModal.announcementId;
     setDeletingId(id);
     try {
       const res = await fetch(`/api/admin/notifications/${id}`, { method: "DELETE" });
       if (res.ok) {
         setAnnouncements((prev) => prev.filter((a) => a.id !== id));
+        setConfirmModal((prev) => ({ ...prev, isOpen: false }));
+        toast.success("تم حذف الإعلان بنجاح");
       } else {
-        alert("فشل حذف الإشعار");
+        toast.error("فشل حذف الإشعار");
       }
     } catch (err) {
       console.error(err);
-      alert("حدث خطأ أثناء الحذف");
+      toast.error("حدث خطأ أثناء حذف الإعلان");
     } finally {
       setDeletingId(null);
     }
@@ -189,7 +212,7 @@ export function AdminNotificationsClient({
             <span className="text-xs font-semibold text-[#64748B] dark:text-[#94A3B8]">إجمالي الإعلانات</span>
             <Bell className="w-4 h-4 text-[#800020] dark:text-[#FDA4AF]" />
           </div>
-          <div className="text-2xl font-black text-[#0F172A] dark:text-[#F8FAFC] mt-2">
+          <div className="text-2xl font-black font-mono text-[#0F172A] dark:text-[#F8FAFC] mt-2">
             {announcements.length}
           </div>
           <span className="text-[11px] text-[#64748B] dark:text-[#94A3B8]">إعلان منشور في النظام</span>
@@ -200,7 +223,7 @@ export function AdminNotificationsClient({
             <span className="text-xs font-semibold text-[#64748B] dark:text-[#94A3B8]">قراءات وتفاعل الطلاب</span>
             <Eye className="w-4 h-4 text-[#059669]" />
           </div>
-          <div className="text-2xl font-black text-[#0F172A] dark:text-[#F8FAFC] mt-2">
+          <div className="text-2xl font-black font-mono text-[#0F172A] dark:text-[#F8FAFC] mt-2">
             {totalReads}
           </div>
           <span className="text-[11px] text-[#059669]">عملية فتح وقراءة للإعلانات</span>
@@ -211,7 +234,7 @@ export function AdminNotificationsClient({
             <span className="text-xs font-semibold text-[#64748B] dark:text-[#94A3B8]">مشتركو إشعارات المتصفح</span>
             <Radio className="w-4 h-4 text-[#D97706]" />
           </div>
-          <div className="text-2xl font-black text-[#0F172A] dark:text-[#F8FAFC] mt-2">
+          <div className="text-2xl font-black font-mono text-[#0F172A] dark:text-[#F8FAFC] mt-2">
             {pushSubscribersCount}
           </div>
           <span className="text-[11px] text-[#D97706]">جهاز مفعل للإشعارات اللحظية</span>
@@ -305,7 +328,7 @@ export function AdminNotificationsClient({
                   <div className="flex items-center gap-2 shrink-0">
                     <button
                       type="button"
-                      onClick={() => handleDelete(item.id)}
+                      onClick={() => handleDeleteClick(item.id, item.title)}
                       disabled={deletingId === item.id}
                       className="p-2 rounded-lg text-[#DC2626] hover:bg-[#FEF2F2] dark:hover:bg-[#3E141B] transition-colors cursor-pointer disabled:opacity-50"
                       title="حذف الإعلان"
@@ -320,122 +343,138 @@ export function AdminNotificationsClient({
         )}
       </div>
 
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        open={confirmModal.isOpen}
+        title="حذف الإعلان"
+        description="هل أنت متأكد من حذف هذا الإعلان نهائياً؟ لا يمكن استرجاعه بعد الحذف."
+        itemHighlight={confirmModal.announcementTitle ? `الإعلان المستهدف: ${confirmModal.announcementTitle}` : undefined}
+        confirmText="تأكيد الحذف"
+        variant="danger"
+        onClose={() => setConfirmModal((prev) => ({ ...prev, isOpen: false }))}
+        onConfirm={handleConfirmDelete}
+      />
+
       {/* Create Announcement Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-in fade-in duration-150">
-          <div className="bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl">
-            <div className="px-6 py-4 border-b border-[#E2E8F0] dark:border-[#334155] flex items-center justify-between bg-[#F8FAFC] dark:bg-[#1E293B]">
-              <div className="flex items-center gap-2">
-                <Megaphone className="w-5 h-5 text-[#800020] dark:text-[#FDA4AF]" />
-                <h3 className="font-bold text-sm text-[#0F172A] dark:text-[#F8FAFC]">إرسال إشعار وإعلان جديد</h3>
-              </div>
+          <div className="bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] rounded-2xl w-full max-w-lg shadow-2xl p-6 text-right">
+            <div className="flex items-center justify-between pb-4 border-b border-[#E2E8F0] dark:border-[#334155]">
+              <h3 className="font-bold text-base text-[#0F172A] dark:text-[#F8FAFC]">
+                إنشاء وبث إشعار جديد
+              </h3>
               <button
                 type="button"
                 onClick={() => setIsModalOpen(false)}
-                className="text-xs text-[#64748B] hover:text-[#0F172A] dark:hover:text-[#F8FAFC]"
+                className="text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-[#F8FAFC] p-1 rounded-lg"
               >
-                إلغاء
+                ✕
               </button>
             </div>
 
-            <form onSubmit={handleCreateAnnouncement} className="p-6 space-y-4 text-xs">
+            <form onSubmit={handleCreateAnnouncement} className="space-y-4 pt-4">
               <div>
-                <label className="block font-bold text-[#0F172A] dark:text-[#F8FAFC] mb-1">
-                  عنوان الإشعار <span className="text-[#DC2626]">*</span>
+                <label className="block text-xs font-bold text-[#334155] dark:text-[#CBD5E1] mb-1">
+                  عنوان الإشعار *
                 </label>
                 <input
                   type="text"
                   required
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder="مثال: إضافة نماذج تدريبية جديدة لمادة الفيزياء"
-                  className="w-full h-10 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B] text-[#0F172A] dark:text-[#F8FAFC] focus:outline-hidden focus:border-[#800020]"
+                  placeholder="مثال: تم إضافة امتحان شامل جديد في الفيزياء..."
+                  className="w-full px-3.5 py-2 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-sm text-[#0F172A] dark:text-[#F8FAFC] focus:outline-none focus:border-[#800020]"
                 />
               </div>
 
               <div>
-                <label className="block font-bold text-[#0F172A] dark:text-[#F8FAFC] mb-1">
-                  نص الإشعار والتفاصيل <span className="text-[#DC2626]">*</span>
+                <label className="block text-xs font-bold text-[#334155] dark:text-[#CBD5E1] mb-1">
+                  نص الرسالة والتفاصيل *
                 </label>
                 <textarea
                   required
                   rows={3}
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
-                  placeholder="اكتب الرسالة التي ستظهر للطلاب بالتفصيل..."
-                  className="w-full p-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B] text-[#0F172A] dark:text-[#F8FAFC] focus:outline-hidden focus:border-[#800020]"
+                  placeholder="اكتب نص الإعلان بالتفصيل للطلاب..."
+                  className="w-full px-3.5 py-2 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-sm text-[#0F172A] dark:text-[#F8FAFC] focus:outline-none focus:border-[#800020]"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-medium text-[#64748B] dark:text-[#94A3B8] mb-1">نوع الإشعار</label>
+                  <label className="block text-xs font-bold text-[#334155] dark:text-[#CBD5E1] mb-1">
+                    تصنيف الإشعار
+                  </label>
                   <select
                     value={type}
                     onChange={(e) => setType(e.target.value)}
-                    className="w-full h-9 px-2.5 rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B] text-[#0F172A] dark:text-[#F8FAFC]"
+                    className="w-full px-3 py-2 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-sm text-[#0F172A] dark:text-[#F8FAFC]"
                   >
                     <option value="ANNOUNCEMENT">إعلان عام</option>
-                    <option value="COURSE_UPDATE">تحديث محتوى أو درس</option>
+                    <option value="COURSE_UPDATE">تحديث محتوى أو منهج</option>
                     <option value="DAILY_EXAM">تحدي يومي</option>
-                    <option value="MISTAKE_REMINDER">تذكير بالمراجعة</option>
+                    <option value="SYSTEM">تنبيه نظامي</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="block font-medium text-[#64748B] dark:text-[#94A3B8] mb-1">الرابط الموجه (اختياري)</label>
-                  <input
-                    type="text"
-                    value={link}
-                    onChange={(e) => setLink(e.target.value)}
-                    placeholder="/subjects أو /exams"
-                    className="w-full h-9 px-2.5 rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B] text-[#0F172A] dark:text-[#F8FAFC]"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-medium text-[#64748B] dark:text-[#94A3B8] mb-1">الصف المستهدف</label>
-                  <select
-                    value={targetGradeId}
-                    onChange={(e) => setTargetGradeId(e.target.value)}
-                    className="w-full h-9 px-2.5 rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B] text-[#0F172A] dark:text-[#F8FAFC]"
-                  >
-                    <option value="">جميع الصفوف الدراسية</option>
-                    {grades.map((g) => (
-                      <option key={g.id} value={g.id}>
-                        {g.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block font-medium text-[#64748B] dark:text-[#94A3B8] mb-1">المسار الدراسي</label>
+                  <label className="block text-xs font-bold text-[#334155] dark:text-[#CBD5E1] mb-1">
+                    الفئة المستهدفة
+                  </label>
                   <select
                     value={targetSchoolCategory}
                     onChange={(e) => setTargetSchoolCategory(e.target.value)}
-                    className="w-full h-9 px-2.5 rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B] text-[#0F172A] dark:text-[#F8FAFC]"
+                    className="w-full px-3 py-2 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-sm text-[#0F172A] dark:text-[#F8FAFC]"
                   >
-                    <option value="">كافة المسارات (عام ولغات)</option>
-                    <option value="ARABIC">المدارس العامة (عربي)</option>
-                    <option value="LANGUAGES">مدارس اللغات (Languages)</option>
+                    <option value="">كافة المدارس (عربي ولغات)</option>
+                    <option value="ARABIC">مدارس عربي فقط</option>
+                    <option value="LANGUAGES">مدارس لغات فقط</option>
                   </select>
                 </div>
               </div>
 
-              {/* Checkboxes: Urgent & Web Push */}
-              <div className="pt-2 space-y-2 border-t border-[#E2E8F0] dark:border-[#334155]">
+              <div>
+                <label className="block text-xs font-bold text-[#334155] dark:text-[#CBD5E1] mb-1">
+                  الصف الدراسي المستهدف
+                </label>
+                <select
+                  value={targetGradeId}
+                  onChange={(e) => setTargetGradeId(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-sm text-[#0F172A] dark:text-[#F8FAFC]"
+                >
+                  <option value="">جميع الصفوف الدراسية</option>
+                  {grades.map((g) => (
+                    <option key={g.id} value={g.id}>
+                      {g.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-[#334155] dark:text-[#CBD5E1] mb-1">
+                  رابط توجيه اختياري
+                </label>
+                <input
+                  type="text"
+                  value={link}
+                  onChange={(e) => setLink(e.target.value)}
+                  placeholder="/exams أو /dashboard أو رابط خارجي"
+                  className="w-full px-3.5 py-2 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-sm text-[#0F172A] dark:text-[#F8FAFC] focus:outline-none focus:border-[#800020]"
+                />
+              </div>
+
+              <div className="pt-2 space-y-2">
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={isUrgent}
                     onChange={(e) => setIsUrgent(e.target.checked)}
-                    className="rounded text-[#800020] focus:ring-[#800020]"
+                    className="w-4 h-4 rounded text-[#800020] focus:ring-[#800020]"
                   />
-                  <span className="font-semibold text-[#0F172A] dark:text-[#F8FAFC]">
-                    تمييز كإشعار عاجل ومهم (يظهر في صدارة التنبيهات مع شارة ملونة)
+                  <span className="text-xs font-semibold text-[#0F172A] dark:text-[#F8FAFC]">
+                    تمييز كإشعار عاجل أو استثنائي (Urgent Notification)
                   </span>
                 </label>
 
@@ -444,9 +483,9 @@ export function AdminNotificationsClient({
                     type="checkbox"
                     checked={sendPush}
                     onChange={(e) => setSendPush(e.target.checked)}
-                    className="rounded text-[#800020] focus:ring-[#800020]"
+                    className="w-4 h-4 rounded text-[#800020] focus:ring-[#800020]"
                   />
-                  <span className="font-semibold text-[#0F172A] dark:text-[#F8FAFC]">
+                  <span className="text-xs font-semibold text-[#0F172A] dark:text-[#F8FAFC]">
                     بث إشعار فوري لمتصفحات وهواتف الطلاب (Web Push Notification)
                   </span>
                 </label>

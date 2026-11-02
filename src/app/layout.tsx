@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next";
 
 import "./globals.css";
 
-
 export const viewport: Viewport = {
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#800020" },
@@ -38,6 +37,7 @@ export const metadata: Metadata = {
 import Script from "next/script";
 import { PwaRegister } from "@/components/pwa/PwaRegister";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
+import { ToastProvider } from "@/components/ui/Toast";
 import { AppShell } from "@/components/layout/AppShell";
 import { getCurrentUser } from "@/lib/auth";
 
@@ -100,8 +100,10 @@ export default async function RootLayout({
           }}
         />
         <ThemeProvider>
-          <PwaRegister />
-          <AppShell user={shellUser}>{children}</AppShell>
+          <ToastProvider>
+            <PwaRegister />
+            <AppShell user={shellUser}>{children}</AppShell>
+          </ToastProvider>
         </ThemeProvider>
       </body>
     </html>

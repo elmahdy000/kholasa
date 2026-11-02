@@ -27,6 +27,7 @@ import {
   Plus,
 } from "lucide-react";
 import type { UnitInfo } from "./types";
+import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import {
   ParsedQuestion,
   QuestionType,
@@ -89,6 +90,7 @@ export function QuestionImportWizard({
   const [isCommitting, setIsCommitting] = useState(false);
   const [commitError, setCommitError] = useState<string | null>(null);
   const [commitSuccess, setCommitSuccess] = useState(false);
+  const [isCloseConfirmOpen, setIsCloseConfirmOpen] = useState(false);
 
   // Synchronize targetType and allowedTypes whenever modal opens or initialType changes
   useEffect(() => {
@@ -131,11 +133,14 @@ export function QuestionImportWizard({
   // Reset or close modal
   const handleClose = () => {
     if (stagedQuestions.length > 0 && !commitSuccess) {
-      if (!confirm("هل تريد إغلاق معالج الاستيراد؟ سيتم فقد أي تعديلات قيد المراجعة لم يتم حفظها.")) {
-        return;
-      }
+      setIsCloseConfirmOpen(true);
+      return;
     }
-    // Reset state
+    executeClose();
+  };
+
+  const executeClose = () => {
+    setIsCloseConfirmOpen(false);
     setCurrentStep(1);
     setSelectedFile(null);
     setPasteText("");
@@ -2050,6 +2055,16 @@ export function QuestionImportWizard({
           </div>
         </div>
       </div>
+      <ConfirmModal
+        isOpen={isCloseConfirmOpen}
+        onClose={() => setIsCloseConfirmOpen(false)}
+        onConfirm={async () => executeClose()}
+        title="إلغاء الاستيراد"
+        description="هل تريد إغلاق معالج الاستيراد؟ سيتم فقد أي أسئلة أو تعديلات قيد المراجعة لم يتم حفظها."
+        confirmText="نعم، إغلاق وفقد التعديلات"
+        cancelText="متابعة المراجعة"
+        variant="warning"
+      />
     </div>
   );
 }

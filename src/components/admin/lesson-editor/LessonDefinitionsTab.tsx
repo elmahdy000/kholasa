@@ -16,6 +16,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import type { DefinitionItem } from "./types";
+import { useToast } from "@/components/ui/Toast";
 
 interface LessonDefinitionsTabProps {
   definitions: DefinitionItem[];
@@ -26,12 +27,15 @@ interface LessonDefinitionsTabProps {
 }
 
 export function LessonDefinitionsTab({
+  // Toast notification
   definitions,
   setDefinitions,
   onAddDefinition,
   onRemoveDefinition,
   onUpdateDefinition,
 }: LessonDefinitionsTabProps) {
+  const { toast } = useToast();
+
   // Manual single input state
   const [term, setTerm] = useState("");
   const [meaning, setMeaning] = useState("");
@@ -92,8 +96,9 @@ export function LessonDefinitionsTab({
       setDefinitions((prev) => [...prev, ...newItems]);
       setBulkText("");
       setShowBulkModal(false);
+      toast.success(`تمت إضافة ${newItems.length} مصطلح بنجاح`);
     } else {
-      alert("يرجى لصق المصطلحات بالصيغة: المصطلح: التعريف في كل سطر");
+      toast.warning("يرجى لصق المصطلحات بالصيغة: المصطلح: التعريف في كل سطر");
     }
   };
 
