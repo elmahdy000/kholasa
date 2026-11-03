@@ -25,8 +25,14 @@ export function UserManagerClient({
   const [users, setUsers] = useState<UserItem[]>(initialUsers);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedRole, setSelectedRole] = useState("all");
+  const [selectedStatus, setSelectedStatus] = useState<"all" | "active" | "inactive">("all");
   const [selectedSystemId, setSelectedSystemId] = useState("all");
   const [inspectUserId, setInspectUserId] = useState<string | null>(null);
+
+  const suspendedCount = useMemo(
+    () => users.filter((u) => u.role === "STUDENT" && u.isActive === false).length,
+    [users]
+  );
 
   // Pagination State
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -227,9 +233,66 @@ export function UserManagerClient({
     });
   };
 
+  const handleToggleStatus = async (userId: string, currentStatus: boolean, userName: string) => {
+    try {
+      const nextStatus = !currentStatus;
+      const res = await fetch(`/api/admin/users/${userId}/toggle-status`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isActive: nextStatus }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "تعذر تحديث حالة الحساب");
+
+      setUsers((prev) =>
+        prev.map((u) => (u.id === userId ? { ...u, isActive: nextStatus } : u))
+      );
+      toast.success(
+        data.message || (nextStatus ? `تم تفعيل حساب الطالب "${userName}" بنجاح` : `تم إيقاف حساب الطالب "${userName}" بنجاح`)
+      );
+    } catch (err: any) {
+      toast.error(err.message || "حدث خطأ أثناء تحديث حالة الحساب");
+    }
+  };
+
+  const handleBulkActivateStudents = () => {
+    const suspendedStudents = users.filter((u) => u.role === "STUDENT" && u.isActive === false);
+    const count = suspendedStudents.length;
+
+    if (count === 0) {
+      toast.info("جميع حسابات الطلاب مفعلة بالفعل!");
+      return;
+    }
+
+    setConfirmModal({
+      isOpen: true,
+      title: "تفعيل جماعي لحسابات الطلاب",
+      description: `هل ترغب في تفعيل جميع حسابات الطلاب المعلقة (${count} طالب)؟ بعد التفعيل، سيتمكن كل طالب من تسجيل الدخول والمذاكرة بصورة طبيعية.`,
+      confirmText: `تأكيد تفعيل ${count} طالب`,
+      variant: "warning",
+      onConfirm: async () => {
+        const res = await fetch("/api/admin/users/bulk-toggle-status", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ isActive: true, role: "STUDENT" }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "تعذر تفعيل الطلاب");
+
+        setUsers((prev) =>
+          prev.map((u) => (u.role === "STUDENT" ? { ...u, isActive: true } : u))
+        );
+        setConfirmModal((prev) => ({ ...prev, isOpen: false }));
+        toast.success(data.message || `تم تفعيل ${count} طالب بنجاح`);
+      },
+    });
+  };
+
   const filteredUsers = useMemo(() => {
     return users.filter((u) => {
       if (selectedRole !== "all" && u.role !== selectedRole) return false;
+      if (selectedStatus === "active" && u.isActive === false) return false;
+      if (selectedStatus === "inactive" && u.isActive !== false) return false;
       if (selectedSystemId !== "all" && u.system?.id !== selectedSystemId)
         return false;
       if (searchQuery.trim()) {
@@ -242,7 +305,7 @@ export function UserManagerClient({
       }
       return true;
     });
-  }, [users, selectedRole, selectedSystemId, searchQuery]);
+  }, [users, selectedRole, selectedStatus, selectedSystemId, searchQuery]);
 
   // Pagination calculation
   const totalFilteredCount = filteredUsers.length;
@@ -268,6 +331,11 @@ export function UserManagerClient({
           setSelectedRole(r);
           setCurrentPage(1);
         }}
+        selectedStatus={selectedStatus}
+        setSelectedStatus={(s) => {
+          setSelectedStatus(s);
+          setCurrentPage(1);
+        }}
         selectedSystemId={selectedSystemId}
         setSelectedSystemId={(s) => {
           setSelectedSystemId(s);
@@ -276,10 +344,12 @@ export function UserManagerClient({
         systems={systems}
         totalFilteredCount={totalFilteredCount}
         totalUsersCount={users.length}
+        suspendedCount={suspendedCount}
         onOpenCreate={() => {
           handleOpenCreateModal();
           setCreateError(null);
         }}
+        onOpenBulkActivation={handleBulkActivateStudents}
       />
 
       {/* 3. Users Table */}
@@ -294,6 +364,7 @@ export function UserManagerClient({
         onDeleteUser={handleDeleteUser}
         onResetDevices={handleResetDevices}
         onInspectUser={(id) => setInspectUserId(id)}
+        onToggleStatus={handleToggleStatus}
       />
 
       {/* Pagination Footer */}
@@ -445,13 +516,18 @@ export function UserManagerClient({
         systems={systems}
         grades={grades}
         onClose={() => setInspectUserId(null)}
-        onUserUpdated={() => {
-          void fetch("/api/admin/users")
-            .then((res) => res.json())
-            .then((data) => {
-              if (data.users) setUsers(data.users);
-            })
-            .catch(() => {});
+        onUserUpdated={async () => {
+          if (inspectUserId) {
+            try {
+              const res = await fetch(`/api/admin/users/${inspectUserId}`);
+              const data = await res.json();
+              if (data.user) {
+                setUsers((prev) =>
+                  prev.map((u) => (u.id === inspectUserId ? { ...u, ...data.user } : u))
+                );
+              }
+            } catch {}
+          }
         }}
       />
     </div>

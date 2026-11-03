@@ -27,6 +27,7 @@ export interface UserItem {
   lastActiveAt?: string | Date | null;
   totalLessons?: number;
   progressPercent?: number;
+  isActive?: boolean;
 }
 
 export interface UserManagerClientProps {

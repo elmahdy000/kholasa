@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Shield, Trash2, Smartphone, RotateCcw, Eye, Copy, KeyRound, Check, Clock } from "lucide-react";
+import { Shield, Trash2, Smartphone, RotateCcw, Eye, Copy, KeyRound, Check, Clock, CheckCircle2, Ban } from "lucide-react";
 import type { UserItem } from "./types";
 
 interface UserTableProps {
@@ -11,6 +11,7 @@ interface UserTableProps {
   onDeleteUser: (userId: string, userName: string) => void;
   onResetDevices: (userId: string, userName: string) => void;
   onInspectUser?: (userId: string) => void;
+  onToggleStatus?: (userId: string, currentStatus: boolean, userName: string) => void;
 }
 
 function formatLastActive(dateStr?: string | Date | null) {
@@ -35,6 +36,7 @@ export function UserTable({
   onDeleteUser,
   onResetDevices,
   onInspectUser,
+  onToggleStatus,
 }: UserTableProps) {
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
 
@@ -59,7 +61,7 @@ export function UserTable({
               <th className="py-3.5 px-4 whitespace-nowrap text-center">الأجهزة</th>
               <th className="py-3.5 px-4 whitespace-nowrap text-center min-w-[170px]">إنجاز المنهج الدراسي</th>
               <th className="py-3.5 px-4 whitespace-nowrap text-center">الامتحانات</th>
-              <th className="sticky left-0 bg-[#F8FAFC] dark:bg-[#1E293B] shadow-[-6px_0_12px_rgba(0,0,0,0.06)] dark:shadow-[-6px_0_12px_rgba(0,0,0,0.3)] border-r border-[#E2E8F0] dark:border-[#334155] py-3.5 px-4 whitespace-nowrap text-center min-w-[295px] z-10">
+              <th className="sticky left-0 bg-[#F8FAFC] dark:bg-[#1E293B] shadow-[-6px_0_12px_rgba(0,0,0,0.06)] dark:shadow-[-6px_0_12px_rgba(0,0,0,0.3)] border-r border-[#E2E8F0] dark:border-[#334155] py-3.5 px-4 whitespace-nowrap text-center min-w-[340px] z-10">
                 الإجراءات
               </th>
             </tr>
@@ -131,6 +133,17 @@ export function UserTable({
                             >
                               {u.schoolCategory === "LANGUAGES" ? "لغات" : "عربي"}
                             </span>
+                          )}
+                          {u.role === "STUDENT" && (
+                            u.isActive === false ? (
+                              <span className="text-[10px] px-1.5 py-0.5 rounded-md font-bold whitespace-nowrap bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-400 border border-rose-200 dark:border-rose-800">
+                                معلّق 🔴
+                              </span>
+                            ) : (
+                              <span className="text-[10px] px-1.5 py-0.5 rounded-md font-bold whitespace-nowrap bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
+                                مفعّل 🟢
+                              </span>
+                            )
                           )}
                           {u.role === "STUDENT" && (
                             <span
@@ -279,7 +292,7 @@ export function UserTable({
                   </td>
 
                   {/* 8. Sticky Actions Column */}
-                  <td className="sticky left-0 bg-white group-hover:bg-[#F8FAFC] dark:bg-[#0F172A] dark:group-hover:bg-[#1E293B] shadow-[-6px_0_12px_rgba(0,0,0,0.06)] dark:shadow-[-6px_0_12px_rgba(0,0,0,0.3)] border-r border-[#E2E8F0] dark:border-[#334155] py-3.5 px-4 whitespace-nowrap text-center min-w-[295px] z-10 transition-colors">
+                  <td className="sticky left-0 bg-white group-hover:bg-[#F8FAFC] dark:bg-[#0F172A] dark:group-hover:bg-[#1E293B] shadow-[-6px_0_12px_rgba(0,0,0,0.06)] dark:shadow-[-6px_0_12px_rgba(0,0,0,0.3)] border-r border-[#E2E8F0] dark:border-[#334155] py-3.5 px-4 whitespace-nowrap text-center min-w-[340px] z-10 transition-colors">
                     <div className="inline-flex items-center justify-center gap-1.5">
                       <button
                         type="button"
@@ -290,6 +303,31 @@ export function UserTable({
                         <Eye className="w-3.5 h-3.5 opacity-70" />
                         <span>تفاصيل</span>
                       </button>
+
+                      {/* 1-Click Activate / Suspend Toggle */}
+                      {u.role === "STUDENT" && onToggleStatus && (
+                        u.isActive === false ? (
+                          <button
+                            type="button"
+                            onClick={() => onToggleStatus(u.id, false, u.name || "")}
+                            className="h-8 px-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold inline-flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
+                            title="تفعيل الحساب والسماح للطالب بالدخول فوراً"
+                          >
+                            <CheckCircle2 className="w-3.5 h-3.5" />
+                            <span>تفعيل</span>
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => onToggleStatus(u.id, true, u.name || "")}
+                            className="h-8 px-2.5 rounded-lg bg-slate-100 hover:bg-rose-100 text-slate-700 hover:text-rose-700 dark:bg-[#1E293B] dark:text-slate-300 dark:hover:bg-rose-950/40 dark:hover:text-rose-300 text-xs font-semibold inline-flex items-center gap-1.5 transition-colors cursor-pointer border border-transparent hover:border-rose-300/40"
+                            title="إيقاف الحساب وتعليقه"
+                          >
+                            <Ban className="w-3.5 h-3.5 text-rose-500" />
+                            <span>إيقاف</span>
+                          </button>
+                        )
+                      )}
 
                       {u.role === "STUDENT" && (
                         <button

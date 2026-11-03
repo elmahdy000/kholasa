@@ -92,6 +92,7 @@ export async function getCurrentUser() {
             schoolCategory: true,
             maxDevices: true,
             boundDevices: true,
+            isActive: true,
             system: { select: { id: true, name: true, code: true } },
             grade: { select: { id: true, name: true, code: true } },
             track: { select: { id: true, name: true, code: true } },
@@ -101,6 +102,12 @@ export async function getCurrentUser() {
     });
 
     if (!session || session.expires < new Date()) {
+      return null;
+    }
+
+    // Account suspension check: kick out inactive/suspended students immediately
+    if (session.user.role === Role.STUDENT && session.user.isActive === false) {
+      await prisma.session.delete({ where: { id: session.id } }).catch(() => {});
       return null;
     }
 

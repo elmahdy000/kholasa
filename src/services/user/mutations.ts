@@ -68,10 +68,11 @@ export class UserMutationsService {
         gradeId: gradeId || null,
         schoolCategory: schoolCategory || "ARABIC",
         maxDevices: initialMaxDevices,
+        isActive: data.isActive !== undefined ? data.isActive : true,
       },
       select: {
         id: true, name: true, phone: true, email: true, loginCode: true, role: true,
-        schoolCategory: true, systemId: true, gradeId: true, createdAt: true,
+        schoolCategory: true, systemId: true, gradeId: true, createdAt: true, isActive: true,
         attempts: { select: { id: true, score: true, percentage: true } },
         progress: { select: { id: true, isCompleted: true } },
         system: { select: { id: true, name: true } },
@@ -160,19 +161,24 @@ export class UserMutationsService {
         ...(data.trackId !== undefined ? { trackId: data.trackId || null } : {}),
         ...(data.schoolCategory !== undefined ? { schoolCategory: data.schoolCategory } : {}),
         ...(typeof data.maxDevices === "number" && data.maxDevices > 0 ? { maxDevices: data.maxDevices } : {}),
+        ...(data.isActive !== undefined ? { isActive: data.isActive } : {}),
       },
       select: {
         id: true, name: true, phone: true, email: true, loginCode: true, role: true,
         systemId: true, gradeId: true, trackId: true, schoolCategory: true, createdAt: true,
-        maxDevices: true, boundDevices: true,
+        maxDevices: true, boundDevices: true, isActive: true,
         system: { select: { id: true, name: true } },
         grade: { select: { id: true, name: true } },
         track: { select: { id: true, name: true } },
       },
     });
 
-    // A role or password change must purge existing sessions.
-    if ((data.role !== undefined && data.role !== targetUser.role) || hashedPassword) {
+    // A role, password, or account deactivation must purge existing sessions.
+    if (
+      (data.role !== undefined && data.role !== targetUser.role) ||
+      hashedPassword ||
+      data.isActive === false
+    ) {
       await prisma.session.deleteMany({ where: { userId: id } });
     }
 

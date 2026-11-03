@@ -56,6 +56,13 @@ export async function POST(req: Request) {
       throw unauthorized("بيانات تسجيل الدخول غير مكتملة");
     }
 
+    // Account Activation / Suspension Check for Students
+    if (user.role === Role.STUDENT && user.isActive === false) {
+      throw forbidden(
+        "عذراً، هذا الحساب معلق أو بانتظار التفعيل حالياً. يرجى مراجعة المساعد أو إدارة المنصة لتفعيل حسابك."
+      );
+    }
+
     const cookieStore = await cookies();
     let resolvedDeviceId = deviceId || cookieStore.get("kholasa_device_id")?.value || null;
 

@@ -50,6 +50,7 @@ interface DetailedStudent {
   phone: string | null;
   loginCode: string | null;
   role: string;
+  isActive?: boolean;
   schoolCategory: "ARABIC" | "LANGUAGES";
   maxDevices: number;
   boundDevices: string[];
@@ -159,6 +160,8 @@ export function StudentDetailsDrawer({
   const [gradeId, setGradeId] = useState("");
   const [schoolCategory, setSchoolCategory] = useState<"ARABIC" | "LANGUAGES">("ARABIC");
   const [maxDevices, setMaxDevices] = useState(1);
+  const [isActive, setIsActive] = useState<boolean>(true);
+  const [isTogglingStatus, setIsTogglingStatus] = useState<boolean>(false);
   const [isSavingInfo, setIsSavingInfo] = useState(false);
   const [infoMessage, setInfoMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
@@ -202,6 +205,7 @@ export function StudentDetailsDrawer({
           setGradeId(u.grade?.id || "");
           setSchoolCategory(u.schoolCategory || "ARABIC");
           setMaxDevices(u.maxDevices || 2);
+          setIsActive(u.isActive !== false);
         }
       } catch (err) {
         console.error("Failed to load student details:", err);
@@ -239,6 +243,7 @@ export function StudentDetailsDrawer({
           gradeId: gradeId || undefined,
           schoolCategory,
           maxDevices,
+          isActive,
         }),
       });
 
@@ -246,6 +251,7 @@ export function StudentDetailsDrawer({
       if (!res.ok) throw new Error(data.error || "تعذر حفظ البيانات");
 
       setInfoMessage({ type: "success", text: "تم تحديث بيانات الطالب بنجاح" });
+      setStudent((prev) => (prev ? { ...prev, isActive } : prev));
       onUserUpdated();
     } catch (err) {
       setInfoMessage({
@@ -254,6 +260,30 @@ export function StudentDetailsDrawer({
       });
     } finally {
       setIsSavingInfo(false);
+    }
+  };
+
+  const handleToggleStudentStatus = async () => {
+    if (!student) return;
+    setIsTogglingStatus(true);
+    try {
+      const nextStatus = !isActive;
+      const res = await fetch(`/api/admin/users/${student.id}/toggle-status`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isActive: nextStatus }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "تعذر تعديل حالة الحساب");
+
+      setIsActive(nextStatus);
+      setStudent((prev) => (prev ? { ...prev, isActive: nextStatus } : prev));
+      onUserUpdated();
+      toast.success(data.message || (nextStatus ? "تم تفعيل الحساب بنجاح" : "تم إيقاف الحساب"));
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "حدث خطأ أثناء تعديل حالة الحساب");
+    } finally {
+      setIsTogglingStatus(false);
     }
   };
 
@@ -426,6 +456,17 @@ _منصة الخلاصة التعليمية - رفيقكم نحو التفوق_ 
                 <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
                   {student?.schoolCategory === "LANGUAGES" ? "لغات" : "عربي"}
                 </span>
+                {student && (
+                  isActive ? (
+                    <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 inline-flex items-center gap-1">
+                      مفعّل 🟢
+                    </span>
+                  ) : (
+                    <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-400 border border-rose-200 dark:border-rose-800 inline-flex items-center gap-1">
+                      معلّق 🔴
+                    </span>
+                  )
+                )}
                 {student?.loginCode && (
                   <button
                     type="button"
@@ -450,12 +491,42 @@ _منصة الخلاصة التعليمية - رفيقكم نحو التفوق_ 
             </div>
           </div>
 
-          <button
-            onClick={onClose}
-            className="w-10 h-10 rounded-xl border border-[#E2E8F0] dark:border-[#334155] flex items-center justify-center text-[#64748B] hover:text-[#0F172A] dark:hover:text-white transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-2">
+            {student && (
+              <button
+                type="button"
+                disabled={isTogglingStatus}
+                onClick={handleToggleStudentStatus}
+                className={`h-9 px-3.5 rounded-xl text-xs font-bold inline-flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs ${
+                  isActive
+                    ? "bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800"
+                    : "bg-emerald-600 hover:bg-emerald-700 text-white"
+                }`}
+                title={isActive ? "إيقاف الحساب وتعليقه" : "تفعيل الحساب فوراً"}
+              >
+                {isTogglingStatus ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : isActive ? (
+                  <>
+                    <AlertCircle className="w-3.5 h-3.5 text-rose-500" />
+                    <span>إيقاف الحساب</span>
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    <span>تفعيل الحساب</span>
+                  </>
+                )}
+              </button>
+            )}
+
+            <button
+              onClick={onClose}
+              className="w-10 h-10 rounded-xl border border-[#E2E8F0] dark:border-[#334155] flex items-center justify-center text-[#64748B] hover:text-[#0F172A] dark:hover:text-white transition-colors cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         {/* Quick Stats Strip */}
@@ -859,6 +930,22 @@ _منصة الخلاصة التعليمية - رفيقكم نحو التفوق_ 
                             <option value={1}>جهاز واحد فقط (الافتراضي - منع مشاركة الحساب)</option>
                             <option value={2}>جهازين (تصريح إضافي للطالب)</option>
                             <option value={3}>3 أجهزة (استثناء خاص)</option>
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="block text-[#64748B] mb-1.5 font-bold">حالة تفعيل الحساب</label>
+                          <select
+                            value={isActive ? "active" : "inactive"}
+                            onChange={(e) => setIsActive(e.target.value === "active")}
+                            className={`w-full h-10 px-3 rounded-xl border font-bold transition-colors ${
+                              isActive
+                                ? "border-emerald-300 text-emerald-700 dark:border-emerald-800 dark:text-emerald-300 bg-emerald-50/20"
+                                : "border-rose-300 text-rose-700 dark:border-rose-800 dark:text-rose-300 bg-rose-50/20"
+                            }`}
+                          >
+                            <option value="active">مفعّل (مسموح له بالدخول والمذاكرة)</option>
+                            <option value="inactive">معلق / موقوف (محظور من الدخول بانتظار التفعيل)</option>
                           </select>
                         </div>
                       </div>

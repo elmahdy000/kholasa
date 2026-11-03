@@ -20,6 +20,7 @@ export interface CreateUserInput {
   gradeId?: string | null;
   schoolCategory?: SchoolCategory;
   maxDevices?: number;
+  isActive?: boolean;
 }
 
 export interface UpdateUserInput {
@@ -34,6 +35,7 @@ export interface UpdateUserInput {
   trackId?: string | null;
   schoolCategory?: SchoolCategory;
   maxDevices?: number;
+  isActive?: boolean;
 }
 
 export interface StudentProfileUpdateInput {
