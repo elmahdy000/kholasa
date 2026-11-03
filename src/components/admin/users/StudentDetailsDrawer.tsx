@@ -579,11 +579,11 @@ _منصة الخلاصة التعليمية - رفيقكم نحو التفوق_ 
                       <div className="flex items-center gap-2">
                         <TrendingUp className="w-4 h-4 text-[#800020] dark:text-[#FB7185]" />
                         <h3 className="font-bold text-sm text-[#0F172A] dark:text-white">
-                          مؤشر التقدم وإنجاز المنهج الدراسي
+                          مؤشر التقدم وإنجاز المنهج الدراسي ({student.schoolCategory === "LANGUAGES" ? "مدارس لغات" : "مدارس عربي"})
                         </h3>
                       </div>
                       <span className="text-xs font-mono font-bold text-[#64748B] dark:text-[#94A3B8]">
-                        {student.stats.completedLessons} من أصل {student.stats.totalGradeLessons || 32} درس مكتمل
+                        {student.stats.completedLessons} من أصل {student.stats.totalGradeLessons || (student.schoolCategory === "LANGUAGES" ? 14 : 18)} درس مكتمل
                       </span>
                     </div>
 
@@ -604,7 +604,7 @@ _منصة الخلاصة التعليمية - رفيقكم نحو التفوق_ 
                           نسبة الإنجاز: {student.stats.progressPercent || 0}%
                         </span>
                         <span className="text-[#64748B] text-[11px]">
-                          المتبقي: {Math.max(0, (student.stats.totalGradeLessons || 32) - student.stats.completedLessons)} درس
+                          المتبقي: {Math.max(0, (student.stats.totalGradeLessons || (student.schoolCategory === "LANGUAGES" ? 14 : 18)) - student.stats.completedLessons)} درس
                         </span>
                       </div>
 
@@ -637,7 +637,7 @@ _منصة الخلاصة التعليمية - رفيقكم نحو التفوق_ 
                       <div className="p-2.5 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]">
                         <span className="text-[10px] text-[#64748B] block font-medium">الدروس المتبقية</span>
                         <span className="text-base font-bold text-[#0F172A] dark:text-white font-mono">
-                          {Math.max(0, (student.stats.totalGradeLessons || 32) - student.stats.completedLessons)}
+                          {Math.max(0, (student.stats.totalGradeLessons || (student.schoolCategory === "LANGUAGES" ? 14 : 18)) - student.stats.completedLessons)}
                         </span>
                       </div>
                       <div className="p-2.5 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]">

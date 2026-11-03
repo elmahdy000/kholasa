@@ -49,36 +49,39 @@ export default async function AdminUsersPage() {
       select: { id: true, name: true, systemId: true },
     }),
     prisma.unit.findMany({
-      where: { subject: { isPublished: true } },
+      where: { subject: { isPublished: true }, isPublished: true },
       select: {
-        subject: { select: { gradeId: true } },
+        subject: { select: { gradeId: true, schoolCategory: true } },
         _count: { select: { lessons: true } },
       },
     }),
   ]);
 
-  const gradeLessonsMap: Record<string, number> = {};
-  let totalPlatformLessons = 0;
+  // Map lessons count by Grade ID AND School Category (Strict Separation: Arabic vs Languages)
+  const curriculumLessonsMap: Record<string, number> = {};
   for (const u of gradeUnits) {
     const gid = u.subject?.gradeId;
-    const lCount = u._count.lessons;
-    totalPlatformLessons += lCount;
+    const cat = u.subject?.schoolCategory || "ARABIC";
     if (gid) {
-      gradeLessonsMap[gid] = (gradeLessonsMap[gid] || 0) + lCount;
+      const key = `${gid}:${cat}`;
+      curriculumLessonsMap[key] = (curriculumLessonsMap[key] || 0) + u._count.lessons;
     }
   }
 
   const mappedUsers = users.map((u) => {
     const completedCount = u.progress.filter((p) => p.isCompleted).length;
-    const totalForGrade =
-      u.grade?.id && gradeLessonsMap[u.grade.id]
-        ? gradeLessonsMap[u.grade.id]
-        : totalPlatformLessons > 0
-        ? totalPlatformLessons
-        : 32;
+    const studentCat = u.schoolCategory || "ARABIC";
+    const studentKey = `${u.grade?.id}:${studentCat}`;
+    const totalForStudent =
+      u.grade?.id && curriculumLessonsMap[studentKey]
+        ? curriculumLessonsMap[studentKey]
+        : studentCat === "LANGUAGES"
+        ? 14
+        : 18;
+
     const progressPercent =
-      totalForGrade > 0
-        ? Math.min(100, Math.round((completedCount / totalForGrade) * 100))
+      totalForStudent > 0
+        ? Math.min(100, Math.round((completedCount / totalForStudent) * 100))
         : 0;
 
     const sessionTime = u.sessions[0]?.createdAt
@@ -110,7 +113,7 @@ export default async function AdminUsersPage() {
       grade: u.grade,
       attempts: u.attempts,
       progress: u.progress,
-      totalLessons: totalForGrade,
+      totalLessons: totalForStudent,
       progressPercent,
       lastActiveAt,
     };

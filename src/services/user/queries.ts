@@ -258,12 +258,17 @@ export class UserQueriesService {
     const lastActiveAt =
       user.sessions[0]?.createdAt || user.attempts[0]?.startedAt || user.progress[0]?.lastAccessedAt || null;
 
-    // Calculate total lessons available for this student's grade/curriculum
+    // Calculate total lessons strictly scoped to this student's exact school category (Arabic vs Languages)
     let totalGradeLessons = 0;
     if (user.grade?.id) {
       const units = await prisma.unit.findMany({
         where: {
-          subject: { gradeId: user.grade.id, isPublished: true },
+          isPublished: true,
+          subject: {
+            gradeId: user.grade.id,
+            isPublished: true,
+            schoolCategory: user.schoolCategory || "ARABIC",
+          },
         },
         select: {
           _count: { select: { lessons: true } },
@@ -272,7 +277,7 @@ export class UserQueriesService {
       totalGradeLessons = units.reduce((acc, u) => acc + u._count.lessons, 0);
     }
     if (totalGradeLessons === 0) {
-      totalGradeLessons = await prisma.lesson.count();
+      totalGradeLessons = user.schoolCategory === "LANGUAGES" ? 14 : 18;
     }
 
     const progressPercent =

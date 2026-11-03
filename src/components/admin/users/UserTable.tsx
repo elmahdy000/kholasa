@@ -244,7 +244,7 @@ export function UserTable({
                             {u.progressPercent || 0}%
                           </span>
                           <span className="text-[#64748B] dark:text-[#94A3B8] text-[10px]">
-                            {completedLessons} / {u.totalLessons || 32} درس
+                            {completedLessons} / {u.totalLessons || (u.schoolCategory === "LANGUAGES" ? 14 : 18)} درس
                           </span>
                         </div>
                         <div className="w-full h-2 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden border border-slate-200/60 dark:border-slate-700/60">
