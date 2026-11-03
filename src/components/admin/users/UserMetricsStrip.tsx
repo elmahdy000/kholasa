@@ -16,6 +16,16 @@ export function UserMetricsStrip({ users }: UserMetricsStripProps) {
   const adminsCount = users.filter((u) => u.role === "ADMIN" || u.role === "SUPER_ADMIN").length;
   const totalAttempts = users.reduce((sum, u) => sum + u.attempts.length, 0);
 
+  const studentProgressList = students.map((s) => s.progressPercent || 0);
+  const avgStudentProgress =
+    studentProgressList.length > 0
+      ? Math.round(studentProgressList.reduce((a, b) => a + b, 0) / studentProgressList.length)
+      : 0;
+  const totalCompletedLessons = students.reduce(
+    (sum, u) => sum + (u.progress?.filter((p) => p.isCompleted).length || 0),
+    0
+  );
+
   return (
     <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
       <div className="p-4 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0]/80 dark:border-[#334155]/80 flex flex-col justify-between">
@@ -55,11 +65,16 @@ export function UserMetricsStrip({ users }: UserMetricsStripProps) {
       </div>
 
       <div className="p-4 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0]/80 dark:border-[#334155]/80 flex flex-col justify-between">
-        <span className="text-xs font-bold text-[#D97706] dark:text-[#FBBF24]">المسؤولون والمشرفون</span>
-        <span className="text-2xl font-bold font-mono text-[#D97706] dark:text-[#FBBF24] block mt-1">
-          {adminsCount}
+        <span className="text-xs font-bold text-[#D97706] dark:text-[#FBBF24]">إنجاز المنهج للدفعة</span>
+        <div className="flex items-baseline gap-1 mt-1">
+          <span className="text-2xl font-bold font-mono text-[#D97706] dark:text-[#FBBF24]">
+            {avgStudentProgress}%
+          </span>
+          <span className="text-xs text-[#64748B]">متوسط التقدم</span>
+        </div>
+        <span className="text-[11px] text-[#64748B] mt-1 font-mono">
+          {totalCompletedLessons} درس مكتمل
         </span>
-        <span className="text-[11px] text-[#64748B] mt-1 font-mono">طاقم الإدارة والتحكم</span>
       </div>
 
       <div className="p-4 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0]/80 dark:border-[#334155]/80 flex flex-col justify-between">

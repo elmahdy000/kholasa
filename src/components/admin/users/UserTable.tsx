@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Shield, Trash2, Smartphone, RotateCcw, Eye, Copy, KeyRound, Check } from "lucide-react";
+import { Shield, Trash2, Smartphone, RotateCcw, Eye, Copy, KeyRound, Check, Clock } from "lucide-react";
 import type { UserItem } from "./types";
 
 interface UserTableProps {
@@ -11,6 +11,21 @@ interface UserTableProps {
   onDeleteUser: (userId: string, userName: string) => void;
   onResetDevices: (userId: string, userName: string) => void;
   onInspectUser?: (userId: string) => void;
+}
+
+function formatLastActive(dateStr?: string | Date | null) {
+  if (!dateStr) return "لم يسجل دخول بعد";
+  const date = new Date(dateStr);
+  const now = new Date();
+  const diffMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
+  if (diffMinutes < 5) return "نشط الآن 🟢";
+  if (diffMinutes < 60) return `منذ ${diffMinutes} دقيقة`;
+  const diffHours = Math.floor(diffMinutes / 60);
+  if (diffHours < 24) return `منذ ${diffHours} ساعة`;
+  const diffDays = Math.floor(diffHours / 24);
+  if (diffDays === 1) return "أمس";
+  if (diffDays < 7) return `منذ ${diffDays} أيام`;
+  return date.toLocaleDateString("ar-EG");
 }
 
 export function UserTable({
@@ -42,7 +57,7 @@ export function UserTable({
               <th className="py-3.5 px-4 whitespace-nowrap">الصف الدراسي</th>
               <th className="py-3.5 px-4 whitespace-nowrap">الصلاحية</th>
               <th className="py-3.5 px-4 whitespace-nowrap text-center">الأجهزة</th>
-              <th className="py-3.5 px-4 whitespace-nowrap text-center">الدروس</th>
+              <th className="py-3.5 px-4 whitespace-nowrap text-center min-w-[170px]">إنجاز المنهج الدراسي</th>
               <th className="py-3.5 px-4 whitespace-nowrap text-center">الامتحانات</th>
               <th className="sticky left-0 bg-[#F8FAFC] dark:bg-[#1E293B] shadow-[-6px_0_12px_rgba(0,0,0,0.06)] dark:shadow-[-6px_0_12px_rgba(0,0,0,0.3)] border-r border-[#E2E8F0] dark:border-[#334155] py-3.5 px-4 whitespace-nowrap text-center min-w-[295px] z-10">
                 الإجراءات
@@ -115,6 +130,23 @@ export function UserTable({
                               }`}
                             >
                               {u.schoolCategory === "LANGUAGES" ? "لغات" : "عربي"}
+                            </span>
+                          )}
+                          {u.role === "STUDENT" && (
+                            <span
+                              className={`text-[10px] px-1.5 py-0.5 rounded-md font-mono inline-flex items-center gap-1 border ${
+                                u.lastActiveAt
+                                  ? "bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700"
+                                  : "bg-slate-50 text-slate-400 dark:bg-slate-800/40 dark:text-slate-500 border-transparent"
+                              }`}
+                              title={
+                                u.lastActiveAt
+                                  ? `آخر نشاط: ${new Date(u.lastActiveAt).toLocaleString("ar-EG")}`
+                                  : "لم يتم تسجيل أي دخول بعد"
+                              }
+                            >
+                              <Clock className="w-2.5 h-2.5 opacity-60" />
+                              <span>{formatLastActive(u.lastActiveAt)}</span>
                             </span>
                           )}
                         </div>
@@ -193,11 +225,50 @@ export function UserTable({
                     )}
                   </td>
 
-                  {/* 6. Completed Lessons */}
-                  <td className="py-3.5 px-4 whitespace-nowrap text-center">
-                    <span className="text-[12px] font-semibold text-[#64748B] dark:text-[#94A3B8] bg-[#F1F5F9] dark:bg-[#1E293B] px-2 py-0.5 rounded-md font-mono">
-                      {completedLessons}
-                    </span>
+                  {/* 6. Completed Lessons & Progress Bar */}
+                  <td className="py-3.5 px-4 whitespace-nowrap">
+                    {u.role === "STUDENT" ? (
+                      <div className="flex flex-col gap-1 min-w-[140px] max-w-[190px] mx-auto text-right">
+                        <div className="flex items-center justify-between text-[11px] font-mono">
+                          <span
+                            className={`font-bold ${
+                              (u.progressPercent || 0) >= 75
+                                ? "text-emerald-600 dark:text-emerald-400"
+                                : (u.progressPercent || 0) >= 30
+                                ? "text-blue-600 dark:text-blue-400"
+                                : (u.progressPercent || 0) > 0
+                                ? "text-amber-600 dark:text-amber-400"
+                                : "text-slate-400"
+                            }`}
+                          >
+                            {u.progressPercent || 0}%
+                          </span>
+                          <span className="text-[#64748B] dark:text-[#94A3B8] text-[10px]">
+                            {completedLessons} / {u.totalLessons || 32} درس
+                          </span>
+                        </div>
+                        <div className="w-full h-2 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden border border-slate-200/60 dark:border-slate-700/60">
+                          <div
+                            className={`h-full rounded-full transition-all duration-300 ${
+                              (u.progressPercent || 0) >= 75
+                                ? "bg-emerald-500 dark:bg-emerald-400"
+                                : (u.progressPercent || 0) >= 30
+                                ? "bg-[#800020] dark:bg-[#FB7185]"
+                                : (u.progressPercent || 0) > 0
+                                ? "bg-amber-500 dark:bg-amber-400"
+                                : "bg-slate-300 dark:bg-slate-700"
+                            }`}
+                            style={{
+                              width: `${Math.max(u.progressPercent || 0, (u.progressPercent || 0) > 0 ? 5 : 0)}%`,
+                            }}
+                          />
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="text-center">
+                        <span className="text-[#94A3B8] text-[11px]">غير مقيد بالمنهج</span>
+                      </div>
+                    )}
                   </td>
 
                   {/* 7. Exams Attempts */}

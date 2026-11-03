@@ -24,6 +24,7 @@ import {
   Sparkles,
   ExternalLink,
   Trophy,
+  Calendar,
 } from "lucide-react";
 
 interface AnalyticsData {
@@ -39,6 +40,27 @@ interface AnalyticsData {
     completedAttemptsCount: number;
     avgScore: number;
     avgDurationMinutes: number;
+  };
+  dailyActivity?: {
+    todayCount: number;
+    yesterdayCount: number;
+    past7DaysAverage: number;
+    days: Array<{
+      dateStr: string;
+      dayName: string;
+      isToday: boolean;
+      isYesterday: boolean;
+      uniqueStudentsCount: number;
+      students: Array<{
+        id: string;
+        name: string;
+        loginCode: string;
+        gradeName: string;
+        schoolCategory: "ARABIC" | "LANGUAGES";
+        lastActiveTime: string;
+        actions: string[];
+      }>;
+    }>;
   };
   studentCohort?: {
     totalStudents: number;
@@ -115,6 +137,7 @@ export function AnalyticsManagerClient({ data }: AnalyticsManagerClientProps) {
   const {
     overview,
     studentCohort,
+    dailyActivity,
     difficultyDistribution,
     questionTypes,
     scoreBrackets,
@@ -123,6 +146,7 @@ export function AnalyticsManagerClient({ data }: AnalyticsManagerClientProps) {
   } = data;
 
   const [copiedCodeId, setCopiedCodeId] = useState<string | null>(null);
+  const [selectedDayIndex, setSelectedDayIndex] = useState<number>(0);
 
   const handleCopyInvite = (student: { name: string; loginCode: string }) => {
     const text = `مرحباً بك يا ${student.name} في منصة "الخلاصة" التعليمية! 🎉\n\nكود الدخول الحصري الخاص بك هو: ${student.loginCode}\n\n🔗 رابط المنصة للدخول المباشر:\nhttps://kholasa.com/login\n\nيرجى الدخول من جهازك المعتمد لحل الاختبارات ومتابعة دروسك. بالتوفيق والنجاح! 🚀`;
@@ -156,6 +180,16 @@ export function AnalyticsManagerClient({ data }: AnalyticsManagerClientProps) {
     topStudents: [],
     pendingStudents: [],
   };
+
+  const dau = dailyActivity || {
+    todayCount: 0,
+    yesterdayCount: 0,
+    past7DaysAverage: 0,
+    days: [],
+  };
+
+  const selectedDay = dau.days[selectedDayIndex] || dau.days[0] || null;
+  const maxDayCount = Math.max(1, ...dau.days.map((d) => d.uniqueStudentsCount));
 
   const totalCohort = cohort.totalStudents || 1;
   const activePercent = Math.round((cohort.activeStudents / totalCohort) * 100);
@@ -267,6 +301,179 @@ export function AnalyticsManagerClient({ data }: AnalyticsManagerClientProps) {
             {questionTypes.mcq} اختيار من متعدد · {questionTypes.essay} مقالي
           </span>
         </div>
+      </div>
+
+      {/* 4.5. Dedicated Daily Active Students (DAU) & Activity Telemetry */}
+      <div className="p-6 rounded-2xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#E2E8F0] dark:border-[#334155]">
+          <div>
+            <div className="flex items-center gap-2">
+              <Calendar className="w-5 h-5 text-[#800020] dark:text-[#FB7185]" />
+              <h2 className="text-base font-bold text-[#0F172A] dark:text-white">
+                سجل الحضور والنشاط اليومي للطلاب (Daily Active Students - DAU)
+              </h2>
+            </div>
+            <p className="text-xs text-[#64748B] dark:text-[#94A3B8] mt-1">
+              متابعة دقيقة لعدد الطلاب الذين يدخلون المنصة يوماً بيوم، وتفاصيل ما ذاكروه وتفاعلوا معه
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="px-3 py-1 rounded-full text-xs font-mono font-bold bg-[#800020]/10 text-[#800020] dark:text-[#FB7185] border border-[#800020]/20">
+              اليوم: {dau.todayCount} طالب
+            </span>
+            <span className="px-3 py-1 rounded-full text-xs font-mono font-bold bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+              أمس: {dau.yesterdayCount} طالب
+            </span>
+            <span className="px-3 py-1 rounded-full text-xs font-mono font-bold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400">
+              متوسط أسبوعي: {dau.past7DaysAverage} طالب/يوم
+            </span>
+          </div>
+        </div>
+
+        {/* 14-Day Visual Bar Chart */}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between text-xs">
+            <span className="font-bold text-[#0F172A] dark:text-white">
+              مخطط تفاعل الطلاب لآخر 14 يوماً (انقر على أي يوم لعرض أسماء وتفاصيل نشاط الطلاب)
+            </span>
+            <span className="text-[11px] text-[#64748B] font-mono">
+              الأعلى: {maxDayCount} طلاب
+            </span>
+          </div>
+
+          <div className="p-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/30 border border-[#E2E8F0] dark:border-[#334155]">
+            <div className="flex items-end justify-between gap-1.5 sm:gap-2 h-36 pt-4">
+              {dau.days.map((day, idx) => {
+                const isSelected = idx === selectedDayIndex;
+                const heightPercent =
+                  day.uniqueStudentsCount > 0
+                    ? Math.max(22, Math.round((day.uniqueStudentsCount / maxDayCount) * 100))
+                    : 10;
+
+                return (
+                  <button
+                    key={day.dateStr}
+                    type="button"
+                    onClick={() => setSelectedDayIndex(idx)}
+                    className="flex-1 flex flex-col items-center h-full justify-end group cursor-pointer focus:outline-none"
+                    title={`${day.dayName} (${day.dateStr}): ${day.uniqueStudentsCount} طالب`}
+                  >
+                    <span
+                      className={`text-[10px] font-mono font-bold mb-1 transition-all ${
+                        isSelected
+                          ? "text-[#800020] dark:text-[#FB7185] scale-110"
+                          : "text-[#64748B] group-hover:text-[#0F172A] dark:group-hover:text-white"
+                      }`}
+                    >
+                      {day.uniqueStudentsCount}
+                    </span>
+
+                    <div className="w-full max-w-[32px] h-24 flex items-end justify-center">
+                      <div
+                        className={`w-full rounded-t-md transition-all duration-300 ${
+                          isSelected
+                            ? "bg-[#800020] dark:bg-[#FB7185] shadow-xs"
+                            : day.uniqueStudentsCount > 0
+                            ? "bg-slate-300 hover:bg-[#800020]/70 dark:bg-slate-700 dark:hover:bg-[#FB7185]/70"
+                            : "bg-slate-200/60 dark:bg-slate-800/60"
+                        }`}
+                        style={{ height: `${heightPercent}%` }}
+                      />
+                    </div>
+
+                    <span
+                      className={`text-[10px] mt-2 font-mono whitespace-nowrap block truncate max-w-[42px] transition-colors ${
+                        isSelected
+                          ? "font-bold text-[#800020] dark:text-[#FB7185]"
+                          : "text-[#94A3B8]"
+                      }`}
+                    >
+                      {day.dayName}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* Selected Day Details Panel */}
+        {selectedDay && (
+          <div className="p-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC]/50 dark:bg-[#1E293B]/20 space-y-3">
+            <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#334155] pb-2.5">
+              <div className="flex items-center gap-2">
+                <Clock className="w-4 h-4 text-[#800020] dark:text-[#FB7185]" />
+                <h3 className="font-bold text-xs text-[#0F172A] dark:text-white">
+                  سجل نشاط الطلاب في {selectedDay.dayName} ({selectedDay.dateStr})
+                </h3>
+              </div>
+              <span className="text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400">
+                {selectedDay.uniqueStudentsCount} طالب دخل المنصة
+              </span>
+            </div>
+
+            {selectedDay.students.length === 0 ? (
+              <p className="text-xs text-[#64748B] py-6 text-center">
+                لم يتم تسجيل دخول أي طالب في هذا اليوم ({selectedDay.dateStr}).
+              </p>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {selectedDay.students.map((student) => (
+                  <div
+                    key={student.id}
+                    className="p-3.5 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] space-y-2.5 text-xs"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-lg bg-[#800020] text-white flex items-center justify-center font-bold text-xs shrink-0">
+                          {student.name.charAt(0)}
+                        </div>
+                        <div>
+                          <span className="font-bold text-[#0F172A] dark:text-white block">
+                            {student.name}
+                          </span>
+                          <div className="flex items-center gap-1.5 text-[10px] text-[#64748B] font-mono mt-0.5">
+                            <span className="font-bold text-[#800020] dark:text-[#FB7185]">
+                              كود: {student.loginCode}
+                            </span>
+                            <span>• {student.gradeName}</span>
+                            <span>• {student.schoolCategory === "LANGUAGES" ? "لغات" : "عربي"}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <a
+                        href={`/admin/users?search=${encodeURIComponent(student.loginCode)}`}
+                        className="p-1.5 rounded-lg border border-[#E2E8F0] dark:border-[#334155] text-slate-600 hover:text-[#800020] hover:bg-slate-50 dark:hover:bg-[#1E293B] transition-colors"
+                        title="فتح ملف الطالب في إدارة المستخدمين"
+                      >
+                        <ExternalLink className="w-3.5 h-3.5" />
+                      </a>
+                    </div>
+
+                    {/* What student studied/did that day */}
+                    <div className="space-y-1 pt-1 border-t border-slate-100 dark:border-slate-800">
+                      <span className="text-[10px] text-[#94A3B8] font-bold block">
+                        النشاط المسجل في هذا اليوم:
+                      </span>
+                      <div className="flex flex-wrap gap-1.5">
+                        {student.actions.map((act, i) => (
+                          <span
+                            key={i}
+                            className="text-[11px] px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-medium"
+                          >
+                            {act}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* 5. Dedicated Student Cohort Telemetry Section */}

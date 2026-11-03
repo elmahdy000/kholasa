@@ -11,18 +11,33 @@ export default async function AdminUsersPage() {
     redirect("/login?callbackUrl=/admin/users");
   }
 
-  const [users, systems, grades] = await Promise.all([
+  const [users, systems, grades, gradeUnits] = await Promise.all([
     prisma.user.findMany({
       orderBy: { createdAt: "desc" },
       select: {
-        id: true, name: true, email: true, phone: true, loginCode: true, role: true, schoolCategory: true, createdAt: true,
-        maxDevices: true, boundDevices: true,
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        loginCode: true,
+        role: true,
+        schoolCategory: true,
+        createdAt: true,
+        maxDevices: true,
+        boundDevices: true,
         system: { select: { id: true, name: true } },
         grade: { select: { id: true, name: true } },
         attempts: {
-          select: { id: true, score: true, percentage: true },
+          select: { id: true, score: true, percentage: true, startedAt: true },
         },
-        progress: { select: { id: true, isCompleted: true } },
+        progress: {
+          select: { id: true, isCompleted: true, lastAccessedAt: true },
+        },
+        sessions: {
+          orderBy: { createdAt: "desc" },
+          take: 1,
+          select: { createdAt: true },
+        },
       },
     }),
     prisma.educationalSystem.findMany({
@@ -33,7 +48,73 @@ export default async function AdminUsersPage() {
       orderBy: { order: "asc" },
       select: { id: true, name: true, systemId: true },
     }),
+    prisma.unit.findMany({
+      where: { subject: { isPublished: true } },
+      select: {
+        subject: { select: { gradeId: true } },
+        _count: { select: { lessons: true } },
+      },
+    }),
   ]);
+
+  const gradeLessonsMap: Record<string, number> = {};
+  let totalPlatformLessons = 0;
+  for (const u of gradeUnits) {
+    const gid = u.subject?.gradeId;
+    const lCount = u._count.lessons;
+    totalPlatformLessons += lCount;
+    if (gid) {
+      gradeLessonsMap[gid] = (gradeLessonsMap[gid] || 0) + lCount;
+    }
+  }
+
+  const mappedUsers = users.map((u) => {
+    const completedCount = u.progress.filter((p) => p.isCompleted).length;
+    const totalForGrade =
+      u.grade?.id && gradeLessonsMap[u.grade.id]
+        ? gradeLessonsMap[u.grade.id]
+        : totalPlatformLessons > 0
+        ? totalPlatformLessons
+        : 32;
+    const progressPercent =
+      totalForGrade > 0
+        ? Math.min(100, Math.round((completedCount / totalForGrade) * 100))
+        : 0;
+
+    const sessionTime = u.sessions[0]?.createdAt
+      ? new Date(u.sessions[0].createdAt).getTime()
+      : 0;
+    const progressTime =
+      u.progress.length > 0
+        ? Math.max(...u.progress.map((p) => new Date(p.lastAccessedAt).getTime()))
+        : 0;
+    const attemptTime =
+      u.attempts.length > 0
+        ? Math.max(...u.attempts.map((a) => new Date(a.startedAt).getTime()))
+        : 0;
+    const maxTime = Math.max(sessionTime, progressTime, attemptTime);
+    const lastActiveAt = maxTime > 0 ? new Date(maxTime).toISOString() : null;
+
+    return {
+      id: u.id,
+      name: u.name,
+      email: u.email,
+      phone: u.phone,
+      loginCode: u.loginCode,
+      role: u.role,
+      schoolCategory: u.schoolCategory,
+      createdAt: u.createdAt,
+      maxDevices: u.maxDevices,
+      boundDevices: u.boundDevices,
+      system: u.system,
+      grade: u.grade,
+      attempts: u.attempts,
+      progress: u.progress,
+      totalLessons: totalForGrade,
+      progressPercent,
+      lastActiveAt,
+    };
+  });
 
   return (
     <AdminShell user={user}>
@@ -48,7 +129,7 @@ export default async function AdminUsersPage() {
         </div>
 
         <UserManagerClient
-          initialUsers={users as any}
+          initialUsers={mappedUsers as any}
           systems={systems}
           grades={grades}
           currentUserId={user.id}

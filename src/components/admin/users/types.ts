@@ -24,6 +24,9 @@ export interface UserItem {
   maxDevices?: number;
   boundDevices?: string[];
   createdAt: string | Date;
+  lastActiveAt?: string | Date | null;
+  totalLessons?: number;
+  progressPercent?: number;
 }
 
 export interface UserManagerClientProps {

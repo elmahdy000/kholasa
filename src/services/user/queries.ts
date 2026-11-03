@@ -258,10 +258,90 @@ export class UserQueriesService {
     const lastActiveAt =
       user.sessions[0]?.createdAt || user.attempts[0]?.startedAt || user.progress[0]?.lastAccessedAt || null;
 
+    // Calculate total lessons available for this student's grade/curriculum
+    let totalGradeLessons = 0;
+    if (user.grade?.id) {
+      const units = await prisma.unit.findMany({
+        where: {
+          subject: { gradeId: user.grade.id, isPublished: true },
+        },
+        select: {
+          _count: { select: { lessons: true } },
+        },
+      });
+      totalGradeLessons = units.reduce((acc, u) => acc + u._count.lessons, 0);
+    }
+    if (totalGradeLessons === 0) {
+      totalGradeLessons = await prisma.lesson.count();
+    }
+
+    const progressPercent =
+      totalGradeLessons > 0
+        ? Math.min(100, Math.round((completedLessons / totalGradeLessons) * 100))
+        : 0;
+
+    // Build unified chronological activity timeline (what the student studied and did)
+    const activityTimeline: Array<{
+      id: string;
+      type: "SESSION" | "LESSON" | "EXAM";
+      title: string;
+      description?: string;
+      timestamp: string;
+      meta?: Record<string, any>;
+    }> = [];
+
+    for (const s of user.sessions) {
+      activityTimeline.push({
+        id: `sess_${s.id}`,
+        type: "SESSION",
+        title: "تسجيل دخول إلى المنصة",
+        description: s.deviceId
+          ? `تم الدخول بنجاح من الجهاز المعتمد (${s.deviceId.slice(0, 16)})`
+          : "جلسة تصفح معتمدة",
+        timestamp: s.createdAt.toISOString(),
+      });
+    }
+
+    for (const a of user.attempts) {
+      activityTimeline.push({
+        id: `att_${a.id}`,
+        type: "EXAM",
+        title: `حل امتحان: ${a.title || a.exam?.title || "اختبار مادة"}`,
+        description: `المادة: ${a.exam?.subject?.name || "عام"} • النسبة: ${a.percentage}% (${a.isCompleted ? "مكتمل" : "غير مكتمل"})`,
+        timestamp: a.startedAt.toISOString(),
+        meta: {
+          percentage: a.percentage,
+          score: a.score,
+          isCompleted: a.isCompleted,
+          subjectName: a.exam?.subject?.name,
+        },
+      });
+    }
+
+    for (const p of user.progress) {
+      activityTimeline.push({
+        id: `prog_${p.id}`,
+        type: "LESSON",
+        title: `${p.isCompleted ? "إتمام مذاكرة درس" : "متابعة مذاكرة درس"}: ${p.lesson?.title || "درس"}`,
+        description: `${p.lesson?.unit?.subject?.name || "المادة"} • ${p.lesson?.unit?.title || "الوحدة"} (نسبة الإنجاز: ${p.isCompleted ? "100%" : p.progressPercent + "%"})`,
+        timestamp: p.lastAccessedAt.toISOString(),
+        meta: {
+          progressPercent: p.progressPercent,
+          isCompleted: p.isCompleted,
+          unitTitle: p.lesson?.unit?.title,
+          subjectName: p.lesson?.unit?.subject?.name,
+        },
+      });
+    }
+
+    activityTimeline.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+
     return {
       ...user,
       stats: {
         completedLessons,
+        totalGradeLessons,
+        progressPercent,
         totalAttempts: user._count.attempts,
         averageScore,
         totalMistakes: user._count.mistakes,
@@ -270,6 +350,7 @@ export class UserQueriesService {
         totalTimeSpentMinutes,
         lastActiveAt,
         subjectStats,
+        activityTimeline: activityTimeline.slice(0, 40),
       },
     };
   }

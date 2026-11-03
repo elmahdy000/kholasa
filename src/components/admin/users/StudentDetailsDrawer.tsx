@@ -59,6 +59,8 @@ interface DetailedStudent {
   track: { id: string; name: string } | null;
   stats: {
     completedLessons: number;
+    totalGradeLessons?: number;
+    progressPercent?: number;
     totalAttempts: number;
     averageScore: number;
     totalMistakes: number;
@@ -66,6 +68,14 @@ interface DetailedStudent {
     activeDevicesCount: number;
     totalTimeSpentMinutes?: number;
     lastActiveAt?: string | null;
+    activityTimeline?: Array<{
+      id: string;
+      type: "SESSION" | "LESSON" | "EXAM";
+      title: string;
+      description?: string;
+      timestamp: string;
+      meta?: Record<string, any>;
+    }>;
     subjectStats?: Array<{
       subjectName: string;
       attemptsCount: number;
@@ -563,6 +573,158 @@ _منصة الخلاصة التعليمية - رفيقكم نحو التفوق_ 
               {/* TAB 1: OVERVIEW & CONTROLS */}
               {activeTab === "overview" && (
                 <div className="space-y-6">
+                  {/* Master Curriculum Progress Card */}
+                  <div className="bg-[#F8FAFC] dark:bg-[#1E293B]/30 p-5 rounded-2xl border border-[#E2E8F0] dark:border-[#334155] space-y-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <TrendingUp className="w-4 h-4 text-[#800020] dark:text-[#FB7185]" />
+                        <h3 className="font-bold text-sm text-[#0F172A] dark:text-white">
+                          مؤشر التقدم وإنجاز المنهج الدراسي
+                        </h3>
+                      </div>
+                      <span className="text-xs font-mono font-bold text-[#64748B] dark:text-[#94A3B8]">
+                        {student.stats.completedLessons} من أصل {student.stats.totalGradeLessons || 32} درس مكتمل
+                      </span>
+                    </div>
+
+                    {/* Progress Bar Container */}
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between text-xs font-mono font-bold">
+                        <span
+                          className={`${
+                            (student.stats.progressPercent || 0) >= 75
+                              ? "text-emerald-600 dark:text-emerald-400"
+                              : (student.stats.progressPercent || 0) >= 30
+                              ? "text-blue-600 dark:text-blue-400"
+                              : (student.stats.progressPercent || 0) > 0
+                              ? "text-amber-600 dark:text-amber-400"
+                              : "text-slate-400"
+                          }`}
+                        >
+                          نسبة الإنجاز: {student.stats.progressPercent || 0}%
+                        </span>
+                        <span className="text-[#64748B] text-[11px]">
+                          المتبقي: {Math.max(0, (student.stats.totalGradeLessons || 32) - student.stats.completedLessons)} درس
+                        </span>
+                      </div>
+
+                      <div className="w-full h-3.5 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden border border-slate-300/40 dark:border-slate-700/60 p-0.5">
+                        <div
+                          className={`h-full rounded-full transition-all duration-500 ${
+                            (student.stats.progressPercent || 0) >= 75
+                              ? "bg-emerald-500"
+                              : (student.stats.progressPercent || 0) >= 30
+                              ? "bg-[#800020] dark:bg-[#FB7185]"
+                              : (student.stats.progressPercent || 0) > 0
+                              ? "bg-amber-500"
+                              : "bg-slate-300 dark:bg-slate-700"
+                          }`}
+                          style={{
+                            width: `${Math.max(student.stats.progressPercent || 0, (student.stats.progressPercent || 0) > 0 ? 5 : 0)}%`,
+                          }}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Quick Metric Badges */}
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 text-center">
+                      <div className="p-2.5 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]">
+                        <span className="text-[10px] text-[#64748B] block font-medium">الدروس المكتملة</span>
+                        <span className="text-base font-bold text-emerald-600 dark:text-emerald-400 font-mono">
+                          {student.stats.completedLessons}
+                        </span>
+                      </div>
+                      <div className="p-2.5 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]">
+                        <span className="text-[10px] text-[#64748B] block font-medium">الدروس المتبقية</span>
+                        <span className="text-base font-bold text-[#0F172A] dark:text-white font-mono">
+                          {Math.max(0, (student.stats.totalGradeLessons || 32) - student.stats.completedLessons)}
+                        </span>
+                      </div>
+                      <div className="p-2.5 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]">
+                        <span className="text-[10px] text-[#64748B] block font-medium">متوسط الامتحانات</span>
+                        <span className="text-base font-bold text-blue-600 dark:text-blue-400 font-mono">
+                          {student.stats.averageScore}%
+                        </span>
+                      </div>
+                      <div className="p-2.5 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]">
+                        <span className="text-[10px] text-[#64748B] block font-medium">الأخطاء المعالجة</span>
+                        <span className="text-base font-bold text-amber-600 dark:text-amber-400 font-mono">
+                          {student.stats.resolvedMistakes} / {student.stats.totalMistakes}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Student Recent Study & Activity Timeline */}
+                  <div className="bg-[#F8FAFC] dark:bg-[#1E293B]/30 p-5 rounded-2xl border border-[#E2E8F0] dark:border-[#334155] space-y-3">
+                    <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#334155] pb-2.5">
+                      <div className="flex items-center gap-2">
+                        <Clock className="w-4 h-4 text-[#800020] dark:text-[#FB7185]" />
+                        <h3 className="font-bold text-sm text-[#0F172A] dark:text-white">
+                          سجل ما ذاكره وتفاعل معه الطالب مؤخراً (Activity & Study Log)
+                        </h3>
+                      </div>
+                      <span className="text-xs text-[#64748B] font-mono">
+                        {student.stats.activityTimeline?.length || 0} نشاط مسجل
+                      </span>
+                    </div>
+
+                    {!student.stats.activityTimeline || student.stats.activityTimeline.length === 0 ? (
+                      <p className="text-xs text-[#64748B] py-6 text-center">
+                        لم يبدأ الطالب في مذاكرة الدروس أو حل الاختبارات بعد.
+                      </p>
+                    ) : (
+                      <div className="space-y-2 max-h-[280px] overflow-y-auto pr-1">
+                        {student.stats.activityTimeline.map((item) => (
+                          <div
+                            key={item.id}
+                            className="p-3 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] flex items-start justify-between gap-3 text-xs"
+                          >
+                            <div className="flex items-start gap-2.5">
+                              <span
+                                className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${
+                                  item.type === "LESSON"
+                                    ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400"
+                                    : item.type === "EXAM"
+                                    ? "bg-blue-50 text-blue-700 dark:bg-blue-950/50 dark:text-blue-400"
+                                    : "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300"
+                                }`}
+                              >
+                                {item.type === "LESSON" ? (
+                                  <BookOpen className="w-3.5 h-3.5" />
+                                ) : item.type === "EXAM" ? (
+                                  <Trophy className="w-3.5 h-3.5" />
+                                ) : (
+                                  <Smartphone className="w-3.5 h-3.5" />
+                                )}
+                              </span>
+
+                              <div>
+                                <span className="font-bold text-[#0F172A] dark:text-white block">
+                                  {item.title}
+                                </span>
+                                {item.description && (
+                                  <p className="text-[11px] text-[#64748B] dark:text-[#94A3B8] mt-0.5">
+                                    {item.description}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+
+                            <span className="text-[10px] text-[#94A3B8] font-mono shrink-0 whitespace-nowrap">
+                              {new Date(item.timestamp).toLocaleString("ar-EG", {
+                                month: "short",
+                                day: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
                   {/* Basic Info Form */}
                   <div className="bg-[#F8FAFC] dark:bg-[#1E293B]/30 p-5 rounded-2xl border border-[#E2E8F0] dark:border-[#334155] space-y-4">
                     <h3 className="font-bold text-sm text-[#0F172A] dark:text-white flex items-center gap-2">
@@ -1139,15 +1301,31 @@ _منصة الخلاصة التعليمية - رفيقكم نحو التفوق_ 
                                 {p.lesson?.title || "الدرس"}
                               </td>
                               <td className="p-3">
-                                <span
-                                  className={`inline-block px-2 py-0.5 rounded-md font-mono text-[11px] ${
-                                    p.isCompleted
-                                      ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400"
-                                      : "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400"
-                                  }`}
-                                >
-                                  {p.isCompleted ? "مكتمل (100%)" : `${p.progressPercent}%`}
-                                </span>
+                                <div className="flex items-center gap-2 max-w-[150px]">
+                                  <div className="flex-1 h-2 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden border border-slate-200 dark:border-slate-700">
+                                    <div
+                                      className={`h-full rounded-full transition-all duration-300 ${
+                                        p.isCompleted
+                                          ? "bg-emerald-500"
+                                          : p.progressPercent >= 50
+                                          ? "bg-[#800020] dark:bg-[#FB7185]"
+                                          : "bg-amber-500"
+                                      }`}
+                                      style={{
+                                        width: `${p.isCompleted ? 100 : Math.max(p.progressPercent, 5)}%`,
+                                      }}
+                                    />
+                                  </div>
+                                  <span
+                                    className={`px-1.5 py-0.5 rounded text-[10px] font-mono font-bold whitespace-nowrap ${
+                                      p.isCompleted
+                                        ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400"
+                                        : "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400"
+                                    }`}
+                                  >
+                                    {p.isCompleted ? "100%" : `${p.progressPercent}%`}
+                                  </span>
+                                </div>
                               </td>
                               <td className="p-3 font-mono text-[#94A3B8]">
                                 {p.lastAccessedAt ? new Date(p.lastAccessedAt).toLocaleDateString("ar-EG") : "—"}
