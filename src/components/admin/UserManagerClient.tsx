@@ -33,6 +33,14 @@ export function UserManagerClient({
     () => users.filter((u) => u.role === "STUDENT" && u.isActive === false).length,
     [users]
   );
+  const staffCount = useMemo(
+    () => users.filter((u) => u.role !== "STUDENT").length,
+    [users]
+  );
+  const studentsCount = useMemo(
+    () => users.filter((u) => u.role === "STUDENT").length,
+    [users]
+  );
 
   // Pagination State
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -56,12 +64,8 @@ export function UserManagerClient({
     onConfirm: async () => {},
   });
 
-  // Edit Role Modal State
+  // Edit Role & Password Modal State
   const [selectedUser, setSelectedUser] = useState<UserItem | null>(null);
-  const [newRole, setNewRole] = useState("STUDENT");
-  const [newMaxDevices, setNewMaxDevices] = useState(2);
-  const [isUpdating, setIsUpdating] = useState(false);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   // Create User Modal State
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -135,44 +139,6 @@ export function UserManagerClient({
       setCreateError(err.message || "حدث خطأ أثناء إنشاء المستخدم");
     } finally {
       setIsCreating(false);
-    }
-  };
-
-  const handleUpdateRole = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selectedUser) return;
-
-    setIsUpdating(true);
-    setErrorMsg(null);
-
-    try {
-      const res = await fetch(`/api/admin/users/${selectedUser.id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          role: newRole,
-          maxDevices: newRole === "STUDENT" ? newMaxDevices : undefined,
-        }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || "تعذر تحديث الرتبة");
-      }
-
-      setUsers((prev) =>
-        prev.map((u) =>
-          u.id === selectedUser.id
-            ? { ...u, role: newRole, maxDevices: newRole === "STUDENT" ? newMaxDevices : u.maxDevices }
-            : u
-        )
-      );
-      setSelectedUser(null);
-      toast.success("تم تحديث صلاحيات الحساب بنجاح");
-    } catch (err: any) {
-      setErrorMsg(err.message || "حدث خطأ أثناء التحديث");
-    } finally {
-      setIsUpdating(false);
     }
   };
 
@@ -290,7 +256,10 @@ export function UserManagerClient({
 
   const filteredUsers = useMemo(() => {
     return users.filter((u) => {
-      if (selectedRole !== "all" && u.role !== selectedRole) return false;
+      if (selectedRole !== "all") {
+        if (selectedRole === "STAFF" && u.role === "STUDENT") return false;
+        if (selectedRole !== "STAFF" && u.role !== selectedRole) return false;
+      }
       if (selectedStatus === "active" && u.isActive === false) return false;
       if (selectedStatus === "inactive" && u.isActive !== false) return false;
       if (selectedSystemId !== "all" && u.system?.id !== selectedSystemId)
@@ -345,6 +314,8 @@ export function UserManagerClient({
         totalFilteredCount={totalFilteredCount}
         totalUsersCount={users.length}
         suspendedCount={suspendedCount}
+        staffCount={staffCount}
+        studentsCount={studentsCount}
         onOpenCreate={() => {
           handleOpenCreateModal();
           setCreateError(null);
@@ -358,8 +329,6 @@ export function UserManagerClient({
         currentUserId={currentUserId}
         onSelectUserToEdit={(u) => {
           setSelectedUser(u);
-          setNewRole(u.role);
-          setNewMaxDevices(u.maxDevices || 1);
         }}
         onDeleteUser={handleDeleteUser}
         onResetDevices={handleResetDevices}
@@ -450,18 +419,16 @@ export function UserManagerClient({
         </div>
       )}
 
-      {/* 4. Edit Role Modal */}
+      {/* 4. Edit Role & Password Modal */}
       <EditRoleModal
         user={selectedUser}
-        newRole={newRole}
-        setNewRole={setNewRole}
-        maxDevices={newMaxDevices}
-        setMaxDevices={setNewMaxDevices}
-        isUpdating={isUpdating}
-        errorMsg={errorMsg}
         currentUserRole={currentUserRole}
         onClose={() => setSelectedUser(null)}
-        onSubmit={handleUpdateRole}
+        onUserSaved={(updatedUser) => {
+          setUsers((prev) =>
+            prev.map((u) => (u.id === updatedUser.id ? { ...u, ...updatedUser } : u))
+          );
+        }}
       />
 
       {/* 5. Create User Modal */}

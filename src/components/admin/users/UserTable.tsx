@@ -294,62 +294,101 @@ export function UserTable({
                   {/* 8. Sticky Actions Column */}
                   <td className="sticky left-0 bg-white group-hover:bg-[#F8FAFC] dark:bg-[#0F172A] dark:group-hover:bg-[#1E293B] shadow-[-6px_0_12px_rgba(0,0,0,0.06)] dark:shadow-[-6px_0_12px_rgba(0,0,0,0.3)] border-r border-[#E2E8F0] dark:border-[#334155] py-3.5 px-4 whitespace-nowrap text-center min-w-[340px] z-10 transition-colors">
                     <div className="inline-flex items-center justify-center gap-1.5">
-                      <button
-                        type="button"
-                        onClick={() => onInspectUser?.(u.id)}
-                        className="h-8 px-2.5 rounded-lg bg-slate-100 hover:bg-[#800020] hover:text-white dark:bg-[#1E293B] dark:hover:bg-[#800020] text-slate-700 dark:text-slate-200 text-xs font-semibold inline-flex items-center gap-1.5 transition-colors cursor-pointer"
-                        title="عرض الملف الشامل للطالب"
-                      >
-                        <Eye className="w-3.5 h-3.5 opacity-70" />
-                        <span>تفاصيل</span>
-                      </button>
-
-                      {/* 1-Click Activate / Suspend Toggle */}
-                      {u.role === "STUDENT" && onToggleStatus && (
-                        u.isActive === false ? (
+                      {u.role !== "STUDENT" ? (
+                        <>
                           <button
                             type="button"
-                            onClick={() => onToggleStatus(u.id, false, u.name || "")}
-                            className="h-8 px-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold inline-flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
-                            title="تفعيل الحساب والسماح للطالب بالدخول فوراً"
+                            onClick={() => onSelectUserToEdit(u)}
+                            className="h-8 px-3 rounded-lg bg-[#800020] hover:bg-[#66001A] text-white text-xs font-bold inline-flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
+                            title="تعديل صلاحيات المساعد وتغيير كلمة المرور وبيانات الاتصال"
                           >
-                            <CheckCircle2 className="w-3.5 h-3.5" />
-                            <span>تفعيل</span>
+                            <KeyRound className="w-3.5 h-3.5" />
+                            <span>إدارة وكلمة المرور</span>
                           </button>
-                        ) : (
+
+                          {onToggleStatus && (
+                            u.isActive === false ? (
+                              <button
+                                type="button"
+                                onClick={() => onToggleStatus(u.id, false, u.name || "")}
+                                className="h-8 px-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold inline-flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
+                                title="تفعيل حساب المساعد"
+                              >
+                                <CheckCircle2 className="w-3.5 h-3.5" />
+                                <span>تفعيل</span>
+                              </button>
+                            ) : (
+                              <button
+                                type="button"
+                                onClick={() => onToggleStatus(u.id, true, u.name || "")}
+                                disabled={u.id === currentUserId}
+                                className="h-8 px-2.5 rounded-lg bg-slate-100 hover:bg-rose-100 text-slate-700 hover:text-rose-700 dark:bg-[#1E293B] dark:text-slate-300 dark:hover:bg-rose-950/40 dark:hover:text-rose-300 text-xs font-semibold inline-flex items-center gap-1.5 transition-colors cursor-pointer border border-transparent hover:border-rose-300/40 disabled:opacity-30 disabled:cursor-not-allowed"
+                                title="إيقاف حساب المساعد"
+                              >
+                                <Ban className="w-3.5 h-3.5 text-rose-500" />
+                                <span>إيقاف</span>
+                              </button>
+                            )
+                          )}
+                        </>
+                      ) : (
+                        <>
                           <button
                             type="button"
-                            onClick={() => onToggleStatus(u.id, true, u.name || "")}
-                            className="h-8 px-2.5 rounded-lg bg-slate-100 hover:bg-rose-100 text-slate-700 hover:text-rose-700 dark:bg-[#1E293B] dark:text-slate-300 dark:hover:bg-rose-950/40 dark:hover:text-rose-300 text-xs font-semibold inline-flex items-center gap-1.5 transition-colors cursor-pointer border border-transparent hover:border-rose-300/40"
-                            title="إيقاف الحساب وتعليقه"
+                            onClick={() => onInspectUser?.(u.id)}
+                            className="h-8 px-2.5 rounded-lg bg-slate-100 hover:bg-[#800020] hover:text-white dark:bg-[#1E293B] dark:hover:bg-[#800020] text-slate-700 dark:text-slate-200 text-xs font-semibold inline-flex items-center gap-1.5 transition-colors cursor-pointer"
+                            title="عرض الملف الشامل للطالب"
                           >
-                            <Ban className="w-3.5 h-3.5 text-rose-500" />
-                            <span>إيقاف</span>
+                            <Eye className="w-3.5 h-3.5 opacity-70" />
+                            <span>تفاصيل</span>
                           </button>
-                        )
-                      )}
 
-                      {u.role === "STUDENT" && (
-                        <button
-                          type="button"
-                          onClick={() => onResetDevices(u.id, u.name || "")}
-                          className="h-8 px-2.5 rounded-lg bg-slate-100 hover:bg-amber-500/15 text-slate-700 hover:text-amber-800 dark:bg-[#1E293B] dark:text-slate-300 dark:hover:text-amber-300 text-xs font-semibold inline-flex items-center gap-1.5 transition-colors cursor-pointer border border-transparent hover:border-amber-300/40"
-                          title="فك ربط الأجهزة المسجلة لإتاحة الدخول من جهاز جديد"
-                        >
-                          <RotateCcw className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
-                          <span>فك الأجهزة</span>
-                        </button>
-                      )}
+                          {/* 1-Click Activate / Suspend Toggle */}
+                          {onToggleStatus && (
+                            u.isActive === false ? (
+                              <button
+                                type="button"
+                                onClick={() => onToggleStatus(u.id, false, u.name || "")}
+                                className="h-8 px-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold inline-flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
+                                title="تفعيل الحساب والسماح للطالب بالدخول فوراً"
+                              >
+                                <CheckCircle2 className="w-3.5 h-3.5" />
+                                <span>تفعيل</span>
+                              </button>
+                            ) : (
+                              <button
+                                type="button"
+                                onClick={() => onToggleStatus(u.id, true, u.name || "")}
+                                className="h-8 px-2.5 rounded-lg bg-slate-100 hover:bg-rose-100 text-slate-700 hover:text-rose-700 dark:bg-[#1E293B] dark:text-slate-300 dark:hover:bg-rose-950/40 dark:hover:text-rose-300 text-xs font-semibold inline-flex items-center gap-1.5 transition-colors cursor-pointer border border-transparent hover:border-rose-300/40"
+                                title="إيقاف الحساب وتعليقه"
+                              >
+                                <Ban className="w-3.5 h-3.5 text-rose-500" />
+                                <span>إيقاف</span>
+                              </button>
+                            )
+                          )}
 
-                      <button
-                        type="button"
-                        onClick={() => onSelectUserToEdit(u)}
-                        className="h-8 px-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-[#1E293B] dark:hover:bg-[#334155] text-slate-600 dark:text-slate-300 text-xs font-semibold inline-flex items-center gap-1.5 transition-colors cursor-pointer"
-                        title="تعديل الرتبة أو عدد الأجهزة"
-                      >
-                        <Shield className="w-3.5 h-3.5 text-slate-400" />
-                        <span>الرتبة</span>
-                      </button>
+                          <button
+                            type="button"
+                            onClick={() => onResetDevices(u.id, u.name || "")}
+                            className="h-8 px-2.5 rounded-lg bg-slate-100 hover:bg-amber-500/15 text-slate-700 hover:text-amber-800 dark:bg-[#1E293B] dark:text-slate-300 dark:hover:text-amber-300 text-xs font-semibold inline-flex items-center gap-1.5 transition-colors cursor-pointer border border-transparent hover:border-amber-300/40"
+                            title="فك ربط الأجهزة المسجلة لإتاحة الدخول من جهاز جديد"
+                          >
+                            <RotateCcw className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+                            <span>فك الأجهزة</span>
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => onSelectUserToEdit(u)}
+                            className="h-8 px-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-[#1E293B] dark:hover:bg-[#334155] text-slate-600 dark:text-slate-300 text-xs font-semibold inline-flex items-center gap-1.5 transition-colors cursor-pointer"
+                            title="تعديل الرتبة أو عدد الأجهزة"
+                          >
+                            <Shield className="w-3.5 h-3.5 text-slate-400" />
+                            <span>الرتبة</span>
+                          </button>
+                        </>
+                      )}
 
                       <button
                         type="button"

@@ -22,12 +22,9 @@ export class UserMutationsService {
 
     if (!name?.trim()) throw new Error("اسم المستخدم مطلوب");
 
-    // Only a SUPER_ADMIN may create administrative accounts.
-    if (
-      (role === Role.SUPER_ADMIN || role === Role.ADMIN) &&
-      actorRole !== Role.SUPER_ADMIN
-    ) {
-      throw new Error("فقط المشرف العام يمكنه إنشاء حسابات المسؤولين");
+    // Only a SUPER_ADMIN may create another SUPER_ADMIN.
+    if (role === Role.SUPER_ADMIN && actorRole !== Role.SUPER_ADMIN) {
+      throw new Error("فقط المشرف العام الأعلى يمكنه إنشاء حساب مشرف عام");
     }
 
     let cleanPhone: string | undefined = undefined;
@@ -105,11 +102,8 @@ export class UserMutationsService {
       if (id === actorUserId) {
         throw new Error("لا يمكنك تغيير رتبتك بنفسك");
       }
-      if (
-        (data.role === Role.SUPER_ADMIN || data.role === Role.ADMIN) &&
-        actorRole !== Role.SUPER_ADMIN
-      ) {
-        throw new Error("فقط المشرف العام يمكنه منح رتبة مسؤول");
+      if (data.role === Role.SUPER_ADMIN && actorRole !== Role.SUPER_ADMIN) {
+        throw new Error("فقط المشرف العام الأعلى يمكنه منح رتبة مشرف عام");
       }
     }
 
@@ -208,11 +202,8 @@ export class UserMutationsService {
     });
     if (!target) throw new Error("المستخدم غير موجود");
 
-    if (
-      (newRole === Role.SUPER_ADMIN || newRole === Role.ADMIN) &&
-      actorRole !== Role.SUPER_ADMIN
-    ) {
-      throw new Error("فقط المشرف العام يمكنه منح رتبة مسؤول");
+    if (newRole === Role.SUPER_ADMIN && actorRole !== Role.SUPER_ADMIN) {
+      throw new Error("فقط المشرف العام الأعلى يمكنه منح رتبة مشرف عام");
     }
 
     if (target.role === Role.SUPER_ADMIN && actorRole !== Role.SUPER_ADMIN) {
