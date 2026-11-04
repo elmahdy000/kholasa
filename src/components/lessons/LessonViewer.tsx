@@ -25,6 +25,7 @@ import { LessonMcqSection } from "./flow/LessonMcqSection";
 import { LessonEssaySection } from "./flow/LessonEssaySection";
 import { LessonAssessmentSection } from "./flow/LessonAssessmentSection";
 import { LessonTrueFalseSection } from "./flow/LessonTrueFalseSection";
+import { LessonFlashcardsModal } from "./LessonFlashcardsModal";
 
 function getEmbedUrl(url?: string | null): string | null {
   if (!url) return null;
@@ -76,6 +77,7 @@ export function LessonViewer({
   >({});
 
   // Bookmark & Progress States
+  const [isFlashcardsOpen, setIsFlashcardsOpen] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(initialIsBookmarked);
   const [isCompleted, setIsCompleted] = useState(initialIsCompleted);
   const [isTogglingBookmark, setIsTogglingBookmark] = useState(false);
@@ -352,6 +354,7 @@ export function LessonViewer({
         bookmarkNotice={bookmarkNotice}
         onToggleBookmark={toggleBookmark}
         onToggleComplete={toggleComplete}
+        onStartFlashcards={() => setIsFlashcardsOpen(true)}
       />
 
       {/* 2. Audio Player Bar */}
@@ -667,6 +670,15 @@ export function LessonViewer({
         prevLesson={prevLesson}
         nextLesson={nextLesson}
         subjectId={lesson.unit.subject.id}
+      />
+      {/* Flashcards Self-Recitation Modal */}
+      <LessonFlashcardsModal
+        isOpen={isFlashcardsOpen}
+        onClose={() => setIsFlashcardsOpen(false)}
+        lessonId={lesson.id}
+        lessonTitle={lesson.title}
+        unitTitle={lesson.unit?.title}
+        definitions={definitions}
       />
     </div>
   );

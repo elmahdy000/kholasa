@@ -6,6 +6,7 @@ import {
   X,
   Check,
   Copy,
+  Cards,
 } from "@phosphor-icons/react";
 import { Definition } from "../types";
 
@@ -17,6 +18,7 @@ interface LessonDefinitionsSectionProps {
   onSearchChange: (value: string) => void;
   onClearSearch: () => void;
   onCopyDefinition: (term: string, meaning: string) => void;
+  onStartFlashcards?: () => void;
 }
 
 export function LessonDefinitionsSection({
@@ -27,6 +29,7 @@ export function LessonDefinitionsSection({
   onSearchChange,
   onClearSearch,
   onCopyDefinition,
+  onStartFlashcards,
 }: LessonDefinitionsSectionProps) {
   return (
     <div id="section-definitions" className="space-y-6 pt-4">
@@ -51,7 +54,17 @@ export function LessonDefinitionsSection({
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          {onStartFlashcards && (
+            <button
+              type="button"
+              onClick={onStartFlashcards}
+              className="px-3.5 py-2 rounded-xl bg-[#800020] hover:bg-[#600018] text-white text-[13px] font-bold flex items-center gap-2 shadow-sm transition-all cursor-pointer"
+            >
+              <Cards className="w-4 h-4" weight="bold" />
+              <span>تسميع ذاتي بالكروت</span>
+            </button>
+          )}
           <span className="px-3 py-1.5 rounded-xl bg-white dark:bg-[#1E293B] border border-[#059669]/20 text-[#059669] text-[13px] font-bold font-mono">
             {definitions.length} مصطلح أساسي
           </span>
@@ -98,29 +111,18 @@ export function LessonDefinitionsSection({
                       <span>{item.term}</span>
                     </span>
                     <button
-                      type="button"
                       onClick={() => onCopyDefinition(item.term, item.meaning)}
-                      className={`p-1.5 rounded-lg text-[12px] font-bold flex items-center gap-1 transition-all ${
-                        isCopied
-                          ? "bg-[#059669] text-white"
-                          : "text-[#64748B] dark:text-[#94A3B8] hover:bg-[#059669]/10 hover:text-[#059669]"
-                      }`}
+                      className="p-1.5 rounded-lg text-[#64748B] hover:text-[#059669] hover:bg-[#059669]/10 transition-colors"
                       title="نسخ المصطلح والتعريف"
                     >
                       {isCopied ? (
-                        <>
-                          <Check className="w-3.5 h-3.5" weight="bold" />
-                          <span>تم النسخ!</span>
-                        </>
+                        <Check className="w-4 h-4 text-[#059669]" weight="bold" />
                       ) : (
-                        <>
-                          <Copy className="w-3.5 h-3.5" weight="bold" />
-                          <span className="hidden sm:inline">نسخ</span>
-                        </>
+                        <Copy className="w-4 h-4" weight="bold" />
                       )}
                     </button>
                   </div>
-                  <p className="text-[13px] sm:text-sm text-[#0F172A] dark:text-[#F8FAFC] leading-relaxed font-content">
+                  <p className="text-[13px] sm:text-[14px] text-[#64748B] dark:text-[#94A3B8] leading-relaxed">
                     {item.meaning}
                   </p>
                 </div>
@@ -129,8 +131,12 @@ export function LessonDefinitionsSection({
           })}
         </div>
       ) : (
-        <div className="p-8 text-center text-[#64748B] rounded-2xl bg-[#F8FAFC] dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]">
-          لا توجد تعريفات تطابق بحثك حالياً...
+        <div className="text-center py-12 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]">
+          <p className="text-sm font-medium text-[#64748B] dark:text-[#94A3B8]">
+            {definitionSearch
+              ? `لا توجد نتائج مطابقة لبحثك عن "${definitionSearch}"`
+              : "لا توجد تعريفات مضافة لهذا الدرس حتى الآن"}
+          </p>
         </div>
       )}
     </div>

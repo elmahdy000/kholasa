@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Clock, BookmarkSimple, CheckCircle, Check } from "@phosphor-icons/react";
+import { Clock, BookmarkSimple, CheckCircle, Check, Cards } from "@phosphor-icons/react";
 
 interface LessonHeaderProps {
   subject: {
@@ -23,6 +23,7 @@ interface LessonHeaderProps {
   bookmarkNotice: string | null;
   onToggleBookmark: () => void;
   onToggleComplete: () => void;
+  onStartFlashcards?: () => void;
 }
 
 export function LessonHeader({
@@ -38,6 +39,7 @@ export function LessonHeader({
   bookmarkNotice,
   onToggleBookmark,
   onToggleComplete,
+  onStartFlashcards,
 }: LessonHeaderProps) {
   return (
     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E2E8F0] dark:border-[#334155] pb-5">
@@ -72,7 +74,19 @@ export function LessonHeader({
       </div>
 
       {/* Actions */}
-      <div className="flex items-center gap-2 relative">
+      <div className="flex items-center gap-2 relative flex-wrap sm:flex-nowrap">
+        {/* Flashcards Recitation Button */}
+        {onStartFlashcards && (
+          <button
+            onClick={onStartFlashcards}
+            className="h-11 px-3.5 sm:px-4 rounded-lg bg-white dark:bg-[#1E293B] border border-[#800020]/30 hover:border-[#800020] text-[#800020] dark:text-[#FB7185] hover:bg-[#800020]/10 text-[13px] font-bold flex items-center gap-2 transition-colors cursor-pointer"
+            title="تسميع الدرس ذاتياً بكروت الفلاش"
+          >
+            <Cards className="w-4 h-4" weight="bold" />
+            <span>تسميع بالكروت</span>
+          </button>
+        )}
+
         {/* Bookmark Button */}
         <button
           onClick={onToggleBookmark}
