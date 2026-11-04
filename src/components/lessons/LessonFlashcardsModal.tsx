@@ -17,6 +17,7 @@ import {
   Translate,
 } from "@phosphor-icons/react";
 import { TranslationToggle } from "@/components/ui/TranslationToggle";
+import { FormattedDefinitionView } from "@/components/ui/FormattedDefinitionView";
 import type { Definition } from "./types";
 
 interface LessonFlashcardsModalProps {
@@ -457,25 +458,26 @@ export function LessonFlashcardsModal({
                 >
                   <div
                     onClick={handleFlip}
-                    className={`relative w-full h-[360px] sm:h-[400px] transform-style-preserve-3d transition-transform duration-500 cursor-pointer ${
+                    className={`relative w-full min-h-[430px] sm:min-h-[460px] transform-style-preserve-3d transition-transform duration-500 cursor-pointer ${
                       isFlipped ? "rotate-y-180" : ""
                     }`}
                   >
                     {/* ===== FRONT FACE (المصطلح / المفهوم) ===== */}
-                    <div className="absolute inset-0 backface-hidden rounded-2xl bg-white dark:bg-[#1E293B] border-2 border-[#E2E8F0] dark:border-[#334155] shadow-lg p-6 sm:p-8 flex flex-col justify-between items-center text-center hover:border-[#800020]/40 transition-colors">
+                    <div className="absolute inset-0 backface-hidden rounded-3xl bg-white dark:bg-[#1E293B] border-2 border-slate-200 dark:border-slate-700 shadow-xl p-6 sm:p-8 flex flex-col justify-between items-center text-center hover:border-[#800020]/50 transition-all">
                       {/* Top Header of Front Face */}
-                      <div className="w-full flex items-center justify-between text-xs font-bold text-[#64748B] dark:text-[#94A3B8]">
-                        <span className="px-3 py-1 rounded-full bg-[#800020]/10 text-[#800020] dark:bg-[#800020]/30 dark:text-[#FB7185] border border-[#800020]/20">
-                          المصطلح المطلوب تسميعه
+                      <div className="w-full flex items-center justify-between text-xs font-bold text-slate-500 dark:text-slate-400">
+                        <span className="px-3.5 py-1 rounded-full bg-[#800020]/10 text-[#800020] dark:bg-[#800020]/30 dark:text-[#FB7185] border border-[#800020]/25 flex items-center gap-1.5 shadow-2xs">
+                          <span className="w-2 h-2 rounded-full bg-[#800020] dark:bg-[#FB7185] animate-ping" />
+                          <span>المصطلح المطلوب تسميعه</span>
                         </span>
-                        <span className="font-mono">
+                        <span className="font-mono text-xs px-2.5 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold border border-slate-200 dark:border-slate-700">
                           {currentIndex + 1} / {totalCards}
                         </span>
                       </div>
 
                       {/* Term Large Centered Title */}
-                      <div className="my-auto px-4 max-w-md">
-                        <span className="text-[11px] font-bold text-[#64748B] dark:text-[#94A3B8] block mb-2">
+                      <div className="my-auto px-4 max-w-md space-y-2">
+                        <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 block uppercase tracking-wider">
                           ما هو تعريف ومفهوم:
                         </span>
                         <h2 className="text-2xl sm:text-3xl font-black text-[#0F172A] dark:text-white leading-relaxed tracking-tight">
@@ -484,9 +486,11 @@ export function LessonFlashcardsModal({
                       </div>
 
                       {/* Bottom Hint */}
-                      <div className="w-full pt-3 border-t border-[#E2E8F0]/70 dark:border-[#334155]/70 flex items-center justify-center gap-1.5 text-xs font-bold text-[#800020] dark:text-[#FB7185] animate-pulse">
+                      <div className="w-full pt-3.5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-center gap-2 text-xs font-bold text-[#800020] dark:text-[#FB7185]">
                         <span>اضغط على الكارت لكشف الإجابة والتعريف النموذجي</span>
-                        <span>👆</span>
+                        <kbd className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-mono text-[11px] border border-slate-300 dark:border-slate-700 shadow-2xs">
+                          Space
+                        </kbd>
                       </div>
                     </div>
 
@@ -500,13 +504,14 @@ export function LessonFlashcardsModal({
                           e.stopPropagation();
                         }
                       }}
-                      className="absolute inset-0 backface-hidden rotate-y-180 rounded-2xl bg-white dark:bg-[#1E293B] border-2 border-[#059669]/40 dark:border-[#059669]/50 shadow-xl p-5 sm:p-7 flex flex-col justify-between text-right"
+                      className="absolute inset-0 backface-hidden rotate-y-180 rounded-3xl bg-white dark:bg-[#1E293B] border-2 border-[#059669]/40 dark:border-[#059669]/50 shadow-2xl p-5 sm:p-7 flex flex-col justify-between text-right"
                     >
                       {/* Top Header of Back Face */}
-                      <div className="flex items-center justify-between text-xs font-bold">
+                      <div className="flex items-center justify-between text-xs font-bold border-b border-slate-100 dark:border-slate-800 pb-2.5">
                         <div className="flex items-center gap-2">
-                          <span className="px-3 py-1 rounded-full bg-[#059669]/10 text-[#059669] dark:bg-[#059669]/20 dark:text-[#34D399] border border-[#059669]/30">
-                            التعريف والإجابة النموذجية
+                          <span className="px-3 py-1 rounded-full bg-[#059669]/10 text-[#059669] dark:bg-[#059669]/20 dark:text-[#34D399] border border-[#059669]/30 flex items-center gap-1.5 shadow-2xs">
+                            <span className="w-2 h-2 rounded-full bg-[#059669] dark:bg-[#34D399]" />
+                            <span>التعريف والإجابة النموذجية</span>
                           </span>
                           {currentCard.translation && (
                             <TranslationToggle
@@ -521,35 +526,37 @@ export function LessonFlashcardsModal({
                         </span>
                       </div>
 
-                      {/* Definition Box */}
-                      <div className="my-auto py-3">
-                        <div className="p-4 sm:p-5 rounded-xl bg-[#F8FAFC] dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] max-h-[190px] overflow-y-auto scrollbar-thin space-y-3">
-                          <p
-                            className="text-[14px] sm:text-[16px] font-medium text-[#0F172A] dark:text-white leading-loose text-justify"
-                            dir={/[\u0600-\u06FF]/.test(currentCard.meaning) ? "rtl" : "ltr"}
-                          >
-                            {currentCard.meaning}
-                          </p>
+                      {/* Definition Box with Formatted Multi-paragraph / Point View */}
+                      <div className="my-auto py-2.5">
+                        <div className="p-4 sm:p-5 rounded-2xl bg-[#F8FAFC] dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 max-h-[250px] sm:max-h-[270px] overflow-y-auto scrollbar-thin space-y-3.5">
+                          <FormattedDefinitionView
+                            text={currentCard.meaning}
+                            variant="flashcard"
+                            colorScheme="emerald"
+                          />
 
                           {showTranslation && currentCard.translation && (
                             <div
-                              className="p-3 rounded-lg bg-emerald-50/80 dark:bg-emerald-950/30 border border-emerald-200/80 dark:border-emerald-800/40 text-right animate-in fade-in duration-200"
+                              className="p-3 sm:p-3.5 rounded-xl bg-emerald-50/90 dark:bg-emerald-950/40 border border-emerald-200/90 dark:border-emerald-800/50 text-right animate-in fade-in duration-200 shadow-2xs space-y-1.5"
                               dir="rtl"
                             >
-                              <div className="flex items-center gap-1.5 mb-1 text-[11px] font-bold text-emerald-700 dark:text-emerald-400">
+                              <div className="flex items-center gap-1.5 text-[11px] font-bold text-emerald-800 dark:text-emerald-300">
                                 <Translate className="w-3.5 h-3.5" />
                                 <span>الترجمة العربية للتعريف</span>
                               </div>
-                              <p className="text-xs sm:text-sm font-medium text-slate-800 dark:text-slate-200 leading-relaxed font-content">
-                                {currentCard.translation}
-                              </p>
+                              <FormattedDefinitionView
+                                text={currentCard.translation}
+                                variant="translation"
+                                colorScheme="emerald"
+                                forceDir="rtl"
+                              />
                             </div>
                           )}
                         </div>
                       </div>
 
                       {/* Bottom Evaluation Action Bar ("وبيظهر اختيارين تمام او مش تمام") */}
-                      <div className="pt-2 border-t border-[#E2E8F0]/80 dark:border-[#334155]/80 space-y-2">
+                      <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-2">
                         <p className="text-center text-[12px] font-bold text-[#64748B] dark:text-[#94A3B8]">
                           كيف كان حفظك وتسميعك للتعريف؟
                         </p>
@@ -562,6 +569,9 @@ export function LessonFlashcardsModal({
                           >
                             <CheckCircle className="w-5 h-5" weight="bold" />
                             <span>تمام</span>
+                            <kbd className="hidden sm:inline-block px-1.5 py-0.5 rounded bg-white/20 text-white font-mono text-[10px]">
+                              1
+                            </kbd>
                           </button>
 
                           {/* BUTTON 2: مش تمام (Save to Mistakes) */}
@@ -572,6 +582,9 @@ export function LessonFlashcardsModal({
                           >
                             <WarningCircle className="w-5 h-5" weight="bold" />
                             <span>مش تمام (غلطاتي)</span>
+                            <kbd className="hidden sm:inline-block px-1.5 py-0.5 rounded bg-white/20 text-white font-mono text-[10px]">
+                              2
+                            </kbd>
                           </button>
                         </div>
                       </div>

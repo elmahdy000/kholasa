@@ -11,6 +11,7 @@ import {
 } from "@phosphor-icons/react";
 import { Definition } from "../types";
 import { TranslationToggle } from "@/components/ui/TranslationToggle";
+import { FormattedDefinitionView } from "@/components/ui/FormattedDefinitionView";
 
 interface LessonDefinitionsSectionProps {
   definitions: Definition[];
@@ -148,28 +149,28 @@ export function LessonDefinitionsSection({
                     </div>
                   </div>
 
-                  {/* English Definition */}
-                  <p
-                    dir={isEnglishMeaning ? "ltr" : "rtl"}
-                    className={`text-[13px] sm:text-[14px] text-[#0F172A] dark:text-white leading-relaxed ${
-                      isEnglishMeaning ? "text-left font-sans" : "text-right font-content"
-                    }`}
-                  >
-                    {item.meaning}
-                  </p>
+                  {/* Definition Body with Formatted Points / Paragraphs */}
+                  <FormattedDefinitionView
+                    text={item.meaning}
+                    variant="card"
+                    colorScheme="emerald"
+                  />
 
                   {/* Collapsible Arabic Translation */}
                   {isTranslated && item.translation && (
                     <div
                       dir="rtl"
-                      className="mt-3 p-3 rounded-xl bg-[#059669]/5 dark:bg-[#059669]/10 border border-[#059669]/20 text-right animate-in fade-in slide-in-from-top-1 duration-200"
+                      className="mt-3 p-3 sm:p-3.5 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/25 border border-emerald-200/70 dark:border-emerald-800/40 text-right animate-in fade-in slide-in-from-top-1 duration-200 space-y-1.5 shadow-2xs"
                     >
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-[#059669]/15 text-[#059669] dark:text-[#34D399] mb-1.5 inline-block">
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-600/15 text-emerald-800 dark:text-emerald-300 inline-block">
                         الترجمة العربية للتعريف
                       </span>
-                      <p className="text-[13px] sm:text-[14px] text-[#1E293B] dark:text-slate-200 leading-relaxed font-content">
-                        {item.translation}
-                      </p>
+                      <FormattedDefinitionView
+                        text={item.translation}
+                        variant="translation"
+                        colorScheme="emerald"
+                        forceDir="rtl"
+                      />
                     </div>
                   )}
                 </div>
