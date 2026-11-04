@@ -39,6 +39,7 @@ export async function PUT(req: Request, { params }: RouteParams) {
     const body = await req.json().catch(() => ({}));
     const {
       statement,
+      translation,
       type,
       difficulty,
       subjectId,
@@ -49,6 +50,7 @@ export async function PUT(req: Request, { params }: RouteParams) {
       concept,
       correctReason,
       modelAnswer,
+      modelAnswerTranslation,
     } = body;
 
     if (typeof statement !== "string" || !statement.trim()) {
@@ -57,6 +59,7 @@ export async function PUT(req: Request, { params }: RouteParams) {
 
     const updated = await QuestionService.updateQuestion(id, {
       statement: statement.trim(),
+      translation: translation === undefined ? undefined : typeof translation === "string" ? translation.trim() || null : null,
       type,
       difficulty,
       subjectId: typeof subjectId === "string" && subjectId ? subjectId : undefined,
@@ -74,10 +77,13 @@ export async function PUT(req: Request, { params }: RouteParams) {
               }
             : null,
       rubric:
-        modelAnswer === undefined
+        modelAnswer === undefined && modelAnswerTranslation === undefined
           ? undefined
           : typeof modelAnswer === "string" && modelAnswer.trim()
-            ? { modelAnswer: modelAnswer.trim() }
+            ? {
+                modelAnswer: modelAnswer.trim(),
+                modelAnswerTranslation: typeof modelAnswerTranslation === "string" ? modelAnswerTranslation.trim() || null : null,
+              }
             : null,
     });
 

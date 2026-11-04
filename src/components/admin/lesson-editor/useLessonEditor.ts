@@ -188,7 +188,11 @@ export function useLessonEditor({
                   return { term: parts[0]?.trim() || "", meaning: parts.slice(1).join(":")?.trim() || "" };
                 }
                 if (d && (d.term || d.meaning)) {
-                  return { term: String(d.term || "").trim(), meaning: String(d.meaning || "").trim() };
+                  return {
+                    term: String(d.term || "").trim(),
+                    meaning: String(d.meaning || "").trim(),
+                    translation: d.translation ? String(d.translation).trim() : undefined,
+                  };
                 }
                 return null;
               })
@@ -300,18 +304,38 @@ export function useLessonEditor({
   };
 
   // Definitions Handlers
-  const handleAddDefinition = (newTerm: string, newMeaning: string) => {
+  const handleAddDefinition = (newTerm: string, newMeaning: string, newTranslation?: string) => {
     if (!newTerm.trim() || !newMeaning.trim()) return;
-    setDefinitions((prev) => [...prev, { term: newTerm.trim(), meaning: newMeaning.trim() }]);
+    setDefinitions((prev) => [
+      ...prev,
+      {
+        term: newTerm.trim(),
+        meaning: newMeaning.trim(),
+        translation: newTranslation && newTranslation.trim() ? newTranslation.trim() : undefined,
+      },
+    ]);
   };
 
   const handleRemoveDefinition = (index: number) => {
     setDefinitions((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const handleUpdateDefinition = (index: number, updatedTerm: string, updatedMeaning: string) => {
+  const handleUpdateDefinition = (
+    index: number,
+    updatedTerm: string,
+    updatedMeaning: string,
+    updatedTranslation?: string
+  ) => {
     setDefinitions((prev) =>
-      prev.map((item, i) => (i === index ? { term: updatedTerm, meaning: updatedMeaning } : item))
+      prev.map((item, i) =>
+        i === index
+          ? {
+              term: updatedTerm,
+              meaning: updatedMeaning,
+              translation: updatedTranslation && updatedTranslation.trim() ? updatedTranslation.trim() : undefined,
+            }
+          : item
+      )
     );
   };
 

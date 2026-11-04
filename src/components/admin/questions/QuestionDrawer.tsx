@@ -35,12 +35,14 @@ export function QuestionDrawer({
   const [unitId, setUnitId] = useState<string>("");
   const [lessonId, setLessonId] = useState<string>("");
   const [statement, setStatement] = useState("");
+  const [translation, setTranslation] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [type, setType] = useState<"MCQ" | "TRUE_FALSE" | "ESSAY">("MCQ");
   const [difficulty, setDifficulty] = useState<"EASY" | "MEDIUM" | "HARD">("MEDIUM");
   const [concept, setConcept] = useState("");
   const [correctReason, setCorrectReason] = useState("");
   const [modelAnswer, setModelAnswer] = useState("");
+  const [modelAnswerTranslation, setModelAnswerTranslation] = useState("");
   const [options, setOptions] = useState<FormOption[]>([
     { text: "", isCorrect: true, explanation: "" },
     { text: "", isCorrect: false, explanation: "" },
@@ -62,16 +64,19 @@ export function QuestionDrawer({
       setUnitId(editingQuestion.unit?.id || "");
       setLessonId(editingQuestion.lessons?.[0]?.lesson?.id || "");
       setStatement(editingQuestion.statement);
+      setTranslation(editingQuestion.translation || "");
       setImageUrl(editingQuestion.imageUrl || "");
       setType(editingQuestion.type as any);
       setDifficulty(editingQuestion.difficulty as any);
       setConcept(editingQuestion.explanation?.concept || "");
       setCorrectReason(editingQuestion.explanation?.correctReason || "");
       setModelAnswer(editingQuestion.rubric?.modelAnswer || "");
+      setModelAnswerTranslation(editingQuestion.rubric?.modelAnswerTranslation || "");
       setOptions(
         editingQuestion.options && editingQuestion.options.length > 0
           ? editingQuestion.options.map((o) => ({
               text: o.text,
+              translation: o.translation || "",
               isCorrect: o.isCorrect,
               explanation: o.explanation || "",
             }))
@@ -92,12 +97,14 @@ export function QuestionDrawer({
       setUnitId("");
       setLessonId("");
       setStatement("");
+      setTranslation("");
       setImageUrl("");
       setType("MCQ");
       setDifficulty("MEDIUM");
       setConcept("");
       setCorrectReason("");
       setModelAnswer("");
+      setModelAnswerTranslation("");
       setOptions([
         { text: "", isCorrect: true, explanation: "" },
         { text: "", isCorrect: false, explanation: "" },
@@ -140,6 +147,7 @@ export function QuestionDrawer({
         }
         optionsPayload = filledOptions.map((o, idx) => ({
           text: o.text.trim(),
+          translation: o.translation?.trim() || undefined,
           isCorrect: o.isCorrect,
           order: idx + 1,
           explanation: o.explanation || undefined,
@@ -162,6 +170,7 @@ export function QuestionDrawer({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           statement: statement.trim(),
+          translation: translation.trim() || undefined,
           imageUrl: imageUrl.trim() || null,
           subjectId,
           unitId: unitId || null,
@@ -171,6 +180,7 @@ export function QuestionDrawer({
           concept: concept.trim() || undefined,
           correctReason: correctReason.trim(),
           modelAnswer: type === "ESSAY" ? modelAnswer.trim() : undefined,
+          modelAnswerTranslation: type === "ESSAY" ? modelAnswerTranslation.trim() || undefined : undefined,
           options: type !== "ESSAY" ? optionsPayload : [],
         }),
       });
@@ -253,18 +263,34 @@ export function QuestionDrawer({
               />
 
               {/* Statement */}
-              <div className="space-y-1.5">
-                <label className="block text-[13px] font-bold text-[#0F172A] dark:text-white">
-                  نص السؤال *
-                </label>
-                <textarea
-                  required
-                  rows={4}
-                  value={statement}
-                  onChange={(e) => setStatement(e.target.value)}
-                  placeholder="اكتب صيغة السؤال هنا بدقة (يدعم التنسيقات والرموز واللغات المختلفة)..."
-                  className="w-full p-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold text-[#0F172A] dark:text-white placeholder:text-[#94A3B8] focus:outline-none focus:border-[#800020] transition-colors"
-                />
+              <div className="space-y-3">
+                <div className="space-y-1.5">
+                  <label className="block text-[13px] font-bold text-[#0F172A] dark:text-white">
+                    نص السؤال *
+                  </label>
+                  <textarea
+                    required
+                    rows={4}
+                    value={statement}
+                    onChange={(e) => setStatement(e.target.value)}
+                    placeholder="اكتب صيغة السؤال هنا بدقة (يدعم التنسيقات والرموز واللغات المختلفة)..."
+                    className="w-full p-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold text-[#0F172A] dark:text-white placeholder:text-[#94A3B8] focus:outline-none focus:border-[#800020] transition-colors"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="block text-[12px] font-bold text-slate-600 dark:text-slate-400">
+                    الترجمة العربية لنص السؤال (اختياري - لمدارس اللغات)
+                  </label>
+                  <textarea
+                    rows={2}
+                    dir="rtl"
+                    value={translation}
+                    onChange={(e) => setTranslation(e.target.value)}
+                    placeholder="الترجمة العربية التي تظهر للطالب عند النقر على زر الترجمة..."
+                    className="w-full p-2.5 rounded-xl border border-dashed border-[#CBD5E1] dark:border-[#475569] bg-[#F8FAFC] dark:bg-[#1E293B] text-xs text-[#0F172A] dark:text-white focus:outline-none focus:border-[#800020]"
+                  />
+                </div>
               </div>
 
               {/* Diagram / Image Uploader */}
@@ -357,6 +383,8 @@ export function QuestionDrawer({
                 setOptions={setOptions}
                 modelAnswer={modelAnswer}
                 setModelAnswer={setModelAnswer}
+                modelAnswerTranslation={modelAnswerTranslation}
+                setModelAnswerTranslation={setModelAnswerTranslation}
               />
 
               {/* Educational Explanation Editor */}

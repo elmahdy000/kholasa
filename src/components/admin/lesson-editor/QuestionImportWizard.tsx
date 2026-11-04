@@ -351,6 +351,16 @@ export function QuestionImportWizard({
     updateStagedQuestion(questionId, { options: newOptions });
   };
 
+  // Edit option translation
+  const handleOptionTranslationChange = (questionId: string, optionIndex: number, translation: string) => {
+    const target = stagedQuestions.find((q) => q.id === questionId);
+    if (!target) return;
+
+    const newOptions = [...target.options];
+    newOptions[optionIndex] = { ...newOptions[optionIndex], translation };
+    updateStagedQuestion(questionId, { options: newOptions });
+  };
+
   // Add new option to MCQ
   const handleAddOption = (questionId: string) => {
     const target = stagedQuestions.find((q) => q.id === questionId);
@@ -504,16 +514,23 @@ export function QuestionImportWizard({
         },
         questions: approvedQuestions.map((q) => ({
           statement: q.statement.trim(),
+          translation: q.translation ? q.translation.trim() : undefined,
           type: q.type,
           difficulty: q.difficulty,
           schoolCategory: unitInfo.schoolCategory,
           subjectId: unitInfo.subjectId,
           unitId: unitInfo.unitId,
           lessonId: lessonId,
-          options: q.options || [],
+          options: (q.options || []).map((opt) => ({
+            text: opt.text.trim(),
+            translation: opt.translation ? opt.translation.trim() : undefined,
+            isCorrect: opt.isCorrect,
+            explanation: opt.explanation || undefined,
+          })),
           concept: q.concept || undefined,
           correctReason: q.correctReason || undefined,
           modelAnswer: q.modelAnswer || undefined,
+          modelAnswerTranslation: q.modelAnswerTranslation ? q.modelAnswerTranslation.trim() : undefined,
           points: q.points || (q.type === "ESSAY" ? 10 : 1),
         })),
       };
@@ -1556,6 +1573,24 @@ export function QuestionImportWizard({
                             />
                           </div>
 
+                          {/* Statement translation editable */}
+                          <div className="space-y-1">
+                            <label className="text-[11px] font-bold text-sky-700 dark:text-sky-300 flex items-center gap-1.5">
+                              <Sparkles className="w-3.5 h-3.5 text-sky-600" />
+                              <span>الترجمة العربية للسؤال (اختياري - لمدارس اللغات):</span>
+                            </label>
+                            <textarea
+                              rows={2}
+                              dir="rtl"
+                              value={q.translation || ""}
+                              onChange={(e) =>
+                                updateStagedQuestion(q.id, { translation: e.target.value })
+                              }
+                              placeholder="اكتب أو عدل الترجمة العربية لنص السؤال هنا..."
+                              className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white leading-relaxed resize-y outline-none focus:border-sky-500 font-content"
+                            />
+                          </div>
+
                           {/* ── TYPE SPECIFIC DEDICATED CONTENT ── */}
                           {/* 1. ESSAY DEDICATED VIEW */}
                           {q.type === "ESSAY" && (
@@ -1609,6 +1644,24 @@ export function QuestionImportWizard({
                                   placeholder="اكتب خطوات الحل أو الإجابة النموذجية الكاملة (ستظهر كل نقطة في سطر مستقل)..."
                                   className="w-full p-2.5 rounded-xl bg-white dark:bg-[#0F172A] border border-amber-200 dark:border-amber-800/80 text-xs font-medium text-slate-900 dark:text-white leading-relaxed resize-y outline-none focus:border-amber-500 whitespace-pre-wrap font-sans"
                                 />
+
+                                {/* Essay Model Answer Translation */}
+                                <div className="space-y-1 pt-1">
+                                  <label className="text-[11px] font-bold text-amber-800 dark:text-amber-300 flex items-center gap-1.5">
+                                    <BookOpen className="w-3.5 h-3.5 text-amber-600" />
+                                    <span>الترجمة العربية لنموذج الإجابة (اختياري - لمدارس اللغات):</span>
+                                  </label>
+                                  <textarea
+                                    rows={3}
+                                    dir="rtl"
+                                    value={q.modelAnswerTranslation || ""}
+                                    onChange={(e) =>
+                                      updateStagedQuestion(q.id, { modelAnswerTranslation: e.target.value })
+                                    }
+                                    placeholder="الترجمة العربية لخطوات الحل أو الإجابة النموذجية..."
+                                    className="w-full p-2.5 rounded-xl bg-white dark:bg-[#0F172A] border border-amber-200 dark:border-amber-800/80 text-xs font-medium text-slate-900 dark:text-white leading-relaxed resize-y outline-none focus:border-amber-500 font-content"
+                                  />
+                                </div>
                               </div>
 
                               {/* Explanation */}
@@ -1780,6 +1833,17 @@ export function QuestionImportWizard({
                                           handleOptionTextChange(q.id, optIdx, e.target.value)
                                         }
                                         className="flex-1 bg-transparent border-none text-xs font-bold outline-none"
+                                      />
+
+                                      <input
+                                        type="text"
+                                        dir="rtl"
+                                        placeholder="الترجمة (اختياري)"
+                                        value={opt.translation || ""}
+                                        onChange={(e) =>
+                                          handleOptionTranslationChange(q.id, optIdx, e.target.value)
+                                        }
+                                        className="w-24 sm:w-36 px-2 py-0.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-[11px] text-slate-800 dark:text-slate-200 outline-none"
                                       />
 
                                       {q.options.length > 2 && (

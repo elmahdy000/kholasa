@@ -18,6 +18,7 @@ export interface ParseOptions {
 
 export interface ParsedQuestionOption {
   text: string;
+  translation?: string;
   isCorrect: boolean;
   explanation?: string;
 }
@@ -25,11 +26,13 @@ export interface ParsedQuestionOption {
 export interface ParsedQuestion {
   id: string;
   statement: string;
+  translation?: string;
   type: QuestionType;
   difficulty: QuestionDifficulty;
   options: ParsedQuestionOption[];
   imageUrl?: string;
   modelAnswer?: string;
+  modelAnswerTranslation?: string;
   concept?: string;
   correctReason?: string;
   points?: number;
@@ -211,6 +214,20 @@ export function cleanQuestionStatement(statement: string): string {
 export function parseOptionItem(rawOption: string): ParsedQuestionOption {
   let text = rawOption.trim();
   let isCorrect = false;
+  let translation: string | undefined = undefined;
+
+  // Check for inline translation: [ترجمة: ...] or (ترجمة: ...) or || translation
+  const transMatch = text.match(/[\(\[]\s*(?:الترجمة|ترجمة|translation)\s*[:\-\=]\s*([^\]\)]+)[\)\]]/i);
+  if (transMatch) {
+    translation = transMatch[1].trim();
+    text = text.replace(transMatch[0], "").trim();
+  } else if (text.includes("||")) {
+    const parts = text.split("||");
+    if (parts.length >= 2 && parts[1].trim()) {
+      text = parts[0].trim();
+      translation = parts[1].trim();
+    }
+  }
 
   // Check if starts or ends with asterisk: *أ) ... or أ) ... *
   if (text.startsWith("*") || text.endsWith("*") || text.includes("(*)")) {
@@ -236,6 +253,7 @@ export function parseOptionItem(rawOption: string): ParsedQuestionOption {
 
   return {
     text,
+    translation,
     isCorrect,
   };
 }
@@ -417,6 +435,8 @@ function processQuestionBlock(
   let explanationText = "";
   let conceptText = "";
   let modelAnswerText = "";
+  let questionTranslation = "";
+  let modelAnswerTranslation = "";
   let detectedType: QuestionType = options?.forcedType || "MCQ";
   let detectedDifficulty: QuestionDifficulty =
     options?.forcedDifficulty && options.forcedDifficulty !== "MIXED"
@@ -461,10 +481,38 @@ function processQuestionBlock(
   statement = lines[0];
   const statementLines = [lines[0]];
   let readingStatement = true;
-  let currentSection: "STATEMENT" | "OPTIONS" | "ANSWER" | "MODEL_ANSWER" | "EXPLANATION" | "CONCEPT" = "STATEMENT";
+  let currentSection: "STATEMENT" | "OPTIONS" | "ANSWER" | "MODEL_ANSWER" | "EXPLANATION" | "CONCEPT" | "TRANSLATION" | "MODEL_ANSWER_TRANSLATION" = "STATEMENT";
 
   for (let i = 1; i < lines.length; i++) {
     const line = lines[i];
+
+    // Check for Question Statement Translation line
+    const transMatch = line.match(
+      /^(?:\[|\()?(?:الترجمة العربية للسؤال|الترجمة العربية|ترجمة السؤال|ترجمة العبارة|ترجمة|الترجمة|Translation|Arabic Translation)(?:\]|\))?\s*[:\-\=—–]\s*(.*)$/i
+    );
+    if (transMatch) {
+      readingStatement = false;
+      currentSection = "TRANSLATION";
+      const val = transMatch[1].trim();
+      if (val) {
+        questionTranslation = questionTranslation ? questionTranslation + " " + val : val;
+      }
+      continue;
+    }
+
+    // Check for Model Answer Translation line
+    const modelTransMatch = line.match(
+      /^(?:\[|\()?(?:ترجمة نموذج الإجابة|ترجمة الإجابة النموذجية|ترجمة الإجابة|Model Answer Translation)(?:\]|\))?\s*[:\-\=—–]\s*(.*)$/i
+    );
+    if (modelTransMatch) {
+      readingStatement = false;
+      currentSection = "MODEL_ANSWER_TRANSLATION";
+      const val = modelTransMatch[1].trim();
+      if (val) {
+        modelAnswerTranslation = modelAnswerTranslation ? modelAnswerTranslation + "\n" + val : val;
+      }
+      continue;
+    }
 
     // Check for Answer Indicator line
     const answerMatch = line.match(
@@ -529,6 +577,18 @@ function processQuestionBlock(
     // If currently accumulating concept lines
     if (currentSection === "CONCEPT") {
       conceptText = (conceptText ? conceptText + " " : "") + line;
+      continue;
+    }
+
+    // If currently accumulating question translation
+    if (currentSection === "TRANSLATION") {
+      questionTranslation = (questionTranslation ? questionTranslation + " " : "") + line;
+      continue;
+    }
+
+    // If currently accumulating model answer translation
+    if (currentSection === "MODEL_ANSWER_TRANSLATION") {
+      modelAnswerTranslation = (modelAnswerTranslation ? modelAnswerTranslation + "\n" : "") + line;
       continue;
     }
 
@@ -808,10 +868,12 @@ function processQuestionBlock(
   return {
     id,
     statement,
+    translation: questionTranslation ? questionTranslation.trim() : undefined,
     type: detectedType,
     difficulty: finalDifficulty,
     options: parsedOptions,
     modelAnswer: modelAnswerText ? formatModelAnswer(modelAnswerText) : undefined,
+    modelAnswerTranslation: modelAnswerTranslation ? modelAnswerTranslation.trim() : undefined,
     concept: conceptText || undefined,
     correctReason: explanationText || undefined,
     sourceReference: sourceReference || undefined,

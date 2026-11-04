@@ -72,6 +72,7 @@ export async function POST(req: Request) {
     const body = await req.json().catch(() => ({}));
     const {
       statement,
+      translation,
       type = "MCQ",
       difficulty = "MEDIUM",
       subjectId,
@@ -82,6 +83,7 @@ export async function POST(req: Request) {
       concept,
       correctReason,
       modelAnswer,
+      modelAnswerTranslation,
     } = body;
 
     if (typeof statement !== "string" || !statement.trim() || typeof subjectId !== "string" || !subjectId) {
@@ -93,6 +95,7 @@ export async function POST(req: Request) {
 
     const question = await QuestionService.createQuestion({
       statement: statement.trim(),
+      translation: typeof translation === "string" ? translation.trim() || null : null,
       type,
       difficulty,
       subjectId,
@@ -111,6 +114,7 @@ export async function POST(req: Request) {
         typeof modelAnswer === "string" && modelAnswer.trim()
           ? {
               modelAnswer: modelAnswer.trim(),
+              modelAnswerTranslation: typeof modelAnswerTranslation === "string" ? modelAnswerTranslation.trim() || null : null,
             }
           : undefined,
     });

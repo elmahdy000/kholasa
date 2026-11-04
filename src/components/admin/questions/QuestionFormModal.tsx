@@ -35,12 +35,14 @@ export function QuestionFormModal({
   const [unitId, setUnitId] = useState<string>("");
   const [lessonId, setLessonId] = useState<string>("");
   const [statement, setStatement] = useState("");
+  const [translation, setTranslation] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [type, setType] = useState<"MCQ" | "TRUE_FALSE" | "ESSAY">("MCQ");
   const [difficulty, setDifficulty] = useState<"EASY" | "MEDIUM" | "HARD">("MEDIUM");
   const [concept, setConcept] = useState("");
   const [correctReason, setCorrectReason] = useState("");
   const [modelAnswer, setModelAnswer] = useState("");
+  const [modelAnswerTranslation, setModelAnswerTranslation] = useState("");
   const [options, setOptions] = useState<FormOption[]>([
     { text: "", isCorrect: true, explanation: "" },
     { text: "", isCorrect: false, explanation: "" },
@@ -58,15 +60,18 @@ export function QuestionFormModal({
         setUnitId(editingQuestion.unit?.id || "");
         setLessonId(editingQuestion.lessons?.[0]?.lesson?.id || "");
         setStatement(editingQuestion.statement);
+        setTranslation(editingQuestion.translation || "");
         setImageUrl(editingQuestion.imageUrl || "");
         setType(editingQuestion.type as any);
         setDifficulty(editingQuestion.difficulty as any);
         setConcept(editingQuestion.explanation?.concept || "");
         setCorrectReason(editingQuestion.explanation?.correctReason || "");
         setModelAnswer(editingQuestion.rubric?.modelAnswer || "");
+        setModelAnswerTranslation(editingQuestion.rubric?.modelAnswerTranslation || "");
         setOptions(
           editingQuestion.options.map((o) => ({
             text: o.text,
+            translation: o.translation || "",
             isCorrect: o.isCorrect,
             explanation: o.explanation || "",
           }))
@@ -76,12 +81,14 @@ export function QuestionFormModal({
         setUnitId("");
         setLessonId("");
         setStatement("");
+        setTranslation("");
         setImageUrl("");
         setType("MCQ");
         setDifficulty("MEDIUM");
         setConcept("");
         setCorrectReason("");
         setModelAnswer("");
+        setModelAnswerTranslation("");
         setOptions([
           { text: "", isCorrect: true, explanation: "" },
           { text: "", isCorrect: false, explanation: "" },
@@ -108,6 +115,7 @@ export function QuestionFormModal({
       if (type === "MCQ") {
         optionsPayload = options.map((o, idx) => ({
           text: o.text,
+          translation: o.translation?.trim() || undefined,
           isCorrect: o.isCorrect,
           order: idx + 1,
           explanation: o.explanation || undefined,
@@ -130,6 +138,7 @@ export function QuestionFormModal({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           statement: statement.trim(),
+          translation: translation.trim() || undefined,
           imageUrl: imageUrl.trim() || undefined,
           subjectId,
           unitId: unitId || undefined,
@@ -140,6 +149,7 @@ export function QuestionFormModal({
           concept: concept.trim() || undefined,
           correctReason: correctReason.trim() || undefined,
           modelAnswer: type === "ESSAY" ? modelAnswer.trim() : undefined,
+          modelAnswerTranslation: type === "ESSAY" ? modelAnswerTranslation.trim() || undefined : undefined,
           options: type !== "ESSAY" ? optionsPayload : [],
         }),
       });
@@ -200,18 +210,34 @@ export function QuestionFormModal({
           />
 
           {/* Statement */}
-          <div>
-            <label className="block text-[13px] font-bold text-[#64748B] mb-1">
-              نص السؤال *
-            </label>
-            <textarea
-              required
-              rows={3}
-              value={statement}
-              onChange={(e) => setStatement(e.target.value)}
-              placeholder="اكتب صيغة السؤال هنا بوضوح ودقة..."
-              className="w-full p-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#800020]"
-            />
+          <div className="space-y-3">
+            <div>
+              <label className="block text-[13px] font-bold text-[#64748B] mb-1">
+                نص السؤال *
+              </label>
+              <textarea
+                required
+                rows={3}
+                value={statement}
+                onChange={(e) => setStatement(e.target.value)}
+                placeholder="اكتب صيغة السؤال هنا بوضوح ودقة..."
+                className="w-full p-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#800020]"
+              />
+            </div>
+
+            <div>
+              <label className="block text-[12px] font-bold text-slate-600 dark:text-slate-400 mb-1">
+                الترجمة العربية لنص السؤال (اختياري - لمدارس اللغات)
+              </label>
+              <textarea
+                rows={2}
+                dir="rtl"
+                value={translation}
+                onChange={(e) => setTranslation(e.target.value)}
+                placeholder="الترجمة العربية التي تظهر للطالب عند النقر على زر الترجمة..."
+                className="w-full p-2.5 rounded-xl border border-dashed border-[#CBD5E1] dark:border-[#475569] bg-[#F8FAFC] dark:bg-[#1E293B] text-[12px] text-[#0F172A] dark:text-white focus:outline-none focus:border-[#800020]"
+              />
+            </div>
           </div>
 
           {/* Question Image (Optional) */}
@@ -260,6 +286,8 @@ export function QuestionFormModal({
             setOptions={setOptions}
             modelAnswer={modelAnswer}
             setModelAnswer={setModelAnswer}
+            modelAnswerTranslation={modelAnswerTranslation}
+            setModelAnswerTranslation={setModelAnswerTranslation}
           />
 
           {/* Explanations */}

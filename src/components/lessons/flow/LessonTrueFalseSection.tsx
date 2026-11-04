@@ -1,15 +1,18 @@
 "use client";
 
+import { useState } from "react";
 import {
   Question as QuestionIcon,
   Check,
   X,
   CheckCircle,
   XCircle,
+  Translate,
 } from "@phosphor-icons/react";
 import { BidiStatement } from "@/components/ui/BidiStatement";
 import { QuestionExplanationBox } from "@/components/ui/QuestionExplanationBox";
 import { QuestionImageAttachment } from "@/components/ui/QuestionImageAttachment";
+import { TranslationToggle } from "@/components/ui/TranslationToggle";
 import { Question, QuestionAnswerState } from "../types";
 
 interface LessonTrueFalseSectionProps {
@@ -23,6 +26,15 @@ export function LessonTrueFalseSection({
   questionAnswers,
   onSelectOption,
 }: LessonTrueFalseSectionProps) {
+  const [translatedQuestions, setTranslatedQuestions] = useState<Record<string, boolean>>({});
+
+  const toggleTranslation = (questionId: string) => {
+    setTranslatedQuestions((prev) => ({
+      ...prev,
+      [questionId]: !prev[questionId],
+    }));
+  };
+
   return (
     <div id="section-true-false" className="space-y-6 pt-4">
       {/* Section Header */}
@@ -41,7 +53,7 @@ export function LessonTrueFalseSection({
               </h2>
             </div>
             <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8] mt-0.5">
-              اختبر دقة تركيزك وتفريقك بين المفاهيم في ثوانٍ معدودة
+              اختبر دقة تركيزك وتفريقك بين المفاهيم في ثوانٍ معدودة مع دعم الترجمة الفورية عند الحاجة
             </p>
           </div>
         </div>
@@ -58,6 +70,10 @@ export function LessonTrueFalseSection({
         <div className="space-y-5">
           {questions.map(({ question }, qIndex) => {
             const state = questionAnswers[question.id];
+            const isTranslated = Boolean(translatedQuestions[question.id]);
+            const hasTranslation = Boolean(
+              question.translation && question.translation.trim().length > 0
+            );
 
             return (
               <div
@@ -71,9 +87,19 @@ export function LessonTrueFalseSection({
                     </span>
                     <span>تحدي صح وغلط رقم {qIndex + 1}</span>
                   </span>
-                  <span className="px-3 py-1 rounded-lg text-[12px] font-bold bg-[#0284C7]/10 text-[#0284C7]">
-                    تحدي سريع
-                  </span>
+
+                  <div className="flex items-center gap-2">
+                    {hasTranslation && (
+                      <TranslationToggle
+                        size="xs"
+                        isTranslated={isTranslated}
+                        onToggle={() => toggleTranslation(question.id)}
+                      />
+                    )}
+                    <span className="px-3 py-1 rounded-lg text-[12px] font-bold bg-[#0284C7]/10 text-[#0284C7]">
+                      تحدي سريع
+                    </span>
+                  </div>
                 </div>
 
                 <BidiStatement
@@ -81,6 +107,22 @@ export function LessonTrueFalseSection({
                   text={question.statement}
                   className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-white leading-relaxed font-content"
                 />
+
+                {/* Collapsible Arabic Translation for Statement */}
+                {isTranslated && question.translation && (
+                  <div
+                    className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60 text-right animate-in fade-in duration-200"
+                    dir="rtl"
+                  >
+                    <div className="flex items-center gap-1.5 mb-1.5 text-[11px] font-bold text-slate-500 dark:text-slate-400">
+                      <Translate className="w-3.5 h-3.5 text-sky-600 dark:text-sky-400" />
+                      <span>الترجمة العربية للعبارة</span>
+                    </div>
+                    <p className="text-sm font-medium text-slate-800 dark:text-slate-200 leading-relaxed font-content">
+                      {question.translation}
+                    </p>
+                  </div>
+                )}
 
                 <QuestionImageAttachment imageUrl={question.imageUrl} />
 

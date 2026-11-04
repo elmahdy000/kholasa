@@ -413,6 +413,7 @@ export function QuestionImportWizardModal({
         },
         questions: approvedList.map((q) => ({
           statement: q.statement,
+          translation: q.translation ? q.translation.trim() : undefined,
           type: q.type,
           difficulty: q.difficulty,
           schoolCategory: selectedSchoolCategory,
@@ -422,9 +423,11 @@ export function QuestionImportWizardModal({
           concept: q.concept || undefined,
           correctReason: q.correctReason || undefined,
           modelAnswer: q.modelAnswer || undefined,
+          modelAnswerTranslation: q.modelAnswerTranslation ? q.modelAnswerTranslation.trim() : undefined,
           points: q.points || 10,
           options: q.options.map((opt, idx) => ({
             text: opt.text,
+            translation: opt.translation ? opt.translation.trim() : undefined,
             isCorrect: opt.isCorrect,
             order: idx + 1,
             explanation: opt.explanation || undefined,

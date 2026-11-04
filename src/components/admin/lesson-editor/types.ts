@@ -69,11 +69,13 @@ export interface UnitInfo {
 export interface DefinitionItem {
   term: string;
   meaning: string;
+  translation?: string;
 }
 
 export interface LessonQuestionOption {
   id?: string;
   text: string;
+  translation?: string | null;
   isCorrect: boolean;
   explanation?: string | null;
 }
@@ -81,6 +83,7 @@ export interface LessonQuestionOption {
 export interface LessonQuestionItem {
   id: string;
   statement: string;
+  translation?: string | null;
   type: "MCQ" | "TRUE_FALSE" | "ESSAY";
   difficulty: "EASY" | "MEDIUM" | "HARD";
   options?: LessonQuestionOption[];
@@ -90,6 +93,7 @@ export interface LessonQuestionItem {
   } | null;
   rubric?: {
     modelAnswer?: string;
+    modelAnswerTranslation?: string | null;
   } | null;
 }
 

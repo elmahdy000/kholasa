@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import {
   Flag,
   CaretRight,
@@ -8,11 +9,13 @@ import {
   Lightbulb,
   Check,
   PaperPlaneTilt,
+  Translate,
 } from "@phosphor-icons/react";
 import { BidiStatement } from "@/components/ui/BidiStatement";
 import { FormattedAnswerView } from "@/components/ui/FormattedAnswerView";
 import { QuestionExplanationBox } from "@/components/ui/QuestionExplanationBox";
 import { QuestionImageAttachment } from "@/components/ui/QuestionImageAttachment";
+import { TranslationToggle } from "@/components/ui/TranslationToggle";
 import { Question, UserAnswerState, RevealedAnswer } from "./types";
 
 interface ExamQuestionCardProps {
@@ -55,6 +58,20 @@ export function ExamQuestionCard({
   const arabicLetters = ["أ", "ب", "ج", "د", "هـ"];
   const englishLetters = ["A", "B", "C", "D", "E"];
 
+  const [isQuestionTranslated, setIsQuestionTranslated] = useState(false);
+  const [isModelAnswerTranslated, setIsModelAnswerTranslated] = useState(false);
+
+  useEffect(() => {
+    setIsQuestionTranslated(false);
+    setIsModelAnswerTranslated(false);
+  }, [currentQ.id]);
+
+  const hasTranslation = Boolean(
+    initialMode === "PRACTICE" &&
+    ((currentQ.translation && currentQ.translation.trim().length > 0) ||
+      currentQ.options?.some((o) => o.translation && o.translation.trim().length > 0))
+  );
+
   return (
     <div className="p-6 sm:p-8 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] space-y-6">
       {/* Question Header & Badges */}
@@ -72,18 +89,27 @@ export function ExamQuestionCard({
           </span>
         </div>
 
-        <button
-          type="button"
-          onClick={onToggleFlag}
-          className={`px-3 py-2 rounded-lg border text-[13px] font-bold flex items-center gap-2 transition-colors cursor-pointer ${
-            isFlagged
-              ? "bg-[#D97706]/10 dark:bg-[#1E293B] border-[#E2E8F0] text-[#D97706]"
-              : "border-[#E2E8F0] dark:border-[#334155] text-[#64748B] hover:text-[#0F172A] dark:hover:text-white"
-          }`}
-        >
-          <Flag className={`w-3.5 h-3.5 ${isFlagged ? "fill-current" : ""}`} weight={isFlagged ? "fill" : "bold"} />
-          <span>{isFlagged ? "متعلّم للمراجعة" : "علّم عليه للمراجعة"}</span>
-        </button>
+        <div className="flex items-center gap-2">
+          {hasTranslation && (
+            <TranslationToggle
+              size="xs"
+              isTranslated={isQuestionTranslated}
+              onToggle={() => setIsQuestionTranslated((prev) => !prev)}
+            />
+          )}
+          <button
+            type="button"
+            onClick={onToggleFlag}
+            className={`px-3 py-2 rounded-lg border text-[13px] font-bold flex items-center gap-2 transition-colors cursor-pointer ${
+              isFlagged
+                ? "bg-[#D97706]/10 dark:bg-[#1E293B] border-[#E2E8F0] text-[#D97706]"
+                : "border-[#E2E8F0] dark:border-[#334155] text-[#64748B] hover:text-[#0F172A] dark:hover:text-white"
+            }`}
+          >
+            <Flag className={`w-3.5 h-3.5 ${isFlagged ? "fill-current" : ""}`} weight={isFlagged ? "fill" : "bold"} />
+            <span>{isFlagged ? "متعلّم للمراجعة" : "علّم عليه للمراجعة"}</span>
+          </button>
+        </div>
       </div>
 
       {/* Statement */}
@@ -103,6 +129,21 @@ export function ExamQuestionCard({
           />
         )}
         <QuestionImageAttachment imageUrl={currentQ.imageUrl} />
+
+        {initialMode === "PRACTICE" && isQuestionTranslated && currentQ.translation && (
+          <div
+            className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60 text-right animate-in fade-in duration-200"
+            dir="rtl"
+          >
+            <div className="flex items-center gap-1.5 mb-1.5 text-[11px] font-bold text-slate-500 dark:text-slate-400">
+              <Translate className="w-3.5 h-3.5 text-[#800020] dark:text-[#FB7185]" />
+              <span>الترجمة العربية للسؤال</span>
+            </div>
+            <p className="text-sm font-medium text-slate-800 dark:text-slate-200 leading-relaxed font-content">
+              {currentQ.translation}
+            </p>
+          </div>
+        )}
       </div>
 
       {/* MCQ / TRUE_FALSE Options */}
@@ -160,6 +201,16 @@ export function ExamQuestionCard({
                     ) : (
                       <BidiStatement as="span" text={opt.text} />
                     )}
+
+                    {initialMode === "PRACTICE" && isQuestionTranslated && opt.translation && (
+                      <div
+                        className="mt-2 pt-2 border-t border-slate-200/60 dark:border-slate-700/60 text-right text-xs text-slate-600 dark:text-slate-300 font-medium font-content animate-in fade-in duration-150"
+                        dir="rtl"
+                      >
+                        <span className="text-[10px] text-slate-400 block mb-0.5 font-bold">الترجمة:</span>
+                        <span>{opt.translation}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -199,14 +250,37 @@ export function ExamQuestionCard({
 
           {initialMode === "PRACTICE" && currentAnswer.practiceRevealed && revealedAnswer?.modelAnswer && (
             <div className="p-5 rounded-2xl bg-[#800020]/10 dark:bg-[#1E293B] border border-[#E2E8F0]/60 dark:border-[#E11D48]/60 space-y-3">
-              <h4 className="text-[13px] font-bold text-[#800020] dark:text-[#FB7185] flex items-center gap-2">
-                <Sparkle className="w-4 h-4" weight="fill" />
-                <span>نموذج الإجابة ومعايير التقييم</span>
-              </h4>
+              <div className="flex items-center justify-between">
+                <h4 className="text-[13px] font-bold text-[#800020] dark:text-[#FB7185] flex items-center gap-2">
+                  <Sparkle className="w-4 h-4" weight="fill" />
+                  <span>نموذج الإجابة ومعايير التقييم</span>
+                </h4>
+                {revealedAnswer.modelAnswerTranslation && (
+                  <TranslationToggle
+                    size="xs"
+                    isTranslated={isModelAnswerTranslated}
+                    onToggle={() => setIsModelAnswerTranslated((prev) => !prev)}
+                  />
+                )}
+              </div>
               <FormattedAnswerView
                 text={revealedAnswer.modelAnswer}
                 colorScheme="burgundy"
               />
+              {isModelAnswerTranslated && revealedAnswer.modelAnswerTranslation && (
+                <div
+                  className="p-3.5 rounded-xl bg-white/80 dark:bg-[#0F172A]/80 border border-slate-200 dark:border-slate-700 text-right animate-in fade-in duration-200"
+                  dir="rtl"
+                >
+                  <div className="flex items-center gap-1.5 mb-1.5 text-[11px] font-bold text-slate-500 dark:text-slate-400">
+                    <Translate className="w-3.5 h-3.5 text-[#800020] dark:text-[#FB7185]" />
+                    <span>الترجمة العربية لنموذج الإجابة</span>
+                  </div>
+                  <p className="text-xs sm:text-sm font-medium text-slate-800 dark:text-slate-200 leading-relaxed font-content whitespace-pre-wrap">
+                    {revealedAnswer.modelAnswerTranslation}
+                  </p>
+                </div>
+              )}
             </div>
           )}
         </div>

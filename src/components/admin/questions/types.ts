@@ -1,6 +1,7 @@
 export interface QuestionOption {
   id?: string;
   text: string;
+  translation?: string | null;
   isCorrect: boolean;
   order: number;
   explanation?: string | null;
@@ -13,6 +14,7 @@ export interface QuestionExplanation {
 
 export interface EssayRubric {
   modelAnswer: string;
+  modelAnswerTranslation?: string | null;
   maxScore: number;
 }
 
@@ -32,6 +34,7 @@ export interface Grade {
 export interface Question {
   id: string;
   statement: string;
+  translation?: string | null;
   type: string;
   difficulty: string;
   schoolCategory?: "ARABIC" | "LANGUAGES";

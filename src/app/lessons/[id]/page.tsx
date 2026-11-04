@@ -42,16 +42,18 @@ export default async function LessonPage({ params }: LessonPageProps) {
             select: {
               id: true,
               statement: true,
+              translation: true,
               type: true,
               difficulty: true,
               imageUrl: true,
               options: {
-                select: { id: true, text: true, order: true },
+                select: { id: true, text: true, translation: true, order: true },
                 orderBy: { order: "asc" },
               },
               rubric: {
                 select: {
                   modelAnswer: true,
+                  modelAnswerTranslation: true,
                   criteria: true,
                   maxScore: true,
                 },

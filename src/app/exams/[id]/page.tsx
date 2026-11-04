@@ -30,11 +30,12 @@ export default async function ExamPage({ params, searchParams }: ExamPageProps) 
             select: {
               id: true,
               statement: true,
+              translation: true,
               type: true,
               difficulty: true,
               imageUrl: true,
               options: {
-                select: { id: true, text: true, order: true },
+                select: { id: true, text: true, translation: true, order: true },
                 orderBy: { order: "asc" },
               },
             },

@@ -40,6 +40,7 @@ export async function POST(
         isResolved: true,
         explanation: question.explanation,
         modelAnswer: question.rubric?.modelAnswer,
+        modelAnswerTranslation: question.rubric?.modelAnswerTranslation,
       });
     }
 
@@ -101,6 +102,7 @@ export async function POST(
     return NextResponse.json({
       isEssay: true,
       modelAnswer: question.rubric?.modelAnswer,
+      modelAnswerTranslation: question.rubric?.modelAnswerTranslation,
       criteria: question.rubric?.criteria,
       maxScore: question.rubric?.maxScore,
       explanation: question.explanation,

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   BookOpen,
   MagnifyingGlass,
@@ -9,6 +10,7 @@ import {
   Cards,
 } from "@phosphor-icons/react";
 import { Definition } from "../types";
+import { TranslationToggle } from "@/components/ui/TranslationToggle";
 
 interface LessonDefinitionsSectionProps {
   definitions: Definition[];
@@ -31,6 +33,15 @@ export function LessonDefinitionsSection({
   onCopyDefinition,
   onStartFlashcards,
 }: LessonDefinitionsSectionProps) {
+  const [translatedMap, setTranslatedMap] = useState<Record<number, boolean>>({});
+
+  const toggleTranslation = (idx: number) => {
+    setTranslatedMap((prev) => ({
+      ...prev,
+      [idx]: !prev[idx],
+    }));
+  };
+
   return (
     <div id="section-definitions" className="space-y-6 pt-4">
       {/* Section Header */}
@@ -49,7 +60,7 @@ export function LessonDefinitionsSection({
               </h2>
             </div>
             <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8] mt-0.5">
-              أهم المفاهيم اللي محتاج تفهمها وتحفظها كويس، تقدر تبحث فيهم وتنسخ أي تعريف بضغطة واحدة
+              أهم المفاهيم اللي محتاج تفهمها وتحفظها كويس، تقدر تبحث فيهم وتترجم أو تنسخ أي تعريف بضغطة واحدة
             </p>
           </div>
         </div>
@@ -99,32 +110,68 @@ export function LessonDefinitionsSection({
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {filteredDefinitions.map((item, idx) => {
             const isCopied = copiedDefinition === item.term;
+            const isTranslated = Boolean(translatedMap[idx]);
+            const hasTranslation = Boolean(item.translation && item.translation.trim().length > 0);
+            const isEnglishMeaning = !/[\u0600-\u06FF]/.test(item.meaning || "");
+
             return (
               <div
                 key={idx}
                 className="p-5 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] hover:border-[#059669]/40 transition-all flex flex-col justify-between gap-3 shadow-sm"
               >
-                <div className="space-y-2">
+                <div className="space-y-2.5">
                   <div className="flex items-center justify-between gap-2 border-b border-[#E2E8F0]/60 dark:border-[#334155]/60 pb-2.5">
-                    <span className="font-bold text-[14px] sm:text-[15px] text-[#059669] flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-[#059669]" />
-                      <span>{item.term}</span>
+                    <span className="font-bold text-[14px] sm:text-[15px] text-[#059669] flex items-center gap-1.5 truncate">
+                      <span className="w-2 h-2 rounded-full bg-[#059669] shrink-0" />
+                      <span className="truncate">{item.term}</span>
                     </span>
-                    <button
-                      onClick={() => onCopyDefinition(item.term, item.meaning)}
-                      className="p-1.5 rounded-lg text-[#64748B] hover:text-[#059669] hover:bg-[#059669]/10 transition-colors"
-                      title="نسخ المصطلح والتعريف"
-                    >
-                      {isCopied ? (
-                        <Check className="w-4 h-4 text-[#059669]" weight="bold" />
-                      ) : (
-                        <Copy className="w-4 h-4" weight="bold" />
+
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      {hasTranslation && (
+                        <TranslationToggle
+                          size="xs"
+                          isTranslated={isTranslated}
+                          onToggle={() => toggleTranslation(idx)}
+                        />
                       )}
-                    </button>
+                      <button
+                        onClick={() => onCopyDefinition(item.term, item.meaning)}
+                        className="p-1.5 rounded-lg text-[#64748B] hover:text-[#059669] hover:bg-[#059669]/10 transition-colors"
+                        title="نسخ المصطلح والتعريف"
+                      >
+                        {isCopied ? (
+                          <Check className="w-4 h-4 text-[#059669]" weight="bold" />
+                        ) : (
+                          <Copy className="w-4 h-4" weight="bold" />
+                        )}
+                      </button>
+                    </div>
                   </div>
-                  <p className="text-[13px] sm:text-[14px] text-[#64748B] dark:text-[#94A3B8] leading-relaxed">
+
+                  {/* English Definition */}
+                  <p
+                    dir={isEnglishMeaning ? "ltr" : "rtl"}
+                    className={`text-[13px] sm:text-[14px] text-[#0F172A] dark:text-white leading-relaxed ${
+                      isEnglishMeaning ? "text-left font-sans" : "text-right font-content"
+                    }`}
+                  >
                     {item.meaning}
                   </p>
+
+                  {/* Collapsible Arabic Translation */}
+                  {isTranslated && item.translation && (
+                    <div
+                      dir="rtl"
+                      className="mt-3 p-3 rounded-xl bg-[#059669]/5 dark:bg-[#059669]/10 border border-[#059669]/20 text-right animate-in fade-in slide-in-from-top-1 duration-200"
+                    >
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-[#059669]/15 text-[#059669] dark:text-[#34D399] mb-1.5 inline-block">
+                        الترجمة العربية للتعريف
+                      </span>
+                      <p className="text-[13px] sm:text-[14px] text-[#1E293B] dark:text-slate-200 leading-relaxed font-content">
+                        {item.translation}
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
             );

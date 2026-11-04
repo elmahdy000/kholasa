@@ -304,6 +304,7 @@ model MindMap {
 model Question {
   id             String         @id @default(cuid())
   statement      String         @db.Text
+  translation    String?        @db.Text
   type           QuestionType   @default(MCQ)
   difficulty     Difficulty     @default(MEDIUM)
   status         PublishStatus  @default(PUBLISHED)
@@ -358,6 +359,7 @@ model QuestionOption {
   id          String  @id @default(cuid())
   questionId  String
   text        String
+  translation String? @db.Text
   isCorrect   Boolean @default(false)
   order       Int     @default(0)
   explanation String? @db.Text
@@ -394,6 +396,7 @@ model EssayRubric {
   id          String @id @default(cuid())
   questionId  String @unique
   modelAnswer String @db.Text
+  modelAnswerTranslation String? @db.Text
   criteria    Json   @default("[]")
   maxScore    Int    @default(10)
 

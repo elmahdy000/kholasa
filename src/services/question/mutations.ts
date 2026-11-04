@@ -28,6 +28,7 @@ interface ExistingOption {
 interface IncomingOption {
   id?: string;
   text: string;
+  translation?: string | null;
   isCorrect: boolean;
   order?: number;
   explanation?: string | null;
@@ -71,6 +72,7 @@ async function syncOptions(
     const opt = incoming[i];
     const data = {
       text: opt.text.trim(),
+      translation: opt.translation?.trim() || null,
       isCorrect: Boolean(opt.isCorrect),
       order: opt.order ?? i + 1,
       explanation: opt.explanation?.trim() || null,
@@ -123,6 +125,7 @@ export class QuestionMutationsService {
     return prisma.question.create({
       data: {
         statement: data.statement.trim(),
+        translation: data.translation?.trim() || null,
         subjectId: subject.id,
         unitId: data.unitId || null,
         type,
@@ -135,6 +138,7 @@ export class QuestionMutationsService {
             ? {
                 create: options.map((opt, idx) => ({
                   text: opt.text.trim(),
+                  translation: opt.translation?.trim() || null,
                   isCorrect: Boolean(opt.isCorrect),
                   order: opt.order ?? idx + 1,
                   explanation: opt.explanation?.trim() || null,
@@ -155,6 +159,7 @@ export class QuestionMutationsService {
             ? {
                 create: {
                   modelAnswer: data.rubric.modelAnswer.trim(),
+                  modelAnswerTranslation: data.rubric.modelAnswerTranslation?.trim() || null,
                   criteria: data.rubric.criteria || [],
                   maxScore: Number(data.rubric.maxScore || 10),
                 },
@@ -245,6 +250,7 @@ export class QuestionMutationsService {
         where: { id },
         data: {
           statement: data.statement !== undefined ? data.statement.trim() : undefined,
+          translation: data.translation !== undefined ? data.translation?.trim() || null : undefined,
           subjectId: subjectChanged ? targetSubjectId : undefined,
           schoolCategory: nextSchoolCategory,
           unitId: unitProvided || subjectChanged ? nextUnitId : undefined,
@@ -288,6 +294,7 @@ export class QuestionMutationsService {
             create: {
               questionId: id,
               modelAnswer: data.rubric.modelAnswer.trim(),
+              modelAnswerTranslation: data.rubric.modelAnswerTranslation?.trim() || null,
               criteria: data.rubric.criteria || [],
               maxScore: Number(data.rubric.maxScore || 10),
             },
@@ -825,6 +832,7 @@ export class QuestionMutationsService {
         await tx.question.create({
           data: {
             statement: q.statement.trim(),
+            translation: q.translation?.trim() || null,
             type,
             difficulty: q.difficulty || batchMeta?.difficulty || "MEDIUM",
             status: "PUBLISHED",
@@ -836,6 +844,7 @@ export class QuestionMutationsService {
             options: {
               create: options.map((opt, idx: number) => ({
                 text: opt.text.trim(),
+                translation: opt.translation?.trim() || null,
                 isCorrect: Boolean(opt.isCorrect),
                 order: idx + 1,
                 explanation: opt.explanation?.trim() || null,
@@ -865,6 +874,7 @@ export class QuestionMutationsService {
                   rubric: {
                     create: {
                       modelAnswer: q.modelAnswer.trim(),
+                      modelAnswerTranslation: q.modelAnswerTranslation?.trim() || null,
                       maxScore: Number(q.points || 10),
                     },
                   },

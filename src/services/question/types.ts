@@ -2,6 +2,7 @@ import { QuestionType, Difficulty, PublishStatus, SchoolCategory, Prisma } from 
 
 export interface ParsedQuestionImportItem {
   statement: string;
+  translation?: string | null;
   subjectId?: string;
   unitId?: string | null;
   lessonId?: string | null;
@@ -12,6 +13,7 @@ export interface ParsedQuestionImportItem {
   imageUrl?: string | null;
   options?: {
     text: string;
+    translation?: string | null;
     isCorrect: boolean;
     explanation?: string | null;
     order?: number;
@@ -19,6 +21,7 @@ export interface ParsedQuestionImportItem {
   concept?: string | null;
   correctReason?: string | null;
   modelAnswer?: string | null;
+  modelAnswerTranslation?: string | null;
   points?: number;
 }
 
@@ -52,6 +55,7 @@ export interface QuestionFilterParams {
 
 export interface QuestionCreateInput {
   statement: string;
+  translation?: string | null;
   subjectId: string;
   unitId?: string | null;
   lessonIds?: string[];
@@ -62,6 +66,7 @@ export interface QuestionCreateInput {
   imageUrl?: string | null;
   options?: {
     text: string;
+    translation?: string | null;
     isCorrect: boolean;
     order?: number;
     explanation?: string | null;
@@ -73,6 +78,7 @@ export interface QuestionCreateInput {
   };
   rubric?: {
     modelAnswer: string;
+    modelAnswerTranslation?: string | null;
     criteria?: Prisma.InputJsonValue;
     maxScore?: number;
   };
@@ -80,6 +86,7 @@ export interface QuestionCreateInput {
 
 export interface QuestionUpdateInput {
   statement?: string;
+  translation?: string | null;
   subjectId?: string;
   unitId?: string | null;
   lessonIds?: string[];
@@ -91,6 +98,7 @@ export interface QuestionUpdateInput {
   options?: {
     id?: string;
     text: string;
+    translation?: string | null;
     isCorrect: boolean;
     order?: number;
     explanation?: string | null;
@@ -102,6 +110,7 @@ export interface QuestionUpdateInput {
   } | null;
   rubric?: {
     modelAnswer: string;
+    modelAnswerTranslation?: string | null;
     criteria?: Prisma.InputJsonValue;
     maxScore?: number;
   } | null;

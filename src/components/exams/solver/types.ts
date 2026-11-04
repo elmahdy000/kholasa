@@ -1,6 +1,7 @@
 export interface QuestionOption {
   id: string;
   text: string;
+  translation?: string | null;
   order: number;
   explanation?: string | null;
 }
@@ -15,6 +16,7 @@ export interface QuestionExplanation {
 export interface RevealedOption {
   id: string;
   text?: string;
+  translation?: string | null;
   isCorrect?: boolean;
   explanation?: string | null;
 }
@@ -26,6 +28,7 @@ export interface RevealedAnswer {
   explanation?: QuestionExplanation | null;
   options?: RevealedOption[];
   modelAnswer?: string | null;
+  modelAnswerTranslation?: string | null;
   criteria?: unknown;
   maxScore?: number;
 }
@@ -33,6 +36,7 @@ export interface RevealedAnswer {
 export interface Question {
   id: string;
   statement: string;
+  translation?: string | null;
   type: string;
   difficulty: string;
   imageUrl?: string | null;

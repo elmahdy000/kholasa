@@ -14,7 +14,9 @@ import {
   CaretLeft,
   ArrowSquareOut,
   Trophy,
+  Translate,
 } from "@phosphor-icons/react";
+import { TranslationToggle } from "@/components/ui/TranslationToggle";
 import type { Definition } from "./types";
 
 interface LessonFlashcardsModalProps {
@@ -39,6 +41,7 @@ export function LessonFlashcardsModal({
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [isShuffled, setIsShuffled] = useState(false);
+  const [showTranslation, setShowTranslation] = useState(false);
 
   // Tracking outcomes
   const [masteredTerms, setMasteredTerms] = useState<string[]>([]);
@@ -56,6 +59,7 @@ export function LessonFlashcardsModal({
       setDeck(definitions);
       setCurrentIndex(0);
       setIsFlipped(false);
+      setShowTranslation(false);
       setMasteredTerms([]);
       setMistakeTerms([]);
       setSlideState("idle");
@@ -103,6 +107,7 @@ export function LessonFlashcardsModal({
       );
       setCurrentIndex((prev) => prev + 1);
       setIsFlipped(false);
+      setShowTranslation(false);
       setSlideState("enter-right");
 
       setTimeout(() => {
@@ -138,6 +143,7 @@ export function LessonFlashcardsModal({
       );
       setCurrentIndex((prev) => prev + 1);
       setIsFlipped(false);
+      setShowTranslation(false);
       setSlideState("enter-left");
 
       setTimeout(() => {
@@ -498,20 +504,47 @@ export function LessonFlashcardsModal({
                     >
                       {/* Top Header of Back Face */}
                       <div className="flex items-center justify-between text-xs font-bold">
-                        <span className="px-3 py-1 rounded-full bg-[#059669]/10 text-[#059669] dark:bg-[#059669]/20 dark:text-[#34D399] border border-[#059669]/30">
-                          التعريف والإجابة النموذجية
-                        </span>
-                        <span className="text-xs font-bold text-[#800020] dark:text-[#FB7185]">
+                        <div className="flex items-center gap-2">
+                          <span className="px-3 py-1 rounded-full bg-[#059669]/10 text-[#059669] dark:bg-[#059669]/20 dark:text-[#34D399] border border-[#059669]/30">
+                            التعريف والإجابة النموذجية
+                          </span>
+                          {currentCard.translation && (
+                            <TranslationToggle
+                              size="xs"
+                              isTranslated={showTranslation}
+                              onToggle={() => setShowTranslation((prev) => !prev)}
+                            />
+                          )}
+                        </div>
+                        <span className="text-xs font-bold text-[#800020] dark:text-[#FB7185] max-w-[150px] truncate">
                           {currentCard.term}
                         </span>
                       </div>
 
                       {/* Definition Box */}
                       <div className="my-auto py-3">
-                        <div className="p-4 sm:p-5 rounded-xl bg-[#F8FAFC] dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] max-h-[190px] overflow-y-auto scrollbar-thin">
-                          <p className="text-[14px] sm:text-[16px] font-medium text-[#0F172A] dark:text-white leading-loose text-justify">
+                        <div className="p-4 sm:p-5 rounded-xl bg-[#F8FAFC] dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] max-h-[190px] overflow-y-auto scrollbar-thin space-y-3">
+                          <p
+                            className="text-[14px] sm:text-[16px] font-medium text-[#0F172A] dark:text-white leading-loose text-justify"
+                            dir={/[\u0600-\u06FF]/.test(currentCard.meaning) ? "rtl" : "ltr"}
+                          >
                             {currentCard.meaning}
                           </p>
+
+                          {showTranslation && currentCard.translation && (
+                            <div
+                              className="p-3 rounded-lg bg-emerald-50/80 dark:bg-emerald-950/30 border border-emerald-200/80 dark:border-emerald-800/40 text-right animate-in fade-in duration-200"
+                              dir="rtl"
+                            >
+                              <div className="flex items-center gap-1.5 mb-1 text-[11px] font-bold text-emerald-700 dark:text-emerald-400">
+                                <Translate className="w-3.5 h-3.5" />
+                                <span>الترجمة العربية للتعريف</span>
+                              </div>
+                              <p className="text-xs sm:text-sm font-medium text-slate-800 dark:text-slate-200 leading-relaxed font-content">
+                                {currentCard.translation}
+                              </p>
+                            </div>
+                          )}
                         </div>
                       </div>
 
@@ -581,3 +614,4 @@ export function LessonFlashcardsModal({
     </div>
   );
 }
+

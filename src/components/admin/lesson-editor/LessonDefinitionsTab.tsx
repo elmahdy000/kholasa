@@ -21,9 +21,9 @@ import { useToast } from "@/components/ui/Toast";
 interface LessonDefinitionsTabProps {
   definitions: DefinitionItem[];
   setDefinitions: React.Dispatch<React.SetStateAction<DefinitionItem[]>>;
-  onAddDefinition: (term: string, meaning: string) => void;
+  onAddDefinition: (term: string, meaning: string, translation?: string) => void;
   onRemoveDefinition: (index: number) => void;
-  onUpdateDefinition: (index: number, term: string, meaning: string) => void;
+  onUpdateDefinition: (index: number, term: string, meaning: string, translation?: string) => void;
 }
 
 export function LessonDefinitionsTab({
@@ -39,11 +39,13 @@ export function LessonDefinitionsTab({
   // Manual single input state
   const [term, setTerm] = useState("");
   const [meaning, setMeaning] = useState("");
+  const [translation, setTranslation] = useState("");
 
   // Editing state
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [editTerm, setEditTerm] = useState("");
   const [editMeaning, setEditMeaning] = useState("");
+  const [editTranslation, setEditTranslation] = useState("");
 
   // Bulk paste state
   const [showBulkModal, setShowBulkModal] = useState(false);
@@ -59,9 +61,10 @@ export function LessonDefinitionsTab({
   const handleSingleAdd = (e: React.FormEvent) => {
     e.preventDefault();
     if (!term.trim() || !meaning.trim()) return;
-    onAddDefinition(term.trim(), meaning.trim());
+    onAddDefinition(term.trim(), meaning.trim(), translation.trim() || undefined);
     setTerm("");
     setMeaning("");
+    setTranslation("");
   };
 
   // Bulk Paste Parser
@@ -75,19 +78,35 @@ export function LessonDefinitionsTab({
       const line = rawLine.trim();
       if (!line) continue;
 
+      // Check for translation separator "||" or "::"
+      let rawDef = line;
+      let parsedTranslation: string | undefined = undefined;
+
+      if (rawDef.includes("||")) {
+        const parts = rawDef.split("||");
+        rawDef = parts[0].trim();
+        parsedTranslation = parts.slice(1).join("||").trim() || undefined;
+      } else if (rawDef.includes("::")) {
+        const parts = rawDef.split("::");
+        if (parts.length >= 2) {
+          rawDef = parts[0].trim();
+          parsedTranslation = parts.slice(1).join("::").trim() || undefined;
+        }
+      }
+
       // Split by ":" or "-" or "="
-      const match = line.match(/^([^:\-=\t]+)[:\-=\t](.+)$/);
+      const match = rawDef.match(/^([^:\-=\t]+)[:\-=\t](.+)$/);
       if (match && match[1] && match[2]) {
         const parsedTerm = match[1].trim();
         const parsedMeaning = match[2].trim();
         if (parsedTerm && parsedMeaning) {
-          newItems.push({ term: parsedTerm, meaning: parsedMeaning });
+          newItems.push({ term: parsedTerm, meaning: parsedMeaning, translation: parsedTranslation });
         }
       } else {
-        // Fallback: If line contains a comma or dash
-        const parts = line.split(/[–—]/);
+        // Fallback: If line contains a dash
+        const parts = rawDef.split(/[–—]/);
         if (parts.length >= 2 && parts[0].trim() && parts[1].trim()) {
-          newItems.push({ term: parts[0].trim(), meaning: parts.slice(1).join("–").trim() });
+          newItems.push({ term: parts[0].trim(), meaning: parts.slice(1).join("–").trim(), translation: parsedTranslation });
         }
       }
     }
@@ -121,6 +140,7 @@ export function LessonDefinitionsTab({
             .map((item) => ({
               term: String(item.term || item.name).trim(),
               meaning: String(item.meaning || item.definition).trim(),
+              translation: item.translation ? String(item.translation).trim() : undefined,
             }));
           if (valid.length > 0) {
             setDefinitions((prev) => [...prev, ...valid]);
@@ -222,21 +242,35 @@ export function LessonDefinitionsTab({
               type="text"
               value={term}
               onChange={(e) => setTerm(e.target.value)}
-              placeholder="مثال: قانون أوم"
+              placeholder="مثال: Algorithm أو خوارزمية"
               className="w-full h-11 px-3.5 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-xs font-bold text-[#0F172A] dark:text-white outline-none focus:border-[#059669]"
             />
           </div>
 
-          <div className="md:col-span-2 space-y-1">
+          <div className="space-y-1">
             <label className="text-[11px] font-bold text-[#64748B] dark:text-[#94A3B8]">
               التعريف، الشرح، أو نص القانون *
+            </label>
+            <input
+              type="text"
+              value={meaning}
+              onChange={(e) => setMeaning(e.target.value)}
+              placeholder="نص التعريف باللغة الإنجليزية أو العربية..."
+              className="w-full h-11 px-3.5 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-xs text-[#0F172A] dark:text-white outline-none focus:border-[#059669]"
+            />
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-[11px] font-bold text-[#64748B] dark:text-[#94A3B8]">
+              الترجمة العربية للتعريف (اختياري - لمدارس اللغات)
             </label>
             <div className="flex items-center gap-2">
               <input
                 type="text"
-                value={meaning}
-                onChange={(e) => setMeaning(e.target.value)}
-                placeholder="مثال: تتناسب شدة التيار المار في موصل طردياً مع فرق الجهد بين طرفيه عند ثبوت درجة الحرارة."
+                dir="rtl"
+                value={translation}
+                onChange={(e) => setTranslation(e.target.value)}
+                placeholder="الترجمة العربية التي تظهر عند الطلب..."
                 className="flex-1 h-11 px-3.5 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-xs text-[#0F172A] dark:text-white outline-none focus:border-[#059669]"
               />
               <button
@@ -304,20 +338,30 @@ export function LessonDefinitionsTab({
                         type="text"
                         value={editTerm}
                         onChange={(e) => setEditTerm(e.target.value)}
+                        placeholder="المصطلح..."
                         className="w-full h-9 px-3 rounded-lg border border-[#059669] bg-[#F8FAFC] dark:bg-[#1E293B] text-xs font-bold"
                       />
                       <textarea
                         value={editMeaning}
                         onChange={(e) => setEditMeaning(e.target.value)}
-                        rows={3}
+                        placeholder="التعريف..."
+                        rows={2}
                         className="w-full p-2.5 rounded-lg border border-[#059669] bg-[#F8FAFC] dark:bg-[#1E293B] text-xs leading-relaxed resize-none"
+                      />
+                      <input
+                        type="text"
+                        dir="rtl"
+                        value={editTranslation}
+                        onChange={(e) => setEditTranslation(e.target.value)}
+                        placeholder="الترجمة العربية (اختياري)..."
+                        className="w-full h-9 px-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-[#F8FAFC] dark:bg-[#1E293B] text-xs"
                       />
                       <div className="flex items-center gap-2 justify-end">
                         <button
                           type="button"
                           onClick={() => {
                             if (editTerm.trim() && editMeaning.trim()) {
-                              onUpdateDefinition(realIndex, editTerm.trim(), editMeaning.trim());
+                              onUpdateDefinition(realIndex, editTerm.trim(), editMeaning.trim(), editTranslation.trim() || undefined);
                               setEditingIndex(null);
                             }
                           }}
@@ -344,9 +388,17 @@ export function LessonDefinitionsTab({
                           </span>
                           <span className="text-[10px] font-mono text-[#94A3B8]">#{realIndex + 1}</span>
                         </div>
-                        <p className="text-xs text-[#0F172A] dark:text-white leading-relaxed whitespace-pre-wrap">
+                        <p className="text-xs text-[#0F172A] dark:text-white leading-relaxed whitespace-pre-wrap font-content">
                           {item.meaning}
                         </p>
+                        {item.translation && (
+                          <div className="p-2 rounded-lg bg-emerald-50/60 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/40 text-right" dir="rtl">
+                            <span className="text-[10px] font-bold text-emerald-700 dark:text-emerald-400 block mb-0.5">الترجمة العربية:</span>
+                            <p className="text-xs text-slate-700 dark:text-slate-300 font-medium font-content">
+                              {item.translation}
+                            </p>
+                          </div>
+                        )}
                       </div>
 
                       <div className="flex items-center justify-between pt-2 border-t border-[#F1F5F9] dark:border-[#1E293B]">
@@ -375,6 +427,7 @@ export function LessonDefinitionsTab({
                               setEditingIndex(realIndex);
                               setEditTerm(item.term);
                               setEditMeaning(item.meaning);
+                              setEditTranslation(item.translation || "");
                             }}
                             className="w-7 h-7 rounded-md flex items-center justify-center text-[#64748B] hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
                             title="تعديل"

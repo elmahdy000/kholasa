@@ -10,6 +10,7 @@ export interface LessonContent {
 export interface Definition {
   term: string;
   meaning: string;
+  translation?: string;
 }
 
 export interface Formula {
@@ -71,6 +72,7 @@ export interface MindMap {
 export interface QuestionOption {
   id: string;
   text: string;
+  translation?: string | null;
   order: number;
 }
 
@@ -101,6 +103,7 @@ export interface RubricCriterion {
 
 export interface QuestionRubric {
   modelAnswer: string;
+  modelAnswerTranslation?: string | null;
   criteria?: RubricCriterion[] | any;
   maxScore: number;
 }
@@ -108,6 +111,7 @@ export interface QuestionRubric {
 export interface Question {
   id: string;
   statement: string;
+  translation?: string | null;
   type: string;
   difficulty: string;
   imageUrl?: string | null;
