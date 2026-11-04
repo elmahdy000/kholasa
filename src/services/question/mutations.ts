@@ -625,10 +625,11 @@ export class QuestionMutationsService {
     type ExistingQ = {
       id: string;
       statement: string;
+      translation: string | null;
       type: QuestionType;
       difficulty: Difficulty;
       explanation: { id: string } | null;
-      rubric: { id: string } | null;
+      rubric: { id: string; modelAnswerTranslation: string | null } | null;
     };
     const existingByKey = new Map<string, ExistingQ>();
 
@@ -643,10 +644,11 @@ export class QuestionMutationsService {
             select: {
               id: true,
               statement: true,
+              translation: true,
               type: true,
               difficulty: true,
               explanation: { select: { id: true } },
-              rubric: { select: { id: true } },
+              rubric: { select: { id: true, modelAnswerTranslation: true } },
             },
           },
         },
@@ -671,10 +673,11 @@ export class QuestionMutationsService {
         select: {
           id: true,
           statement: true,
+          translation: true,
           type: true,
           difficulty: true,
           explanation: { select: { id: true } },
-          rubric: { select: { id: true } },
+          rubric: { select: { id: true, modelAnswerTranslation: true } },
         },
       });
       for (const r of existingSubjectBank) {
@@ -723,6 +726,16 @@ export class QuestionMutationsService {
     if (duplicateMatches.length > 0) {
       await prisma.$transaction(async (tx) => {
         for (const { item, existing } of duplicateMatches) {
+          // 1. Enrich statement translation if missing
+          if (item.translation?.trim() && !existing.translation) {
+            await tx.question.update({
+              where: { id: existing.id },
+              data: { translation: item.translation.trim() },
+            });
+            enrichedExisting++;
+          }
+
+          // 2. Enrich explanation if missing
           if (item.correctReason?.trim() && !existing.explanation) {
             await tx.questionExplanation.create({
               data: {
@@ -733,15 +746,53 @@ export class QuestionMutationsService {
             });
             enrichedExisting++;
           }
-          if (existing.type === "ESSAY" && item.modelAnswer?.trim() && !existing.rubric) {
-            await tx.essayRubric.create({
-              data: {
-                questionId: existing.id,
-                modelAnswer: item.modelAnswer.trim(),
-                maxScore: Number(item.points || 10),
-              },
+
+          // 3. Enrich essay rubric or rubric translation
+          if (existing.type === "ESSAY") {
+            if (item.modelAnswer?.trim() && !existing.rubric) {
+              await tx.essayRubric.create({
+                data: {
+                  questionId: existing.id,
+                  modelAnswer: item.modelAnswer.trim(),
+                  modelAnswerTranslation: item.modelAnswerTranslation?.trim() || null,
+                  maxScore: Number(item.points || 10),
+                },
+              });
+              enrichedExisting++;
+            } else if (
+              existing.rubric &&
+              item.modelAnswerTranslation?.trim() &&
+              !existing.rubric.modelAnswerTranslation
+            ) {
+              await tx.essayRubric.update({
+                where: { id: existing.rubric.id },
+                data: {
+                  modelAnswerTranslation: item.modelAnswerTranslation.trim(),
+                },
+              });
+              enrichedExisting++;
+            }
+          }
+
+          // 4. Enrich option translations if missing
+          if (item.options && item.options.some((o) => o.translation?.trim())) {
+            const existingOptions = await tx.questionOption.findMany({
+              where: { questionId: existing.id },
+              orderBy: { order: "asc" },
             });
-            enrichedExisting++;
+            for (let optIdx = 0; optIdx < existingOptions.length; optIdx++) {
+              const optItem = item.options[optIdx];
+              if (
+                optItem?.translation?.trim() &&
+                !existingOptions[optIdx].translation
+              ) {
+                await tx.questionOption.update({
+                  where: { id: existingOptions[optIdx].id },
+                  data: { translation: optItem.translation.trim() },
+                });
+                enrichedExisting++;
+              }
+            }
           }
         }
       }, BULK_TRANSACTION_OPTIONS);

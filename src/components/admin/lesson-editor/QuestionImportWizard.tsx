@@ -91,9 +91,18 @@ export function QuestionImportWizard({
   const [commitError, setCommitError] = useState<string | null>(null);
   const [commitSuccess, setCommitSuccess] = useState(false);
   const commitSuccessRef = useRef(false);
+  const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [isCloseConfirmOpen, setIsCloseConfirmOpen] = useState(false);
 
   // Synchronize targetType and allowedTypes whenever modal opens or initialType changes
+  useEffect(() => {
+    return () => {
+      if (closeTimeoutRef.current) {
+        clearTimeout(closeTimeoutRef.current);
+      }
+    };
+  }, []);
+
   useEffect(() => {
     if (isOpen) {
       commitSuccessRef.current = false;
@@ -143,6 +152,10 @@ export function QuestionImportWizard({
   };
 
   const executeClose = () => {
+    if (closeTimeoutRef.current) {
+      clearTimeout(closeTimeoutRef.current);
+      closeTimeoutRef.current = null;
+    }
     commitSuccessRef.current = false;
     setIsCloseConfirmOpen(false);
     setCurrentStep(1);
@@ -548,7 +561,8 @@ export function QuestionImportWizard({
 
       commitSuccessRef.current = true;
       setCommitSuccess(true);
-      setTimeout(() => {
+      if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
+      closeTimeoutRef.current = setTimeout(() => {
         onImportSuccess();
         executeClose();
       }, 1500);

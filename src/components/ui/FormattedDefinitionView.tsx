@@ -39,14 +39,18 @@ export function parseDefinitionContent(
 
   // 1. Check for explicit point markers (numbered or bulleted)
   // Matches: 1. 2. or 1- 2- or 1) 2) or (1) (2) or ١- ٢- or A. B. or a) b) or • - *
+  // Uses leading whitespace offset instead of lookbehind for universal browser compatibility.
   const markerRegex =
-    /(?:^|[\n\r]+|(?<=\s))(?:(?:Step|Part|Point|Phase|المرحلة|الخطوة|النقطة)\s+)?(?:\(((?:[0-9]{1,2}|[٠-٩]{1,2}|[a-zA-Z]|[أ-ي]|[ivxIVX]{1,4}))\)|(?:[0-9]{1,2}|[٠-٩]{1,2})\s*[.\-):]|(?:[a-zA-Z]|[أ-ي])\s*[.\-)]|(?:[ivxIVX]{1,4})\s*[.\-)]|[•*⁃\–\—\-])\s+/gi;
+    /(?:^|[\s\n\r]+)(?:(?:Step|Part|Point|Phase|المرحلة|الخطوة|النقطة)\s+)?(?:\(((?:[0-9]{1,2}|[٠-٩]{1,2}|[a-zA-Z]|[أ-ي]|[ivxIVX]{1,4}))\)|(?:[0-9]{1,2}|[٠-٩]{1,2})\s*[.\-):]|(?:[a-zA-Z]|[أ-ي])\s*[.\-)]|(?:[ivxIVX]{1,4})\s*[.\-)]|[•*⁃\–\—\-])\s+/gi;
 
   const rawMatches: { index: number; length: number; badge: string; isBullet: boolean }[] = [];
   let m: RegExpExecArray | null;
 
   while ((m = markerRegex.exec(text)) !== null) {
     const rawMatched = m[0].trim();
+    const leadingSpace = m[0].length - m[0].trimStart().length;
+    const actualIndex = m.index + leadingSpace;
+    const actualLength = m[0].length - leadingSpace;
     const isBullet = /^[•*⁃\–\—\-]$/.test(rawMatched);
     const badge =
       m[1] ||
@@ -56,8 +60,8 @@ export function parseDefinitionContent(
       "•";
 
     rawMatches.push({
-      index: m.index,
-      length: m[0].length,
+      index: actualIndex,
+      length: actualLength,
       badge,
       isBullet,
     });
@@ -222,7 +226,7 @@ export function FormattedDefinitionView({
           {parsed.points.map((pt, idx) => (
             <div
               key={idx}
-              className={`p-2.5 sm:p-3 rounded-xl ${theme.itemBg} shadow-2xs flex items-start gap-2.5 transition-all text-right`}
+              className={`p-2.5 sm:p-3 rounded-xl ${theme.itemBg} shadow-2xs flex items-start gap-2.5 transition-all ${alignClass}`}
               dir={dir}
             >
               {/* Badge: Number or Bullet Dot */}
@@ -278,3 +282,4 @@ export function FormattedDefinitionView({
     </p>
   );
 }
+
