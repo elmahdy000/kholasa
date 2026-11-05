@@ -109,12 +109,45 @@ export default async function LessonPage({ params }: LessonPageProps) {
       ? lesson.progress[0].isCompleted
       : false;
 
+  let initialMistakes: any[] = [];
+  if (user) {
+    const rawMistakes = await prisma.mistakeReview.findMany({
+      where: {
+        userId: user.id,
+        isResolved: false,
+        question: {
+          lessons: {
+            some: { lessonId: lesson.id },
+          },
+        },
+      },
+      orderBy: { lastAttemptAt: "desc" },
+      include: {
+        question: {
+          include: {
+            options: { orderBy: { order: "asc" } },
+            explanation: true,
+            rubric: true,
+          },
+        },
+      },
+    });
+
+    initialMistakes = rawMistakes.map((m) => ({
+      id: m.id,
+      questionId: m.questionId,
+      wrongCount: m.wrongCount,
+      question: m.question,
+    }));
+  }
+
   return (
     <StudentShell user={user}>
       <LessonViewer
         lesson={lesson as any}
         initialIsBookmarked={isBookmarked}
         initialIsCompleted={isCompleted}
+        initialMistakes={initialMistakes}
         userId={user?.id}
       />
     </StudentShell>

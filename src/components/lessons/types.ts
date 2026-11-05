@@ -74,6 +74,8 @@ export interface QuestionOption {
   text: string;
   translation?: string | null;
   order: number;
+  isCorrect?: boolean;
+  explanation?: string | null;
 }
 
 export interface QuestionExplanation {
@@ -127,6 +129,13 @@ export interface QuestionAnswerState {
   reveal?: RevealedQuestion;
 }
 
+export interface LessonMistakeItem {
+  id: string;
+  questionId: string;
+  wrongCount: number;
+  question: Question;
+}
+
 export interface LessonViewerProps {
   lesson: {
     id: string;
@@ -149,6 +158,7 @@ export interface LessonViewerProps {
   };
   initialIsBookmarked: boolean;
   initialIsCompleted: boolean;
+  initialMistakes?: LessonMistakeItem[];
   userId?: string | null;
 }
 

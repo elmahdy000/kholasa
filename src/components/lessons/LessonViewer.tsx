@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { BookOpen, Graph, BookmarkSimple, CheckCircle } from "@phosphor-icons/react";
 import {
   LessonViewerProps,
@@ -26,6 +26,7 @@ import { LessonEssaySection } from "./flow/LessonEssaySection";
 import { LessonAssessmentSection } from "./flow/LessonAssessmentSection";
 import { LessonTrueFalseSection } from "./flow/LessonTrueFalseSection";
 import { LessonFlashcardsModal } from "./LessonFlashcardsModal";
+import { LessonMistakesCapsuleModal } from "./LessonMistakesCapsuleModal";
 
 function getEmbedUrl(url?: string | null): string | null {
   if (!url) return null;
@@ -42,6 +43,7 @@ export function LessonViewer({
   lesson,
   initialIsBookmarked,
   initialIsCompleted,
+  initialMistakes = [],
   userId,
 }: LessonViewerProps) {
   // 4 Main Student Navigation Tabs
@@ -78,7 +80,18 @@ export function LessonViewer({
 
   // Bookmark & Progress States
   const [isFlashcardsOpen, setIsFlashcardsOpen] = useState(false);
+  const [mistakes, setMistakes] = useState(initialMistakes);
+  const [isMistakesCapsuleOpen, setIsMistakesCapsuleOpen] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(initialIsBookmarked);
+
+  // Sync mistakes when initialMistakes prop updates
+  useEffect(() => {
+    setMistakes(initialMistakes);
+  }, [initialMistakes]);
+
+  const handleMistakeResolved = useCallback((questionId: string) => {
+    setMistakes((prev) => prev.filter((m) => m.questionId !== questionId));
+  }, []);
   const [isCompleted, setIsCompleted] = useState(initialIsCompleted);
   const [isTogglingBookmark, setIsTogglingBookmark] = useState(false);
   const [isTogglingComplete, setIsTogglingComplete] = useState(false);
@@ -352,9 +365,11 @@ export function LessonViewer({
         isTogglingBookmark={isTogglingBookmark}
         isTogglingComplete={isTogglingComplete}
         bookmarkNotice={bookmarkNotice}
+        unresolvedMistakesCount={mistakes.length}
         onToggleBookmark={toggleBookmark}
         onToggleComplete={toggleComplete}
         onStartFlashcards={() => setIsFlashcardsOpen(true)}
+        onOpenMistakesCapsule={() => setIsMistakesCapsuleOpen(true)}
       />
 
       {/* 2. Audio Player Bar */}
@@ -679,6 +694,15 @@ export function LessonViewer({
         lessonTitle={lesson.title}
         unitTitle={lesson.unit?.title}
         definitions={definitions}
+      />
+      {/* Mistakes Quick Drill Capsule Modal (كبسولة تظبيط الغلطات) */}
+      <LessonMistakesCapsuleModal
+        isOpen={isMistakesCapsuleOpen}
+        onClose={() => setIsMistakesCapsuleOpen(false)}
+        lessonTitle={lesson.title}
+        unitTitle={lesson.unit?.title}
+        mistakes={mistakes}
+        onMistakeResolved={handleMistakeResolved}
       />
     </div>
   );
