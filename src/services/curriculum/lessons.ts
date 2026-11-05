@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { Prisma } from "@prisma/client";
+import { Prisma, PublishStatus } from "@prisma/client";
 import { badRequest, notFound } from "@/lib/http";
 import { LessonCreateInput, LessonUpdateInput } from "./types";
 
@@ -30,6 +30,11 @@ export class CurriculumLessonsService {
         summary: true,
         mindMap: true,
         questions: {
+          where: {
+            question: {
+              status: { not: PublishStatus.ARCHIVED },
+            },
+          },
           include: {
             question: {
               include: {

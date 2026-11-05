@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { QuestionType, Difficulty, SchoolCategory, Prisma } from "@prisma/client";
+import { QuestionType, Difficulty, SchoolCategory, Prisma, PublishStatus } from "@prisma/client";
 import type { QuestionFilterParams } from "./types";
 
 export class QuestionQueriesService {
@@ -27,7 +27,11 @@ export class QuestionQueriesService {
     if (unitId) where.unitId = unitId;
     if (type && type !== "ALL") where.type = type;
     if (difficulty && difficulty !== "ALL") where.difficulty = difficulty;
-    if (status && status !== "ALL") where.status = status;
+    if (status && status !== "ALL") {
+      where.status = status;
+    } else if (!status) {
+      where.status = { not: PublishStatus.ARCHIVED };
+    }
     if (schoolCategory && schoolCategory !== "ALL") where.schoolCategory = schoolCategory;
     if (gradeId) where.subject = { gradeId };
 

@@ -338,6 +338,10 @@ export class QuestionMutationsService {
 
     if (hasStudentOrExamData) {
       // Soft-delete / Archive: Protects every student's past exam answers, scores, and mistakes!
+      // Unlink from active lesson curriculum so it disappears from lesson questions
+      await prisma.questionLesson.deleteMany({
+        where: { questionId: id },
+      });
       return prisma.question.update({
         where: { id },
         data: { status: PublishStatus.ARCHIVED },
@@ -402,6 +406,9 @@ export class QuestionMutationsService {
 
     await prisma.$transaction(async (tx) => {
       if (toArchive.length > 0) {
+        await tx.questionLesson.deleteMany({
+          where: { questionId: { in: toArchive } },
+        });
         const res = await tx.question.updateMany({
           where: { id: { in: toArchive } },
           data: { status: PublishStatus.ARCHIVED },
@@ -456,11 +463,64 @@ export class QuestionMutationsService {
         return { count: 0 };
       }
 
-      const deleted = await tx.question.deleteMany({
-        where: { id: { in: allIds } },
+      // Always unlink questions from this lesson
+      await tx.questionLesson.deleteMany({
+        where: {
+          lessonId,
+          questionId: { in: allIds },
+        },
       });
 
-      return { count: deleted.count };
+      // Protect student history: archive questions with answers/mistakes/exams, purge unreferenced ones
+      const [answeredQIds, mistakeQIds, bookmarkedQIds, examQIds] = await Promise.all([
+        tx.studentAnswer.findMany({
+          where: { questionId: { in: allIds } },
+          select: { questionId: true },
+          distinct: ["questionId"],
+        }),
+        tx.mistakeReview.findMany({
+          where: { questionId: { in: allIds } },
+          select: { questionId: true },
+          distinct: ["questionId"],
+        }),
+        tx.bookmark.findMany({
+          where: { questionId: { in: allIds } },
+          select: { questionId: true },
+          distinct: ["questionId"],
+        }),
+        tx.examQuestion.findMany({
+          where: { questionId: { in: allIds } },
+          select: { questionId: true },
+          distinct: ["questionId"],
+        }),
+      ]);
+
+      const preserveIds = new Set([
+        ...answeredQIds.map((a) => a.questionId),
+        ...mistakeQIds.map((m) => m.questionId),
+        ...bookmarkedQIds.map((b) => b.questionId),
+        ...examQIds.map((e) => e.questionId),
+      ]);
+
+      const archivedIds = allIds.filter((id) => preserveIds.has(id));
+      const purgeIds = allIds.filter((id) => !preserveIds.has(id));
+
+      if (archivedIds.length > 0) {
+        await tx.question.updateMany({
+          where: { id: { in: archivedIds } },
+          data: { status: PublishStatus.ARCHIVED },
+        });
+      }
+
+      let deletedCount = 0;
+      if (purgeIds.length > 0) {
+        const deleted = await tx.question.deleteMany({
+          where: { id: { in: purgeIds } },
+        });
+        deletedCount = deleted.count;
+      }
+
+      return { count: allIds.length, archivedCount: archivedIds.length, deletedCount };
     });
   }
 
