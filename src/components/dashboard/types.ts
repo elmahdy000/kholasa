@@ -1,4 +1,7 @@
 import type { WeekDayProgress } from "./StreakWidget";
+import type { DailyStudyPlanData } from "./DailyGuidedStudyPlanCard";
+
+export type { DailyStudyPlanData } from "./DailyGuidedStudyPlanCard";
 
 export interface ContinueLessonItem {
   id: string;
@@ -56,6 +59,7 @@ export interface DashboardClientProps {
   dailyQuestion?: any;
   recentExams?: RecentExamItem[];
   masteryData?: any;
+  dailyStudyPlan?: DailyStudyPlanData | null;
 }
 
 export const fadeInUp = {

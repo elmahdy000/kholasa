@@ -11,6 +11,7 @@ import { SubjectsGrid } from "./SubjectsGrid";
 import { RecentExamsList } from "./RecentExamsList";
 import { ProductTourModal } from "./ProductTourModal";
 import { StudentMasteryMapCard } from "./StudentMasteryMapCard";
+import { DailyGuidedStudyPlanCard } from "./DailyGuidedStudyPlanCard";
 import type { DashboardClientProps } from "./types";
 
 export type { DashboardClientProps, ContinueLessonItem, SubjectItem, RecentExamItem, StudentMeta } from "./types";
@@ -30,6 +31,7 @@ export function DashboardClient({
   dailyQuestion,
   recentExams = [],
   masteryData,
+  dailyStudyPlan,
 }: DashboardClientProps) {
   const [currentStreakDays, setCurrentStreakDays] = useState(streakDays);
   const [isTodayCompletedState, setIsTodayCompletedState] = useState(isTodayCompleted);
@@ -104,6 +106,21 @@ export function DashboardClient({
           }
         }}
       />
+
+      {/* 3. Daily Guided Study Plan */}
+      {dailyStudyPlan && (
+        <DailyGuidedStudyPlanCard
+          plan={dailyStudyPlan}
+          onOpenDailyChallenge={() => {
+            const el = document.getElementById("daily-challenge-card");
+            if (el) {
+              el.scrollIntoView({ behavior: "smooth", block: "center" });
+            } else {
+              window.dispatchEvent(new CustomEvent("kholasa_open_entrance_exam"));
+            }
+          }}
+        />
+      )}
 
       {/* 3. Continue Learning */}
       <ContinueLearningCard continueLesson={continueLesson} />

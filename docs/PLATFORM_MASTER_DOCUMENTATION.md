@@ -282,7 +282,7 @@ Each lesson is decomposed into four distinct cognitive dimensions:
 - **Subjects Explorer (`/subjects`):** Aggregates exact questions and units filtered strictly by the authenticated student's `questionScopeWhere(scope)` and `subjectScopeWhere(scope)`.
 - Zero placeholder mock strings (e.g. arbitrary `+3,200 سؤال`, hardcoded `92%`, or static `إتقان 100%`) are permitted in the application code.
 
-### 6.6 On-Demand Live Translation Engine
+### 6.7 On-Demand Live Translation Engine
 - Specifically built for Language Schools (`LANGUAGES` category), where STEM subjects are taught in English.
 - Every question, option, and essay model answer supports optional `translation` fields.
 - Students can toggle between English and Arabic using the inline translation button (`Globe` / `Translate` icon).
@@ -291,13 +291,22 @@ Each lesson is decomposed into four distinct cognitive dimensions:
   - Arabic: `dir="rtl"` with right-aligned `IBM Plex Sans Arabic`.
 - **Anti-Leak Invariant:** Translation toggling only translates text; it never reveals correct options or alters the state of the question.
 
-### 6.7 Daily Challenge & Entrance Gatekeeper
+### 6.8 Daily Challenge & Entrance Gatekeeper
 - Triggered on the student dashboard `/dashboard`.
 - Each Cairo calendar day (Africa/Cairo timezone calculated via `src/lib/date.ts`), the system issues a 3-question challenge.
 - Maintains continuous day streaks (`DailyChallenge.completedAt`).
 - Integrated into `EntranceGatekeeperModal.tsx` for students who haven't completed their daily check-in.
 
-### 6.8 Smart Student Mastery Map & Score Progression (`StudentMasteryMapCard.tsx`)
+### 6.9 Daily Guided Study Path («خطة مذاكرتك للنهاردة» - `DailyGuidedStudyPlanCard.tsx`)
+- Displayed prominently at the top of the student dashboard as an intelligent, friction-free daily action plan.
+- Breaks down the student's daily cognitive workload into 3 bite-sized, deterministic tasks:
+  1. **المهمة 1 (تحدي اليوم):** 1-minute daily warm-up preserving the student's streak (`isTodayCompleted`). Reactively synchronized across the UI when completed.
+  2. **المهمة 2 (مراجعة زتونة الدرس الأضعف):** 5-minute targeted review of the student's lowest-mastery or highest-mistake lesson directly opening the Zaytouna summary tab (`/lessons/[id]#section-summary`).
+  3. **المهمة 3 (اختبار إتقان نقطة الضعف):** 5-question adaptive assessment targeting the weak lesson with zero repetition of mastered questions. Automatically detects if an exam was submitted today.
+- Dynamic Progress Bar tracking completion (0%, 33%, 66%, 100%).
+- Upon completing all 3 tasks, surfaces an academic congratulations banner confirming daily mastery without cartoon emojis.
+
+### 6.10 Smart Student Mastery Map & Score Progression (`StudentMasteryMapCard.tsx`)
 - Calculates real question mastery percentage per subject, unit, and lesson based on `QuestionAttempt.isCorrect = true`.
 - Dynamic Mastery Badges:
   - $\ge 80\%$: "متقن بامتياز" (Emerald Green)
@@ -310,7 +319,7 @@ Each lesson is decomposed into four distinct cognitive dimensions:
   - Automatically identifies the lesson with the most unresolved mistakes or lowest mastery score.
   - Direct 1-click CTA launching an adaptive exam or lesson study session.
 
-### 6.9 Full PWA Offline Mode & Offline Study Center (`/offline`)
+### 6.11 Full PWA Offline Mode & Offline Study Center (`/offline`)
 - Client-side storage engine using IndexedDB (`src/lib/offline-db.ts`).
 - Lesson saving toggle inside `LessonHeader.tsx`: 1-click downloads lesson body, golden summary, definitions, formulas, and mind map into local storage.
 - Interactive Offline Study Center at `/offline`:

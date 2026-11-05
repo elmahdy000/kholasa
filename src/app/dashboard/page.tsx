@@ -40,6 +40,9 @@ export default async function DashboardPage() {
   });
 
   // 2. Calculate real progress & counts
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
+
   const [
     completedLessonsCount,
     unresolvedMistakesCount,
@@ -48,6 +51,7 @@ export default async function DashboardPage() {
     examStats,
     challengeDays,
     masteryData,
+    todayExamAttempt,
   ] = await Promise.all([
     userId
       ? prisma.studentProgress.count({
@@ -95,6 +99,21 @@ export default async function DashboardPage() {
         })
       : [],
     userId ? StudentService.getStudentMasteryMap(userId) : null,
+    userId
+      ? prisma.examAttempt.findFirst({
+          where: {
+            userId,
+            isCompleted: true,
+            completedAt: { gte: startOfToday },
+          },
+          select: {
+            id: true,
+            title: true,
+            percentage: true,
+          },
+          orderBy: { completedAt: "desc" },
+        })
+      : null,
   ]);
 
   const completedAttemptsCount = examStats._count._all;
@@ -249,6 +268,50 @@ export default async function DashboardPage() {
     };
   });
 
+  // 5. Build intelligent Daily Guided Study Plan
+  const focusLesson =
+    masteryData?.focusRecommendation ||
+    (continueLessonData
+      ? {
+          lessonId: continueLessonData.id,
+          lessonTitle: continueLessonData.title,
+          unitTitle: continueLessonData.unit.title,
+          subjectId: continueLessonData.unit.subject.id,
+          subjectName: continueLessonData.unit.subject.name,
+          subjectColor: continueLessonData.unit.subject.color,
+          masteryPercentage: continueLessonData.progressPercent ?? 0,
+          unresolvedMistakesCount: 0,
+          reason: "واصل مذاكرة هذا الدرس لإتمام وحدتك الحالية",
+        }
+      : null);
+
+  const isFocusLessonAccessedToday = Boolean(
+    lastActiveProgress?.lastAccessedAt &&
+      lastActiveProgress.lastAccessedAt >= startOfToday &&
+      focusLesson &&
+      lastActiveProgress.lessonId === focusLesson.lessonId
+  );
+
+  const dailyStudyPlan = {
+    todayKey,
+    focusLesson,
+    task1: {
+      isCompleted: isTodayCompleted,
+    },
+    task2: {
+      isCompleted: isFocusLessonAccessedToday,
+    },
+    task3: {
+      isCompleted: Boolean(todayExamAttempt),
+      examAttempt: todayExamAttempt
+        ? {
+            title: todayExamAttempt.title,
+            percentage: Math.round(todayExamAttempt.percentage),
+          }
+        : null,
+    },
+  };
+
   return (
     <StudentShell user={user}>
       <DashboardClient
@@ -269,6 +332,7 @@ export default async function DashboardPage() {
         continueLesson={continueLessonData}
         dailyQuestion={resolvedDailyQuestion as any}
         masteryData={masteryData}
+        dailyStudyPlan={dailyStudyPlan}
         recentExams={recentAttempts.map((a) => ({
           id: a.id,
           title: a.title,

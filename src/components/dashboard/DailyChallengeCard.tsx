@@ -274,7 +274,7 @@ export function DailyChallengeCard({
                 <div className="flex items-center gap-2">
                   <Sparkle className="w-5 h-5 text-[#D97706] dark:text-[#FBBF24] shrink-0" weight="fill" />
                   <span className="text-[13px] font-bold text-[#D97706] dark:text-[#FBBF24]">
-                    عاش! كدة بقالك {streakEarned} أيام ورا بعض مستمر 🎉
+                    عاش! كدة بقالك {streakEarned} أيام ورا بعض مستمر
                   </span>
                 </div>
                 <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-[#D97706] text-white shrink-0">
