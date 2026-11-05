@@ -284,6 +284,27 @@ Each lesson is decomposed into four distinct cognitive dimensions:
 - Maintains continuous day streaks (`DailyChallenge.completedAt`).
 - Integrated into `EntranceGatekeeperModal.tsx` for students who haven't completed their daily check-in.
 
+### 6.8 Smart Student Mastery Map & Score Progression (`StudentMasteryMapCard.tsx`)
+- Calculates real question mastery percentage per subject, unit, and lesson based on `QuestionAttempt.isCorrect = true`.
+- Dynamic Mastery Badges:
+  - $\ge 80\%$: "متقن بامتياز" (Emerald Green)
+  - $50\% - 79\%$: "مستوى جيد — يحتاج مراجعة" (Amber)
+  - $< 50\%$: "بحاجة لتركيز" (Muted Slate / Red)
+- **Progression Sparkline (رسم بياني لتطور الدرجات):**
+  - Pure SVG responsive line & shaded area chart showing the trajectory of the student's last 10 completed exams.
+  - Date and percentage markers with positive/negative delta tracking.
+- **Actionable Focus Recommendation:**
+  - Automatically identifies the lesson with the most unresolved mistakes or lowest mastery score.
+  - Direct 1-click CTA launching an adaptive exam or lesson study session.
+
+### 6.9 Full PWA Offline Mode & Offline Study Center (`/offline`)
+- Client-side storage engine using IndexedDB (`src/lib/offline-db.ts`).
+- Lesson saving toggle inside `LessonHeader.tsx`: 1-click downloads lesson body, golden summary, definitions, formulas, and mind map into local storage.
+- Interactive Offline Study Center at `/offline`:
+  - Lists all locally cached lessons grouped by subject.
+  - Full-screen `OfflineLessonViewerModal` providing 100% network-independent reading, definitions flashcards, and formulas.
+  - Live online/offline detection with auto-refresh and cache deletion controls.
+
 ---
 
 ## 7. Backoffice & Admin Subsystems (`/admin`)
