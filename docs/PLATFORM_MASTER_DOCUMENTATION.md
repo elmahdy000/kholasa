@@ -1,5 +1,5 @@
 # منصة الخلاصة التعليمية الذكية | PLATFORM MASTER DOCUMENTATION
-> **Document Version:** 2.0.0  
+> **Document Version:** 2.1.0  
 > **Last Updated:** November 2026  
 > **Target Audience:** AI Agents, LLMs, System Architects, Senior Software Engineers  
 > **Status:** Authoritative Source of Truth (Active Production Reference)
@@ -244,9 +244,15 @@ Each lesson is decomposed into four distinct cognitive dimensions:
 - Upon answering a mistake correctly, `isResolved: true` is sent to the backend, removing it from the student's active mistake burden.
 - Designed with clean Phosphor SVGs (`ArrowClockwise`, `CheckCircle`, `WarningCircle`), completely free of cartoon emojis.
 
-### 6.3 Universal Question Persistence (`QuestionAttempt`)
-- Every time a student selects an answer or submits an essay anywhere on the platform (in a lesson, practice mode, or exam), the answer is saved via `POST /api/questions/[id]/answer`.
-- When a student returns to a lesson, their previously selected option, correctness status, and essay responses are pre-populated from the database.
+### 6.3 Universal Question Persistence (`QuestionAttempt`) & Automated Mistake Resolution
+- **Continuous Answer Logging:** Every time a student selects an answer or submits an essay anywhere on the platform (in a lesson via `/api/questions/[id]/answer` or an exam via `/api/exams/[id]/submit`), the response is permanently recorded in `QuestionAttempt`.
+- **Pre-population on Return:** When a student opens any lesson, their previously chosen choices, correctness state, and essay answers are pre-populated directly from `QuestionAttempt`.
+- **Automated Mistake Auto-Resolution:** In accordance with cognitive mastery principles, whenever a student correctly answers a question in an exam (whether through custom exam, lesson exam, or unit exam), `ExamAttemptService.submitExamAttempt` executes an ACID transaction:
+  - Updates `ExamAttempt` (`isCompleted: true`, score, and percentage).
+  - Syncs the answer to `QuestionAttempt` (`isCorrect: true`).
+  - Automatically resolves any corresponding active record in `MistakeReview` (`isResolved: true`), immediately clearing the burden from "ركن غلطاتي" and the lesson's weak-spot capsule.
+  - Symmetrically, any newly failed questions are upserted into `MistakeReview` (`isResolved: false`, `wrongCount` incremented).
+  - Synchronized across both the direct client answers payload path and incremental `recordAnswer` execution path.
 
 ### 6.4 Spaced Learning & Smart Custom Exam Builder (`/exams/builder`)
 - Students can construct custom exams targeting:
@@ -258,6 +264,7 @@ Each lesson is decomposed into four distinct cognitive dimensions:
   - It cross-references `QuestionAttempt` where `userId = student.id` and `isCorrect = true`.
   - Mastered questions are **completely excluded** from new exams until the student has exhausted 100% of the questions in that bank.
   - Displays dynamic indicators: `unmasteredCount` (الأسئلة الجديدة / التي لم تُتقن) vs `masteredCount` (الأسئلة المتقنة سابقاً).
+  - **Medium Difficulty Fallback:** If a student selects Medium difficulty but the bank has zero Medium questions, the engine intelligently draws a balanced progression of Easy and Hard questions, and calculates accurate builder stats via `isMediumFallback`.
 - Dynamic naming: Automatically names generated exams (e.g. `امتحان درس: الحركة في اتجاه واحد`, `امتحان وحدة: القوى والحركة`).
 
 ### 6.5 Full Exam History & Inspection (`/exams`)
@@ -268,6 +275,12 @@ Each lesson is decomposed into four distinct cognitive dimensions:
   - **امتحانات الوحدات (Unit Exams)**
   - **شاملة ومخصصة (Comprehensive & Custom)**
 - Students can click "مراجعة الإجابات" on any completed attempt to open `/exams/[id]/results`, reviewing their answers, correct answers, time spent, and detailed explanations.
+
+### 6.6 100% Dynamic Content & Zero-Static Metric Policy
+- To maintain complete data integrity, all metrics, counters, and statistics across the platform are strictly computed from live PostgreSQL queries.
+- **Landing Page (`/`):** The subjects showcase queries live subjects with `_count: { units: true, questions: true }` and displays real available curriculum counts.
+- **Subjects Explorer (`/subjects`):** Aggregates exact questions and units filtered strictly by the authenticated student's `questionScopeWhere(scope)` and `subjectScopeWhere(scope)`.
+- Zero placeholder mock strings (e.g. arbitrary `+3,200 سؤال`, hardcoded `92%`, or static `إتقان 100%`) are permitted in the application code.
 
 ### 6.6 On-Demand Live Translation Engine
 - Specifically built for Language Schools (`LANGUAGES` category), where STEM subjects are taught in English.
