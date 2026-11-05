@@ -181,12 +181,14 @@ export default async function DashboardPage() {
     prisma.question.findFirst({
       where: {
         status: "PUBLISHED",
-        type: "MCQ",
+        type: { in: ["MCQ", "TRUE_FALSE"] },
+        ...(scope?.schoolCategory ? { schoolCategory: scope.schoolCategory } : {}),
         ...(scope?.gradeId ? { subject: { is: subjectScopeWhere(scope) } } : {}),
       },
       select: {
         id: true,
         statement: true,
+        translation: true,
         type: true,
         difficulty: true,
         imageUrl: true,
@@ -201,28 +203,7 @@ export default async function DashboardPage() {
     }),
   ]);
 
-  const resolvedDailyQuestion =
-    dailyQuestion ||
-    (await prisma.question.findFirst({
-      where: {
-        status: "PUBLISHED",
-        type: "MCQ",
-      },
-      select: {
-        id: true,
-        statement: true,
-        type: true,
-        difficulty: true,
-        imageUrl: true,
-        subject: { select: { id: true, name: true } },
-        unit: { select: { id: true, title: true } },
-        options: {
-          select: { id: true, text: true, order: true },
-          orderBy: { order: "asc" },
-        },
-      },
-      orderBy: { createdAt: "desc" },
-    }));
+  const resolvedDailyQuestion = dailyQuestion;
 
   const activeLesson =
     (lastActiveProgress?.lesson &&

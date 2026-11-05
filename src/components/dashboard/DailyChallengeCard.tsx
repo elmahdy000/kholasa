@@ -11,6 +11,7 @@ import {
   ArrowLeft,
 } from "@phosphor-icons/react";
 import { BidiStatement } from "@/components/ui/BidiStatement";
+import { TranslationToggle } from "@/components/ui/TranslationToggle";
 
 import { QuestionImageAttachment } from "@/components/ui/QuestionImageAttachment";
 
@@ -23,6 +24,7 @@ interface Option {
 interface DailyQuestion {
   id: string;
   statement: string;
+  translation?: string | null;
   type: string;
   difficulty: string;
   imageUrl?: string | null;
@@ -54,6 +56,7 @@ export function DailyChallengeCard({
   const [revealed, setRevealed] = useState<RevealedAnswer | null>(null);
   const [streakEarned, setStreakEarned] = useState<number | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [isTranslated, setIsTranslated] = useState(false);
 
   if (!question) {
     return null;
@@ -127,6 +130,13 @@ export function DailyChallengeCard({
           </div>
 
           <div className="flex items-center gap-2">
+            {Boolean(question.translation) && (
+              <TranslationToggle
+                size="xs"
+                isTranslated={isTranslated}
+                onToggle={() => setIsTranslated((prev) => !prev)}
+              />
+            )}
             {isTodayAlreadyCompleted ? (
               <span className="text-[12px] font-bold text-[#059669] dark:text-[#34D399] bg-[#059669]/10 px-3 py-1 rounded-md border border-[#059669]/30 flex items-center gap-1">
                 <CheckCircle className="w-3.5 h-3.5" weight="fill" />
@@ -148,6 +158,19 @@ export function DailyChallengeCard({
             text={question.statement}
             className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-[#F8FAFC] leading-relaxed font-content"
           />
+          {isTranslated && question.translation && (
+            <div
+              dir="rtl"
+              className="p-3.5 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/60 border border-[#E2E8F0] dark:border-[#334155] text-right animate-in fade-in slide-in-from-top-1 duration-200"
+            >
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-[#800020]/10 text-[#800020] dark:text-[#FB7185] mb-1.5 inline-block">
+                الترجمة العربية للسؤال
+              </span>
+              <p className="text-[13px] sm:text-[14px] text-[#1E293B] dark:text-slate-200 leading-relaxed font-content">
+                {question.translation}
+              </p>
+            </div>
+          )}
           <QuestionImageAttachment imageUrl={question.imageUrl} />
         </div>
 

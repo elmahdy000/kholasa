@@ -16,6 +16,7 @@ export interface DailyCheckinAnswer {
 interface ReviewedDailyQuestion {
   id: string;
   statement: string;
+  translation?: string | null;
   type: QuestionType;
   difficulty: string;
   subjectName: string;
@@ -66,6 +67,7 @@ export class DailyCheckinService {
 
     const whereClause = {
       status: "PUBLISHED" as const,
+      ...(scope?.schoolCategory ? { schoolCategory: scope.schoolCategory } : {}),
       ...(hasScope ? { subject: { is: subjectFilter } } : {}),
     };
 
@@ -136,6 +138,7 @@ export class DailyCheckinService {
       .map((q) => ({
         id: q.id,
         statement: q.statement,
+        translation: q.translation,
         type: q.type,
         difficulty: q.difficulty,
         subjectName: q.subject?.name || "المادة",
@@ -279,6 +282,7 @@ export class DailyCheckinService {
       reviewedQuestions.push({
         id: q.id,
         statement: q.statement,
+        translation: q.translation,
         type: q.type,
         difficulty: q.difficulty,
         subjectName: q.subject?.name || "المادة",
