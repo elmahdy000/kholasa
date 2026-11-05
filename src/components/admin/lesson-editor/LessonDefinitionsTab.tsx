@@ -46,6 +46,24 @@ export function parseDefinitionsText(text: string): DefinitionItem[] {
   if (!text || !text.trim()) return [];
 
   const raw = text.trim();
+
+  // Strategy 0: Direct JSON array pasted
+  if (raw.startsWith("[") && raw.endsWith("]")) {
+    try {
+      const parsedJson = JSON.parse(raw);
+      if (Array.isArray(parsedJson)) {
+        const valid = parsedJson
+          .filter((item) => item && (item.term || item.name) && (item.meaning || item.definition))
+          .map((item) => ({
+            term: cleanTerm(String(item.term || item.name)),
+            meaning: cleanMeaning(String(item.meaning || item.definition)),
+            translation: item.translation ? String(item.translation).trim() : undefined,
+          }));
+        if (valid.length > 0) return valid;
+      }
+    } catch {}
+  }
+
   const rawLines = raw.split("\n").map((l) => l.trim()).filter(Boolean);
 
   // Strategy 1: Check for Multi-line block with "الترجمة:" or "Translation:"
@@ -139,39 +157,70 @@ export function parseDefinitionsText(text: string): DefinitionItem[] {
   for (const line of rawLines) {
     if (/^(?:الترجمة|Translation)\s*[:：]/i.test(line)) continue;
 
-    let rawDef = line;
-    let parsedTranslation: string | undefined = undefined;
-
-    if (rawDef.includes("||")) {
-      const parts = rawDef.split("||");
-      rawDef = parts[0].trim();
-      parsedTranslation = parts.slice(1).join("||").trim() || undefined;
-    } else if (rawDef.includes("::")) {
-      const parts = rawDef.split("::");
-      rawDef = parts[0].trim();
-      parsedTranslation = parts.slice(1).join("::").trim() || undefined;
-    }
-
     let parsedTerm = "";
     let parsedMeaning = "";
+    let parsedTranslation: string | undefined = undefined;
 
-    if (rawDef.includes("\t")) {
-      const parts = rawDef.split("\t");
-      parsedTerm = parts[0].trim();
-      parsedMeaning = parts[1]?.trim() || "";
-      if (!parsedTranslation && parts[2]) {
-        parsedTranslation = parts[2].trim();
+    // 3.1 Check double pipe "||"
+    if (line.includes("||")) {
+      const parts = line.split("||").map((p) => p.trim());
+      if (parts.length >= 3) {
+        parsedTerm = parts[0];
+        parsedMeaning = parts[1];
+        parsedTranslation = parts.slice(2).join("||").trim() || undefined;
+      } else if (parts.length === 2) {
+        if (parts[0].includes(":")) {
+          const idx = parts[0].indexOf(":");
+          parsedTerm = parts[0].slice(0, idx).trim();
+          parsedMeaning = parts[0].slice(idx + 1).trim();
+          parsedTranslation = parts[1];
+        } else {
+          parsedTerm = parts[0];
+          parsedMeaning = parts[1];
+        }
       }
-    } else if (rawDef.includes(":")) {
-      const idx = rawDef.indexOf(":");
-      parsedTerm = rawDef.slice(0, idx).trim();
-      parsedMeaning = rawDef.slice(idx + 1).trim();
-    } else if (rawDef.includes("=")) {
-      const idx = rawDef.indexOf("=");
-      parsedTerm = rawDef.slice(0, idx).trim();
-      parsedMeaning = rawDef.slice(idx + 1).trim();
-    } else {
-      const dashMatch = rawDef.match(/^(.+?)\s+[-–—]\s+(.+)$/);
+    }
+    // 3.2 Check double colon "::"
+    else if (line.includes("::")) {
+      const parts = line.split("::").map((p) => p.trim());
+      if (parts.length >= 3) {
+        parsedTerm = parts[0];
+        parsedMeaning = parts[1];
+        parsedTranslation = parts.slice(2).join("::").trim() || undefined;
+      } else if (parts.length === 2) {
+        if (parts[0].includes(":")) {
+          const idx = parts[0].indexOf(":");
+          parsedTerm = parts[0].slice(0, idx).trim();
+          parsedMeaning = parts[0].slice(idx + 1).trim();
+          parsedTranslation = parts[1];
+        } else {
+          parsedTerm = parts[0];
+          parsedMeaning = parts[1];
+        }
+      }
+    }
+    // 3.3 Check Tab separated
+    else if (line.includes("\t")) {
+      const parts = line.split("\t").map((p) => p.trim());
+      parsedTerm = parts[0];
+      parsedMeaning = parts[1] || "";
+      parsedTranslation = parts[2] || undefined;
+    }
+    // 3.4 Check standard colon ":"
+    else if (line.includes(":")) {
+      const idx = line.indexOf(":");
+      parsedTerm = line.slice(0, idx).trim();
+      parsedMeaning = line.slice(idx + 1).trim();
+    }
+    // 3.5 Check equal "="
+    else if (line.includes("=")) {
+      const idx = line.indexOf("=");
+      parsedTerm = line.slice(0, idx).trim();
+      parsedMeaning = line.slice(idx + 1).trim();
+    }
+    // 3.6 Check spaced dash " - " or " — "
+    else {
+      const dashMatch = line.match(/^(.+?)\s+[-–—]\s+(.+)$/);
       if (dashMatch) {
         parsedTerm = dashMatch[1].trim();
         parsedMeaning = dashMatch[2].trim();
