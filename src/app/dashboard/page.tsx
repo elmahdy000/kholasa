@@ -5,6 +5,7 @@ import { getCurriculumScope, isSubjectInScope, subjectScopeWhere } from "@/lib/c
 import { calculateStreak, getCairoDayKey, shiftDayKey } from "@/lib/date";
 import { StudentShell } from "@/components/layout/StudentShell";
 import { DashboardClient } from "@/components/dashboard/DashboardClient";
+import { StudentService } from "@/services/student.service";
 
 export default async function DashboardPage() {
   const user = await getCurrentUser();
@@ -46,6 +47,7 @@ export default async function DashboardPage() {
     userProgress,
     examStats,
     challengeDays,
+    masteryData,
   ] = await Promise.all([
     userId
       ? prisma.studentProgress.count({
@@ -92,6 +94,7 @@ export default async function DashboardPage() {
           take: 90,
         })
       : [],
+    userId ? StudentService.getStudentMasteryMap(userId) : null,
   ]);
 
   const completedAttemptsCount = examStats._count._all;
@@ -265,6 +268,7 @@ export default async function DashboardPage() {
         subjects={subjectsForClient}
         continueLesson={continueLessonData}
         dailyQuestion={resolvedDailyQuestion as any}
+        masteryData={masteryData}
         recentExams={recentAttempts.map((a) => ({
           id: a.id,
           title: a.title,

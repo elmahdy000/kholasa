@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Clock, BookmarkSimple, CheckCircle, Check, Cards, ArrowClockwise, Target } from "@phosphor-icons/react";
+import { Clock, BookmarkSimple, CheckCircle, Check, Cards, ArrowClockwise, Target, CloudArrowDown, CloudCheck } from "@phosphor-icons/react";
 
 interface LessonHeaderProps {
   subject: {
@@ -23,8 +23,11 @@ interface LessonHeaderProps {
   isTogglingComplete: boolean;
   bookmarkNotice: string | null;
   unresolvedMistakesCount?: number;
+  isSavedOffline?: boolean;
+  isSavingOffline?: boolean;
   onToggleBookmark: () => void;
   onToggleComplete: () => void;
+  onToggleOffline?: () => void;
   onStartFlashcards?: () => void;
   onOpenMistakesCapsule?: () => void;
 }
@@ -42,8 +45,11 @@ export function LessonHeader({
   isTogglingComplete,
   bookmarkNotice,
   unresolvedMistakesCount,
+  isSavedOffline = false,
+  isSavingOffline = false,
   onToggleBookmark,
   onToggleComplete,
+  onToggleOffline,
   onStartFlashcards,
   onOpenMistakesCapsule,
 }: LessonHeaderProps) {
@@ -116,6 +122,30 @@ export function LessonHeader({
             <Target className="w-4 h-4" weight="bold" />
             <span>امتحان الدرس</span>
           </Link>
+        )}
+
+        {/* Offline Save/Delete Button */}
+        {onToggleOffline && (
+          <button
+            type="button"
+            onClick={onToggleOffline}
+            disabled={isSavingOffline}
+            className={`h-11 px-3 sm:px-3.5 rounded-lg border text-[13px] font-bold flex items-center gap-2 transition-colors cursor-pointer ${
+              isSavedOffline
+                ? "bg-[#059669]/10 border-[#059669]/30 text-[#059669] dark:text-[#34D399]"
+                : "bg-white dark:bg-[#1E293B] border-[#E2E8F0] dark:border-[#334155] text-[#64748B] dark:text-[#F8FAFC] hover:border-[#4F46E5]/50"
+            }`}
+            title={isSavedOffline ? "محفوظ للمذاكرة بدون نت (اضغط للحذف)" : "حفظ الدرس للمذاكرة بدون إنترنت"}
+          >
+            {isSavedOffline ? (
+              <CloudCheck className="w-4 h-4 text-[#059669] dark:text-[#34D399]" weight="bold" />
+            ) : (
+              <CloudArrowDown className="w-4 h-4 text-[#64748B] dark:text-[#94A3B8]" weight="bold" />
+            )}
+            <span className="hidden sm:inline">
+              {isSavingOffline ? "جاري الحفظ..." : isSavedOffline ? "محفوظ أوفلاين" : "حفظ أوفلاين"}
+            </span>
+          </button>
         )}
 
         {/* Bookmark Button */}

@@ -10,6 +10,7 @@ import { QuickActionsGrid } from "./QuickActionsGrid";
 import { SubjectsGrid } from "./SubjectsGrid";
 import { RecentExamsList } from "./RecentExamsList";
 import { ProductTourModal } from "./ProductTourModal";
+import { StudentMasteryMapCard } from "./StudentMasteryMapCard";
 import type { DashboardClientProps } from "./types";
 
 export type { DashboardClientProps, ContinueLessonItem, SubjectItem, RecentExamItem, StudentMeta } from "./types";
@@ -28,6 +29,7 @@ export function DashboardClient({
   continueLesson,
   dailyQuestion,
   recentExams = [],
+  masteryData,
 }: DashboardClientProps) {
   const [currentStreakDays, setCurrentStreakDays] = useState(streakDays);
   const [isTodayCompletedState, setIsTodayCompletedState] = useState(isTodayCompleted);
@@ -130,7 +132,10 @@ export function DashboardClient({
         </section>
       )}
 
-      {/* 7. Curriculum Subjects */}
+      {/* 7. Student Mastery & Progression Map */}
+      {masteryData && <StudentMasteryMapCard data={masteryData} />}
+
+      {/* 8. Curriculum Subjects */}
       <SubjectsGrid subjects={subjects} />
 
       {/* 8. Recent Exam Results */}

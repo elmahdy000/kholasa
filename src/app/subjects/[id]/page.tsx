@@ -22,7 +22,7 @@ export default async function SubjectDetailPage({ params }: SubjectDetailPagePro
   const { id } = await params;
   const user = await getCurrentUser();
 
-  const [subject, userProgress] = await Promise.all([
+  const [subject, userProgress, masteredAttempts] = await Promise.all([
     prisma.subject.findUnique({
       where: { id, isPublished: true },
       include: {
@@ -35,6 +35,9 @@ export default async function SubjectDetailPage({ params }: SubjectDetailPagePro
               orderBy: { order: "asc" },
               include: {
                 summary: { select: { id: true } },
+                questions: {
+                  select: { questionId: true },
+                },
               },
             },
           },
@@ -50,6 +53,15 @@ export default async function SubjectDetailPage({ params }: SubjectDetailPagePro
           select: { lessonId: true },
         })
       : [],
+    user?.id
+      ? prisma.questionAttempt.findMany({
+          where: {
+            userId: user.id,
+            isCorrect: true,
+          },
+          select: { questionId: true },
+        })
+      : [],
   ]);
 
   if (!subject) {
@@ -62,6 +74,7 @@ export default async function SubjectDetailPage({ params }: SubjectDetailPagePro
   }
 
   const completedLessonIds = new Set(userProgress.map((p) => p.lessonId));
+  const masteredSet = new Set(masteredAttempts.map((a) => a.questionId));
 
   const totalLessons = subject.units.reduce(
     (sum, u) => sum + u.lessons.length,
@@ -150,6 +163,10 @@ export default async function SubjectDetailPage({ params }: SubjectDetailPagePro
               const unitTotal = unit.lessons.length;
               const unitProgress = unitTotal > 0 ? Math.round((unitCompleted / unitTotal) * 100) : 0;
 
+              const unitQuestions = unit.lessons.flatMap((l) => l.questions.map((q) => q.questionId));
+              const unitMasteredCount = unitQuestions.filter((qid) => masteredSet.has(qid)).length;
+              const unitMasteryPct = unitQuestions.length > 0 ? Math.round((unitMasteredCount / unitQuestions.length) * 100) : 0;
+
               return (
                 <div
                   key={unit.id}
@@ -158,7 +175,7 @@ export default async function SubjectDetailPage({ params }: SubjectDetailPagePro
                   {/* Unit Header */}
                   <div className="p-4 sm:p-5 bg-[#F8FAFC]/80 dark:bg-[#1E293B]/40 border-b border-[#E2E8F0] dark:border-[#334155] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div className="space-y-1">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 flex-wrap">
                         <span className="text-[13px] font-mono font-bold text-[#800020] dark:text-[#FB7185]">
                           الوحدة {index + 1}
                         </span>
@@ -166,6 +183,22 @@ export default async function SubjectDetailPage({ params }: SubjectDetailPagePro
                         <span className="text-[13px] font-mono text-[#64748B] dark:text-[#94A3B8]">
                           {unitCompleted} من {unitTotal} منجز ({unitProgress}%)
                         </span>
+                        {unitQuestions.length > 0 && (
+                          <>
+                            <span className="text-[13px] text-[#64748B]">•</span>
+                            <span
+                              className={`text-[12px] font-mono font-bold px-2 py-0.5 rounded-full ${
+                                unitMasteryPct >= 80
+                                  ? "bg-[#059669]/10 text-[#059669] dark:text-[#34D399]"
+                                  : unitMasteryPct >= 50
+                                  ? "bg-amber-500/10 text-amber-700 dark:text-amber-400"
+                                  : "bg-[#64748B]/10 text-[#64748B] dark:text-[#94A3B8]"
+                              }`}
+                            >
+                              إتقان الأسئلة: {unitMasteryPct}% ({unitMasteredCount}/{unitQuestions.length})
+                            </span>
+                          </>
+                        )}
                       </div>
                       <h3 className="text-base font-bold text-[#0F172A] dark:text-[#F8FAFC]">
                         {unit.title}
@@ -190,6 +223,9 @@ export default async function SubjectDetailPage({ params }: SubjectDetailPagePro
                   <div className="divide-y divide-[#E2E8F0] dark:divide-[#334155]/80">
                     {unit.lessons.map((lesson) => {
                       const isLessonCompleted = completedLessonIds.has(lesson.id);
+                      const lessonQuestions = lesson.questions.map((q) => q.questionId);
+                      const lessonMasteredCount = lessonQuestions.filter((qid) => masteredSet.has(qid)).length;
+                      const lessonMasteryPct = lessonQuestions.length > 0 ? Math.round((lessonMasteredCount / lessonQuestions.length) * 100) : 0;
 
                       return (
                         <div
@@ -211,17 +247,30 @@ export default async function SubjectDetailPage({ params }: SubjectDetailPagePro
                               )}
                             </div>
                             <div>
-                              <div className="flex items-center gap-2">
+                              <div className="flex items-center gap-2 flex-wrap">
                                 <h4 className="text-sm font-bold text-[#0F172A] dark:text-[#F8FAFC] leading-snug">
                                   {lesson.title}
                                 </h4>
                                 {isLessonCompleted && (
-                                  <span className="text-[13px] font-bold px-2 py-1 rounded-full bg-[#059669]/10 dark:bg-[#1E293B] text-[#059669] dark:text-[#34D399]">
+                                  <span className="text-[12px] font-bold px-2 py-0.5 rounded-full bg-[#059669]/10 dark:bg-[#1E293B] text-[#059669] dark:text-[#34D399]">
                                     مكتمل
                                   </span>
                                 )}
+                                {lessonQuestions.length > 0 && (
+                                  <span
+                                    className={`inline-flex items-center gap-1 text-[11px] font-mono font-bold px-2 py-0.5 rounded-full ${
+                                      lessonMasteryPct >= 80
+                                        ? "bg-[#059669]/10 text-[#059669] dark:text-[#34D399]"
+                                        : lessonMasteryPct >= 40
+                                        ? "bg-amber-500/10 text-amber-700 dark:text-amber-400"
+                                        : "bg-[#64748B]/10 text-[#64748B] dark:text-[#94A3B8]"
+                                    }`}
+                                  >
+                                    إتقان {lessonMasteryPct}%
+                                  </span>
+                                )}
                               </div>
-                              <div className="flex items-center gap-3 text-[13px] text-[#64748B] dark:text-[#94A3B8] font-medium mt-1">
+                              <div className="flex items-center gap-3 text-[13px] text-[#64748B] dark:text-[#94A3B8] font-medium mt-1 flex-wrap">
                                 <span className="flex items-center gap-1 font-mono text-[13px]">
                                   <Clock className="w-3 h-3 text-[#64748B]" />
                                   <span>{lesson.durationMinutes} دقيقة</span>

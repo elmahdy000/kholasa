@@ -27,6 +27,7 @@ import { LessonAssessmentSection } from "./flow/LessonAssessmentSection";
 import { LessonTrueFalseSection } from "./flow/LessonTrueFalseSection";
 import { LessonFlashcardsModal } from "./LessonFlashcardsModal";
 import { LessonMistakesCapsuleModal } from "./LessonMistakesCapsuleModal";
+import { offlineStorage } from "@/lib/offline-db";
 
 function getEmbedUrl(url?: string | null): string | null {
   if (!url) return null;
@@ -136,6 +137,57 @@ export function LessonViewer({
   const [isTogglingBookmark, setIsTogglingBookmark] = useState(false);
   const [isTogglingComplete, setIsTogglingComplete] = useState(false);
   const [bookmarkNotice, setBookmarkNotice] = useState<string | null>(null);
+
+  // Offline PWA Mode State
+  const [isSavedOffline, setIsSavedOffline] = useState(false);
+  const [isSavingOffline, setIsSavingOffline] = useState(false);
+  const [offlineToast, setOfflineToast] = useState<string | null>(null);
+
+  // Check if lesson is cached in IndexedDB
+  useEffect(() => {
+    let isMounted = true;
+    offlineStorage
+      .hasLesson(lesson.id)
+      .then((saved) => {
+        if (isMounted) setIsSavedOffline(saved);
+      })
+      .catch((err) => {
+        console.warn("IndexedDB check failed:", err);
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, [lesson.id]);
+
+  const handleToggleOffline = async () => {
+    if (isSavingOffline) return;
+    setIsSavingOffline(true);
+    try {
+      if (isSavedOffline) {
+        await offlineStorage.deleteLesson(lesson.id);
+        setIsSavedOffline(false);
+        setOfflineToast("تم حذف الدرس من المذاكرة بدون إنترنت");
+      } else {
+        const res = await fetch(`/api/lessons/${lesson.id}/offline`);
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.error || "تعذر تجهيز حزمة الدرس أوفلاين");
+        }
+        const data = await res.json();
+        if (data.package) {
+          await offlineStorage.saveLesson(data.package);
+          setIsSavedOffline(true);
+          setOfflineToast("تم حفظ الدرس بنجاح للمذاكرة بدون إنترنت!");
+        }
+      }
+    } catch (err) {
+      console.error("Offline toggle error:", err);
+      setOfflineToast("حدث خطأ أثناء حفظ الدرس أوفلاين");
+    } finally {
+      setIsSavingOffline(false);
+      setTimeout(() => setOfflineToast(null), 3000);
+    }
+  };
 
   // Audio Player State
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
@@ -405,10 +457,13 @@ export function LessonViewer({
         isCompleted={isCompleted}
         isTogglingBookmark={isTogglingBookmark}
         isTogglingComplete={isTogglingComplete}
-        bookmarkNotice={bookmarkNotice}
+        bookmarkNotice={offlineToast || bookmarkNotice}
         unresolvedMistakesCount={mistakes.length}
+        isSavedOffline={isSavedOffline}
+        isSavingOffline={isSavingOffline}
         onToggleBookmark={toggleBookmark}
         onToggleComplete={toggleComplete}
+        onToggleOffline={handleToggleOffline}
         onStartFlashcards={() => setIsFlashcardsOpen(true)}
         onOpenMistakesCapsule={() => setIsMistakesCapsuleOpen(true)}
       />

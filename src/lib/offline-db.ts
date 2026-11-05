@@ -87,6 +87,14 @@ export const offlineStorage = {
   },
 
   /**
+   * Check if a lesson exists in offline storage
+   */
+  async hasLesson(lessonId: string): Promise<boolean> {
+    const lesson = await this.getLesson(lessonId);
+    return !!lesson;
+  },
+
+  /**
    * Remove a saved lesson from offline storage
    */
   async deleteLesson(lessonId: string): Promise<void> {

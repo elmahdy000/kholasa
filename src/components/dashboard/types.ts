@@ -55,6 +55,7 @@ export interface DashboardClientProps {
   continueLesson?: ContinueLessonItem | null;
   dailyQuestion?: any;
   recentExams?: RecentExamItem[];
+  masteryData?: any;
 }
 
 export const fadeInUp = {

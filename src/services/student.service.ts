@@ -374,4 +374,252 @@ export class StudentService {
       },
     });
   }
+
+  /**
+   * Get detailed mastery analytics across curriculum subjects, units, and lessons,
+   * with score progression over time and actionable focus recommendations.
+   */
+  static async getStudentMasteryMap(userId: string) {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        role: true,
+        systemId: true,
+        gradeId: true,
+        schoolCategory: true,
+        trackId: true,
+      },
+    });
+
+    if (!user) {
+      throw notFound("المستخدم غير موجود");
+    }
+
+    const scope = getCurriculumScope(user);
+
+    // 1. Fetch all curriculum subjects, units, and lessons with their questions in scope
+    const subjects = await prisma.subject.findMany({
+      where: { isPublished: true, ...subjectScopeWhere(scope) },
+      orderBy: { order: "asc" },
+      include: {
+        units: {
+          where: { isPublished: true },
+          orderBy: { order: "asc" },
+          include: {
+            lessons: {
+              where: { isPublished: true },
+              orderBy: { order: "asc" },
+              include: {
+                questions: {
+                  where: {
+                    question: {
+                      status: "PUBLISHED",
+                      ...(scope?.schoolCategory ? { schoolCategory: scope.schoolCategory } : {}),
+                    },
+                  },
+                  select: {
+                    questionId: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    // 2. Fetch all mastered questions for this student (isCorrect: true)
+    const masteredAttempts = await prisma.questionAttempt.findMany({
+      where: { userId, isCorrect: true },
+      select: { questionId: true },
+    });
+    const masteredSet = new Set(masteredAttempts.map((a) => a.questionId));
+
+    // 3. Fetch unresolved mistakes for this student
+    const unresolvedMistakes = await prisma.mistakeReview.findMany({
+      where: { userId, isResolved: false },
+      select: { questionId: true, wrongCount: true },
+    });
+    const mistakeMap = new Map(unresolvedMistakes.map((m) => [m.questionId, m.wrongCount]));
+
+    // 4. Fetch recent completed exam attempts for score progression
+    const recentAttempts = await prisma.examAttempt.findMany({
+      where: { userId, isCompleted: true },
+      orderBy: { completedAt: "asc" },
+      take: 10,
+      select: {
+        id: true,
+        title: true,
+        percentage: true,
+        completedAt: true,
+      },
+    });
+
+    const scoreProgression = recentAttempts.map((att) => {
+      const d = att.completedAt || new Date();
+      const dateFormatted = new Intl.DateTimeFormat("ar-EG", {
+        month: "short",
+        day: "numeric",
+      }).format(d);
+      return {
+        id: att.id,
+        title: att.title,
+        percentage: Math.round(att.percentage),
+        dateFormatted,
+        completedAt: d.toISOString(),
+      };
+    });
+
+    // 5. Compute mastery breakdown
+    let totalCurriculumQuestions = 0;
+    let totalMasteredQuestions = 0;
+
+    interface LessonCandidate {
+      lessonId: string;
+      lessonTitle: string;
+      unitTitle: string;
+      subjectId: string;
+      subjectName: string;
+      subjectColor: string | null;
+      masteryPercentage: number;
+      unresolvedMistakesCount: number;
+      totalQuestions: number;
+    }
+
+    const lessonCandidates: LessonCandidate[] = [];
+
+    const subjectAnalytics = subjects.map((subj) => {
+      let subjQuestions = 0;
+      let subjMastered = 0;
+
+      const unitAnalytics = subj.units.map((u) => {
+        let unitQuestions = 0;
+        let unitMastered = 0;
+
+        const lessonAnalytics = u.lessons.map((l) => {
+          const qIds = l.questions.map((q) => q.questionId);
+          const totalQ = qIds.length;
+          const masteredQ = qIds.filter((qid) => masteredSet.has(qid)).length;
+          const mistakesCount = qIds.reduce((sum, qid) => sum + (mistakeMap.has(qid) ? 1 : 0), 0);
+          const masteryPct = totalQ > 0 ? Math.round((masteredQ / totalQ) * 100) : 0;
+
+          unitQuestions += totalQ;
+          unitMastered += masteredQ;
+
+          if (totalQ > 0) {
+            lessonCandidates.push({
+              lessonId: l.id,
+              lessonTitle: l.title,
+              unitTitle: u.title,
+              subjectId: subj.id,
+              subjectName: subj.name,
+              subjectColor: subj.color,
+              masteryPercentage: masteryPct,
+              unresolvedMistakesCount: mistakesCount,
+              totalQuestions: totalQ,
+            });
+          }
+
+          return {
+            id: l.id,
+            title: l.title,
+            durationMinutes: l.durationMinutes,
+            totalQuestions: totalQ,
+            masteredCount: masteredQ,
+            masteryPercentage: masteryPct,
+            unresolvedMistakesCount: mistakesCount,
+          };
+        });
+
+        const unitMasteryPct = unitQuestions > 0 ? Math.round((unitMastered / unitQuestions) * 100) : 0;
+        subjQuestions += unitQuestions;
+        subjMastered += unitMastered;
+
+        return {
+          id: u.id,
+          title: u.title,
+          order: u.order,
+          totalQuestions: unitQuestions,
+          masteredCount: unitMastered,
+          masteryPercentage: unitMasteryPct,
+          lessons: lessonAnalytics,
+        };
+      });
+
+      const subjMasteryPct = subjQuestions > 0 ? Math.round((subjMastered / subjQuestions) * 100) : 0;
+      totalCurriculumQuestions += subjQuestions;
+      totalMasteredQuestions += subjMastered;
+
+      return {
+        id: subj.id,
+        name: subj.name,
+        color: subj.color,
+        icon: subj.icon,
+        totalQuestions: subjQuestions,
+        masteredCount: subjMastered,
+        masteryPercentage: subjMasteryPct,
+        units: unitAnalytics,
+      };
+    });
+
+    const overallMasteryPercentage =
+      totalCurriculumQuestions > 0
+        ? Math.round((totalMasteredQuestions / totalCurriculumQuestions) * 100)
+        : 0;
+
+    // 6. Determine Focus Recommendation:
+    // Priority A: Lesson with the most unresolved mistakes
+    // Priority B: Lesson with the lowest mastery percentage (< 80%)
+    // Fallback: First lesson in candidates
+    let focusRecommendation: {
+      lessonId: string;
+      lessonTitle: string;
+      unitTitle: string;
+      subjectId: string;
+      subjectName: string;
+      subjectColor: string | null;
+      masteryPercentage: number;
+      unresolvedMistakesCount: number;
+      reason: string;
+    } | null = null;
+
+    if (lessonCandidates.length > 0) {
+      // Check highest mistakes first
+      const withMistakes = [...lessonCandidates].filter((c) => c.unresolvedMistakesCount > 0);
+      if (withMistakes.length > 0) {
+        withMistakes.sort((a, b) => b.unresolvedMistakesCount - a.unresolvedMistakesCount);
+        const top = withMistakes[0];
+        focusRecommendation = {
+          ...top,
+          reason: `يحتوي على ${top.unresolvedMistakesCount} أخطاء تحتاج معالجة سريعة`,
+        };
+      } else {
+        // Sort by lowest mastery
+        const byMastery = [...lessonCandidates].sort((a, b) => a.masteryPercentage - b.masteryPercentage);
+        const lowest = byMastery[0];
+        if (lowest.masteryPercentage < 100) {
+          focusRecommendation = {
+            ...lowest,
+            reason: `نسبة إتقانك للدرس ${lowest.masteryPercentage}% — راجعه لتصل لـ 100%`,
+          };
+        } else {
+          // All 100% mastered!
+          focusRecommendation = {
+            ...lowest,
+            reason: "ما شاء الله، إتقانك ممتاز! استمر في المراجعة الدورية",
+          };
+        }
+      }
+    }
+
+    return {
+      overallMasteryPercentage,
+      totalCurriculumQuestions,
+      totalMasteredQuestions,
+      subjects: subjectAnalytics,
+      focusRecommendation,
+      scoreProgression,
+    };
+  }
 }
