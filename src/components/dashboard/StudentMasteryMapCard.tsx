@@ -121,12 +121,18 @@ export function StudentMasteryMapCard({ data }: StudentMasteryMapProps) {
           </span>
           <span
             className={`px-2 py-0.5 rounded-md font-mono text-[12px] font-bold ${
-              diff >= 0
+              diff > 0
                 ? "bg-[#059669]/10 text-[#059669] dark:text-[#34D399]"
-                : "bg-[#DC2626]/10 text-[#DC2626] dark:text-[#F87171]"
+                : diff < 0
+                ? "bg-[#DC2626]/10 text-[#DC2626] dark:text-[#F87171]"
+                : "bg-[#64748B]/10 text-[#64748B] dark:text-[#94A3B8]"
             }`}
           >
-            {diff >= 0 ? `+${diff}% تقدم في المستوى` : `${diff}% بحاجة للمراجعة`}
+            {diff > 0
+              ? `+${diff}% تقدم في المستوى`
+              : diff < 0
+              ? `${diff}% بحاجة للمراجعة`
+              : `مستوى مستقر (${lastScore}%)`}
           </span>
         </div>
 
@@ -263,7 +269,7 @@ export function StudentMasteryMapCard({ data }: StudentMasteryMapProps) {
 
           <div className="flex items-center gap-2 shrink-0">
             <Link
-              href={`/exams/builder?subjectId=${focusRecommendation.subjectId}&unitId=&lessonId=${focusRecommendation.lessonId}`}
+              href={`/exams/builder?subjectId=${focusRecommendation.subjectId}&lessonId=${focusRecommendation.lessonId}`}
               className="h-10 px-4 rounded-lg bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[13px] font-bold flex items-center justify-center gap-2 transition-colors cursor-pointer"
             >
               <Target className="w-4 h-4" weight="bold" />
@@ -367,3 +373,4 @@ export function StudentMasteryMapCard({ data }: StudentMasteryMapProps) {
     </section>
   );
 }
+

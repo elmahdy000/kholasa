@@ -1113,7 +1113,7 @@ _منصة الخلاصة التعليمية - رفيقكم نحو التفوق_ 
                         <span className="text-xs text-[#64748B] mr-1">درس</span>
                       </div>
                       <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">
-                        إتقان 100% للشروحات
+                        {student.stats.completedLessons > 0 ? `${student.stats.completedLessons} درس مكتمل` : "قيد البدء"}
                       </span>
                     </div>
 

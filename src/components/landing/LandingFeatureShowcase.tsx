@@ -131,7 +131,7 @@ export function LandingFeatureShowcase() {
             </div>
             <span className="text-[13px] font-bold bg-[#D97706]/10 dark:bg-[#1E293B] text-[#D97706] dark:text-[#FBBF24] px-3 py-1 rounded-full border border-[#E2E8F0] dark:border-[#FBBF24] flex items-center gap-2">
               <Clock className="w-3.5 h-3.5" />
-              <span>ملخص مركز في 3 دقائق</span>
+              <span>ملخص مركز وسريع</span>
             </span>
           </div>
 
@@ -264,10 +264,10 @@ export function LandingFeatureShowcase() {
             </div>
             <div className="flex items-center gap-2">
               <span className="text-[13px] font-bold text-[#DC2626] dark:text-[#F87171] bg-[#DC2626]/10 dark:bg-[#1E293B] px-3 py-1 rounded-full border border-[#E2E8F0] dark:border-[#F87171]/40">
-                3 أخطاء بانتظار الإتقان
+                تصنيف ذكي للأخطاء
               </span>
               <span className="text-[13px] font-bold text-[#059669] dark:text-[#34D399] bg-[#059669]/10 dark:bg-[#1E293B] px-3 py-1 rounded-full border border-[#E2E8F0] dark:border-[#34D399]/40">
-                92% معدل التحسن
+                تتبع مستمر للتحسن
               </span>
             </div>
           </div>
@@ -345,7 +345,7 @@ export function LandingFeatureShowcase() {
             </div>
           </div>
           <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8]">
-            تساعدك الخريطة الذهنية على استحضار روابط المنهج في عقلك خلال 30 ثانية قبل دخول اللجنة.
+            تساعدك الخريطة الذهنية على استحضار روابط المنهج في عقلك بسرعة وثقة قبل دخول اللجنة.
           </p>
         </div>
       )}

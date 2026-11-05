@@ -24,8 +24,8 @@ export function QuickActionsGrid({ subjectsCount, unresolvedMistakesCount }: Qui
     },
     {
       id: "quick-exam",
-      title: "اختبار 5 دقايق",
-      desc: "سؤالين على السريع تطمن بيهم على فهمك",
+      title: "اختبار سريع",
+      desc: "تدريب فوري مخصص تطمن بيه على فهمك",
       href: "/exams/builder",
       icon: Target,
       badge: "فوري",

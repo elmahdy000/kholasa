@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
-import { getCurriculumScope, subjectScopeWhere } from "@/lib/curriculum";
+import { getCurriculumScope, subjectScopeWhere, questionScopeWhere } from "@/lib/curriculum";
 import { StudentShell } from "@/components/layout/StudentShell";
 import { SubjectsExplorer, type SubjectItemData } from "@/components/subjects/SubjectsExplorer";
 import {
@@ -38,7 +38,7 @@ export default async function SubjectsPage() {
       },
     }),
     prisma.question.count({
-      where: { status: "PUBLISHED" },
+      where: { status: "PUBLISHED", ...questionScopeWhere(scope) },
     }).catch(() => 0),
   ]);
 
@@ -136,7 +136,7 @@ export default async function SubjectsPage() {
 
                 <div className="p-3.5 rounded-xl bg-[#F7F8FA] dark:bg-[#0F172A] border border-[#E8E9ED] dark:border-[#334155] space-y-0.5">
                   <span className="text-lg sm:text-xl font-extrabold text-[#D97706] font-mono block">
-                    {totalQuestions > 0 ? `+${totalQuestions}` : "متجدد"}
+                    {totalQuestions > 0 ? totalQuestions : "متجدد"}
                   </span>
                   <span className="text-[11px] font-bold text-[#64748B] dark:text-[#94A3B8] block">
                     سؤال وتدريب

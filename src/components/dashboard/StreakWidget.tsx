@@ -322,7 +322,7 @@ export function StreakWidget({
             <div className="flex items-center gap-2">
               <Sparkle className="w-5 h-5 fill-current animate-spin-slow" weight="fill" />
               <span>
-                عاش يا بطل! سجلت حضور النهاردة وزودت أيام استمرارك (+1 يوم) 🎉
+                عاش يا بطل! سجلت حضور النهاردة وزودت أيام استمرارك (+1 يوم)
               </span>
             </div>
             <span className="text-[11px] font-mono opacity-90">مستمر ومكمل</span>
