@@ -247,3 +247,4 @@ FORMATTING REQUIREMENTS (CRITICAL FOR PLATFORM PARSER):
 6. Distractors (wrong answers) must be realistic, plausible, and grammatically parallel to the correct answer.
 7. Output the raw formatted text directly without enclosing the entire response in a top-level markdown wrapper so it can be copied directly into Microsoft Word (.docx) or pasted into the importer.
 ```
+

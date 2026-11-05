@@ -26,6 +26,172 @@ interface LessonDefinitionsTabProps {
   onUpdateDefinition: (index: number, term: string, meaning: string, translation?: string) => void;
 }
 
+function cleanTerm(t: string): string {
+  return t
+    .replace(/^\d+[\.\-\)]\s*/, "")
+    .replace(/^[•\-\*]\s*/, "")
+    .replace(/^\*\*(.+?)\*\*$/, "$1")
+    .trim();
+}
+
+function cleanMeaning(m: string): string {
+  let res = m.trim();
+  if (res.startsWith('"') && res.endsWith('"') && res.length > 2) {
+    res = res.slice(1, -1).trim();
+  }
+  return res;
+}
+
+export function parseDefinitionsText(text: string): DefinitionItem[] {
+  if (!text || !text.trim()) return [];
+
+  const raw = text.trim();
+  const rawLines = raw.split("\n").map((l) => l.trim()).filter(Boolean);
+
+  // Strategy 1: Check for Multi-line block with "الترجمة:" or "Translation:"
+  const hasStandaloneTranslation = rawLines.some((l) =>
+    /^(?:الترجمة|Translation)\s*[:：]/i.test(l)
+  );
+
+  if (hasStandaloneTranslation) {
+    const results: DefinitionItem[] = [];
+    let currentTerm = "";
+    let currentMeaning = "";
+    let currentTranslation = "";
+
+    for (let i = 0; i < rawLines.length; i++) {
+      const line = rawLines[i];
+
+      // Translation line
+      const transMatch = line.match(/^(?:الترجمة|Translation)\s*[:：]\s*(.+)$/i);
+      if (transMatch) {
+        currentTranslation = transMatch[1].trim();
+        if (currentTerm && currentMeaning) {
+          results.push({
+            term: cleanTerm(currentTerm),
+            meaning: cleanMeaning(currentMeaning),
+            translation: currentTranslation || undefined,
+          });
+          currentTerm = "";
+          currentMeaning = "";
+          currentTranslation = "";
+        }
+        continue;
+      }
+
+      const nextLine = rawLines[i + 1] || "";
+      const isNextTrans = /^(?:الترجمة|Translation)\s*[:：]/i.test(nextLine);
+
+      if (isNextTrans) {
+        currentMeaning = line;
+        continue;
+      }
+
+      currentTerm = line;
+    }
+
+    if (currentTerm && currentMeaning) {
+      results.push({
+        term: cleanTerm(currentTerm),
+        meaning: cleanMeaning(currentMeaning),
+        translation: currentTranslation || undefined,
+      });
+    }
+
+    if (results.length > 0) return results;
+  }
+
+  // Strategy 2: Paragraph blocks separated by blank lines
+  const blocks = raw.split(/\n\s*\n/).map((b) => b.trim()).filter(Boolean);
+  if (blocks.length > 1 && !rawLines.every((l) => l.includes(":") || l.includes("||"))) {
+    const blockResults: DefinitionItem[] = [];
+    for (const block of blocks) {
+      const blockLines = block.split("\n").map((l) => l.trim()).filter(Boolean);
+      if (blockLines.length >= 2) {
+        const potentialTerm = cleanTerm(blockLines[0]);
+        let potentialMeaning = "";
+        let potentialTrans = "";
+
+        for (let j = 1; j < blockLines.length; j++) {
+          const l = blockLines[j];
+          const tMatch = l.match(/^(?:الترجمة|Translation)\s*[:：]\s*(.+)$/i);
+          if (tMatch) {
+            potentialTrans = tMatch[1].trim();
+          } else {
+            potentialMeaning = potentialMeaning ? `${potentialMeaning} ${l}` : l;
+          }
+        }
+
+        if (potentialTerm && potentialMeaning) {
+          blockResults.push({
+            term: potentialTerm,
+            meaning: cleanMeaning(potentialMeaning),
+            translation: potentialTrans || undefined,
+          });
+        }
+      }
+    }
+    if (blockResults.length > 1) return blockResults;
+  }
+
+  // Strategy 3: Single-line definitions
+  const singleLineResults: DefinitionItem[] = [];
+  for (const line of rawLines) {
+    if (/^(?:الترجمة|Translation)\s*[:：]/i.test(line)) continue;
+
+    let rawDef = line;
+    let parsedTranslation: string | undefined = undefined;
+
+    if (rawDef.includes("||")) {
+      const parts = rawDef.split("||");
+      rawDef = parts[0].trim();
+      parsedTranslation = parts.slice(1).join("||").trim() || undefined;
+    } else if (rawDef.includes("::")) {
+      const parts = rawDef.split("::");
+      rawDef = parts[0].trim();
+      parsedTranslation = parts.slice(1).join("::").trim() || undefined;
+    }
+
+    let parsedTerm = "";
+    let parsedMeaning = "";
+
+    if (rawDef.includes("\t")) {
+      const parts = rawDef.split("\t");
+      parsedTerm = parts[0].trim();
+      parsedMeaning = parts[1]?.trim() || "";
+      if (!parsedTranslation && parts[2]) {
+        parsedTranslation = parts[2].trim();
+      }
+    } else if (rawDef.includes(":")) {
+      const idx = rawDef.indexOf(":");
+      parsedTerm = rawDef.slice(0, idx).trim();
+      parsedMeaning = rawDef.slice(idx + 1).trim();
+    } else if (rawDef.includes("=")) {
+      const idx = rawDef.indexOf("=");
+      parsedTerm = rawDef.slice(0, idx).trim();
+      parsedMeaning = rawDef.slice(idx + 1).trim();
+    } else {
+      const dashMatch = rawDef.match(/^(.+?)\s+[-–—]\s+(.+)$/);
+      if (dashMatch) {
+        parsedTerm = dashMatch[1].trim();
+        parsedMeaning = dashMatch[2].trim();
+      }
+    }
+
+    if (parsedTerm && parsedMeaning) {
+      if (/^(?:الترجمة|Translation)$/i.test(cleanTerm(parsedTerm))) continue;
+
+      singleLineResults.push({
+        term: cleanTerm(parsedTerm),
+        meaning: cleanMeaning(parsedMeaning),
+        translation: parsedTranslation,
+      });
+    }
+  }
+
+  return singleLineResults;
+}
+
 export function LessonDefinitionsTab({
   // Toast notification
   definitions,
@@ -50,6 +216,7 @@ export function LessonDefinitionsTab({
   // Bulk paste state
   const [showBulkModal, setShowBulkModal] = useState(false);
   const [bulkText, setBulkText] = useState("");
+  const [replaceExisting, setReplaceExisting] = useState(false);
 
   // Search filter
   const [searchQuery, setSearchQuery] = useState("");
@@ -71,53 +238,21 @@ export function LessonDefinitionsTab({
   const handleBulkParseAndAdd = () => {
     if (!bulkText.trim()) return;
 
-    const lines = bulkText.split("\n");
-    const newItems: DefinitionItem[] = [];
-
-    for (const rawLine of lines) {
-      const line = rawLine.trim();
-      if (!line) continue;
-
-      // Check for translation separator "||" or "::"
-      let rawDef = line;
-      let parsedTranslation: string | undefined = undefined;
-
-      if (rawDef.includes("||")) {
-        const parts = rawDef.split("||");
-        rawDef = parts[0].trim();
-        parsedTranslation = parts.slice(1).join("||").trim() || undefined;
-      } else if (rawDef.includes("::")) {
-        const parts = rawDef.split("::");
-        if (parts.length >= 2) {
-          rawDef = parts[0].trim();
-          parsedTranslation = parts.slice(1).join("::").trim() || undefined;
-        }
-      }
-
-      // Split by ":" or "-" or "="
-      const match = rawDef.match(/^([^:\-=\t]+)[:\-=\t](.+)$/);
-      if (match && match[1] && match[2]) {
-        const parsedTerm = match[1].trim();
-        const parsedMeaning = match[2].trim();
-        if (parsedTerm && parsedMeaning) {
-          newItems.push({ term: parsedTerm, meaning: parsedMeaning, translation: parsedTranslation });
-        }
-      } else {
-        // Fallback: If line contains a dash
-        const parts = rawDef.split(/[–—]/);
-        if (parts.length >= 2 && parts[0].trim() && parts[1].trim()) {
-          newItems.push({ term: parts[0].trim(), meaning: parts.slice(1).join("–").trim(), translation: parsedTranslation });
-        }
-      }
-    }
+    const newItems = parseDefinitionsText(bulkText);
 
     if (newItems.length > 0) {
-      setDefinitions((prev) => [...prev, ...newItems]);
+      if (replaceExisting) {
+        setDefinitions(newItems);
+        toast.success(`تم استبدال المصطلحات وإضافة ${newItems.length} مصطلح بنجاح`);
+      } else {
+        setDefinitions((prev) => [...prev, ...newItems]);
+        toast.success(`تمت إضافة ${newItems.length} مصطلح بنجاح`);
+      }
       setBulkText("");
       setShowBulkModal(false);
-      toast.success(`تمت إضافة ${newItems.length} مصطلح بنجاح`);
+      setReplaceExisting(false);
     } else {
-      toast.warning("يرجى لصق المصطلحات بالصيغة: المصطلح: التعريف في كل سطر");
+      toast.warning("لم نتمكن من استخراج أي مصطلحات. يرجى التأكد من التنسيق (المصطلح: التعريف أو كل مصطلح في فقرة).");
     }
   };
 
@@ -144,12 +279,21 @@ export function LessonDefinitionsTab({
             }));
           if (valid.length > 0) {
             setDefinitions((prev) => [...prev, ...valid]);
+            toast.success(`تم استيراد ${valid.length} مصطلح من ملف JSON بنجاح`);
             return;
           }
         }
       } catch {}
 
-      // Fallback to text line parser
+      // Try smart text parser directly
+      const parsed = parseDefinitionsText(content);
+      if (parsed.length > 0) {
+        setDefinitions((prev) => [...prev, ...parsed]);
+        toast.success(`تم استيراد ${parsed.length} مصطلح من الملف بنجاح`);
+        return;
+      }
+
+      // Fallback to text line parser modal
       setBulkText(content);
       setShowBulkModal(true);
     };
@@ -294,15 +438,31 @@ export function LessonDefinitionsTab({
           </span>
 
           {definitions.length > 0 && (
-            <div className="relative w-full sm:w-64">
-              <Search className="w-4 h-4 text-[#94A3B8] absolute right-3 top-1/2 -translate-y-1/2" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="بحث في المصطلحات..."
-                className="w-full h-9 pr-9 pl-3 rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B] text-xs text-[#0F172A] dark:text-white outline-none focus:border-[#059669]"
-              />
+            <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+              <button
+                type="button"
+                onClick={() => {
+                  if (window.confirm(`هل أنت متأكد من رغبتك في حذف جميع المصطلحات (${definitions.length} مصطلح)؟`)) {
+                    setDefinitions([]);
+                    toast.info("تم حذف جميع المصطلحات بنجاح");
+                  }
+                }}
+                className="h-9 px-3 rounded-lg border border-red-200 dark:border-red-900/40 bg-red-50/70 dark:bg-red-950/20 hover:bg-red-100 text-red-600 dark:text-red-400 text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer shrink-0"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>حذف الكل ({definitions.length})</span>
+              </button>
+
+              <div className="relative w-full sm:w-64">
+                <Search className="w-4 h-4 text-[#94A3B8] absolute right-3 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="بحث في المصطلحات..."
+                  className="w-full h-9 pr-9 pl-3 rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B] text-xs text-[#0F172A] dark:text-white outline-none focus:border-[#059669]"
+                />
+              </div>
             </div>
           )}
         </div>
@@ -474,23 +634,40 @@ export function LessonDefinitionsTab({
             </div>
 
             <div className="p-5 space-y-3 overflow-y-auto">
-              <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-700 dark:text-amber-400 space-y-1">
-                <span className="font-bold block">💡 طريقة الاستخدام:</span>
+              <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-800 dark:text-amber-300 space-y-1.5 leading-relaxed">
+                <span className="font-bold flex items-center gap-1.5 text-amber-900 dark:text-amber-200">
+                  <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                  <span>الصيغ المدعومة بذكاء تلقائياً:</span>
+                </span>
                 <p>
-                  انسخ تعريفاتك من أي ملف Word أو ملخص، والصقها هنا. اكتب في كل سطر:{" "}
-                  <code className="px-1.5 py-0.5 rounded bg-black/10 dark:bg-white/10 font-mono font-bold">
-                    المصطلح: التعريف
-                  </code>
+                  1. <b>سطر واحد:</b> <code className="px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/10 font-mono font-bold">المصطلح: التعريف || الترجمة العربية</code>
+                </p>
+                <p>
+                  2. <b>فقرات متعددة (ChatGPT / Word):</b> اسم المصطلح في سطر، والشرح في سطر، والترجمة في سطر يبدأ بـ <code className="px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/10 font-mono font-bold">الترجمة: ...</code> (يتم تجاهل الترقيم وعناوين الأقسام تلقائياً).
                 </p>
               </div>
 
               <textarea
                 value={bulkText}
                 onChange={(e) => setBulkText(e.target.value)}
-                rows={10}
-                placeholder={`قانون أوم: تتناسب شدة التيار المار في موصل طردياً مع فرق الجهد عند ثبوت درجة الحرارة.\nالسرعة المتجهة: الإزاحة المقطوعة مقسومة على الزمن الكلي.\nالتسارع: معدل التغير في السرعة المتجهة بالنسبة للزمن.`}
+                rows={11}
+                placeholder={`مثال 1 (سطر واحد):\nMoore's Law: Transistors double every 2 years. || يتضاعف عدد الترانزستورات كل عامين.\nCloud Computing: IT delivered over the Internet. || الحوسبة السحابية.\n\nأو مثال 2 (فقرات):\n1. Moore's Law\nThe empirical observation that transistors double every two years.\nالترجمة: الملاحظة التجريبية التي تنص على تضاعف الترانزستورات كل سنتين.`}
                 className="w-full p-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-xs font-mono text-[#0F172A] dark:text-white leading-relaxed resize-none outline-none focus:border-[#059669]"
               />
+
+              {definitions.length > 0 && (
+                <div className="pt-1">
+                  <label className="inline-flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-300 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={replaceExisting}
+                      onChange={(e) => setReplaceExisting(e.target.checked)}
+                      className="w-4 h-4 rounded text-emerald-600 border-slate-300 focus:ring-emerald-500 cursor-pointer"
+                    />
+                    <span>استبدال المصطلحات الموجودة حالياً ({definitions.length} مصطلح) بالبيانات الجديدة</span>
+                  </label>
+                </div>
+              )}
             </div>
 
             <div className="p-4 bg-[#F8FAFC] dark:bg-[#1E293B]/60 border-t border-[#E2E8F0] dark:border-[#334155] flex items-center justify-between">
