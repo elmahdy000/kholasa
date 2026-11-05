@@ -5,11 +5,10 @@ import {
   X,
   CheckCircle,
   WarningCircle,
-  Lightning,
-  Sparkle,
+  ArrowClockwise,
+  BookOpen,
   ArrowRight,
   ArrowLeft,
-  Trophy,
   Check,
   Translate,
 } from "@phosphor-icons/react";
@@ -132,7 +131,7 @@ export function LessonMistakesCapsuleModal({
       }
 
       if (answerCorrect) {
-        setFeedbackNotice("👏 الله ينور عليك! كدا تمام واتشال من غلطاتك");
+        setFeedbackNotice("إجابة صحيحة، تم حذف السؤال من قائمة الأخطاء");
         setResolvedIds((prev) => new Set([...prev, currentQ.id]));
         onMistakeResolved(currentQ.id);
 
@@ -143,7 +142,7 @@ export function LessonMistakesCapsuleModal({
           }, 1400);
         }
       } else {
-        setFeedbackNotice("مش مضبوطة.. متقلقش، فكر تاني وشوف التفسير اللي تحت 💡");
+        setFeedbackNotice("إجابة غير دقيقة، راجع التفسير التعليمي المرفق أدناه");
         setShowExplanation(true);
       }
     } catch {
@@ -173,7 +172,7 @@ export function LessonMistakesCapsuleModal({
         body: JSON.stringify({ resolve: true }),
       });
 
-      setFeedbackNotice("👏 عاش يا بطل! تم تأكيد فهم السؤال وحذفه من غلطاتك");
+      setFeedbackNotice("تم تأكيد استيعاب السؤال وحذفه من قائمة الأخطاء بنجاح");
       setResolvedIds((prev) => new Set([...prev, currentQ.id]));
       onMistakeResolved(currentQ.id);
 
@@ -199,20 +198,20 @@ export function LessonMistakesCapsuleModal({
     >
       <div className="w-full max-w-2xl rounded-3xl bg-white dark:bg-[#0F172A] border border-amber-200/80 dark:border-amber-900/40 shadow-2xl flex flex-col max-h-[92vh] overflow-hidden">
         {/* ─────────────────────────────────────────────────────────────
-            1. MODAL TOP BAR (FRIENDLY EGYPTIAN TONE)
+            1. MODAL TOP BAR (PROFESSIONAL ELEGANT TONE)
         ───────────────────────────────────────────────────────────── */}
         <div className="px-5 py-4 bg-amber-500/10 dark:bg-amber-950/30 border-b border-amber-200/80 dark:border-amber-900/40 flex items-center justify-between gap-3 shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold shadow-2xs">
-              <Lightning className="w-5 h-5" weight="fill" />
+            <div className="w-10 h-10 rounded-xl bg-amber-500/15 text-amber-700 dark:text-amber-400 border border-amber-500/25 flex items-center justify-center font-bold shadow-2xs">
+              <ArrowClockwise className="w-5 h-5" weight="bold" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
-                  كبسولة تظبيط الغلطات ⚡
+                <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">
+                  معالجة أخطاء الدرس
                 </h3>
                 <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-800 dark:text-amber-300 font-mono">
-                  {resolvedIds.size} من {totalCount} متظبّط
+                  {resolvedIds.size} من {totalCount} تم تصحيحه
                 </span>
               </div>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
@@ -251,7 +250,7 @@ export function LessonMistakesCapsuleModal({
                     key={m.questionId}
                     type="button"
                     onClick={() => goToQuestion(idx)}
-                    className={`w-6 h-6 rounded-lg text-[11px] font-bold font-mono transition-all cursor-pointer ${
+                    className={`w-6 h-6 rounded-lg text-[11px] font-bold font-mono transition-all cursor-pointer flex items-center justify-center ${
                       isDone
                         ? "bg-emerald-500 text-white shadow-2xs"
                         : isCurrent
@@ -259,7 +258,7 @@ export function LessonMistakesCapsuleModal({
                         : "bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-300"
                     }`}
                   >
-                    {isDone ? "✓" : idx + 1}
+                    {isDone ? <Check className="w-3.5 h-3.5" weight="bold" /> : idx + 1}
                   </button>
                 );
               })}
@@ -274,44 +273,44 @@ export function LessonMistakesCapsuleModal({
           {/* CASE A: No mistakes at all */}
           {totalCount === 0 ? (
             <div className="text-center py-12 px-4 max-w-md mx-auto space-y-4">
-              <div className="w-16 h-16 rounded-3xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto shadow-2xs">
-                <CheckCircle className="w-9 h-9" weight="fill" />
+              <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto shadow-2xs">
+                <CheckCircle className="w-8 h-8" weight="bold" />
               </div>
               <h4 className="text-lg font-bold text-slate-900 dark:text-white">
-                أنت تمام التمام! مفيش أي غلطات في الدرس دا 🎉
+                لا توجد أخطاء مسجلة لهذا الدرس حالياً
               </h4>
               <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
-                كل أسئلة الدرس متجاوبة ومتقنة بنجاح.. كمل مذاكرتك أو سمع لنفسك بكروت الفلاش.
+                جميع أسئلة الدرس متقنة بنجاح. يمكنك استكمال دراستك أو التسميع الذاتي بكروت الفلاش.
               </p>
               <button
                 type="button"
                 onClick={onClose}
                 className="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-all cursor-pointer shadow-sm"
               >
-                زي الفل، ارجع للدرس
+                العودة إلى الدرس
               </button>
             </div>
           ) : isCapsuleCompleted ? (
             /* CASE B: Completed All Mistakes in the Capsule! */
             <div className="text-center py-8 px-4 max-w-md mx-auto space-y-5 animate-in zoom-in-95 duration-200">
-              <div className="w-20 h-20 rounded-3xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto shadow-sm">
-                <Trophy className="w-10 h-10" weight="fill" />
+              <div className="w-16 h-16 rounded-2xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto shadow-sm">
+                <CheckCircle className="w-8 h-8" weight="bold" />
               </div>
 
               <div>
                 <span className="text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-300 bg-emerald-500/15 px-3 py-1 rounded-full">
-                  تم التقفيل بنجاح 🌟
+                  اكتملت المراجعة بنجاح
                 </span>
-                <h4 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white mt-2">
-                  عاش يا بطل! صفّرت كل غلطاتك في الدرس دا
+                <h4 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mt-2">
+                  تم تصحيح ومعالجة جميع أخطاء الدرس
                 </h4>
                 <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">
-                  حليت كل الأسئلة اللي كانت واقفة معاك بنجاح، واتحذفت فوراً من دفتر غلطاتك.
+                  تمت مراجعة جميع الأسئلة وتأكيد استيعابها وحذفها من قائمة الأخطاء.
                 </p>
               </div>
 
               <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-800 dark:text-emerald-300 text-xs font-bold flex items-center justify-center gap-2">
-                <CheckCircle className="w-4 h-4" weight="fill" />
+                <CheckCircle className="w-4 h-4" weight="bold" />
                 <span>تم إتقان {totalCount} أسئلة بنسبة 100%</span>
               </div>
 
@@ -320,7 +319,7 @@ export function LessonMistakesCapsuleModal({
                 onClick={onClose}
                 className="w-full py-3 px-5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold shadow-md transition-all active:scale-95 cursor-pointer"
               >
-                زي الفل، ارجع للدرس
+                العودة إلى الدرس
               </button>
             </div>
           ) : (
@@ -340,7 +339,7 @@ export function LessonMistakesCapsuleModal({
                     {resolvedIds.has(currentQ.id) && (
                       <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 text-[11px] font-bold flex items-center gap-1">
                         <Check className="w-3.5 h-3.5" weight="bold" />
-                        <span>اتظبّطت</span>
+                        <span>تم التصحيح</span>
                       </span>
                     )}
                   </div>
@@ -431,10 +430,10 @@ export function LessonMistakesCapsuleModal({
                               {isOptionCorrect ? (
                                 <span className="text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
                                   <Check className="w-4 h-4" weight="bold" />
-                                  <span>صح 👏</span>
+                                  <span>صحيحة</span>
                                 </span>
                               ) : isSelected ? (
-                                <span className="text-red-600 dark:text-red-400">مش مضبوطة</span>
+                                <span className="text-red-600 dark:text-red-400">غير صحيحة</span>
                               ) : null}
                             </div>
                           )}
@@ -452,7 +451,7 @@ export function LessonMistakesCapsuleModal({
                       onClick={() => setShowEssayModel((prev) => !prev)}
                       className="px-4 py-2.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-800 dark:text-amber-300 text-xs font-bold flex items-center gap-2 cursor-pointer transition-colors"
                     >
-                      <Sparkle className="w-4 h-4" weight="fill" />
+                      <BookOpen className="w-4 h-4" weight="bold" />
                       <span>{showEssayModel ? "إخفاء نموذج الإجابة" : "عرض نموذج الإجابة للمقارنة"}</span>
                     </button>
 
@@ -480,17 +479,17 @@ export function LessonMistakesCapsuleModal({
                         className="w-full py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-sm transition-transform active:scale-95 cursor-pointer"
                       >
                         <CheckCircle className="w-4 h-4" weight="bold" />
-                        <span>فهمتها تمام وصلّحتها.. شيلها من غلطاتي 👍</span>
+                        <span>تأكيد الاستيعاب وحذف السؤال من الأخطاء</span>
                       </button>
                     )}
                   </div>
                 )}
 
-                {/* Friendly Feedback Toast */}
+                {/* Status Feedback Toast */}
                 {feedbackNotice && (
                   <div
                     className={`p-3 rounded-xl text-xs font-bold flex items-center gap-2 animate-in fade-in duration-200 ${
-                      isCorrect || feedbackNotice.includes("عاش")
+                      isCorrect || resolvedIds.has(currentQ.id)
                         ? "bg-emerald-500/10 border border-emerald-500/25 text-emerald-800 dark:text-emerald-300"
                         : "bg-red-500/10 border border-red-500/25 text-red-700 dark:text-red-300"
                     }`}
@@ -527,12 +526,12 @@ export function LessonMistakesCapsuleModal({
               className="px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-bold text-slate-600 dark:text-slate-300 flex items-center gap-1.5 cursor-pointer disabled:opacity-40"
             >
               <ArrowRight className="w-3.5 h-3.5" />
-              <span>السابق</span>
+              <span>السؤال السابق</span>
             </button>
 
             <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">
-              صلّحت <span className="font-mono text-emerald-600 dark:text-emerald-400 font-bold">{resolvedIds.size}</span> من{" "}
-              <span className="font-mono">{totalCount}</span> أسئلة 💪
+              تمت معالجة <span className="font-mono text-emerald-600 dark:text-emerald-400 font-bold">{resolvedIds.size}</span> من{" "}
+              <span className="font-mono">{totalCount}</span> أسئلة
             </span>
 
             <button
@@ -541,7 +540,7 @@ export function LessonMistakesCapsuleModal({
               onClick={() => goToQuestion(currentIndex + 1)}
               className="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold flex items-center gap-1.5 cursor-pointer disabled:opacity-40 shadow-2xs"
             >
-              <span>اللي بعده</span>
+              <span>السؤال التالي</span>
               <ArrowLeft className="w-3.5 h-3.5" />
             </button>
           </div>

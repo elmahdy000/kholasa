@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Clock, BookmarkSimple, CheckCircle, Check, Cards, Lightning } from "@phosphor-icons/react";
+import { Clock, BookmarkSimple, CheckCircle, Check, Cards, ArrowClockwise } from "@phosphor-icons/react";
 
 interface LessonHeaderProps {
   subject: {
@@ -79,16 +79,16 @@ export function LessonHeader({
 
       {/* Actions */}
       <div className="flex items-center gap-2 relative flex-wrap sm:flex-nowrap">
-        {/* Quick Mistakes Capsule Button (ظبّط غلطاتك) */}
+        {/* Quick Mistakes Drill Button */}
         {unresolvedMistakesCount !== undefined && unresolvedMistakesCount > 0 && onOpenMistakesCapsule && (
           <button
             type="button"
             onClick={onOpenMistakesCapsule}
-            className="h-11 px-3 sm:px-4 rounded-lg bg-amber-500/10 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 border border-amber-500/30 hover:border-amber-500 hover:bg-amber-500/15 text-[13px] font-bold flex items-center gap-2 transition-all cursor-pointer shadow-2xs animate-pulse"
-            title="ظبّط غلطاتك في الدرس دا"
+            className="h-11 px-3 sm:px-4 rounded-lg bg-amber-500/10 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 border border-amber-500/30 hover:border-amber-500 hover:bg-amber-500/15 text-[13px] font-bold flex items-center gap-2 transition-all cursor-pointer shadow-2xs"
+            title="مراجعة وتصحيح الأسئلة غير المتقنة في هذا الدرس"
           >
-            <Lightning className="w-4 h-4 text-amber-500 fill-amber-500" weight="fill" />
-            <span>ظبّط غلطاتك ({unresolvedMistakesCount})</span>
+            <ArrowClockwise className="w-4 h-4 text-amber-600 dark:text-amber-400" weight="bold" />
+            <span>معالجة الأخطاء ({unresolvedMistakesCount})</span>
           </button>
         )}
 

@@ -123,7 +123,7 @@ export function LessonFlashcardsModal({
 
     const cardToSave = currentCard;
     setSlideState("exit-right");
-    setSavingNotice(`تم حفظ "${cardToSave.term}" في غلطاتي 📌`);
+    setSavingNotice(`تم حفظ "${cardToSave.term}" في دفتر الأخطاء`);
 
     // Async record to Mistake Bank
     fetch(`/api/lessons/${lessonId}/flashcards/mistake`, {
