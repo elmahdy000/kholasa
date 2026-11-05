@@ -10,6 +10,7 @@ interface ExamBuilderPageProps {
     subjectId?: string;
     unitId?: string;
     lessonId?: string;
+    questionCount?: string;
   }>;
 }
 
@@ -20,7 +21,7 @@ export default async function ExamBuilderPage({
 }: ExamBuilderPageProps) {
   const user = await getCurrentUser();
   const scope = getCurriculumScope(user);
-  const { subjectId, unitId, lessonId } = await searchParams;
+  const { subjectId, unitId, lessonId, questionCount } = await searchParams;
 
   // Fetch published subjects for the student's curriculum
   const subjects = await prisma.subject.findMany({
@@ -76,6 +77,7 @@ export default async function ExamBuilderPage({
           initialSubjectId={subjectId}
           initialUnitId={unitId}
           initialLessonId={lessonId}
+          initialQuestionCount={questionCount ? Number(questionCount) : undefined}
         />
       </div>
     </StudentShell>

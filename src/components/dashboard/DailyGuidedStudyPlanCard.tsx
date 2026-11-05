@@ -354,7 +354,7 @@ export function DailyGuidedStudyPlanCard({
           </div>
         </div>
 
-        {/* Task 3: 5-Question Weakness Mastery Quiz */}
+        {/* Task 3: 30-Question Mastery Quiz */}
         <div
           className={`p-4 rounded-xl border flex flex-col justify-between gap-4 transition-all ${
             task3Done
@@ -365,7 +365,7 @@ export function DailyGuidedStudyPlanCard({
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-bold text-[#64748B] dark:text-[#94A3B8]">
-                المهمة 3 • 5 أسئلة
+                المهمة 3 • 30 سؤال
               </span>
               <span
                 className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold ${
@@ -397,12 +397,12 @@ export function DailyGuidedStudyPlanCard({
               </div>
               <div className="space-y-0.5 min-w-0 flex-1">
                 <h4 className="text-sm font-bold text-[#0F172A] dark:text-white truncate">
-                  اختبار نقطة الضعف
+                  اختبار تثبيت الإتقان
                 </h4>
                 <p className="text-[11px] text-[#64748B] dark:text-[#94A3B8] leading-relaxed">
                   {task3Done && plan.task3.examAttempt
                     ? `أتممت الامتحان بنتيجة ${plan.task3.examAttempt.percentage}%`
-                    : "5 أسئلة متدرجة تتأكد إنك هضمت نقطة ضعفك بدون تكرار."}
+                    : "تدريب شامل (30 سؤال) يتأكد إنك هضمت نقطة ضعفك بدون تكرار."}
                 </p>
               </div>
             </div>
@@ -420,11 +420,11 @@ export function DailyGuidedStudyPlanCard({
               </div>
             ) : focus ? (
               <Link
-                href={`/exams/builder?subjectId=${focus.subjectId}&lessonId=${focus.lessonId}&questionCount=5`}
+                href={`/exams/builder?subjectId=${focus.subjectId}&lessonId=${focus.lessonId}&questionCount=30`}
                 className="h-9 px-4 rounded-lg bg-[#4F46E5] hover:bg-[#4338CA] text-white text-xs font-bold flex items-center justify-center gap-1.5 w-full transition-colors cursor-pointer shadow-xs active:scale-[0.99]"
               >
                 <Target className="w-3.5 h-3.5" weight="bold" />
-                <span>ابدأ اختبار الـ 5 أسئلة</span>
+                <span>ابدأ اختبار الـ 30 سؤال</span>
               </Link>
             ) : (
               <Link
@@ -432,7 +432,7 @@ export function DailyGuidedStudyPlanCard({
                 className="h-9 px-4 rounded-lg bg-[#4F46E5] hover:bg-[#4338CA] text-white text-xs font-bold flex items-center justify-center gap-1.5 w-full transition-colors cursor-pointer shadow-xs active:scale-[0.99]"
               >
                 <Target className="w-3.5 h-3.5" weight="bold" />
-                <span>فصّل امتحان سريع</span>
+                <span>فصّل امتحانك (30 سؤال)</span>
               </Link>
             )}
           </div>
@@ -441,4 +441,3 @@ export function DailyGuidedStudyPlanCard({
     </section>
   );
 }
-

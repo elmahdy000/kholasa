@@ -22,6 +22,7 @@ export interface ExamBuilderFormProps {
   initialSubjectId?: string;
   initialUnitId?: string;
   initialLessonId?: string;
+  initialQuestionCount?: number;
 }
 
 export type ScopeType = "subject" | "unit" | "lessons";

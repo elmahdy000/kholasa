@@ -1,5 +1,5 @@
 # منصة الخلاصة التعليمية الذكية | PLATFORM MASTER DOCUMENTATION
-> **Document Version:** 2.1.0  
+> **Document Version:** 2.2.0  
 > **Last Updated:** November 2026  
 > **Target Audience:** AI Agents, LLMs, System Architects, Senior Software Engineers  
 > **Status:** Authoritative Source of Truth (Active Production Reference)
@@ -258,14 +258,22 @@ Each lesson is decomposed into four distinct cognitive dimensions:
 - Students can construct custom exams targeting:
   - An entire Subject.
   - A specific Unit.
-  - A single Lesson.
-- **Adaptive Question De-duplication:**
-  - The exam generator queries all questions matching the chosen scope.
-  - It cross-references `QuestionAttempt` where `userId = student.id` and `isCorrect = true`.
-  - Mastered questions are **completely excluded** from new exams until the student has exhausted 100% of the questions in that bank.
-  - Displays dynamic indicators: `unmasteredCount` (الأسئلة الجديدة / التي لم تُتقن) vs `masteredCount` (الأسئلة المتقنة سابقاً).
+  - A single Lesson (or multiple selected Lessons).
+- **Exam Size Bounds (30 to 50 Questions):**
+  - Minimum exam question count for students is **30 questions**, and maximum is **50 questions** (preset selectable options: 30, 35, 40, 50; default: 30).
+  - Duration is matched to ministry exam standards: 30, 45, 60, 90 minutes (default: 45 minutes).
+  - **Graceful Underflow Handling:** If a lesson or filter in the database contains fewer questions than requested (e.g. 18 questions exist in the DB), the generator smoothly selects all 18 available questions without error, adjusting the exam title and duration accordingly.
+- **Strict Anti-Repetition on Same Lesson (`freshQuestions` First):**
+  - When generating an exam for a lesson (or multiple lessons), the system inspects all questions previously taken by the student across all attempts (`StudentAnswer`, `QuestionAttempt`, and user-generated `ExamQuestion`).
+  - Questions are strictly partitioned into:
+    1. `freshQuestions`: questions the student has **never seen or taken before** on this lesson.
+    2. `unmasteredMistakes`: questions previously taken where the student made an unresolved mistake (`isCorrect: false`).
+    3. `masteredQuestions`: questions already answered correctly.
+  - **Zero-Repetition Invariant:** If `freshQuestions.length >= targetCount`, candidate selection is drawn **exclusively from `freshQuestions`**. Consecutive exams on the same lesson will have **0% repeated questions**!
+  - If fresh questions are fewer than the requested count, all remaining fresh questions are included first, then filled from unmastered mistakes to reinforce weak spots, and finally mastered questions. Only when 100% of the lesson bank has been mastered does the bank cycle reset.
+  - Displays dynamic indicators: `freshCount` (أسئلة جديدة لم تسبق رؤيتها) and `unmasteredCount` (لم تُتقن بعد).
   - **Medium Difficulty Fallback:** If a student selects Medium difficulty but the bank has zero Medium questions, the engine intelligently draws a balanced progression of Easy and Hard questions, and calculates accurate builder stats via `isMediumFallback`.
-- Dynamic naming: Automatically names generated exams (e.g. `امتحان درس: الحركة في اتجاه واحد`, `امتحان وحدة: القوى والحركة`).
+- Dynamic naming: Automatically names generated exams (e.g. `امتحان درس: الحركة في اتجاه واحد (30 سؤال)`, `امتحان وحدة: القوى والحركة (35 سؤال)`).
 
 ### 6.5 Full Exam History & Inspection (`/exams`)
 - All historical exam attempts (official exams, unit exams, lesson exams, custom generator exams) are stored permanently in `ExamAttempt`.
@@ -302,7 +310,7 @@ Each lesson is decomposed into four distinct cognitive dimensions:
 - Breaks down the student's daily cognitive workload into 3 bite-sized, deterministic tasks:
   1. **المهمة 1 (تحدي اليوم):** 1-minute daily warm-up preserving the student's streak (`isTodayCompleted`). Reactively synchronized across the UI when completed.
   2. **المهمة 2 (مراجعة زتونة الدرس الأضعف):** 5-minute targeted review of the student's lowest-mastery or highest-mistake lesson directly opening the Zaytouna summary tab (`/lessons/[id]#section-summary`).
-  3. **المهمة 3 (اختبار إتقان نقطة الضعف):** 5-question adaptive assessment targeting the weak lesson with zero repetition of mastered questions. Automatically detects if an exam was submitted today.
+  3. **المهمة 3 (اختبار إتقان نقطة الضعف):** 30-question comprehensive assessment targeting the weak lesson with zero repetition of previously tested questions. Automatically detects if an exam was submitted today.
 - Dynamic Progress Bar tracking completion (0%, 33%, 66%, 100%).
 - Upon completing all 3 tasks, surfaces an academic congratulations banner confirming daily mastery without cartoon emojis.
 

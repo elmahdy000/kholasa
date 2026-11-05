@@ -26,7 +26,7 @@ export function ExamConfigSection({
 }: ExamConfigSectionProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      {/* 5. عدد الأسئلة (Question Count) */}
+      {/* 5. عدد الأسئلة (Question Count: 30 - 50) */}
       <section className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#10233A] border border-[#E8E9ED] dark:border-[#22364F] shadow-xs space-y-3 flex flex-col justify-between">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
@@ -38,7 +38,7 @@ export function ExamConfigSection({
                 5. عدد الأسئلة
               </h2>
               <p className="text-xs text-[#64748B] dark:text-[#94A3B8]">
-                اختر كمية الأسئلة للاختبار
+                من 30 إلى 50 سؤال للامتحان
               </p>
             </div>
           </div>
@@ -62,7 +62,7 @@ export function ExamConfigSection({
 
         <div className="space-y-2 pt-1">
           <div className="grid grid-cols-4 gap-2">
-            {[5, 10, 15, 20].map((num) => {
+            {[30, 35, 40, 50].map((num) => {
               const isSelected = questionCount === num;
               return (
                 <button
@@ -83,7 +83,7 @@ export function ExamConfigSection({
                       isSelected ? "text-white/80" : "text-[#64748B] dark:text-[#94A3B8]"
                     }`}
                   >
-                    أسئلة
+                    سؤال
                   </span>
                 </button>
               );
@@ -94,7 +94,7 @@ export function ExamConfigSection({
             availableCount < questionCount &&
             availableCount > 0 && (
               <p className="text-[11px] text-[#D97706] dark:text-[#E59A18] font-medium leading-relaxed">
-                * متاح {availableCount} أسئلة فقط بالمعايير الحالية؛ سيتم تضمين أقصى عدد متاح.
+                * متاح {availableCount} سؤال فقط بالمعايير الحالية؛ سيتم تضمين أقصى عدد متاح ({availableCount} سؤال) في الاختبار.
               </p>
             )}
         </div>
@@ -191,7 +191,7 @@ export function ExamConfigSection({
             </button>
           </div>
 
-          {/* Duration selector if Exam mode */}
+          {/* Duration selector if Exam mode: 30, 45, 60, 90 mins */}
           {mode === "EXAM" && (
             <div className="pt-2 border-t border-[#E8E9ED] dark:border-[#22364F] flex items-center justify-between gap-2 text-xs">
               <span className="text-[#64748B] dark:text-[#94A3B8] flex items-center gap-1 shrink-0">
@@ -199,7 +199,7 @@ export function ExamConfigSection({
                 <span>المدة:</span>
               </span>
               <div className="flex items-center gap-1.5 flex-wrap justify-end">
-                {[15, 20, 30, 45].map((mins) => (
+                {[30, 45, 60, 90].map((mins) => (
                   <button
                     key={mins}
                     type="button"

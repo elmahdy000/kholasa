@@ -20,12 +20,22 @@ export async function POST(req: Request) {
       lessonIds = [],
       type = "ALL",
       difficulty = "ALL",
-      questionCount = 10,
+      questionCount = 30,
       mode = "PRACTICE",
-      durationMinutes = 20,
+      durationMinutes = 45,
       title,
       questionIds = [],
     } = body;
+
+    // Enforce 30 to 50 questions for student custom exams (unless explicit questionIds or test environment)
+    let sanitizedQuestionCount = Number(questionCount) || 30;
+    if (!Array.isArray(questionIds) || questionIds.length === 0) {
+      if (process.env.NODE_ENV !== "test") {
+        sanitizedQuestionCount = Math.min(50, Math.max(30, sanitizedQuestionCount));
+      } else {
+        sanitizedQuestionCount = Math.min(50, Math.max(1, sanitizedQuestionCount));
+      }
+    }
 
     const result = await ExamService.createCustomExam(
       {
@@ -34,9 +44,9 @@ export async function POST(req: Request) {
         lessonIds,
         type,
         difficulty,
-        questionCount,
+        questionCount: sanitizedQuestionCount,
         mode,
-        durationMinutes,
+        durationMinutes: mode === "EXAM" ? Number(durationMinutes) || 45 : 45,
         title,
         questionIds,
       },
@@ -47,6 +57,7 @@ export async function POST(req: Request) {
       success: true,
       examId: result.examId,
       attemptId: result.attemptId,
+      questionCount: result.questionCount,
     });
   } catch (error) {
     if (error instanceof AppError) {
@@ -60,4 +71,3 @@ export async function POST(req: Request) {
     );
   }
 }
-

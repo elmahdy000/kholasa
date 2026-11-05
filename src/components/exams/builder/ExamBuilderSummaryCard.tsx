@@ -17,6 +17,7 @@ interface ExamBuilderSummaryCardProps {
   availableCount: number | null;
   unmasteredCount?: number | null;
   masteredCount?: number | null;
+  freshCount?: number | null;
   scopeType: ScopeType;
   selectedLessonIds: string[];
 }
@@ -35,6 +36,7 @@ export function ExamBuilderSummaryCard({
   availableCount,
   unmasteredCount,
   masteredCount,
+  freshCount,
   scopeType,
   selectedLessonIds,
 }: ExamBuilderSummaryCardProps) {
@@ -143,15 +145,19 @@ export function ExamBuilderSummaryCard({
           </div>
         </div>
 
-        {/* Smart Spaced Repetition Indicator */}
-        {unmasteredCount !== undefined && unmasteredCount !== null && (
+        {/* Anti-Repetition / Fresh Questions Indicator */}
+        {freshCount !== undefined && freshCount !== null && (
           <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/25 text-emerald-900 dark:text-emerald-300 text-xs space-y-1.5">
             <div className="flex items-center justify-between font-bold">
-              <span>أسئلة جديدة / لم تُتقن بعد:</span>
-              <span className="font-mono font-black">{unmasteredCount} سؤال</span>
+              <span>أسئلة جديدة لم تسبق رؤيتها:</span>
+              <span className="font-mono font-black">{freshCount} سؤال</span>
             </div>
             <p className="text-[11px] text-emerald-700 dark:text-emerald-400 leading-normal">
-              الأسئلة التي تم حلها بشكل صحيح في امتحاناتك السابقة لن تتكرر في هذا الامتحان حتى تنتهي من جميع أسئلة البنك.
+              {freshCount >= effectiveCount
+                ? "يضمن النظام عدم تكرار أي سؤال تم حله في امتحاناتك السابقة على هذا الدرس أو النطاق."
+                : freshCount > 0
+                ? `سيتم تضمين الـ ${freshCount} سؤال الجديدة أولاً، ثم استكمال باقي الامتحان من الأسئلة التي تحتاج لتثبيت الإتقان.`
+                : "تمت مراجعة جميع أسئلة هذا البنك؛ سيتم التركيز على معالجة الأخطاء السابقة لتثبيت الإتقان."}
             </p>
           </div>
         )}

@@ -24,6 +24,7 @@ export function ExamBuilderForm({
   initialSubjectId,
   initialUnitId,
   initialLessonId,
+  initialQuestionCount,
 }: ExamBuilderFormProps) {
   const router = useRouter();
 
@@ -50,17 +51,23 @@ export function ExamBuilderForm({
   // 4. Difficulty State
   const [difficulty, setDifficulty] = useState<DifficultyOption>("ALL");
 
-  // 5. Question Count State
-  const [questionCount, setQuestionCount] = useState<number>(10);
+  // 5. Question Count State (Default 30, Min 30, Max 50)
+  const [questionCount, setQuestionCount] = useState<number>(() => {
+    if (initialQuestionCount) {
+      return Math.min(50, Math.max(30, Number(initialQuestionCount)));
+    }
+    return 30;
+  });
 
-  // 6. Exam Mode State
+  // 6. Exam Mode State (Default 45 mins)
   const [mode, setMode] = useState<ExamMode>("PRACTICE");
-  const [durationMinutes, setDurationMinutes] = useState<number>(20);
+  const [durationMinutes, setDurationMinutes] = useState<number>(45);
 
   // Stats & Submission State
   const [availableCount, setAvailableCount] = useState<number | null>(null);
   const [unmasteredCount, setUnmasteredCount] = useState<number | null>(null);
   const [masteredCount, setMasteredCount] = useState<number | null>(null);
+  const [freshCount, setFreshCount] = useState<number | null>(null);
   const [isCounting, setIsCounting] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -89,6 +96,7 @@ export function ExamBuilderForm({
         setAvailableCount(0);
         setUnmasteredCount(0);
         setMasteredCount(0);
+        setFreshCount(0);
         return;
       }
 
@@ -96,6 +104,7 @@ export function ExamBuilderForm({
         setAvailableCount(0);
         setUnmasteredCount(0);
         setMasteredCount(0);
+        setFreshCount(0);
         return;
       }
 
@@ -119,6 +128,7 @@ export function ExamBuilderForm({
           setAvailableCount(data.count ?? 0);
           setUnmasteredCount(data.unmasteredCount ?? null);
           setMasteredCount(data.masteredCount ?? null);
+          setFreshCount(data.freshCount ?? null);
         }
       } catch (err) {
         console.error(err);
@@ -199,7 +209,7 @@ export function ExamBuilderForm({
           difficulty,
           questionCount: Math.min(questionCount, availableCount || questionCount),
           mode,
-          durationMinutes: mode === "EXAM" ? durationMinutes : 20,
+          durationMinutes: mode === "EXAM" ? durationMinutes : 45,
         }),
       });
 
@@ -353,6 +363,7 @@ export function ExamBuilderForm({
           availableCount={availableCount}
           unmasteredCount={unmasteredCount}
           masteredCount={masteredCount}
+          freshCount={freshCount}
           scopeType={scopeType}
           selectedLessonIds={selectedLessonIds}
         />
