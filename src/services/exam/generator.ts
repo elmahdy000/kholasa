@@ -330,6 +330,7 @@ export class ExamGeneratorService {
     }
 
     let count = await prisma.question.count({ where });
+    let isMediumFallback = false;
 
     // Fallback: if student selected MEDIUM but count is 0, count available EASY + HARD questions without blocking
     if (difficulty === "MEDIUM" && count === 0) {
@@ -338,6 +339,7 @@ export class ExamGeneratorService {
         difficulty: { in: [Difficulty.EASY, Difficulty.HARD] },
       };
       count = await prisma.question.count({ where: fallbackWhere });
+      isMediumFallback = true;
     }
 
     let masteredCount = 0;
@@ -345,7 +347,7 @@ export class ExamGeneratorService {
 
     if (userId && count > 0) {
       const matchingQuestions = await prisma.question.findMany({
-        where: difficulty === "MEDIUM" && count === 0
+        where: isMediumFallback
           ? { ...where, difficulty: { in: [Difficulty.EASY, Difficulty.HARD] } }
           : where,
         select: { id: true },

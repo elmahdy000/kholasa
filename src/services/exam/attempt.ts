@@ -122,6 +122,7 @@ export class ExamAttemptService {
     let objectiveQuestionsCount = 0;
     let correctCount = 0;
     const mistakesToRecord: string[] = [];
+    const correctQuestionIds: string[] = [];
     const studentAnswersToCreate: {
       attemptId: string;
       questionId: string;
@@ -151,6 +152,7 @@ export class ExamAttemptService {
             isCorrect = true;
             score = 1;
             correctCount++;
+            correctQuestionIds.push(q.id);
           } else {
             isCorrect = false;
             score = 0;
@@ -223,6 +225,21 @@ export class ExamAttemptService {
           }
         }
 
+        // Resolve any active mistakes for questions answered correctly in this attempt
+        if (correctQuestionIds.length > 0) {
+          await tx.mistakeReview.updateMany({
+            where: {
+              userId,
+              questionId: { in: correctQuestionIds },
+              isResolved: false,
+            },
+            data: {
+              isResolved: true,
+              lastAttemptAt: new Date(),
+            },
+          });
+        }
+
         for (const questionId of mistakesToRecord) {
           await tx.mistakeReview.upsert({
             where: {
@@ -258,19 +275,47 @@ export class ExamAttemptService {
       const studentAnswersMap = new Map(
         attempt.answers.map((a) => [a.questionId, a])
       );
+      const correctQuestionIds: string[] = [];
+      const studentAnswersToUpdate: {
+        id?: string;
+        questionId: string;
+        selectedOptionId: string | null;
+        essayText: string | null;
+        isCorrect: boolean | null;
+        score: number | null;
+      }[] = [];
 
       for (const q of examQuestions) {
+        const ans = studentAnswersMap.get(q.id);
+        const selectedOptionId = ans?.selectedOptionId || null;
+        const essayText = ans?.essayText || null;
+        let isCorrect: boolean | null = null;
+        let score: number | null = null;
+
         if (q.type === QuestionType.MCQ || q.type === QuestionType.TRUE_FALSE) {
           objectiveQuestionsCount++;
-          const ans = studentAnswersMap.get(q.id);
           const correctOption = q.options.find((o) => o.isCorrect);
 
-          if (ans && ans.selectedOptionId && correctOption && ans.selectedOptionId === correctOption.id) {
+          if (selectedOptionId && correctOption && selectedOptionId === correctOption.id) {
             correctCount++;
+            isCorrect = true;
+            score = 1;
+            correctQuestionIds.push(q.id);
           } else {
+            isCorrect = false;
+            score = 0;
             mistakesToRecord.push(q.id);
           }
         }
+
+        studentAnswersToUpdate.push({
+          id: ans?.id,
+          questionId: q.id,
+          selectedOptionId,
+          essayText,
+          isCorrect,
+          score,
+        });
       }
 
       const percentage =
@@ -278,44 +323,106 @@ export class ExamAttemptService {
           ? Math.round((correctCount / objectiveQuestionsCount) * 1000) / 10
           : 0;
 
-      const completed = await prisma.examAttempt.updateMany({
-        where: { id: attemptId, userId, isCompleted: false },
-        data: {
-          score: correctCount,
-          percentage,
-          timeSpentSeconds: submission?.totalTimeSpentSeconds || attempt.timeSpentSeconds,
-          isCompleted: true,
-          completedAt: new Date(),
-        },
-      });
-
-      if (completed.count === 0) {
-        throw new Error("تم تسليم هذه المحاولة مسبقاً، لا يمكن إعادة تسليمها أو تعديل إجاباتها");
-      }
-
-      const updatedAttempt = await prisma.examAttempt.findUniqueOrThrow({
-        where: { id: attemptId },
-      });
-
-      for (const questionId of mistakesToRecord) {
-        await prisma.mistakeReview.upsert({
-          where: {
-            userId_questionId: { userId, questionId },
-          },
-          create: {
-            userId,
-            questionId,
-            wrongCount: 1,
-            isResolved: false,
-            lastAttemptAt: new Date(),
-          },
-          update: {
-            wrongCount: { increment: 1 },
-            isResolved: false,
-            lastAttemptAt: new Date(),
+      const updatedAttempt = await prisma.$transaction(async (tx) => {
+        const claim = await tx.examAttempt.updateMany({
+          where: { id: attemptId, userId, isCompleted: false },
+          data: {
+            score: correctCount,
+            percentage,
+            timeSpentSeconds: submission?.totalTimeSpentSeconds || attempt.timeSpentSeconds,
+            isCompleted: true,
+            completedAt: new Date(),
           },
         });
-      }
+
+        if (claim.count === 0) {
+          throw new Error("تم تسليم هذه المحاولة مسبقاً، لا يمكن إعادة تسليمها أو تعديل إجاباتها");
+        }
+
+        const updated = await tx.examAttempt.findUniqueOrThrow({
+          where: { id: attemptId },
+        });
+
+        for (const sa of studentAnswersToUpdate) {
+          if (sa.id) {
+            await tx.studentAnswer.update({
+              where: { id: sa.id },
+              data: {
+                isCorrect: sa.isCorrect,
+                score: sa.score,
+              },
+            });
+          } else {
+            await tx.studentAnswer.create({
+              data: {
+                attemptId,
+                questionId: sa.questionId,
+                selectedOptionId: sa.selectedOptionId,
+                essayText: sa.essayText,
+                isCorrect: sa.isCorrect,
+                score: sa.score,
+                timeSpentSeconds: 0,
+              },
+            });
+          }
+
+          // Sync answer to QuestionAttempt for permanent cross-session history & smart repetition prevention
+          if (sa.isCorrect !== null) {
+            await tx.questionAttempt.upsert({
+              where: { userId_questionId: { userId, questionId: sa.questionId } },
+              update: {
+                selectedOptionId: sa.selectedOptionId,
+                essayText: sa.essayText,
+                isCorrect: sa.isCorrect,
+                updatedAt: new Date(),
+              },
+              create: {
+                userId,
+                questionId: sa.questionId,
+                selectedOptionId: sa.selectedOptionId,
+                essayText: sa.essayText,
+                isCorrect: sa.isCorrect,
+              },
+            });
+          }
+        }
+
+        if (correctQuestionIds.length > 0) {
+          await tx.mistakeReview.updateMany({
+            where: {
+              userId,
+              questionId: { in: correctQuestionIds },
+              isResolved: false,
+            },
+            data: {
+              isResolved: true,
+              lastAttemptAt: new Date(),
+            },
+          });
+        }
+
+        for (const questionId of mistakesToRecord) {
+          await tx.mistakeReview.upsert({
+            where: {
+              userId_questionId: { userId, questionId },
+            },
+            create: {
+              userId,
+              questionId,
+              wrongCount: 1,
+              isResolved: false,
+              lastAttemptAt: new Date(),
+            },
+            update: {
+              wrongCount: { increment: 1 },
+              isResolved: false,
+              lastAttemptAt: new Date(),
+            },
+          });
+        }
+
+        return updated;
+      });
 
       return {
         attempt: updatedAttempt,

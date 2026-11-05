@@ -21,7 +21,7 @@ export class MistakeService {
       include: {
         question: {
           include: {
-            subject: { select: { id: true, name: true, color: true } },
+            subject: { select: { id: true, name: true, color: true, schoolCategory: true } },
             unit: { select: { id: true, title: true } },
             options: { orderBy: { order: "asc" } },
             explanation: true,
@@ -83,11 +83,13 @@ export class MistakeService {
 
     const selectedMistakes = mistakes.slice(0, questionCount);
     const primarySubjectId = subjectId || selectedMistakes[0].question.subjectId;
+    const schoolCategory = selectedMistakes[0]?.question?.subject?.schoolCategory || "ARABIC";
 
     const exam = await prisma.exam.create({
       data: {
         title: `امتحان مراجعة الأخطاء (${selectedMistakes.length} أسئلة غير متقنة)`,
         subjectId: primarySubjectId,
+        schoolCategory,
         durationMinutes: Math.max(10, selectedMistakes.length * 2),
         isPractice: true,
         isCustom: true,
