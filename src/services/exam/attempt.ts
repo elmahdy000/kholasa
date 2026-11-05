@@ -201,6 +201,26 @@ export class ExamAttemptService {
 
         for (const sa of studentAnswersToCreate) {
           await tx.studentAnswer.create({ data: sa });
+
+          // Sync answer to QuestionAttempt for permanent cross-session history & smart repetition prevention
+          if (sa.isCorrect !== null) {
+            await tx.questionAttempt.upsert({
+              where: { userId_questionId: { userId, questionId: sa.questionId } },
+              update: {
+                selectedOptionId: sa.selectedOptionId,
+                essayText: sa.essayText,
+                isCorrect: sa.isCorrect,
+                updatedAt: new Date(),
+              },
+              create: {
+                userId,
+                questionId: sa.questionId,
+                selectedOptionId: sa.selectedOptionId,
+                essayText: sa.essayText,
+                isCorrect: sa.isCorrect,
+              },
+            });
+          }
         }
 
         for (const questionId of mistakesToRecord) {

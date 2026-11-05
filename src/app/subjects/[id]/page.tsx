@@ -236,17 +236,28 @@ export default async function SubjectDetailPage({ params }: SubjectDetailPagePro
                             </div>
                           </div>
 
-                          <Link
-                            href={`/lessons/${lesson.id}`}
-                            className={`h-11 px-4 rounded-xl text-[13px] font-bold flex items-center justify-center gap-2 transition-all shrink-0 active:opacity-80 ${
-                              isLessonCompleted
-                                ? "bg-[#F8FAFC] dark:bg-[#1E293B] hover:bg-[#E2E8F0] dark:hover:bg-[#334155] text-[#0F172A] dark:text-[#F8FAFC] border border-[#E2E8F0] dark:border-[#334155]"
-                                : "bg-[#800020] hover:bg-[#66001A] text-white "
-                            }`}
-                          >
-                            <span>{isLessonCompleted ? "مراجعة الدرس" : "ابدأ المذاكرة"}</span>
-                            <ArrowLeft className="w-3.5 h-3.5" />
-                          </Link>
+                          <div className="flex items-center gap-2 shrink-0 self-stretch sm:self-center">
+                            <Link
+                              href={`/exams/builder?subjectId=${subject.id}&unitId=${unit.id}&lessonId=${lesson.id}`}
+                              className="h-11 px-3.5 rounded-xl bg-white dark:bg-[#1E293B] hover:bg-[#F8FAFC] dark:hover:bg-[#334155] text-[#800020] dark:text-[#FB7185] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-bold flex items-center justify-center gap-1.5 transition-colors"
+                              title="امتحان على هذا الدرس"
+                            >
+                              <Target className="w-3.5 h-3.5" />
+                              <span className="hidden sm:inline">امتحان الدرس</span>
+                            </Link>
+
+                            <Link
+                              href={`/lessons/${lesson.id}`}
+                              className={`h-11 px-4 rounded-xl text-[13px] font-bold flex items-center justify-center gap-2 transition-all shrink-0 active:opacity-80 flex-1 sm:flex-initial ${
+                                isLessonCompleted
+                                  ? "bg-[#F8FAFC] dark:bg-[#1E293B] hover:bg-[#E2E8F0] dark:hover:bg-[#334155] text-[#0F172A] dark:text-[#F8FAFC] border border-[#E2E8F0] dark:border-[#334155]"
+                                  : "bg-[#800020] hover:bg-[#66001A] text-white "
+                              }`}
+                            >
+                              <span>{isLessonCompleted ? "مراجعة الدرس" : "ابدأ المذاكرة"}</span>
+                              <ArrowLeft className="w-3.5 h-3.5" />
+                            </Link>
+                          </div>
                         </div>
                       );
                     })}

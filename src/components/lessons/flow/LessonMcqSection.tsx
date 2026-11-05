@@ -139,7 +139,11 @@ export function LessonMcqSection({
                   {question.options.map((opt, optIdx) => {
                     const isSelected = state?.selectedOptionId === opt.id;
                     const isRevealed = state?.revealed;
-                    const isOptionCorrect = state?.reveal?.correctOptionId === opt.id;
+                    const isOptionCorrect =
+                      state?.reveal?.correctOptionId === opt.id ||
+                      (state?.isCorrect && isSelected) ||
+                      Boolean(opt.isCorrect);
+
                     let btnStyle =
                       "bg-[#F8FAFC] dark:bg-[#1E293B] border-[#E2E8F0] dark:border-[#334155] text-[#0F172A] dark:text-[#F8FAFC] hover:border-[#800020]/50";
 
@@ -162,7 +166,7 @@ export function LessonMcqSection({
                       <button
                         key={opt.id}
                         type="button"
-                        disabled={isRevealed}
+                        disabled={isSelected}
                         onClick={() => onSelectOption(question.id, opt.id)}
                         className={`w-full p-4 rounded-xl border text-right text-[13px] sm:text-sm font-medium flex items-start sm:items-center justify-between gap-3 transition-all font-content cursor-pointer ${btnStyle}`}
                       >

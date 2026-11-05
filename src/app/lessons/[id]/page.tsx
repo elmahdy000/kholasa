@@ -141,6 +141,32 @@ export default async function LessonPage({ params }: LessonPageProps) {
     }));
   }
 
+  // Fetch student's previously saved answers for this lesson's questions
+  let initialQuestionAttempts: {
+    questionId: string;
+    selectedOptionId: string | null;
+    essayText: string | null;
+    isCorrect: boolean;
+  }[] = [];
+
+  if (user && lesson.questions.length > 0) {
+    const rawAttempts = await prisma.questionAttempt.findMany({
+      where: {
+        userId: user.id,
+        questionId: {
+          in: lesson.questions.map((q) => q.question.id),
+        },
+      },
+    });
+
+    initialQuestionAttempts = rawAttempts.map((a) => ({
+      questionId: a.questionId,
+      selectedOptionId: a.selectedOptionId,
+      essayText: a.essayText,
+      isCorrect: a.isCorrect,
+    }));
+  }
+
   return (
     <StudentShell user={user}>
       <LessonViewer
@@ -148,6 +174,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
         initialIsBookmarked={isBookmarked}
         initialIsCompleted={isCompleted}
         initialMistakes={initialMistakes}
+        initialQuestionAttempts={initialQuestionAttempts}
         userId={user?.id}
       />
     </StudentShell>

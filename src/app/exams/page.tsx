@@ -13,6 +13,7 @@ import {
   BookmarkCheck,
   History,
 } from "lucide-react";
+import { StudentExamHistoryList } from "@/components/exams/StudentExamHistoryList";
 
 export const dynamic = "force-dynamic";
 
@@ -31,12 +32,19 @@ export default async function ExamsHubPage() {
     },
   });
 
-  // Fetch student recent attempts if logged in
-  const recentAttempts = user
+  // Fetch student completed exam attempts for comprehensive review
+  const completedAttempts = user
     ? await prisma.examAttempt.findMany({
-        where: { userId: user.id },
-        take: 5,
-        orderBy: { startedAt: "desc" },
+        where: { userId: user.id, isCompleted: true },
+        orderBy: { completedAt: "desc" },
+        include: {
+          exam: {
+            select: {
+              id: true,
+              subject: { select: { id: true, name: true, color: true } },
+            },
+          },
+        },
       })
     : [];
 
@@ -164,74 +172,9 @@ export default async function ExamsHubPage() {
           </div>
         </div>
 
-        {/* Recent Attempts History */}
-        {recentAttempts.length > 0 && (
-          <div className="space-y-4 pt-2">
-            <h2 className="text-base sm:text-lg font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
-              <History className="w-5 h-5 text-[#800020]" />
-              <span>امتحاناتك اللي حلتها قبل كدة</span>
-            </h2>
-
-            <div className="rounded-xl bg-white dark:bg-[#0F172A]/50 border border-[#E2E8F0] dark:border-[#334155] divide-y divide-[#E2E8F0] dark:divide-[#334155] overflow-hidden ">
-              {recentAttempts.map((attempt) => {
-                const isGood = attempt.percentage >= 70;
-                const isPass = attempt.percentage >= 50;
-
-                const scoreColor = isGood
-                  ? "bg-[#059669]/10 dark:bg-[#1E293B] text-[#059669] dark:text-[#34D399] border-[#E2E8F0] dark:border-[#34D399]/50"
-                  : isPass
-                  ? "bg-[#D97706]/10 dark:bg-[#1E293B] text-[#D97706] dark:text-[#FBBF24] border-[#E2E8F0] dark:border-[#FBBF24]/50"
-                  : "bg-[#DC2626]/10 dark:bg-[#1E293B] text-[#DC2626] dark:text-[#F87171] border-[#E2E8F0] dark:border-[#F87171]/50";
-
-                const dateStr = new Date(attempt.startedAt).toLocaleDateString("ar-EG", {
-                  year: "numeric",
-                  month: "short",
-                  day: "numeric",
-                });
-
-                return (
-                  <div
-                    key={attempt.id}
-                    className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-[#F8FAFC] dark:hover:bg-[#334155]/40 transition-colors"
-                  >
-                    <div className="flex items-start sm:items-center gap-4 min-w-0 flex-1">
-                      <div
-                        className={`w-11 h-11 rounded-xl flex items-center justify-center font-mono font-bold text-[13px] sm:text-sm shrink-0 border ${scoreColor}`}
-                      >
-                        {Math.round(attempt.percentage)}%
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <h4 className="text-[13px] sm:text-sm font-bold text-[#0F172A] dark:text-white leading-normal">
-                          <BidiStatement as="span" text={attempt.title} />
-                        </h4>
-                        <div className="flex flex-wrap items-center gap-2 text-[13px] sm:text-[13px] text-[#64748B] dark:text-[#94A3B8] font-bold mt-1">
-                          <span>
-                            {attempt.score === attempt.totalQuestions && attempt.totalQuestions > 0
-                              ? `قفلته! جبت ${attempt.score} من ${attempt.totalQuestions}`
-                              : `جبت ${attempt.score} من ${attempt.totalQuestions} أسئلة`}
-                          </span>
-                          <span>•</span>
-                          <span>{dateStr}</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <Link
-                      href={
-                        attempt.examId
-                          ? `/exams/${attempt.examId}/results?attemptId=${attempt.id}`
-                          : `/exams/${attempt.id}/results`
-                      }
-                      className="h-11 px-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] hover:border-[#800020] hover:text-[#800020] dark:hover:border-[#E11D48] dark:hover:text-[#FB7185] text-[13px] font-bold text-[#0F172A] dark:text-white flex items-center justify-center gap-2 transition-colors shrink-0 self-stretch sm:self-center"
-                    >
-                      <span>راجع إجاباتك</span>
-                      <ArrowLeft className="w-3.5 h-3.5" />
-                    </Link>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+        {/* Complete Exam Attempts History with Tabs & Full Review */}
+        {completedAttempts.length > 0 && (
+          <StudentExamHistoryList attempts={completedAttempts as any} />
         )}
       </div>
     </StudentShell>

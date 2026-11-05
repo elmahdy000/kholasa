@@ -15,7 +15,7 @@ export async function GET(req: Request) {
     const difficulty = searchParams.get("difficulty") || undefined;
 
     if (!subjectId) {
-      return NextResponse.json({ count: 0 });
+      return NextResponse.json({ count: 0, unmasteredCount: 0, masteredCount: 0 });
     }
 
     // Never count questions from another grade/track for scoped students.
@@ -39,17 +39,18 @@ export async function GET(req: Request) {
       }
     }
 
-    const count = await ExamService.getExamBuilderStats({
+    const stats = await ExamService.getExamBuilderStats({
       subjectId,
       unitId,
       lessonIds,
       type,
       difficulty,
+      userId: user?.id,
     });
 
-    return NextResponse.json({ count });
+    return NextResponse.json(stats);
   } catch (error) {
     console.error("Failed to get question count:", error);
-    return NextResponse.json({ count: 0 });
+    return NextResponse.json({ count: 0, unmasteredCount: 0, masteredCount: 0 });
   }
 }

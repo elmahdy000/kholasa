@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Clock, BookmarkSimple, CheckCircle, Check, Cards, ArrowClockwise } from "@phosphor-icons/react";
+import { Clock, BookmarkSimple, CheckCircle, Check, Cards, ArrowClockwise, Target } from "@phosphor-icons/react";
 
 interface LessonHeaderProps {
   subject: {
@@ -13,6 +13,7 @@ interface LessonHeaderProps {
     id: string;
     title: string;
   };
+  lessonId: string;
   lessonTitle: string;
   durationMinutes: number;
   questionsCount: number;
@@ -31,6 +32,7 @@ interface LessonHeaderProps {
 export function LessonHeader({
   subject,
   unit,
+  lessonId,
   lessonTitle,
   durationMinutes,
   questionsCount,
@@ -102,6 +104,18 @@ export function LessonHeader({
             <Cards className="w-4 h-4" weight="bold" />
             <span>تسميع بالكروت</span>
           </button>
+        )}
+
+        {/* Lesson Exam Button */}
+        {lessonId && (
+          <Link
+            href={`/exams/builder?subjectId=${subject.id}&unitId=${unit.id}&lessonId=${lessonId}`}
+            className="h-11 px-3.5 sm:px-4 rounded-lg bg-white dark:bg-[#1E293B] border border-[#800020]/30 hover:border-[#800020] text-[#800020] dark:text-[#FB7185] hover:bg-[#800020]/10 text-[13px] font-bold flex items-center gap-2 transition-colors"
+            title="بدء امتحان مخصص على هذا الدرس"
+          >
+            <Target className="w-4 h-4" weight="bold" />
+            <span>امتحان الدرس</span>
+          </Link>
         )}
 
         {/* Bookmark Button */}

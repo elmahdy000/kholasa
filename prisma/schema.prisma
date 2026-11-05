@@ -87,6 +87,7 @@ model User {
   notificationsRead    NotificationRead[]
   pushSubscriptions    PushSubscription[]
   createdAnnouncements Announcement[]     @relation("AnnouncementCreator")
+  questionAttempts     QuestionAttempt[]
 }
 
 model Account {
@@ -325,8 +326,9 @@ model Question {
   rubric         EssayRubric?
   examQuestions  ExamQuestion[]
   studentAnswers StudentAnswer[]
-  mistakes       MistakeReview[]
-  bookmarks      Bookmark[]
+  mistakes         MistakeReview[]
+  bookmarks        Bookmark[]
+  questionAttempts QuestionAttempt[]
 
   @@index([subjectId, status, type, difficulty, schoolCategory])
   @@index([unitId])
@@ -474,6 +476,24 @@ model StudentAnswer {
   question Question    @relation(fields: [questionId], references: [id], onDelete: Cascade)
 
   @@unique([attemptId, questionId])
+  @@index([questionId])
+}
+
+model QuestionAttempt {
+  id               String   @id @default(cuid())
+  userId           String
+  questionId       String
+  selectedOptionId String?
+  essayText        String?  @db.Text
+  isCorrect        Boolean  @default(false)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, questionId])
+  @@index([userId, isCorrect])
   @@index([questionId])
 }
 

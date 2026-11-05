@@ -131,7 +131,10 @@ export function LessonTrueFalseSection({
                   {question.options.map((opt) => {
                     const isSelected = state?.selectedOptionId === opt.id;
                     const isRevealed = state?.revealed;
-                    const isOptionCorrect = state?.reveal?.correctOptionId === opt.id;
+                    const isOptionCorrect =
+                      state?.reveal?.correctOptionId === opt.id ||
+                      (state?.isCorrect && isSelected) ||
+                      Boolean(opt.isCorrect);
                     const isTrueOption =
                       opt.text.includes("صواب") ||
                       opt.text.includes("صح") ||
@@ -158,9 +161,9 @@ export function LessonTrueFalseSection({
                       <button
                         key={opt.id}
                         type="button"
-                        disabled={isRevealed}
+                        disabled={isSelected}
                         onClick={() => onSelectOption(question.id, opt.id)}
-                        className={`h-14 rounded-2xl border text-[14px] sm:text-base font-bold flex items-center justify-center gap-2 transition-all ${btnStyle}`}
+                        className={`h-14 rounded-2xl border text-[14px] sm:text-base font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${btnStyle}`}
                       >
                         {isTrueOption ? (
                           <Check className="w-5 h-5 shrink-0" weight="bold" />

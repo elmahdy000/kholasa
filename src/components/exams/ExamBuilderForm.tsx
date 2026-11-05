@@ -59,6 +59,8 @@ export function ExamBuilderForm({
 
   // Stats & Submission State
   const [availableCount, setAvailableCount] = useState<number | null>(null);
+  const [unmasteredCount, setUnmasteredCount] = useState<number | null>(null);
+  const [masteredCount, setMasteredCount] = useState<number | null>(null);
   const [isCounting, setIsCounting] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -85,11 +87,15 @@ export function ExamBuilderForm({
     async function checkCount() {
       if (!selectedSubjectId) {
         setAvailableCount(0);
+        setUnmasteredCount(0);
+        setMasteredCount(0);
         return;
       }
 
       if (scopeType === "lessons" && selectedLessonIds.length === 0) {
         setAvailableCount(0);
+        setUnmasteredCount(0);
+        setMasteredCount(0);
         return;
       }
 
@@ -111,6 +117,8 @@ export function ExamBuilderForm({
         if (res.ok && !isCancelled) {
           const data = await res.json();
           setAvailableCount(data.count ?? 0);
+          setUnmasteredCount(data.unmasteredCount ?? null);
+          setMasteredCount(data.masteredCount ?? null);
         }
       } catch (err) {
         console.error(err);
@@ -343,6 +351,8 @@ export function ExamBuilderForm({
           mode={mode}
           durationMinutes={durationMinutes}
           availableCount={availableCount}
+          unmasteredCount={unmasteredCount}
+          masteredCount={masteredCount}
           scopeType={scopeType}
           selectedLessonIds={selectedLessonIds}
         />

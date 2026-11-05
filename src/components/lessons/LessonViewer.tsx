@@ -44,6 +44,7 @@ export function LessonViewer({
   initialIsBookmarked,
   initialIsCompleted,
   initialMistakes = [],
+  initialQuestionAttempts = [],
   userId,
 }: LessonViewerProps) {
   // 4 Main Student Navigation Tabs
@@ -63,9 +64,23 @@ export function LessonViewer({
   const [definitionSearch, setDefinitionSearch] = useState("");
   const [copiedDefinition, setCopiedDefinition] = useState<string | null>(null);
 
-  // Essay Student Drafting, Reveal & Self-scoring
-  const [essayDrafts, setEssayDrafts] = useState<Record<string, string>>({});
-  const [revealedEssays, setRevealedEssays] = useState<Record<string, boolean>>({});
+  // Essay Student Drafting, Reveal & Self-scoring (Restored from previous attempts)
+  const [essayDrafts, setEssayDrafts] = useState<Record<string, string>>(() => {
+    const init: Record<string, string> = {};
+    for (const a of initialQuestionAttempts) {
+      if (a.essayText) init[a.questionId] = a.essayText;
+    }
+    return init;
+  });
+
+  const [revealedEssays, setRevealedEssays] = useState<Record<string, boolean>>(() => {
+    const init: Record<string, boolean> = {};
+    for (const a of initialQuestionAttempts) {
+      if (a.essayText || a.isCorrect) init[a.questionId] = true;
+    }
+    return init;
+  });
+
   const [essaySelfScores, setEssaySelfScores] = useState<Record<string, number>>({});
 
   // Mastery Ratings for Learning Objectives
@@ -73,10 +88,35 @@ export function LessonViewer({
     Record<number, MasteryRatingType>
   >({});
 
-  // Practice Questions Answer State
+  // Practice Questions Answer State (Restored from previous saved attempts)
   const [questionAnswers, setQuestionAnswers] = useState<
     Record<string, QuestionAnswerState>
-  >({});
+  >(() => {
+    const init: Record<string, QuestionAnswerState> = {};
+    for (const a of initialQuestionAttempts) {
+      if (a.selectedOptionId) {
+        const qObj = lesson.questions.find((lq) => lq.question.id === a.questionId)?.question;
+        const correctOpt = qObj?.options.find((o) => o.isCorrect);
+        init[a.questionId] = {
+          selectedOptionId: a.selectedOptionId,
+          revealed: true,
+          isCorrect: a.isCorrect,
+          reveal: {
+            isCorrect: a.isCorrect,
+            correctOptionId: correctOpt?.id,
+            explanation: qObj?.explanation,
+            options: qObj?.options.map((o) => ({
+              id: o.id,
+              text: o.text,
+              isCorrect: o.isCorrect,
+              explanation: o.explanation,
+            })),
+          },
+        };
+      }
+    }
+    return init;
+  });
 
   // Bookmark & Progress States
   const [isFlashcardsOpen, setIsFlashcardsOpen] = useState(false);
@@ -317,7 +357,7 @@ export function LessonViewer({
   };
 
   const handleSelectOption = async (questionId: string, optionId: string) => {
-    if (questionAnswers[questionId]?.revealed) return;
+    if (questionAnswers[questionId]?.selectedOptionId === optionId) return;
 
     try {
       const res = await fetch(`/api/questions/${questionId}/answer`, {
@@ -357,6 +397,7 @@ export function LessonViewer({
       <LessonHeader
         subject={lesson.unit.subject}
         unit={lesson.unit}
+        lessonId={lesson.id}
         lessonTitle={lesson.title}
         durationMinutes={lesson.durationMinutes}
         questionsCount={lesson.questions.length}
@@ -664,12 +705,22 @@ export function LessonViewer({
                   onDraftChange={(qId, draft) =>
                     setEssayDrafts((prev) => ({ ...prev, [qId]: draft }))
                   }
-                  onToggleReveal={(qId) =>
-                    setRevealedEssays((prev) => ({
-                      ...prev,
-                      [qId]: !prev[qId],
-                    }))
-                  }
+                  onToggleReveal={(qId) => {
+                    setRevealedEssays((prev) => {
+                      const next = !prev[qId];
+                      if (next) {
+                        fetch(`/api/questions/${qId}/answer`, {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({
+                            essayText: essayDrafts[qId] || "",
+                            resolve: true,
+                          }),
+                        }).catch(() => {});
+                      }
+                      return { ...prev, [qId]: next };
+                    });
+                  }}
                   onSelectScore={(qId, score) =>
                     setEssaySelfScores((prev) => ({ ...prev, [qId]: score }))
                   }

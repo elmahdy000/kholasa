@@ -22,7 +22,7 @@ export async function POST(
 
     const { id: questionId } = await params;
     const body = await req.json().catch(() => ({}));
-    const { selectedOptionId, isDailyChallenge, resolve } = body;
+    const { selectedOptionId, isDailyChallenge, resolve, essayText } = body;
 
     const question = await QuestionService.getQuestionById(questionId);
 
@@ -33,8 +33,16 @@ export async function POST(
       );
     }
 
+    // Student self-resolved mistake or confirmed understanding
     if (resolve) {
-      await MistakeService.resolveMistake(user.id, questionId);
+      await Promise.all([
+        MistakeService.resolveMistake(user.id, questionId),
+        prisma.questionAttempt.upsert({
+          where: { userId_questionId: { userId: user.id, questionId } },
+          update: { isCorrect: true, updatedAt: new Date() },
+          create: { userId: user.id, questionId, isCorrect: true },
+        }),
+      ]);
       return NextResponse.json({
         success: true,
         isResolved: true,
@@ -52,11 +60,26 @@ export async function POST(
       const isCorrect = selectedOption?.isCorrect ?? false;
       const correctOption = question.options.find((o) => o.isCorrect);
 
-      if (!isCorrect) {
-        await MistakeService.recordMistake(user.id, questionId);
-      } else {
-        await MistakeService.resolveMistake(user.id, questionId);
-      }
+      // Persist the student's answer in QuestionAttempt
+      await Promise.all([
+        prisma.questionAttempt.upsert({
+          where: { userId_questionId: { userId: user.id, questionId } },
+          update: {
+            selectedOptionId: selectedOptionId || null,
+            isCorrect,
+            updatedAt: new Date(),
+          },
+          create: {
+            userId: user.id,
+            questionId,
+            selectedOptionId: selectedOptionId || null,
+            isCorrect,
+          },
+        }),
+        !isCorrect
+          ? MistakeService.recordMistake(user.id, questionId)
+          : MistakeService.resolveMistake(user.id, questionId),
+      ]);
 
       let streakDays: number | undefined;
       let isTodayCompleted: boolean | undefined;
@@ -99,6 +122,23 @@ export async function POST(
     }
 
     // Essay question
+    if (essayText !== undefined && essayText !== null) {
+      await prisma.questionAttempt.upsert({
+        where: { userId_questionId: { userId: user.id, questionId } },
+        update: {
+          essayText: String(essayText),
+          isCorrect: true,
+          updatedAt: new Date(),
+        },
+        create: {
+          userId: user.id,
+          questionId,
+          essayText: String(essayText),
+          isCorrect: true,
+        },
+      });
+    }
+
     return NextResponse.json({
       isEssay: true,
       modelAnswer: question.rubric?.modelAnswer,

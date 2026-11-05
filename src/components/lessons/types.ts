@@ -136,6 +136,13 @@ export interface LessonMistakeItem {
   question: Question;
 }
 
+export interface InitialQuestionAttempt {
+  questionId: string;
+  selectedOptionId?: string | null;
+  essayText?: string | null;
+  isCorrect: boolean;
+}
+
 export interface LessonViewerProps {
   lesson: {
     id: string;
@@ -159,6 +166,7 @@ export interface LessonViewerProps {
   initialIsBookmarked: boolean;
   initialIsCompleted: boolean;
   initialMistakes?: LessonMistakeItem[];
+  initialQuestionAttempts?: InitialQuestionAttempt[];
   userId?: string | null;
 }
 

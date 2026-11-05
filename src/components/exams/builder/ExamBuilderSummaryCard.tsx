@@ -15,6 +15,8 @@ interface ExamBuilderSummaryCardProps {
   mode: ExamMode;
   durationMinutes: number;
   availableCount: number | null;
+  unmasteredCount?: number | null;
+  masteredCount?: number | null;
   scopeType: ScopeType;
   selectedLessonIds: string[];
 }
@@ -31,6 +33,8 @@ export function ExamBuilderSummaryCard({
   mode,
   durationMinutes,
   availableCount,
+  unmasteredCount,
+  masteredCount,
   scopeType,
   selectedLessonIds,
 }: ExamBuilderSummaryCardProps) {
@@ -138,6 +142,19 @@ export function ExamBuilderSummaryCard({
             <span className="text-xs font-normal text-[#64748B] dark:text-[#94A3B8]">سؤال</span>
           </div>
         </div>
+
+        {/* Smart Spaced Repetition Indicator */}
+        {unmasteredCount !== undefined && unmasteredCount !== null && (
+          <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/25 text-emerald-900 dark:text-emerald-300 text-xs space-y-1.5">
+            <div className="flex items-center justify-between font-bold">
+              <span>أسئلة جديدة / لم تُتقن بعد:</span>
+              <span className="font-mono font-black">{unmasteredCount} سؤال</span>
+            </div>
+            <p className="text-[11px] text-emerald-700 dark:text-emerald-400 leading-normal">
+              الأسئلة التي تم حلها بشكل صحيح في امتحاناتك السابقة لن تتكرر في هذا الامتحان حتى تنتهي من جميع أسئلة البنك.
+            </p>
+          </div>
+        )}
 
         {/* Warnings or Zero Availability Note */}
         {availableCount === 0 && !isCounting && (

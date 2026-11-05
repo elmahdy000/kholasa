@@ -156,22 +156,57 @@ export class ExamGeneratorService {
         throw new Error("لا توجد أسئلة كافية مطابقة لمعايير الامتحان المحددة في هذا المسار المدرسي");
       }
 
-      // 3. Prevent repeating questions the student has already taken in previous exams
-      const previousAnswers = await prisma.studentAnswer.findMany({
-        where: { attempt: { userId } },
-        select: { questionId: true },
-      });
-      const attemptedQuestionIds = new Set(previousAnswers.map((a) => a.questionId));
+      // 3. Spaced Learning: Prevent repeating questions the student has already answered correctly
+      // "الاسئلة اللى امتحانها وجاوبها صح مش تتكرر تانى فى الامتحان اللى بعده لحد مايخلص كل الاسءلة"
+      const [correctStudentAnswers, correctQuestionAttempts, activeMistakes] = await Promise.all([
+        prisma.studentAnswer.findMany({
+          where: { attempt: { userId }, isCorrect: true },
+          select: { questionId: true },
+        }),
+        prisma.questionAttempt.findMany({
+          where: { userId, isCorrect: true },
+          select: { questionId: true },
+        }),
+        prisma.mistakeReview.findMany({
+          where: { userId, isResolved: false },
+          select: { questionId: true },
+        }),
+      ]);
 
-      // Prioritize unattempted (fresh) questions so questions don't repeat for the student
-      const unattempted = availableQuestions.filter((q) => !attemptedQuestionIds.has(q.id));
-      const attempted = availableQuestions.filter((q) => attemptedQuestionIds.has(q.id));
+      const masteredQuestionIds = new Set([
+        ...correctStudentAnswers.map((a) => a.questionId),
+        ...correctQuestionAttempts.map((q) => q.questionId),
+      ]);
+      const mistakeQuestionIds = new Set(activeMistakes.map((m) => m.questionId));
 
-      const shuffledUnattempted = [...unattempted].sort(() => 0.5 - Math.random());
-      const shuffledAttempted = [...attempted].sort(() => 0.5 - Math.random());
+      // Partition available questions:
+      // - unmastered: questions the student has NOT answered correctly yet (never answered, or answered incorrectly)
+      // - mastered: questions the student has already mastered/answered correctly
+      const unmastered = availableQuestions.filter((q) => !masteredQuestionIds.has(q.id));
+      const mastered = availableQuestions.filter((q) => masteredQuestionIds.has(q.id));
 
-      // Candidate pool gives absolute priority to unattempted questions
-      const candidatePool = [...shuffledUnattempted, ...shuffledAttempted];
+      // Prioritize mistakes within unmastered questions, then fresh questions
+      const mistakeUnmastered = unmastered.filter((q) => mistakeQuestionIds.has(q.id));
+      const freshUnmastered = unmastered.filter((q) => !mistakeQuestionIds.has(q.id));
+
+      const shuffledMistakes = [...mistakeUnmastered].sort(() => 0.5 - Math.random());
+      const shuffledFresh = [...freshUnmastered].sort(() => 0.5 - Math.random());
+      const prioritizedUnmastered = [...shuffledMistakes, ...shuffledFresh];
+
+      let candidatePool: typeof availableQuestions = [];
+
+      if (prioritizedUnmastered.length >= questionCount) {
+        // ZERO REPETITION of mastered questions! Exclude all correctly answered questions completely!
+        candidatePool = prioritizedUnmastered;
+      } else if (prioritizedUnmastered.length > 0) {
+        // Take ALL remaining unmastered questions first, then fill remaining shortage with mastered questions
+        const shuffledMastered = [...mastered].sort(() => 0.5 - Math.random());
+        candidatePool = [...prioritizedUnmastered, ...shuffledMastered];
+      } else {
+        // Student has finished and mastered 100% of all questions in this bank! ("لحد ما يخلص كل الأسئلة")
+        // Reset cycle and present all questions shuffled
+        candidatePool = [...availableQuestions].sort(() => 0.5 - Math.random());
+      }
 
       // Ensure no duplicate statements or questions exist within the exam itself
       const seenStatements = new Set<string>();
@@ -189,9 +224,30 @@ export class ExamGeneratorService {
     }
 
     const isPractice = mode === "PRACTICE";
-    const examTitle =
-      customTitle?.trim() ||
-      `امتحان ${isPractice ? "تدريبي" : "مخصص"}: ${subject?.name || "عام"} (${selected.length} سؤال)`;
+
+    // Generate clear, distinguished exam title indicating subject, unit, or lesson
+    let generatedTitle = "";
+    if (customTitle?.trim()) {
+      generatedTitle = customTitle.trim();
+    } else if (lessonIds && lessonIds.length === 1) {
+      const targetLesson = await prisma.lesson.findUnique({
+        where: { id: lessonIds[0] },
+        select: { title: true },
+      });
+      generatedTitle = `امتحان درس: ${targetLesson?.title || "الدرس"} (${selected.length} سؤال)`;
+    } else if (lessonIds && lessonIds.length > 1) {
+      generatedTitle = `امتحان دروس محددة: ${subject?.name || ""} (${selected.length} سؤال)`;
+    } else if (unitId && unitId !== "all") {
+      const targetUnit = await prisma.unit.findUnique({
+        where: { id: unitId },
+        select: { title: true },
+      });
+      generatedTitle = `امتحان وحدة: ${targetUnit?.title || "الوحدة"} (${selected.length} سؤال)`;
+    } else {
+      generatedTitle = `امتحان شامل: ${subject?.name || "عام"} (${selected.length} سؤال)`;
+    }
+
+    const examTitle = generatedTitle;
 
     const exam = await prisma.exam.create({
       data: {
@@ -235,7 +291,7 @@ export class ExamGeneratorService {
   }
 
   /**
-   * Calculate available question count for custom exam builder
+   * Calculate available question count for custom exam builder, including smart unmastered/mastered breakdown
    */
   static async getExamBuilderStats(params: {
     subjectId?: string;
@@ -243,9 +299,10 @@ export class ExamGeneratorService {
     lessonIds?: string[];
     type?: string;
     difficulty?: string;
+    userId?: string;
   }) {
-    const { subjectId, unitId, lessonIds, type, difficulty } = params;
-    if (!subjectId) return 0;
+    const { subjectId, unitId, lessonIds, type, difficulty, userId } = params;
+    if (!subjectId) return { count: 0, unmasteredCount: 0, masteredCount: 0 };
 
     const where: Prisma.QuestionWhereInput = {
       status: "PUBLISHED",
@@ -283,6 +340,48 @@ export class ExamGeneratorService {
       count = await prisma.question.count({ where: fallbackWhere });
     }
 
-    return count;
+    let masteredCount = 0;
+    let unmasteredCount = count;
+
+    if (userId && count > 0) {
+      const matchingQuestions = await prisma.question.findMany({
+        where: difficulty === "MEDIUM" && count === 0
+          ? { ...where, difficulty: { in: [Difficulty.EASY, Difficulty.HARD] } }
+          : where,
+        select: { id: true },
+      });
+      const qIds = matchingQuestions.map((q) => q.id);
+
+      if (qIds.length > 0) {
+        const [examCorrect, practiceCorrect] = await Promise.all([
+          prisma.studentAnswer.findMany({
+            where: {
+              attempt: { userId },
+              isCorrect: true,
+              questionId: { in: qIds },
+            },
+            select: { questionId: true },
+          }),
+          prisma.questionAttempt.findMany({
+            where: {
+              userId,
+              isCorrect: true,
+              questionId: { in: qIds },
+            },
+            select: { questionId: true },
+          }),
+        ]);
+
+        const masteredSet = new Set([
+          ...examCorrect.map((a) => a.questionId),
+          ...practiceCorrect.map((q) => q.questionId),
+        ]);
+
+        masteredCount = masteredSet.size;
+        unmasteredCount = Math.max(0, count - masteredCount);
+      }
+    }
+
+    return { count, unmasteredCount, masteredCount };
   }
 }
