@@ -293,6 +293,95 @@ export function parseQuestionsFromText(
   const text = cleanText(rawContent);
   if (!text) return [];
 
+  // Direct JSON Array Support
+  const trimmed = text.trim();
+  if (trimmed.startsWith("[") && trimmed.endsWith("]")) {
+    try {
+      const parsedArray = JSON.parse(trimmed);
+      if (Array.isArray(parsedArray) && parsedArray.length > 0 && parsedArray.some((i) => i && (i.statement || i.question))) {
+        return parsedArray.map((item: any) => {
+          const rawType = String(item.type || "").toUpperCase();
+          const type: QuestionType =
+            rawType.includes("TRUE") || rawType.includes("صح")
+              ? "TRUE_FALSE"
+              : rawType.includes("ESSAY") || rawType.includes("مقال")
+              ? "ESSAY"
+              : "MCQ";
+
+          const rawDiff = String(item.difficulty || "").toUpperCase();
+          const difficulty: QuestionDifficulty =
+            rawDiff.includes("HARD") || rawDiff.includes("صعب")
+              ? "HARD"
+              : rawDiff.includes("EASY") || rawDiff.includes("سهل")
+              ? "EASY"
+              : "MEDIUM";
+
+          const rawStatement = String(item.statement || item.question || "").trim();
+          const statement = cleanQuestionStatement(rawStatement);
+
+          const translation = item.translation ? String(item.translation).trim() : undefined;
+          const modelAnswer = item.modelAnswer ? formatModelAnswer(String(item.modelAnswer)) : undefined;
+          const modelAnswerTranslation = item.modelAnswerTranslation ? String(item.modelAnswerTranslation).trim() : undefined;
+          const concept = item.concept ? String(item.concept).trim() : undefined;
+          const correctReason = item.explanation || item.correctReason ? String(item.explanation || item.correctReason).trim() : undefined;
+
+          let options: ParsedQuestionOption[] = [];
+          if (type !== "ESSAY" && Array.isArray(item.options)) {
+            options = item.options.map((opt: any) => ({
+              text: String(opt.text || opt.title || opt).trim(),
+              translation: opt.translation ? String(opt.translation).trim() : undefined,
+              isCorrect: Boolean(opt.isCorrect || opt.correct),
+              explanation: opt.explanation ? String(opt.explanation).trim() : undefined,
+            }));
+          }
+
+          const validationNotes: string[] = [];
+          let isValid = true;
+          let reviewStatus: QuestionReviewStatus = "APPROVED";
+
+          if (!statement || statement.length < 3) {
+            isValid = false;
+            reviewStatus = "NEEDS_CHANGES";
+            validationNotes.push("نص السؤال مفقود أو قصير جداً");
+          }
+
+          if (type === "MCQ") {
+            if (options.length < 2) {
+              isValid = false;
+              reviewStatus = "NEEDS_CHANGES";
+              validationNotes.push("السؤال الاختياري يتطلب خيارين على الأقل");
+            } else if (!options.some((o) => o.isCorrect)) {
+              isValid = false;
+              reviewStatus = "NEEDS_CHANGES";
+              validationNotes.push("لم يتم تحديد الإجابة الصحيحة");
+            }
+          }
+
+          return {
+            id: "pq_json_" + Math.random().toString(36).substring(2, 9),
+            statement,
+            translation,
+            type,
+            difficulty,
+            options,
+            modelAnswer,
+            modelAnswerTranslation,
+            concept,
+            correctReason,
+            isValid,
+            validationNotes,
+            classificationConfidence: 1.0,
+            classificationReason: "استيراد مباشر بصيغة JSON المعيارية",
+            difficultyReason: `تم التحديد في ملف JSON [${difficulty}]`,
+            reviewStatus,
+            rawText: JSON.stringify(item, null, 2),
+            isDuplicate: false,
+          };
+        });
+      }
+    } catch {}
+  }
+
   const rawLines = text.split("\n").map((l) => l.trim()).filter((l) => l.length > 0);
   const questions: ParsedQuestion[] = [];
 
