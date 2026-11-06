@@ -293,22 +293,82 @@ export function parseQuestionsFromText(
   const text = cleanText(rawContent);
   if (!text) return [];
 
-  // Direct JSON Array Support
+  // Direct JSON Support (Arrays or Wrapped Objects)
   const trimmed = text.trim();
-  if (trimmed.startsWith("[") && trimmed.endsWith("]")) {
+  if ((trimmed.startsWith("[") && trimmed.endsWith("]")) || (trimmed.startsWith("{") && trimmed.endsWith("}"))) {
     try {
-      const parsedArray = JSON.parse(trimmed);
-      if (Array.isArray(parsedArray) && parsedArray.length > 0 && parsedArray.some((i) => i && (i.statement || i.question))) {
-        return parsedArray.map((item: any) => {
-          const rawType = String(item.type || "").toUpperCase();
-          const type: QuestionType =
-            rawType.includes("TRUE") || rawType.includes("صح")
-              ? "TRUE_FALSE"
-              : rawType.includes("ESSAY") || rawType.includes("مقال")
-              ? "ESSAY"
-              : "MCQ";
+      let parsedArray: any[] | null = null;
+      if (trimmed.startsWith("[")) {
+        const parsed = JSON.parse(trimmed);
+        if (Array.isArray(parsed)) parsedArray = parsed;
+      } else {
+        const parsedObj = JSON.parse(trimmed);
+        if (Array.isArray(parsedObj.questions)) parsedArray = parsedObj.questions;
+        else if (Array.isArray(parsedObj.data)) parsedArray = parsedObj.data;
+        else if (Array.isArray(parsedObj.items)) parsedArray = parsedObj.items;
+        else if (Array.isArray(parsedObj.bank)) parsedArray = parsedObj.bank;
+      }
 
-          const rawDiff = String(item.difficulty || "").toUpperCase();
+      if (Array.isArray(parsedArray) && parsedArray.length > 0 && parsedArray.some((i) => i && typeof i === "object")) {
+        return parsedArray.map((item: any) => {
+          // Flatten nested question payload (e.g. { id, question: { prompt, options, ... } })
+          const rawItem = item && typeof item.question === "object" ? { ...item, ...item.question } : item;
+
+          const rawType = String(rawItem.type || rawItem.questionType || rawItem.kind || "").toUpperCase();
+          const hasRubric = Boolean(rawItem.modelAnswer || rawItem.rubric || rawItem.modelAnswerTranslation);
+
+          // Extract candidate options across various naming conventions
+          let candidateOptions: any[] = [];
+          if (Array.isArray(rawItem.options)) candidateOptions = rawItem.options;
+          else if (Array.isArray(rawItem.choices)) candidateOptions = rawItem.choices;
+          else if (Array.isArray(rawItem.answers) && rawItem.answers.length > 1) candidateOptions = rawItem.answers;
+          else if (Array.isArray(rawItem.alternatives)) candidateOptions = rawItem.alternatives;
+          else if (rawItem.options && typeof rawItem.options === "object" && !Array.isArray(rawItem.options)) {
+            // Object map: { "A": "...", "B": "..." }
+            candidateOptions = Object.entries(rawItem.options).map(([key, val]) => {
+              if (typeof val === "object" && val !== null) return { ...(val as any), label: key };
+              return { label: key, text: String(val) };
+            });
+          } else if (rawItem.optionA || rawItem.optionB) {
+            candidateOptions = [
+              rawItem.optionA ? { label: "A", text: String(rawItem.optionA) } : null,
+              rawItem.optionB ? { label: "B", text: String(rawItem.optionB) } : null,
+              rawItem.optionC ? { label: "C", text: String(rawItem.optionC) } : null,
+              rawItem.optionD ? { label: "D", text: String(rawItem.optionD) } : null,
+            ].filter(Boolean);
+          } else if (rawItem.A || rawItem.B) {
+            candidateOptions = [
+              rawItem.A ? { label: "A", text: String(rawItem.A) } : null,
+              rawItem.B ? { label: "B", text: String(rawItem.B) } : null,
+              rawItem.C ? { label: "C", text: String(rawItem.C) } : null,
+              rawItem.D ? { label: "D", text: String(rawItem.D) } : null,
+            ].filter(Boolean);
+          }
+
+          let type: QuestionType = "MCQ";
+          if (
+            rawType.includes("TRUE") ||
+            rawType.includes("صح") ||
+            rawType.includes("FALSE") ||
+            rawType.includes("خطأ")
+          ) {
+            type = "TRUE_FALSE";
+          } else if (
+            rawType.includes("ESSAY") ||
+            rawType.includes("مقال") ||
+            (hasRubric && candidateOptions.length === 0)
+          ) {
+            type = "ESSAY";
+          } else if (
+            candidateOptions.length === 2 &&
+            candidateOptions.some((o) => /true|false|صواب|خطأ/i.test(String(o?.text || o)))
+          ) {
+            type = "TRUE_FALSE";
+          } else {
+            type = "MCQ";
+          }
+
+          const rawDiff = String(rawItem.difficulty || rawItem.level || "").toUpperCase();
           const difficulty: QuestionDifficulty =
             rawDiff.includes("HARD") || rawDiff.includes("صعب")
               ? "HARD"
@@ -316,23 +376,82 @@ export function parseQuestionsFromText(
               ? "EASY"
               : "MEDIUM";
 
-          const rawStatement = String(item.statement || item.question || "").trim();
+          const rawStatement = String(
+            (typeof rawItem.statement === "string" ? rawItem.statement : "") ||
+            (typeof rawItem.prompt === "string" ? rawItem.prompt : "") ||
+            (typeof rawItem.question === "string" ? rawItem.question : "") ||
+            (typeof rawItem.title === "string" ? rawItem.title : "") ||
+            (typeof rawItem.text === "string" ? rawItem.text : "") ||
+            ""
+          ).trim();
           const statement = cleanQuestionStatement(rawStatement);
 
-          const translation = item.translation ? String(item.translation).trim() : undefined;
-          const modelAnswer = item.modelAnswer ? formatModelAnswer(String(item.modelAnswer)) : undefined;
-          const modelAnswerTranslation = item.modelAnswerTranslation ? String(item.modelAnswerTranslation).trim() : undefined;
-          const concept = item.concept ? String(item.concept).trim() : undefined;
-          const correctReason = item.explanation || item.correctReason ? String(item.explanation || item.correctReason).trim() : undefined;
+          const translation = rawItem.translation ? String(rawItem.translation).trim() : undefined;
+          const modelAnswer = rawItem.modelAnswer ? formatModelAnswer(String(rawItem.modelAnswer)) : undefined;
+          const modelAnswerTranslation = rawItem.modelAnswerTranslation
+            ? String(rawItem.modelAnswerTranslation).trim()
+            : undefined;
+          const concept = rawItem.concept ? String(rawItem.concept).trim() : undefined;
+          const correctReason =
+            rawItem.explanation || rawItem.correctReason
+              ? String(rawItem.explanation || rawItem.correctReason).trim()
+              : undefined;
+
+          // External answer indicators (e.g. answer: "A", correctAnswer: "B", correctIndex: 2)
+          const externalAnswer =
+            rawItem.answer ?? rawItem.correctAnswer ?? rawItem.correctOption ?? rawItem.correct;
+          const externalIndex = typeof rawItem.correctIndex === "number" ? rawItem.correctIndex : undefined;
 
           let options: ParsedQuestionOption[] = [];
-          if (type !== "ESSAY" && Array.isArray(item.options)) {
-            options = item.options.map((opt: any) => ({
-              text: String(opt.text || opt.title || opt).trim(),
-              translation: opt.translation ? String(opt.translation).trim() : undefined,
-              isCorrect: Boolean(opt.isCorrect || opt.correct),
-              explanation: opt.explanation ? String(opt.explanation).trim() : undefined,
-            }));
+          if (type !== "ESSAY" && candidateOptions.length > 0) {
+            options = candidateOptions.map((opt: any, idx: number) => {
+              const isObj = typeof opt === "object" && opt !== null;
+              let optText = isObj
+                ? String(opt.text || opt.title || opt.value || "").trim()
+                : String(opt).trim();
+              const optTranslation = isObj && opt.translation ? String(opt.translation).trim() : undefined;
+              const optExplanation =
+                isObj && (opt.explanation || opt.reason)
+                  ? String(opt.explanation || opt.reason).trim()
+                  : undefined;
+
+              let isMarkedCorrect = isObj && Boolean(opt.isCorrect || opt.correct);
+              if (optText.startsWith("*")) {
+                isMarkedCorrect = true;
+                optText = optText.replace(/^\*\s*/, "");
+              }
+
+              const letterMatch = optText.match(/^(\*?[A-Da-dأ-د1-4])\s*[\)\.\-\:]\s*(.+)$/);
+              let extractedLabel: string | undefined = isObj && opt.label ? String(opt.label).trim() : undefined;
+              if (letterMatch) {
+                if (letterMatch[1].startsWith("*")) isMarkedCorrect = true;
+                extractedLabel = letterMatch[1].replace("*", "").toUpperCase();
+                optText = letterMatch[2].trim();
+              }
+
+              if (!isMarkedCorrect) {
+                if (externalIndex !== undefined && idx === externalIndex) {
+                  isMarkedCorrect = true;
+                } else if (externalAnswer !== undefined && externalAnswer !== null) {
+                  const ansStr = String(externalAnswer).trim();
+                  const currentLabel = extractedLabel || String.fromCharCode(65 + idx);
+                  if (ansStr.toUpperCase() === currentLabel.toUpperCase()) {
+                    isMarkedCorrect = true;
+                  } else if (ansStr === String(idx) || ansStr === String(idx + 1)) {
+                    isMarkedCorrect = true;
+                  } else if (ansStr.toLowerCase() === optText.toLowerCase()) {
+                    isMarkedCorrect = true;
+                  }
+                }
+              }
+
+              return {
+                text: optText,
+                translation: optTranslation,
+                isCorrect: isMarkedCorrect,
+                explanation: optExplanation,
+              };
+            });
           }
 
           const validationNotes: string[] = [];
@@ -354,6 +473,16 @@ export function parseQuestionsFromText(
               isValid = false;
               reviewStatus = "NEEDS_CHANGES";
               validationNotes.push("لم يتم تحديد الإجابة الصحيحة");
+            }
+          } else if (type === "TRUE_FALSE") {
+            if (options.length === 0) {
+              // Auto-generate standard True/False choices if missing
+              const ansStr = externalAnswer !== undefined ? String(externalAnswer).toLowerCase() : "";
+              const isTrue = ansStr.includes("true") || ansStr.includes("صح") || ansStr.includes("صواب");
+              options = [
+                { text: "صواب", isCorrect: isTrue },
+                { text: "خطأ", isCorrect: !isTrue },
+              ];
             }
           }
 

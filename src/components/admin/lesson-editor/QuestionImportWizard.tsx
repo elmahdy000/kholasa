@@ -248,11 +248,12 @@ export function QuestionImportWizard({
           body: formData,
         });
       } else {
+        const isJsonPayload = pasteText.trim().startsWith("[") || pasteText.trim().startsWith("{");
         const payload = {
           text: pasteText.trim(),
           strategy,
-          allowedTypes,
-          type: targetType !== "ALL" ? targetType : undefined,
+          allowedTypes: isJsonPayload ? ["MCQ", "TRUE_FALSE", "ESSAY"] : allowedTypes,
+          type: isJsonPayload ? undefined : (targetType !== "ALL" ? targetType : undefined),
           difficulty: strategy === "FORCED" ? forcedDifficulty : undefined,
           schoolCategory: unitInfo.schoolCategory,
         };
@@ -273,14 +274,17 @@ export function QuestionImportWizard({
         throw new Error("لم يتم العثور على أي أسئلة صالحة في المستند. يرجى مراجعة التنسيق والترقيم.");
       }
 
-      // Check against allowed types: mark unallowed types as EXCLUDED with reason
+      // Auto-adapt allowed types and targetType to match what was parsed
       let effectiveAllowed = [...allowedTypes];
-      if (inputMode === "PASTE") {
-        const detectedTypes = Array.from(new Set(questions.map((q) => q.type)));
-        if (detectedTypes.some((t) => !effectiveAllowed.includes(t))) {
-          effectiveAllowed = Array.from(new Set([...effectiveAllowed, ...detectedTypes]));
-          setAllowedTypes(effectiveAllowed);
-        }
+      const detectedTypes = Array.from(new Set(questions.map((q) => q.type)));
+      if (detectedTypes.some((t) => !effectiveAllowed.includes(t))) {
+        effectiveAllowed = Array.from(new Set([...effectiveAllowed, ...detectedTypes]));
+        setAllowedTypes(effectiveAllowed);
+      }
+      if (detectedTypes.length === 1 && targetType !== "ALL" && targetType !== detectedTypes[0]) {
+        setTargetType(detectedTypes[0]);
+      } else if (detectedTypes.length > 1 && targetType !== "ALL") {
+        setTargetType("ALL");
       }
 
       const processed: ParsedQuestion[] = questions.map((q) => {

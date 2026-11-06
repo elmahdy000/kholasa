@@ -293,11 +293,12 @@ export function QuestionImportWizardModal({
         rawQuestions = data.questions || [];
       } else {
         // Direct Text Parse using API with forcedType support
+        const isJsonPayload = pasteText.trim().startsWith("[") || pasteText.trim().startsWith("{");
         const payload = {
           text: pasteText.trim(),
           strategy,
-          allowedTypes,
-          type: targetType !== "ALL" ? targetType : undefined,
+          allowedTypes: isJsonPayload ? ["MCQ", "TRUE_FALSE", "ESSAY"] : allowedTypes,
+          type: isJsonPayload ? undefined : (targetType !== "ALL" ? targetType : undefined),
           difficulty: strategy === "FORCED" ? forcedDifficulty : undefined,
           schoolCategory: selectedSchoolCategory,
         };
@@ -319,9 +320,22 @@ export function QuestionImportWizardModal({
         throw new Error("لم يتم العثور على أي أسئلة صالحة في المحتوى المرفوع.");
       }
 
-      // Filter by allowed types if specified
+      // Auto-adapt allowed types if questions of other types are detected
+      let effectiveAllowed = [...allowedTypes];
+      const detectedTypes = Array.from(new Set(rawQuestions.map((q) => q.type)));
+      if (detectedTypes.some((t) => !effectiveAllowed.includes(t))) {
+        effectiveAllowed = Array.from(new Set([...effectiveAllowed, ...detectedTypes]));
+        setAllowedTypes(effectiveAllowed);
+      }
+      if (detectedTypes.length === 1 && targetType !== "ALL" && targetType !== detectedTypes[0]) {
+        setTargetType(detectedTypes[0]);
+      } else if (detectedTypes.length > 1 && targetType !== "ALL") {
+        setTargetType("ALL");
+      }
+
+      // Filter by effective allowed types
       const filteredByType = rawQuestions.filter((q) =>
-        allowedTypes.includes(q.type)
+        effectiveAllowed.includes(q.type)
       );
 
       // Revalidate each question and apply strategy
