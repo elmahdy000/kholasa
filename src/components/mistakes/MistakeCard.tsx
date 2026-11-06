@@ -17,6 +17,7 @@ interface MistakeCardProps {
 }
 
 const ARABIC_LETTERS = ["أ", "ب", "ج", "د", "هـ"];
+const ENGLISH_LETTERS = ["A", "B", "C", "D", "E"];
 
 export function MistakeCard({
   mistake,
@@ -32,6 +33,11 @@ export function MistakeCard({
   const isEssay = q.type === "ESSAY" || (!q.options || q.options.length === 0);
   const relatedLesson = q.lessons?.[0]?.lesson;
   const isChecked = !!answerState?.result;
+
+  const isEnglishStatement = !/[\u0600-\u06FF]/.test(q.statement || "");
+  const isEnglish =
+    isEnglishStatement ||
+    Boolean(q.options?.some((o) => !/[\u0600-\u06FF]/.test(o.text || "")));
 
   const handleResolve = async () => {
     if (!onResolveMistake || isResolving) return;
@@ -63,18 +69,18 @@ export function MistakeCard({
           {isEssay && (
             <span className="px-2.5 py-1 rounded-lg bg-[#7C3AED]/10 text-[#7C3AED] text-[13px] font-bold border border-[#7C3AED]/20 flex items-center gap-1.5">
               <PencilLine className="w-3.5 h-3.5" />
-              <span>سؤال مقالي</span>
+              <span>{isEnglish ? "Essay Question" : "سؤال مقالي"}</span>
             </span>
           )}
           {mistake.wrongCount > 1 && (
             <span className="px-2 py-1 rounded-lg bg-[#DC2626]/10 dark:bg-[#1E293B] text-[#DC2626] text-[13px] font-bold border border-[#E2E8F0]/50 dark:border-[#F87171]/50">
-              اتكرر الغلط {mistake.wrongCount} مرات
+              {isEnglish ? `Repeated mistake ${mistake.wrongCount} times` : `اتكرر الغلط ${mistake.wrongCount} مرات`}
             </span>
           )}
           {mistake.isResolved && (
             <span className="px-3 py-1 rounded-lg bg-[#059669]/10 dark:bg-[#1E293B] text-[#059669] dark:text-[#34D399] text-[13px] font-bold flex items-center gap-1 border border-[#E2E8F0]/50 dark:border-[#34D399]/50">
               <Check className="w-3 h-3" />
-              <span>اتقنتها خلاص</span>
+              <span>{isEnglish ? "Mastered" : "اتقنتها خلاص"}</span>
             </span>
           )}
         </div>
@@ -86,7 +92,7 @@ export function MistakeCard({
           >
             <BookOpen className="w-3.5 h-3.5 shrink-0 text-[#800020]" />
             <span className="break-words">
-              شرح الدرس: <BidiStatement as="span" text={relatedLesson.title} />
+              {isEnglish ? "Lesson: " : "شرح الدرس: "}<BidiStatement as="span" text={relatedLesson.title} />
             </span>
             <ArrowLeft className="w-3 h-3 shrink-0" />
           </Link>
@@ -94,11 +100,16 @@ export function MistakeCard({
       </div>
 
       {/* Statement */}
-      <BidiStatement
-        as="h3"
-        text={q.statement}
-        className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-white leading-relaxed font-content"
-      />
+      <div
+        dir={isEnglish ? "ltr" : "rtl"}
+        className={isEnglish ? "text-left" : "text-right"}
+      >
+        <BidiStatement
+          as="h3"
+          text={q.statement}
+          className={`text-sm sm:text-base font-bold text-[#0F172A] dark:text-white leading-relaxed ${isEnglish ? "font-sans" : "font-content"}`}
+        />
+      </div>
 
       <QuestionImageAttachment imageUrl={q.imageUrl} />
 
@@ -106,7 +117,7 @@ export function MistakeCard({
       {!isEssay && q.options && q.options.length > 0 && (
         <div className="space-y-3">
           <span className="text-[13px] font-bold text-[#64748B] dark:text-[#94A3B8] block mb-1">
-            جرب تحلها تاني دلوقتي وافهم الصح عشان متغلطش فيها:
+            {isEnglish ? "Try answering again now and understand the correct reasoning:" : "جرب تحلها تاني دلوقتي وافهم الصح عشان متغلطش فيها:"}
           </span>
           {q.options.map((opt, optIdx) => {
             const isSelected = answerState?.selectedOptionId === opt.id;
@@ -124,21 +135,27 @@ export function MistakeCard({
               }
             }
 
+            const isEnglishOpt = isEnglish || !/[\u0600-\u06FF]/.test(opt.text || "");
+            const letter = isEnglishOpt
+              ? ENGLISH_LETTERS[optIdx] || opt.order
+              : ARABIC_LETTERS[optIdx] || opt.order;
+
             return (
               <button
                 key={opt.id}
                 type="button"
+                dir={isEnglishOpt ? "ltr" : "rtl"}
                 disabled={isChecked || answerState?.isChecking}
                 onClick={() => onRetakeAnswer(q.id, opt.id)}
-                className={`w-full p-4 rounded-xl border text-right text-[13px] sm:text-sm font-medium flex items-start sm:items-center justify-between gap-3 transition-colors ${rowStyle} ${
+                className={`w-full p-4 rounded-xl border ${isEnglishOpt ? "text-left font-sans" : "text-right font-content"} text-[13px] sm:text-sm font-medium flex items-start sm:items-center justify-between gap-3 transition-colors ${rowStyle} ${
                   isChecked || answerState?.isChecking ? "cursor-default" : "cursor-pointer"
                 }`}
               >
                 <div className="flex items-start sm:items-center gap-3 min-w-0 flex-1">
                   <span className="w-6 h-6 rounded-lg bg-[#F8FAFC] dark:bg-[#1E293B] text-[#64748B] dark:text-[#F8FAFC] flex items-center justify-center text-[13px] font-mono font-bold shrink-0 mt-1 sm:mt-0 border border-[#E2E8F0]/60 dark:border-[#334155]/60">
-                    {ARABIC_LETTERS[optIdx] || opt.order}
+                    {letter}
                   </span>
-                  <div className="min-w-0 flex-1 leading-relaxed">
+                  <div className={`min-w-0 flex-1 leading-relaxed ${isEnglishOpt ? "text-left" : "text-right"}`}>
                     <BidiStatement as="span" text={opt.text} />
                   </div>
                 </div>
@@ -148,11 +165,11 @@ export function MistakeCard({
                     {opt.isCorrect ? (
                       <span className="text-[#059669] dark:text-[#34D399] text-[13px] font-bold flex items-center gap-1">
                         <Check className="w-3.5 h-3.5" />
-                        <span>صح! برافو عليك</span>
+                        <span>{isEnglishOpt ? "Correct!" : "صح! برافو عليك"}</span>
                       </span>
                     ) : isSelected ? (
                       <span className="text-[#DC2626] dark:text-[#F87171] text-[13px] font-bold">
-                        مش صحيحة
+                        {isEnglishOpt ? "Incorrect" : "مش صحيحة"}
                       </span>
                     ) : null}
                   </div>

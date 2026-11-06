@@ -72,20 +72,28 @@ export function ExamQuestionCard({
       currentQ.options?.some((o) => o.translation && o.translation.trim().length > 0))
   );
 
+  const isEnglishStatement = !/[\u0600-\u06FF]/.test(currentQ.statement || "");
+  const isEnglish = isLanguages || isEnglishStatement;
+
   return (
     <div className="p-6 sm:p-8 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] space-y-6">
       {/* Question Header & Badges */}
-      <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#334155] pb-4">
+      <div
+        dir={isEnglish ? "ltr" : "rtl"}
+        className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#334155] pb-4"
+      >
         <div className="flex items-center gap-2">
           <span className="px-3 py-1 rounded-lg bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] text-[13px] font-bold border border-[#E2E8F0]/50 dark:border-[#E11D48]/50">
-            السؤال {currentIndex + 1} من {totalQuestions}
+            {isEnglish
+              ? `Question ${currentIndex + 1} of ${totalQuestions}`
+              : `السؤال ${currentIndex + 1} من ${totalQuestions}`}
           </span>
           <span className="px-3 py-1 rounded-lg bg-[#F8FAFC] dark:bg-[#1E293B] text-[#64748B] dark:text-[#F8FAFC] text-[13px] font-bold border border-[#E2E8F0]/50 dark:border-[#334155]/50">
             {currentQ.difficulty === "EASY"
-              ? "سهل"
+              ? isEnglish ? "Easy" : "سهل"
               : currentQ.difficulty === "MEDIUM"
-              ? "متوسط"
-              : "صعب"}
+              ? isEnglish ? "Medium" : "متوسط"
+              : isEnglish ? "Hard" : "صعب"}
           </span>
         </div>
 
@@ -107,27 +115,25 @@ export function ExamQuestionCard({
             }`}
           >
             <Flag className={`w-3.5 h-3.5 ${isFlagged ? "fill-current" : ""}`} weight={isFlagged ? "fill" : "bold"} />
-            <span>{isFlagged ? "متعلّم للمراجعة" : "علّم عليه للمراجعة"}</span>
+            <span>
+              {isFlagged
+                ? isEnglish ? "Flagged for review" : "متعلّم للمراجعة"
+                : isEnglish ? "Flag for review" : "علّم عليه للمراجعة"}
+            </span>
           </button>
         </div>
       </div>
 
       {/* Statement */}
-      <div className="space-y-4">
-        {isLanguages ? (
-          <h2
-            dir="ltr"
-            className="text-base sm:text-lg font-semibold text-[#0F172A] dark:text-white leading-relaxed font-sans text-left"
-          >
-            {currentQ.statement}
-          </h2>
-        ) : (
-          <BidiStatement
-            as="h2"
-            text={currentQ.statement}
-            className="text-base sm:text-lg font-bold text-[#0F172A] dark:text-white leading-relaxed font-content"
-          />
-        )}
+      <div
+        dir={isEnglish ? "ltr" : "rtl"}
+        className={`space-y-4 ${isEnglish ? "text-left" : "text-right"}`}
+      >
+        <BidiStatement
+          as="h2"
+          text={currentQ.statement}
+          className={`text-base sm:text-lg font-bold text-[#0F172A] dark:text-white leading-relaxed ${isEnglish ? "font-sans" : "font-content"}`}
+        />
         <QuestionImageAttachment imageUrl={currentQ.imageUrl} />
 
         {initialMode === "PRACTICE" && isQuestionTranslated && currentQ.translation && (
@@ -174,7 +180,8 @@ export function ExamQuestionCard({
               }
             }
 
-            const letter = isLanguages
+            const isEnglishOpt = isEnglish || !/[\u0600-\u06FF]/.test(opt.text || "");
+            const letter = isEnglishOpt
               ? englishLetters[optIdx] || opt.order
               : arabicLetters[optIdx] || opt.order;
 
@@ -182,8 +189,9 @@ export function ExamQuestionCard({
               <button
                 key={opt.id}
                 type="button"
+                dir={isEnglishOpt ? "ltr" : "rtl"}
                 onClick={() => onSelectOption(opt.id)}
-                className={`w-full p-4 sm:p-4 rounded-xl border ${isLanguages ? "text-left font-sans" : "text-right"} text-[13px] sm:text-sm font-medium flex items-start sm:items-center justify-between gap-3 transition-colors cursor-pointer ${cardStyle}`}
+                className={`w-full p-4 sm:p-4 rounded-xl border ${isEnglishOpt ? "text-left font-sans" : "text-right font-content"} text-[13px] sm:text-sm font-medium flex items-start sm:items-center justify-between gap-3 transition-colors cursor-pointer ${cardStyle}`}
               >
                 <div className="flex items-start sm:items-center gap-3 min-w-0 flex-1">
                   <div
@@ -195,12 +203,8 @@ export function ExamQuestionCard({
                   >
                     {letter}
                   </div>
-                  <div className="min-w-0 flex-1 leading-relaxed">
-                    {isLanguages ? (
-                      <span className="font-sans">{opt.text}</span>
-                    ) : (
-                      <BidiStatement as="span" text={opt.text} />
-                    )}
+                  <div className={`min-w-0 flex-1 leading-relaxed ${isEnglishOpt ? "text-left" : "text-right"}`}>
+                    <BidiStatement as="span" text={opt.text} />
 
                     {initialMode === "PRACTICE" && isQuestionTranslated && opt.translation && (
                       <div
@@ -219,11 +223,11 @@ export function ExamQuestionCard({
                     {isOptionCorrect ? (
                       <span className="text-[#059669] dark:text-[#34D399] text-[13px] font-bold flex items-center gap-1">
                         <Check className="w-4 h-4" weight="bold" />
-                        <span>صح! برافو</span>
+                        <span>{isEnglish ? "Correct" : "صح! برافو"}</span>
                       </span>
                     ) : isSelected ? (
                       <span className="text-[#DC2626] dark:text-[#F87171] text-[13px] font-bold">
-                        مش صحيحة
+                        {isEnglish ? "Incorrect" : "مش صحيحة"}
                       </span>
                     ) : null}
                   </div>
@@ -237,15 +241,16 @@ export function ExamQuestionCard({
       {/* Essay Question Area */}
       {currentQ.type === "ESSAY" && (
         <div className="space-y-4">
-          <label className="block text-[13px] font-bold text-[#64748B] dark:text-[#94A3B8]">
-            اكتب إجابتك هنا بالتفصيل:
+          <label className={`block text-[13px] font-bold text-[#64748B] dark:text-[#94A3B8] ${isEnglish ? "text-left" : "text-right"}`}>
+            {isEnglish ? "Write your detailed answer here:" : "اكتب إجابتك هنا بالتفصيل:"}
           </label>
           <textarea
             value={currentAnswer.essayText || ""}
             onChange={(e) => onEssayChange(e.target.value)}
-            placeholder="اكتب خطوات الحل وشرحك هنا بالتفصيل..."
+            dir={isEnglish ? "ltr" : "rtl"}
+            placeholder={isEnglish ? "Write your solution steps and explanation here..." : "اكتب خطوات الحل وشرحك هنا بالتفصيل..."}
             rows={5}
-            className="w-full p-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#800020] text-[#0F172A] dark:text-white font-content"
+            className={`w-full p-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#800020] text-[#0F172A] dark:text-white ${isEnglish ? "text-left font-sans" : "text-right font-content"}`}
           />
 
           {initialMode === "PRACTICE" && currentAnswer.practiceRevealed && revealedAnswer?.modelAnswer && (

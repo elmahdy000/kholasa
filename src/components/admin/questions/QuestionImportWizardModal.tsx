@@ -1218,10 +1218,11 @@ Explanation: الذكاء الاصطناعي مجال يضم أنظمة حاسو
                                   <textarea
                                     rows={2}
                                     value={q.statement}
+                                    dir={!/[\u0600-\u06FF]/.test(q.statement || "") ? "ltr" : "rtl"}
                                     onChange={(e) =>
                                       handleUpdateStagedQuestion({ ...q, statement: e.target.value })
                                     }
-                                    className="w-full p-2.5 rounded-lg border border-[#E2E8F0] text-[12px] font-bold"
+                                    className={`w-full p-2.5 rounded-lg border border-[#E2E8F0] text-[12px] font-bold ${!/[\u0600-\u06FF]/.test(q.statement || "") ? "text-left font-sans" : "text-right font-content"}`}
                                   />
                                 </div>
 
@@ -1253,11 +1254,12 @@ Explanation: الذكاء الاصطناعي مجال يضم أنظمة حاسو
                                       <textarea
                                         rows={5}
                                         value={q.modelAnswer || ""}
+                                        dir={!/[\u0600-\u06FF]/.test(q.modelAnswer || "") ? "ltr" : "rtl"}
                                         onChange={(e) =>
                                           handleUpdateStagedQuestion({ ...q, modelAnswer: e.target.value })
                                         }
                                         placeholder="اكتب عناصر الإجابة والخطوات النموذجية بالتفصيل (ستظهر كل نقطة في سطر مستقل)..."
-                                        className="w-full p-2.5 rounded-lg border border-amber-300 dark:border-amber-700 bg-amber-50/30 text-[12px] font-medium leading-relaxed whitespace-pre-wrap font-sans"
+                                        className={`w-full p-2.5 rounded-lg border border-amber-300 dark:border-amber-700 bg-amber-50/30 text-[12px] font-medium leading-relaxed whitespace-pre-wrap ${!/[\u0600-\u06FF]/.test(q.modelAnswer || "") ? "text-left font-sans" : "text-right font-content"}`}
                                       />
                                     </div>
 
@@ -1348,12 +1350,13 @@ Explanation: الذكاء الاصطناعي مجال يضم أنظمة حاسو
                                           <input
                                             type="text"
                                             value={opt.text}
+                                            dir={!/[\u0600-\u06FF]/.test(opt.text || "") ? "ltr" : "rtl"}
                                             onChange={(e) => {
                                               const nextOpts = [...q.options];
                                               nextOpts[oIdx].text = e.target.value;
                                               handleUpdateStagedQuestion({ ...q, options: nextOpts });
                                             }}
-                                            className="flex-1 bg-transparent focus:outline-none"
+                                            className={`flex-1 bg-transparent focus:outline-none ${!/[\u0600-\u06FF]/.test(opt.text || "") ? "text-left font-sans" : "text-right font-content"}`}
                                           />
                                           <button
                                             type="button"

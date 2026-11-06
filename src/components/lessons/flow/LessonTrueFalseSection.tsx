@@ -75,17 +75,26 @@ export function LessonTrueFalseSection({
               question.translation && question.translation.trim().length > 0
             );
 
+            const isEnglishStatement = !/[\u0600-\u06FF]/.test(question.statement || "");
+
             return (
               <div
                 key={question.id}
                 className="p-6 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] space-y-4 shadow-sm"
               >
-                <div className="flex items-center justify-between gap-2 border-b border-[#E2E8F0] dark:border-[#334155] pb-3">
+                <div
+                  dir={isEnglishStatement ? "ltr" : "rtl"}
+                  className="flex items-center justify-between gap-2 border-b border-[#E2E8F0] dark:border-[#334155] pb-3"
+                >
                   <span className="text-[13px] font-bold text-[#0284C7] flex items-center gap-2">
                     <span className="w-6 h-6 rounded-lg bg-[#0284C7]/10 text-[#0284C7] flex items-center justify-center font-mono font-bold text-[12px]">
                       {qIndex + 1}
                     </span>
-                    <span>تحدي صح وغلط رقم {qIndex + 1}</span>
+                    <span>
+                      {isEnglishStatement
+                        ? `True / False Question ${qIndex + 1}`
+                        : `تحدي صح وغلط رقم ${qIndex + 1}`}
+                    </span>
                   </span>
 
                   <div className="flex items-center gap-2">
@@ -97,16 +106,21 @@ export function LessonTrueFalseSection({
                       />
                     )}
                     <span className="px-3 py-1 rounded-lg text-[12px] font-bold bg-[#0284C7]/10 text-[#0284C7]">
-                      تحدي سريع
+                      {isEnglishStatement ? "Quick Challenge" : "تحدي سريع"}
                     </span>
                   </div>
                 </div>
 
-                <BidiStatement
-                  as="h4"
-                  text={question.statement}
-                  className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-white leading-relaxed font-content"
-                />
+                <div
+                  dir={isEnglishStatement ? "ltr" : "rtl"}
+                  className={isEnglishStatement ? "text-left" : "text-right"}
+                >
+                  <BidiStatement
+                    as="h4"
+                    text={question.statement}
+                    className={`text-sm sm:text-base font-bold text-[#0F172A] dark:text-white leading-relaxed ${isEnglishStatement ? "font-sans" : "font-content"}`}
+                  />
+                </div>
 
                 {/* Collapsible Arabic Translation for Statement */}
                 {isTranslated && question.translation && (
@@ -127,7 +141,10 @@ export function LessonTrueFalseSection({
                 <QuestionImageAttachment imageUrl={question.imageUrl} />
 
                 {/* 2 Big Tactile Buttons: صواب / خطأ */}
-                <div className="grid grid-cols-2 gap-3 pt-1">
+                <div
+                  dir={isEnglishStatement ? "ltr" : "rtl"}
+                  className="grid grid-cols-2 gap-3 pt-1"
+                >
                   {question.options.map((opt) => {
                     const isSelected = state?.selectedOptionId === opt.id;
                     const isRevealed = state?.revealed;

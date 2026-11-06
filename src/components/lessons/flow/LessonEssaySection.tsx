@@ -103,12 +103,19 @@ export function LessonEssaySection({
                 className="p-6 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] space-y-4 shadow-sm"
               >
                 {/* Question Header & Controls */}
-                <div className="flex items-center justify-between gap-2 border-b border-[#E2E8F0] dark:border-[#334155] pb-3">
+                <div
+                  dir={isEnglishStatement ? "ltr" : "rtl"}
+                  className="flex items-center justify-between gap-2 border-b border-[#E2E8F0] dark:border-[#334155] pb-3"
+                >
                   <span className="text-[13px] font-bold text-[#7C3AED] flex items-center gap-2">
                     <span className="w-6 h-6 rounded-lg bg-[#7C3AED]/10 text-[#7C3AED] flex items-center justify-center font-mono font-bold text-[12px]">
                       {qIndex + 1}
                     </span>
-                    <span>سؤال مقالي رقم {qIndex + 1}</span>
+                    <span>
+                      {isEnglishStatement
+                        ? `Essay Question ${qIndex + 1}`
+                        : `سؤال مقالي رقم ${qIndex + 1}`}
+                    </span>
                   </span>
 
                   <div className="flex items-center gap-2">
@@ -120,7 +127,9 @@ export function LessonEssaySection({
                       />
                     )}
                     <span className="px-3 py-1 rounded-lg text-[12px] font-bold bg-[#7C3AED]/10 text-[#7C3AED]">
-                      درجة السؤال: {maxScore} درجات
+                      {isEnglishStatement
+                        ? `Score: ${maxScore} pts`
+                        : `درجة السؤال: ${maxScore} درجات`}
                     </span>
                   </div>
                 </div>
@@ -133,7 +142,7 @@ export function LessonEssaySection({
                   <BidiStatement
                     as="h4"
                     text={question.statement}
-                    className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-white leading-relaxed font-content"
+                    className={`text-sm sm:text-base font-bold text-[#0F172A] dark:text-white leading-relaxed ${isEnglishStatement ? "font-sans" : "font-content"}`}
                   />
                 </div>
 
@@ -156,16 +165,30 @@ export function LessonEssaySection({
 
                 {/* Student Drafting Box */}
                 <div className="space-y-2">
-                  <label className="text-[12px] font-bold text-[#64748B] dark:text-[#94A3B8] flex items-center justify-between">
-                    <span>اكتب مسودة إجابتك هنا للتدريب (اختياري):</span>
-                    <span className="font-mono text-[11px]">{draft.length} حرف</span>
+                  <label
+                    dir={isEnglishStatement ? "ltr" : "rtl"}
+                    className="text-[12px] font-bold text-[#64748B] dark:text-[#94A3B8] flex items-center justify-between"
+                  >
+                    <span>
+                      {isEnglishStatement
+                        ? "Write your draft answer here (optional):"
+                        : "اكتب مسودة إجابتك هنا للتدريب (اختياري):"}
+                    </span>
+                    <span className="font-mono text-[11px]">
+                      {draft.length} {isEnglishStatement ? "chars" : "حرف"}
+                    </span>
                   </label>
                   <textarea
                     value={draft}
                     onChange={(e) => onDraftChange(question.id, e.target.value)}
-                    placeholder="اكتب أفكارك أو صياغتك هنا قبل فتح نموذج الإجابة لتختبر نفسك..."
+                    dir={isEnglishStatement ? "ltr" : "rtl"}
+                    placeholder={
+                      isEnglishStatement
+                        ? "Write your thoughts or draft answer here before revealing the model answer..."
+                        : "اكتب أفكارك أو صياغتك هنا قبل فتح نموذج الإجابة لتختبر نفسك..."
+                    }
                     rows={3}
-                    className="w-full p-3.5 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] sm:text-sm text-[#0F172A] dark:text-white placeholder-[#94A3B8] focus:outline-none focus:border-[#7C3AED] transition-colors resize-y font-content"
+                    className={`w-full p-3.5 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] sm:text-sm text-[#0F172A] dark:text-white placeholder-[#94A3B8] focus:outline-none focus:border-[#7C3AED] transition-colors resize-y ${isEnglishStatement ? "text-left font-sans" : "text-right font-content"}`}
                   />
                 </div>
 

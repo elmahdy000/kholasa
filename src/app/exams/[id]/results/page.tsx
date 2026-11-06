@@ -21,6 +21,7 @@ import { QuestionExplanationBox } from "@/components/ui/QuestionExplanationBox";
 import { QuestionImageAttachment } from "@/components/ui/QuestionImageAttachment";
 
 const ARABIC_LETTERS = ["أ", "ب", "ج", "د", "هـ", "و"];
+const ENGLISH_LETTERS = ["A", "B", "C", "D", "E", "F"];
 
 interface ExamResultsPageProps {
   params: Promise<{ id: string }>;
@@ -391,12 +392,16 @@ export default async function ExamResultsPage({
                             "bg-[#DC2626]/10 dark:bg-[#1E293B] border-[#DC2626]/50 text-[#DC2626] dark:text-[#F87171] font-bold";
                         }
 
-                        const letterLabel = ARABIC_LETTERS[oIdx] || opt.order;
+                        const isEnglishOpt = !/[\u0600-\u06FF]/.test(opt.text || "") || !/[\u0600-\u06FF]/.test(q.statement || "");
+                        const letterLabel = isEnglishOpt
+                          ? ENGLISH_LETTERS[oIdx] || opt.order
+                          : ARABIC_LETTERS[oIdx] || opt.order;
 
                         return (
                           <div
                             key={opt.id}
-                            className={`p-4 sm:p-4 rounded-xl border text-[13px] sm:text-sm font-medium flex items-start sm:items-center justify-between gap-3 ${rowStyle}`}
+                            dir={isEnglishOpt ? "ltr" : "rtl"}
+                            className={`p-4 sm:p-4 rounded-xl border text-[13px] sm:text-sm font-medium flex items-start sm:items-center justify-between gap-3 ${isEnglishOpt ? "text-left font-sans" : "text-right font-content"} ${rowStyle}`}
                           >
                             <div className="flex items-start sm:items-center gap-3 min-w-0 flex-1">
                               <span className="w-6 h-6 rounded-lg bg-[#E2E8F0] dark:bg-[#1E293B] text-[#0F172A] dark:text-[#F8FAFC] flex items-center justify-center text-[13px] font-bold shrink-0 mt-1 sm:mt-0 ">
@@ -409,13 +414,13 @@ export default async function ExamResultsPage({
                               {opt.isCorrect && (
                                 <span className="text-[#059669] dark:text-[#34D399] text-[13px] font-bold inline-flex items-center gap-2 bg-[#059669]/10 dark:bg-[#1E293B] px-2 py-1 rounded-md">
                                   <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
-                                  <span>الإجابة الصح</span>
+                                  <span>{isEnglishOpt ? "Correct Answer" : "الإجابة الصح"}</span>
                                 </span>
                               )}
                               {isUserChoice && !opt.isCorrect && (
                                 <span className="text-[#DC2626] dark:text-[#F87171] text-[13px] font-bold inline-flex items-center gap-2 bg-[#DC2626]/10 dark:bg-[#1E293B] px-2 py-1 rounded-md">
                                   <XCircle className="w-3.5 h-3.5 shrink-0" />
-                                  <span>إنت اخترت ده</span>
+                                  <span>{isEnglishOpt ? "Your Choice" : "إنت اخترت ده"}</span>
                                 </span>
                               )}
                             </div>

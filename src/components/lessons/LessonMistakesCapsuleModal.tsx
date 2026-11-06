@@ -403,7 +403,9 @@ export function LessonMistakesCapsuleModal({
                         }
                       }
 
-                      const isEnglishOpt = !/[\u0600-\u06FF]/.test(opt.text || "");
+                      const isEnglishOpt =
+                        !/[\u0600-\u06FF]/.test(opt.text || "") ||
+                        !/[\u0600-\u06FF]/.test(currentQ.statement || "");
                       const arabicLetters = ["أ", "ب", "ج", "د", "هـ"];
                       const englishLetters = ["A", "B", "C", "D", "E"];
                       const letter = isEnglishOpt ? englishLetters[optIdx] || opt.order : arabicLetters[optIdx] || opt.order;
@@ -412,9 +414,10 @@ export function LessonMistakesCapsuleModal({
                         <button
                           key={opt.id}
                           type="button"
+                          dir={isEnglishOpt ? "ltr" : "rtl"}
                           disabled={revealed || isSubmitting}
                           onClick={() => handleSelectOption(opt.id)}
-                          className={`w-full p-3.5 sm:p-4 rounded-2xl border text-right text-xs sm:text-sm font-medium flex items-center justify-between gap-3 transition-all cursor-pointer ${btnStyle}`}
+                          className={`w-full p-3.5 sm:p-4 rounded-2xl border ${isEnglishOpt ? "text-left font-sans" : "text-right font-content"} text-xs sm:text-sm font-medium flex items-center justify-between gap-3 transition-all cursor-pointer ${btnStyle}`}
                         >
                           <div className="flex items-center gap-3 min-w-0 flex-1">
                             <span className="w-7 h-7 rounded-xl bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 flex items-center justify-center text-xs font-mono font-bold shrink-0 border border-slate-200 dark:border-slate-700 shadow-2xs">
@@ -430,10 +433,12 @@ export function LessonMistakesCapsuleModal({
                               {isOptionCorrect ? (
                                 <span className="text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
                                   <Check className="w-4 h-4" weight="bold" />
-                                  <span>صحيحة</span>
+                                  <span>{isEnglishOpt ? "Correct" : "صحيحة"}</span>
                                 </span>
                               ) : isSelected ? (
-                                <span className="text-red-600 dark:text-red-400">غير صحيحة</span>
+                                <span className="text-red-600 dark:text-red-400">
+                                  {isEnglishOpt ? "Incorrect" : "غير صحيحة"}
+                                </span>
                               ) : null}
                             </div>
                           )}

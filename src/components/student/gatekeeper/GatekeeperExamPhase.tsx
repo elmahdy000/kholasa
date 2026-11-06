@@ -58,14 +58,22 @@ export function GatekeeperExamPhase({
             const isSelected =
               answers[currentQ.id]?.selectedOptionId === opt.id;
             const letters = ["أ", "ب", "ج", "د", "هـ"];
+            const englishLetters = ["A", "B", "C", "D", "E"];
+            const isEnglish =
+              !/[\u0600-\u06FF]/.test(currentQ.statement || "") ||
+              !/[\u0600-\u06FF]/.test(opt.text || "");
+            const letter = isEnglish
+              ? englishLetters[oIdx] || oIdx + 1
+              : letters[oIdx] || oIdx + 1;
 
             return (
               <button
                 key={opt.id}
                 type="button"
+                dir={isEnglish ? "ltr" : "rtl"}
                 aria-pressed={isSelected}
                 onClick={() => onSelectOption(currentQ.id, opt.id)}
-                className={`w-full p-3 sm:p-4 rounded-xl border text-right transition-all flex items-center justify-between gap-3 ${
+                className={`w-full p-3 sm:p-4 rounded-xl border ${isEnglish ? "text-left font-sans" : "text-right font-content"} transition-all flex items-center justify-between gap-3 cursor-pointer ${
                   isSelected
                     ? "bg-[#800020]/10 dark:bg-[#1E293B] border-[#800020] text-[#0F172A] dark:text-white"
                     : "bg-[#F8FAFC] dark:bg-[#1E293B]/60 hover:bg-[#F8FAFC] dark:hover:bg-[#334155] border-[#E2E8F0] dark:border-[#334155] text-[#0F172A] dark:text-[#F8FAFC]"
@@ -79,7 +87,7 @@ export function GatekeeperExamPhase({
                         : "bg-[#E2E8F0] dark:bg-[#334155] text-[#64748B] dark:text-[#94A3B8]"
                     }`}
                   >
-                    {letters[oIdx] || oIdx + 1}
+                    {letter}
                   </span>
                   <BidiStatement
                     as="span"

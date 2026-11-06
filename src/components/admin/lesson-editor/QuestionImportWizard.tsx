@@ -1613,10 +1613,11 @@ export function QuestionImportWizard({
                             <textarea
                               rows={2}
                               value={q.statement}
+                              dir={!/[\u0600-\u06FF]/.test(q.statement || "") ? "ltr" : "rtl"}
                               onChange={(e) =>
                                 updateStagedQuestion(q.id, { statement: e.target.value })
                               }
-                              className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white leading-relaxed resize-y outline-none focus:border-blue-500"
+                              className={`w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-900 dark:text-white leading-relaxed resize-y outline-none focus:border-blue-500 ${!/[\u0600-\u06FF]/.test(q.statement || "") ? "text-left font-sans" : "text-right font-content"}`}
                             />
                           </div>
 
@@ -1685,11 +1686,12 @@ export function QuestionImportWizard({
                                 <textarea
                                   rows={5}
                                   value={q.modelAnswer || ""}
+                                  dir={!/[\u0600-\u06FF]/.test(q.modelAnswer || "") ? "ltr" : "rtl"}
                                   onChange={(e) =>
                                     updateStagedQuestion(q.id, { modelAnswer: e.target.value })
                                   }
                                   placeholder="اكتب خطوات الحل أو الإجابة النموذجية الكاملة (ستظهر كل نقطة في سطر مستقل)..."
-                                  className="w-full p-2.5 rounded-xl bg-white dark:bg-[#0F172A] border border-amber-200 dark:border-amber-800/80 text-xs font-medium text-slate-900 dark:text-white leading-relaxed resize-y outline-none focus:border-amber-500 whitespace-pre-wrap font-sans"
+                                  className={`w-full p-2.5 rounded-xl bg-white dark:bg-[#0F172A] border border-amber-200 dark:border-amber-800/80 text-xs font-medium text-slate-900 dark:text-white leading-relaxed resize-y outline-none focus:border-amber-500 whitespace-pre-wrap ${!/[\u0600-\u06FF]/.test(q.modelAnswer || "") ? "text-left font-sans" : "text-right font-content"}`}
                                 />
 
                                 {/* Essay Model Answer Translation */}
@@ -1876,10 +1878,11 @@ export function QuestionImportWizard({
                                       <input
                                         type="text"
                                         value={opt.text}
+                                        dir={!/[\u0600-\u06FF]/.test(opt.text || "") ? "ltr" : "rtl"}
                                         onChange={(e) =>
                                           handleOptionTextChange(q.id, optIdx, e.target.value)
                                         }
-                                        className="flex-1 bg-transparent border-none text-xs font-bold outline-none"
+                                        className={`flex-1 bg-transparent border-none text-xs font-bold outline-none ${!/[\u0600-\u06FF]/.test(opt.text || "") ? "text-left font-sans" : "text-right font-content"}`}
                                       />
 
                                       <input

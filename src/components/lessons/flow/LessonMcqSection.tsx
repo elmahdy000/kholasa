@@ -72,6 +72,9 @@ export function LessonMcqSection({
               question.options?.some((o) => o.translation && o.translation.trim().length > 0)
             );
             const isEnglishStatement = !/[\u0600-\u06FF]/.test(question.statement || "");
+            const isEnglish =
+              isEnglishStatement ||
+              Boolean(question.options?.some((o) => !/[\u0600-\u06FF]/.test(o.text || "")));
 
             return (
               <div
@@ -79,12 +82,15 @@ export function LessonMcqSection({
                 className="p-6 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] space-y-4 shadow-sm"
               >
                 {/* Question Header & Controls */}
-                <div className="flex items-center justify-between gap-2 border-b border-[#E2E8F0] dark:border-[#334155] pb-3">
+                <div
+                  dir={isEnglish ? "ltr" : "rtl"}
+                  className="flex items-center justify-between gap-2 border-b border-[#E2E8F0] dark:border-[#334155] pb-3"
+                >
                   <span className="text-[13px] font-bold text-[#800020] dark:text-[#FB7185] flex items-center gap-2">
                     <span className="w-6 h-6 rounded-lg bg-[#800020]/10 dark:bg-[#800020]/30 text-[#800020] dark:text-[#FB7185] flex items-center justify-center font-mono font-bold text-[12px]">
                       {qIndex + 1}
                     </span>
-                    <span>السؤال رقم {qIndex + 1}</span>
+                    <span>{isEnglish ? `Question ${qIndex + 1}` : `السؤال رقم ${qIndex + 1}`}</span>
                   </span>
 
                   <div className="flex items-center gap-2">
@@ -97,23 +103,23 @@ export function LessonMcqSection({
                     )}
                     <span className="px-3 py-1 rounded-lg text-[12px] font-bold bg-[#F8FAFC] dark:bg-[#1E293B] text-[#64748B] dark:text-[#F8FAFC] border border-[#E2E8F0]/60 dark:border-[#334155]/60">
                       {question.difficulty === "EASY"
-                        ? "مباشر"
+                        ? isEnglish ? "Easy" : "مباشر"
                         : question.difficulty === "MEDIUM"
-                        ? "متوسط"
-                        : "متقدم"}
+                        ? isEnglish ? "Medium" : "متوسط"
+                        : isEnglish ? "Advanced" : "متقدم"}
                     </span>
                   </div>
                 </div>
 
                 {/* Question Statement */}
                 <div
-                  dir={isEnglishStatement ? "ltr" : "rtl"}
-                  className={isEnglishStatement ? "text-left" : "text-right"}
+                  dir={isEnglish ? "ltr" : "rtl"}
+                  className={isEnglish ? "text-left" : "text-right"}
                 >
                   <BidiStatement
                     as="h4"
                     text={question.statement}
-                    className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-white leading-relaxed font-content"
+                    className={`text-sm sm:text-base font-bold text-[#0F172A] dark:text-white leading-relaxed ${isEnglish ? "font-sans" : "font-content"}`}
                   />
                 </div>
 
@@ -157,18 +163,19 @@ export function LessonMcqSection({
                       }
                     }
 
-                    const isEnglishOpt = !/[\u0600-\u06FF]/.test(opt.text || "");
+                    const isEnglishOpt = isEnglish || !/[\u0600-\u06FF]/.test(opt.text || "");
                     const arabicLetters = ["أ", "ب", "ج", "د", "هـ"];
                     const englishLetters = ["A", "B", "C", "D", "E"];
-                    const letter = isEnglishStatement ? englishLetters[optIdx] || opt.order : arabicLetters[optIdx] || opt.order;
+                    const letter = isEnglish ? englishLetters[optIdx] || opt.order : arabicLetters[optIdx] || opt.order;
 
                     return (
                       <button
                         key={opt.id}
                         type="button"
+                        dir={isEnglishOpt ? "ltr" : "rtl"}
                         disabled={isSelected}
                         onClick={() => onSelectOption(question.id, opt.id)}
-                        className={`w-full p-4 rounded-xl border text-right text-[13px] sm:text-sm font-medium flex items-start sm:items-center justify-between gap-3 transition-all font-content cursor-pointer ${btnStyle}`}
+                        className={`w-full p-4 rounded-xl border ${isEnglishOpt ? "text-left font-sans" : "text-right font-content"} text-[13px] sm:text-sm font-medium flex items-start sm:items-center justify-between gap-3 transition-all cursor-pointer ${btnStyle}`}
                       >
                         <div className="flex items-start sm:items-center gap-3 min-w-0 flex-1">
                           <span className="w-7 h-7 rounded-lg bg-[#F8FAFC] dark:bg-[#1E293B] text-[#64748B] dark:text-[#F8FAFC] flex items-center justify-center text-[13px] font-mono font-bold shrink-0 mt-0.5 sm:mt-0 border border-[#E2E8F0]/80 dark:border-[#334155]/80">
@@ -196,11 +203,11 @@ export function LessonMcqSection({
                             {isOptionCorrect ? (
                               <span className="text-[#059669] text-[13px] font-bold flex items-center gap-1">
                                 <Check className="w-4 h-4" weight="bold" />
-                                <span>صح! ممتاز</span>
+                                <span>{isEnglish ? "Correct!" : "صح! ممتاز"}</span>
                               </span>
                             ) : isSelected ? (
                               <span className="text-[#DC2626] text-[13px] font-bold">
-                                مش مضبوطة
+                                {isEnglish ? "Incorrect" : "مش مضبوطة"}
                               </span>
                             ) : null}
                           </div>

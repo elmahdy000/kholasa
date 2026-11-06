@@ -107,6 +107,11 @@ export function DailyChallengeCard({
     revealed?.options?.find((o) => o.id === revealed.correctOptionId) ??
     question.options.find((o) => o.id === revealed?.correctOptionId);
 
+  const isEnglishStatement = !/[\u0600-\u06FF]/.test(question.statement || "");
+  const isEnglish =
+    isEnglishStatement ||
+    Boolean(question.options?.some((o) => !/[\u0600-\u06FF]/.test(o.text || "")));
+
   return (
     <div
       id="daily-challenge-card"
@@ -114,14 +119,17 @@ export function DailyChallengeCard({
     >
       <div className="space-y-4">
         {/* Top Header */}
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#E2E8F0] dark:border-[#334155]/80 pb-3">
+        <div
+          dir={isEnglish ? "ltr" : "rtl"}
+          className="flex flex-wrap items-center justify-between gap-2 border-b border-[#E2E8F0] dark:border-[#334155]/80 pb-3"
+        >
           <div className="flex items-center gap-2">
             <div className="w-11 h-11 rounded-lg bg-[#D97706]/10 dark:bg-[#1E293B] text-[#D97706] dark:text-[#FBBF24] flex items-center justify-center">
               <Lightning className="w-4 h-4" weight="fill" />
             </div>
             <div>
               <span className="text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC] block">
-                سؤال النهاردة السريع
+                {isEnglish ? "Daily Fast Challenge" : "سؤال النهاردة السريع"}
               </span>
               <span className="text-[13px] text-[#64748B] dark:text-[#94A3B8] font-medium block">
                 <BidiStatement as="span" text={question.subject.name} /> {question.unit ? `• ${question.unit.title}` : ""}
@@ -140,23 +148,26 @@ export function DailyChallengeCard({
             {isTodayAlreadyCompleted ? (
               <span className="text-[12px] font-bold text-[#059669] dark:text-[#34D399] bg-[#059669]/10 px-3 py-1 rounded-md border border-[#059669]/30 flex items-center gap-1">
                 <CheckCircle className="w-3.5 h-3.5" weight="fill" />
-                <span>حضور النهاردة اتسجل</span>
+                <span>{isEnglish ? "Today's challenge done" : "حضور النهاردة اتسجل"}</span>
               </span>
             ) : (
               <span className="text-[13px] font-bold text-[#D97706] dark:text-[#FBBF24] bg-[#D97706]/10 dark:bg-[#1E293B] px-3 py-1 rounded-md border border-[#D97706]/20 dark:border-[#FBBF24]/40 flex items-center gap-1">
                 <Lightning className="w-3.5 h-3.5 text-[#D97706]" weight="fill" />
-                <span>سؤال النهاردة</span>
+                <span>{isEnglish ? "Today's Question" : "سؤال النهاردة"}</span>
               </span>
             )}
           </div>
         </div>
 
         {/* Question Statement */}
-        <div className="text-right space-y-3">
+        <div
+          dir={isEnglish ? "ltr" : "rtl"}
+          className={`space-y-3 ${isEnglish ? "text-left" : "text-right"}`}
+        >
           <BidiStatement
             as="p"
             text={question.statement}
-            className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-[#F8FAFC] leading-relaxed font-content"
+            className={`text-sm sm:text-base font-bold text-[#0F172A] dark:text-[#F8FAFC] leading-relaxed ${isEnglish ? "font-sans" : "font-content"}`}
           />
           {isTranslated && question.translation && (
             <div
@@ -175,7 +186,10 @@ export function DailyChallengeCard({
         </div>
 
         {/* Options */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div
+          dir={isEnglish ? "ltr" : "rtl"}
+          className="grid grid-cols-1 sm:grid-cols-2 gap-3"
+        >
           {question.options.map((opt, optIdx) => {
             const isSelected = selectedOptionId === opt.id;
             const isOptCorrect = revealed?.correctOptionId === opt.id;
@@ -198,15 +212,21 @@ export function DailyChallengeCard({
                 "bg-[#800020]/10 dark:bg-[#1E293B] border-2 border-[#800020] dark:border-[#E11D48] text-[#0F172A] dark:text-white  font-bold";
             }
 
+            const isEnglishOpt = isEnglish || !/[\u0600-\u06FF]/.test(opt.text || "");
             const arabicLetters = ["أ", "ب", "ج", "د", "هـ"];
+            const englishLetters = ["A", "B", "C", "D", "E"];
+            const letter = isEnglishOpt
+              ? englishLetters[optIdx] || "•"
+              : arabicLetters[optIdx] || "•";
 
             return (
               <button
                 key={opt.id}
                 type="button"
+                dir={isEnglishOpt ? "ltr" : "rtl"}
                 disabled={isAnswered}
                 onClick={() => setSelectedOptionId(opt.id)}
-                className={`p-4 sm:p-4 rounded-xl border text-[13px] sm:text-sm text-right flex items-start sm:items-center justify-between gap-3 transition-all ${btnStyle}`}
+                className={`p-4 sm:p-4 rounded-xl border text-[13px] sm:text-sm ${isEnglishOpt ? "text-left font-sans" : "text-right font-content"} flex items-start sm:items-center justify-between gap-3 transition-all cursor-pointer ${btnStyle}`}
               >
                 <div className="flex items-start sm:items-center gap-3 min-w-0 flex-1">
                   <span
@@ -216,9 +236,9 @@ export function DailyChallengeCard({
                         : "bg-[#E2E8F0] dark:bg-[#334155] text-[#0F172A] dark:text-[#F8FAFC]"
                     }`}
                   >
-                    {arabicLetters[optIdx] || "•"}
+                    {letter}
                   </span>
-                  <div className="min-w-0 flex-1 leading-relaxed">
+                  <div className={`min-w-0 flex-1 leading-relaxed ${isEnglishOpt ? "text-left" : "text-right"}`}>
                     <BidiStatement as="span" text={opt.text} />
                   </div>
                 </div>
