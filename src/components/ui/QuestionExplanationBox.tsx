@@ -49,17 +49,20 @@ export function splitExplanation(text: string | null | undefined): {
     return { primary, translation: translation || undefined };
   }
 
-  // 3. Header marker: newline followed by "الترجمة العربية للتفسير:" or "الترجمة العربية:" or similar
+  // 3. Header marker: newline or spacing followed by "الترجمة العربية للتفسير:" or "الترجمة العربية:" or similar
   const headerMatch = trimmed.match(
-    /\n+\s*(?:الترجمة العربية للتفسير|الترجمة العربية|ترجمة التفسير|الترجمة|Arabic Translation)\s*:\s*([\s\S]+)$/i
+    /(?:[\r\n]+|^|\s{2,})(?:(?:الترجمة العربية للتفسير|ترجمة التفسير|الترجمة العربية|Arabic Translation|الترجمة)\s*[:：\-]?\s*)([\s\S]+)$/i
   );
   if (headerMatch && headerMatch.index !== undefined) {
-    const primary = trimmed.substring(0, headerMatch.index).trim();
+    const rawPrimary = trimmed.substring(0, headerMatch.index).trim();
+    // Clean any leading/trailing dot artifacts from BiDi inversion
+    const primary = rawPrimary.replace(/^\.\s*/, "").trim();
     const translation = headerMatch[1].trim();
     return { primary, translation: translation || undefined };
   }
 
-  return { primary: trimmed };
+  // Clean any leading dot artifact on fallback
+  return { primary: trimmed.replace(/^\.\s*/, "").trim() };
 }
 
 /**
@@ -205,8 +208,9 @@ export function QuestionExplanationBox({
             className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20"
           >
             <Sparkle className="w-3 h-3 text-emerald-500 shrink-0" weight="fill" />
-            <span>
-              {isConceptEnglish ? `Concept: ${cleanConcept}` : `المفهوم: ${cleanConcept}`}
+            <span className="inline-flex items-center gap-1 font-mono">
+              <span className="font-bold">{isConceptEnglish ? "Concept:" : "المفهوم:"}</span>
+              <span dir={isConceptEnglish ? "ltr" : "rtl"}>{cleanConcept}</span>
             </span>
           </div>
         )}

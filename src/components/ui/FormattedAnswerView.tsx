@@ -108,26 +108,35 @@ export function extractAnswerPoints(rawText: string | null | undefined): {
     }
   }
 
-  // 2. Check if the text is split across multiple separate lines
-  const lines = text
+  // 2. Check if the text is split across multiple separate lines that are explicitly structured
+  const isTranslationHeader = (str: string) =>
+    /^(?:الترجمة العربية للتفسير|الترجمة العربية|ترجمة التفسير|الترجمة|Arabic Translation|Translation|<!--\s*translation\s*-->|\[TRANSLATION\])\s*[:：\-]?/i.test(
+      str.trim()
+    );
+
+  const rawLines = text
     .split(/[\n\r]+/)
     .map((l) => l.trim())
-    .filter((l) => l.length > 0);
+    .filter((l) => l.length > 0 && !isTranslationHeader(l));
 
-  if (lines.length >= 2) {
+  // Only convert to points if lines actually have leading list markers or titles
+  const hasStructuredMarkers = rawLines.filter((l) =>
+    /^(?:(?:Step|Part|Point|Phase|المرحلة|الخطوة|النقطة)\s*(?:[0-9٠-٩]+|[a-zA-Z]|[ivxIVX]+)\s*[:.\-)]|\((?:[0-9٠-٩a-zA-Zأ-يivxIVX]+)\)|(?:[0-9٠-٩]+|[a-zA-Z]|[أ-ي]|[ivxIVX]+)\s*[.\-):]|[•*⁃\–\—\-])\s+/i.test(l) ||
+    /^([^\n:\-–—]{2,50})(?:\s*:\s+|\s+[\-–—]\s+)([\s\S]*)$/.test(l)
+  );
+
+  if (rawLines.length >= 2 && hasStructuredMarkers.length >= Math.ceil(rawLines.length / 2)) {
     const points: FormattedPoint[] = [];
     let intro: string | undefined = undefined;
     let startIdx = 0;
 
-    // If first line ends with a colon, treat it as intro (e.g. "Key differences:" or "المراحل الخمس:")
-    if (lines[0].endsWith(":") && lines.length >= 3) {
-      intro = lines[0];
+    if (rawLines[0].endsWith(":") && rawLines.length >= 3) {
+      intro = rawLines[0];
       startIdx = 1;
     }
 
-    for (let i = startIdx; i < lines.length; i++) {
-      const line = lines[i];
-      // Clean leading digit, letter, step keyword, or bullet if any
+    for (let i = startIdx; i < rawLines.length; i++) {
+      const line = rawLines[i];
       const cleaned = line
         .replace(
           /^(?:(?:Step|Part|Point|Phase|المرحلة|الخطوة|النقطة)\s*(?:[0-9٠-٩]+|[a-zA-Z]|[ivxIVX]+)\s*[:.\-)]|\((?:[0-9٠-٩a-zA-Zأ-يivxIVX]+)\)|(?:[0-9٠-٩]+|[a-zA-Z]|[أ-ي]|[ivxIVX]+)\s*[.\-):]|[•*⁃\–\—\-])\s*/i,
@@ -256,28 +265,37 @@ export function FormattedAnswerView({
         )}
 
         <div className="space-y-2">
-          {parsed.points.map((pt, idx) => (
-            <div
-              key={idx}
-              className={`p-3 sm:p-3.5 rounded-xl ${styles.cardBg} border ${styles.border} shadow-2xs flex items-start gap-3 transition-all`}
-            >
+          {parsed.points.map((pt, idx) => {
+            const isPtArabic = /[\u0600-\u06FF]/.test(pt.body || pt.title || "");
+            const ptDir = isPtArabic ? "rtl" : "ltr";
+            const ptAlign = isPtArabic ? "text-right" : "text-left";
+            const ptFont = isPtArabic ? "font-content" : "font-sans";
+            const ptTitleMargin = isPtArabic ? "ml-1.5" : "mr-1.5";
+
+            return (
               <div
-                className={`w-6 h-6 rounded-lg ${styles.badgeBg} font-bold text-xs flex items-center justify-center shrink-0 mt-0.5 font-mono`}
+                key={idx}
+                dir={ptDir}
+                className={`p-3 sm:p-3.5 rounded-xl ${styles.cardBg} border ${styles.border} shadow-2xs flex items-start gap-3 transition-all ${ptAlign}`}
               >
-                {pt.badge}
+                <div
+                  className={`w-6 h-6 rounded-lg ${styles.badgeBg} font-bold text-xs flex items-center justify-center shrink-0 mt-0.5 font-mono`}
+                >
+                  {pt.badge}
+                </div>
+                <div
+                  className={`text-[13px] sm:text-sm leading-relaxed ${ptFont} ${styles.body} flex-1 min-w-0`}
+                >
+                  {pt.title && (
+                    <strong className={`font-bold ${ptTitleMargin} ${styles.title}`}>
+                      {pt.title}
+                    </strong>
+                  )}
+                  <span>{pt.body}</span>
+                </div>
               </div>
-              <div
-                className={`text-[13px] sm:text-sm leading-relaxed ${fontClass} ${styles.body} flex-1`}
-              >
-                {pt.title && (
-                  <strong className={`font-bold ${titleMargin} ${styles.title}`}>
-                    {pt.title}
-                  </strong>
-                )}
-                <span>{pt.body}</span>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     );

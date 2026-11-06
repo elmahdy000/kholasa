@@ -408,6 +408,40 @@ export function QuestionImportWizard({
     updateStagedQuestion(questionId, { options: newOptions });
   };
 
+  // Change question type with intelligent defaults
+  const handleTypeChange = (questionId: string, newType: QuestionType) => {
+    const target = stagedQuestions.find((q) => q.id === questionId);
+    if (!target) return;
+
+    let updatedOptions = [...(target.options || [])];
+    const isEnglish = !/[\u0600-\u06FF]/.test(target.statement || "");
+
+    if (newType === "MCQ") {
+      if (updatedOptions.length < 2) {
+        updatedOptions = [
+          { text: "", isCorrect: false },
+          { text: "", isCorrect: false },
+          { text: "", isCorrect: false },
+          { text: "", isCorrect: false },
+        ];
+      }
+    } else if (newType === "TRUE_FALSE") {
+      if (updatedOptions.length !== 2 || !updatedOptions.some((o) => /true|false|صواب|خطأ/i.test(o.text))) {
+        updatedOptions = isEnglish
+          ? [
+              { text: "True", isCorrect: true },
+              { text: "False", isCorrect: false },
+            ]
+          : [
+              { text: "صواب", isCorrect: true },
+              { text: "خطأ", isCorrect: false },
+            ];
+      }
+    }
+
+    updateStagedQuestion(questionId, { type: newType, options: updatedOptions });
+  };
+
   // Remove option from MCQ
   const handleRemoveOption = (questionId: string, optionIndex: number) => {
     const target = stagedQuestions.find((q) => q.id === questionId);
@@ -1490,9 +1524,7 @@ export function QuestionImportWizard({
                             <select
                               value={q.type}
                               onChange={(e) =>
-                                updateStagedQuestion(q.id, {
-                                  type: e.target.value as QuestionType,
-                                })
+                                handleTypeChange(q.id, e.target.value as QuestionType)
                               }
                               className="text-xs font-bold px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#0F172A] outline-none"
                             >
@@ -1722,11 +1754,12 @@ export function QuestionImportWizard({
                                 <textarea
                                   rows={2}
                                   value={q.correctReason || ""}
+                                  dir={!/[\u0600-\u06FF]/.test(q.correctReason || "") ? "ltr" : "rtl"}
                                   onChange={(e) =>
                                     updateStagedQuestion(q.id, { correctReason: e.target.value })
                                   }
                                   placeholder="تفسير سبب الإجابة أو توجيه المصحح..."
-                                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white leading-relaxed resize-y outline-none focus:border-blue-500"
+                                  className={`w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white leading-relaxed resize-y outline-none focus:border-blue-500 ${!/[\u0600-\u06FF]/.test(q.correctReason || "") ? "text-left font-sans" : "text-right font-content"}`}
                                 />
                               </div>
 
@@ -1738,11 +1771,12 @@ export function QuestionImportWizard({
                                 <input
                                   type="text"
                                   value={q.concept || ""}
+                                  dir={!/[\u0600-\u06FF]/.test(q.concept || "") ? "ltr" : "rtl"}
                                   onChange={(e) =>
                                     updateStagedQuestion(q.id, { concept: e.target.value })
                                   }
                                   placeholder="المفهوم العلمي المرتبط بالسؤال..."
-                                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white outline-none focus:border-blue-500"
+                                  className={`w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white outline-none focus:border-blue-500 ${!/[\u0600-\u06FF]/.test(q.concept || "") ? "text-left font-sans" : "text-right font-content"}`}
                                 />
                               </div>
                             </div>
@@ -1804,11 +1838,12 @@ export function QuestionImportWizard({
                                 <textarea
                                   rows={2}
                                   value={q.correctReason || ""}
+                                  dir={!/[\u0600-\u06FF]/.test(q.correctReason || "") ? "ltr" : "rtl"}
                                   onChange={(e) =>
                                     updateStagedQuestion(q.id, { correctReason: e.target.value })
                                   }
                                   placeholder="التفسير العلمي للإجابة..."
-                                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white leading-relaxed resize-y outline-none focus:border-blue-500"
+                                  className={`w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white leading-relaxed resize-y outline-none focus:border-blue-500 ${!/[\u0600-\u06FF]/.test(q.correctReason || "") ? "text-left font-sans" : "text-right font-content"}`}
                                 />
                               </div>
 
@@ -1820,11 +1855,12 @@ export function QuestionImportWizard({
                                 <input
                                   type="text"
                                   value={q.concept || ""}
+                                  dir={!/[\u0600-\u06FF]/.test(q.concept || "") ? "ltr" : "rtl"}
                                   onChange={(e) =>
                                     updateStagedQuestion(q.id, { concept: e.target.value })
                                   }
                                   placeholder="المفهوم العلمي المرتبط بالسؤال..."
-                                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white outline-none focus:border-blue-500"
+                                  className={`w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white outline-none focus:border-blue-500 ${!/[\u0600-\u06FF]/.test(q.concept || "") ? "text-left font-sans" : "text-right font-content"}`}
                                 />
                               </div>
                             </div>
@@ -1919,11 +1955,12 @@ export function QuestionImportWizard({
                                 <textarea
                                   rows={2}
                                   value={q.correctReason || ""}
+                                  dir={!/[\u0600-\u06FF]/.test(q.correctReason || "") ? "ltr" : "rtl"}
                                   onChange={(e) =>
                                     updateStagedQuestion(q.id, { correctReason: e.target.value })
                                   }
                                   placeholder="التفسير العلمي للإجابة..."
-                                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white leading-relaxed resize-y outline-none focus:border-blue-500"
+                                  className={`w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white leading-relaxed resize-y outline-none focus:border-blue-500 ${!/[\u0600-\u06FF]/.test(q.correctReason || "") ? "text-left font-sans" : "text-right font-content"}`}
                                 />
                               </div>
 
@@ -1935,11 +1972,12 @@ export function QuestionImportWizard({
                                 <input
                                   type="text"
                                   value={q.concept || ""}
+                                  dir={!/[\u0600-\u06FF]/.test(q.concept || "") ? "ltr" : "rtl"}
                                   onChange={(e) =>
                                     updateStagedQuestion(q.id, { concept: e.target.value })
                                   }
                                   placeholder="المفهوم العلمي المرتبط بالسؤال..."
-                                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white outline-none focus:border-blue-500"
+                                  className={`w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white outline-none focus:border-blue-500 ${!/[\u0600-\u06FF]/.test(q.concept || "") ? "text-left font-sans" : "text-right font-content"}`}
                                 />
                               </div>
                             </div>

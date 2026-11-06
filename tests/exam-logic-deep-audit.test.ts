@@ -2,6 +2,9 @@ import { describe, expect, it } from "vitest";
 import { prisma } from "@/lib/prisma";
 import { ExamService } from "@/services/exam.service";
 import { CurriculumService } from "@/services/curriculum.service";
+import { cleanQuestionStatement } from "@/lib/question-parser";
+import { splitExplanation } from "@/components/ui/QuestionExplanationBox";
+import { extractAnswerPoints } from "@/components/ui/FormattedAnswerView";
 
 describe("Deep Exam Logic & Architecture Verification Audit", () => {
   it("Test 1: Mixed Exam (MCQ + TRUE_FALSE + ESSAY) grading, scoring isolation, and rubric exposure", async () => {
@@ -298,5 +301,39 @@ describe("Deep Exam Logic & Architecture Verification Audit", () => {
     expect(calcPercentage(0, 5)).toBe(0); // 0%
     expect(calcPercentage(5, 5)).toBe(100); // 100%
     expect(calcPercentage(0, 0)).toBe(0); // 0 objective questions -> 0%, no NaN
+  });
+
+  it("Test 3: BiDi sanitization, Explanation Splitting, and Formatted Answer parsing", () => {
+    // 1. Inverted leading question mark on English text
+    const inverted = cleanQuestionStatement("?Which of the following options represents the main technology");
+    expect(inverted).toBe("Which of the following options represents the main technology?");
+
+    // 2. Normal question
+    const normal = cleanQuestionStatement("What is Moore's Law?");
+    expect(normal).toBe("What is Moore's Law?");
+
+    // 3. splitExplanation separates primary English explanation from Arabic translation
+    const dbExplanation =
+      "The book places the spread of personal computers in the 1970s–1980s; the 1990s are associated with the commercialization of the Internet and the Web.\n\nالترجمة العربية للتفسير:\nيربط الكتاب انتشار أجهزة الكمبيوتر الشخصية بالسبعينيات والثمانينيات، بينما ترتبط التسعينيات بإتاحة الإنترنت للاستخدام التجاري وظهور الويب.";
+    const split = splitExplanation(dbExplanation);
+    expect(split.primary).toBe(
+      "The book places the spread of personal computers in the 1970s–1980s; the 1990s are associated with the commercialization of the Internet and the Web."
+    );
+    expect(split.translation).toBe(
+      "يربط الكتاب انتشار أجهزة الكمبيوتر الشخصية بالسبعينيات والثمانينيات، بينما ترتبط التسعينيات بإتاحة الإنترنت للاستخدام التجاري وظهور الويب."
+    );
+
+    // 4. Normal multi-line explanation should NOT be parsed into artificial numbered points
+    const normalParagraph =
+      "The book places the spread of personal computers in the 1970s–1980s.\nThe 1990s are associated with the commercialization of the Internet.";
+    expect(extractAnswerPoints(normalParagraph)).toBeNull();
+
+    // 5. Explicit structured model answer SHOULD be parsed into points
+    const structuredAnswer =
+      "1. Early computers used vacuum tubes.\n2. Personal computers spread in the 1970s.\n3. The Internet expanded in the 1990s.";
+    const structured = extractAnswerPoints(structuredAnswer);
+    expect(structured).not.toBeNull();
+    expect(structured?.points.length).toBe(3);
+    expect(structured?.points[0].badge).toBe("1");
   });
 });

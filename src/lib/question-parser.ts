@@ -188,7 +188,9 @@ export function extractInlineChoices(line: string): string[] {
  * Strip question numbering/prefix from statement
  */
 export function cleanQuestionStatement(statement: string): string {
-  let cleaned = statement.trim();
+  let cleaned = statement
+    .replace(/[\u200B-\u200F\uFEFF\u202A-\u202E]/g, "")
+    .trim();
 
   // Strip brackets first so that [سهل] 1. -> 1. -> stripped number
   cleaned = cleaned
@@ -204,6 +206,14 @@ export function cleanQuestionStatement(statement: string): string {
     .replace(/^(?:Question|Q)\s*[0-9]*\s*[:\-\.\)\/]\s*/i, "")
     .replace(/^(?:\([0-9]+\)|[0-9]+[\.\-\)\:\/]|(?:\([٠-٩]+\)|[٠-٩]+[\.\-\)\:\/]))\s*/, "")
     .trim();
+
+  // Inverted leading question mark on English text (e.g. "?Which of the following...")
+  if ((cleaned.startsWith("?") || cleaned.startsWith("؟")) && !/[\u0600-\u06FF]/.test(cleaned)) {
+    cleaned = cleaned.replace(/^[\?؟]\s*/, "").trim();
+    if (!cleaned.endsWith("?")) {
+      cleaned = cleaned + "?";
+    }
+  }
 
   return cleaned;
 }
@@ -323,6 +333,7 @@ export function parseQuestionsFromText(
           else if (Array.isArray(rawItem.choices)) candidateOptions = rawItem.choices;
           else if (Array.isArray(rawItem.answers) && rawItem.answers.length > 1) candidateOptions = rawItem.answers;
           else if (Array.isArray(rawItem.alternatives)) candidateOptions = rawItem.alternatives;
+          else if (Array.isArray(rawItem.items) && rawItem.items.length > 1) candidateOptions = rawItem.items;
           else if (rawItem.options && typeof rawItem.options === "object" && !Array.isArray(rawItem.options)) {
             // Object map: { "A": "...", "B": "..." }
             candidateOptions = Object.entries(rawItem.options).map(([key, val]) => {
@@ -335,6 +346,41 @@ export function parseQuestionsFromText(
               rawItem.optionB ? { label: "B", text: String(rawItem.optionB) } : null,
               rawItem.optionC ? { label: "C", text: String(rawItem.optionC) } : null,
               rawItem.optionD ? { label: "D", text: String(rawItem.optionD) } : null,
+            ].filter(Boolean);
+          } else if (rawItem.choiceA || rawItem.choiceB) {
+            candidateOptions = [
+              rawItem.choiceA ? { label: "A", text: String(rawItem.choiceA) } : null,
+              rawItem.choiceB ? { label: "B", text: String(rawItem.choiceB) } : null,
+              rawItem.choiceC ? { label: "C", text: String(rawItem.choiceC) } : null,
+              rawItem.choiceD ? { label: "D", text: String(rawItem.choiceD) } : null,
+            ].filter(Boolean);
+          } else if (rawItem.optA || rawItem.optB) {
+            candidateOptions = [
+              rawItem.optA ? { label: "A", text: String(rawItem.optA) } : null,
+              rawItem.optB ? { label: "B", text: String(rawItem.optB) } : null,
+              rawItem.optC ? { label: "C", text: String(rawItem.optC) } : null,
+              rawItem.optD ? { label: "D", text: String(rawItem.optD) } : null,
+            ].filter(Boolean);
+          } else if (rawItem.option_a || rawItem.option_b) {
+            candidateOptions = [
+              rawItem.option_a ? { label: "A", text: String(rawItem.option_a) } : null,
+              rawItem.option_b ? { label: "B", text: String(rawItem.option_b) } : null,
+              rawItem.option_c ? { label: "C", text: String(rawItem.option_c) } : null,
+              rawItem.option_d ? { label: "D", text: String(rawItem.option_d) } : null,
+            ].filter(Boolean);
+          } else if (rawItem.option1 || rawItem.option2) {
+            candidateOptions = [
+              rawItem.option1 ? { label: "1", text: String(rawItem.option1) } : null,
+              rawItem.option2 ? { label: "2", text: String(rawItem.option2) } : null,
+              rawItem.option3 ? { label: "3", text: String(rawItem.option3) } : null,
+              rawItem.option4 ? { label: "4", text: String(rawItem.option4) } : null,
+            ].filter(Boolean);
+          } else if (rawItem.choice1 || rawItem.choice2) {
+            candidateOptions = [
+              rawItem.choice1 ? { label: "1", text: String(rawItem.choice1) } : null,
+              rawItem.choice2 ? { label: "2", text: String(rawItem.choice2) } : null,
+              rawItem.choice3 ? { label: "3", text: String(rawItem.choice3) } : null,
+              rawItem.choice4 ? { label: "4", text: String(rawItem.choice4) } : null,
             ].filter(Boolean);
           } else if (rawItem.A || rawItem.B) {
             candidateOptions = [
@@ -413,8 +459,11 @@ export function parseQuestionsFromText(
             options = candidateOptions.map((opt: any, idx: number) => {
               const isObj = typeof opt === "object" && opt !== null;
               let optText = isObj
-                ? String(opt.text || opt.title || opt.value || "").trim()
+                ? String(opt.text || opt.choice || opt.title || opt.statement || opt.value || opt.content || opt.answer || opt.body || "").trim()
                 : String(opt).trim();
+              if (optText.startsWith("?") && !/[\u0600-\u06FF]/.test(optText)) {
+                optText = optText.replace(/^\?\s*/, "").trim();
+              }
               const optTranslation = isObj && opt.translation ? String(opt.translation).trim() : undefined;
               const optExplanation =
                 isObj && (opt.explanation || opt.reason)
