@@ -155,6 +155,7 @@ export interface LessonViewerProps {
         id: string;
         name: string;
         color?: string | null;
+        schoolCategory?: "ARABIC" | "LANGUAGES";
       };
       lessons: { id: string; title: string; order: number }[];
     };

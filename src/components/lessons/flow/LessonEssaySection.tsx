@@ -79,6 +79,21 @@ export function LessonEssaySection({
         </div>
       </div>
 
+      {/* Clear Self-Comparison Notice (آلية تصحيح المقالي المعتمدة) */}
+      <div className="p-4 sm:p-5 rounded-2xl bg-[#7C3AED]/[0.07] dark:bg-[#7C3AED]/15 border border-[#7C3AED]/25 text-xs sm:text-[13px] text-purple-950 dark:text-purple-200 flex items-start gap-3 shadow-2xs">
+        <div className="w-7 h-7 rounded-lg bg-[#7C3AED] text-white flex items-center justify-center shrink-0 font-bold text-xs mt-0.5 shadow-xs">
+          💡
+        </div>
+        <div className="leading-relaxed space-y-1">
+          <strong className="block text-[#7C3AED] dark:text-purple-300 font-bold text-sm">
+            آلية حل وتصحيح الأسئلة المقالية:
+          </strong>
+          <p className="text-slate-700 dark:text-slate-300">
+            الأسئلة المقالية في الامتحانات تقاس باستيعابك للمفاهيم الرئيسية؛ اكتب مسودة إجابتك أولاً لاختبار نفسك، ثم اضغط على <strong>"عرض نموذج الإجابة المعتمد"</strong> لمقارنة نقاطك بنموذج الوزارة وعناصر التقييم، وتحديد مدى تغطيتك للمفاهيم المطلوبة.
+          </p>
+        </div>
+      </div>
+
       {/* Essay Questions List */}
       {questions.length > 0 ? (
         <div className="space-y-6">

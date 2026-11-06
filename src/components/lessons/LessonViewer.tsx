@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { BookOpen, Graph, BookmarkSimple, CheckCircle } from "@phosphor-icons/react";
 import {
   LessonViewerProps,
@@ -25,6 +25,7 @@ import { LessonMcqSection } from "./flow/LessonMcqSection";
 import { LessonEssaySection } from "./flow/LessonEssaySection";
 import { LessonAssessmentSection } from "./flow/LessonAssessmentSection";
 import { LessonTrueFalseSection } from "./flow/LessonTrueFalseSection";
+import { LessonLearningStepper } from "./flow/LessonLearningStepper";
 import { LessonFlashcardsModal } from "./LessonFlashcardsModal";
 import { LessonMistakesCapsuleModal } from "./LessonMistakesCapsuleModal";
 import { offlineStorage } from "@/lib/offline-db";
@@ -311,6 +312,54 @@ export function LessonViewer({
       )
       : 100;
 
+  // Sibling lessons navigation calculations
+  const isLanguagesSubject =
+    lesson.unit.subject.schoolCategory === "LANGUAGES" ||
+    !/[\u0600-\u06FF]/.test(lesson.title || "");
+
+  const tfAnsweredCount = useMemo(() => {
+    return tfQuestions.filter((q) => Boolean(questionAnswers[q.question.id])).length;
+  }, [tfQuestions, questionAnswers]);
+
+  const examAnsweredCount = useMemo(() => {
+    const mcqAnswered = mcqQuestions.filter((q) => Boolean(questionAnswers[q.question.id])).length;
+    const essayAnswered = essayQuestions.filter(
+      (q) => Boolean(revealedEssays[q.question.id] || essayDrafts[q.question.id]?.trim())
+    ).length;
+    return mcqAnswered + essayAnswered;
+  }, [mcqQuestions, essayQuestions, questionAnswers, revealedEssays, essayDrafts]);
+
+  const isQuestionsFullyAnswered = useMemo(() => {
+    const totalPractice = tfQuestions.length + mcqQuestions.length + essayQuestions.length;
+    if (totalPractice === 0) return true;
+    return (tfAnsweredCount + examAnsweredCount) >= totalPractice;
+  }, [tfQuestions.length, mcqQuestions.length, essayQuestions.length, tfAnsweredCount, examAnsweredCount]);
+
+  const activeStep = useMemo(() => {
+    if (activeTab === "definitions" || activeTab === "content" || activeTab === "mindmap") {
+      return "definitions";
+    }
+    if (activeTab === "questions") {
+      if (questionTypeFilter === "TRUE_FALSE") return "tf";
+      return "exam";
+    }
+    return "definitions";
+  }, [activeTab, questionTypeFilter]);
+
+  const handleSelectStep = useCallback((step: "definitions" | "tf" | "exam" | "mistakes") => {
+    if (step === "definitions") {
+      setActiveTab("definitions");
+    } else if (step === "tf") {
+      setActiveTab("questions");
+      setQuestionTypeFilter("TRUE_FALSE");
+    } else if (step === "exam") {
+      setActiveTab("questions");
+      setQuestionTypeFilter("ALL");
+    } else if (step === "mistakes") {
+      setIsMistakesCapsuleOpen(true);
+    }
+  }, []);
+
   // Siblings navigation
   const siblingLessons = lesson.unit.lessons;
   const currentIndex = siblingLessons.findIndex((l) => l.id === lesson.id);
@@ -525,6 +574,19 @@ export function LessonViewer({
           setIsPlayingAudio(false);
           setAudioProgress(0);
         }}
+      />
+
+      {/* 2.5 Interactive Step-by-Step Learning Stepper (شريط خطوة بخطوة للدرس) */}
+      <LessonLearningStepper
+        activeStep={activeStep}
+        onSelectStep={handleSelectStep}
+        definitionsCount={definitions.length}
+        tfQuestionsCount={tfQuestions.length}
+        tfAnsweredCount={tfAnsweredCount}
+        examQuestionsCount={mcqQuestions.length + essayQuestions.length}
+        examAnsweredCount={examAnsweredCount}
+        unresolvedMistakesCount={mistakes.length}
+        isLanguages={isLanguagesSubject}
       />
 
       {/* 3. Main Navigation Tabs (4 Clear Student Tabs) */}
@@ -817,11 +879,15 @@ export function LessonViewer({
         </div>
       )}
 
-      {/* Sibling Lessons Navigation Footer */}
+      {/* Sibling Lessons Navigation Footer (with Next Lesson Hero Action) */}
       <LessonFooterNav
         prevLesson={prevLesson}
         nextLesson={nextLesson}
         subjectId={lesson.unit.subject.id}
+        isAllAnswered={isQuestionsFullyAnswered}
+        unresolvedMistakesCount={mistakes.length}
+        onOpenMistakesCapsule={() => setIsMistakesCapsuleOpen(true)}
+        isLanguages={isLanguagesSubject}
       />
       {/* Flashcards Self-Recitation Modal */}
       <LessonFlashcardsModal
