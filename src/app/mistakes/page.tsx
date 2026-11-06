@@ -14,7 +14,14 @@ export default async function MistakesPage() {
 
   // Fetch student's mistake records
   const mistakes = await prisma.mistakeReview.findMany({
-    where: { userId: user.id },
+    where: {
+      userId: user.id,
+      question: {
+        status: { not: "ARCHIVED" },
+        ...(user.schoolCategory ? { schoolCategory: user.schoolCategory } : {}),
+        ...(user.gradeId ? { subject: { gradeId: user.gradeId } } : {}),
+      },
+    },
     orderBy: { lastAttemptAt: "desc" },
     include: {
       question: {

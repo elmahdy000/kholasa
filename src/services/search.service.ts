@@ -68,8 +68,10 @@ export class SearchService {
         where: {
           status: "PUBLISHED",
           ...(hasScope ? { subject: { is: subjectFilter } } : {}),
+          ...(scope?.schoolCategory ? { schoolCategory: scope.schoolCategory } : {}),
           OR: [
             { statement: { contains: q, mode: "insensitive" } },
+            { translation: { contains: q, mode: "insensitive" } },
             {
               explanation: {
                 concept: { contains: q, mode: "insensitive" },
