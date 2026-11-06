@@ -226,12 +226,14 @@ Each lesson is decomposed into four distinct cognitive dimensions:
 2. **الخريطة الذهنية (Interactive Mind Map):**
    - High-resolution SVG / Canvas mental schema.
    - Pan, zoom, and fullscreen controls without external distractions.
-3. **المصطلحات والتسميع (Flashcards & Active Recall):**
-   - 3D flip card component with smooth CSS transforms.
+3. **كروت التثبيت والاسترجاع الذكي (Smart Flashcards & Active Recall):**
+   - 3D flip card component with smooth CSS transforms and Web Audio synthetic chimes.
+   - Dual study modes: "استرجاع المفهوم (Term -> Definition)" & "تحدي اكتب المصطلح العلمي (Definition -> Term)".
    - Multi-paragraph and numbered definitions rendered cleanly via `FormattedDefinitionView`.
+   - Client-side voice pronunciation via Web Speech Synthesis API.
    - Self-evaluation actions:
-     - **"تمام" (Mastered):** Advances card, marks term as understood.
-     - **"مش تمام" (Struggling):** Automatically dispatches `POST /api/lessons/[id]/flashcards/mistake`, logging the term directly into the student's Mistake Bank for spaced review.
+     - **"أتقنته تماماً" (Mastered):** Advances card, marks term as understood with positive feedback.
+     - **"محتاج تثبيت" (Needs Practice):** Automatically dispatches `POST /api/lessons/[id]/flashcards/mistake`, logging the term directly into the student's Mistake Bank for spaced review.
 4. **أسئلة الدرس (Lesson Questions & Practice):**
    - Instant in-lesson question practice.
    - Instant answer verification with pedagogical explanation breakdown.

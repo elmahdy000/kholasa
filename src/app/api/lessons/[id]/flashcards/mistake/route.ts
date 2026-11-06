@@ -18,7 +18,7 @@ export async function POST(
 ) {
   try {
     const user = await getCurrentUser();
-    if (!user) throw unauthorized("غير مصرح لك بتسجيل التسميع");
+    if (!user) throw unauthorized("غير مصرح لك بتسجيل التثبيت الذكي");
 
     rateLimit(`flashcard:mistake:${user.id}`, 60, 60 * 1000);
 

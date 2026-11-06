@@ -889,7 +889,7 @@ export function LessonViewer({
         onOpenMistakesCapsule={() => setIsMistakesCapsuleOpen(true)}
         isLanguages={isLanguagesSubject}
       />
-      {/* Flashcards Self-Recitation Modal */}
+      {/* Flashcards Smart Active Recall Modal (كروت التثبيت الذكي) */}
       <LessonFlashcardsModal
         isOpen={isFlashcardsOpen}
         onClose={() => setIsFlashcardsOpen(false)}
@@ -897,6 +897,7 @@ export function LessonViewer({
         lessonTitle={lesson.title}
         unitTitle={lesson.unit?.title}
         definitions={definitions}
+        isLanguages={isLanguagesSubject}
       />
       {/* Mistakes Quick Drill Capsule Modal (كبسولة تظبيط الغلطات) */}
       <LessonMistakesCapsuleModal

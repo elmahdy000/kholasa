@@ -107,9 +107,10 @@ export function LessonDefinitionsSection({
               type="button"
               onClick={onStartFlashcards}
               className="px-3.5 py-2 rounded-xl bg-[#800020] hover:bg-[#600018] text-white text-[13px] font-bold flex items-center gap-2 shadow-sm transition-all cursor-pointer"
+              title="تثبيت المفاهيم والمصطلحات بنظام الاسترجاع الذكي (Active Recall)"
             >
               <Cards className="w-4 h-4" weight="bold" />
-              <span>تسميع ذاتي بالكروت</span>
+              <span>تثبيت بالكروت الذكية</span>
             </button>
           )}
           <span className="px-3 py-1.5 rounded-xl bg-white dark:bg-[#1E293B] border border-[#059669]/20 text-[#059669] text-[13px] font-bold font-mono">
