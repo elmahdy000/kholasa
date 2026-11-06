@@ -570,7 +570,6 @@ export function LessonFlashcardsModal({
                           </>
                         );
                       })()}
-                      </div>
 
                       {/* Bottom Evaluation Action Bar ("وبيظهر اختيارين تمام او مش تمام") */}
                       <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-2">
