@@ -25,7 +25,7 @@ export function ExamSolverHeader({
   return (
     <div className="p-4 sm:p-5 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div>
-        <span className="text-[13px] font-bold text-[#800020] block">
+        <span className="text-[13px] font-bold text-[#800020] dark:text-[#FB7185] block">
           {subjectName} •{" "}
           {initialMode === "PRACTICE" ? "وضع التدريب (شرح فوري)" : "وضع الامتحان (وقت حقيقي)"}
         </span>
@@ -41,11 +41,11 @@ export function ExamSolverHeader({
         <div
           className={`px-4 py-2 rounded-xl border flex items-center gap-2 text-[13px] font-mono font-bold ${
             isUrgent
-              ? "bg-[#DC2626]/10 dark:bg-[#1E293B] border-[#E2E8F0] dark:border-[#F87171] text-[#DC2626] animate-pulse"
+              ? "bg-[#DC2626]/10 dark:bg-[#1E293B] border-[#DC2626]/40 dark:border-[#F87171]/50 text-[#DC2626] dark:text-[#F87171] animate-pulse"
               : "bg-[#F8FAFC] dark:bg-[#1E293B] border-[#E2E8F0] dark:border-[#334155] text-[#0F172A] dark:text-white"
           }`}
         >
-          <Clock className="w-4 h-4 text-[#800020]" weight="bold" />
+          <Clock className="w-4 h-4 text-[#800020] dark:text-[#FB7185]" weight="bold" />
           <span dir="ltr">
             {String(minutes).padStart(2, "0")}:{String(seconds).padStart(2, "0")}
           </span>

@@ -189,7 +189,7 @@ export function LessonTrueFalseSection({
                         type="button"
                         disabled={isSelected}
                         onClick={() => onSelectOption(question.id, opt.id)}
-                        className={`h-14 rounded-2xl border text-[14px] sm:text-base font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${btnStyle}`}
+                        className={`h-14 rounded-2xl border text-[14px] sm:text-base font-bold flex items-center justify-center gap-2 transition-all cursor-pointer overflow-hidden active:scale-95 ${btnStyle}`}
                       >
                         {isTrueOption ? (
                           <Check className="w-5 h-5 shrink-0" weight="bold" />

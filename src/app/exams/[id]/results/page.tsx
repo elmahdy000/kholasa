@@ -176,9 +176,9 @@ export default async function ExamResultsPage({
             <div className="flex flex-wrap items-center gap-3 pt-2">
               <Link
                 href="/mistakes"
-                className="h-11 px-4 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] font-bold flex items-center gap-2  transition-colors interactive-tap"
+                className="h-11 px-4 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] font-bold flex items-center gap-2 transition-colors interactive-tap"
               >
-                <AlertTriangle className="w-3.5 h-3.5 text-[#D97706]" />
+                <AlertTriangle className="w-3.5 h-3.5 text-amber-300" />
                 <span>راجع أخطاءك في "غلطاتي"</span>
               </Link>
 

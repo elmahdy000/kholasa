@@ -145,7 +145,7 @@ export function ExamQuestionCard({
         />
         <QuestionImageAttachment imageUrl={currentQ.imageUrl} />
 
-        {initialMode === "PRACTICE" && isQuestionTranslated && currentQ.translation && (
+        {isQuestionTranslated && currentQ.translation && (
           <div
             className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60 text-right animate-in fade-in duration-200"
             dir="rtl"
@@ -215,7 +215,7 @@ export function ExamQuestionCard({
                   <div className={`min-w-0 flex-1 leading-relaxed break-words ${isEnglishOpt ? "text-left" : "text-right"}`}>
                     <BidiStatement as="span" text={opt.text} />
 
-                    {initialMode === "PRACTICE" && isQuestionTranslated && opt.translation && (
+                    {isQuestionTranslated && opt.translation && (
                       <div
                         className="mt-2 pt-2 border-t border-slate-200/60 dark:border-slate-700/60 text-right text-xs text-slate-600 dark:text-slate-300 font-medium font-content animate-in fade-in duration-150"
                         dir="rtl"
@@ -335,15 +335,18 @@ export function ExamQuestionCard({
       )}
 
       {/* Question Navigation Controls */}
-      <div className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-3 pt-4 border-t border-[#E2E8F0] dark:border-[#334155]">
+      <div
+        dir={isEnglish ? "ltr" : "rtl"}
+        className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-3 pt-4 border-t border-[#E2E8F0] dark:border-[#334155]"
+      >
         <button
           type="button"
           onClick={onPrevQuestion}
           disabled={currentIndex === 0}
           className="h-11 px-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-bold text-[#0F172A] dark:text-white flex items-center gap-2 hover:bg-[#F8FAFC] dark:hover:bg-[#334155] disabled:opacity-40 transition-colors cursor-pointer"
         >
-          <CaretRight className="w-4 h-4" weight="bold" />
-          <span>السؤال اللي قبله</span>
+          {isEnglish ? <CaretLeft className="w-4 h-4" weight="bold" /> : <CaretRight className="w-4 h-4" weight="bold" />}
+          <span>{isEnglish ? "Previous Question" : "السؤال اللي قبله"}</span>
         </button>
 
         {currentIndex < totalQuestions - 1 ? (
@@ -352,8 +355,8 @@ export function ExamQuestionCard({
             onClick={onNextQuestion}
             className="h-11 px-5 sm:px-6 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] font-bold flex items-center gap-2 transition-colors active:opacity-80 cursor-pointer"
           >
-            <span>السؤال اللي بعده</span>
-            <CaretLeft className="w-4 h-4" weight="bold" />
+            <span>{isEnglish ? "Next Question" : "السؤال اللي بعده"}</span>
+            {isEnglish ? <CaretRight className="w-4 h-4" weight="bold" /> : <CaretLeft className="w-4 h-4" weight="bold" />}
           </button>
         ) : (
           <button
@@ -361,7 +364,7 @@ export function ExamQuestionCard({
             onClick={onOpenSubmitModal}
             className="h-11 px-5 sm:px-6 rounded-xl bg-[#059669] hover:bg-[#047857] text-white text-[13px] font-bold flex items-center gap-2 transition-colors active:opacity-80 cursor-pointer"
           >
-            <span>خلصت؟ سلّم الامتحان</span>
+            <span>{isEnglish ? "Finished? Submit Exam" : "خلصت؟ سلّم الامتحان"}</span>
             <PaperPlaneTilt className="w-3.5 h-3.5" weight="bold" />
           </button>
         )}
