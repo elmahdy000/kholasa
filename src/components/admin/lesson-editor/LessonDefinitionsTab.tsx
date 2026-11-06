@@ -47,198 +47,196 @@ export function parseDefinitionsText(text: string): DefinitionItem[] {
 
   const raw = text.trim();
 
-  // Strategy 0: Direct JSON array pasted
+  // Helper to detect translation header lines (e.g. الترجمة:, الترجمة العربية:, Translation:, Arabic Translation:)
+  const isTranslationHeader = (str: string) =>
+    /^(?:(?:الترجمة\s*العربية|ترجمة\s*المصطلح|ترجمة\s*التعريف|الترجمة|Translation|Arabic\s*Translation)\s*[:：\-]?)/i.test(
+      str.trim()
+    );
+
+  const extractTranslation = (str: string): string | null => {
+    const match = str
+      .trim()
+      .match(
+        /^(?:(?:الترجمة\s*العربية|ترجمة\s*المصطلح|ترجمة\s*التعريف|الترجمة|Translation|Arabic\s*Translation)\s*[:：\-]?)\s*(.+)$/i
+      );
+    return match ? match[1].trim() : null;
+  };
+
+  // Strategy 0: Direct JSON array pasted (with flexible translation key mappings)
   if (raw.startsWith("[") && raw.endsWith("]")) {
     try {
       const parsedJson = JSON.parse(raw);
       if (Array.isArray(parsedJson)) {
         const valid = parsedJson
-          .filter((item) => item && (item.term || item.name) && (item.meaning || item.definition))
-          .map((item) => ({
-            term: cleanTerm(String(item.term || item.name)),
-            meaning: cleanMeaning(String(item.meaning || item.definition)),
-            translation: item.translation ? String(item.translation).trim() : undefined,
-          }));
+          .filter(
+            (item) =>
+              item &&
+              typeof item === "object" &&
+              (item.term || item.name || item.title) &&
+              (item.meaning || item.definition || item.desc)
+          )
+          .map((item) => {
+            const rawTrans =
+              item.translation ||
+              item.translationArabic ||
+              item.arabicTranslation ||
+              item.trans ||
+              item.arabic ||
+              item.meaningTranslation;
+            return {
+              term: cleanTerm(String(item.term || item.name || item.title)),
+              meaning: cleanMeaning(String(item.meaning || item.definition || item.desc)),
+              translation: rawTrans ? String(rawTrans).trim() : undefined,
+            };
+          });
         if (valid.length > 0) return valid;
       }
     } catch {}
   }
 
-  const rawLines = raw.split("\n").map((l) => l.trim()).filter(Boolean);
+  const rawLines = raw.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
 
-  // Strategy 1: Check for Multi-line block with "الترجمة:" or "Translation:"
-  const hasStandaloneTranslation = rawLines.some((l) =>
-    /^(?:الترجمة|Translation)\s*[:：]/i.test(l)
-  );
+  // Strategy 1: Smart Block & Multi-line Parsing with robust translation handling
+  const results: DefinitionItem[] = [];
+  let currentTerm = "";
+  let currentMeaning = "";
+  let currentTranslation = "";
 
-  if (hasStandaloneTranslation) {
-    const results: DefinitionItem[] = [];
-    let currentTerm = "";
-    let currentMeaning = "";
-    let currentTranslation = "";
-
-    for (let i = 0; i < rawLines.length; i++) {
-      const line = rawLines[i];
-
-      // Translation line
-      const transMatch = line.match(/^(?:الترجمة|Translation)\s*[:：]\s*(.+)$/i);
-      if (transMatch) {
-        currentTranslation = transMatch[1].trim();
-        if (currentTerm && currentMeaning) {
-          results.push({
-            term: cleanTerm(currentTerm),
-            meaning: cleanMeaning(currentMeaning),
-            translation: currentTranslation || undefined,
-          });
-          currentTerm = "";
-          currentMeaning = "";
-          currentTranslation = "";
-        }
-        continue;
-      }
-
-      const nextLine = rawLines[i + 1] || "";
-      const isNextTrans = /^(?:الترجمة|Translation)\s*[:：]/i.test(nextLine);
-
-      if (isNextTrans) {
-        currentMeaning = line;
-        continue;
-      }
-
-      currentTerm = line;
-    }
-
+  const commitCurrent = () => {
     if (currentTerm && currentMeaning) {
       results.push({
         term: cleanTerm(currentTerm),
         meaning: cleanMeaning(currentMeaning),
-        translation: currentTranslation || undefined,
+        translation: currentTranslation.trim() || undefined,
       });
+      currentTerm = "";
+      currentMeaning = "";
+      currentTranslation = "";
+    }
+  };
+
+  for (let i = 0; i < rawLines.length; i++) {
+    const line = rawLines[i];
+
+    // Check if line is an explicit translation line
+    const trans = extractTranslation(line);
+    if (trans) {
+      currentTranslation = trans;
+      commitCurrent();
+      continue;
     }
 
-    if (results.length > 0) return results;
+    // Check if line has inline translation via || or ::
+    if (line.includes("||") || line.includes("::")) {
+      commitCurrent();
+      const delimiter = line.includes("||") ? "||" : "::";
+      const parts = line.split(delimiter).map((p) => p.trim());
+      if (parts.length >= 2) {
+        let pTerm = parts[0];
+        let pMeaning = parts[1];
+        let pTrans = parts[2] || undefined;
+
+        if (pTerm.includes(":")) {
+          const cIdx = pTerm.indexOf(":");
+          pMeaning = pTerm.slice(cIdx + 1).trim();
+          pTerm = pTerm.slice(0, cIdx).trim();
+          pTrans = parts[1];
+        } else if (pTerm.includes(" - ")) {
+          const dIdx = pTerm.indexOf(" - ");
+          pMeaning = pTerm.slice(dIdx + 3).trim();
+          pTerm = pTerm.slice(0, dIdx).trim();
+          pTrans = parts[1];
+        }
+
+        results.push({
+          term: cleanTerm(pTerm),
+          meaning: cleanMeaning(pMeaning),
+          translation: pTrans ? cleanMeaning(pTrans) : undefined,
+        });
+        continue;
+      }
+    }
+
+    // Check if line has "Term: Meaning" on the same line
+    const colonMatch = line.match(/^([^:\n]{2,80})\s*[:：]\s*(.+)$/);
+    if (colonMatch && !isTranslationHeader(line)) {
+      commitCurrent();
+
+      const nextLine = rawLines[i + 1] || "";
+      const nextTrans = extractTranslation(nextLine);
+
+      if (nextTrans) {
+        // Line is "Term: Meaning", and the very next line is its translation!
+        currentTerm = colonMatch[1];
+        currentMeaning = colonMatch[2];
+        continue;
+      } else {
+        // Check if the meaning itself ends with an embedded "(الترجمة: ...)"
+        let meaningText = colonMatch[2];
+        let embeddedTrans: string | undefined = undefined;
+        const inlineTransMatch = meaningText.match(
+          /\((?:(?:الترجمة\s*العربية|الترجمة|ترجمة\s*المصطلح|Translation|Arabic\s*Translation)\s*[:：\-]?)\s*([^)]+)\)\s*$/i
+        );
+        if (inlineTransMatch) {
+          embeddedTrans = inlineTransMatch[1].trim();
+          meaningText = meaningText
+            .replace(
+              /\((?:(?:الترجمة\s*العربية|الترجمة|ترجمة\s*المصطلح|Translation|Arabic\s*Translation)\s*[:：\-]?)\s*([^)]+)\)\s*$/i,
+              ""
+            )
+            .trim();
+        }
+
+        results.push({
+          term: cleanTerm(colonMatch[1]),
+          meaning: cleanMeaning(meaningText),
+          translation: embeddedTrans,
+        });
+        continue;
+      }
+    }
+
+    // Check if line has "Term - Meaning" on the same line
+    const dashMatch = line.match(/^([^\-–—\n]{2,80})\s+[-–—]\s+(.+)$/);
+    if (dashMatch && !isTranslationHeader(line)) {
+      commitCurrent();
+
+      const nextLine = rawLines[i + 1] || "";
+      const nextTrans = extractTranslation(nextLine);
+
+      if (nextTrans) {
+        currentTerm = dashMatch[1];
+        currentMeaning = dashMatch[2];
+        continue;
+      } else {
+        results.push({
+          term: cleanTerm(dashMatch[1]),
+          meaning: cleanMeaning(dashMatch[2]),
+          translation: undefined,
+        });
+        continue;
+      }
+    }
+
+    // Fallback: Line is part of multi-line block (term line, or meaning line)
+    if (!currentTerm) {
+      currentTerm = line;
+    } else if (!currentMeaning) {
+      currentMeaning = line;
+      const nextLine = rawLines[i + 1] || "";
+      if (!isTranslationHeader(nextLine)) {
+        commitCurrent();
+      }
+    } else {
+      currentMeaning += " " + line;
+    }
   }
 
-  // Strategy 2: Paragraph blocks separated by blank lines
-  const blocks = raw.split(/\n\s*\n/).map((b) => b.trim()).filter(Boolean);
-  if (blocks.length > 1 && !rawLines.every((l) => l.includes(":") || l.includes("||"))) {
-    const blockResults: DefinitionItem[] = [];
-    for (const block of blocks) {
-      const blockLines = block.split("\n").map((l) => l.trim()).filter(Boolean);
-      if (blockLines.length >= 2) {
-        const potentialTerm = cleanTerm(blockLines[0]);
-        let potentialMeaning = "";
-        let potentialTrans = "";
+  commitCurrent();
 
-        for (let j = 1; j < blockLines.length; j++) {
-          const l = blockLines[j];
-          const tMatch = l.match(/^(?:الترجمة|Translation)\s*[:：]\s*(.+)$/i);
-          if (tMatch) {
-            potentialTrans = tMatch[1].trim();
-          } else {
-            potentialMeaning = potentialMeaning ? `${potentialMeaning} ${l}` : l;
-          }
-        }
+  if (results.length > 0) return results;
 
-        if (potentialTerm && potentialMeaning) {
-          blockResults.push({
-            term: potentialTerm,
-            meaning: cleanMeaning(potentialMeaning),
-            translation: potentialTrans || undefined,
-          });
-        }
-      }
-    }
-    if (blockResults.length > 1) return blockResults;
-  }
-
-  // Strategy 3: Single-line definitions
-  const singleLineResults: DefinitionItem[] = [];
-  for (const line of rawLines) {
-    if (/^(?:الترجمة|Translation)\s*[:：]/i.test(line)) continue;
-
-    let parsedTerm = "";
-    let parsedMeaning = "";
-    let parsedTranslation: string | undefined = undefined;
-
-    // 3.1 Check double pipe "||"
-    if (line.includes("||")) {
-      const parts = line.split("||").map((p) => p.trim());
-      if (parts.length >= 3) {
-        parsedTerm = parts[0];
-        parsedMeaning = parts[1];
-        parsedTranslation = parts.slice(2).join("||").trim() || undefined;
-      } else if (parts.length === 2) {
-        if (parts[0].includes(":")) {
-          const idx = parts[0].indexOf(":");
-          parsedTerm = parts[0].slice(0, idx).trim();
-          parsedMeaning = parts[0].slice(idx + 1).trim();
-          parsedTranslation = parts[1];
-        } else {
-          parsedTerm = parts[0];
-          parsedMeaning = parts[1];
-        }
-      }
-    }
-    // 3.2 Check double colon "::"
-    else if (line.includes("::")) {
-      const parts = line.split("::").map((p) => p.trim());
-      if (parts.length >= 3) {
-        parsedTerm = parts[0];
-        parsedMeaning = parts[1];
-        parsedTranslation = parts.slice(2).join("::").trim() || undefined;
-      } else if (parts.length === 2) {
-        if (parts[0].includes(":")) {
-          const idx = parts[0].indexOf(":");
-          parsedTerm = parts[0].slice(0, idx).trim();
-          parsedMeaning = parts[0].slice(idx + 1).trim();
-          parsedTranslation = parts[1];
-        } else {
-          parsedTerm = parts[0];
-          parsedMeaning = parts[1];
-        }
-      }
-    }
-    // 3.3 Check Tab separated
-    else if (line.includes("\t")) {
-      const parts = line.split("\t").map((p) => p.trim());
-      parsedTerm = parts[0];
-      parsedMeaning = parts[1] || "";
-      parsedTranslation = parts[2] || undefined;
-    }
-    // 3.4 Check standard colon ":"
-    else if (line.includes(":")) {
-      const idx = line.indexOf(":");
-      parsedTerm = line.slice(0, idx).trim();
-      parsedMeaning = line.slice(idx + 1).trim();
-    }
-    // 3.5 Check equal "="
-    else if (line.includes("=")) {
-      const idx = line.indexOf("=");
-      parsedTerm = line.slice(0, idx).trim();
-      parsedMeaning = line.slice(idx + 1).trim();
-    }
-    // 3.6 Check spaced dash " - " or " — "
-    else {
-      const dashMatch = line.match(/^(.+?)\s+[-–—]\s+(.+)$/);
-      if (dashMatch) {
-        parsedTerm = dashMatch[1].trim();
-        parsedMeaning = dashMatch[2].trim();
-      }
-    }
-
-    if (parsedTerm && parsedMeaning) {
-      if (/^(?:الترجمة|Translation)$/i.test(cleanTerm(parsedTerm))) continue;
-
-      singleLineResults.push({
-        term: cleanTerm(parsedTerm),
-        meaning: cleanMeaning(parsedMeaning),
-        translation: parsedTranslation,
-      });
-    }
-  }
-
-  return singleLineResults;
+  return [];
 }
 
 export function LessonDefinitionsTab({

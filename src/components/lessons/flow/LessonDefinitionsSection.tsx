@@ -8,10 +8,12 @@ import {
   Check,
   Copy,
   Cards,
+  Translate,
 } from "@phosphor-icons/react";
 import { Definition } from "../types";
 import { TranslationToggle } from "@/components/ui/TranslationToggle";
 import { FormattedDefinitionView } from "@/components/ui/FormattedDefinitionView";
+import { splitExplanation } from "@/components/ui/QuestionExplanationBox";
 
 interface LessonDefinitionsSectionProps {
   definitions: Definition[];
@@ -35,6 +37,7 @@ export function LessonDefinitionsSection({
   onStartFlashcards,
 }: LessonDefinitionsSectionProps) {
   const [translatedMap, setTranslatedMap] = useState<Record<number, boolean>>({});
+  const [isAllTranslated, setIsAllTranslated] = useState(false);
 
   const toggleTranslation = (idx: number) => {
     setTranslatedMap((prev) => ({
@@ -42,6 +45,22 @@ export function LessonDefinitionsSection({
       [idx]: !prev[idx],
     }));
   };
+
+  const toggleAll = () => {
+    const nextState = !isAllTranslated;
+    setIsAllTranslated(nextState);
+    const newMap: Record<number, boolean> = {};
+    definitions.forEach((_, idx) => {
+      newMap[idx] = nextState;
+    });
+    setTranslatedMap(newMap);
+  };
+
+  const hasAnyTranslation = definitions.some((d) => {
+    if (d.translation && d.translation.trim().length > 0) return true;
+    const s = splitExplanation(d.meaning);
+    return Boolean(s.translation && s.translation.trim().length > 0);
+  });
 
   return (
     <div id="section-definitions" className="space-y-6 pt-4">
@@ -67,6 +86,22 @@ export function LessonDefinitionsSection({
         </div>
 
         <div className="flex items-center gap-2 flex-wrap">
+          {hasAnyTranslation && (
+            <button
+              type="button"
+              onClick={toggleAll}
+              className={`px-3 py-1.5 rounded-xl border text-[13px] font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+                isAllTranslated
+                  ? "bg-[#059669] text-white border-[#059669] shadow-xs"
+                  : "bg-white dark:bg-[#1E293B] border-[#059669]/30 text-[#059669] hover:bg-[#059669]/10"
+              }`}
+              title={isAllTranslated ? "إخفاء كل الترجمات" : "عرض ترجمة جميع المصطلحات"}
+            >
+              <Translate className="w-4 h-4" />
+              <span>{isAllTranslated ? "إخفاء كل الترجمات" : "ترجمة جميع المصطلحات"}</span>
+            </button>
+          )}
+
           {onStartFlashcards && (
             <button
               type="button"
@@ -111,9 +146,15 @@ export function LessonDefinitionsSection({
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {filteredDefinitions.map((item, idx) => {
             const isCopied = copiedDefinition === item.term;
-            const isTranslated = Boolean(translatedMap[idx]);
-            const hasTranslation = Boolean(item.translation && item.translation.trim().length > 0);
-            const isEnglishMeaning = !/[\u0600-\u06FF]/.test(item.meaning || "");
+            const split = splitExplanation(item.meaning);
+            const cleanMeaning = item.translation
+              ? item.meaning
+              : split.translation
+              ? split.primary
+              : item.meaning;
+            const effectiveTranslation = (item.translation || split.translation || "").trim();
+            const hasTranslation = effectiveTranslation.length > 0;
+            const isTranslated = isAllTranslated || Boolean(translatedMap[idx]);
 
             return (
               <div
@@ -136,7 +177,7 @@ export function LessonDefinitionsSection({
                         />
                       )}
                       <button
-                        onClick={() => onCopyDefinition(item.term, item.meaning)}
+                        onClick={() => onCopyDefinition(item.term, cleanMeaning)}
                         className="p-1.5 rounded-lg text-[#64748B] hover:text-[#059669] hover:bg-[#059669]/10 transition-colors"
                         title="نسخ المصطلح والتعريف"
                       >
@@ -151,13 +192,13 @@ export function LessonDefinitionsSection({
 
                   {/* Definition Body with Formatted Points / Paragraphs */}
                   <FormattedDefinitionView
-                    text={item.meaning}
+                    text={cleanMeaning}
                     variant="card"
                     colorScheme="emerald"
                   />
 
                   {/* Collapsible Arabic Translation */}
-                  {isTranslated && item.translation && (
+                  {isTranslated && hasTranslation && (
                     <div
                       dir="rtl"
                       className="mt-3 p-3 sm:p-3.5 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/25 border border-emerald-200/70 dark:border-emerald-800/40 text-right animate-in fade-in slide-in-from-top-1 duration-200 space-y-1.5 shadow-2xs"
@@ -166,7 +207,7 @@ export function LessonDefinitionsSection({
                         الترجمة العربية للتعريف
                       </span>
                       <FormattedDefinitionView
-                        text={item.translation}
+                        text={effectiveTranslation}
                         variant="translation"
                         colorScheme="emerald"
                         forceDir="rtl"

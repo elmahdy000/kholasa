@@ -18,6 +18,7 @@ import {
 } from "@phosphor-icons/react";
 import { TranslationToggle } from "@/components/ui/TranslationToggle";
 import { FormattedDefinitionView } from "@/components/ui/FormattedDefinitionView";
+import { splitExplanation } from "@/components/ui/QuestionExplanationBox";
 import type { Definition } from "./types";
 
 interface LessonFlashcardsModalProps {
@@ -507,52 +508,68 @@ export function LessonFlashcardsModal({
                       className="absolute inset-0 backface-hidden rotate-y-180 rounded-3xl bg-white dark:bg-[#1E293B] border-2 border-[#059669]/40 dark:border-[#059669]/50 shadow-2xl p-5 sm:p-7 flex flex-col justify-between text-right"
                     >
                       {/* Top Header of Back Face */}
-                      <div className="flex items-center justify-between text-xs font-bold border-b border-slate-100 dark:border-slate-800 pb-2.5">
-                        <div className="flex items-center gap-2">
-                          <span className="px-3 py-1 rounded-full bg-[#059669]/10 text-[#059669] dark:bg-[#059669]/20 dark:text-[#34D399] border border-[#059669]/30 flex items-center gap-1.5 shadow-2xs">
-                            <span className="w-2 h-2 rounded-full bg-[#059669] dark:bg-[#34D399]" />
-                            <span>التعريف والإجابة النموذجية</span>
-                          </span>
-                          {currentCard.translation && (
-                            <TranslationToggle
-                              size="xs"
-                              isTranslated={showTranslation}
-                              onToggle={() => setShowTranslation((prev) => !prev)}
-                            />
-                          )}
-                        </div>
-                        <span className="text-xs font-bold text-[#800020] dark:text-[#FB7185] max-w-[150px] truncate">
-                          {currentCard.term}
-                        </span>
-                      </div>
+                      {(() => {
+                        const cardSplit = splitExplanation(currentCard.meaning);
+                        const cleanMeaning = currentCard.translation
+                          ? currentCard.meaning
+                          : cardSplit.translation
+                          ? cardSplit.primary
+                          : currentCard.meaning;
+                        const effectiveTrans = (currentCard.translation || cardSplit.translation || "").trim();
+                        const hasTrans = effectiveTrans.length > 0;
 
-                      {/* Definition Box with Formatted Multi-paragraph / Point View */}
-                      <div className="my-auto py-2.5">
-                        <div className="p-4 sm:p-5 rounded-2xl bg-[#F8FAFC] dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 max-h-[250px] sm:max-h-[270px] overflow-y-auto scrollbar-thin space-y-3.5">
-                          <FormattedDefinitionView
-                            text={currentCard.meaning}
-                            variant="flashcard"
-                            colorScheme="emerald"
-                          />
-
-                          {showTranslation && currentCard.translation && (
-                            <div
-                              className="p-3 sm:p-3.5 rounded-xl bg-emerald-50/90 dark:bg-emerald-950/40 border border-emerald-200/90 dark:border-emerald-800/50 text-right animate-in fade-in duration-200 shadow-2xs space-y-1.5"
-                              dir="rtl"
-                            >
-                              <div className="flex items-center gap-1.5 text-[11px] font-bold text-emerald-800 dark:text-emerald-300">
-                                <Translate className="w-3.5 h-3.5" />
-                                <span>الترجمة العربية للتعريف</span>
+                        return (
+                          <>
+                            <div className="flex items-center justify-between text-xs font-bold border-b border-slate-100 dark:border-slate-800 pb-2.5">
+                              <div className="flex items-center gap-2">
+                                <span className="px-3 py-1 rounded-full bg-[#059669]/10 text-[#059669] dark:bg-[#059669]/20 dark:text-[#34D399] border border-[#059669]/30 flex items-center gap-1.5 shadow-2xs">
+                                  <span className="w-2 h-2 rounded-full bg-[#059669] dark:bg-[#34D399]" />
+                                  <span>التعريف والإجابة النموذجية</span>
+                                </span>
+                                {hasTrans && (
+                                  <TranslationToggle
+                                    size="xs"
+                                    isTranslated={showTranslation}
+                                    onToggle={() => setShowTranslation((prev) => !prev)}
+                                  />
+                                )}
                               </div>
-                              <FormattedDefinitionView
-                                text={currentCard.translation}
-                                variant="translation"
-                                colorScheme="emerald"
-                                forceDir="rtl"
-                              />
+                              <span className="text-xs font-bold text-[#800020] dark:text-[#FB7185] max-w-[150px] truncate">
+                                {currentCard.term}
+                              </span>
                             </div>
-                          )}
-                        </div>
+
+                            {/* Definition Box with Formatted Multi-paragraph / Point View */}
+                            <div className="my-auto py-2.5">
+                              <div className="p-4 sm:p-5 rounded-2xl bg-[#F8FAFC] dark:bg-[#0F172A] border border-slate-200 dark:border-slate-700 max-h-[250px] sm:max-h-[270px] overflow-y-auto scrollbar-thin space-y-3.5">
+                                <FormattedDefinitionView
+                                  text={cleanMeaning}
+                                  variant="flashcard"
+                                  colorScheme="emerald"
+                                />
+
+                                {showTranslation && hasTrans && (
+                                  <div
+                                    className="p-3 sm:p-3.5 rounded-xl bg-emerald-50/90 dark:bg-emerald-950/40 border border-emerald-200/90 dark:border-emerald-800/50 text-right animate-in fade-in duration-200 shadow-2xs space-y-1.5"
+                                    dir="rtl"
+                                  >
+                                    <div className="flex items-center gap-1.5 text-[11px] font-bold text-emerald-800 dark:text-emerald-300">
+                                      <Translate className="w-3.5 h-3.5" />
+                                      <span>الترجمة العربية للتعريف</span>
+                                    </div>
+                                    <FormattedDefinitionView
+                                      text={effectiveTrans}
+                                      variant="translation"
+                                      colorScheme="emerald"
+                                      forceDir="rtl"
+                                    />
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </>
+                        );
+                      })()}
                       </div>
 
                       {/* Bottom Evaluation Action Bar ("وبيظهر اختيارين تمام او مش تمام") */}
