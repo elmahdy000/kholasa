@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useMemo } from "react";
 import {
@@ -48,11 +48,13 @@ export function LessonQuestionsTab({
   // Modal states
   const [showImportWizard, setShowImportWizard] = useState(false);
   const [wizardInitialType, setWizardInitialType] = useState<"ALL" | "MCQ" | "TRUE_FALSE" | "ESSAY">("ALL");
+  const [wizardInitialMode, setWizardInitialMode] = useState<"FILE" | "PASTE">("FILE");
   const [showAddModal, setShowAddModal] = useState(false);
   const [showGuideModal, setShowGuideModal] = useState(false);
 
-  const openImportWizardWithType = (type: "ALL" | "MCQ" | "TRUE_FALSE" | "ESSAY") => {
+  const openImportWizardWithType = (type: "ALL" | "MCQ" | "TRUE_FALSE" | "ESSAY", mode: "FILE" | "PASTE" = "FILE") => {
     setWizardInitialType(type);
+    setWizardInitialMode(mode);
     setShowImportWizard(true);
   };
 
@@ -650,9 +652,9 @@ export function LessonQuestionsTab({
 
           <button
             type="button"
-            onClick={() => openImportWizardWithType(typeFilter === "ALL" ? "ALL" : (typeFilter as any))}
+            onClick={() => openImportWizardWithType(typeFilter === "ALL" ? "ALL" : (typeFilter as any), "FILE")}
             className="h-10 px-3.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#1E293B] hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 text-xs font-bold flex items-center gap-1.5 shadow-2xs transition-all cursor-pointer"
-            title="استيراد الأسئلة من ملف Word"
+            title="استيراد الأسئلة من ملف Word (.docx)"
           >
             <Upload className="w-4 h-4 text-[#800020] dark:text-[#FB7185]" />
             <span>
@@ -664,6 +666,16 @@ export function LessonQuestionsTab({
                 ? "استيراد صح وخطأ من Word"
                 : "استيراد أسئلة Word"}
             </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => openImportWizardWithType(typeFilter === "ALL" ? "ALL" : (typeFilter as any), "PASTE")}
+            className="h-10 px-3.5 rounded-xl border border-blue-200 dark:border-blue-900/60 bg-blue-50/80 hover:bg-blue-100 dark:bg-blue-950/30 text-blue-700 dark:text-blue-300 text-xs font-bold flex items-center gap-1.5 shadow-2xs transition-all cursor-pointer"
+            title="لصق أسئلة بصيغة JSON أو نصوص مباشرة بدون ملفات"
+          >
+            <Sparkles className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+            <span>لصق مجمع (JSON / نص)</span>
           </button>
 
           {questions.length > 0 && (
@@ -1680,6 +1692,7 @@ export function LessonQuestionsTab({
         lessonId={lessonId}
         unitInfo={unitInfo}
         initialType={wizardInitialType}
+        initialMode={wizardInitialMode}
         onImportSuccess={() => {
           if (wizardInitialType !== "ALL") {
             handleTypeFilterChange(wizardInitialType);

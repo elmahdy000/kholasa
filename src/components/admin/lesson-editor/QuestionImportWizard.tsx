@@ -45,6 +45,7 @@ interface QuestionImportWizardProps {
   unitInfo: UnitInfo;
   onImportSuccess: () => void;
   initialType?: ImportTargetType;
+  initialMode?: "FILE" | "PASTE";
 }
 
 export function QuestionImportWizard({
@@ -54,6 +55,7 @@ export function QuestionImportWizard({
   unitInfo,
   onImportSuccess,
   initialType = "ALL",
+  initialMode = "FILE",
 }: QuestionImportWizardProps) {
   // Stepper state: 1 = Settings, 2 = Upload & Analyze, 3 = Full Review, 4 = Final Commit
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
@@ -108,6 +110,13 @@ export function QuestionImportWizard({
       commitSuccessRef.current = false;
       const mode = initialType || "ALL";
       setTargetType(mode);
+      if (initialMode === "PASTE") {
+        setInputMode("PASTE");
+        setCurrentStep(2);
+      } else {
+        setInputMode("FILE");
+        setCurrentStep(1);
+      }
       if (mode === "MCQ") {
         setAllowedTypes(["MCQ"]);
         setTypeFilter("MCQ");
@@ -122,7 +131,7 @@ export function QuestionImportWizard({
         setTypeFilter("ALL");
       }
     }
-  }, [isOpen, initialType]);
+  }, [isOpen, initialType, initialMode]);
 
   const selectTargetType = (type: ImportTargetType) => {
     setTargetType(type);
@@ -1270,19 +1279,30 @@ export function QuestionImportWizard({
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-900 dark:text-white block">
-                      الصق نص الأسئلة بالكامل هنا:
+                    <label className="text-xs font-bold text-slate-900 dark:text-white flex items-center justify-between">
+                      <span>الصق كود الـ JSON أو نصوص الأسئلة بالكامل هنا:</span>
+                      <span className="text-[11px] font-mono text-blue-600 dark:text-blue-400">يدعم كود JSON المباشر [...] أو النصوص العادية</span>
                     </label>
                     <textarea
                       rows={12}
                       value={pasteText}
                       onChange={(e) => setPasteText(e.target.value)}
                       placeholder={
-                        targetType === "ESSAY"
-                          ? `[مقالي] [سهل] س1: اذكر المراحل الرئيسية لتطور الحواسيب؟\nالإجابة النموذجية: 1. الصمامات المفرغة 2. الترانزستور 3. الدوائر المتكاملة...\nالتفسير: يوضح السؤال التدرج التقني لأجيال المعالجة.\nالدرجة: 10`
-                          : targetType === "TRUE_FALSE"
-                          ? `[صح وخطأ] [سهل]\n1. تُعد القاهرة عاصمة جمهورية مصر العربية.\nالإجابة: صواب\nالتفسير: تأسست القاهرة عام 969م.`
-                          : `Question 1: ما المقصود بالذكاء الاصطناعي (AI)؟\n\nA) مجال يهدف إلى تطوير أنظمة ذكية\nB) نظام لتخزين الملفات فقط\nC) متصفح إنترنت\nD) محرك أقراص\n\nCorrect Answer: A\n\nExplanation: الذكاء الاصطناعي يحاكي القدرات الذهنية البشرية.`
+                        `الصق هنا كود مصفوفة الـ JSON مباشرة:
+[
+  {
+    "type": "MCQ",
+    "difficulty": "MEDIUM",
+    "statement": "Question statement here...",
+    "translation": "ترجمة السؤال بالعربي...",
+    "options": [
+      { "text": "Option A", "isCorrect": true },
+      { "text": "Option B", "isCorrect": false }
+    ]
+  }
+]
+
+أو الصق نصوص الأسئلة العادية أو الأسئلة المقالية...`
                       }
                       className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-xs font-mono text-slate-900 dark:text-white leading-relaxed resize-none outline-none focus:border-blue-500"
                     />
