@@ -65,7 +65,7 @@ describe("Deep Exam Logic & Architecture Verification Audit", () => {
         unitId: unit.id,
         type: "MCQ",
         difficulty: "EASY",
-        schoolCategory: "LANGUAGES",
+        schoolCategory: subject.schoolCategory,
         status: "PUBLISHED",
         options: {
           create: [
@@ -94,7 +94,7 @@ describe("Deep Exam Logic & Architecture Verification Audit", () => {
         unitId: unit.id,
         type: "TRUE_FALSE",
         difficulty: "EASY",
-        schoolCategory: "LANGUAGES",
+        schoolCategory: subject.schoolCategory,
         status: "PUBLISHED",
         options: {
           create: [
@@ -121,7 +121,7 @@ describe("Deep Exam Logic & Architecture Verification Audit", () => {
         unitId: unit.id,
         type: "ESSAY",
         difficulty: "MEDIUM",
-        schoolCategory: "LANGUAGES",
+        schoolCategory: subject.schoolCategory,
         status: "PUBLISHED",
         rubric: {
           create: {
