@@ -369,6 +369,29 @@ export function LessonViewer({
       ? siblingLessons[currentIndex + 1]
       : null;
 
+  // Auto-complete lesson progress in background when student answers all questions in the lesson
+  useEffect(() => {
+    if (
+      userId &&
+      !isCompleted &&
+      isQuestionsFullyAnswered &&
+      lesson.questions.length > 0
+    ) {
+      fetch(`/api/lessons/${lesson.id}/progress`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          isCompleted: true,
+          progressPercent: 100,
+        }),
+      })
+        .then((res) => {
+          if (res.ok) setIsCompleted(true);
+        })
+        .catch((err) => console.error("Auto progress error:", err));
+    }
+  }, [userId, isCompleted, isQuestionsFullyAnswered, lesson.id, lesson.questions.length]);
+
   // Set audio playback speed
   useEffect(() => {
     if (audioElemRef.current) {

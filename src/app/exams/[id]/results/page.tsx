@@ -14,6 +14,7 @@ import {
   BookmarkCheck,
   Lightbulb,
   AlertTriangle,
+  Home,
 } from "lucide-react";
 import { BidiStatement } from "@/components/ui/BidiStatement";
 import { ExamResultActions } from "@/components/exams/ExamResultActions";
@@ -451,6 +452,67 @@ export default async function ExamResultsPage({
                 </div>
               );
             })}
+          </div>
+
+          {/* Bottom Action Banner (Clear Next Step for the Student) */}
+          <div className="rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] p-6 sm:p-8 shadow-sm text-center sm:text-right space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+              <div>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#800020]/10 text-[#800020] dark:text-[#FB7185] dark:bg-[#FB7185]/10 mb-2">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  <span>الخطوة التالية يا بطل</span>
+                </span>
+                <h2 className="text-lg sm:text-xl font-bold text-[#0F172A] dark:text-white">
+                  راجعنا كل الأسئلة! حابب تكمل إيه دلوقتي؟
+                </h2>
+                <p className="text-xs sm:text-sm text-[#64748B] dark:text-[#94A3B8] mt-1">
+                  {wrongAnswers.length > 0
+                    ? `عندك ${wrongAnswers.length} أسئلة محتاجة مراجعة، اتحفظت تلقائياً في ركن غلطاتي عشان تراجعها وتثبتها.`
+                    : "عاش يا بطل! ما شاء الله قفلت كل الأسئلة بدون أخطاء. جاهز للتحدي التالي!"}
+                </p>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3">
+                {wrongAnswers.length > 0 && (
+                  <Link
+                    href="/mistakes"
+                    className="h-11 px-5 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-xs sm:text-sm font-bold flex items-center gap-2 transition-all shadow-sm hover:shadow active:scale-95"
+                  >
+                    <AlertTriangle className="w-4 h-4 text-amber-300" />
+                    <span>تظبيط أخطاءك في "غلطاتي" ({wrongAnswers.length})</span>
+                  </Link>
+                )}
+
+                {attempt.exam?.subjectId && (
+                  <Link
+                    href={`/subjects/${attempt.exam.subjectId}`}
+                    className="h-11 px-5 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B] hover:bg-[#F8FAFC] dark:hover:bg-[#334155] text-xs sm:text-sm font-bold text-[#0F172A] dark:text-white flex items-center gap-2 transition-colors active:scale-95"
+                  >
+                    <BookOpen className="w-4 h-4 text-[#800020] dark:text-[#FB7185]" />
+                    <span>فهرس {attempt.exam.subject?.name || "المادة"}</span>
+                  </Link>
+                )}
+
+                {attempt.exam?.subjectId && (
+                  <Link
+                    href={`/exams/builder?subjectId=${attempt.exam.subjectId}`}
+                    className="h-11 px-5 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B] hover:bg-[#F8FAFC] dark:hover:bg-[#334155] text-xs sm:text-sm font-bold text-[#0F172A] dark:text-white flex items-center gap-2 transition-colors active:scale-95"
+                  >
+                    <RotateCcw className="w-4 h-4" />
+                    <span>امتحان جديد عالـمادة</span>
+                  </Link>
+                )}
+
+                <Link
+                  href="/dashboard"
+                  className="h-11 px-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B] hover:bg-[#F8FAFC] dark:hover:bg-[#334155] text-xs sm:text-sm font-bold text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white flex items-center gap-2 transition-colors active:scale-95"
+                >
+                  <Home className="w-4 h-4" />
+                  <span>الرئيسية</span>
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </div>
