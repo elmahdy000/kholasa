@@ -18,7 +18,6 @@ import {
   Lightbulb,
   ArrowsLeftRight,
   Sparkle,
-  Brain,
   Cards,
   Check,
 } from "@phosphor-icons/react";
@@ -196,7 +195,7 @@ export function LessonFlashcardsModal({
     setShowHint(false);
   }, []);
 
-  // Action: أتقنته تماماً (Mastered)
+  // Action: تمام وحافظه (Mastered)
   const handleMastered = useCallback(() => {
     if (!currentCard || slideState !== "idle") return;
 
@@ -231,14 +230,14 @@ export function LessonFlashcardsModal({
     }, 220);
   }, [currentCard, slideState, lessonId, soundEnabled]);
 
-  // Action: محتاج تثبيت (Save to Mistakes & Advance)
+  // Action: محتاج أراجعه (Save to Mistakes & Advance)
   const handleNeedsReview = useCallback(() => {
     if (!currentCard || slideState !== "idle") return;
 
     playTone("review", soundEnabled);
     const cardToSave = currentCard;
     setSlideState("exit-right");
-    setSavingNotice(`تم حفظ "${cardToSave.term}" في غلطاتي للمراجعة`);
+    setSavingNotice(`حفظنا "${cardToSave.term}" في غلطاتك عشان تراجعه براحتك`);
 
     // Async record to Mistake Bank
     fetch(`/api/lessons/${lessonId}/flashcards/mistake`, {
@@ -386,20 +385,20 @@ export function LessonFlashcardsModal({
   const hasTrans = effectiveTrans.length > 0;
   const isEnglishTerm = currentCard ? !/[\u0600-\u06FF]/.test(currentCard.term) : false;
 
-  // Smart Hints Generator
+  // Smart Hints Generator (Egyptian Colloquial Friendly)
   const getHintText = () => {
     if (!currentCard) return "";
     if (studyMode === "TERM_TO_DEF") {
       const cleanWords = cleanMeaning.replace(/^[\s#*-]+/, "").split(/\s+/);
       if (cleanWords.length <= 4) {
-        return "فكر في الفكرة الجوهرية والخصائص العلمية لهذا المفهوم.";
+        return "فكر في المعنى الأساسي للشرح والكلمات المميزة له.";
       }
-      return `يبدأ الشرح بـ: "${cleanWords.slice(0, 4).join(" ")}..."`;
+      return `الشرح بيبدأ بـ: "${cleanWords.slice(0, 4).join(" ")}..."`;
     } else {
       const cleanTerm = currentCard.term.trim();
       const wordsCount = cleanTerm.split(/\s+/).length;
       const firstChar = cleanTerm.charAt(0);
-      return `يبدأ بحرف (${firstChar}) ومكون من ${wordsCount} ${
+      return `المصطلح بيبدأ بحرف (${firstChar}) ومكون من ${wordsCount} ${
         wordsCount === 1 ? "كلمة واحدة" : "كلمات"
       }.`;
     }
@@ -408,19 +407,19 @@ export function LessonFlashcardsModal({
   const getCelebrationMessage = () => {
     if (masteryPercent === 100) {
       return {
-        title: "أداء استثنائي! أتقنت جميع مصطلحات الدرس 🏆",
-        desc: "ذاكرتك في قمة الجاهزية، المفاهيم مثبتة تماماً وجاهزة للامتحان.",
+        title: "الله ينور عليك! حافظ كل مصطلحات الدرس صم 🏆",
+        desc: "ذاكرتك 100% وجاهز للامتحان في أي وقت.",
       };
     }
     if (masteryPercent >= 70) {
       return {
-        title: "مستوى رائع! استرجاع سريع ومتقن ✨",
-        desc: `أتقنت ${masteredTerms.length} من ${totalCards} مصطلحاً. راجع المتبقي لتصل إلى 100% إتقان.`,
+        title: "شغل عالي جداً! أغلب المفاهيم في جيبك ✨",
+        desc: `أتقنت ${masteredTerms.length} من ${totalCards} مصطلحات، فاضلك شوية تركيز ع الباقي وتقفلها.`,
       };
     }
     return {
-      title: "بداية ممتازة! خطوة قوية لتثبيت الدرس 🎯",
-      desc: `استرجعت ${masteredTerms.length} مصطلحات. بالتكرار المتباعد ستثبت باقي المصطلحات في الذاكرة الدائمة بسهولة.`,
+      title: "بداية كويسة! المهم عرفت اللي فلت منك وهنظبطه 🎯",
+      desc: `راجعت ${masteredTerms.length} مصطلحات تمام، سمّع اللي ناقصين تاني وهيثبتوا في دماغك علطول.`,
     };
   };
 
@@ -433,15 +432,15 @@ export function LessonFlashcardsModal({
         <div className="px-4 sm:px-6 py-3.5 border-b border-[#E2E8F0] dark:border-[#334155] flex items-center justify-between gap-3 bg-[#F8FAFC] dark:bg-[#1E293B]/70">
           <div className="flex items-center gap-2.5 overflow-hidden">
             <div className="w-8 h-8 rounded-lg bg-[#800020]/10 text-[#800020] dark:bg-[#800020]/30 dark:text-[#FB7185] flex items-center justify-center shrink-0">
-              <Brain className="w-4 h-4" weight="bold" />
+              <Cards className="w-4 h-4" weight="bold" />
             </div>
             <div className="truncate">
               <div className="flex items-center gap-2">
                 <span className="text-[11px] font-bold px-2 py-0.5 rounded bg-[#800020] text-white">
-                  {isLanguages ? "Smart Recall • كروت التثبيت" : "كروت التثبيت الذكي"}
+                  {isLanguages ? "تسميع الدرس • Flashcards" : "تسميع الدرس"}
                 </span>
                 <h3 className="text-sm font-bold text-[#0F172A] dark:text-white truncate">
-                  {lessonTitle}
+                  تسميع: {lessonTitle}
                 </h3>
               </div>
               {unitTitle && (
@@ -459,12 +458,12 @@ export function LessonFlashcardsModal({
                 type="button"
                 onClick={handleToggleMode}
                 className="px-2 sm:px-2.5 py-1.5 rounded-lg border text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer bg-white dark:bg-[#1E293B] border-[#E2E8F0] dark:border-[#334155] text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white hover:border-[#800020]"
-                title="تبديل نمط التثبيت (من المصطلح للتعريف أو العكس للمصطلح العلمي)"
+                title="تبديل طريقة التسميع (تسميع التعريف أو تحدي المصطلح العلمي)"
               >
                 <ArrowsLeftRight className="w-3.5 h-3.5 text-[#800020] dark:text-[#FB7185]" weight="bold" />
                 <span className="hidden md:inline">
                   {studyMode === "TERM_TO_DEF"
-                    ? "نمط: مصطلح ➔ تعريف"
+                    ? "نمط: سمّع التعريف"
                     : "نمط: اكتب المصطلح العلمي"}
                 </span>
               </button>
@@ -480,7 +479,7 @@ export function LessonFlashcardsModal({
                     ? "bg-[#800020]/10 border-[#800020]/40 text-[#800020] dark:text-[#FB7185]"
                     : "bg-white dark:bg-[#1E293B] border-[#E2E8F0] dark:border-[#334155] text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
                 }`}
-                title="خلط ترتيب الكروت عشوائياً (S)"
+                title="لخبطة ترتيب الكروت (S)"
               >
                 <Shuffle className="w-3.5 h-3.5" weight="bold" />
               </button>
@@ -495,7 +494,7 @@ export function LessonFlashcardsModal({
                   ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-400"
                   : "bg-white dark:bg-[#1E293B] border-[#E2E8F0] dark:border-[#334155] text-[#94A3B8]"
               }`}
-              title={soundEnabled ? "كتم المؤثرات الصوتية" : "تشغيل المؤثرات الصوتية"}
+              title={soundEnabled ? "كتم الصوت" : "تشغيل الصوت"}
             >
               {soundEnabled ? (
                 <SpeakerSimpleHigh className="w-3.5 h-3.5" weight="bold" />
@@ -509,7 +508,7 @@ export function LessonFlashcardsModal({
               type="button"
               onClick={onClose}
               className="w-8 h-8 rounded-lg bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[#64748B] dark:text-[#94A3B8] hover:text-[#DC2626] dark:hover:text-[#F87171] hover:bg-[#DC2626]/10 flex items-center justify-center transition-colors cursor-pointer"
-              title="إغلاق كروت التثبيت (Esc)"
+              title="إغلاق التسميع (Esc)"
             >
               <X className="w-4 h-4" weight="bold" />
             </button>
@@ -521,7 +520,7 @@ export function LessonFlashcardsModal({
           <div className="bg-[#F1F5F9] dark:bg-[#1E293B] px-5 py-2.5 border-b border-[#E2E8F0] dark:border-[#334155] flex items-center justify-between gap-4">
             <div className="flex items-center gap-3 text-xs font-bold text-[#64748B] dark:text-[#94A3B8]">
               <span>
-                المفهوم{" "}
+                المصطلح{" "}
                 <span className="text-[#0F172A] dark:text-white font-mono font-black">
                   {currentIndex + 1}
                 </span>{" "}
@@ -533,12 +532,12 @@ export function LessonFlashcardsModal({
               <span>•</span>
               <span className="text-[#059669] flex items-center gap-1 font-mono">
                 <CheckCircle className="w-3.5 h-3.5" weight="fill" />
-                <span>{masteredTerms.length} أتقنتها</span>
+                <span>{masteredTerms.length} تمام وحافظه</span>
               </span>
               <span>•</span>
               <span className="text-amber-600 dark:text-amber-400 flex items-center gap-1 font-mono">
                 <WarningCircle className="w-3.5 h-3.5" weight="fill" />
-                <span>{mistakeTerms.length} محتاجة تثبيت</span>
+                <span>{mistakeTerms.length} محتاج أراجعه</span>
               </span>
             </div>
 
@@ -568,11 +567,11 @@ export function LessonFlashcardsModal({
                 <BookOpen className="w-8 h-8" weight="bold" />
               </div>
               <h4 className="text-lg font-bold text-[#0F172A] dark:text-white">
-                لا توجد مفاهيم مسجلة لهذا الدرس بعد
+                لسه مفيش مصطلحات مسجلة للدرس ده
               </h4>
               <p className="text-sm text-[#64748B] dark:text-[#94A3B8] leading-relaxed">
-                لم يتم إدراج تعريفات أو مصطلحات لهذا الدرس حتى الآن. يمكنك مذاكرة
-                شرح الدرس وحل أسئلة وتدريبات البنك مباشرة.
+                أول ما تتضاف هتقدر تسمّعها لنفسك هنا بكل سهولة، دلوقتي تقدر
+                تذاكر الشرح وتحل أسئلة وتدريبات البنك.
               </p>
               <button
                 type="button"
@@ -591,7 +590,7 @@ export function LessonFlashcardsModal({
 
               <div>
                 <span className="text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400 bg-emerald-500/15 px-3 py-1 rounded-full">
-                  اكتمل تحدي التثبيت الذكي
+                  عاش يا بطل! خلصت التسميع 🎉
                 </span>
                 <h4 className="text-xl sm:text-2xl font-black text-[#0F172A] dark:text-white mt-2">
                   {celebration.title}
@@ -606,7 +605,7 @@ export function LessonFlashcardsModal({
                 <div className="p-4 rounded-xl bg-[#059669]/10 border border-[#059669]/25 flex items-center justify-between">
                   <div>
                     <p className="text-xs font-bold text-[#059669]">
-                      أتقنتها بنجاح
+                      تمام وحافظه بنجاح
                     </p>
                     <p className="text-2xl font-black text-[#059669] font-mono mt-1">
                       {masteredTerms.length}
@@ -618,7 +617,7 @@ export function LessonFlashcardsModal({
                 <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/25 flex items-center justify-between">
                   <div>
                     <p className="text-xs font-bold text-amber-700 dark:text-amber-400">
-                      محتاجة مراجعة وتثبيت
+                      محتاج أراجعه تاني
                     </p>
                     <p className="text-2xl font-black text-amber-700 dark:text-amber-400 font-mono mt-1">
                       {mistakeTerms.length}
@@ -637,7 +636,7 @@ export function LessonFlashcardsModal({
                     className="w-full sm:flex-1 py-3 px-4 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-sm font-bold flex items-center justify-center gap-2 shadow-sm transition-colors cursor-pointer"
                   >
                     <ArrowClockwise className="w-4 h-4" weight="bold" />
-                    <span>تثبيت غير المتقن فقط ({mistakeTerms.length})</span>
+                    <span>سمّع اللي محتاج مراجعة بس ({mistakeTerms.length})</span>
                   </button>
                 )}
 
@@ -647,7 +646,7 @@ export function LessonFlashcardsModal({
                   className="w-full sm:flex-1 py-3 px-4 rounded-xl bg-[#800020] hover:bg-[#600018] text-white text-sm font-bold flex items-center justify-center gap-2 shadow-sm transition-colors cursor-pointer"
                 >
                   <ArrowClockwise className="w-4 h-4" weight="bold" />
-                  <span>إعادة الجولة كاملة</span>
+                  <span>إعادة تسميع كل الكروت</span>
                 </button>
               </div>
 
@@ -657,7 +656,7 @@ export function LessonFlashcardsModal({
                     href="/mistakes"
                     className="text-[#800020] dark:text-[#FB7185] hover:underline flex items-center gap-1"
                   >
-                    <span>فتح دفتر غلطاتي للمراجعة</span>
+                    <span>افتح كشكول غلطاتي للمراجعة</span>
                     <ArrowSquareOut className="w-3.5 h-3.5" weight="bold" />
                   </Link>
                 )}
@@ -702,7 +701,7 @@ export function LessonFlashcardsModal({
                           <Sparkle className="w-3.5 h-3.5 text-[#800020] dark:text-[#FB7185]" weight="fill" />
                           <span>
                             {studyMode === "TERM_TO_DEF"
-                              ? "استرجاع المفهوم"
+                              ? "سمّع التعريف"
                               : "تحدي اكتب المصطلح العلمي"}
                           </span>
                         </span>
@@ -716,7 +715,7 @@ export function LessonFlashcardsModal({
                         {studyMode === "TERM_TO_DEF" ? (
                           <>
                             <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 block uppercase tracking-wider">
-                              ما هو تعريف وشرح:
+                              يا ترى إيه هو تعريف وشرح:
                             </span>
                             <div className="flex items-center justify-center gap-2">
                               <h2
@@ -733,7 +732,7 @@ export function LessonFlashcardsModal({
                                   speakText(currentCard.term, isEnglishTerm);
                                 }}
                                 className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-[#800020]/10 hover:text-[#800020] flex items-center justify-center transition-colors shrink-0"
-                                title="استمع لنطق المصطلح"
+                                title="اسمع نطق المصطلح"
                               >
                                 <SpeakerHigh className="w-4 h-4" weight="bold" />
                               </button>
@@ -766,7 +765,7 @@ export function LessonFlashcardsModal({
                               className="text-xs font-bold text-slate-500 hover:text-amber-600 dark:hover:text-amber-400 flex items-center gap-1.5 transition-colors cursor-pointer py-1 px-3 rounded-lg hover:bg-amber-50 dark:hover:bg-amber-950/30"
                             >
                               <Lightbulb className="w-3.5 h-3.5" weight="bold" />
-                              <span>تلميح للمساعدة (H)</span>
+                              <span>تلميح ع الماشي 💡 (H)</span>
                             </button>
                           ) : (
                             <div className="w-full p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 text-xs text-amber-800 dark:text-amber-300 text-center animate-in fade-in duration-200 shadow-2xs">
@@ -779,7 +778,7 @@ export function LessonFlashcardsModal({
 
                       {/* Bottom Hint */}
                       <div className="w-full pt-3.5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-center gap-2 text-xs font-bold text-[#800020] dark:text-[#FB7185]">
-                        <span>اضغط على الكارت لكشف الإجابة والنموذج</span>
+                        <span>اضغط ع الكارت عشان تتأكد من إجابتك</span>
                         <kbd className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-mono text-[11px] border border-slate-300 dark:border-slate-700 shadow-2xs">
                           Space
                         </kbd>
@@ -801,7 +800,7 @@ export function LessonFlashcardsModal({
                         <div className="flex items-center gap-2">
                           <span className="px-3 py-1 rounded-full bg-[#059669]/10 text-[#059669] dark:bg-[#059669]/20 dark:text-[#34D399] border border-[#059669]/30 flex items-center gap-1.5 shadow-2xs">
                             <span className="w-2 h-2 rounded-full bg-[#059669] dark:bg-[#34D399]" />
-                            <span>النموذج المعتمد والدقة</span>
+                            <span>الإجابة النموذجية المعتمدة</span>
                           </span>
                           {hasTrans && (
                             <TranslationToggle
@@ -816,7 +815,7 @@ export function LessonFlashcardsModal({
                             type="button"
                             onClick={() => speakText(currentCard.term, isEnglishTerm)}
                             className="p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 hover:text-[#059669] transition-colors"
-                            title="استمع لنطق المصطلح"
+                            title="اسمع نطق المصطلح"
                           >
                             <SpeakerHigh className="w-3.5 h-3.5" weight="bold" />
                           </button>
@@ -831,7 +830,7 @@ export function LessonFlashcardsModal({
                         {studyMode === "DEF_TO_TERM" && (
                           <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-center animate-in fade-in duration-200 shadow-2xs">
                             <span className="text-[11px] font-bold text-emerald-800 dark:text-emerald-300 block">
-                              المصطلح العلمي الصحيح هو:
+                              المصطلح العلمي الصح هو:
                             </span>
                             <span className="text-lg sm:text-xl font-black text-emerald-900 dark:text-emerald-200 mt-0.5 inline-block">
                               {currentCard.term}
@@ -869,30 +868,30 @@ export function LessonFlashcardsModal({
                       {/* Bottom Evaluation Action Bar */}
                       <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-2">
                         <p className="text-center text-[12px] font-bold text-[#64748B] dark:text-[#94A3B8]">
-                          ما مدى دقة استرجاعك للإجابة؟
+                          ها، طمنّي.. كنت حافظ الإجابة صح؟
                         </p>
                         <div className="grid grid-cols-2 gap-3">
-                          {/* BUTTON 1: أتقنته تماماً */}
+                          {/* BUTTON 1: تمام وحافظه */}
                           <button
                             type="button"
                             onClick={handleMastered}
                             className="py-3 px-4 rounded-xl bg-[#059669] hover:bg-[#047857] text-white font-bold text-sm sm:text-base flex items-center justify-center gap-2 shadow-sm transition-transform active:scale-95 cursor-pointer"
                           >
                             <CheckCircle className="w-5 h-5" weight="bold" />
-                            <span>أتقنته تماماً</span>
+                            <span>تمام وحافظه</span>
                             <kbd className="hidden sm:inline-block px-1.5 py-0.5 rounded bg-white/20 text-white font-mono text-[10px]">
                               1
                             </kbd>
                           </button>
 
-                          {/* BUTTON 2: محتاج تثبيت (غلطاتي) */}
+                          {/* BUTTON 2: محتاج أراجعه (غلطاتي) */}
                           <button
                             type="button"
                             onClick={handleNeedsReview}
                             className="py-3 px-4 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-sm sm:text-base flex items-center justify-center gap-2 shadow-sm transition-transform active:scale-95 cursor-pointer"
                           >
                             <WarningCircle className="w-5 h-5" weight="bold" />
-                            <span>محتاج تثبيت</span>
+                            <span>محتاج أراجعه</span>
                             <kbd className="hidden sm:inline-block px-1.5 py-0.5 rounded bg-white/20 text-white font-mono text-[10px]">
                               2
                             </kbd>
@@ -918,14 +917,14 @@ export function LessonFlashcardsModal({
                         <kbd className="px-1.5 py-0.5 rounded bg-[#E2E8F0] dark:bg-[#334155] text-[#0F172A] dark:text-white font-mono text-[10px]">
                           1
                         </kbd>{" "}
-                        أتقنته تماماً
+                        تمام وحافظه
                       </span>
                       <span>•</span>
                       <span>
                         <kbd className="px-1.5 py-0.5 rounded bg-[#E2E8F0] dark:bg-[#334155] text-[#0F172A] dark:text-white font-mono text-[10px]">
                           2
                         </kbd>{" "}
-                        محتاج تثبيت
+                        محتاج أراجعه
                       </span>
                     </>
                   ) : (

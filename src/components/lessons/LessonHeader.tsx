@@ -100,15 +100,15 @@ export function LessonHeader({
           </button>
         )}
 
-        {/* Flashcards Smart Recall Button */}
+        {/* Lesson Flashcards Recitation Button */}
         {onStartFlashcards && (
           <button
             onClick={onStartFlashcards}
             className="h-11 px-3.5 sm:px-4 rounded-lg bg-white dark:bg-[#1E293B] border border-[#800020]/30 hover:border-[#800020] text-[#800020] dark:text-[#FB7185] hover:bg-[#800020]/10 text-[13px] font-bold flex items-center gap-2 transition-colors cursor-pointer"
-            title="تثبيت المفاهيم والمصطلحات بنظام الاسترجاع الذكي (Active Recall)"
+            title="سمّع لنفسك مفاهيم ومصطلحات الدرس"
           >
             <Cards className="w-4 h-4" weight="bold" />
-            <span>كروت التثبيت الذكي</span>
+            <span>تسميع الدرس</span>
           </button>
         )}
 

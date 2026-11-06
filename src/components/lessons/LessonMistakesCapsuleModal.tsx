@@ -280,7 +280,7 @@ export function LessonMistakesCapsuleModal({
                 لا توجد أخطاء مسجلة لهذا الدرس حالياً
               </h4>
               <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
-                جميع أسئلة الدرس متقنة بنجاح. يمكنك استكمال دراستك أو تثبيت المفاهيم بكروت الاسترجاع الذكي.
+                جميع أسئلة الدرس متقنة بنجاح. تقدر تكمل مذاكرتك أو تسمّع لنفسك بالكروت.
               </p>
               <button
                 type="button"
