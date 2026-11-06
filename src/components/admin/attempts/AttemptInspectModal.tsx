@@ -3,6 +3,7 @@
 import { X, Check } from "lucide-react";
 import type { Attempt } from "./types";
 import { Dialog } from "@/components/ui/Dialog";
+import { BidiStatement } from "@/components/ui/BidiStatement";
 
 interface AttemptInspectModalProps {
   isOpen: boolean;
@@ -108,7 +109,7 @@ export function AttemptInspectModal({
                         return (
                           <div
                             key={opt.id}
-                            className={`p-3 rounded text-[13px] border flex items-center justify-between ${
+                            className={`p-3 rounded text-[13px] border flex items-start justify-between gap-2 overflow-hidden ${
                               isCorrectOpt
                                 ? "border-[#059669]/60 bg-[#059669]/10 text-[#059669] font-semibold"
                                 : isSelected
@@ -116,14 +117,16 @@ export function AttemptInspectModal({
                                 : "border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B] text-[#64748B] dark:text-[#94A3B8]"
                             }`}
                           >
-                            <span>{opt.text}</span>
+                            <div className="flex-1 min-w-0 break-words leading-relaxed">
+                              <BidiStatement as="span" text={opt.text} />
+                            </div>
                             {isCorrectOpt && (
-                              <span className="text-[13px] font-mono">
+                              <span className="text-[12px] font-mono shrink-0 mt-0.5">
                                 الإجابة النموذجية
                               </span>
                             )}
                             {isSelected && !isCorrectOpt && (
-                              <span className="text-[13px] font-mono">
+                              <span className="text-[12px] font-mono shrink-0 mt-0.5">
                                 اختيار الطالب
                               </span>
                             )}

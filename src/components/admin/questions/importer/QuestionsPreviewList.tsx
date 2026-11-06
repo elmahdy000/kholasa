@@ -374,17 +374,17 @@ export function QuestionsPreviewList({
                         {q.options.map((opt, oIdx) => (
                           <div
                             key={oIdx}
-                            className={`p-2.5 rounded-xl border text-[13px] flex items-center justify-between gap-2 transition-colors ${
+                            className={`p-2.5 rounded-xl border text-[13px] flex items-start justify-between gap-2 transition-colors overflow-hidden ${
                               opt.isCorrect
                                 ? "border-emerald-500 bg-emerald-50/70 dark:bg-emerald-950/30 font-bold text-emerald-900 dark:text-emerald-200"
                                 : "border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/30 text-slate-700 dark:text-slate-300"
                             }`}
                           >
-                            <span className="flex-1">
+                            <div className="flex-1 min-w-0 break-words leading-relaxed">
                               <BidiStatement text={opt.text} />
-                            </span>
+                            </div>
                             {opt.isCorrect && (
-                              <span className="text-[11px] font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-900/60 px-2 py-0.5 rounded-md flex items-center gap-1 shrink-0">
+                              <span className="text-[11px] font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-900/60 px-2 py-0.5 rounded-md flex items-center gap-1 shrink-0 mt-0.5">
                                 <Check className="w-3 h-3" />
                                 الإجابة الصحيحة
                               </span>

@@ -142,7 +142,7 @@ export function GatekeeperResultPhase({
                 <span className="text-[13px] font-bold block text-[#94A3B8] mb-1">
                   إجابتك:
                 </span>
-                <span className="font-bold">{q.selectedAnswer}</span>
+                <BidiStatement as="span" text={q.selectedAnswer || ""} className="font-bold break-words leading-relaxed" />
               </div>
 
               {/* Correct Answer */}
@@ -150,7 +150,7 @@ export function GatekeeperResultPhase({
                 <span className="text-[13px] font-bold block text-[#059669] dark:text-[#34D399] mb-1">
                   الإجابة النموذجية الصحيحة:
                 </span>
-                <span className="font-bold">{q.correctAnswer}</span>
+                <BidiStatement as="span" text={q.correctAnswer || ""} className="font-bold break-words leading-relaxed" />
               </div>
             </div>
 

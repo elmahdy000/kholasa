@@ -73,15 +73,15 @@ export function GatekeeperExamPhase({
                 dir={isEnglish ? "ltr" : "rtl"}
                 aria-pressed={isSelected}
                 onClick={() => onSelectOption(currentQ.id, opt.id)}
-                className={`w-full p-3 sm:p-4 rounded-xl border ${isEnglish ? "text-left font-sans" : "text-right font-content"} transition-all flex items-center justify-between gap-3 cursor-pointer ${
+                className={`w-full p-3 sm:p-4 rounded-xl border ${isEnglish ? "text-left font-sans" : "text-right font-content"} transition-all flex items-start justify-between gap-3 cursor-pointer overflow-hidden ${
                   isSelected
                     ? "bg-[#800020]/10 dark:bg-[#1E293B] border-[#800020] text-[#0F172A] dark:text-white"
                     : "bg-[#F8FAFC] dark:bg-[#1E293B]/60 hover:bg-[#F8FAFC] dark:hover:bg-[#334155] border-[#E2E8F0] dark:border-[#334155] text-[#0F172A] dark:text-[#F8FAFC]"
                 }`}
               >
-                <div className="flex items-center gap-3">
+                <div className="flex items-start gap-3 min-w-0 flex-1">
                   <span
-                    className={`w-6 h-6 rounded-lg text-[13px] font-bold flex items-center justify-center shrink-0 ${
+                    className={`w-6 h-6 rounded-lg text-[13px] font-bold flex items-center justify-center shrink-0 mt-0.5 ${
                       isSelected
                         ? "bg-[#800020] text-white"
                         : "bg-[#E2E8F0] dark:bg-[#334155] text-[#64748B] dark:text-[#94A3B8]"
@@ -89,15 +89,17 @@ export function GatekeeperExamPhase({
                   >
                     {letter}
                   </span>
-                  <BidiStatement
-                    as="span"
-                    text={opt.text}
-                    className="text-[13px] sm:text-sm font-bold"
-                  />
+                  <div className={`min-w-0 flex-1 leading-relaxed break-words ${isEnglish ? "text-left" : "text-right"}`}>
+                    <BidiStatement
+                      as="span"
+                      text={opt.text}
+                      className="text-[13px] sm:text-sm font-bold"
+                    />
+                  </div>
                 </div>
 
                 <div
-                  className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 ${
+                  className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 mt-0.5 ${
                     isSelected
                       ? "border-[#800020] bg-[#800020] text-white"
                       : "border-[#E2E8F0] dark:border-[#334155] text-transparent"

@@ -226,21 +226,23 @@ export function QuestionCard({
           {q.options.map((opt, oIdx) => (
             <div
               key={opt.id || oIdx}
-              className={`p-3 rounded-xl border text-[13px] font-bold flex items-center justify-between gap-2 ${
+              className={`p-3 rounded-xl border text-[13px] font-bold flex items-start justify-between gap-2 overflow-hidden ${
                 opt.isCorrect
                   ? "bg-[#059669]/10 dark:bg-[#1E293B] border-[#059669]/50 text-[#059669] dark:text-[#34D399] font-bold"
                   : "bg-[#F8FAFC] dark:bg-[#1E293B] border-[#E2E8F0] dark:border-[#334155] text-[#64748B] dark:text-[#F8FAFC]"
               }`}
             >
-              {isLanguageSchool ? (
-                <span dir="ltr" className="text-left font-sans">
-                  {opt.text}
-                </span>
-              ) : (
-                <BidiStatement as="span" text={opt.text} />
-              )}
+              <div className="flex-1 min-w-0 break-words leading-relaxed">
+                {isLanguageSchool ? (
+                  <span dir="ltr" className="text-left font-sans block">
+                    {opt.text}
+                  </span>
+                ) : (
+                  <BidiStatement as="span" text={opt.text} />
+                )}
+              </div>
               {opt.isCorrect && (
-                <span className="text-[13px] font-bold text-[#059669] flex items-center gap-1 shrink-0">
+                <span className="text-[13px] font-bold text-[#059669] flex items-center gap-1 shrink-0 mt-0.5">
                   <Check className="w-3 h-3" />
                   الإجابة الصحيحة
                 </span>

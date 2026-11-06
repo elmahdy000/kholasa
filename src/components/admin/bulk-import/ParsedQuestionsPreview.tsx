@@ -112,15 +112,17 @@ export function ParsedQuestionsPreview({
                   {q.options.map((opt, oIdx) => (
                     <div
                       key={oIdx}
-                      className={`p-2 rounded-xl text-[13px] flex items-center justify-between border ${
+                      className={`p-2 rounded-xl text-[13px] flex items-start justify-between gap-2 border overflow-hidden ${
                         opt.isCorrect
                           ? "bg-[#059669]/10 dark:bg-[#1E293B] border-[#E2E8F0] dark:border-[#34D399] text-[#059669] dark:text-[#34D399] font-bold"
                           : "bg-[#F8FAFC] dark:bg-[#1E293B] border-[#E2E8F0] dark:border-[#334155] text-[#0F172A] dark:text-[#F8FAFC]"
                       }`}
                     >
-                      <BidiStatement as="span" text={opt.text} />
+                      <div className="flex-1 min-w-0 break-words leading-relaxed">
+                        <BidiStatement as="span" text={opt.text} />
+                      </div>
                       {opt.isCorrect && (
-                        <span className="text-[13px] bg-[#059669] text-white px-2 py-1 rounded-full font-bold flex items-center gap-1">
+                        <span className="text-[12px] bg-[#059669] text-white px-2 py-0.5 rounded-full font-bold flex items-center gap-1 shrink-0 mt-0.5">
                           <CheckCircle2 className="w-3 h-3" />
                           <span>صحيح</span>
                         </span>
