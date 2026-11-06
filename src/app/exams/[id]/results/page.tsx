@@ -366,7 +366,7 @@ export default async function ExamResultsPage({
                       </div>
 
                       {q.rubric && (
-                        <div className="p-4 rounded-xl border border-[#E2E8F0] dark:border-[#34D399]/40 bg-[#059669]/10 dark:bg-[#1E293B] space-y-2">
+                        <div className="p-4 rounded-xl border border-[#E2E8F0] dark:border-[#34D399]/40 bg-[#059669]/10 dark:bg-[#1E293B] space-y-3">
                           <span className="text-[13px] font-bold text-[#059669] dark:text-[#34D399] block flex items-center gap-2">
                             <CheckCircle2 className="w-4 h-4 shrink-0" />
                             <span>نموذج الإجابة المثالي من بنك الأسئلة:</span>
@@ -374,6 +374,16 @@ export default async function ExamResultsPage({
                           <p className="text-[13px] sm:text-sm text-[#059669] dark:text-[#34D399] leading-relaxed font-medium whitespace-pre-line">
                             {q.rubric.modelAnswer}
                           </p>
+                          {q.rubric.modelAnswerTranslation && (
+                            <div className="pt-2.5 border-t border-[#059669]/20 text-right" dir="rtl">
+                              <span className="text-[12px] font-bold text-[#059669] dark:text-[#34D399] block mb-1">
+                                الترجمة العربية لنموذج الإجابة:
+                              </span>
+                              <p className="text-[13px] text-slate-700 dark:text-slate-200 leading-relaxed font-content whitespace-pre-line">
+                                {q.rubric.modelAnswerTranslation}
+                              </p>
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>
