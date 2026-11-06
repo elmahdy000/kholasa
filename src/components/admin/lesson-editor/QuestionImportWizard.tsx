@@ -274,11 +274,20 @@ export function QuestionImportWizard({
       }
 
       // Check against allowed types: mark unallowed types as EXCLUDED with reason
+      let effectiveAllowed = [...allowedTypes];
+      if (inputMode === "PASTE") {
+        const detectedTypes = Array.from(new Set(questions.map((q) => q.type)));
+        if (detectedTypes.some((t) => !effectiveAllowed.includes(t))) {
+          effectiveAllowed = Array.from(new Set([...effectiveAllowed, ...detectedTypes]));
+          setAllowedTypes(effectiveAllowed);
+        }
+      }
+
       const processed: ParsedQuestion[] = questions.map((q) => {
         let currentStatus: QuestionReviewStatus = q.reviewStatus || "PENDING";
         const validationNotes = [...(q.validationNotes || [])];
 
-        if (!allowedTypes.includes(q.type)) {
+        if (!effectiveAllowed.includes(q.type)) {
           currentStatus = "EXCLUDED";
           validationNotes.push(`تم استبعاد السؤال لأن نوعه (${q.type}) غير مدرج في إعدادات الاستيراد`);
         }

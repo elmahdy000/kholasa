@@ -104,6 +104,7 @@ export function useLessonEditor({
             .map((q: any) => ({
               id: q.id,
               statement: q.statement,
+              translation: q.translation || null,
               type: q.type,
               difficulty: q.difficulty,
               options: q.options || [],
@@ -210,6 +211,7 @@ export function useLessonEditor({
               .map((q: any) => ({
                 id: q.id,
                 statement: q.statement,
+                translation: q.translation || null,
                 type: q.type,
                 difficulty: q.difficulty,
                 options: q.options || [],

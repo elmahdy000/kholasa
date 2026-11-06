@@ -94,9 +94,8 @@ export function LessonEditorForm({
 
   return (
     <div
-      className={`w-full bg-white dark:bg-[#0F172A] rounded-2xl border border-[#E2E8F0] dark:border-[#334155] shadow-sm overflow-hidden flex flex-col font-sans text-right ${
-        isStandaloneRoute ? "min-h-[85vh]" : "max-h-[92vh]"
-      }`}
+      className={`w-full bg-white dark:bg-[#0F172A] rounded-2xl border border-[#E2E8F0] dark:border-[#334155] shadow-sm overflow-hidden flex flex-col font-sans text-right ${isStandaloneRoute ? "min-h-[85vh]" : "max-h-[92vh]"
+        }`}
     >
       {/* Header */}
       <LessonEditorHeader
@@ -113,11 +112,10 @@ export function LessonEditorForm({
       {/* Status Toast */}
       {statusMessage && (
         <div
-          className={`px-6 py-3 text-xs font-bold flex items-center gap-2 border-b transition-all ${
-            statusMessage.type === "success"
+          className={`px-6 py-3 text-xs font-bold flex items-center gap-2 border-b transition-all ${statusMessage.type === "success"
               ? "bg-emerald-500/10 text-emerald-600 dark:bg-[#1E293B] dark:text-emerald-400 border-emerald-500/20"
               : "bg-red-500/10 text-red-600 dark:bg-[#1E293B] dark:text-red-400 border-red-500/20"
-          }`}
+            }`}
         >
           {statusMessage.type === "success" ? (
             <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
@@ -159,11 +157,10 @@ export function LessonEditorForm({
               key={tab.id}
               type="button"
               onClick={() => setActiveTab(tab.id as any)}
-              className={`pb-3 px-3.5 text-xs font-bold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap cursor-pointer ${
-                isSelected
+              className={`pb-3 px-3.5 text-xs font-bold flex items-center gap-2 border-b-2 transition-all whitespace-nowrap cursor-pointer ${isSelected
                   ? "border-blue-600 text-blue-600 dark:text-blue-400"
                   : "border-transparent text-slate-500 hover:text-slate-900 dark:hover:text-slate-200"
-              }`}
+                }`}
             >
               <Icon className="w-4 h-4" />
               <span>{tab.label}</span>

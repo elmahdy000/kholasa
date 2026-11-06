@@ -1,8 +1,9 @@
-﻿"use client";
+"use client";
 
 import { useState, useMemo } from "react";
 import {
   HelpCircle,
+  Languages,
   Plus,
   Upload,
   Trash2,
@@ -67,17 +68,20 @@ export function LessonQuestionsTab({
   const [editingQuestionId, setEditingQuestionId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<{
     statement: string;
+    translation?: string;
     type: "MCQ" | "TRUE_FALSE" | "ESSAY";
     difficulty: "EASY" | "MEDIUM" | "HARD";
     options: LessonQuestionOption[];
     correctReason: string;
     modelAnswer: string;
+    modelAnswerTranslation?: string;
   } | null>(null);
   const [isSavingEdit, setIsSavingEdit] = useState(false);
   const [editError, setEditError] = useState<string | null>(null);
 
   // Single Question Add Form State
   const [newStatement, setNewStatement] = useState("");
+  const [newTranslation, setNewTranslation] = useState("");
   const [newType, setNewType] = useState<"MCQ" | "TRUE_FALSE" | "ESSAY">("MCQ");
   const [newDifficulty, setNewDifficulty] = useState<"EASY" | "MEDIUM" | "HARD">("MEDIUM");
   const [newOptions, setNewOptions] = useState<LessonQuestionOption[]>([
@@ -89,6 +93,7 @@ export function LessonQuestionsTab({
   const [newTfAnswer, setNewTfAnswer] = useState<boolean>(true);
   const [newExplanation, setNewExplanation] = useState("");
   const [newModelAnswer, setNewModelAnswer] = useState("");
+  const [newModelAnswerTranslation, setNewModelAnswerTranslation] = useState("");
   const [isSubmittingNew, setIsSubmittingNew] = useState(false);
   const [addErrorMsg, setAddErrorMsg] = useState<string | null>(null);
 
@@ -159,6 +164,8 @@ export function LessonQuestionsTab({
   // Open Add Single Question Modal
   const openNewQuestionModal = (initialType?: "MCQ" | "TRUE_FALSE" | "ESSAY") => {
     setNewStatement("");
+    setNewTranslation("");
+    setNewModelAnswerTranslation("");
     const targetType = initialType || (typeFilter !== "ALL" ? (typeFilter as "MCQ" | "TRUE_FALSE" | "ESSAY") : "MCQ");
     setNewType(targetType);
     setNewDifficulty("MEDIUM");
@@ -202,6 +209,7 @@ export function LessonQuestionsTab({
         }
         finalOptions = newOptions.map((o, idx) => ({
           text: o.text.trim() || `الخيار ${idx + 1}`,
+          translation: o.translation?.trim() || undefined,
           isCorrect: o.isCorrect,
           order: idx,
         }));
@@ -214,6 +222,7 @@ export function LessonQuestionsTab({
 
       const payload = {
         statement: newStatement.trim(),
+        translation: newTranslation.trim() || undefined,
         type: newType,
         difficulty: newDifficulty,
         subjectId: unitInfo.subjectId,
@@ -223,6 +232,7 @@ export function LessonQuestionsTab({
         concept: newExplanation.trim() ? "شرح الحل" : undefined,
         correctReason: newExplanation.trim() || undefined,
         modelAnswer: newType === "ESSAY" ? newModelAnswer.trim() || undefined : undefined,
+        modelAnswerTranslation: newType === "ESSAY" ? newModelAnswerTranslation.trim() || undefined : undefined,
       };
 
       const res = await fetch("/api/admin/questions", {
@@ -251,11 +261,13 @@ export function LessonQuestionsTab({
     setEditError(null);
     setEditForm({
       statement: q.statement,
+      translation: q.translation || "",
       type: q.type,
       difficulty: q.difficulty,
       options: q.options ? JSON.parse(JSON.stringify(q.options)) : [],
       correctReason: q.explanation?.correctReason || "",
       modelAnswer: (q as any).rubric?.modelAnswer || "",
+      modelAnswerTranslation: (q as any).rubric?.modelAnswerTranslation || "",
     });
   };
 
@@ -279,12 +291,19 @@ export function LessonQuestionsTab({
     try {
       const payload: any = {
         statement: editForm.statement.trim(),
+        translation: editForm.translation?.trim() || undefined,
         type: editForm.type,
         difficulty: editForm.difficulty,
-        options: editForm.options,
+        options: editForm.options.map(opt => ({
+          text: opt.text.trim(),
+          translation: opt.translation?.trim() || undefined,
+          isCorrect: opt.isCorrect,
+          explanation: opt.explanation?.trim() || undefined,
+        })),
         concept: editForm.correctReason.trim() ? "شرح الحل" : undefined,
         correctReason: editForm.correctReason.trim() || undefined,
         modelAnswer: editForm.type === "ESSAY" ? editForm.modelAnswer.trim() || undefined : undefined,
+        modelAnswerTranslation: editForm.type === "ESSAY" ? editForm.modelAnswerTranslation?.trim() || undefined : undefined,
       };
 
       const res = await fetch(`/api/admin/questions/${questionId}`, {
@@ -305,14 +324,18 @@ export function LessonQuestionsTab({
             ? {
                 ...item,
                 statement: editForm.statement.trim(),
+                translation: editForm.translation?.trim() || null,
                 type: editForm.type,
                 difficulty: editForm.difficulty,
                 options: editForm.options,
                 explanation: editForm.correctReason.trim()
                   ? { concept: "شرح الحل", correctReason: editForm.correctReason.trim() }
                   : null,
-                rubric: editForm.type === "ESSAY" && editForm.modelAnswer.trim()
-                  ? { modelAnswer: editForm.modelAnswer.trim() }
+                rubric: editForm.type === "ESSAY" && (editForm.modelAnswer.trim() || editForm.modelAnswerTranslation?.trim())
+                  ? {
+                      modelAnswer: editForm.modelAnswer.trim(),
+                      modelAnswerTranslation: editForm.modelAnswerTranslation?.trim() || null,
+                    }
                   : undefined,
               }
             : item
@@ -670,7 +693,7 @@ export function LessonQuestionsTab({
 
           <button
             type="button"
-            onClick={() => openImportWizardWithType(typeFilter === "ALL" ? "ALL" : (typeFilter as any), "PASTE")}
+            onClick={() => openImportWizardWithType("ALL", "PASTE")}
             className="h-10 px-3.5 rounded-xl border border-blue-200 dark:border-blue-900/60 bg-blue-50/80 hover:bg-blue-100 dark:bg-blue-950/30 text-blue-700 dark:text-blue-300 text-xs font-bold flex items-center gap-1.5 shadow-2xs transition-all cursor-pointer"
             title="لصق أسئلة بصيغة JSON أو نصوص مباشرة بدون ملفات"
           >
@@ -1105,12 +1128,28 @@ export function LessonQuestionsTab({
 
                   {/* Statement input */}
                   <div className="space-y-1">
-                    <label className="text-[11px] font-bold text-slate-500">نص السؤال:</label>
+                    <label className="text-[11px] font-bold text-slate-500">نص السؤال الأصلي:</label>
                     <textarea
                       rows={3}
                       value={editForm.statement}
                       onChange={(e) => setEditForm({ ...editForm, statement: e.target.value })}
                       className="w-full p-3 rounded-2xl bg-slate-50 dark:bg-slate-900 border text-xs font-bold text-slate-900 dark:text-white leading-relaxed resize-y outline-none focus:border-blue-500"
+                    />
+                  </div>
+
+                  {/* Statement Arabic Translation (for languages) */}
+                  <div className="space-y-1">
+                    <label className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
+                      <Languages className="w-3.5 h-3.5" />
+                      <span>الترجمة العربية للسؤال (اختياري لمدارس اللغات):</span>
+                    </label>
+                    <textarea
+                      rows={2}
+                      value={editForm.translation || ""}
+                      onChange={(e) => setEditForm({ ...editForm, translation: e.target.value })}
+                      dir="rtl"
+                      placeholder="اكتب الترجمة العربية هنا لمساعدة طلاب اللغات..."
+                      className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border text-xs font-bold text-slate-900 dark:text-white leading-relaxed resize-y outline-none focus:border-emerald-500"
                     />
                   </div>
 
@@ -1165,7 +1204,8 @@ export function LessonQuestionsTab({
 
                   {/* Model Answer (for Essay) */}
                   {editForm.type === "ESSAY" && (
-                    <div className="space-y-1">
+                    <div className="space-y-3">
+                      <div className="space-y-1">
                       <label className="text-[11px] font-bold text-amber-700 dark:text-amber-400">
                         نموذج الإجابة للسؤال المقالي (عناصر الحل):
                       </label>
@@ -1178,6 +1218,25 @@ export function LessonQuestionsTab({
                         placeholder="اكتب عناصر الإجابة والخطوات النموذجية..."
                         className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border text-xs outline-none focus:border-amber-500 leading-relaxed font-sans"
                       />
+                    </div>
+
+                    {/* Model Answer Translation */}
+                    <div className="space-y-1">
+                      <label className="text-[11px] font-bold text-amber-700 dark:text-amber-400 flex items-center gap-1.5">
+                        <Languages className="w-3.5 h-3.5 text-amber-600" />
+                        <span>ترجمة نموذج الإجابة بالعربي (اختياري لمدارس اللغات):</span>
+                      </label>
+                      <textarea
+                        rows={3}
+                        value={editForm.modelAnswerTranslation || ""}
+                        onChange={(e) =>
+                          setEditForm({ ...editForm, modelAnswerTranslation: e.target.value })
+                        }
+                        dir="rtl"
+                        placeholder="اكتب ترجمة عناصر الإجابة بالعربي..."
+                        className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border text-xs outline-none focus:border-amber-500 leading-relaxed font-sans"
+                      />
+                    </div>
                     </div>
                   )}
 
@@ -1302,10 +1361,31 @@ export function LessonQuestionsTab({
                   </div>
                 </div>
 
-                {/* Question Statement (NEVER truncated, full text, break-words) */}
-                <div className="text-sm font-bold text-slate-900 dark:text-white leading-relaxed whitespace-pre-wrap break-words">
-                  {q.statement}
-                </div>
+                {/* Question Statement (Bidi aware: LTR for English, RTL for Arabic) */}
+                {(() => {
+                  const isEng = !/[\u0600-\u06FF]/.test(q.statement || "");
+                  return (
+                    <div
+                      dir={isEng ? "ltr" : "rtl"}
+                      className={`text-sm font-bold text-slate-900 dark:text-white leading-relaxed whitespace-pre-wrap break-words ${
+                        isEng ? "text-left font-sans" : "text-right"
+                      }`}
+                    >
+                      {q.statement}
+                    </div>
+                  );
+                })()}
+
+                {/* Arabic Translation for Statement (if available) */}
+                {q.translation && (
+                  <div className="p-3 rounded-2xl bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-200/60 dark:border-emerald-900/40 text-xs text-emerald-950 dark:text-emerald-200 space-y-1 text-right" dir="rtl">
+                    <span className="font-bold text-[11px] text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5">
+                      <Languages className="w-3.5 h-3.5" />
+                      <span>الترجمة العربية للسؤال:</span>
+                    </span>
+                    <p className="leading-relaxed whitespace-pre-wrap font-medium">{q.translation}</p>
+                  </div>
+                )}
 
                 {/* Expanded Details: Options, Explanations, Rubric */}
                 {isExpanded && (
@@ -1335,7 +1415,16 @@ export function LessonQuestionsTab({
                                 String.fromCharCode(65 + optIdx)
                               )}
                             </span>
-                            <span className="break-words leading-relaxed">{opt.text}</span>
+                            <div className="flex-1 flex flex-col min-w-0">
+                              <span className="break-words leading-relaxed" dir={!/[\u0600-\u06FF]/.test(opt.text) ? "ltr" : "rtl"}>
+                                {opt.text}
+                              </span>
+                              {opt.translation && (
+                                <span className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 text-right font-normal" dir="rtl">
+                                  {opt.translation}
+                                </span>
+                              )}
+                            </div>
                             {opt.isCorrect && (
                               <span className="mr-auto text-[10px] px-1.5 py-0.5 rounded bg-emerald-600/10 text-emerald-700 font-bold shrink-0">
                                 إجابة صحيحة
@@ -1362,15 +1451,29 @@ export function LessonQuestionsTab({
 
                     {/* Essay Rubric */}
                     {(q as any).rubric?.modelAnswer && (
-                      <div className="p-4 rounded-2xl bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200/60 dark:border-amber-900/40 text-xs text-amber-900 dark:text-amber-200 space-y-2">
+                      <div className="p-4 rounded-2xl bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200/60 dark:border-amber-900/40 text-xs text-amber-900 dark:text-amber-200 space-y-2.5">
                         <span className="font-bold flex items-center gap-1.5 text-xs text-amber-800 dark:text-amber-300">
                           <BookOpen className="w-3.5 h-3.5 text-amber-600" />
                           <span>نموذج الإجابة للسؤال المقالي:</span>
                         </span>
-                        <FormattedAnswerView
-                          text={(q as any).rubric.modelAnswer}
-                          colorScheme="amber"
-                        />
+                        <div dir={!/[\u0600-\u06FF]/.test((q as any).rubric.modelAnswer) ? "ltr" : "rtl"}>
+                          <FormattedAnswerView
+                            text={(q as any).rubric.modelAnswer}
+                            colorScheme="amber"
+                          />
+                        </div>
+                        {(q as any).rubric?.modelAnswerTranslation && (
+                          <div className="mt-2.5 pt-2.5 border-t border-amber-200/70 dark:border-amber-900/50 space-y-1 text-right" dir="rtl">
+                            <span className="font-bold text-[11px] text-amber-700 dark:text-amber-400 flex items-center gap-1.5">
+                              <Languages className="w-3.5 h-3.5" />
+                              <span>ترجمة نموذج الإجابة بالعربي:</span>
+                            </span>
+                            <FormattedAnswerView
+                              text={(q as any).rubric.modelAnswerTranslation}
+                              colorScheme="amber"
+                            />
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
@@ -1543,7 +1646,7 @@ export function LessonQuestionsTab({
               {/* Statement */}
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-slate-800 dark:text-slate-200">
-                  3. نص السؤال *
+                  3. نص السؤال الأصلي *
                 </label>
                 <textarea
                   rows={3}
@@ -1551,6 +1654,22 @@ export function LessonQuestionsTab({
                   onChange={(e) => setNewStatement(e.target.value)}
                   placeholder="اكتب صيغة السؤال هنا..."
                   className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-xs font-bold text-slate-900 dark:text-white leading-relaxed resize-none outline-none focus:border-blue-500"
+                />
+              </div>
+
+              {/* Statement Translation (for languages curricula) */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5">
+                  <Languages className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>الترجمة العربية للسؤال (اختياري - لمناهج اللغات):</span>
+                </label>
+                <textarea
+                  rows={2}
+                  value={newTranslation}
+                  onChange={(e) => setNewTranslation(e.target.value)}
+                  dir="rtl"
+                  placeholder="اكتب الترجمة العربية هنا لمساعدة طلاب اللغات..."
+                  className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-xs font-bold text-slate-900 dark:text-white leading-relaxed resize-none outline-none focus:border-emerald-500"
                 />
               </div>
 
@@ -1633,17 +1752,35 @@ export function LessonQuestionsTab({
 
               {/* Model Answer for Essay */}
               {newType === "ESSAY" && (
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-amber-700 dark:text-amber-300">
-                    4. نموذج الإجابة وتوزيع الدرجات
-                  </label>
-                  <textarea
-                    rows={3}
-                    value={newModelAnswer}
-                    onChange={(e) => setNewModelAnswer(e.target.value)}
-                    placeholder="اكتب الحل النموذجي والنقاط المطلوبة..."
-                    className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-xs outline-none focus:border-amber-500 resize-none"
-                  />
+                <div className="space-y-3">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-amber-700 dark:text-amber-300">
+                      4. نموذج الإجابة وتوزيع الدرجات
+                    </label>
+                    <textarea
+                      rows={3}
+                      value={newModelAnswer}
+                      onChange={(e) => setNewModelAnswer(e.target.value)}
+                      placeholder="اكتب الحل النموذجي والنقاط المطلوبة..."
+                      className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-xs outline-none focus:border-amber-500 resize-none"
+                    />
+                  </div>
+
+                  {/* Model Answer Translation */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-amber-700 dark:text-amber-300 flex items-center gap-1.5">
+                      <Languages className="w-3.5 h-3.5 text-amber-600" />
+                      <span>ترجمة نموذج الإجابة بالعربي (اختياري - لمناهج اللغات):</span>
+                    </label>
+                    <textarea
+                      rows={3}
+                      value={newModelAnswerTranslation}
+                      onChange={(e) => setNewModelAnswerTranslation(e.target.value)}
+                      dir="rtl"
+                      placeholder="اكتب ترجمة عناصر الإجابة بالعربي..."
+                      className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-xs outline-none focus:border-amber-500 resize-none"
+                    />
+                  </div>
                 </div>
               )}
 
