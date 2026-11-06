@@ -111,6 +111,8 @@ export function LessonQuestionsTab({
     onConfirm: () => Promise<void>;
     itemHighlight?: string;
     variant?: "danger" | "warning";
+    confirmText?: string;
+    cancelText?: string;
   }>({
     isOpen: false,
     title: "",
@@ -434,31 +436,62 @@ export function LessonQuestionsTab({
     });
   };
 
-  // Purge all questions or all questions of current active type
-  const handlePurgeQuestions = async (targetType?: string) => {
-    setIsPurging(true);
-    setPurgeError(null);
-    try {
-      const query = targetType && targetType !== "ALL" ? `?type=${targetType}` : "?all=true";
-      const res = await fetch(`/api/admin/lessons/${lessonId}/questions${query}`, {
-        method: "DELETE",
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "فشل مسح الأسئلة");
-
-      if (targetType && targetType !== "ALL") {
-        setQuestions((prev) => prev.filter((q) => q.type !== targetType));
-      } else {
-        setQuestions([]);
-      }
-      setSelectedIds(new Set());
-      setShowPurgeModal(false);
-      onRefreshQuestions();
-    } catch (err: any) {
-      setPurgeError(err.message || "حدث خطأ أثناء حذف الأسئلة");
-    } finally {
-      setIsPurging(false);
+  // Prompt confirmation before purging questions by type or all
+  const promptPurgeConfirmation = (targetType: "ALL" | "MCQ" | "TRUE_FALSE" | "ESSAY") => {
+    let typeLabel = "جميع أسئلة الدرس بالكامل";
+    let count = totalCount;
+    if (targetType === "MCQ") {
+      typeLabel = "أسئلة الاختيار من متعدد (MCQ)";
+      count = mcqCount;
+    } else if (targetType === "TRUE_FALSE") {
+      typeLabel = "أسئلة الصواب والخطأ (True / False)";
+      count = tfCount;
+    } else if (targetType === "ESSAY") {
+      typeLabel = "الأسئلة المقالية (Essay)";
+      count = essayCount;
     }
+
+    if (count === 0) {
+      toast.error(`لا توجد ${typeLabel} مسجلة في هذا الدرس لحذفها`);
+      return;
+    }
+
+    setShowPurgeModal(false);
+
+    setQuestionConfirmModal({
+      isOpen: true,
+      title: `تأكيد حذف ${typeLabel}`,
+      description: `أنت على وشك حذف ${count} سؤال (${typeLabel}) نهائياً من قاعدة البيانات لهذا الدرس. هذا الإجراء دائم ولا يمكن التراجع عنه. هل أنت متأكد تماماً من المتابعة؟`,
+      variant: "danger",
+      itemHighlight: `${count} سؤال - ${typeLabel}`,
+      confirmText: `نعم، احذف ${typeLabel}`,
+      onConfirm: async () => {
+        setIsPurging(true);
+        setPurgeError(null);
+        try {
+          const query = targetType !== "ALL" ? `?type=${targetType}` : "?all=true";
+          const res = await fetch(`/api/admin/lessons/${lessonId}/questions${query}`, {
+            method: "DELETE",
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || "فشل مسح الأسئلة");
+
+          if (targetType !== "ALL") {
+            setQuestions((prev) => prev.filter((q) => q.type !== targetType));
+          } else {
+            setQuestions([]);
+          }
+          setSelectedIds(new Set());
+          setQuestionConfirmModal((prev) => ({ ...prev, isOpen: false }));
+          onRefreshQuestions();
+          toast.success(data.message || `تم حذف ${typeLabel} بنجاح`);
+        } catch (err: any) {
+          toast.error(err.message || "حدث خطأ أثناء حذف الأسئلة");
+        } finally {
+          setIsPurging(false);
+        }
+      },
+    });
   };
 
   // Metrics - overall
@@ -1976,47 +2009,95 @@ export function LessonQuestionsTab({
                 اختر العملية التي ترغب في تنفيذها. سيتم حذف الأسئلة نهائياً من قاعدة البيانات مع كافة خياراتها وشروحاتها ونماذج إجاباتها:
               </p>
 
-              <div className="space-y-3">
-                {typeFilter !== "ALL" && typeScopedQuestions.length > 0 && (
+              <div className="space-y-2.5">
+                {/* 1. Delete MCQ only */}
+                {mcqCount > 0 && (
                   <button
                     type="button"
                     disabled={isPurging}
-                    onClick={() => handlePurgeQuestions(typeFilter)}
-                    className="w-full p-4 rounded-2xl border border-amber-200 dark:border-amber-900/50 bg-amber-50/50 dark:bg-amber-950/20 hover:bg-amber-100/70 dark:hover:bg-amber-950/40 text-right space-y-1 transition-all cursor-pointer disabled:opacity-50"
+                    onClick={() => promptPurgeConfirmation("MCQ")}
+                    className="w-full p-3.5 rounded-2xl border border-blue-200 dark:border-blue-900/50 bg-blue-50/40 dark:bg-blue-950/20 hover:bg-blue-100/70 dark:hover:bg-blue-950/40 text-right transition-all cursor-pointer disabled:opacity-50 flex items-center justify-between"
                   >
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-amber-900 dark:text-amber-200 flex items-center gap-1.5">
-                        <Trash2 className="w-4 h-4 text-amber-600" />
-                        حذف أسئلة {typeFilter === "MCQ" ? "الاختيار من متعدد" : typeFilter === "ESSAY" ? "المقالي" : "صح أم خطأ"} فقط
+                    <div className="space-y-0.5">
+                      <span className="text-xs font-bold text-blue-950 dark:text-blue-200 flex items-center gap-1.5">
+                        <CheckCircle2 className="w-4 h-4 text-blue-600" />
+                        حذف أسئلة الاختيار من متعدد (MCQ) فقط
                       </span>
-                      <span className="text-xs font-mono font-bold px-2 py-0.5 rounded-full bg-amber-200 dark:bg-amber-800/80 text-amber-900 dark:text-amber-200">
-                        {typeScopedQuestions.length} سؤال
-                      </span>
+                      <p className="text-[11px] text-blue-700/80 dark:text-blue-300/80">
+                        مسح أسئلة MCQ مع الإبقاء على الأسئلة المقالية والصواب والخطأ.
+                      </p>
                     </div>
-                    <p className="text-[11px] text-amber-700/80 dark:text-amber-300/80">
-                      حذف كافة أسئلة القسم النشط حالياً والإبقاء على باقي أنواع الأسئلة الأخرى في الدرس.
-                    </p>
+                    <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-full bg-blue-200 dark:bg-blue-800 text-blue-950 dark:text-blue-100 shrink-0">
+                      {mcqCount} سؤال
+                    </span>
                   </button>
                 )}
 
+                {/* 2. Delete True/False only */}
+                {tfCount > 0 && (
+                  <button
+                    type="button"
+                    disabled={isPurging}
+                    onClick={() => promptPurgeConfirmation("TRUE_FALSE")}
+                    className="w-full p-3.5 rounded-2xl border border-purple-200 dark:border-purple-900/50 bg-purple-50/40 dark:bg-purple-950/20 hover:bg-purple-100/70 dark:hover:bg-purple-950/40 text-right transition-all cursor-pointer disabled:opacity-50 flex items-center justify-between"
+                  >
+                    <div className="space-y-0.5">
+                      <span className="text-xs font-bold text-purple-950 dark:text-purple-200 flex items-center gap-1.5">
+                        <Layers className="w-4 h-4 text-purple-600" />
+                        حذف أسئلة الصواب والخطأ (True / False) فقط
+                      </span>
+                      <p className="text-[11px] text-purple-700/80 dark:text-purple-300/80">
+                        مسح عبارات صح وخطأ مع الإبقاء على باقي أنواع الأسئلة.
+                      </p>
+                    </div>
+                    <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-full bg-purple-200 dark:bg-purple-800 text-purple-950 dark:text-purple-100 shrink-0">
+                      {tfCount} سؤال
+                    </span>
+                  </button>
+                )}
+
+                {/* 3. Delete Essay only */}
+                {essayCount > 0 && (
+                  <button
+                    type="button"
+                    disabled={isPurging}
+                    onClick={() => promptPurgeConfirmation("ESSAY")}
+                    className="w-full p-3.5 rounded-2xl border border-amber-200 dark:border-amber-900/50 bg-amber-50/40 dark:bg-amber-950/20 hover:bg-amber-100/70 dark:hover:bg-amber-950/40 text-right transition-all cursor-pointer disabled:opacity-50 flex items-center justify-between"
+                  >
+                    <div className="space-y-0.5">
+                      <span className="text-xs font-bold text-amber-950 dark:text-amber-200 flex items-center gap-1.5">
+                        <BookOpen className="w-4 h-4 text-amber-600" />
+                        حذف الأسئلة المقالية (Essay) فقط
+                      </span>
+                      <p className="text-[11px] text-amber-700/80 dark:text-amber-300/80">
+                        مسح كافة الأسئلة المقالية ونماذج إجاباتها مع الإبقاء على باقي الأنواع.
+                      </p>
+                    </div>
+                    <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-full bg-amber-200 dark:bg-amber-800 text-amber-950 dark:text-amber-100 shrink-0">
+                      {essayCount} سؤال
+                    </span>
+                  </button>
+                )}
+
+                {/* 4. Delete ALL questions */}
                 <button
                   type="button"
-                  disabled={isPurging}
-                  onClick={() => handlePurgeQuestions("ALL")}
-                  className="w-full p-4 rounded-2xl border border-red-200 dark:border-red-900/50 bg-red-50/50 dark:bg-red-950/20 hover:bg-red-100/70 dark:hover:bg-red-950/40 text-right space-y-1 transition-all cursor-pointer disabled:opacity-50"
+                  disabled={isPurging || totalCount === 0}
+                  onClick={() => promptPurgeConfirmation("ALL")}
+                  className="w-full p-3.5 rounded-2xl border border-red-300 dark:border-red-900/60 bg-red-50/60 dark:bg-red-950/30 hover:bg-red-100/80 dark:hover:bg-red-950/50 text-right transition-all cursor-pointer disabled:opacity-50 flex items-center justify-between"
                 >
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-red-900 dark:text-red-200 flex items-center gap-1.5">
+                  <div className="space-y-0.5">
+                    <span className="text-xs font-bold text-red-950 dark:text-red-200 flex items-center gap-1.5">
                       <Trash2 className="w-4 h-4 text-red-600" />
-                      حذف جميع أسئلة الدرس بالكامل
+                      حذف جميع أسئلة الدرس بالكامل (تفريغ شامل)
                     </span>
-                    <span className="text-xs font-mono font-bold px-2 py-0.5 rounded-full bg-red-200 dark:bg-red-800/80 text-red-900 dark:text-red-200">
-                      {totalCount} سؤال
-                    </span>
+                    <p className="text-[11px] text-red-700/80 dark:text-red-300/80">
+                      تفريغ كافة الأسئلة بجميع أنواعها من بنك أسئلة هذا الدرس نهائياً.
+                    </p>
                   </div>
-                  <p className="text-[11px] text-red-700/80 dark:text-red-300/80">
-                    تفريغ ومسح كافة أسئلة هذا الدرس (MCQ، مقالي، صح وخطأ) بالكامل من بنك الأسئلة وقاعدة البيانات.
-                  </p>
+                  <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-full bg-red-200 dark:bg-red-800 text-red-950 dark:text-red-100 shrink-0">
+                    {totalCount} سؤال
+                  </span>
                 </button>
               </div>
             </div>
@@ -2048,8 +2129,8 @@ export function LessonQuestionsTab({
         description={questionConfirmModal.description}
         variant={questionConfirmModal.variant || "danger"}
         itemHighlight={questionConfirmModal.itemHighlight}
-        confirmText="تأكيد الحذف"
-        cancelText="إلغاء"
+        confirmText={questionConfirmModal.confirmText || "تأكيد الحذف"}
+        cancelText={questionConfirmModal.cancelText || "إلغاء"}
       />
     </div>
   );
