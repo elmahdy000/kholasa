@@ -146,7 +146,7 @@ describe("EL KHOLASA — Difficulty Fallback & Deduplication Logic", () => {
     });
 
     // Even though there are 0 medium questions, statsCount must fallback to easy+hard
-    expect(statsCount).toBe(5);
+    expect(statsCount.count).toBe(5);
 
     // 5. Create custom exam with difficulty: "MEDIUM"
     const examResult = await ExamService.createCustomExam(
