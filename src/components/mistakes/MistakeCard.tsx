@@ -197,8 +197,8 @@ export function MistakeCard({
               <Sparkle className="w-4 h-4" />
               <span>
                 {showEssayModel || mistake.isResolved
-                  ? "إخفاء نموذج الإجابة"
-                  : "عرض نموذج الإجابة المعتمد"}
+                  ? isEnglish ? "Hide Model Answer" : "إخفاء نموذج الإجابة"
+                  : isEnglish ? "View Model Answer" : "عرض نموذج الإجابة المعتمد"}
               </span>
             </button>
 
@@ -210,7 +210,7 @@ export function MistakeCard({
                 className="h-10 px-4 rounded-xl text-[13px] font-bold bg-[#059669] hover:bg-[#047857] text-white flex items-center gap-2 transition-colors disabled:opacity-60 cursor-pointer shadow-sm"
               >
                 <Check className="w-4 h-4" />
-                <span>{isResolving ? "جاري الحفظ..." : "فهمتها خلاص"}</span>
+                <span>{isResolving ? (isEnglish ? "Saving..." : "جاري الحفظ...") : (isEnglish ? "Understood & Mastered" : "فهمتها خلاص")}</span>
               </button>
             )}
           </div>
@@ -218,25 +218,33 @@ export function MistakeCard({
           {/* Essay Model Answer & Rubric Criteria Display */}
           {(showEssayModel || mistake.isResolved) && (
             <div className="space-y-4 pt-3 border-t border-[#E2E8F0] dark:border-[#334155] animate-in fade-in duration-200">
-              <div className="p-4 sm:p-5 rounded-2xl bg-[#7C3AED]/5 border border-[#7C3AED]/20 space-y-3">
+              <div
+                dir={isEnglish ? "ltr" : "rtl"}
+                className={`p-4 sm:p-5 rounded-2xl bg-[#7C3AED]/5 border border-[#7C3AED]/20 space-y-3 ${isEnglish ? "text-left font-sans" : "text-right font-content"}`}
+              >
                 <span className="text-[12px] font-bold uppercase tracking-wider text-[#7C3AED] flex items-center gap-1.5">
                   <Sparkle className="w-3.5 h-3.5" />
-                  <span>النموذج المعتمد للإجابة:</span>
+                  <span>{isEnglish ? "Approved Model Answer:" : "النموذج المعتمد للإجابة:"}</span>
                 </span>
                 <FormattedAnswerView
                   text={
                     q.rubric?.modelAnswer ||
                     q.explanation?.correctReason ||
-                    "الإجابة المعتمدة تركز على الخطوات والشرح المنهجي لمفاهيم السؤال."
+                    (isEnglish
+                      ? "The approved model answer focuses on step-by-step methodology and curriculum concepts."
+                      : "الإجابة المعتمدة تركز على الخطوات والشرح المنهجي لمفاهيم السؤال.")
                   }
                   colorScheme="purple"
                 />
               </div>
 
               {Array.isArray(q.rubric?.criteria) && q.rubric.criteria.length > 0 && (
-                <div className="p-4 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] space-y-2">
+                <div
+                  dir={isEnglish ? "ltr" : "rtl"}
+                  className="p-4 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] space-y-2"
+                >
                   <span className="text-[12px] font-bold text-[#64748B] dark:text-[#94A3B8] block">
-                    معايير توزيع الدرجات:
+                    {isEnglish ? "Grading Criteria:" : "معايير توزيع الدرجات:"}
                   </span>
                   <div className="space-y-1.5">
                     {(q.rubric.criteria as RubricCriterion[]).map((c, cIdx) => (
@@ -248,7 +256,7 @@ export function MistakeCard({
                           {c.criterion}
                         </span>
                         <span className="font-mono text-[#7C3AED] font-bold shrink-0">
-                          {c.points} درجات
+                          {isEnglish ? `${c.points} Marks` : `${c.points} درجات`}
                         </span>
                       </div>
                     ))}
@@ -271,12 +279,12 @@ export function MistakeCard({
             {showExplanation ? (
               <>
                 <EyeOff className="w-3.5 h-3.5" />
-                <span>إخفاء التفسير والحل</span>
+                <span>{isEnglish ? "Hide explanation & solution" : "إخفاء التفسير والحل"}</span>
               </>
             ) : (
               <>
                 <Eye className="w-3.5 h-3.5" />
-                <span>عرض التفسير والحل المعتمد مباشرة</span>
+                <span>{isEnglish ? "View explanation & solution directly" : "عرض التفسير والحل المعتمد مباشرة"}</span>
               </>
             )}
           </button>

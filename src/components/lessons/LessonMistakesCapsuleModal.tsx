@@ -324,22 +324,27 @@ export function LessonMistakesCapsuleModal({
             </div>
           ) : (
             /* CASE C: Active Question Display */
-            currentQ && (
+            currentQ && (() => {
+              const isEnglishQ = !/[\u0600-\u06FF]/.test(currentQ.statement || "");
+              return (
               <div className="space-y-4">
                 {/* Question Header & Controls */}
-                <div className="flex items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
+                <div
+                  dir={isEnglishQ ? "ltr" : "rtl"}
+                  className="flex items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800 pb-3"
+                >
                   <div className="flex items-center gap-2">
                     <span className="px-3 py-1 rounded-lg text-xs font-bold bg-amber-500/10 text-amber-800 dark:text-amber-300 border border-amber-500/20">
                       {currentQ.type === "MCQ"
-                        ? "اختيار من متعدد"
+                        ? isEnglishQ ? "Multiple Choice" : "اختيار من متعدد"
                         : currentQ.type === "TRUE_FALSE"
-                        ? "صح وغلط"
-                        : "سؤال مقالي"}
+                        ? isEnglishQ ? "True / False" : "صح وغلط"
+                        : isEnglishQ ? "Essay Question" : "سؤال مقالي"}
                     </span>
                     {resolvedIds.has(currentQ.id) && (
                       <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 text-[11px] font-bold flex items-center gap-1">
                         <Check className="w-3.5 h-3.5" weight="bold" />
-                        <span>تم التصحيح</span>
+                        <span>{isEnglishQ ? "Mastered" : "تم التصحيح"}</span>
                       </span>
                     )}
                   </div>
@@ -457,19 +462,24 @@ export function LessonMistakesCapsuleModal({
                       className="px-4 py-2.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-800 dark:text-amber-300 text-xs font-bold flex items-center gap-2 cursor-pointer transition-colors"
                     >
                       <BookOpen className="w-4 h-4" weight="bold" />
-                      <span>{showEssayModel ? "إخفاء نموذج الإجابة" : "عرض نموذج الإجابة للمقارنة"}</span>
+                      <span>{showEssayModel ? (isEnglishQ ? "Hide Model Answer" : "إخفاء نموذج الإجابة") : (isEnglishQ ? "View Model Answer" : "عرض نموذج الإجابة للمقارنة")}</span>
                     </button>
 
                     {showEssayModel && (
-                      <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2 text-right animate-in fade-in duration-200">
+                      <div
+                        dir={isEnglishQ ? "ltr" : "rtl"}
+                        className={`p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2 ${isEnglishQ ? "text-left font-sans" : "text-right font-content"} animate-in fade-in duration-200`}
+                      >
                         <span className="text-xs font-bold text-amber-800 dark:text-amber-300 block">
-                          النموذج المعتمد للإجابة:
+                          {isEnglishQ ? "Approved Model Answer:" : "النموذج المعتمد للإجابة:"}
                         </span>
                         <FormattedAnswerView
                           text={
                             currentQ.rubric?.modelAnswer ||
                             currentQ.explanation?.correctReason ||
-                            "راجع عناصر ومفاهيم الدرس الأساسية لتأكيد الحل."
+                            (isEnglishQ
+                              ? "The approved model answer focuses on step-by-step methodology and curriculum concepts."
+                              : "راجع عناصر ومفاهيم الدرس الأساسية لتأكيد الحل.")
                           }
                           colorScheme="emerald"
                         />
@@ -484,7 +494,7 @@ export function LessonMistakesCapsuleModal({
                         className="w-full py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-sm transition-transform active:scale-95 cursor-pointer"
                       >
                         <CheckCircle className="w-4 h-4" weight="bold" />
-                        <span>تأكيد الاستيعاب وحذف السؤال من الأخطاء</span>
+                        <span>{isEnglishQ ? "Confirm Understanding & Remove" : "تأكيد الاستيعاب وحذف السؤال من الأخطاء"}</span>
                       </button>
                     )}
                   </div>
@@ -515,7 +525,8 @@ export function LessonMistakesCapsuleModal({
                   />
                 )}
               </div>
-            )
+              );
+            })()
           )}
         </div>
 

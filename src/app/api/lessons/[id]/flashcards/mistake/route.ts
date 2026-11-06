@@ -32,6 +32,12 @@ export async function POST(
           select: {
             id: true,
             subjectId: true,
+            subject: {
+              select: {
+                id: true,
+                schoolCategory: true,
+              },
+            },
           },
         },
       },
@@ -46,6 +52,7 @@ export async function POST(
 
     const normalizedTerm = body.term.trim();
     const normalizedMeaning = body.meaning.trim();
+    const isEnglishTerm = !/[\u0600-\u06FF]/.test(normalizedTerm);
 
     let questionId: string;
 
@@ -61,6 +68,7 @@ export async function POST(
         },
         OR: [
           { statement: `ما المقصود بمصطلح: ${normalizedTerm}؟` },
+          { statement: `What is meant by the term: ${normalizedTerm}?` },
           { statement: { contains: normalizedTerm } },
         ],
       },
@@ -72,22 +80,32 @@ export async function POST(
     if (existingQuestion) {
       questionId = existingQuestion.id;
     } else {
+      const statement = isEnglishTerm
+        ? `What is meant by the term: ${normalizedTerm}?`
+        : `ما المقصود بمصطلح: ${normalizedTerm}؟`;
+
       // Create a clean ESSAY question representing this definition
       const created = await prisma.question.create({
         data: {
-          statement: `ما المقصود بمصطلح: ${normalizedTerm}؟`,
+          statement,
           type: "ESSAY",
           difficulty: "MEDIUM",
           status: "PUBLISHED",
           subjectId: lesson.unit.subjectId,
           unitId: lesson.unitId,
+          schoolCategory: lesson.unit.subject.schoolCategory,
           rubric: {
             create: {
               modelAnswer: normalizedMeaning,
-              criteria: [
-                "صياغة المفهوم العلمي بدقة واكتمال",
-                "توضيح العناصر والأركان الأساسية للمصطلح",
-              ],
+              criteria: isEnglishTerm
+                ? [
+                    "Accurately formulate the scientific concept and definition",
+                    "Identify key pillars and context of the term",
+                  ]
+                : [
+                    "صياغة المفهوم العلمي بدقة واكتمال",
+                    "توضيح العناصر والأركان الأساسية للمصطلح",
+                  ],
               maxScore: 2,
             },
           },
@@ -117,7 +135,9 @@ export async function POST(
         action: "RECORDED",
         questionId,
         wrongCount: mistake.wrongCount,
-        message: "تم حفظ المصطلح في بنك غلطاتي بنجاح للمراجعة اللاحقة",
+        message: isEnglishTerm
+          ? "Concept saved to My Mistakes bank for later review"
+          : "تم حفظ المصطلح في بنك غلطاتي بنجاح للمراجعة اللاحقة",
       });
     } else {
       await MistakeService.resolveMistake(user.id, questionId);
@@ -125,7 +145,9 @@ export async function POST(
         success: true,
         action: "RESOLVED",
         questionId,
-        message: "تم تسجيل المصطلح كمتقن وإزالته من الأخطاء غير المحلولة",
+        message: isEnglishTerm
+          ? "Concept marked as mastered and removed from active mistakes"
+          : "تم تسجيل المصطلح كمتقن وإزالته من الأخطاء غير المحلولة",
       });
     }
   } catch (error) {

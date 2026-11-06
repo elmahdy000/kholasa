@@ -9,11 +9,11 @@ export class MistakeService {
     const where: Prisma.MistakeReviewWhereInput = {
       userId,
       isResolved: false,
+      question: {
+        status: { not: "ARCHIVED" },
+        ...(subjectId ? { subjectId } : {}),
+      },
     };
-
-    if (subjectId) {
-      where.question = { subjectId };
-    }
 
     return prisma.mistakeReview.findMany({
       where,
@@ -81,8 +81,10 @@ export class MistakeService {
       throw new Error("رائع! لا توجد أخطاء حالية تحتاج للمراجعة في هذه المادة");
     }
 
-    const selectedMistakes = mistakes.slice(0, questionCount);
-    const primarySubjectId = subjectId || selectedMistakes[0].question.subjectId;
+    // Coherently scope exam to a single subject & schoolCategory
+    const primarySubjectId = subjectId || mistakes[0].question.subjectId;
+    const subjectMistakes = mistakes.filter((m) => m.question.subjectId === primarySubjectId);
+    const selectedMistakes = subjectMistakes.slice(0, questionCount);
     const schoolCategory = selectedMistakes[0]?.question?.subject?.schoolCategory || "ARABIC";
 
     const exam = await prisma.exam.create({

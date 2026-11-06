@@ -12,21 +12,19 @@ export default async function MistakesPage() {
     redirect("/login?callbackUrl=/mistakes");
   }
 
-  // Fetch student's mistake records
+  // Fetch student's mistake records (all active non-archived mistakes for this user)
   const mistakes = await prisma.mistakeReview.findMany({
     where: {
       userId: user.id,
       question: {
         status: { not: "ARCHIVED" },
-        ...(user.schoolCategory ? { schoolCategory: user.schoolCategory } : {}),
-        ...(user.gradeId ? { subject: { gradeId: user.gradeId } } : {}),
       },
     },
     orderBy: { lastAttemptAt: "desc" },
     include: {
       question: {
         include: {
-          subject: { select: { id: true, name: true } },
+          subject: { select: { id: true, name: true, color: true, schoolCategory: true } },
           unit: { select: { id: true, title: true } },
           options: { orderBy: { order: "asc" } },
           explanation: true,
@@ -43,8 +41,10 @@ export default async function MistakesPage() {
 
   // Fetch student's enrolled subjects matching their grade & category, plus any subjects with mistakes
   const subjectWhere: any = { isPublished: true };
-  if (user.gradeId) subjectWhere.gradeId = user.gradeId;
-  if (user.schoolCategory) subjectWhere.schoolCategory = user.schoolCategory;
+  if (user.role === "STUDENT") {
+    if (user.gradeId) subjectWhere.gradeId = user.gradeId;
+    if (user.schoolCategory) subjectWhere.schoolCategory = user.schoolCategory;
+  }
 
   const subjects = await prisma.subject.findMany({
     where: subjectWhere,

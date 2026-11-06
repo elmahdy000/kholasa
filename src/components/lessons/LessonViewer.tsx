@@ -432,15 +432,40 @@ export function LessonViewer({
       if (!res.ok) {
         throw new Error(data.error || "تعذر التحقق من الإجابة");
       }
+      const isRight = !!data.isCorrect;
       setQuestionAnswers((prev) => ({
         ...prev,
         [questionId]: {
           selectedOptionId: optionId,
           revealed: true,
-          isCorrect: !!data.isCorrect,
+          isCorrect: isRight,
           reveal: data,
         },
       }));
+
+      // Live reactive synchronization with the lesson mistakes capsule
+      if (!isRight) {
+        setMistakes((prev) => {
+          if (prev.some((m) => m.questionId === questionId)) {
+            return prev.map((m) =>
+              m.questionId === questionId ? { ...m, wrongCount: m.wrongCount + 1 } : m
+            );
+          }
+          const qObj = lesson.questions.find((lq) => lq.question.id === questionId)?.question;
+          if (!qObj) return prev;
+          return [
+            ...prev,
+            {
+              id: `temp-${questionId}`,
+              questionId,
+              wrongCount: 1,
+              question: qObj as any,
+            },
+          ];
+        });
+      } else {
+        setMistakes((prev) => prev.filter((m) => m.questionId !== questionId));
+      }
     } catch (err) {
       console.error(err);
     }

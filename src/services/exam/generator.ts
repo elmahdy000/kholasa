@@ -70,13 +70,12 @@ export class ExamGeneratorService {
           id: { in: questionIds },
           status: "PUBLISHED",
           subjectId: targetSubjectId,
-          schoolCategory: subject.schoolCategory,
         },
         select: { id: true, subjectId: true, statement: true },
       });
 
       if (explicitQuestions.length === 0) {
-        throw new Error("الأسئلة المحددة غير موجودة في بنك الأسئلة أو لا تنتمي لهذه الفئة المدرسية");
+        throw new Error("الأسئلة المحددة غير موجودة في بنك الأسئلة أو لا تنتمي لهذه المادة");
       }
 
       // Deduplicate questions by statement and ID to guarantee zero duplicates within the exam
@@ -266,7 +265,7 @@ export class ExamGeneratorService {
       generatedTitle = `امتحان شامل: ${subject?.name || "عام"} (${selected.length} سؤال)`;
     }
 
-    const examTitle = generatedTitle;
+    const examTitle = customTitle?.trim() || generatedTitle;
 
     const exam = await prisma.exam.create({
       data: {
