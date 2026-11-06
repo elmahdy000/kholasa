@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { getCurrentUser, isStaff, canManageCurriculum, canGradeAttempts } from "@/lib/auth";
+import { getCurrentUser, isStaff, canManageCurriculum, canGradeAttempts, canManageExams } from "@/lib/auth";
 import { AdminShell } from "@/components/layout/AdminShell";
 import { Plus, HardDrive, Upload } from "lucide-react";
 import { AdminMetricCards } from "@/components/admin/dashboard/AdminMetricCards";
@@ -108,13 +108,15 @@ export default async function AdminDashboardPage() {
 
           {/* Quick Action Buttons Toolbar */}
           <div className="flex flex-wrap items-center gap-2">
-            <Link
-              href="/admin/exams/create"
-              className="h-11 px-3 rounded-lg bg-[#334155] hover:bg-[#334155] dark:bg-[#F8FAFC] dark:hover:bg-white text-white dark:text-[#1E293B] text-[13px] font-semibold flex items-center gap-2 transition-all"
-            >
-              <Plus className="w-3.5 h-3.5" />
-              <span>إنشاء امتحان</span>
-            </Link>
+            {canManageExams(user.role) && (
+              <Link
+                href="/admin/exams/create"
+                className="h-11 px-3.5 rounded-lg bg-[#800020] hover:bg-[#660019] text-white text-[13px] font-bold flex items-center gap-2 transition-all shadow-xs hover:shadow-sm"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>إنشاء امتحان</span>
+              </Link>
+            )}
             <Link
               href="/admin/media"
               className="h-11 px-3 rounded-lg border border-[#E2E8F0] dark:border-[#334155] hover:bg-[#F8FAFC] dark:hover:bg-[#1E293B] text-[#0F172A] dark:text-[#F8FAFC] text-[13px] font-medium flex items-center gap-2 transition-colors"
@@ -122,13 +124,15 @@ export default async function AdminDashboardPage() {
               <HardDrive className="w-3.5 h-3.5" />
               <span>رفع وسائط</span>
             </Link>
-            {canManageCurriculum(user.role) && <Link
-              href="/admin/questions/import"
-              className="h-11 px-3 rounded-lg border border-[#E2E8F0] dark:border-[#334155] hover:bg-[#F8FAFC] dark:hover:bg-[#1E293B] text-[#0F172A] dark:text-[#F8FAFC] text-[13px] font-medium flex items-center gap-2 transition-colors"
-            >
-              <Upload className="w-3.5 h-3.5" />
-              <span>استيراد أسئلة</span>
-            </Link>}
+            {canManageCurriculum(user.role) && (
+              <Link
+                href="/admin/questions/import"
+                className="h-11 px-3 rounded-lg border border-[#E2E8F0] dark:border-[#334155] hover:bg-[#F8FAFC] dark:hover:bg-[#1E293B] text-[#0F172A] dark:text-[#F8FAFC] text-[13px] font-medium flex items-center gap-2 transition-colors"
+              >
+                <Upload className="w-3.5 h-3.5" />
+                <span>استيراد أسئلة</span>
+              </Link>
+            )}
           </div>
         </div>
 

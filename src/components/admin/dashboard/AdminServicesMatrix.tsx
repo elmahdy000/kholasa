@@ -125,7 +125,7 @@ export function AdminServicesMatrix({ metrics, role }: AdminServicesMatrixProps)
                   </div>
                   <ArrowUpRight className="w-4 h-4 text-[#94A3B8] group-hover:text-[#0F172A] dark:group-hover:text-[#F8FAFC] transition-colors" />
                 </div>
-                <h3 className="font-semibold text-sm text-[#0F172A] dark:text-[#F8FAFC] group-hover:text-[#334155] dark:group-hover:text-white transition-colors">
+                <h3 className="font-semibold text-sm text-[#0F172A] dark:text-[#F8FAFC] group-hover:text-[#800020] dark:group-hover:text-[#FB7185] transition-colors">
                   {srv.title}
                 </h3>
                 <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8] mt-1 line-clamp-2">

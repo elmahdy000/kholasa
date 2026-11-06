@@ -61,14 +61,17 @@ export function AdminRecentActivity({
                         : "text-[#DC2626]"
                     }`}
                   >
-                    {attempt.percentage}%
+                    {attempt.percentage ?? 0}%
                   </span>
-                  {canReviewAttempts && <Link
-                    href="/admin/attempts"
-                    className="text-[13px] text-[#64748B] hover:text-[#64748B]"
-                  >
-                    مراجعة
-                  </Link>}
+                  {canReviewAttempts && (
+                    <Link
+                      href={`/admin/attempts?search=${encodeURIComponent(attempt.user?.name || "")}`}
+                      className="text-[13px] font-bold text-[#800020] dark:text-[#FB7185] hover:underline transition-colors"
+                      title="مراجعة وتصحيح محاولة هذا الطالب"
+                    >
+                      مراجعة
+                    </Link>
+                  )}
                 </div>
               </div>
             ))}
