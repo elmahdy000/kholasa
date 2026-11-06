@@ -13,11 +13,11 @@ interface BidiStatementProps {
 // 1. Explicit markdown inline code: `...`
 // 2. Big-O, Theta, Omega asymptotic notations: O(1), O(n), O(log n), O(n²), O(n^2), O(n log n), O(2^n)
 // 3. Programming languages with symbols: C++, C#, .NET, F#, HTML5, CSS3
-// 4. Parenthesized English phrases / terms
-// 5. English identifiers / words
-// 6. Explicit programming language statements (e.g. int x = 13 % 4; or cout << x;)
+// 4. Parenthesized English phrases / terms: (RAM), (Virtual Private Network)
+// 5. Multi-word Latin / English phrases or alphanumeric terms: Virtual Private Network, 100 Mbps, DDoS
+// 6. Explicit programming language statements: int x = 13 % 4; or cout << x;
 const CODE_TOKEN_REGEX =
-  /(`[^`]+`|\b(?:O|Θ|Ω)\s*\([^)]+\)|\bC\+\+|\bC#|\b\.NET|\bF#|\bHTML5|\bCSS3|\([A-Za-z0-9_\s&+/.:,-]+\)|\b[A-Za-z][A-Za-z0-9_&+/.-]*\b|\b(?:const\s+)?(?:int|float|double|char|bool|string|void|auto|long|short|unsigned)\s+[a-zA-Z0-9_\s*+=%&|<>!/().-]+;?|\b(?:cout|cin)\s*(?:<<|>>)\s*[^;]+;?|\b(?:printf|scanf|return|sizeof)\s*[^;]+;?|\b(?:if|for|while|switch)\s*\([^)]+\)|\b[a-zA-Z_][a-zA-Z0-9_]*\s*=\s*[^;]+;|\b[a-zA-Z_][a-zA-Z0-9_]*(?:\+\+|--);?)/g;
+  /(`[^`]+`|\b(?:O|Θ|Ω)\s*\([^)]+\)|\bC\+\+|\bC#|\b\.NET|\bF#|\bHTML5|\bCSS3|\([A-Za-z0-9_\s&+/.:,-]+\)|[A-Za-z0-9][A-Za-z0-9_&+/.:,-]*(?:\s+[A-Za-z0-9][A-Za-z0-9_&+/.:,-]+)*|\b(?:const\s+)?(?:int|float|double|char|bool|string|void|auto|long|short|unsigned)\s+[a-zA-Z0-9_\s*+=%&|<>!/().-]+;?|\b(?:cout|cin)\s*(?:<<|>>)\s*[^;]+;?|\b(?:printf|scanf|return|sizeof)\s*[^;]+;?|\b(?:if|for|while|switch)\s*\([^)]+\)|\b[a-zA-Z_][a-zA-Z0-9_]*\s*=\s*[^;]+;|\b[a-zA-Z_][a-zA-Z0-9_]*(?:\+\+|--);?)/g;
 
 export function BidiStatement({
   text,
@@ -157,7 +157,7 @@ export function BidiStatement({
             <bdi
               key={index}
               dir="ltr"
-              className={cn("inline-block mx-1 font-sans", isShort ? "whitespace-nowrap" : "break-words")}
+              className={cn("inline mx-1 font-sans", isShort ? "whitespace-nowrap" : "break-words")}
               style={{ unicodeBidi: "isolate" }}
             >
               {token}
@@ -165,13 +165,13 @@ export function BidiStatement({
           );
         }
 
-        // 5. Single Latin / English term or acronym (e.g. DDoS, HTTP, CPU)
-        if (/^[A-Za-z][A-Za-z0-9_&+/.-]*$/.test(token)) {
+        // 5. Multi-word or single Latin/English phrase or alphanumeric term (e.g. Virtual Private Network, DDoS, 100 Mbps)
+        if (/^[A-Za-z0-9][A-Za-z0-9_&+/.:,-]*(?:\s+[A-Za-z0-9][A-Za-z0-9_&+/.:,-]+)*$/.test(token)) {
           return (
             <bdi
               key={index}
               dir="ltr"
-              className="inline-block font-sans mx-0.5"
+              className="inline font-sans mx-1"
               style={{ unicodeBidi: "isolate" }}
             >
               {token}
