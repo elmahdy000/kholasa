@@ -224,6 +224,7 @@ export function FormattedAnswerView({
   const dir = isArabic ? "rtl" : "ltr";
   const alignClass = isArabic ? "text-right" : "text-left";
   const titleMargin = isArabic ? "ml-1.5" : "mr-1.5";
+  const fontClass = isArabic ? "font-content" : "font-sans";
 
   const fallback =
     emptyFallback ||
@@ -248,7 +249,7 @@ export function FormattedAnswerView({
       <div className={`space-y-2.5 ${alignClass} ${className}`} dir={dir}>
         {parsed.intro && (
           <p
-            className={`text-[13px] sm:text-sm font-bold font-content leading-relaxed ${styles.intro}`}
+            className={`text-[13px] sm:text-sm font-bold ${fontClass} leading-relaxed ${styles.intro}`}
           >
             {parsed.intro}
           </p>
@@ -261,12 +262,12 @@ export function FormattedAnswerView({
               className={`p-3 sm:p-3.5 rounded-xl ${styles.cardBg} border ${styles.border} shadow-2xs flex items-start gap-3 transition-all`}
             >
               <div
-                className={`w-6 h-6 rounded-lg ${styles.badgeBg} font-bold text-xs flex items-center justify-center shrink-0 mt-0.5`}
+                className={`w-6 h-6 rounded-lg ${styles.badgeBg} font-bold text-xs flex items-center justify-center shrink-0 mt-0.5 font-mono`}
               >
                 {pt.badge}
               </div>
               <div
-                className={`text-[13px] sm:text-sm leading-relaxed font-content ${styles.body} flex-1`}
+                className={`text-[13px] sm:text-sm leading-relaxed ${fontClass} ${styles.body} flex-1`}
               >
                 {pt.title && (
                   <strong className={`font-bold ${titleMargin} ${styles.title}`}>
@@ -285,7 +286,7 @@ export function FormattedAnswerView({
   // Single paragraph fallback with proper line breaks
   return (
     <p
-      className={`text-[13px] sm:text-sm leading-relaxed font-content font-medium whitespace-pre-wrap break-words ${alignClass} ${styles.body} ${className}`}
+      className={`text-[13px] sm:text-sm leading-relaxed ${fontClass} font-medium whitespace-pre-wrap break-words ${alignClass} ${styles.body} ${className}`}
       dir={dir}
     >
       {text}

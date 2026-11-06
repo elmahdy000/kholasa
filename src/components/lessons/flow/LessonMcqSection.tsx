@@ -67,9 +67,18 @@ export function LessonMcqSection({
           {questions.map(({ question }, qIndex) => {
             const state = questionAnswers[question.id];
             const isTranslated = Boolean(translatedQuestions[question.id]);
+            const rawExplanationReason =
+              question.explanation?.correctReason ||
+              question.options?.find((o) => o.isCorrect)?.explanation ||
+              "";
+            const hasExplanationTranslation =
+              /\n+\s*(?:الترجمة العربية للتفسير|الترجمة العربية|ترجمة التفسير|<!--\s*translation\s*-->|\[TRANSLATION\])/i.test(
+                rawExplanationReason
+              );
             const hasTranslation = Boolean(
               (question.translation && question.translation.trim().length > 0) ||
-              question.options?.some((o) => o.translation && o.translation.trim().length > 0)
+              question.options?.some((o) => o.translation && o.translation.trim().length > 0) ||
+              hasExplanationTranslation
             );
             const isEnglishStatement = !/[\u0600-\u06FF]/.test(question.statement || "");
             const isEnglish =
@@ -225,6 +234,8 @@ export function LessonMcqSection({
                       state.reveal?.explanation?.correctReason ||
                       state.reveal?.options?.find((o) => o.isCorrect)?.explanation
                     }
+                    isTranslated={isTranslated}
+                    onToggleTranslation={() => toggleTranslation(question.id)}
                   />
                 )}
               </div>

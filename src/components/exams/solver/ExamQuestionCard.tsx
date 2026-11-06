@@ -66,10 +66,19 @@ export function ExamQuestionCard({
     setIsModelAnswerTranslated(false);
   }, [currentQ.id]);
 
+  const rawExplanationReason =
+    revealedAnswer?.explanation?.correctReason ||
+    (currentQ as any)?.explanation?.correctReason ||
+    "";
+  const hasExplanationTranslation =
+    /\n+\s*(?:الترجمة العربية للتفسير|الترجمة العربية|ترجمة التفسير|<!--\s*translation\s*-->|\[TRANSLATION\])/i.test(
+      rawExplanationReason
+    );
   const hasTranslation = Boolean(
     initialMode === "PRACTICE" &&
     ((currentQ.translation && currentQ.translation.trim().length > 0) ||
-      currentQ.options?.some((o) => o.translation && o.translation.trim().length > 0))
+      currentQ.options?.some((o) => o.translation && o.translation.trim().length > 0) ||
+      hasExplanationTranslation)
   );
 
   const isEnglishStatement = !/[\u0600-\u06FF]/.test(currentQ.statement || "");
@@ -316,6 +325,8 @@ export function ExamQuestionCard({
               <QuestionExplanationBox
                 concept={revealedAnswer.explanation.concept}
                 correctReason={revealedAnswer.explanation.correctReason}
+                isTranslated={isQuestionTranslated}
+                onToggleTranslation={() => setIsQuestionTranslated((prev) => !prev)}
               />
             )
           )}
