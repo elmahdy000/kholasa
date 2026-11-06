@@ -235,11 +235,32 @@ export function FormattedAnswerView({
   emptyFallback,
   className = "",
 }: FormattedAnswerViewProps) {
-  const parsed = useMemo(() => extractAnswerPoints(text), [text]);
+  // Always clean and sanitize text from any embedded translations or BiDi dot artifacts
+  const cleanText = useMemo(() => {
+    if (!text) return "";
+    const trimmed = text
+      .replace(/[\u200B-\u200F\uFEFF\u202A-\u202E]/g, "")
+      .trim();
+    if (!trimmed) return "";
+
+    // Strip embedded translation suffix
+    const translationMatch = trimmed.match(
+      /(?:[\r\n]+|^|\s{2,})(?:(?:الترجمة العربية للتفسير|ترجمة التفسير|الترجمة العربية|Arabic Translation|Translation|<!--\s*translation\s*-->|\[TRANSLATION\])\s*[:：\-]?\s*)([\s\S]+)$/i
+    );
+    const primary =
+      translationMatch && translationMatch.index !== undefined
+        ? trimmed.substring(0, translationMatch.index).trim()
+        : trimmed;
+
+    // Clean leading period from BiDi inversion artifact
+    return primary.replace(/^\.\s*/, "").trim();
+  }, [text]);
+
+  const parsed = useMemo(() => extractAnswerPoints(cleanText), [cleanText]);
   const styles = colorStyles[colorScheme] || colorStyles.purple;
 
-  // Language & Direction detection (Arabic vs English)
-  const isArabic = useMemo(() => /[\u0600-\u06FF]/.test(text || ""), [text]);
+  // Language & Direction detection based ONLY on the sanitized clean text
+  const isArabic = useMemo(() => /[\u0600-\u06FF]/.test(cleanText || ""), [cleanText]);
   const dir = isArabic ? "rtl" : "ltr";
   const alignClass = isArabic ? "text-right" : "text-left";
   const titleMargin = isArabic ? "ml-1.5" : "mr-1.5";
@@ -251,7 +272,7 @@ export function FormattedAnswerView({
       ? "الإجابة المعتمدة تركز على الخطوات والشرح المنهجي لمفاهيم السؤال."
       : "The approved model answer focuses on step-by-step methodology and curriculum concepts.");
 
-  if (!text || !text.trim()) {
+  if (!cleanText) {
     return (
       <p
         className={`text-[13px] sm:text-sm font-content leading-relaxed ${alignClass} ${styles.body} ${className}`}
@@ -317,7 +338,7 @@ export function FormattedAnswerView({
       className={`text-[13px] sm:text-sm leading-relaxed ${fontClass} font-medium whitespace-pre-wrap break-words ${alignClass} ${styles.body} ${className}`}
       dir={dir}
     >
-      {text}
+      {cleanText}
     </p>
   );
 }

@@ -307,8 +307,8 @@ export function LessonViewer({
   const readinessPercentage =
     totalObjectives > 0
       ? Math.round(
-          ((masteredCount * 1 + reviewCount * 0.5) / totalObjectives) * 100
-        )
+        ((masteredCount * 1 + reviewCount * 0.5) / totalObjectives) * 100
+      )
       : 100;
 
   // Siblings navigation
@@ -332,7 +332,7 @@ export function LessonViewer({
     const audio = audioElemRef.current;
     if (lesson.content?.audioUrl && audio) {
       if (isPlayingAudio) {
-        audio.play().catch(() => {});
+        audio.play().catch(() => { });
       } else {
         audio.pause();
       }
@@ -559,11 +559,10 @@ export function LessonViewer({
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`flex-1 min-w-[130px] sm:min-w-[140px] py-2.5 px-3 rounded-lg text-[13px] sm:text-sm font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
-                isSelected
+              className={`flex-1 min-w-[130px] sm:min-w-[140px] py-2.5 px-3 rounded-lg text-[13px] sm:text-sm font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${isSelected
                   ? "bg-[#800020] text-white shadow-sm"
                   : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white hover:bg-white/50 dark:hover:bg-[#334155]/50"
-              }`}
+                }`}
             >
               <Icon
                 className="w-4 h-4 shrink-0"
@@ -572,11 +571,10 @@ export function LessonViewer({
               <span>{tab.label}</span>
               {"badge" in tab && tab.badge && (
                 <span
-                  className={`text-[11px] px-1.5 py-0.5 rounded-full font-bold font-mono ${
-                    isSelected
+                  className={`text-[11px] px-1.5 py-0.5 rounded-full font-bold font-mono ${isSelected
                       ? "bg-white/20 text-white"
                       : "bg-[#800020]/10 text-[#800020] dark:bg-[#FB7185]/20 dark:text-[#FB7185]"
-                  }`}
+                    }`}
                 >
                   {tab.badge}
                 </span>
@@ -665,8 +663,8 @@ export function LessonViewer({
                       mediumCount > 0
                         ? mediumCount
                         : easyCount + hardCount > 0
-                        ? `${easyCount + hardCount} (بديل)`
-                        : 0,
+                          ? `${easyCount + hardCount} (بديل)`
+                          : 0,
                   },
                   { id: "HARD", label: "متقدم وللتفوق", count: hardCount },
                 ].map((item) => {
@@ -676,19 +674,17 @@ export function LessonViewer({
                       key={item.id}
                       type="button"
                       onClick={() => setDifficultyFilter(item.id as any)}
-                      className={`px-3 py-1.5 rounded-xl text-xs sm:text-[13px] font-bold transition-all flex items-center gap-2 border cursor-pointer ${
-                        isActive
+                      className={`px-3 py-1.5 rounded-xl text-xs sm:text-[13px] font-bold transition-all flex items-center gap-2 border cursor-pointer ${isActive
                           ? "bg-[#800020] text-white border-[#800020] shadow-sm"
                           : "bg-[#F8FAFC] dark:bg-[#1E293B] text-[#64748B] dark:text-[#94A3B8] border-[#E2E8F0] dark:border-[#334155] hover:border-[#800020]/40"
-                      }`}
+                        }`}
                     >
                       <span>{item.label}</span>
                       <span
-                        className={`text-[11px] px-1.5 py-0.5 rounded-md font-mono ${
-                          isActive
+                        className={`text-[11px] px-1.5 py-0.5 rounded-md font-mono ${isActive
                             ? "bg-white/20 text-white"
                             : "bg-black/5 dark:bg-white/10 text-inherit"
-                        }`}
+                          }`}
                       >
                         {item.count}
                       </span>
@@ -716,11 +712,10 @@ export function LessonViewer({
                       key={item.id}
                       type="button"
                       onClick={() => setQuestionTypeFilter(item.id as any)}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 border cursor-pointer ${
-                        isActive
+                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 border cursor-pointer ${isActive
                           ? "bg-[#0F172A] text-white dark:bg-white dark:text-[#0F172A] border-transparent shadow-sm"
                           : "bg-white dark:bg-[#0F172A] text-[#64748B] dark:text-[#94A3B8] border-[#E2E8F0] dark:border-[#334155] hover:text-[#0F172A] dark:hover:text-white"
-                      }`}
+                        }`}
                     >
                       <span>{item.label}</span>
                       <span className="text-[11px] font-mono opacity-80">({item.count})</span>
@@ -807,7 +802,7 @@ export function LessonViewer({
                             essayText: essayDrafts[qId] || "",
                             resolve: true,
                           }),
-                        }).catch(() => {});
+                        }).catch(() => { });
                       }
                       return { ...prev, [qId]: next };
                     });

@@ -236,6 +236,7 @@ export function LessonMcqSection({
                     }
                     isTranslated={isTranslated}
                     onToggleTranslation={() => toggleTranslation(question.id)}
+                    forceEnglish={isEnglish}
                   />
                 )}
               </div>

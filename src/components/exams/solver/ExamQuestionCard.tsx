@@ -327,6 +327,7 @@ export function ExamQuestionCard({
                 correctReason={revealedAnswer.explanation.correctReason}
                 isTranslated={isQuestionTranslated}
                 onToggleTranslation={() => setIsQuestionTranslated((prev) => !prev)}
+                forceEnglish={isEnglish}
               />
             )
           )}

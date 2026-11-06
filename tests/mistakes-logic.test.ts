@@ -56,3 +56,4 @@ describe("Mistakes Logic & Track Compatibility (Arabic & Languages)", () => {
     expect(subjectMistakes.every((m) => m.question.subject.schoolCategory === "LANGUAGES")).toBe(true);
   });
 });
+

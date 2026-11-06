@@ -12,6 +12,7 @@ export interface QuestionExplanationBoxProps {
   onToggleTranslation?: () => void;
   className?: string;
   colorScheme?: "emerald" | "amber" | "burgundy" | "blue";
+  forceEnglish?: boolean;
 }
 
 /**
@@ -118,6 +119,7 @@ export function QuestionExplanationBox({
   onToggleTranslation,
   className = "",
   colorScheme = "emerald",
+  forceEnglish,
 }: QuestionExplanationBoxProps) {
   // Split explanation into primary and translation
   const { primary: parsedPrimary, translation: parsedTranslation } = useMemo(
@@ -147,14 +149,16 @@ export function QuestionExplanationBox({
 
   // Direction and Language Detection for Primary Content
   const isEnglish = useMemo(() => {
+    if (forceEnglish !== undefined) return forceEnglish;
     if (!cleanPrimary) return false;
     return !/[\u0600-\u06FF]/.test(cleanPrimary);
-  }, [cleanPrimary]);
+  }, [cleanPrimary, forceEnglish]);
 
   const isConceptEnglish = useMemo(() => {
-    if (!cleanConcept) return false;
+    if (forceEnglish !== undefined) return forceEnglish;
+    if (!cleanConcept) return isEnglish;
     return !/[\u0600-\u06FF]/.test(cleanConcept);
-  }, [cleanConcept]);
+  }, [cleanConcept, forceEnglish, isEnglish]);
 
   if (!cleanPrimary && !cleanTranslation) {
     return null;

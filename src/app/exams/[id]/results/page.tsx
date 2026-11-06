@@ -59,7 +59,7 @@ export default async function ExamResultsPage({
           id: true,
           title: true,
           subjectId: true,
-          subject: { select: { id: true, name: true, color: true } },
+          subject: { select: { id: true, name: true, color: true, schoolCategory: true } },
           questions: {
             select: { questionId: true, order: true },
             orderBy: { order: "asc" },
@@ -445,6 +445,7 @@ export default async function ExamResultsPage({
                     <QuestionExplanationBox
                       concept={q.explanation.concept}
                       correctReason={q.explanation.correctReason}
+                      forceEnglish={!/[\u0600-\u06FF]/.test(q.statement || "") || attempt.exam?.subject?.schoolCategory === "LANGUAGES"}
                     />
                   )}
                 </div>

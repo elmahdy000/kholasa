@@ -297,6 +297,7 @@ export function MistakeCard({
           <QuestionExplanationBox
             concept={q.explanation.concept}
             correctReason={q.explanation.correctReason}
+            forceEnglish={isEnglish}
           />
         </div>
       )}

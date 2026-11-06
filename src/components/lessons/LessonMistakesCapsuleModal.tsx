@@ -522,6 +522,7 @@ export function LessonMistakesCapsuleModal({
                       currentQ.explanation?.correctReason ||
                       currentQ.options?.find((o) => o.id === correctOptionId || o.isCorrect)?.explanation
                     }
+                    forceEnglish={isEnglishQ}
                   />
                 )}
               </div>

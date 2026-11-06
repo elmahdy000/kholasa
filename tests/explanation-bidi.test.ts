@@ -53,5 +53,20 @@ describe("Explanation, BiDi, and Question Cleaning Specifications", () => {
     expect(result?.points[0].badge).toBe("1");
     expect(result?.points[1].badge).toBe("2");
   });
+
+  it("should sanitize English explanation so direction is LTR even when raw text contains Arabic translation suffix", () => {
+    const rawExplanation = `The book places the spread of personal computers in the 1970s–1980s; the 1990s are associated with the commercialization of the Internet and the Web.
+
+الترجمة العربية للتفسير:
+يربط الكتاب انتشار أجهزة الكمبيوتر الشخصية بالسبعينيات والثمانينيات، بينما ترتبط التسعينيات بإتاحة الإنترنت للاستخدام التجاري وظهور الويب.`;
+
+    const { primary, translation } = splitExplanation(rawExplanation);
+    const isArabic = /[\u0600-\u06FF]/.test(primary);
+
+    expect(isArabic).toBe(false);
+    expect(primary.startsWith(".")).toBe(false);
+    expect(primary.endsWith("Web.")).toBe(true);
+    expect(translation).toBeDefined();
+  });
 });
 

@@ -212,6 +212,7 @@ export function LessonTrueFalseSection({
                     }
                     isTranslated={isTranslated}
                     onToggleTranslation={() => toggleTranslation(question.id)}
+                    forceEnglish={isEnglishStatement}
                   />
                 )}
               </div>
