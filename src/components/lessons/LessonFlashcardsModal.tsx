@@ -24,6 +24,7 @@ import {
 import { TranslationToggle } from "@/components/ui/TranslationToggle";
 import { FormattedDefinitionView } from "@/components/ui/FormattedDefinitionView";
 import { splitExplanation } from "@/components/ui/QuestionExplanationBox";
+import { BidiStatement } from "@/components/ui/BidiStatement";
 import type { Definition } from "./types";
 
 interface LessonFlashcardsModalProps {
@@ -430,21 +431,21 @@ export function LessonFlashcardsModal({
       <div className="relative w-full max-w-2xl bg-white dark:bg-[#0F172A] rounded-2xl border border-[#E2E8F0] dark:border-[#334155] shadow-2xl overflow-hidden flex flex-col max-h-[95vh]">
         {/* 1. Modal Top Bar */}
         <div className="px-4 sm:px-6 py-3.5 border-b border-[#E2E8F0] dark:border-[#334155] flex items-center justify-between gap-3 bg-[#F8FAFC] dark:bg-[#1E293B]/70">
-          <div className="flex items-center gap-2.5 overflow-hidden">
+          <div className="flex items-center gap-2.5 min-w-0 flex-1">
             <div className="w-8 h-8 rounded-lg bg-[#800020]/10 text-[#800020] dark:bg-[#800020]/30 dark:text-[#FB7185] flex items-center justify-center shrink-0">
               <Cards className="w-4 h-4" weight="bold" />
             </div>
-            <div className="truncate">
-              <div className="flex items-center gap-2">
-                <span className="text-[11px] font-bold px-2 py-0.5 rounded bg-[#800020] text-white">
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-[11px] font-bold px-2 py-0.5 rounded bg-[#800020] text-white shrink-0">
                   {isLanguages ? "تسميع الدرس • Flashcards" : "تسميع الدرس"}
                 </span>
-                <h3 className="text-sm font-bold text-[#0F172A] dark:text-white truncate">
+                <h3 className="text-sm font-bold text-[#0F172A] dark:text-white leading-tight break-words">
                   تسميع: {lessonTitle}
                 </h3>
               </div>
               {unitTitle && (
-                <p className="text-[11px] text-[#64748B] dark:text-[#94A3B8] truncate mt-0.5">
+                <p className="text-[11px] text-[#64748B] dark:text-[#94A3B8] leading-tight break-words mt-0.5">
                   {unitTitle}
                 </p>
               )}
@@ -717,13 +718,13 @@ export function LessonFlashcardsModal({
                             <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 block uppercase tracking-wider">
                               يا ترى إيه هو تعريف وشرح:
                             </span>
-                            <div className="flex items-center justify-center gap-2">
+                            <div className="flex items-center justify-center gap-2 flex-wrap">
                               <h2
-                                className={`text-2xl sm:text-3xl font-black text-[#0F172A] dark:text-white leading-relaxed tracking-tight ${
-                                  isEnglishTerm ? "font-sans dir-ltr text-left" : ""
+                                className={`text-2xl sm:text-3xl font-black text-[#0F172A] dark:text-white leading-relaxed tracking-tight break-words ${
+                                  isEnglishTerm ? "font-sans dir-ltr text-center" : ""
                                 }`}
                               >
-                                {currentCard.term}
+                                <BidiStatement as="span" text={currentCard.term} />
                               </h2>
                               <button
                                 type="button"
@@ -810,31 +811,54 @@ export function LessonFlashcardsModal({
                             />
                           )}
                         </div>
-                        <div className="flex items-center gap-1.5">
-                          <button
-                            type="button"
-                            onClick={() => speakText(currentCard.term, isEnglishTerm)}
-                            className="p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 hover:text-[#059669] transition-colors"
-                            title="اسمع نطق المصطلح"
-                          >
-                            <SpeakerHigh className="w-3.5 h-3.5" weight="bold" />
-                          </button>
-                          <span className="text-xs font-bold text-[#800020] dark:text-[#FB7185] max-w-[140px] truncate">
-                            {currentCard.term}
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono text-xs px-2.5 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold border border-slate-200 dark:border-slate-700">
+                            {currentIndex + 1} / {totalCards}
                           </span>
                         </div>
                       </div>
 
                       {/* Main Back Content */}
                       <div className="my-auto py-2.5 space-y-2.5">
-                        {studyMode === "DEF_TO_TERM" && (
+                        {studyMode === "TERM_TO_DEF" ? (
+                          <div className="px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60 flex items-center justify-between gap-3 animate-in fade-in duration-200 shadow-2xs">
+                            <div className="flex items-start gap-2 min-w-0 flex-1 text-right">
+                              <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 shrink-0 mt-0.5">
+                                المصطلح:
+                              </span>
+                              <BidiStatement
+                                as="span"
+                                text={currentCard.term}
+                                className="text-xs sm:text-sm font-bold text-[#800020] dark:text-[#FB7185] break-words leading-snug"
+                              />
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => speakText(currentCard.term, isEnglishTerm)}
+                              className="p-1.5 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 hover:text-[#800020] dark:hover:text-[#FB7185] transition-colors shrink-0 cursor-pointer"
+                              title="اسمع نطق المصطلح"
+                            >
+                              <SpeakerHigh className="w-4 h-4" weight="bold" />
+                            </button>
+                          </div>
+                        ) : (
                           <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-center animate-in fade-in duration-200 shadow-2xs">
                             <span className="text-[11px] font-bold text-emerald-800 dark:text-emerald-300 block">
                               المصطلح العلمي الصح هو:
                             </span>
-                            <span className="text-lg sm:text-xl font-black text-emerald-900 dark:text-emerald-200 mt-0.5 inline-block">
-                              {currentCard.term}
-                            </span>
+                            <div className="flex items-center justify-center gap-2 mt-0.5 flex-wrap">
+                              <span className="text-lg sm:text-xl font-black text-emerald-900 dark:text-emerald-200 inline-block break-words">
+                                <BidiStatement as="span" text={currentCard.term} />
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => speakText(currentCard.term, isEnglishTerm)}
+                                className="p-1 rounded-lg hover:bg-emerald-100 dark:hover:bg-emerald-900 text-emerald-700 dark:text-emerald-300 transition-colors shrink-0 cursor-pointer"
+                                title="اسمع نطق المصطلح"
+                              >
+                                <SpeakerHigh className="w-4 h-4" weight="bold" />
+                              </button>
+                            </div>
                           </div>
                         )}
 

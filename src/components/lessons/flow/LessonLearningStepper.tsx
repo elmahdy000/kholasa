@@ -165,7 +165,7 @@ export function LessonLearningStepper({
               <div className="min-w-0 flex-1">
                 <div className="flex items-center justify-between gap-1">
                   <span
-                    className={`text-[12px] sm:text-[13px] font-bold truncate block ${
+                    className={`text-[12px] sm:text-[13px] font-bold leading-tight break-words block ${
                       isActive
                         ? "text-[#800020] dark:text-[#FB7185]"
                         : "text-slate-800 dark:text-slate-100"
