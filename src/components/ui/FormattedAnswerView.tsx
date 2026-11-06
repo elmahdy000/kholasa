@@ -31,6 +31,16 @@ export function extractAnswerPoints(rawText: string | null | undefined): {
     .trim();
   if (!text || text.length < 5) return null;
 
+  // Strip any embedded translation suffix so it is NEVER parsed into answer badges or points
+  const translationMatch = text.match(
+    /(?:[\r\n]+|^|\s{2,})(?:(?:الترجمة العربية للتفسير|ترجمة التفسير|الترجمة العربية|Arabic Translation|Translation|<!--\s*translation\s*-->|\[TRANSLATION\])\s*[:：\-]?\s*)([\s\S]+)$/i
+  );
+  const primaryText =
+    translationMatch && translationMatch.index !== undefined
+      ? text.substring(0, translationMatch.index).trim()
+      : text;
+  if (!primaryText || primaryText.length < 5) return null;
+
   // 1. Check for numbered or bullet markers (either on newlines or inline like " 2. " or " (b) " or "Step 1 - ")
   const markerRegex =
     /(?:^|[\n\r]+|(?<=\s))(?:(?:Step|Part|Point|Phase|المرحلة|الخطوة|النقطة)\s+)?(?:\(((?:[0-9]{1,2}|[٠-٩]{1,2}|[a-zA-Z]|[أ-ي]|[ivxIVX]{1,4}))\)|(?:[0-9]{1,2}|[٠-٩]{1,2})\s*[.\-):]|(?:[a-zA-Z]|[أ-ي])\s*[.\-)]|(?:[ivxIVX]{1,4})\s*[.\-)]|[•*⁃\–\—\-])\s+/gi;
@@ -38,7 +48,7 @@ export function extractAnswerPoints(rawText: string | null | undefined): {
   const rawMatches: { index: number; length: number; badge: string }[] = [];
   let m: RegExpExecArray | null;
 
-  while ((m = markerRegex.exec(text)) !== null) {
+  while ((m = markerRegex.exec(primaryText)) !== null) {
     const rawMatched = m[0].trim();
     const badge =
       m[1] ||
@@ -58,7 +68,7 @@ export function extractAnswerPoints(rawText: string | null | undefined): {
   for (let i = 0; i < rawMatches.length; i++) {
     const cur = rawMatches[i];
     const nextIdx =
-      i + 1 < rawMatches.length ? rawMatches[i + 1].index : text.length;
+      i + 1 < rawMatches.length ? rawMatches[i + 1].index : primaryText.length;
     const sliceLen = nextIdx - (cur.index + cur.length);
     if (sliceLen >= 2) {
       matches.push(cur);
@@ -70,7 +80,7 @@ export function extractAnswerPoints(rawText: string | null | undefined): {
     let intro: string | undefined = undefined;
     const firstMatch = matches[0];
     if (firstMatch.index > 0) {
-      const candidateIntro = text.substring(0, firstMatch.index).trim();
+      const candidateIntro = primaryText.substring(0, firstMatch.index).trim();
       if (candidateIntro.length >= 3) {
         intro = candidateIntro;
       }
@@ -80,8 +90,8 @@ export function extractAnswerPoints(rawText: string | null | undefined): {
     for (let i = 0; i < matches.length; i++) {
       const current = matches[i];
       const start = current.index + current.length;
-      const end = i + 1 < matches.length ? matches[i + 1].index : text.length;
-      const fullPointText = text.substring(start, end).trim();
+      const end = i + 1 < matches.length ? matches[i + 1].index : primaryText.length;
+      const fullPointText = primaryText.substring(start, end).trim();
 
       if (fullPointText) {
         // Check if point has a title prefix e.g. "Supervised Learning: Uses..." or "القيادة الذاتية: تستخدم..."
@@ -114,7 +124,7 @@ export function extractAnswerPoints(rawText: string | null | undefined): {
       str.trim()
     );
 
-  const rawLines = text
+  const rawLines = primaryText
     .split(/[\n\r]+/)
     .map((l) => l.trim())
     .filter((l) => l.length > 0 && !isTranslationHeader(l));
