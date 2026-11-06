@@ -84,6 +84,20 @@ export class QuestionQueriesService {
   /**
    * Get single question by ID with options, explanation, and ideal rubric model answer
    */
+  /**
+   * Fast query for student answer verification (avoids unnecessary joins on Subject, Unit, Batch, Lessons)
+   */
+  static async getQuestionForAnswer(id: string) {
+    return prisma.question.findUnique({
+      where: { id },
+      include: {
+        options: { orderBy: { order: "asc" } },
+        explanation: true,
+        rubric: true,
+      },
+    });
+  }
+
   static async getQuestionById(id: string) {
     return prisma.question.findUnique({
       where: { id },

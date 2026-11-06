@@ -411,6 +411,17 @@ export function LessonViewer({
   const handleSelectOption = async (questionId: string, optionId: string) => {
     if (questionAnswers[questionId]?.selectedOptionId === optionId) return;
 
+    // Instant optimistic visual feedback (0ms perceived latency for the student)
+    setQuestionAnswers((prev) => ({
+      ...prev,
+      [questionId]: {
+        selectedOptionId: optionId,
+        revealed: prev[questionId]?.revealed || false,
+        isCorrect: prev[questionId]?.isCorrect || false,
+        reveal: prev[questionId]?.reveal,
+      },
+    }));
+
     try {
       const res = await fetch(`/api/questions/${questionId}/answer`, {
         method: "POST",

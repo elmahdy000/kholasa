@@ -19,6 +19,7 @@ export type {
 export class QuestionService {
   static getQuestions = QuestionQueriesService.getQuestions;
   static getQuestionById = QuestionQueriesService.getQuestionById;
+  static getQuestionForAnswer = QuestionQueriesService.getQuestionForAnswer;
   static getQuestionStats = QuestionQueriesService.getQuestionStats;
 
   static createQuestion = QuestionMutationsService.createQuestion;

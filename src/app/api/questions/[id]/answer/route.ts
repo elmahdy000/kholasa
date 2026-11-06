@@ -24,7 +24,7 @@ export async function POST(
     const body = await req.json().catch(() => ({}));
     const { selectedOptionId, isDailyChallenge, resolve, essayText } = body;
 
-    const question = await QuestionService.getQuestionById(questionId);
+    const question = await QuestionService.getQuestionForAnswer(questionId);
 
     if (!question) {
       return NextResponse.json(

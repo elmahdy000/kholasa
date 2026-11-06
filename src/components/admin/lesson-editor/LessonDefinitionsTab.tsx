@@ -91,7 +91,7 @@ export function parseDefinitionsText(text: string): DefinitionItem[] {
           });
         if (valid.length > 0) return valid;
       }
-    } catch {}
+    } catch { }
   }
 
   const rawLines = raw.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
@@ -330,7 +330,7 @@ export function LessonDefinitionsTab({
             return;
           }
         }
-      } catch {}
+      } catch { }
 
       // Try smart text parser directly
       const parsed = parseDefinitionsText(content);
