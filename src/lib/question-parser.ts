@@ -392,10 +392,16 @@ export function parseQuestionsFromText(
             ? String(rawItem.modelAnswerTranslation).trim()
             : undefined;
           const concept = rawItem.concept ? String(rawItem.concept).trim() : undefined;
-          const correctReason =
-            rawItem.explanation || rawItem.correctReason
-              ? String(rawItem.explanation || rawItem.correctReason).trim()
-              : undefined;
+          const rawExplanation = rawItem.explanation || rawItem.correctReason || rawItem.reason;
+          const rawExplanationTrans = rawItem.explanationTranslation || rawItem.reasonTranslation;
+          let correctReason: string | undefined = undefined;
+          if (rawExplanation && rawExplanationTrans) {
+            correctReason = `${String(rawExplanation).trim()}\n\nالترجمة العربية للتفسير:\n${String(rawExplanationTrans).trim()}`;
+          } else if (rawExplanation) {
+            correctReason = String(rawExplanation).trim();
+          } else if (rawExplanationTrans) {
+            correctReason = String(rawExplanationTrans).trim();
+          }
 
           // External answer indicators (e.g. answer: "A", correctAnswer: "B", correctIndex: 2)
           const externalAnswer =
@@ -479,10 +485,16 @@ export function parseQuestionsFromText(
               // Auto-generate standard True/False choices if missing
               const ansStr = externalAnswer !== undefined ? String(externalAnswer).toLowerCase() : "";
               const isTrue = ansStr.includes("true") || ansStr.includes("صح") || ansStr.includes("صواب");
-              options = [
-                { text: "صواب", isCorrect: isTrue },
-                { text: "خطأ", isCorrect: !isTrue },
-              ];
+              const isEnglishStatement = !/[\u0600-\u06FF]/.test(statement);
+              options = isEnglishStatement
+                ? [
+                    { text: "True", isCorrect: isTrue },
+                    { text: "False", isCorrect: !isTrue },
+                  ]
+                : [
+                    { text: "صواب", isCorrect: isTrue },
+                    { text: "خطأ", isCorrect: !isTrue },
+                  ];
             }
           }
 
