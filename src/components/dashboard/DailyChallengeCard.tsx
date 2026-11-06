@@ -226,11 +226,11 @@ export function DailyChallengeCard({
                 dir={isEnglishOpt ? "ltr" : "rtl"}
                 disabled={isAnswered}
                 onClick={() => setSelectedOptionId(opt.id)}
-                className={`p-4 sm:p-4 rounded-xl border text-[13px] sm:text-sm ${isEnglishOpt ? "text-left font-sans" : "text-right font-content"} flex items-start sm:items-center justify-between gap-3 transition-all cursor-pointer ${btnStyle}`}
+                className={`p-4 sm:p-4 rounded-xl border text-[13px] sm:text-sm ${isEnglishOpt ? "text-left font-sans" : "text-right font-content"} flex items-start justify-between gap-3 transition-all cursor-pointer overflow-hidden ${btnStyle}`}
               >
-                <div className="flex items-start sm:items-center gap-3 min-w-0 flex-1">
+                <div className="flex items-start gap-3 min-w-0 flex-1">
                   <span
-                    className={`w-6 h-6 rounded-lg flex items-center justify-center text-[13px] font-mono font-bold shrink-0 mt-1 sm:mt-0 transition-colors ${
+                    className={`w-6 h-6 rounded-lg flex items-center justify-center text-[13px] font-mono font-bold shrink-0 mt-0.5 transition-colors ${
                       isSelected
                         ? "bg-[#800020] dark:bg-[#E11D48] text-white "
                         : "bg-[#E2E8F0] dark:bg-[#334155] text-[#0F172A] dark:text-[#F8FAFC]"
@@ -238,7 +238,7 @@ export function DailyChallengeCard({
                   >
                     {letter}
                   </span>
-                  <div className={`min-w-0 flex-1 leading-relaxed ${isEnglishOpt ? "text-left" : "text-right"}`}>
+                  <div className={`min-w-0 flex-1 leading-relaxed break-words ${isEnglishOpt ? "text-left" : "text-right"}`}>
                     <BidiStatement as="span" text={opt.text} />
                   </div>
                 </div>

@@ -184,13 +184,13 @@ export function LessonMcqSection({
                         dir={isEnglishOpt ? "ltr" : "rtl"}
                         disabled={isSelected}
                         onClick={() => onSelectOption(question.id, opt.id)}
-                        className={`w-full p-4 rounded-xl border ${isEnglishOpt ? "text-left font-sans" : "text-right font-content"} text-[13px] sm:text-sm font-medium flex items-start sm:items-center justify-between gap-3 transition-all cursor-pointer ${btnStyle}`}
+                        className={`w-full p-4 rounded-xl border ${isEnglishOpt ? "text-left font-sans" : "text-right font-content"} text-[13px] sm:text-sm font-medium flex items-start justify-between gap-3 transition-all cursor-pointer overflow-hidden ${btnStyle}`}
                       >
-                        <div className="flex items-start sm:items-center gap-3 min-w-0 flex-1">
-                          <span className="w-7 h-7 rounded-lg bg-[#F8FAFC] dark:bg-[#1E293B] text-[#64748B] dark:text-[#F8FAFC] flex items-center justify-center text-[13px] font-mono font-bold shrink-0 mt-0.5 sm:mt-0 border border-[#E2E8F0]/80 dark:border-[#334155]/80">
+                        <div className="flex items-start gap-3 min-w-0 flex-1">
+                          <span className="w-7 h-7 rounded-lg bg-[#F8FAFC] dark:bg-[#1E293B] text-[#64748B] dark:text-[#F8FAFC] flex items-center justify-center text-[13px] font-mono font-bold shrink-0 mt-0.5 border border-[#E2E8F0]/80 dark:border-[#334155]/80">
                             {letter}
                           </span>
-                          <div className={`min-w-0 flex-1 leading-relaxed ${isEnglishOpt ? "text-left" : "text-right"}`}>
+                          <div className={`min-w-0 flex-1 leading-relaxed break-words ${isEnglishOpt ? "text-left" : "text-right"}`}>
                             <BidiStatement as="span" text={opt.text} />
 
                             {/* Collapsible Arabic Translation for Option */}

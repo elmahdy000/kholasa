@@ -412,13 +412,13 @@ export default async function ExamResultsPage({
                           <div
                             key={opt.id}
                             dir={isEnglishOpt ? "ltr" : "rtl"}
-                            className={`p-4 sm:p-4 rounded-xl border text-[13px] sm:text-sm font-medium flex items-start sm:items-center justify-between gap-3 ${isEnglishOpt ? "text-left font-sans" : "text-right font-content"} ${rowStyle}`}
+                            className={`p-4 sm:p-4 rounded-xl border text-[13px] sm:text-sm font-medium flex items-start justify-between gap-3 overflow-hidden ${isEnglishOpt ? "text-left font-sans" : "text-right font-content"} ${rowStyle}`}
                           >
-                            <div className="flex items-start sm:items-center gap-3 min-w-0 flex-1">
-                              <span className="w-6 h-6 rounded-lg bg-[#E2E8F0] dark:bg-[#1E293B] text-[#0F172A] dark:text-[#F8FAFC] flex items-center justify-center text-[13px] font-bold shrink-0 mt-1 sm:mt-0 ">
+                            <div className="flex items-start gap-3 min-w-0 flex-1">
+                              <span className="w-6 h-6 rounded-lg bg-[#E2E8F0] dark:bg-[#1E293B] text-[#0F172A] dark:text-[#F8FAFC] flex items-center justify-center text-[13px] font-bold shrink-0 mt-0.5 ">
                                 {letterLabel}
                               </span>
-                              <BidiStatement as="span" text={opt.text} className="min-w-0 flex-1 leading-relaxed" />
+                              <BidiStatement as="span" text={opt.text} className="min-w-0 flex-1 leading-relaxed break-words" />
                             </div>
 
                             <div className="shrink-0">

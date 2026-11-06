@@ -422,13 +422,13 @@ export function LessonMistakesCapsuleModal({
                           dir={isEnglishOpt ? "ltr" : "rtl"}
                           disabled={revealed || isSubmitting}
                           onClick={() => handleSelectOption(opt.id)}
-                          className={`w-full p-3.5 sm:p-4 rounded-2xl border ${isEnglishOpt ? "text-left font-sans" : "text-right font-content"} text-xs sm:text-sm font-medium flex items-center justify-between gap-3 transition-all cursor-pointer ${btnStyle}`}
+                          className={`w-full p-3.5 sm:p-4 rounded-2xl border ${isEnglishOpt ? "text-left font-sans" : "text-right font-content"} text-xs sm:text-sm font-medium flex items-start justify-between gap-3 transition-all cursor-pointer overflow-hidden ${btnStyle}`}
                         >
-                          <div className="flex items-center gap-3 min-w-0 flex-1">
-                            <span className="w-7 h-7 rounded-xl bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 flex items-center justify-center text-xs font-mono font-bold shrink-0 border border-slate-200 dark:border-slate-700 shadow-2xs">
+                          <div className="flex items-start gap-3 min-w-0 flex-1">
+                            <span className="w-7 h-7 rounded-xl bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 flex items-center justify-center text-xs font-mono font-bold shrink-0 mt-0.5 border border-slate-200 dark:border-slate-700 shadow-2xs">
                               {letter}
                             </span>
-                            <div className={`min-w-0 flex-1 ${isEnglishOpt ? "text-left" : "text-right"}`}>
+                            <div className={`min-w-0 flex-1 leading-relaxed break-words ${isEnglishOpt ? "text-left" : "text-right"}`}>
                               <BidiStatement as="span" text={opt.text} />
                             </div>
                           </div>

@@ -200,11 +200,11 @@ export function ExamQuestionCard({
                 type="button"
                 dir={isEnglishOpt ? "ltr" : "rtl"}
                 onClick={() => onSelectOption(opt.id)}
-                className={`w-full p-4 sm:p-4 rounded-xl border ${isEnglishOpt ? "text-left font-sans" : "text-right font-content"} text-[13px] sm:text-sm font-medium flex items-start sm:items-center justify-between gap-3 transition-colors cursor-pointer ${cardStyle}`}
+                className={`w-full p-4 sm:p-4 rounded-xl border ${isEnglishOpt ? "text-left font-sans" : "text-right font-content"} text-[13px] sm:text-sm font-medium flex items-start justify-between gap-3 transition-colors cursor-pointer overflow-hidden ${cardStyle}`}
               >
-                <div className="flex items-start sm:items-center gap-3 min-w-0 flex-1">
+                <div className="flex items-start gap-3 min-w-0 flex-1">
                   <div
-                    className={`w-7 h-7 rounded-lg flex items-center justify-center text-[13px] font-mono font-bold shrink-0 mt-1 sm:mt-0 ${
+                    className={`w-7 h-7 rounded-lg flex items-center justify-center text-[13px] font-mono font-bold shrink-0 mt-0.5 ${
                       isSelected
                         ? "bg-[#800020] dark:bg-[#E11D48] text-white"
                         : "bg-[#F8FAFC] dark:bg-[#334155] text-[#64748B] dark:text-[#F8FAFC] border border-[#E2E8F0]/60 dark:border-[#334155]"
@@ -212,7 +212,7 @@ export function ExamQuestionCard({
                   >
                     {letter}
                   </div>
-                  <div className={`min-w-0 flex-1 leading-relaxed ${isEnglishOpt ? "text-left" : "text-right"}`}>
+                  <div className={`min-w-0 flex-1 leading-relaxed break-words ${isEnglishOpt ? "text-left" : "text-right"}`}>
                     <BidiStatement as="span" text={opt.text} />
 
                     {initialMode === "PRACTICE" && isQuestionTranslated && opt.translation && (

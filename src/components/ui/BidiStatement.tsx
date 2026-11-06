@@ -9,15 +9,13 @@ interface BidiStatementProps {
   as?: "h1" | "h2" | "h3" | "h4" | "p" | "span" | "div";
 }
 
-// Comprehensive tokenization regex:
+// Comprehensive tokenization regex for mixed Arabic/English text:
 // 1. Explicit markdown inline code: `...`
 // 2. Big-O, Theta, Omega asymptotic notations: O(1), O(n), O(log n), O(n²), O(n^2), O(n log n), O(2^n)
 // 3. Programming languages with symbols: C++, C#, .NET, F#, HTML5, CSS3
-// 4. Variable declarations and statements (e.g. int x = 13 % 4; or float val = 0.5;)
-// 5. I/O statements (e.g. cout << x; or cin >> y;)
-// 6. Control flow expressions (e.g. if (x == 10), for (int i = 0; ...))
-// 7. Assignment expressions (e.g. x = 13 % 4; or res = a + b;)
-// 8. Increment/decrement expressions (e.g. x++; or --count;)
+// 4. Parenthesized English phrases / terms
+// 5. English identifiers / words
+// 6. Explicit programming language statements (e.g. int x = 13 % 4; or cout << x;)
 const CODE_TOKEN_REGEX =
   /(`[^`]+`|\b(?:O|Θ|Ω)\s*\([^)]+\)|\bC\+\+|\bC#|\b\.NET|\bF#|\bHTML5|\bCSS3|\([A-Za-z0-9_\s&+/.:,-]+\)|\b[A-Za-z][A-Za-z0-9_&+/.-]*\b|\b(?:const\s+)?(?:int|float|double|char|bool|string|void|auto|long|short|unsigned)\s+[a-zA-Z0-9_\s*+=%&|<>!/().-]+;?|\b(?:cout|cin)\s*(?:<<|>>)\s*[^;]+;?|\b(?:printf|scanf|return|sizeof)\s*[^;]+;?|\b(?:if|for|while|switch)\s*\([^)]+\)|\b[a-zA-Z_][a-zA-Z0-9_]*\s*=\s*[^;]+;|\b[a-zA-Z_][a-zA-Z0-9_]*(?:\+\+|--);?)/g;
 
@@ -34,43 +32,58 @@ export function BidiStatement({
   // render it strictly with dir="ltr" and isolate so neutral punctuation (like semicolon ';')
   // or operators (like '++') never jump to the wrong side in an RTL page context.
   if (!hasArabic) {
-    const isCode =
-      text.includes(";") ||
-      text.includes("=") ||
-      text.includes("++") ||
-      text.includes("--") ||
-      text.includes("<<") ||
-      text.includes(">>") ||
-      /^(?:int|float|double|char|bool|string|void|auto|long|short)\b/.test(text) ||
-      text.startsWith("`") && text.endsWith("`");
-
-    const cleanText =
-      text.startsWith("`") && text.endsWith("`") && text.length > 2
-        ? text.slice(1, -1)
-        : text;
-
-    if (isCode) {
+    // 1. If the entire text is explicitly wrapped in markdown backticks: `code`
+    if (text.startsWith("`") && text.endsWith("`") && text.length > 2) {
+      const cleanCode = text.slice(1, -1);
       return (
         <code
           dir="ltr"
           className={cn(
-            "inline-block font-mono font-bold bg-[#F8FAFC] dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] px-2 py-1 rounded-md border border-[#E2E8F0] dark:border-[#334155] text-[13px] sm:text-sm whitespace-nowrap mx-1 align-baseline ",
+            "inline-block font-mono font-bold bg-[#F8FAFC] dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] px-2 py-0.5 rounded-md border border-[#E2E8F0] dark:border-[#334155] text-[13px] sm:text-sm break-words whitespace-pre-wrap max-w-full align-baseline",
             className
           )}
           style={{ unicodeBidi: "isolate" }}
         >
-          {cleanText}
+          {cleanCode}
         </code>
       );
     }
 
+    // 2. If it contains inline backticks like: "The output of `cout << x;` is:"
+    if (text.includes("`")) {
+      const parts = text.split(/(`[^`]+`)/g);
+      return (
+        <Component
+          dir="ltr"
+          className={cn("leading-relaxed break-words", className)}
+          style={{ unicodeBidi: "isolate" }}
+        >
+          {parts.map((part, pIdx) => {
+            if (part.startsWith("`") && part.endsWith("`") && part.length > 2) {
+              return (
+                <code
+                  key={pIdx}
+                  dir="ltr"
+                  className="inline-block font-mono font-bold bg-[#F8FAFC] dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] px-1.5 py-0.5 rounded-md border border-[#E2E8F0] dark:border-[#334155] text-[13px] sm:text-sm break-words whitespace-pre-wrap max-w-full align-baseline mx-0.5"
+                >
+                  {part.slice(1, -1)}
+                </code>
+              );
+            }
+            return <React.Fragment key={pIdx}>{part}</React.Fragment>;
+          })}
+        </Component>
+      );
+    }
+
+    // 3. Normal English / Latin text (including sentences with semicolons ';', colons ':', equals '=', formulas)
     return (
       <Component
         dir="ltr"
         className={cn("leading-relaxed break-words", className)}
         style={{ unicodeBidi: "isolate" }}
       >
-        {cleanText}
+        {text}
       </Component>
     );
   }
@@ -94,7 +107,7 @@ export function BidiStatement({
             <code
               key={index}
               dir="ltr"
-              className="inline-block font-mono font-bold bg-[#F8FAFC] dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] px-2 py-1 rounded-md border border-[#E2E8F0] dark:border-[#334155] text-[13px] sm:text-sm whitespace-nowrap mx-1 align-baseline "
+              className="inline-block font-mono font-bold bg-[#F8FAFC] dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] px-2 py-0.5 rounded-md border border-[#E2E8F0] dark:border-[#334155] text-[13px] sm:text-sm break-words whitespace-pre-wrap max-w-full mx-1 align-baseline"
               style={{ unicodeBidi: "isolate" }}
             >
               {rawCode}
@@ -139,11 +152,12 @@ export function BidiStatement({
 
         // 4. Parenthesized English / Latin phrase (e.g. (CIA Triad & Threats), (RAM), (API))
         if (/^\([A-Za-z0-9_\s&+/.:,-]+\)$/.test(token)) {
+          const isShort = token.length <= 25;
           return (
             <bdi
               key={index}
               dir="ltr"
-              className="inline-block whitespace-nowrap mx-1 font-sans"
+              className={cn("inline-block mx-1 font-sans", isShort ? "whitespace-nowrap" : "break-words")}
               style={{ unicodeBidi: "isolate" }}
             >
               {token}
@@ -181,7 +195,7 @@ export function BidiStatement({
             <code
               key={index}
               dir="ltr"
-              className="inline-block font-mono font-bold bg-[#F8FAFC] dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] px-2 py-1 rounded-md border border-[#E2E8F0] dark:border-[#334155] text-[13px] sm:text-sm whitespace-nowrap mx-1 align-baseline "
+              className="inline-block font-mono font-bold bg-[#F8FAFC] dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] px-2 py-0.5 rounded-md border border-[#E2E8F0] dark:border-[#334155] text-[13px] sm:text-sm break-words whitespace-pre-wrap max-w-full mx-1 align-baseline"
               style={{ unicodeBidi: "isolate" }}
             >
               {token.trim()}
@@ -189,7 +203,7 @@ export function BidiStatement({
           );
         }
 
-        // 4. Regular text (Arabic or neutral punctuation)
+        // 7. Regular text (Arabic or neutral punctuation)
         return (
           <span key={index} style={{ unicodeBidi: "isolate" }}>
             {token}
