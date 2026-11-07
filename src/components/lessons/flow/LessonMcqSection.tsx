@@ -15,12 +15,14 @@ interface LessonMcqSectionProps {
   questions: { question: Question }[];
   questionAnswers: Record<string, QuestionAnswerState>;
   onSelectOption: (questionId: string, optionId: string) => void;
+  isLanguages?: boolean;
 }
 
 export function LessonMcqSection({
   questions,
   questionAnswers,
   onSelectOption,
+  isLanguages = false,
 }: LessonMcqSectionProps) {
   const [translatedQuestions, setTranslatedQuestions] = useState<Record<string, boolean>>({});
 
@@ -49,7 +51,9 @@ export function LessonMcqSection({
               </h2>
             </div>
             <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8] mt-0.5">
-              اختر الإجابة وشوف النتيجة لحظياً مع شرح تفصيلي وتوضيح وترجمة فورية عند الحاجة
+              {isLanguages
+                ? "اختر الإجابة وشوف النتيجة لحظياً مع شرح تفصيلي وتوضيح وترجمة فورية عند الحاجة"
+                : "اختر الإجابة وشوف النتيجة لحظياً مع شرح تفصيلي وتوضيح فوري للإجابة الصحيحة"}
             </p>
           </div>
         </div>
@@ -75,13 +79,13 @@ export function LessonMcqSection({
               /\n+\s*(?:الترجمة العربية للتفسير|الترجمة العربية|ترجمة التفسير|<!--\s*translation\s*-->|\[TRANSLATION\])/i.test(
                 rawExplanationReason
               );
-            const isEnglish = !/[\u0600-\u06FF]/.test(question.statement || "");
-            const hasTranslation = isEnglish && Boolean(
+            const isEnglishStatement = !/[\u0600-\u06FF]/.test(question.statement || "");
+            const isEnglish = isLanguages && isEnglishStatement;
+            const hasTranslation = isLanguages && Boolean(
               (question.translation && question.translation.trim().length > 0) ||
               question.options?.some((o) => o.translation && o.translation.trim().length > 0) ||
               hasExplanationTranslation
             );
-              Boolean(question.options?.some((o) => !/[\u0600-\u06FF]/.test(o.text || "")));
 
             return (
               <div

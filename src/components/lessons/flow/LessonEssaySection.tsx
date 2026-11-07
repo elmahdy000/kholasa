@@ -20,6 +20,7 @@ interface LessonEssaySectionProps {
   onDraftChange: (questionId: string, draft: string) => void;
   onToggleReveal: (questionId: string) => void;
   onSelectScore: (questionId: string, score: number) => void;
+  isLanguages?: boolean;
 }
 
 export function LessonEssaySection({
@@ -30,6 +31,7 @@ export function LessonEssaySection({
   onDraftChange,
   onToggleReveal,
   onSelectScore,
+  isLanguages = false,
 }: LessonEssaySectionProps) {
   // Independent translation states for questions and model answers
   const [questionTranslations, setQuestionTranslations] = useState<Record<string, boolean>>({});
@@ -67,7 +69,9 @@ export function LessonEssaySection({
               </h2>
             </div>
             <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8] mt-0.5">
-              درب نفسك واكتب إجابتك هنا، وقارنها فوراً بنموذج الإجابة الرسمي مع إمكانية عرض الترجمة عند الحاجة
+              {isLanguages
+                ? "درب نفسك واكتب إجابتك هنا، وقارنها بنموذج الإجابة الرسمي مع إمكانية عرض الترجمة"
+                : "درب نفسك واكتب إجابتك هنا، وقارنها فوراً بنموذج الإجابة المعتمد وسلم التقدير"}
             </p>
           </div>
         </div>
@@ -106,9 +110,9 @@ export function LessonEssaySection({
             const isQuestionTranslated = Boolean(questionTranslations[question.id]);
             const isModelAnswerTranslated = Boolean(modelAnswerTranslations[question.id]);
             const isEnglishStatement = !/[\u0600-\u06FF]/.test(question.statement || "");
-            const isEnglish = isEnglishStatement;
-            const hasQuestionTranslation = isEnglish && Boolean(question.translation && question.translation.trim().length > 0);
-            const hasModelAnswerTranslation = isEnglish && Boolean(
+            const isEnglish = isLanguages && isEnglishStatement;
+            const hasQuestionTranslation = isLanguages && Boolean(question.translation && question.translation.trim().length > 0);
+            const hasModelAnswerTranslation = isLanguages && Boolean(
               question.rubric?.modelAnswerTranslation &&
               question.rubric.modelAnswerTranslation.trim().length > 0
             );

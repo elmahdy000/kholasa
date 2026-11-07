@@ -74,15 +74,15 @@ export function ExamQuestionCard({
     /\n+\s*(?:الترجمة العربية للتفسير|الترجمة العربية|ترجمة التفسير|<!--\s*translation\s*-->|\[TRANSLATION\])/i.test(
       rawExplanationReason
     );
+  const isEnglishStatement = !/[\u0600-\u06FF]/.test(currentQ.statement || "");
+  const isEnglish = isLanguages && isEnglishStatement;
   const hasTranslation = Boolean(
+    isLanguages &&
     initialMode === "PRACTICE" &&
     ((currentQ.translation && currentQ.translation.trim().length > 0) ||
       currentQ.options?.some((o) => o.translation && o.translation.trim().length > 0) ||
       hasExplanationTranslation)
   );
-
-  const isEnglishStatement = !/[\u0600-\u06FF]/.test(currentQ.statement || "");
-  const isEnglish = isLanguages || isEnglishStatement;
 
   return (
     <div className="p-6 sm:p-8 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] space-y-6">

@@ -855,6 +855,7 @@ export function LessonViewer({
                   questions={mcqQuestions}
                   questionAnswers={questionAnswers}
                   onSelectOption={handleSelectOption}
+                  isLanguages={isLanguagesSubject}
                 />
               )}
 
@@ -864,6 +865,7 @@ export function LessonViewer({
                   questions={tfQuestions}
                   questionAnswers={questionAnswers}
                   onSelectOption={handleSelectOption}
+                  isLanguages={isLanguagesSubject}
                 />
               )}
 
@@ -874,6 +876,7 @@ export function LessonViewer({
                   essayDrafts={essayDrafts}
                   revealedEssays={revealedEssays}
                   essaySelfScores={essaySelfScores}
+                  isLanguages={isLanguagesSubject}
                   onDraftChange={(qId, draft) =>
                     setEssayDrafts((prev) => ({ ...prev, [qId]: draft }))
                   }

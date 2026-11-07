@@ -19,12 +19,14 @@ interface LessonTrueFalseSectionProps {
   questions: { question: Question }[];
   questionAnswers: Record<string, QuestionAnswerState>;
   onSelectOption: (questionId: string, optionId: string) => void;
+  isLanguages?: boolean;
 }
 
 export function LessonTrueFalseSection({
   questions,
   questionAnswers,
   onSelectOption,
+  isLanguages = false,
 }: LessonTrueFalseSectionProps) {
   const [translatedQuestions, setTranslatedQuestions] = useState<Record<string, boolean>>({});
 
@@ -53,7 +55,9 @@ export function LessonTrueFalseSection({
               </h2>
             </div>
             <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8] mt-0.5">
-              اختبر دقة تركيزك وتفريقك بين المفاهيم في ثوانٍ معدودة مع دعم الترجمة الفورية عند الحاجة
+              {isLanguages
+                ? "اختبر دقة تركيزك وتفريقك بين المفاهيم في ثوانٍ معدودة مع دعم الترجمة الفورية"
+                : "اختبر دقة تركيزك وتفريقك بين المفاهيم في ثوانٍ معدودة مع تصحيح وتوضيح فوري"}
             </p>
           </div>
         </div>
@@ -80,8 +84,8 @@ export function LessonTrueFalseSection({
                 rawExplanationReason
               );
             const isEnglishStatement = !/[\u0600-\u06FF]/.test(question.statement || "");
-            const isEnglish = isEnglishStatement;
-            const hasTranslation = isEnglish && Boolean(
+            const isEnglish = isLanguages && isEnglishStatement;
+            const hasTranslation = isLanguages && Boolean(
               (question.translation && question.translation.trim().length > 0) ||
               hasExplanationTranslation
             );
@@ -212,7 +216,7 @@ export function LessonTrueFalseSection({
                     }
                     isTranslated={isTranslated}
                     onToggleTranslation={() => toggleTranslation(question.id)}
-                    forceEnglish={isEnglishStatement}
+                    forceEnglish={isEnglish}
                   />
                 )}
               </div>
