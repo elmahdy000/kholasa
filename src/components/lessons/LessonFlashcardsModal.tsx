@@ -378,12 +378,10 @@ export function LessonFlashcardsModal({
     : cardSplit.translation
     ? cardSplit.primary
     : currentCard?.meaning || "";
-  const effectiveTrans = (
-    currentCard?.translation ||
-    cardSplit.translation ||
-    ""
-  ).trim();
-  const hasTrans = effectiveTrans.length > 0;
+  const effectiveTrans = isLanguages
+    ? (currentCard?.translation || cardSplit.translation || "").trim()
+    : "";
+  const hasTrans = isLanguages && effectiveTrans.length > 0;
   const isEnglishTerm = currentCard ? !/[\u0600-\u06FF]/.test(currentCard.term) : false;
 
   // Smart Hints Generator (Egyptian Colloquial Friendly)

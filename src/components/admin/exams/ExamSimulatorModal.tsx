@@ -313,8 +313,8 @@ export function ExamSimulatorModal({
                   <BidiStatement as="span" text={currentQ.statement} />
                 </h4>
 
-                {/* Translation if exists */}
-                {currentQ.translation && (
+                {/* Translation if exists (Languages curriculum only) */}
+                {!/[\u0600-\u06FF]/.test(currentQ.statement) && currentQ.translation && (
                   <p className="text-xs text-[#64748B] dark:text-[#94A3B8] leading-relaxed">
                     <BidiStatement as="span" text={currentQ.translation} />
                   </p>

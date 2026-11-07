@@ -694,6 +694,7 @@ export function LessonViewer({
             onSearchChange={setDefinitionSearch}
             onClearSearch={() => setDefinitionSearch("")}
             onCopyDefinition={handleCopyDefinition}
+            isLanguages={isLanguagesSubject}
           />
 
           <LessonSummarySection

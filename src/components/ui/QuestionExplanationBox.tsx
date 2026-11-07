@@ -187,8 +187,8 @@ export function QuestionExplanationBox({
             {isEnglish ? "Explanation" : "تفسير الإجابة"}
           </span>
 
-          {/* Quick translation toggle if translation is available */}
-          {cleanTranslation && (
+          {/* Quick translation toggle if translation is available (Languages curriculum only) */}
+          {isEnglish && cleanTranslation && (
             <button
               type="button"
               onClick={handleToggleTranslation}
@@ -236,8 +236,8 @@ export function QuestionExplanationBox({
         </div>
       )}
 
-      {/* Collapsible Arabic Translation for Explanation - Only shown on student demand */}
-      {showTranslation && cleanTranslation && (
+      {/* Collapsible Arabic Translation for Explanation - Only shown for English questions on student demand */}
+      {isEnglish && showTranslation && cleanTranslation && (
         <div
           dir="rtl"
           className="mt-3 p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60 text-right animate-in fade-in slide-in-from-top-1 duration-200 space-y-1.5"

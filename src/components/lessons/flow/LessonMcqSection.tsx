@@ -75,14 +75,12 @@ export function LessonMcqSection({
               /\n+\s*(?:الترجمة العربية للتفسير|الترجمة العربية|ترجمة التفسير|<!--\s*translation\s*-->|\[TRANSLATION\])/i.test(
                 rawExplanationReason
               );
-            const hasTranslation = Boolean(
+            const isEnglish = !/[\u0600-\u06FF]/.test(question.statement || "");
+            const hasTranslation = isEnglish && Boolean(
               (question.translation && question.translation.trim().length > 0) ||
               question.options?.some((o) => o.translation && o.translation.trim().length > 0) ||
               hasExplanationTranslation
             );
-            const isEnglishStatement = !/[\u0600-\u06FF]/.test(question.statement || "");
-            const isEnglish =
-              isEnglishStatement ||
               Boolean(question.options?.some((o) => !/[\u0600-\u06FF]/.test(o.text || "")));
 
             return (

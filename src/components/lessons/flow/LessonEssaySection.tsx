@@ -105,12 +105,13 @@ export function LessonEssaySection({
 
             const isQuestionTranslated = Boolean(questionTranslations[question.id]);
             const isModelAnswerTranslated = Boolean(modelAnswerTranslations[question.id]);
-            const hasQuestionTranslation = Boolean(question.translation && question.translation.trim().length > 0);
-            const hasModelAnswerTranslation = Boolean(
+            const isEnglishStatement = !/[\u0600-\u06FF]/.test(question.statement || "");
+            const isEnglish = isEnglishStatement;
+            const hasQuestionTranslation = isEnglish && Boolean(question.translation && question.translation.trim().length > 0);
+            const hasModelAnswerTranslation = isEnglish && Boolean(
               question.rubric?.modelAnswerTranslation &&
               question.rubric.modelAnswerTranslation.trim().length > 0
             );
-            const isEnglishStatement = !/[\u0600-\u06FF]/.test(question.statement || "");
 
             return (
               <div

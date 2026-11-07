@@ -308,7 +308,7 @@ export function ExamPreviewCard({
                 <div className="text-[14px] sm:text-[15px] font-bold text-[#0F172A] dark:text-white leading-relaxed">
                   <BidiStatement text={q.statement} as="div" />
                 </div>
-                {q.translation && (
+                {!/[\u0600-\u06FF]/.test(q.statement) && q.translation && (
                   <div className="text-[13px] text-[#64748B] dark:text-[#94A3B8] leading-relaxed border-r-2 border-[#800020]/40 pr-2.5">
                     {q.translation}
                   </div>

@@ -79,12 +79,12 @@ export function LessonTrueFalseSection({
               /\n+\s*(?:الترجمة العربية للتفسير|الترجمة العربية|ترجمة التفسير|<!--\s*translation\s*-->|\[TRANSLATION\])/i.test(
                 rawExplanationReason
               );
-            const hasTranslation = Boolean(
+            const isEnglishStatement = !/[\u0600-\u06FF]/.test(question.statement || "");
+            const isEnglish = isEnglishStatement;
+            const hasTranslation = isEnglish && Boolean(
               (question.translation && question.translation.trim().length > 0) ||
               hasExplanationTranslation
             );
-
-            const isEnglishStatement = !/[\u0600-\u06FF]/.test(question.statement || "");
 
             return (
               <div

@@ -25,6 +25,7 @@ interface LessonDefinitionsSectionProps {
   onClearSearch: () => void;
   onCopyDefinition: (term: string, meaning: string) => void;
   onStartFlashcards?: () => void;
+  isLanguages?: boolean;
 }
 
 export function LessonDefinitionsSection({
@@ -36,6 +37,7 @@ export function LessonDefinitionsSection({
   onClearSearch,
   onCopyDefinition,
   onStartFlashcards,
+  isLanguages = false,
 }: LessonDefinitionsSectionProps) {
   const [translatedMap, setTranslatedMap] = useState<Record<number, boolean>>({});
   const [isAllTranslated, setIsAllTranslated] = useState(false);
@@ -57,7 +59,7 @@ export function LessonDefinitionsSection({
     setTranslatedMap(newMap);
   };
 
-  const hasAnyTranslation = definitions.some((d) => {
+  const hasAnyTranslation = Boolean(isLanguages) && definitions.some((d) => {
     if (d.translation && d.translation.trim().length > 0) return true;
     const s = splitExplanation(d.meaning);
     return Boolean(s.translation && s.translation.trim().length > 0);
@@ -81,7 +83,9 @@ export function LessonDefinitionsSection({
               </h2>
             </div>
             <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8] mt-0.5">
-              أهم المفاهيم اللي محتاج تفهمها وتحفظها كويس، تقدر تبحث فيهم وتترجم أو تنسخ أي تعريف بضغطة واحدة
+              {isLanguages
+                ? "أهم المفاهيم باللغة الإنجليزية مع إمكانية عرض الترجمة العربية والتسميع بالكروت"
+                : "أهم المفاهيم والمصطلحات اللي محتاج تفهمها وتحفظها كويس، تقدر تبحث فيها وتسمع لنفسك بالكروت"}
             </p>
           </div>
         </div>
@@ -155,7 +159,7 @@ export function LessonDefinitionsSection({
               ? split.primary
               : item.meaning;
             const effectiveTranslation = (item.translation || split.translation || "").trim();
-            const hasTranslation = effectiveTranslation.length > 0;
+            const hasTranslation = Boolean(isLanguages) && effectiveTranslation.length > 0;
             const isTranslated = isAllTranslated || Boolean(translatedMap[idx]);
 
             return (
