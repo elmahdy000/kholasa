@@ -570,7 +570,7 @@ export function LessonMindMapTab({ mindMap }: LessonMindMapTabProps) {
             {/* Top Toolbar */}
             <div className="flex items-center justify-between px-4 sm:px-6 py-3 border-b border-white/10 shrink-0 bg-[#0F172A]/80">
               <div className="flex items-center gap-3 min-w-0">
-                <span className="text-sm sm:text-base font-bold break-words line-clamp-1">
+                <span className="text-sm sm:text-base font-bold break-words leading-tight">
                   {mindMap.title || "الخريطة الذهنية"}
                 </span>
                 {images.length > 1 && (

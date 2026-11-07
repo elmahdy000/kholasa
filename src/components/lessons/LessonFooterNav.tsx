@@ -120,14 +120,14 @@ export function LessonFooterNav({
         {prevLesson ? (
           <Link
             href={`/lessons/${prevLesson.id}`}
-            className="flex items-center gap-2 text-xs sm:text-[13px] font-bold text-[#64748B] dark:text-[#94A3B8] hover:text-[#800020] transition-colors"
+            className="flex items-center gap-2 text-xs sm:text-[13px] font-bold text-[#64748B] dark:text-[#94A3B8] hover:text-[#800020] transition-colors min-w-0"
           >
             <CaretRight className="w-4 h-4 shrink-0" weight="bold" />
-            <div className={isLanguages ? "text-left" : "text-right"}>
+            <div className={`min-w-0 ${isLanguages ? "text-left" : "text-right"}`}>
               <span className="block text-[11px] text-[#64748B] dark:text-[#94A3B8]">
                 {isLanguages ? "Previous Lesson" : "الدرس السابق"}
               </span>
-              <span className="block break-words max-w-xs leading-snug">
+              <span className="block break-words max-w-[140px] sm:max-w-xs leading-snug">
                 <bdi>{prevLesson.title}</bdi>
               </span>
             </div>
@@ -139,13 +139,13 @@ export function LessonFooterNav({
         {nextLesson && (
           <Link
             href={`/lessons/${nextLesson.id}`}
-            className="flex items-center gap-2 text-xs sm:text-[13px] font-bold text-[#800020] dark:text-[#FB7185] hover:underline transition-colors"
+            className="flex items-center gap-2 text-xs sm:text-[13px] font-bold text-[#800020] dark:text-[#FB7185] hover:underline transition-colors min-w-0"
           >
-            <div className={isLanguages ? "text-right" : "text-left"}>
+            <div className={`min-w-0 ${isLanguages ? "text-right" : "text-left"}`}>
               <span className="block text-[11px] opacity-75">
                 {isLanguages ? "Next Lesson" : "الدرس التالي"}
               </span>
-              <span className="block break-words max-w-xs leading-snug">
+              <span className="block break-words max-w-[140px] sm:max-w-xs leading-snug">
                 <bdi>{nextLesson.title}</bdi>
               </span>
             </div>

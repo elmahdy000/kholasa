@@ -152,12 +152,13 @@ export function BidiStatement({
 
         // 4. Parenthesized English / Latin phrase (e.g. (CIA Triad & Threats), (RAM), (API))
         if (/^\([A-Za-z0-9_\s&+/.:,-]+\)$/.test(token)) {
-          const isShort = token.length <= 25;
+          // Keep strictly short acronyms without spaces on one line, allow multi-word phrases to wrap cleanly
+          const isShortNoSpace = !token.includes(" ") && token.length <= 10;
           return (
             <bdi
               key={index}
               dir="ltr"
-              className={cn("inline mx-1 font-sans", isShort ? "whitespace-nowrap" : "break-words")}
+              className={cn("inline mx-1 font-sans", isShortNoSpace ? "whitespace-nowrap" : "break-words")}
               style={{ unicodeBidi: "isolate" }}
             >
               {token}

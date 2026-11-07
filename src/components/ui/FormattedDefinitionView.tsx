@@ -237,7 +237,7 @@ export function FormattedDefinitionView({
               </div>
 
               {/* Point content */}
-              <div className={`text-[13px] sm:text-[14px] leading-relaxed font-content ${theme.body} flex-1`}>
+              <div className={`text-[13px] sm:text-[14px] leading-relaxed font-content ${theme.body} flex-1 min-w-0 break-words [overflow-wrap:anywhere]`}>
                 {pt.title && (
                   <strong className={`font-bold ${titleMargin} ${theme.title}`}>
                     {pt.title}
@@ -259,7 +259,7 @@ export function FormattedDefinitionView({
         {parsed.paragraphs.map((p, idx) => (
           <p
             key={idx}
-            className={`text-[13px] sm:text-[15px] leading-loose font-content ${theme.body} text-justify ${
+            className={`text-[13px] sm:text-[15px] leading-relaxed font-content ${theme.body} break-words [overflow-wrap:anywhere] ${
               idx > 0
                 ? "pt-2 border-t border-slate-200/60 dark:border-slate-700/60"
                 : ""
@@ -275,7 +275,7 @@ export function FormattedDefinitionView({
   // CASE 3: Single Paragraph
   return (
     <p
-      className={`text-[13px] sm:text-[15px] font-medium leading-loose font-content ${theme.body} ${alignClass} text-justify ${className}`}
+      className={`text-[13px] sm:text-[15px] font-medium leading-relaxed font-content ${theme.body} ${alignClass} break-words [overflow-wrap:anywhere] ${className}`}
       dir={dir}
     >
       {parsed.singleText || text}
