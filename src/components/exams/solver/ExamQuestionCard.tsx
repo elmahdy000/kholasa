@@ -289,7 +289,7 @@ export function ExamQuestionCard({
           type="button"
           onClick={onPrevQuestion}
           disabled={currentIndex === 0}
-          className="h-11 sm:h-12 px-5 sm:px-6 rounded-full border-2 border-[#E8E9ED] dark:border-[#22364F] bg-white dark:bg-[#10233A] text-[#12263F] dark:text-white hover:bg-[#F7F8FA] dark:hover:bg-[#132945] disabled:opacity-30 font-bold text-xs sm:text-sm shadow-xs flex items-center gap-2 transition-all cursor-pointer select-none"
+          className="h-11 sm:h-12 px-5 sm:px-6 rounded-full bg-[#1E3A5F] hover:bg-[#12263F] text-white disabled:opacity-30 disabled:hover:bg-[#1E3A5F] disabled:cursor-not-allowed font-bold text-xs sm:text-sm shadow-xs hover:shadow flex items-center gap-2 transition-all cursor-pointer select-none active:scale-95"
         >
           {isEnglish ? (
             <CaretLeft className="w-4 h-4" weight="bold" />

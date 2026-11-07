@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { ExamSolverProps, RevealedAnswer, UserAnswerState } from "./solver/types";
+import { ExamSolverProps, UserAnswerState } from "./solver/types";
 import { ExamSolverHeader } from "./solver/ExamSolverHeader";
 import { ExamQuestionPalette } from "./solver/ExamQuestionPalette";
 import { ExamQuestionCard } from "./solver/ExamQuestionCard";
@@ -10,25 +10,76 @@ import { ExamSubmitModal } from "./solver/ExamSubmitModal";
 
 export { type ExamSolverProps } from "./solver/types";
 
-export function ExamSolver({ exam, attemptId, initialMode }: ExamSolverProps) {
+export function ExamSolver({ exam, attemptId, attemptStartedAt }: ExamSolverProps) {
   const router = useRouter();
   const questions = exam.questions.map((q) => q.question);
   const totalQuestions = questions.length;
 
+  const storageKey = `kholasa_exam_state_${attemptId}`;
+
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, UserAnswerState>>({});
   const [flaggedQuestions, setFlaggedQuestions] = useState<Record<string, boolean>>({});
-  const [secondsRemaining, setSecondsRemaining] = useState<number>(exam.durationMinutes * 60);
+
+  // Compute remaining timer seconds from attemptStartedAt if available (to survive refresh)
+  const totalExamSeconds = exam.durationMinutes * 60;
+  const [secondsRemaining, setSecondsRemaining] = useState<number>(() => {
+    if (attemptStartedAt) {
+      const elapsed = Math.floor((Date.now() - new Date(attemptStartedAt).getTime()) / 1000);
+      return Math.max(0, totalExamSeconds - elapsed);
+    }
+    return totalExamSeconds;
+  });
+
   const [totalTimeSpent, setTotalTimeSpent] = useState<number>(0);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isRevealing, setIsRevealing] = useState(false);
-  const [revealed, setRevealed] = useState<Record<string, RevealedAnswer>>({});
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isPaletteOpen, setIsPaletteOpen] = useState(false);
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const executeSubmitRef = useRef<() => void>(() => {});
+
+  // 1. Restore state from localStorage on mount (current question, answers, flagged questions)
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(storageKey);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (
+          typeof parsed.currentIndex === "number" &&
+          parsed.currentIndex >= 0 &&
+          parsed.currentIndex < totalQuestions
+        ) {
+          setCurrentIndex(parsed.currentIndex);
+        }
+        if (parsed.answers && typeof parsed.answers === "object") {
+          setAnswers(parsed.answers);
+        }
+        if (parsed.flaggedQuestions && typeof parsed.flaggedQuestions === "object") {
+          setFlaggedQuestions(parsed.flaggedQuestions);
+        }
+      }
+    } catch (e) {
+      console.error("Failed to restore exam state from localStorage", e);
+    }
+  }, [storageKey, totalQuestions]);
+
+  // 2. Persist state to localStorage on every change
+  useEffect(() => {
+    try {
+      localStorage.setItem(
+        storageKey,
+        JSON.stringify({
+          currentIndex,
+          answers,
+          flaggedQuestions,
+        })
+      );
+    } catch (e) {
+      // Ignore private browsing storage quota errors
+    }
+  }, [storageKey, currentIndex, answers, flaggedQuestions]);
 
   const handleAutoSubmit = () => {
     executeSubmitRef.current();
@@ -55,8 +106,7 @@ export function ExamSolver({ exam, attemptId, initialMode }: ExamSolverProps) {
 
   const currentQ = questions[currentIndex];
   const currentAnswer = (currentQ ? answers[currentQ.id] : undefined) || {};
-  const revealedAnswer = currentQ ? revealed[currentQ.id] : undefined;
-  const isFlagged = currentQ ? (flaggedQuestions[currentQ.id] || false) : false;
+  const isFlagged = currentQ ? Boolean(flaggedQuestions[currentQ.id]) : false;
 
   const handleSelectOption = (optionId: string) => {
     if (!currentQ) return;
@@ -78,39 +128,6 @@ export function ExamSolver({ exam, attemptId, initialMode }: ExamSolverProps) {
         essayText: text,
       },
     }));
-  };
-
-  const handleRevealPractice = async () => {
-    if (!currentQ) return;
-    setIsRevealing(true);
-    try {
-      const res = await fetch(`/api/questions/${currentQ.id}/answer`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          selectedOptionId: currentAnswer.selectedOptionId,
-          essayText: currentAnswer.essayText,
-        }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || "تعذر عرض الإجابة");
-      }
-
-      setRevealed((prev) => ({ ...prev, [currentQ.id]: data }));
-      setAnswers((prev) => ({
-        ...prev,
-        [currentQ.id]: {
-          ...prev[currentQ.id],
-          practiceRevealed: true,
-        },
-      }));
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setIsRevealing(false);
-    }
   };
 
   const toggleFlag = () => {
@@ -137,6 +154,12 @@ export function ExamSolver({ exam, attemptId, initialMode }: ExamSolverProps) {
 
       const data = await res.json();
       if (res.ok) {
+        // Clean up persisted state once completed
+        try {
+          localStorage.removeItem(storageKey);
+        } catch (e) {
+          // ignore
+        }
         router.push(`/exams/${exam.id}/results?attemptId=${attemptId}`);
       } else {
         setSubmitError(data.error || "حصلت مشكلة أثناء تسليم الامتحان، جرب تاني.");
@@ -149,16 +172,17 @@ export function ExamSolver({ exam, attemptId, initialMode }: ExamSolverProps) {
     } finally {
       setIsSubmitting(false);
     }
-  }, [exam.id, attemptId, answers, totalTimeSpent, router]);
+  }, [exam.id, attemptId, answers, totalTimeSpent, router, storageKey]);
 
   useEffect(() => {
     executeSubmitRef.current = executeSubmit;
   }, [executeSubmit]);
 
-  // Stats for modal & progress
+  // Live Statistics calculation
   const answeredCount = Object.values(answers).filter(
     (a) => a.selectedOptionId || (a.essayText && a.essayText.trim().length > 0)
   ).length;
+  const flaggedCount = Object.values(flaggedQuestions).filter(Boolean).length;
   const unansweredCount = totalQuestions - answeredCount;
 
   // Format timer MM:SS
@@ -173,7 +197,7 @@ export function ExamSolver({ exam, attemptId, initialMode }: ExamSolverProps) {
 
   return (
     <div className="max-w-3xl mx-auto px-3 sm:px-4 space-y-4 text-right font-ui pb-16">
-      {/* Top Header: Platform Logo, Banner, Status Row */}
+      {/* Top Header: Platform Logo, Banner, Status Row, and Live Stats */}
       <ExamSolverHeader
         subjectName={exam.subject.name}
         examTitle={exam.title}
@@ -183,6 +207,8 @@ export function ExamSolver({ exam, attemptId, initialMode }: ExamSolverProps) {
         currentIndex={currentIndex}
         totalQuestions={totalQuestions}
         answeredCount={answeredCount}
+        flaggedCount={flaggedCount}
+        unansweredCount={unansweredCount}
         isPaletteOpen={isPaletteOpen}
         onTogglePalette={() => setIsPaletteOpen((prev) => !prev)}
         onOpenSubmitModal={() => setShowConfirmModal(true)}
@@ -200,7 +226,7 @@ export function ExamSolver({ exam, attemptId, initialMode }: ExamSolverProps) {
         />
       )}
 
-      {/* Main Question Card matching Mock-up */}
+      {/* Main Question Card with Distinctive Previous/Next Buttons */}
       {currentQ && (
         <ExamQuestionCard
           currentQ={currentQ}

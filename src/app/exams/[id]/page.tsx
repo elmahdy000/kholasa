@@ -152,6 +152,7 @@ export default async function ExamPage({ params, searchParams }: ExamPageProps) 
         exam={exam as any}
         attemptId={attemptId}
         initialMode={attempt.mode === "PRACTICE" ? "PRACTICE" : "EXAM"}
+        attemptStartedAt={attempt.startedAt.toISOString()}
       />
     </StudentShell>
   );

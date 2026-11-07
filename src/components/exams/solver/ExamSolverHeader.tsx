@@ -1,7 +1,7 @@
 "use client";
 
 import { BrandLogo } from "@/components/ui/BrandLogo";
-import { Timer, ListBullets, Code } from "@phosphor-icons/react";
+import { Timer, ListBullets, Code, Flag } from "@phosphor-icons/react";
 import { BidiStatement } from "@/components/ui/BidiStatement";
 
 interface ExamSolverHeaderProps {
@@ -13,6 +13,8 @@ interface ExamSolverHeaderProps {
   currentIndex: number;
   totalQuestions: number;
   answeredCount: number;
+  flaggedCount: number;
+  unansweredCount: number;
   isPaletteOpen: boolean;
   onTogglePalette: () => void;
   onOpenSubmitModal: () => void;
@@ -27,6 +29,8 @@ export function ExamSolverHeader({
   currentIndex,
   totalQuestions,
   answeredCount,
+  flaggedCount,
+  unansweredCount,
   isPaletteOpen,
   onTogglePalette,
   onOpenSubmitModal,
@@ -112,6 +116,30 @@ export function ExamSolverHeader({
           </span>
           <ListBullets className={`w-4 h-4 ${isPaletteOpen ? "text-[#D97706]" : "text-[#800020] dark:text-[#A30D36]"}`} weight="bold" />
         </button>
+      </div>
+
+      {/* 4. Live Statistics Bar: Answered, Flagged for Review, and Remaining */}
+      <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-4 px-2 py-0.5 select-none">
+        {/* Answered Stat */}
+        <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-xs font-bold shadow-xs">
+          <span className="w-2 h-2 rounded-full bg-emerald-500" />
+          <span>تمت الإجابة:</span>
+          <span className="font-mono font-black text-sm">{answeredCount}</span>
+        </div>
+
+        {/* Flagged for Review Stat */}
+        <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-amber-50 dark:bg-amber-950/40 text-amber-900 dark:text-amber-300 border border-amber-200 dark:border-amber-800 text-xs font-bold shadow-xs">
+          <Flag className="w-3.5 h-3.5 text-[#D97706]" weight="fill" />
+          <span>للمراجعة:</span>
+          <span className="font-mono font-black text-sm">{flaggedCount}</span>
+        </div>
+
+        {/* Remaining Stat */}
+        <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#F7F8FA] dark:bg-[#10233A] text-[#64748B] dark:text-[#94A3B8] border border-[#E8E9ED] dark:border-[#22364F] text-xs font-bold shadow-xs">
+          <span className="w-2 h-2 rounded-full bg-slate-400" />
+          <span>متبقي:</span>
+          <span className="font-mono font-black text-sm">{unansweredCount}</span>
+        </div>
       </div>
     </div>
   );

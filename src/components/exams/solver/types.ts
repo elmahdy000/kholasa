@@ -72,4 +72,5 @@ export interface ExamSolverProps {
   exam: ExamSolverExam;
   attemptId: string;
   initialMode: "PRACTICE" | "EXAM";
+  attemptStartedAt?: string;
 }
