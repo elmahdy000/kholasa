@@ -71,10 +71,11 @@ export function questionScopeWhere(
 export function examScopeWhere(
   scope: CurriculumScope | null
 ): Prisma.ExamWhereInput {
-  if (!scope?.gradeId) return { isCustom: false };
+  if (!scope?.gradeId) return { isCustom: false, isPublished: true };
 
   return {
     isCustom: false,
+    isPublished: true,
     ...(scope.schoolCategory ? { schoolCategory: scope.schoolCategory } : {}),
     subject: { is: subjectScopeWhere(scope) },
   };

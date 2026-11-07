@@ -7,6 +7,7 @@ import { ExamFilterBar } from "./exams/ExamFilterBar";
 import { ExamCard } from "./exams/ExamCard";
 import { ExamCreateForm } from "./exams/ExamCreateForm";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
+import { ExamSimulatorModal, SimulatedQuestion } from "./exams/ExamSimulatorModal";
 
 export type { Subject, ExamItem } from "./exams/types";
 
@@ -26,6 +27,17 @@ export function ExamManagerClient({
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [toggleError, setToggleError] = useState<string | null>(null);
   const pendingToggles = useRef(new Set<string>());
+
+  // Simulator State
+  const [simulatingExam, setSimulatingExam] = useState<{
+    isOpen: boolean;
+    examTitle: string;
+    durationMinutes: number;
+    subjectName: string;
+    questions: SimulatedQuestion[];
+    isPractice: boolean;
+  } | null>(null);
+  const [isLoadingSimulation, setIsLoadingSimulation] = useState(false);
 
   // Confirmation dialog state
   const [confirmModal, setConfirmModal] = useState<{
@@ -100,6 +112,51 @@ export function ExamManagerClient({
     setExams((prev) => [newExam, ...prev]);
   };
 
+  // Launch Simulator for an existing exam
+  const handleSimulateExam = async (exam: ExamItem) => {
+    setIsLoadingSimulation(true);
+    try {
+      const res = await fetch(`/api/admin/exams/${exam.id}`);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "تعذر تحميل بيانات الامتحان");
+
+      const mappedQuestions: SimulatedQuestion[] = (data.exam.questions || []).map((eq: any) => {
+        const q = eq.question;
+        return {
+          id: q.id,
+          statement: q.statement,
+          translation: q.translation,
+          type: q.type,
+          difficulty: q.difficulty,
+          unitTitle: q.unit?.title,
+          lessonTitle: q.lessons?.[0]?.lesson?.title,
+          options: (q.options || []).map((opt: any) => ({
+            id: opt.id,
+            text: opt.text,
+            translation: opt.translation,
+            isCorrect: opt.isCorrect,
+            order: opt.order,
+          })),
+          explanation: q.explanation,
+          rubric: q.rubric,
+        };
+      });
+
+      setSimulatingExam({
+        isOpen: true,
+        examTitle: exam.title,
+        durationMinutes: exam.durationMinutes,
+        subjectName: exam.subject.name,
+        questions: mappedQuestions,
+        isPractice: exam.isPractice,
+      });
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "فشل تحميل محاكاة الامتحان");
+    } finally {
+      setIsLoadingSimulation(false);
+    }
+  };
+
   const filteredExams = exams.filter((e) => {
     if (selectedSubjectId !== "all" && e.subject.id !== selectedSubjectId)
       return false;
@@ -151,6 +208,7 @@ export function ExamManagerClient({
               exam={exam}
               onTogglePractice={handleTogglePractice}
               onDeleteExam={handleDeleteExam}
+              onSimulate={handleSimulateExam}
             />
           ))}
         </div>
@@ -165,6 +223,29 @@ export function ExamManagerClient({
             onClose={() => setIsCreateOpen(false)}
             onExamCreated={handleExamCreated}
           />
+        </div>
+      )}
+
+      {/* Simulator Modal for Admin Sandbox Test */}
+      {simulatingExam && (
+        <ExamSimulatorModal
+          isOpen={simulatingExam.isOpen}
+          onClose={() => setSimulatingExam(null)}
+          examTitle={simulatingExam.examTitle}
+          durationMinutes={simulatingExam.durationMinutes}
+          subjectName={simulatingExam.subjectName}
+          questions={simulatingExam.questions}
+          isPractice={simulatingExam.isPractice}
+        />
+      )}
+
+      {/* Loading Overlay when fetching simulation data */}
+      {isLoadingSimulation && (
+        <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center">
+          <div className="p-4 rounded-xl bg-white dark:bg-[#0F172A] shadow-xl flex items-center gap-3 text-[13px] font-bold text-[#0F172A] dark:text-white">
+            <div className="w-5 h-5 border-2 border-[#800020] border-t-transparent rounded-full animate-spin" />
+            <span>جارٍ تجهيز محاكاة الامتحان...</span>
+          </div>
         </div>
       )}
 

@@ -1,9 +1,12 @@
 import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { getCurrentUser } from "@/lib/auth";
+import { getCurrentUser, canManageExams } from "@/lib/auth";
 import { getCurriculumScope, isSubjectInScope } from "@/lib/curriculum";
 import { StudentShell } from "@/components/layout/StudentShell";
 import { ExamSolver } from "@/components/exams/ExamSolver";
+import { ExamWaitingRoom } from "@/components/exams/ExamWaitingRoom";
+import { AlertCircle, ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 interface ExamPageProps {
   params: Promise<{ id: string }>;
@@ -57,6 +60,61 @@ export default async function ExamPage({ params, searchParams }: ExamPageProps) 
   // Official exams are limited to the student's own curriculum.
   if (!isSubjectInScope(getCurriculumScope(user), exam.subject)) {
     notFound();
+  }
+
+  const isStaff = canManageExams(user.role);
+
+  // Draft exams are hidden from students
+  if (!isStaff && exam.isPublished === false) {
+    notFound();
+  }
+
+  // Future scheduled exams: Show waiting room with countdown
+  if (!isStaff && exam.startsAt && new Date(exam.startsAt) > new Date()) {
+    return (
+      <StudentShell user={user}>
+        <ExamWaitingRoom
+          exam={{
+            id: exam.id,
+            title: exam.title,
+            description: exam.description,
+            durationMinutes: exam.durationMinutes,
+            startsAt: exam.startsAt,
+            endsAt: exam.endsAt,
+            subject: exam.subject,
+            questionsCount: exam.questions.length,
+          }}
+        />
+      </StudentShell>
+    );
+  }
+
+  // Expired exams: Deadline has passed
+  if (!isStaff && exam.endsAt && new Date(exam.endsAt) < new Date()) {
+    return (
+      <StudentShell user={user}>
+        <div className="max-w-xl mx-auto py-16 px-4 text-center font-sans space-y-5">
+          <div className="w-16 h-16 mx-auto rounded-2xl bg-red-50 dark:bg-red-950/40 text-red-600 flex items-center justify-center">
+            <AlertCircle className="w-8 h-8" />
+          </div>
+          <h2 className="text-xl sm:text-2xl font-bold text-[#0F172A] dark:text-white">
+            انتهى موعد هذا الامتحان
+          </h2>
+          <p className="text-[13px] sm:text-sm text-[#64748B] dark:text-[#94A3B8] leading-relaxed">
+            تم إغلاق فترة التقديم لهذا الامتحان المجدول ولم يعد يقبل محاولات جديدة. يمكنك استكشاف الامتحانات والتدريبات الأخرى المتاحة.
+          </p>
+          <div className="pt-2">
+            <Link
+              href="/exams"
+              className="inline-flex items-center gap-2 h-11 px-6 rounded-xl bg-[#800020] text-white text-[13px] font-bold hover:bg-[#66001A] transition-colors"
+            >
+              <span>العودة لقائمة الامتحانات</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+        </div>
+      </StudentShell>
+    );
   }
 
   // Find the current user's attempt only (never trust a foreign attemptId)

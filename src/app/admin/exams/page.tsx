@@ -71,6 +71,10 @@ export default async function AdminExamsPage() {
       attemptsCount,
       avgPercentage,
       createdAt: exam.createdAt.toISOString(),
+      startsAt: exam.startsAt ? exam.startsAt.toISOString() : null,
+      endsAt: exam.endsAt ? exam.endsAt.toISOString() : null,
+      isPublished: exam.isPublished,
+      scopeDetails: exam.scopeDetails,
     };
   });
 

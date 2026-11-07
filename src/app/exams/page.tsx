@@ -12,6 +12,8 @@ import {
   ArrowLeft,
   BookmarkCheck,
   History,
+  Calendar,
+  Sparkles,
 } from "lucide-react";
 import { StudentExamHistoryList } from "@/components/exams/StudentExamHistoryList";
 
@@ -127,20 +129,37 @@ export default async function ExamsHubPage() {
                   ? `${qCount} أسئلة`
                   : `${qCount} سؤال`;
 
+              const isScheduled = exam.startsAt && new Date(exam.startsAt) > new Date();
+              const formattedSchedule = exam.startsAt
+                ? new Date(exam.startsAt).toLocaleString("ar-EG", {
+                    dateStyle: "short",
+                    timeStyle: "short",
+                  })
+                : null;
+
               return (
                 <div
                   key={exam.id}
-                  className="p-5 rounded-xl bg-white dark:bg-[#0F172A]/50 border border-[#E2E8F0] dark:border-[#334155]  hover:shadow-sm transition-all flex flex-col justify-between gap-4"
+                  className="p-5 rounded-xl bg-white dark:bg-[#0F172A]/50 border border-[#E2E8F0] dark:border-[#334155] hover:shadow-sm transition-all flex flex-col justify-between gap-4"
                 >
                   <div>
-                    <div className="flex items-center justify-between gap-2 mb-3">
+                    <div className="flex items-center justify-between gap-2 mb-3 flex-wrap">
                       <span className="px-3 py-1 rounded-lg bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] text-[13px] font-bold border border-[#E2E8F0]/50 dark:border-[#E11D48]/50">
                         <BidiStatement as="span" text={exam.subject.name} />
                       </span>
-                      <span className="flex items-center gap-1 text-[13px] font-bold text-[#64748B] dark:text-[#94A3B8]">
-                        <Clock className="w-3.5 h-3.5 text-[#800020]" />
-                        <span>{exam.durationMinutes} دقيقة</span>
-                      </span>
+                      <div className="flex items-center gap-2">
+                        {isScheduled ? (
+                          <span className="flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-md bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800">
+                            <Calendar className="w-3 h-3" />
+                            <span>مجدول: {formattedSchedule}</span>
+                          </span>
+                        ) : (
+                          <span className="flex items-center gap-1 text-[13px] font-bold text-[#64748B] dark:text-[#94A3B8]">
+                            <Clock className="w-3.5 h-3.5 text-[#800020]" />
+                            <span>{exam.durationMinutes} دقيقة</span>
+                          </span>
+                        )}
+                      </div>
                     </div>
 
                     <h3 className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-white leading-snug">
@@ -160,9 +179,13 @@ export default async function ExamsHubPage() {
                     </span>
                     <Link
                       href={`/exams/${exam.id}`}
-                      className="h-11 px-4 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] font-bold flex items-center gap-2 transition-colors  active:opacity-80"
+                      className={`h-11 px-4 rounded-xl text-white text-[13px] font-bold flex items-center gap-2 transition-colors active:opacity-80 ${
+                        isScheduled
+                          ? "bg-sky-700 hover:bg-sky-800"
+                          : "bg-[#800020] hover:bg-[#66001A]"
+                      }`}
                     >
-                      <span>يلا نحل</span>
+                      <span>{isScheduled ? "غرفة الانتظار" : "يلا نحل"}</span>
                       <ArrowLeft className="w-3.5 h-3.5" />
                     </Link>
                   </div>

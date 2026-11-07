@@ -14,6 +14,12 @@ const officialExamSchema = z.object({
   randomQuestionsCount: z.number().int().min(0).max(500).default(0),
   unitId: z.string().min(1).nullable().optional(),
   lessonId: z.string().min(1).nullable().optional(),
+  unitIds: z.array(z.string().min(1)).default([]),
+  lessonIds: z.array(z.string().min(1)).default([]),
+  startsAt: z.coerce.date().nullable().optional(),
+  endsAt: z.coerce.date().nullable().optional(),
+  isPublished: z.boolean().default(true),
+  scopeDetails: z.any().nullable().optional(),
 });
 
 export class ExamCoreService {
@@ -76,6 +82,12 @@ export class ExamCoreService {
     randomQuestionsCount?: number;
     unitId?: string | null;
     lessonId?: string | null;
+    unitIds?: string[];
+    lessonIds?: string[];
+    startsAt?: Date | string | null;
+    endsAt?: Date | string | null;
+    isPublished?: boolean;
+    scopeDetails?: any;
   }) {
     const {
       title,
@@ -87,6 +99,12 @@ export class ExamCoreService {
       randomQuestionsCount = 0,
       unitId,
       lessonId,
+      unitIds = [],
+      lessonIds = [],
+      startsAt = null,
+      endsAt = null,
+      isPublished = true,
+      scopeDetails = null,
     } = officialExamSchema.parse(input);
 
     let selectedQuestionIds = [...new Set(questionIds)];
@@ -101,10 +119,13 @@ export class ExamCoreService {
     })) {
       throw badRequest("الدرس المختار لا يتبع المادة أو الوحدة المحددة");
     }
+    const effectiveUnitIds = unitIds.length > 0 ? unitIds : (unitId ? [unitId] : []);
+    const effectiveLessonIds = lessonIds.length > 0 ? lessonIds : (lessonId ? [lessonId] : []);
+
     const questionWhere: Prisma.QuestionWhereInput = {
       subjectId, status: "PUBLISHED",
-      ...(unitId ? { unitId } : {}),
-      ...(lessonId ? { lessons: { some: { lessonId } } } : {}),
+      ...(effectiveUnitIds.length > 0 ? { unitId: { in: effectiveUnitIds } } : {}),
+      ...(effectiveLessonIds.length > 0 ? { lessons: { some: { lessonId: { in: effectiveLessonIds } } } } : {}),
     };
 
     if (selectedQuestionIds.length > 0) {
@@ -115,19 +136,6 @@ export class ExamCoreService {
     }
 
     if (selectedQuestionIds.length === 0 && Number(randomQuestionsCount) > 0) {
-      const questionWhere: Prisma.QuestionWhereInput = {
-        subjectId,
-        status: "PUBLISHED",
-      };
-      if (unitId) {
-        questionWhere.unitId = unitId;
-      }
-      if (lessonId) {
-        questionWhere.lessons = {
-          some: { lessonId },
-        };
-      }
-
       const availableQuestions = await prisma.question.findMany({
         where: questionWhere,
         select: { id: true },
@@ -149,6 +157,10 @@ export class ExamCoreService {
         subjectId,
         durationMinutes: Number(durationMinutes),
         isPractice: Boolean(isPractice),
+        startsAt: startsAt ? new Date(startsAt) : null,
+        endsAt: endsAt ? new Date(endsAt) : null,
+        isPublished: Boolean(isPublished),
+        scopeDetails: scopeDetails || (effectiveUnitIds.length > 0 || effectiveLessonIds.length > 0 ? { unitIds: effectiveUnitIds, lessonIds: effectiveLessonIds } : undefined),
         questions: {
           create: selectedQuestionIds.map((qId, idx) => ({
             questionId: qId,
@@ -173,6 +185,10 @@ export class ExamCoreService {
       description?: string | null;
       durationMinutes?: number;
       isPractice?: boolean;
+      startsAt?: Date | string | null;
+      endsAt?: Date | string | null;
+      isPublished?: boolean;
+      scopeDetails?: any;
     }
   ) {
     return prisma.exam.update({
@@ -182,6 +198,10 @@ export class ExamCoreService {
         ...(data.description !== undefined ? { description: data.description?.trim() || null } : {}),
         ...(data.durationMinutes !== undefined ? { durationMinutes: Number(data.durationMinutes) } : {}),
         ...(data.isPractice !== undefined ? { isPractice: Boolean(data.isPractice) } : {}),
+        ...(data.startsAt !== undefined ? { startsAt: data.startsAt ? new Date(data.startsAt) : null } : {}),
+        ...(data.endsAt !== undefined ? { endsAt: data.endsAt ? new Date(data.endsAt) : null } : {}),
+        ...(data.isPublished !== undefined ? { isPublished: Boolean(data.isPublished) } : {}),
+        ...(data.scopeDetails !== undefined ? { scopeDetails: data.scopeDetails } : {}),
       },
     });
   }
@@ -235,6 +255,10 @@ export class ExamCoreService {
         description: exam.description,
         durationMinutes: exam.durationMinutes,
         isPractice: exam.isPractice,
+        startsAt: exam.startsAt,
+        endsAt: exam.endsAt,
+        isPublished: exam.isPublished,
+        scopeDetails: exam.scopeDetails,
         subject: exam.subject,
         questionsCount: exam.questions.length,
         attemptsCount,

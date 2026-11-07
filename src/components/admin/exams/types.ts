@@ -30,4 +30,8 @@ export interface ExamItem {
   attemptsCount: number;
   avgPercentage: number;
   createdAt: string | Date;
+  startsAt?: string | Date | null;
+  endsAt?: string | Date | null;
+  isPublished?: boolean;
+  scopeDetails?: { unitIds?: string[]; lessonIds?: string[] } | null;
 }

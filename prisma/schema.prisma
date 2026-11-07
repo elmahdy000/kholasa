@@ -415,6 +415,10 @@ model Exam {
   isPractice      Boolean        @default(false)
   /// true for student-generated custom exams (builder / mistakes / daily). Hidden from the admin list.
   isCustom        Boolean        @default(false)
+  startsAt        DateTime?
+  endsAt          DateTime?
+  isPublished     Boolean        @default(true)
+  scopeDetails    Json?
   createdById     String?
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @default(now()) @updatedAt
@@ -426,6 +430,7 @@ model Exam {
 
   @@index([subjectId, schoolCategory])
   @@index([isCustom, createdById])
+  @@index([startsAt, endsAt, isPublished])
 }
 
 model ExamQuestion {

@@ -38,6 +38,12 @@ export async function POST(req: Request) {
       questionIds = [],
       unitId = null,
       lessonId = null,
+      unitIds = [],
+      lessonIds = [],
+      startsAt = null,
+      endsAt = null,
+      isPublished = true,
+      scopeDetails = null,
     } = body;
 
     const randomQuestionsCount =
@@ -64,6 +70,12 @@ export async function POST(req: Request) {
       randomQuestionsCount,
       unitId: unitId || null,
       lessonId: lessonId || null,
+      unitIds: Array.isArray(unitIds) ? unitIds : [],
+      lessonIds: Array.isArray(lessonIds) ? lessonIds : [],
+      startsAt: startsAt || null,
+      endsAt: endsAt || null,
+      isPublished: isPublished !== false,
+      scopeDetails: scopeDetails || null,
     });
 
     return NextResponse.json({
@@ -79,6 +91,10 @@ export async function POST(req: Request) {
         attemptsCount: 0,
         avgPercentage: 0,
         createdAt: exam.createdAt,
+        startsAt: exam.startsAt,
+        endsAt: exam.endsAt,
+        isPublished: exam.isPublished,
+        scopeDetails: exam.scopeDetails,
       },
     });
   } catch (error) {

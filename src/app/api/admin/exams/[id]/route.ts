@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser, canManageExams } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 import { ExamService } from "@/services";
 
 interface RouteParams {
@@ -14,7 +15,45 @@ export async function GET(req: Request, { params }: RouteParams) {
     }
 
     const { id } = await params;
-    const exam = await ExamService.getExamById(id);
+    const exam = await prisma.exam.findUnique({
+      where: { id },
+      include: {
+        subject: { select: { id: true, name: true, color: true } },
+        questions: {
+          orderBy: { order: "asc" },
+          include: {
+            question: {
+              select: {
+                id: true,
+                statement: true,
+                translation: true,
+                type: true,
+                difficulty: true,
+                imageUrl: true,
+                unit: { select: { id: true, title: true } },
+                lessons: {
+                  select: {
+                    lesson: { select: { id: true, title: true } },
+                  },
+                },
+                options: {
+                  orderBy: { order: "asc" },
+                  select: {
+                    id: true,
+                    text: true,
+                    translation: true,
+                    isCorrect: true,
+                    order: true,
+                  },
+                },
+                explanation: { select: { correctReason: true, concept: true } },
+                rubric: { select: { modelAnswer: true, maxScore: true } },
+              },
+            },
+          },
+        },
+      },
+    });
 
     if (!exam) {
       return NextResponse.json({ error: "الامتحان غير موجود" }, { status: 404 });
@@ -36,13 +75,17 @@ export async function PATCH(req: Request, { params }: RouteParams) {
 
     const { id } = await params;
     const body = await req.json().catch(() => ({}));
-    const { isPractice, title, durationMinutes, description } = body;
+    const { isPractice, title, durationMinutes, description, startsAt, endsAt, isPublished, scopeDetails } = body;
 
     const updated = await ExamService.updateExam(id, {
       isPractice,
       title,
       durationMinutes,
       description,
+      startsAt,
+      endsAt,
+      isPublished,
+      scopeDetails,
     });
 
     return NextResponse.json({ success: true, exam: updated });
