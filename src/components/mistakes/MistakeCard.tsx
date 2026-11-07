@@ -78,9 +78,9 @@ export function MistakeCard({
             </span>
           )}
           {mistake.isResolved && (
-            <span className="px-3 py-1 rounded-lg bg-[#059669]/10 dark:bg-[#1E293B] text-[#059669] dark:text-[#34D399] text-[13px] font-bold flex items-center gap-1 border border-[#E2E8F0]/50 dark:border-[#34D399]/50">
-              <Check className="w-3 h-3" />
-              <span>{isEnglish ? "Mastered" : "اتقنتها خلاص"}</span>
+            <span className="px-3 py-1 rounded-lg bg-[#059669]/10 dark:bg-[#1E293B] text-[#059669] dark:text-[#34D399] text-[13px] font-bold flex items-center gap-1 border border-[#059669]/20 dark:border-[#34D399]/40">
+              <Check className="w-3.5 h-3.5" />
+              <span>{isEnglish ? "Understood & Mastered" : "فهمتها خلاص"}</span>
             </span>
           )}
         </div>

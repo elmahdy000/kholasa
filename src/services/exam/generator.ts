@@ -244,6 +244,7 @@ export class ExamGeneratorService {
     const isPractice = mode === "PRACTICE";
 
     // Generate clear, distinguished exam title indicating subject, unit, or lesson
+    const isLangTrack = subject.schoolCategory === "LANGUAGES";
     let generatedTitle = "";
     if (customTitle?.trim()) {
       generatedTitle = customTitle.trim();
@@ -252,17 +253,25 @@ export class ExamGeneratorService {
         where: { id: lessonIds[0] },
         select: { title: true },
       });
-      generatedTitle = `امتحان درس: ${targetLesson?.title || "الدرس"} (${selected.length} سؤال)`;
+      generatedTitle = isLangTrack
+        ? `Lesson Exam: ${targetLesson?.title || "Lesson"} (${selected.length} Questions)`
+        : `امتحان درس: ${targetLesson?.title || "الدرس"} (${selected.length} سؤال)`;
     } else if (lessonIds && lessonIds.length > 1) {
-      generatedTitle = `امتحان دروس محددة: ${subject?.name || ""} (${selected.length} سؤال)`;
+      generatedTitle = isLangTrack
+        ? `Selected Lessons Exam: ${subject?.name || ""} (${selected.length} Questions)`
+        : `امتحان دروس محددة: ${subject?.name || ""} (${selected.length} سؤال)`;
     } else if (unitId && unitId !== "all") {
       const targetUnit = await prisma.unit.findUnique({
         where: { id: unitId },
         select: { title: true },
       });
-      generatedTitle = `امتحان وحدة: ${targetUnit?.title || "الوحدة"} (${selected.length} سؤال)`;
+      generatedTitle = isLangTrack
+        ? `Unit Exam: ${targetUnit?.title || "Unit"} (${selected.length} Questions)`
+        : `امتحان وحدة: ${targetUnit?.title || "الوحدة"} (${selected.length} سؤال)`;
     } else {
-      generatedTitle = `امتحان شامل: ${subject?.name || "عام"} (${selected.length} سؤال)`;
+      generatedTitle = isLangTrack
+        ? `Comprehensive Exam: ${subject?.name || "All"} (${selected.length} Questions)`
+        : `امتحان شامل: ${subject?.name || "عام"} (${selected.length} سؤال)`;
     }
 
     const examTitle = customTitle?.trim() || generatedTitle;

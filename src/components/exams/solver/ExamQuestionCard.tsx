@@ -85,19 +85,34 @@ export function ExamQuestionCard({
   );
 
   return (
-    <div className="p-6 sm:p-8 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] space-y-6">
-      {/* Question Header & Badges */}
+    <div className="rounded-2xl bg-white dark:bg-[#0F172A] border border-slate-200/90 dark:border-slate-800 shadow-xs p-5 sm:p-7 space-y-6 transition-colors">
+      {/* Question Header & Action Bar (Unified height h-9, balanced modern badges) */}
       <div
         dir={isEnglish ? "ltr" : "rtl"}
-        className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#334155] pb-4"
+        className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-4"
       >
+        {/* Left: Question index and difficulty badges */}
         <div className="flex items-center gap-2">
-          <span className="px-3 py-1 rounded-lg bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] text-[13px] font-bold border border-[#E2E8F0]/50 dark:border-[#E11D48]/50">
-            {isEnglish
-              ? `Question ${currentIndex + 1} of ${totalQuestions}`
-              : `السؤال ${currentIndex + 1} من ${totalQuestions}`}
+          {/* Question Index Pill */}
+          <span className="h-9 px-3.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold border border-slate-200 dark:border-slate-700 flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#800020] dark:bg-[#FB7185]" />
+            <span>
+              {isEnglish
+                ? `Question ${currentIndex + 1} of ${totalQuestions}`
+                : `السؤال ${currentIndex + 1} من ${totalQuestions}`}
+            </span>
           </span>
-          <span className="px-3 py-1 rounded-lg bg-[#F8FAFC] dark:bg-[#1E293B] text-[#64748B] dark:text-[#F8FAFC] text-[13px] font-bold border border-[#E2E8F0]/50 dark:border-[#334155]/50">
+
+          {/* Difficulty Badge */}
+          <span
+            className={`h-9 px-3 rounded-xl text-xs font-bold border flex items-center gap-1 ${
+              currentQ.difficulty === "EASY"
+                ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800"
+                : currentQ.difficulty === "MEDIUM"
+                ? "bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800"
+                : "bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-800"
+            }`}
+          >
             {currentQ.difficulty === "EASY"
               ? isEnglish ? "Easy" : "سهل"
               : currentQ.difficulty === "MEDIUM"
@@ -106,24 +121,38 @@ export function ExamQuestionCard({
           </span>
         </div>
 
+        {/* Right: Translation toggle & Flag for review button */}
         <div className="flex items-center gap-2">
           {hasTranslation && (
-            <TranslationToggle
-              size="xs"
-              isTranslated={isQuestionTranslated}
-              onToggle={() => setIsQuestionTranslated((prev) => !prev)}
-            />
+            <button
+              type="button"
+              onClick={() => setIsQuestionTranslated((prev) => !prev)}
+              className={`h-9 px-3.5 rounded-xl border text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer select-none ${
+                isQuestionTranslated
+                  ? "bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800 shadow-xs"
+                  : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-indigo-300 hover:text-indigo-600"
+              }`}
+              title={isQuestionTranslated ? "إخفاء الترجمة العربية" : "عرض الترجمة العربية"}
+            >
+              <Translate className="w-3.5 h-3.5" weight="bold" />
+              <span>{isQuestionTranslated ? "إخفاء الترجمة" : "ترجمة السؤال"}</span>
+            </button>
           )}
+
+          {/* Flag for review toggle */}
           <button
             type="button"
             onClick={onToggleFlag}
-            className={`px-3 py-2 rounded-lg border text-[13px] font-bold flex items-center gap-2 transition-colors cursor-pointer ${
+            className={`h-9 px-3.5 rounded-xl border text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer select-none ${
               isFlagged
-                ? "bg-[#D97706]/10 dark:bg-[#1E293B] border-[#E2E8F0] text-[#D97706]"
-                : "border-[#E2E8F0] dark:border-[#334155] text-[#64748B] hover:text-[#0F172A] dark:hover:text-white"
+                ? "bg-amber-500 hover:bg-amber-600 text-white border-amber-600 shadow-xs"
+                : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-amber-50 dark:hover:bg-amber-950/30 hover:text-amber-700 hover:border-amber-300"
             }`}
           >
-            <Flag className={`w-3.5 h-3.5 ${isFlagged ? "fill-current" : ""}`} weight={isFlagged ? "fill" : "bold"} />
+            <Flag
+              className={`w-3.5 h-3.5 ${isFlagged ? "fill-current" : ""}`}
+              weight={isFlagged ? "fill" : "bold"}
+            />
             <span>
               {isFlagged
                 ? isEnglish ? "Flagged for review" : "متعلّم للمراجعة"
@@ -133,7 +162,7 @@ export function ExamQuestionCard({
         </div>
       </div>
 
-      {/* Statement */}
+      {/* Statement Area */}
       <div
         dir={isEnglish ? "ltr" : "rtl"}
         className={`space-y-4 ${isEnglish ? "text-left" : "text-right"}`}
@@ -141,18 +170,20 @@ export function ExamQuestionCard({
         <BidiStatement
           as="h2"
           text={currentQ.statement}
-          className={`text-base sm:text-lg font-bold text-[#0F172A] dark:text-white leading-relaxed ${isEnglish ? "font-sans" : "font-content"}`}
+          className={`text-base sm:text-lg lg:text-xl font-bold text-slate-900 dark:text-white leading-relaxed ${
+            isEnglish ? "font-sans" : "font-content"
+          }`}
         />
         <QuestionImageAttachment imageUrl={currentQ.imageUrl} />
 
         {isQuestionTranslated && currentQ.translation && (
           <div
-            className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60 text-right animate-in fade-in duration-200"
+            className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60 text-right animate-in fade-in duration-200 space-y-1"
             dir="rtl"
           >
-            <div className="flex items-center gap-1.5 mb-1.5 text-[11px] font-bold text-slate-500 dark:text-slate-400">
+            <div className="flex items-center gap-1.5 text-xs font-bold text-slate-500 dark:text-slate-400">
               <Translate className="w-3.5 h-3.5 text-[#800020] dark:text-[#FB7185]" />
-              <span>الترجمة العربية للسؤال</span>
+              <span>الترجمة العربية للسؤال:</span>
             </div>
             <p className="text-sm font-medium text-slate-800 dark:text-slate-200 leading-relaxed font-content">
               {currentQ.translation}
@@ -172,20 +203,20 @@ export function ExamQuestionCard({
               revealedAnswer?.options?.find((o) => o.id === opt.id)?.isCorrect === true;
 
             let cardStyle =
-              "bg-white dark:bg-[#1E293B]/80 border-[#E2E8F0] dark:border-[#334155]/80 text-[#0F172A] dark:text-[#F8FAFC] hover:border-[#800020] dark:hover:border-[#64748B]";
+              "bg-white dark:bg-slate-900/60 border-2 border-slate-200/90 dark:border-slate-800 text-slate-900 dark:text-slate-100 hover:border-slate-300 dark:hover:border-slate-700 hover:bg-slate-50/50";
 
             if (isSelected) {
               cardStyle =
-                "bg-[#800020]/10 dark:bg-[#1E293B] border-2 border-[#800020] dark:border-[#E11D48] text-[#0F172A] dark:text-white font-bold";
+                "bg-[#800020]/5 dark:bg-[#800020]/20 border-2 border-[#800020] dark:border-[#FB7185] text-slate-900 dark:text-white font-bold shadow-xs";
             }
 
             if (isRevealed) {
               if (isOptionCorrect) {
                 cardStyle =
-                  "bg-[#059669]/10 dark:bg-[#1E293B] border-2 border-[#059669] text-[#059669] dark:text-[#34D399] font-bold";
+                  "bg-emerald-50 dark:bg-emerald-950/30 border-2 border-emerald-500 text-emerald-900 dark:text-emerald-100 font-bold shadow-xs";
               } else if (isSelected && !isOptionCorrect) {
                 cardStyle =
-                  "bg-[#DC2626]/10 dark:bg-[#1E293B] border-2 border-[#DC2626] text-[#DC2626] dark:text-[#F87171] font-bold";
+                  "bg-rose-50 dark:bg-rose-950/30 border-2 border-rose-500 text-rose-900 dark:text-rose-100 font-bold shadow-xs";
               }
             }
 
@@ -200,19 +231,30 @@ export function ExamQuestionCard({
                 type="button"
                 dir={isEnglishOpt ? "ltr" : "rtl"}
                 onClick={() => onSelectOption(opt.id)}
-                className={`w-full p-4 sm:p-4 rounded-xl border ${isEnglishOpt ? "text-left font-sans" : "text-right font-content"} text-[13px] sm:text-sm font-medium flex items-start justify-between gap-3 transition-colors cursor-pointer overflow-hidden ${cardStyle}`}
+                className={`w-full p-4 rounded-xl transition-all cursor-pointer overflow-hidden flex items-start justify-between gap-3.5 text-left sm:text-right ${cardStyle}`}
               >
-                <div className="flex items-start gap-3 min-w-0 flex-1">
+                <div className="flex items-start gap-3.5 min-w-0 flex-1">
+                  {/* Option Letter Indicator */}
                   <div
-                    className={`w-7 h-7 rounded-lg flex items-center justify-center text-[13px] font-mono font-bold shrink-0 mt-0.5 ${
-                      isSelected
-                        ? "bg-[#800020] dark:bg-[#E11D48] text-white"
-                        : "bg-[#F8FAFC] dark:bg-[#334155] text-[#64748B] dark:text-[#F8FAFC] border border-[#E2E8F0]/60 dark:border-[#334155]"
+                    className={`w-8 h-8 rounded-lg flex items-center justify-center font-mono font-bold text-xs sm:text-sm shrink-0 transition-transform ${
+                      isRevealed && isOptionCorrect
+                        ? "bg-emerald-600 text-white shadow-xs"
+                        : isRevealed && isSelected && !isOptionCorrect
+                        ? "bg-rose-600 text-white shadow-xs"
+                        : isSelected
+                        ? "bg-[#800020] dark:bg-[#FB7185] text-white shadow-xs scale-105"
+                        : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700"
                     }`}
                   >
                     {letter}
                   </div>
-                  <div className={`min-w-0 flex-1 leading-relaxed break-words ${isEnglishOpt ? "text-left" : "text-right"}`}>
+
+                  {/* Option Text */}
+                  <div
+                    className={`min-w-0 flex-1 leading-relaxed break-words pt-1 text-sm sm:text-base font-medium ${
+                      isEnglishOpt ? "text-left font-sans" : "text-right font-content"
+                    }`}
+                  >
                     <BidiStatement as="span" text={opt.text} />
 
                     {isQuestionTranslated && opt.translation && (
@@ -227,16 +269,17 @@ export function ExamQuestionCard({
                   </div>
                 </div>
 
+                {/* Practice revealed check/incorrect badge */}
                 {isRevealed && (
-                  <div className="shrink-0">
+                  <div className="shrink-0 pt-1">
                     {isOptionCorrect ? (
-                      <span className="text-[#059669] dark:text-[#34D399] text-[13px] font-bold flex items-center gap-1">
-                        <Check className="w-4 h-4" weight="bold" />
-                        <span>{isEnglish ? "Correct" : "صح! برافو"}</span>
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 text-xs font-bold">
+                        <Check className="w-3.5 h-3.5" weight="bold" />
+                        <span>{isEnglish ? "Correct" : "صحيح"}</span>
                       </span>
                     ) : isSelected ? (
-                      <span className="text-[#DC2626] dark:text-[#F87171] text-[13px] font-bold">
-                        {isEnglish ? "Incorrect" : "مش صحيحة"}
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-rose-100 dark:bg-rose-900/50 text-rose-700 dark:text-rose-300 text-xs font-bold">
+                        <span>{isEnglish ? "Incorrect" : "غير صحيح"}</span>
                       </span>
                     ) : null}
                   </div>
@@ -250,22 +293,32 @@ export function ExamQuestionCard({
       {/* Essay Question Area */}
       {currentQ.type === "ESSAY" && (
         <div className="space-y-4">
-          <label className={`block text-[13px] font-bold text-[#64748B] dark:text-[#94A3B8] ${isEnglish ? "text-left" : "text-right"}`}>
+          <label
+            className={`block text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-300 ${
+              isEnglish ? "text-left font-sans" : "text-right font-content"
+            }`}
+          >
             {isEnglish ? "Write your detailed answer here:" : "اكتب إجابتك هنا بالتفصيل:"}
           </label>
           <textarea
             value={currentAnswer.essayText || ""}
             onChange={(e) => onEssayChange(e.target.value)}
             dir={isEnglish ? "ltr" : "rtl"}
-            placeholder={isEnglish ? "Write your solution steps and explanation here..." : "اكتب خطوات الحل وشرحك هنا بالتفصيل..."}
+            placeholder={
+              isEnglish
+                ? "Write your solution steps and explanation here..."
+                : "اكتب خطوات الحل وشرحك هنا بالتفصيل..."
+            }
             rows={5}
-            className={`w-full p-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#800020] text-[#0F172A] dark:text-white ${isEnglish ? "text-left font-sans" : "text-right font-content"}`}
+            className={`w-full p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#800020] text-slate-900 dark:text-white leading-relaxed ${
+              isEnglish ? "text-left font-sans" : "text-right font-content"
+            }`}
           />
 
           {initialMode === "PRACTICE" && currentAnswer.practiceRevealed && revealedAnswer?.modelAnswer && (
-            <div className="p-5 rounded-2xl bg-[#800020]/10 dark:bg-[#1E293B] border border-[#E2E8F0]/60 dark:border-[#E11D48]/60 space-y-3">
+            <div className="p-5 rounded-2xl bg-[#800020]/5 dark:bg-[#800020]/15 border border-[#800020]/20 dark:border-[#FB7185]/30 space-y-3">
               <div className="flex items-center justify-between">
-                <h4 className="text-[13px] font-bold text-[#800020] dark:text-[#FB7185] flex items-center gap-2">
+                <h4 className="text-xs sm:text-sm font-bold text-[#800020] dark:text-[#FB7185] flex items-center gap-2">
                   <Sparkle className="w-4 h-4" weight="fill" />
                   <span>نموذج الإجابة ومعايير التقييم</span>
                 </h4>
@@ -302,7 +355,7 @@ export function ExamQuestionCard({
 
       {/* Practice Mode: Reveal Button & In-depth Explanation */}
       {initialMode === "PRACTICE" && (
-        <div>
+        <div className="pt-2">
           {!currentAnswer.practiceRevealed ? (
             <button
               type="button"
@@ -311,13 +364,13 @@ export function ExamQuestionCard({
                 isRevealing ||
                 (!currentAnswer.selectedOptionId && !currentAnswer.essayText)
               }
-              className="h-11 px-5 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white font-bold text-[13px] flex items-center gap-2 transition-all active:opacity-80 disabled:opacity-40 cursor-pointer"
+              className="h-11 px-5 rounded-xl bg-gradient-to-r from-[#800020] to-[#991B1B] hover:from-[#66001A] hover:to-[#800020] text-white font-bold text-xs sm:text-sm flex items-center gap-2 shadow-xs hover:shadow transition-all active:scale-98 disabled:opacity-40 cursor-pointer select-none"
             >
               <Lightbulb className="w-4 h-4" weight="fill" />
               <span>
                 {isRevealing
                   ? "بنراجع إجابتك..."
-                  : "شوف إجابتك صح ولا غلط واعرف التفسير"}
+                  : "تحقق من إجابتك وشاهد التفسير الفوري"}
               </span>
             </button>
           ) : (
@@ -337,35 +390,35 @@ export function ExamQuestionCard({
       {/* Question Navigation Controls */}
       <div
         dir={isEnglish ? "ltr" : "rtl"}
-        className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-3 pt-4 border-t border-[#E2E8F0] dark:border-[#334155]"
+        className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-3 pt-4 border-t border-slate-100 dark:border-slate-800"
       >
         <button
           type="button"
           onClick={onPrevQuestion}
           disabled={currentIndex === 0}
-          className="h-11 px-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-bold text-[#0F172A] dark:text-white flex items-center gap-2 hover:bg-[#F8FAFC] dark:hover:bg-[#334155] disabled:opacity-40 transition-colors cursor-pointer"
+          className="h-11 px-4 sm:px-5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-30 transition-all cursor-pointer select-none"
         >
           {isEnglish ? <CaretLeft className="w-4 h-4" weight="bold" /> : <CaretRight className="w-4 h-4" weight="bold" />}
-          <span>{isEnglish ? "Previous Question" : "السؤال اللي قبله"}</span>
+          <span>{isEnglish ? "Previous Question" : "السؤال السابق"}</span>
         </button>
 
         {currentIndex < totalQuestions - 1 ? (
           <button
             type="button"
             onClick={onNextQuestion}
-            className="h-11 px-5 sm:px-6 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] font-bold flex items-center gap-2 transition-colors active:opacity-80 cursor-pointer"
+            className="h-11 px-5 sm:px-6 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-xs sm:text-sm font-bold flex items-center gap-2 shadow-xs hover:shadow transition-all active:scale-98 cursor-pointer select-none"
           >
-            <span>{isEnglish ? "Next Question" : "السؤال اللي بعده"}</span>
+            <span>{isEnglish ? "Next Question" : "السؤال التالي"}</span>
             {isEnglish ? <CaretRight className="w-4 h-4" weight="bold" /> : <CaretLeft className="w-4 h-4" weight="bold" />}
           </button>
         ) : (
           <button
             type="button"
             onClick={onOpenSubmitModal}
-            className="h-11 px-5 sm:px-6 rounded-xl bg-[#059669] hover:bg-[#047857] text-white text-[13px] font-bold flex items-center gap-2 transition-colors active:opacity-80 cursor-pointer"
+            className="h-11 px-5 sm:px-6 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs sm:text-sm font-bold flex items-center gap-2 shadow-xs hover:shadow transition-all active:scale-98 cursor-pointer select-none"
           >
-            <span>{isEnglish ? "Finished? Submit Exam" : "خلصت؟ سلّم الامتحان"}</span>
-            <PaperPlaneTilt className="w-3.5 h-3.5" weight="bold" />
+            <span>{isEnglish ? "Finished? Submit Exam" : "إنهاء وتسليم الامتحان"}</span>
+            <PaperPlaneTilt className="w-4 h-4" weight="bold" />
           </button>
         )}
       </div>

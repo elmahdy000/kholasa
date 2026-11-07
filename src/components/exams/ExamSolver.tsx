@@ -171,7 +171,7 @@ export function ExamSolver({ exam, attemptId, initialMode }: ExamSolverProps) {
     exam?.subject?.schoolCategory === "LANGUAGES";
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6 text-right font-ui pb-12">
+    <div className="max-w-4xl mx-auto px-3 sm:px-4 space-y-5 text-right font-ui pb-16">
       <ExamSolverHeader
         subjectName={exam.subject.name}
         examTitle={exam.title}
