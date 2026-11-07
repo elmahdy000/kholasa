@@ -10,7 +10,7 @@ interface ExamQuestionPaletteProps {
   answers: Record<string, UserAnswerState>;
   flaggedQuestions: Record<string, boolean>;
   onSelectIndex: (index: number) => void;
-  onClose?: () => void;
+  onClose: () => void;
 }
 
 export function ExamQuestionPalette({
@@ -40,88 +40,96 @@ export function ExamQuestionPalette({
   const unansweredTotal = questions.length - answeredTotal;
 
   return (
-    <div className="rounded-2xl sm:rounded-3xl bg-white dark:bg-[#10233A] border border-[#E8E9ED] dark:border-[#22364F] shadow-sm p-3.5 sm:p-4 space-y-2.5 transition-all animate-in fade-in slide-in-from-top-2 duration-200">
-      {/* Header Row */}
-      <div className="flex items-center justify-between pb-2 border-b border-[#E8E9ED] dark:border-[#22364F] text-xs font-bold text-[#12263F] dark:text-white">
-        <div className="flex items-center gap-3">
-          <span className="text-xs sm:text-sm font-black text-[#12263F] dark:text-white">
-            خريطة الأسئلة ({answeredTotal} مُجاب • {questions.length} سؤال)
-          </span>
-          <div className="hidden sm:flex items-center gap-2.5 text-[11px] font-semibold">
-            <span className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-              <span>مُجاب ({answeredTotal})</span>
-            </span>
-            {flaggedTotal > 0 && (
-              <span className="inline-flex items-center gap-1 text-[#D97706] dark:text-amber-400">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#D97706]" />
-                <span>للمراجعة ({flaggedTotal})</span>
-              </span>
-            )}
-            <span className="inline-flex items-center gap-1 text-[#64748B] dark:text-[#94A3B8]">
-              <span className="w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-600" />
-              <span>لم يُجب ({unansweredTotal})</span>
-            </span>
-          </div>
-        </div>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200">
+      {/* Click outside backdrop to close */}
+      <div className="fixed inset-0" onClick={onClose} />
 
-        {onClose && (
+      {/* Modal Dialog Card (Matches Image 4) */}
+      <div className="relative w-full max-w-lg rounded-3xl bg-white dark:bg-[#10233A] border border-[#E8E9ED] dark:border-[#22364F] shadow-2xl p-5 sm:p-6 space-y-4 z-10 animate-in zoom-in-95 duration-200">
+        {/* Header Row: Title on right, Close 'X' on left (in RTL) */}
+        <div className="flex items-center justify-between pb-3 border-b border-[#E8E9ED] dark:border-[#22364F]">
+          <h3 className="text-sm sm:text-base font-black text-[#12263F] dark:text-white">
+            خريطة الأسئلة ({answeredTotal} مُجاب • {questions.length} سؤال)
+          </h3>
+
           <button
             type="button"
             onClick={onClose}
-            className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-slate-100 dark:bg-[#0D1B2E] text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center justify-center cursor-pointer transition-colors"
-            title="إغلاق اللوحة"
+            className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center justify-center cursor-pointer transition-colors"
+            title="إغلاق خريطة الأسئلة"
           >
-            <X className="w-3.5 h-3.5 sm:w-4 sm:h-4" weight="bold" />
+            <X className="w-4 h-4" weight="bold" />
           </button>
-        )}
-      </div>
+        </div>
 
-      {/* Grid of Question Numbers: Compact, responsive sizing to fit comfortably within viewport */}
-      <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 lg:grid-cols-12 gap-1.5 sm:gap-2 pt-0.5 max-h-[65vh] overflow-y-auto scrollbar-thin">
-        {questions.map((q, idx) => {
-          const ans = answers[q.id];
-          const hasAnswer =
-            Boolean(ans?.selectedOptionId) || Boolean(ans?.essayText && ans.essayText.trim().length > 0);
-          const flagged = flaggedQuestions[q.id];
-          const isActive = idx === currentIndex;
+        {/* 6-Column Grid of Question Numbers (Matches Image 4 Exactly) */}
+        <div className="grid grid-cols-6 gap-2 sm:gap-2.5 max-h-[55vh] overflow-y-auto p-1 scrollbar-thin">
+          {questions.map((q, idx) => {
+            const ans = answers[q.id];
+            const hasAnswer =
+              Boolean(ans?.selectedOptionId) || Boolean(ans?.essayText && ans.essayText.trim().length > 0);
+            const flagged = flaggedQuestions[q.id];
+            const isActive = idx === currentIndex;
 
-          let btnStyle =
-            "bg-[#F7F8FA] dark:bg-[#0D1B2E] border border-[#E8E9ED] dark:border-[#22364F] text-[#12263F] dark:text-slate-300 hover:bg-slate-100";
+            // Default: Light grayish-white button (Unanswered)
+            let btnStyle =
+              "bg-[#F7F8FA] dark:bg-[#0D1B2E] border border-[#E8E9ED] dark:border-[#22364F] text-[#12263F] dark:text-slate-300 hover:bg-slate-100";
 
-          if (isActive) {
-            btnStyle =
-              "bg-[#800020] text-white border-[#800020] font-black shadow-xs ring-2 ring-[#D97706] scale-105 z-10";
-          } else if (flagged) {
-            btnStyle =
-              "bg-amber-50 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-700 text-amber-800 dark:text-amber-300 font-bold hover:bg-amber-100";
-          } else if (hasAnswer) {
-            btnStyle =
-              "bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-700 text-emerald-700 dark:text-emerald-300 font-bold hover:bg-emerald-100";
-          }
+            if (isActive) {
+              // Current Active Question: Deep burgundy with golden amber border & ring (Image 4 button 2)
+              btnStyle =
+                "bg-[#800020] text-white border-2 border-[#D97706] font-black shadow-md ring-2 ring-[#D97706]/50 scale-105 z-10";
+            } else if (flagged) {
+              // Flagged: Light warm cream with orange flag pin (Image 4 button 1)
+              btnStyle =
+                "bg-[#FEF9C3] dark:bg-amber-950/60 border border-amber-300 dark:border-amber-700 text-amber-900 dark:text-amber-200 font-bold hover:bg-amber-100";
+            } else if (hasAnswer) {
+              // Answered: Soft emerald / slate tint
+              btnStyle =
+                "bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-700 text-emerald-800 dark:text-emerald-300 font-bold hover:bg-emerald-100";
+            }
 
-          return (
-            <button
-              key={q.id}
-              ref={(el) => {
-                itemRefs.current[idx] = el;
-              }}
-              type="button"
-              onClick={() => {
-                onSelectIndex(idx);
-                onClose?.();
-              }}
-              className={`relative h-8 sm:h-8.5 rounded-lg text-xs font-mono font-bold flex items-center justify-center transition-all cursor-pointer active:scale-95 ${btnStyle}`}
-            >
-              <span>{idx + 1}</span>
-              {!isActive && flagged && (
-                <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-[#D97706] text-white flex items-center justify-center">
-                  <Flag className="w-1.5 h-1.5" weight="fill" />
-                </span>
-              )}
-            </button>
-          );
-        })}
+            return (
+              <button
+                key={q.id}
+                ref={(el) => {
+                  itemRefs.current[idx] = el;
+                }}
+                type="button"
+                onClick={() => {
+                  onSelectIndex(idx);
+                  onClose();
+                }}
+                className={`relative h-10 sm:h-11 rounded-xl text-xs sm:text-sm font-mono font-bold flex items-center justify-center transition-all cursor-pointer active:scale-95 ${btnStyle}`}
+              >
+                <span>{idx + 1}</span>
+                {!isActive && flagged && (
+                  <span className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-[#D97706] text-white flex items-center justify-center shadow-xs">
+                    <Flag className="w-2 h-2" weight="fill" />
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Legend Row */}
+        <div className="flex items-center justify-center gap-3 pt-2 border-t border-[#E8E9ED] dark:border-[#22364F] text-[11px] font-bold text-slate-500 dark:text-slate-400 flex-wrap">
+          <span className="inline-flex items-center gap-1.5 text-emerald-700 dark:text-emerald-300">
+            <span className="w-2 h-2 rounded-full bg-emerald-500" />
+            <span>مُجاب ({answeredTotal})</span>
+          </span>
+          {flaggedTotal > 0 && (
+            <span className="inline-flex items-center gap-1.5 text-[#D97706] dark:text-amber-300">
+              <span className="w-2 h-2 rounded-full bg-[#D97706]" />
+              <span>للمراجعة ({flaggedTotal})</span>
+            </span>
+          )}
+          <span className="inline-flex items-center gap-1.5 text-slate-600 dark:text-slate-400">
+            <span className="w-2 h-2 rounded-full bg-slate-300 dark:bg-slate-600" />
+            <span>لم يُجب ({unansweredTotal})</span>
+          </span>
+        </div>
       </div>
     </div>
   );

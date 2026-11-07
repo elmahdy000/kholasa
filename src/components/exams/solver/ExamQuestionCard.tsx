@@ -8,6 +8,7 @@ import {
   PaperPlaneTilt,
   Translate,
   ChartBar,
+  Check,
 } from "@phosphor-icons/react";
 import { BidiStatement } from "@/components/ui/BidiStatement";
 import { QuestionImageAttachment } from "@/components/ui/QuestionImageAttachment";
@@ -193,24 +194,24 @@ export function ExamQuestionCard({
               ? englishLetters[optIdx] || opt.order
               : arabicLetters[optIdx] || opt.order;
 
-            // Brand states: Burgundy for selected, neutral for unselected
+            // Brand states: Emerald Green for selected (matching Mockup Image 3), neutral for unselected
             let cardContainerClass =
-              "border-2 border-[#E8E9ED] dark:border-[#22364F] bg-white dark:bg-[#10233A] hover:bg-[#F7F8FA] dark:hover:bg-[#132945] hover:border-slate-300";
+              "border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#10233A] hover:bg-slate-50 dark:hover:bg-[#132945] hover:border-slate-300";
             let leftIndicator = (
               <div className="w-5 h-5 rounded-full border-2 border-slate-300 dark:border-slate-600 flex items-center justify-center shrink-0" />
             );
             let rightBadgeClass =
-              "bg-[#F7F8FA] dark:bg-[#0D1B2E] text-slate-600 dark:text-slate-300 border border-[#E8E9ED] dark:border-[#22364F]";
+              "bg-slate-100 dark:bg-[#0D1B2E] text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800";
 
             if (isSelected) {
               cardContainerClass =
-                "border-2 border-[#800020] dark:border-[#A30D36] bg-[#800020]/5 dark:bg-[#A30D36]/15 shadow-xs";
+                "border-2 border-emerald-500 bg-emerald-50/70 dark:bg-emerald-950/30 text-emerald-950 dark:text-emerald-100 shadow-xs";
               leftIndicator = (
-                <div className="w-5 h-5 rounded-full border-2 border-[#800020] dark:border-[#A30D36] bg-white dark:bg-[#10233A] flex items-center justify-center shadow-xs shrink-0">
-                  <span className="w-2 h-2 rounded-full bg-[#800020] dark:bg-[#A30D36]" />
+                <div className="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                  <Check className="w-3.5 h-3.5" weight="bold" />
                 </div>
               );
-              rightBadgeClass = "bg-[#800020] dark:bg-[#A30D36] text-white shadow-xs font-bold";
+              rightBadgeClass = "bg-emerald-600 text-white shadow-xs font-bold";
             }
 
             return (
@@ -284,22 +285,18 @@ export function ExamQuestionCard({
 
       {/* 5. Navigation Bottom Row with CORRECT Arrow Directions */}
       <div className="flex items-center justify-between gap-3 pt-3.5 sm:pt-4 border-t border-[#E8E9ED] dark:border-[#22364F]">
-        {/* Previous Button: In Arabic RTL, previous goes to the right (→ CaretRight) */}
+        {/* Previous Button: White pill button with border & left chevron (Image 3) */}
         <button
           type="button"
           onClick={onPrevQuestion}
           disabled={currentIndex === 0}
-          className="h-10 sm:h-11 px-4 sm:px-5 rounded-full bg-[#1E3A5F] hover:bg-[#12263F] text-white disabled:opacity-30 disabled:hover:bg-[#1E3A5F] disabled:cursor-not-allowed font-bold text-xs sm:text-sm shadow-xs hover:shadow flex items-center gap-2 transition-all cursor-pointer select-none active:scale-95"
+          className="h-10 sm:h-11 px-5 sm:px-6 rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#10233A] hover:bg-slate-50 dark:hover:bg-slate-800 text-[#12263F] dark:text-white disabled:opacity-30 disabled:cursor-not-allowed font-bold text-xs sm:text-sm shadow-xs flex items-center gap-2 transition-all cursor-pointer select-none active:scale-95"
         >
-          {isEnglish ? (
-            <CaretLeft className="w-4 h-4" weight="bold" />
-          ) : (
-            <CaretRight className="w-4 h-4" weight="bold" />
-          )}
+          <CaretLeft className="w-4 h-4 text-[#12263F] dark:text-white" weight="bold" />
           <span>{isEnglish ? "Previous Question" : "السؤال السابق"}</span>
         </button>
 
-        {/* Center: Pagination Dots */}
+        {/* Center: Pagination Dots (Amber Active Dot) */}
         <div className="hidden sm:flex items-center gap-1.5">
           {paginationRange.map((dotIdx) => {
             const isActive = dotIdx === currentIndex;
@@ -319,28 +316,24 @@ export function ExamQuestionCard({
           })}
         </div>
 
-        {/* Next Question or Submit Exam: In Arabic RTL, next goes to the left (← CaretLeft) */}
+        {/* Next Question: Solid Navy Pill Button with right chevron (Image 3) */}
         {currentIndex < totalQuestions - 1 ? (
           <button
             type="button"
             onClick={onNextQuestion}
-            className="h-10 sm:h-11 px-5 sm:px-6 rounded-full bg-[#800020] hover:bg-[#66001A] dark:bg-[#A30D36] dark:hover:bg-[#BD123F] text-white font-bold text-xs sm:text-sm shadow-sm hover:shadow flex items-center gap-2 transition-all cursor-pointer select-none active:scale-95"
+            className="h-10 sm:h-11 px-6 sm:px-7 rounded-full bg-[#12263F] hover:bg-[#0D1B2E] text-white font-bold text-xs sm:text-sm shadow-sm flex items-center gap-2 transition-all cursor-pointer select-none active:scale-95"
           >
             <span>{isEnglish ? "Next Question" : "السؤال التالي"}</span>
-            {isEnglish ? (
-              <CaretRight className="w-4 h-4" weight="bold" />
-            ) : (
-              <CaretLeft className="w-4 h-4" weight="bold" />
-            )}
+            <CaretRight className="w-4 h-4 text-white" weight="bold" />
           </button>
         ) : (
           <button
             type="button"
             onClick={onOpenSubmitModal}
-            className="h-10 sm:h-11 px-5 sm:px-6 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold text-xs sm:text-sm shadow-sm hover:shadow flex items-center gap-2 transition-all cursor-pointer select-none active:scale-95"
+            className="h-10 sm:h-11 px-6 sm:px-7 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold text-xs sm:text-sm shadow-sm flex items-center gap-2 transition-all cursor-pointer select-none active:scale-95"
           >
             <span>{isEnglish ? "Submit Exam" : "تسليم الامتحان"}</span>
-            <PaperPlaneTilt className="w-4 h-4" weight="bold" />
+            <PaperPlaneTilt className="w-4 h-4 text-white" weight="bold" />
           </button>
         )}
       </div>

@@ -161,21 +161,21 @@ export function LessonHeader({
           </button>
         </div>
 
-        {/* Complete Toggle Button (Primary CTA) */}
+        {/* Complete Toggle Button (Primary CTA - matches Image 1) */}
         <button
           type="button"
           onClick={onToggleComplete}
           disabled={isTogglingComplete}
           className={`h-9.5 px-4 rounded-xl font-bold text-xs flex items-center gap-1.5 shadow-xs transition-all cursor-pointer active:scale-95 ${
             isCompleted
-              ? "bg-emerald-600 hover:bg-emerald-700 text-white"
+              ? "bg-[#D1FAE5] dark:bg-emerald-950/60 text-[#065F46] dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 hover:bg-[#A7F3D0]"
               : "bg-[#800020] hover:bg-[#66001A] text-white"
           }`}
         >
           {isCompleted ? (
             <>
-              <Check className="w-3.5 h-3.5" weight="bold" />
-              <span>مكتمل</span>
+              <Check className="w-3.5 h-3.5 text-[#065F46] dark:text-emerald-300" weight="bold" />
+              <span>اتقنتها خلاص</span>
             </>
           ) : (
             <>

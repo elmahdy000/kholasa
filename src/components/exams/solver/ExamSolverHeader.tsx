@@ -1,7 +1,7 @@
 "use client";
 
 import { BrandLogo } from "@/components/ui/BrandLogo";
-import { Timer, ListBullets, Code, Flag } from "@phosphor-icons/react";
+import { Timer, ListBullets, Code } from "@phosphor-icons/react";
 import { BidiStatement } from "@/components/ui/BidiStatement";
 
 interface ExamSolverHeaderProps {
@@ -42,19 +42,19 @@ export function ExamSolverHeader({
   const progressPct = totalQuestions > 0 ? Math.round((answeredCount / totalQuestions) * 100) : 0;
 
   return (
-    <div className="space-y-2.5 sm:space-y-3">
-      {/* 1. Official Platform Brand Logo */}
+    <div className="space-y-3 sm:space-y-3.5">
+      {/* 1. Official Platform Brand Logo (Matches Mockup) */}
       <div className="flex flex-col items-center justify-center select-none pt-0.5">
         <BrandLogo
           variant="combined"
           size="sm"
           showSubtitle
-          subtitleText="منصة البكالوريا الذكية"
+          subtitleText="- El-Kholasa -"
           glow={false}
         />
       </div>
 
-      {/* 2. Exam Banner: Golden Code Icon + Deep Navy Curved Pill */}
+      {/* 2. Exam Banner: Golden Code Icon + Deep Navy Curved Pill (Matches Mockup) */}
       <div className="flex items-center justify-center gap-2 px-2">
         {/* Golden-Yellow Square Icon Badge */}
         <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-[#D97706] text-white flex items-center justify-center shadow-xs shrink-0 font-bold">
@@ -62,16 +62,16 @@ export function ExamSolverHeader({
         </div>
 
         {/* Navy Curved Pill Banner */}
-        <div className="px-4 sm:px-6 py-1.5 sm:py-2 rounded-full bg-[#12263F] dark:bg-[#10233A] text-white font-black text-xs sm:text-sm md:text-base shadow-sm border border-[#800020]/30 flex items-center gap-2 max-w-full truncate">
+        <div className="px-5 sm:px-6 py-1.5 sm:py-2 rounded-full bg-[#12263F] dark:bg-[#10233A] text-white font-black text-xs sm:text-sm md:text-base shadow-sm border border-slate-700/50 flex items-center gap-2 max-w-full truncate">
           <BidiStatement as="h1" text={coreTitle} className="truncate font-sans sm:font-sans" />
         </div>
       </div>
 
-      {/* 3. Status Bar: Timer, Floating Progress, and Question Counter */}
+      {/* 3. Status Bar: Timer, Floating Progress, and Question Counter (Matches Mockup Exactly) */}
       <div className="flex items-center justify-between gap-2 sm:gap-3 px-1 pt-0.5">
         {/* Left: Timer Pill */}
         <div
-          className={`h-9.5 sm:h-10 px-3 sm:px-3.5 rounded-full border bg-white dark:bg-[#10233A] shadow-xs flex items-center gap-2 text-xs font-bold transition-all shrink-0 ${
+          className={`h-9.5 sm:h-10 px-3.5 sm:px-4 rounded-full border bg-white dark:bg-[#10233A] shadow-xs flex items-center gap-2 text-xs font-bold transition-all shrink-0 ${
             isUrgent
               ? "border-rose-500 text-rose-600 dark:text-rose-400 animate-pulse bg-rose-50/50"
               : "border-[#E8E9ED] dark:border-[#22364F] text-[#12263F] dark:text-white"
@@ -88,8 +88,8 @@ export function ExamSolverHeader({
         </div>
 
         {/* Center: Floating Percentage & Progress Bar (Academic Gold) */}
-        <div className="flex flex-col items-center gap-1 flex-1 max-w-[160px] sm:max-w-xs px-1">
-          <span className="px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-black bg-[#D97706] text-white shadow-xs">
+        <div className="flex flex-col items-center gap-1 flex-1 max-w-[170px] sm:max-w-xs px-2">
+          <span className="px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-black bg-[#D97706] text-white shadow-xs">
             {progressPct}%
           </span>
           <div className="w-full h-1.5 sm:h-2 bg-slate-200/80 dark:bg-slate-800 rounded-full overflow-hidden border border-slate-200/50 dark:border-slate-700/60">
@@ -100,46 +100,22 @@ export function ExamSolverHeader({
           </div>
         </div>
 
-        {/* Right: Question Counter Pill (Toggles Question Palette) */}
+        {/* Right: Question Counter Pill (Opens Question Palette Modal) */}
         <button
           type="button"
           onClick={onTogglePalette}
-          className={`h-9.5 sm:h-10 px-3 sm:px-3.5 rounded-full border shadow-xs flex items-center gap-2 text-xs font-bold transition-all cursor-pointer select-none shrink-0 ${
+          className={`h-9.5 sm:h-10 px-3.5 sm:px-4 rounded-full border shadow-xs flex items-center gap-2 text-xs font-bold transition-all cursor-pointer select-none shrink-0 ${
             isPaletteOpen
               ? "bg-[#12263F] dark:bg-[#1E3A5F] text-white border-[#12263F]"
               : "bg-white dark:bg-[#10233A] border-[#E8E9ED] dark:border-[#22364F] text-[#12263F] dark:text-white hover:bg-[#F7F8FA] dark:hover:bg-[#132945]"
           }`}
-          title="عرض أو إخفاء خريطة الأسئلة"
+          title="عرض خريطة الأسئلة"
         >
           <span className="font-bold text-xs sm:text-[13px]">
             {currentIndex + 1} من {totalQuestions} سؤال
           </span>
-          <ListBullets className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${isPaletteOpen ? "text-[#D97706]" : "text-[#800020] dark:text-[#A30D36]"}`} weight="bold" />
+          <ListBullets className="w-4 h-4 text-[#D97706]" weight="bold" />
         </button>
-      </div>
-
-      {/* 4. Live Statistics Bar: Answered, Flagged for Review, and Remaining */}
-      <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 px-1 select-none">
-        {/* Answered Stat */}
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-[11px] font-bold shadow-xs">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-          <span>تمت الإجابة:</span>
-          <span className="font-mono font-black text-xs">{answeredCount}</span>
-        </div>
-
-        {/* Flagged for Review Stat */}
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 dark:bg-amber-950/40 text-amber-900 dark:text-amber-300 border border-amber-200 dark:border-amber-800 text-[11px] font-bold shadow-xs">
-          <Flag className="w-3 h-3 text-[#D97706]" weight="fill" />
-          <span>للمراجعة:</span>
-          <span className="font-mono font-black text-xs">{flaggedCount}</span>
-        </div>
-
-        {/* Remaining Stat */}
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F7F8FA] dark:bg-[#10233A] text-[#64748B] dark:text-[#94A3B8] border border-[#E8E9ED] dark:border-[#22364F] text-[11px] font-bold shadow-xs">
-          <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
-          <span>متبقي:</span>
-          <span className="font-mono font-black text-xs">{unansweredCount}</span>
-        </div>
       </div>
     </div>
   );
