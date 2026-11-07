@@ -34,6 +34,7 @@ import { SubjectModal } from "./curriculum/SubjectModal";
 import { TrackModal } from "./curriculum/TrackModal";
 import { LessonEditorModal } from "./LessonEditorModal";
 import { UnitEditorModal } from "./UnitEditorModal";
+import { UnitQuestionsExportModal } from "./curriculum/UnitQuestionsExportModal";
 import { LessonCreateModal } from "./LessonCreateModal";
 import { CurriculumBulkImportModal } from "./curriculum/CurriculumBulkImportModal";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
@@ -112,6 +113,13 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
     isOpen: false,
     initialSubject: null,
   });
+
+  // Unit Questions Export Modal state
+  const [exportUnitContext, setExportUnitContext] = useState<{
+    isOpen: boolean;
+    unit: Unit | null;
+    subjectName: string;
+  } | null>(null);
 
   // Unit Modal state
   const [unitModalState, setUnitModalState] = useState<{
@@ -1010,6 +1018,13 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
                   onEditLesson={setEditingLessonId}
                   onDeleteUnit={handleDirectDeleteUnit}
                   onDeleteLesson={handleDirectDeleteLesson}
+                  onExportUnit={(u, subName) =>
+                    setExportUnitContext({
+                      isOpen: true,
+                      unit: u,
+                      subjectName: subName,
+                    })
+                  }
                 />
               );
             })
@@ -1058,6 +1073,16 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
           subjects={allSubjectOptions}
           initialSubjectId={bulkImportSubjectId}
           onSuccess={handleBulkImportSuccess}
+        />
+      )}
+
+      {/* Unit Questions Export Modal */}
+      {exportUnitContext?.isOpen && exportUnitContext.unit && (
+        <UnitQuestionsExportModal
+          isOpen={exportUnitContext.isOpen}
+          unit={exportUnitContext.unit}
+          subjectName={exportUnitContext.subjectName}
+          onClose={() => setExportUnitContext(null)}
         />
       )}
 

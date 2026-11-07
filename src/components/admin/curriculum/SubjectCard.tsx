@@ -17,6 +17,7 @@ interface SubjectCardProps {
   onDeleteSubject?: (subjectId: string, subjectName: string) => void;
   onEditUnit: (unit: Unit) => void;
   onDeleteUnit?: (id: string, title: string) => void;
+  onExportUnit?: (unit: Unit, subjectName: string) => void;
   onCreateLesson: (context: { unitId: string; unitTitle: string; subjectName: string }) => void;
   onTogglePublished: (entity: "subject" | "unit" | "lesson", id: string, currentStatus: boolean) => void;
   onEditLesson: (id: string) => void;
@@ -35,6 +36,7 @@ export function SubjectCard({
   onDeleteSubject,
   onEditUnit,
   onDeleteUnit,
+  onExportUnit,
   onCreateLesson,
   onTogglePublished,
   onEditLesson,
@@ -192,6 +194,7 @@ export function SubjectCard({
               onToggleExpand={onToggleExpand}
               onEditUnit={onEditUnit}
               onDeleteUnit={onDeleteUnit}
+              onExportUnit={onExportUnit}
               onCreateLesson={onCreateLesson}
               onTogglePublished={onTogglePublished}
               onEditLesson={onEditLesson}

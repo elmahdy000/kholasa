@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ChevronDown, Edit, Plus, FileText, Trash2 } from "lucide-react";
+import { ChevronDown, Edit, Plus, FileText, Trash2, FileDown } from "lucide-react";
 import type { Unit } from "./types";
 import { LessonRow } from "./LessonRow";
 
@@ -14,6 +14,7 @@ interface UnitAccordionProps {
   onToggleExpand: (unitId: string) => void;
   onEditUnit: (unit: Unit) => void;
   onDeleteUnit?: (id: string, title: string) => void;
+  onExportUnit?: (unit: Unit, subjectName: string) => void;
   onCreateLesson: (context: { unitId: string; unitTitle: string; subjectName: string }) => void;
   onTogglePublished: (entity: "subject" | "unit" | "lesson", id: string, currentStatus: boolean) => void;
   onEditLesson: (id: string) => void;
@@ -29,6 +30,7 @@ export function UnitAccordion({
   onToggleExpand,
   onEditUnit,
   onDeleteUnit,
+  onExportUnit,
   onCreateLesson,
   onTogglePublished,
   onEditLesson,
@@ -96,6 +98,18 @@ export function UnitAccordion({
             <FileText className="w-3 h-3 text-[#800020] dark:text-[#FB7185]" />
             <span>أسئلة الوحدة</span>
           </Link>
+
+          {onExportUnit && (
+            <button
+              type="button"
+              onClick={() => onExportUnit(unit, subjectName)}
+              className="h-7 px-3 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-[#059669] dark:text-[#34D399] text-[13px] font-bold flex items-center gap-1.5 transition-colors border border-emerald-500/25 cursor-pointer shadow-2xs"
+              title="تصدير أسئلة الوحدة كملف JSON للمقارنة والمراجعة"
+            >
+              <FileDown className="w-3.5 h-3.5" />
+              <span>تصدير JSON</span>
+            </button>
+          )}
 
           <button
             onClick={() => onTogglePublished("unit", unit.id, unit.isPublished)}
