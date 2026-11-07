@@ -40,11 +40,11 @@ export function ExamQuestionPalette({
   const unansweredTotal = questions.length - answeredTotal;
 
   return (
-    <div className="rounded-3xl bg-white dark:bg-[#0D1B2E] border border-slate-200/90 dark:border-slate-800 shadow-sm p-4 sm:p-5 space-y-3.5 transition-all animate-in fade-in slide-in-from-top-2 duration-200">
+    <div className="rounded-3xl bg-white dark:bg-[#10233A] border border-[#E8E9ED] dark:border-[#22364F] shadow-sm p-4 sm:p-5 space-y-3.5 transition-all animate-in fade-in slide-in-from-top-2 duration-200">
       {/* Header Row */}
-      <div className="flex items-center justify-between pb-2.5 border-b border-slate-100 dark:border-slate-800 text-xs font-bold text-slate-800 dark:text-slate-200">
+      <div className="flex items-center justify-between pb-2.5 border-b border-[#E8E9ED] dark:border-[#22364F] text-xs font-bold text-[#12263F] dark:text-white">
         <div className="flex items-center gap-3">
-          <span className="text-sm font-extrabold text-[#0B2545] dark:text-blue-400">
+          <span className="text-sm font-black text-[#12263F] dark:text-white">
             خريطة الأسئلة ({answeredTotal} مُجاب • {questions.length} سؤال)
           </span>
           <div className="hidden sm:flex items-center gap-2.5 text-[11px] font-semibold">
@@ -53,12 +53,12 @@ export function ExamQuestionPalette({
               <span>مُجاب ({answeredTotal})</span>
             </span>
             {flaggedTotal > 0 && (
-              <span className="inline-flex items-center gap-1 text-amber-600 dark:text-amber-400">
-                <span className="w-2 h-2 rounded-full bg-amber-500" />
+              <span className="inline-flex items-center gap-1 text-[#D97706] dark:text-amber-400">
+                <span className="w-2 h-2 rounded-full bg-[#D97706]" />
                 <span>للمراجعة ({flaggedTotal})</span>
               </span>
             )}
-            <span className="inline-flex items-center gap-1 text-slate-400">
+            <span className="inline-flex items-center gap-1 text-[#64748B] dark:text-[#94A3B8]">
               <span className="w-2 h-2 rounded-full bg-slate-300 dark:bg-slate-600" />
               <span>لم يُجب ({unansweredTotal})</span>
             </span>
@@ -69,7 +69,7 @@ export function ExamQuestionPalette({
           <button
             type="button"
             onClick={onClose}
-            className="w-7 h-7 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-900 flex items-center justify-center cursor-pointer transition-colors"
+            className="w-7 h-7 rounded-full bg-slate-100 dark:bg-[#0D1B2E] text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center justify-center cursor-pointer transition-colors"
             title="إغلاق اللوحة"
           >
             <X className="w-4 h-4" weight="bold" />
@@ -87,14 +87,14 @@ export function ExamQuestionPalette({
           const isActive = idx === currentIndex;
 
           let btnStyle =
-            "bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100";
+            "bg-[#F7F8FA] dark:bg-[#0D1B2E] border border-[#E8E9ED] dark:border-[#22364F] text-[#12263F] dark:text-slate-300 hover:bg-slate-100";
 
           if (isActive) {
             btnStyle =
-              "bg-[#0B2545] dark:bg-[#1E3A8A] text-white border-[#0B2545] font-black shadow-xs ring-2 ring-amber-400 scale-105 z-10";
+              "bg-[#800020] text-white border-[#800020] font-black shadow-xs ring-2 ring-[#D97706] scale-105 z-10";
           } else if (flagged) {
             btnStyle =
-              "bg-amber-100 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-700 text-amber-800 dark:text-amber-300 font-bold hover:bg-amber-200";
+              "bg-amber-50 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-700 text-amber-800 dark:text-amber-300 font-bold hover:bg-amber-100";
           } else if (hasAnswer) {
             btnStyle =
               "bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-700 text-emerald-700 dark:text-emerald-300 font-bold hover:bg-emerald-100";
@@ -115,7 +115,7 @@ export function ExamQuestionPalette({
             >
               <span>{idx + 1}</span>
               {!isActive && flagged && (
-                <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-amber-500 text-white flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-[#D97706] text-white flex items-center justify-center">
                   <Flag className="w-1.5 h-1.5" weight="fill" />
                 </span>
               )}

@@ -177,7 +177,6 @@ export function ExamSolver({ exam, attemptId, initialMode }: ExamSolverProps) {
       <ExamSolverHeader
         subjectName={exam.subject.name}
         examTitle={exam.title}
-        initialMode={initialMode}
         minutes={minutes}
         seconds={seconds}
         isUrgent={isUrgent}
@@ -207,16 +206,12 @@ export function ExamSolver({ exam, attemptId, initialMode }: ExamSolverProps) {
           currentQ={currentQ}
           currentIndex={currentIndex}
           totalQuestions={totalQuestions}
-          initialMode={initialMode}
           currentAnswer={currentAnswer}
-          revealedAnswer={revealedAnswer}
           isFlagged={isFlagged}
           isLanguages={Boolean(isLanguages)}
-          isRevealing={isRevealing}
           onToggleFlag={toggleFlag}
           onSelectOption={handleSelectOption}
           onEssayChange={handleEssayChange}
-          onRevealPractice={handleRevealPractice}
           onPrevQuestion={() => setCurrentIndex((idx) => Math.max(0, idx - 1))}
           onNextQuestion={() => setCurrentIndex((idx) => idx + 1)}
           onOpenSubmitModal={() => setShowConfirmModal(true)}
