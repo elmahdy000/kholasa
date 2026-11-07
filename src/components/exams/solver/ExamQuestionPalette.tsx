@@ -40,26 +40,26 @@ export function ExamQuestionPalette({
   const unansweredTotal = questions.length - answeredTotal;
 
   return (
-    <div className="rounded-3xl bg-white dark:bg-[#10233A] border border-[#E8E9ED] dark:border-[#22364F] shadow-sm p-4 sm:p-5 space-y-3.5 transition-all animate-in fade-in slide-in-from-top-2 duration-200">
+    <div className="rounded-2xl sm:rounded-3xl bg-white dark:bg-[#10233A] border border-[#E8E9ED] dark:border-[#22364F] shadow-sm p-3.5 sm:p-4 space-y-2.5 transition-all animate-in fade-in slide-in-from-top-2 duration-200">
       {/* Header Row */}
-      <div className="flex items-center justify-between pb-2.5 border-b border-[#E8E9ED] dark:border-[#22364F] text-xs font-bold text-[#12263F] dark:text-white">
+      <div className="flex items-center justify-between pb-2 border-b border-[#E8E9ED] dark:border-[#22364F] text-xs font-bold text-[#12263F] dark:text-white">
         <div className="flex items-center gap-3">
-          <span className="text-sm font-black text-[#12263F] dark:text-white">
+          <span className="text-xs sm:text-sm font-black text-[#12263F] dark:text-white">
             خريطة الأسئلة ({answeredTotal} مُجاب • {questions.length} سؤال)
           </span>
           <div className="hidden sm:flex items-center gap-2.5 text-[11px] font-semibold">
             <span className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
-              <span className="w-2 h-2 rounded-full bg-emerald-500" />
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
               <span>مُجاب ({answeredTotal})</span>
             </span>
             {flaggedTotal > 0 && (
               <span className="inline-flex items-center gap-1 text-[#D97706] dark:text-amber-400">
-                <span className="w-2 h-2 rounded-full bg-[#D97706]" />
+                <span className="w-1.5 h-1.5 rounded-full bg-[#D97706]" />
                 <span>للمراجعة ({flaggedTotal})</span>
               </span>
             )}
             <span className="inline-flex items-center gap-1 text-[#64748B] dark:text-[#94A3B8]">
-              <span className="w-2 h-2 rounded-full bg-slate-300 dark:bg-slate-600" />
+              <span className="w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-600" />
               <span>لم يُجب ({unansweredTotal})</span>
             </span>
           </div>
@@ -69,16 +69,16 @@ export function ExamQuestionPalette({
           <button
             type="button"
             onClick={onClose}
-            className="w-7 h-7 rounded-full bg-slate-100 dark:bg-[#0D1B2E] text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center justify-center cursor-pointer transition-colors"
+            className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-slate-100 dark:bg-[#0D1B2E] text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center justify-center cursor-pointer transition-colors"
             title="إغلاق اللوحة"
           >
-            <X className="w-4 h-4" weight="bold" />
+            <X className="w-3.5 h-3.5 sm:w-4 sm:h-4" weight="bold" />
           </button>
         )}
       </div>
 
-      {/* Grid of Question Numbers */}
-      <div className="grid grid-cols-6 sm:grid-cols-10 md:grid-cols-15 gap-2 pt-1 max-h-56 overflow-y-auto scrollbar-thin">
+      {/* Grid of Question Numbers: Compact, responsive sizing to fit comfortably within viewport */}
+      <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 lg:grid-cols-12 gap-1.5 sm:gap-2 pt-0.5 max-h-[65vh] overflow-y-auto scrollbar-thin">
         {questions.map((q, idx) => {
           const ans = answers[q.id];
           const hasAnswer =
@@ -111,7 +111,7 @@ export function ExamQuestionPalette({
                 onSelectIndex(idx);
                 onClose?.();
               }}
-              className={`relative h-10 rounded-xl text-xs font-mono font-bold flex items-center justify-center transition-all cursor-pointer active:scale-95 ${btnStyle}`}
+              className={`relative h-8 sm:h-8.5 rounded-lg text-xs font-mono font-bold flex items-center justify-center transition-all cursor-pointer active:scale-95 ${btnStyle}`}
             >
               <span>{idx + 1}</span>
               {!isActive && flagged && (

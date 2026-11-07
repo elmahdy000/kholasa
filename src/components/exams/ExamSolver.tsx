@@ -196,7 +196,7 @@ export function ExamSolver({ exam, attemptId, attemptStartedAt }: ExamSolverProp
     exam?.subject?.schoolCategory === "LANGUAGES";
 
   return (
-    <div className="max-w-3xl mx-auto px-3 sm:px-4 space-y-4 text-right font-ui pb-16">
+    <div className="max-w-3xl mx-auto px-2.5 sm:px-4 space-y-3 sm:space-y-3.5 text-right font-ui pb-10">
       {/* Top Header: Platform Logo, Banner, Status Row, and Live Stats */}
       <ExamSolverHeader
         subjectName={exam.subject.name}
