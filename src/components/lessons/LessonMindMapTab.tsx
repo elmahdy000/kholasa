@@ -314,14 +314,14 @@ export function LessonMindMapTab({ mindMap }: LessonMindMapTabProps) {
                   setPan({ x: 0, y: 0 });
                   setIsFullscreenImage(true);
                 }}
-                className="relative group p-3 sm:p-6 bg-[#0F172A]/5 dark:bg-black/40 flex items-center justify-center min-h-[300px] sm:min-h-[360px] cursor-zoom-in"
+                className="relative group p-1.5 sm:p-6 bg-[#0F172A]/5 dark:bg-black/40 flex items-center justify-center min-h-[240px] sm:min-h-[360px] cursor-zoom-in"
               >
                 <img
                   src={img}
                   alt={`${mindMap.title || "الخريطة الذهنية"} - لوحة ${idx + 1}`}
                   loading="lazy"
                   decoding="async"
-                  className="w-full max-h-[75vh] sm:max-h-[85vh] object-contain rounded-xl shadow-xs transition-transform duration-200 group-hover:scale-[1.008]"
+                  className="w-full h-auto max-h-none sm:max-h-[85vh] object-contain rounded-xl shadow-xs transition-transform duration-200 group-hover:scale-[1.008]"
                   onContextMenu={(e) => e.preventDefault()}
                   draggable={false}
                 />
@@ -492,7 +492,7 @@ export function LessonMindMapTab({ mindMap }: LessonMindMapTabProps) {
                 <img
                   src={currentFullscreenImage}
                   alt={mindMap.title || "الخريطة الذهنية"}
-                  className="max-w-full max-h-[88vh] object-contain rounded-lg shadow-2xl pointer-events-none"
+                  className="max-w-full max-h-[92vh] sm:max-h-[88vh] object-contain rounded-lg shadow-2xl pointer-events-none"
                   draggable={false}
                   onContextMenu={(e) => e.preventDefault()}
                 />
