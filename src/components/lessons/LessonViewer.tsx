@@ -49,10 +49,17 @@ export function LessonViewer({
   initialQuestionAttempts = [],
   userId,
 }: LessonViewerProps) {
-  // 4 Main Student Navigation Tabs
+  // 4 Main Student Navigation Tabs (Defaults to "definitions" if available, else mindmap, questions, or content)
   const [activeTab, setActiveTab] = useState<
     "content" | "mindmap" | "definitions" | "questions"
-  >("content");
+  >(() => {
+    const rawDefs = lesson.summary?.definitions;
+    const hasDefs = Array.isArray(rawDefs) && rawDefs.length > 0;
+    if (hasDefs) return "definitions";
+    if (lesson.mindMap?.images && lesson.mindMap.images.length > 0) return "mindmap";
+    if (lesson.questions && lesson.questions.length > 0) return "questions";
+    return "definitions";
+  });
 
   // Question Filters (Difficulty & Type)
   const [difficultyFilter, setDifficultyFilter] = useState<
@@ -615,7 +622,12 @@ export function LessonViewer({
       {/* 3. Main Navigation Tabs (4 Clear Student Tabs) */}
       <div className="p-1 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/80 border border-[#E2E8F0]/80 dark:border-[#334155]/80 flex items-center gap-1 overflow-x-auto scrollbar-none">
         {[
-          { id: "content", label: "شرح الدرس", icon: BookOpen },
+          {
+            id: "definitions",
+            label: "التعريفات والمفاهيم",
+            icon: BookmarkSimple,
+            badge: definitions.length > 0 ? `${definitions.length}` : undefined,
+          },
           {
             id: "mindmap",
             label: "الملخص الذهني",
@@ -626,17 +638,12 @@ export function LessonViewer({
                 : undefined,
           },
           {
-            id: "definitions",
-            label: "التعريفات المهمة",
-            icon: BookmarkSimple,
-            badge: definitions.length > 0 ? `${definitions.length}` : undefined,
-          },
-          {
             id: "questions",
             label: "تدريبات وبنك الأسئلة",
             icon: CheckCircle,
             badge: totalQuestionsCount > 0 ? `${totalQuestionsCount}` : undefined,
           },
+          { id: "content", label: "شرح الدرس", icon: BookOpen },
         ].map((tab) => {
           const isSelected = activeTab === tab.id;
           const Icon = tab.icon;
