@@ -635,7 +635,7 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
       {/* ─────────────────────────────────────────────────────────────
           UNIFIED COMPACT CONTROL BAR (Grade, Category, Tracks)
       ───────────────────────────────────────────────────────────── */}
-      <div className="rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] p-4 sm:p-5 shadow-xs space-y-4">
+      <div className="rounded-2xl bg-white dark:bg-[#10233A] border border-[#E8E9ED] dark:border-[#22364F] p-4 sm:p-5 shadow-xs space-y-4">
         {/* Row 1: Grade & School Category Segmented Tabs */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Grade Selector */}
@@ -646,7 +646,7 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
                 <span>الصف الدراسي</span>
               </label>
             </div>
-            <div className="grid grid-cols-2 p-1 rounded-xl bg-[#F1F5F9] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155]/60 gap-1">
+            <div className="grid grid-cols-2 p-1 rounded-xl bg-[#F8FAFA] dark:bg-[#0D1B2E] border border-[#E8E9ED] dark:border-[#22364F] gap-1">
               {grades.map((grade) => {
                 const isSelected = selectedGradeId === grade.id;
                 const isGrade10 = grade.code === "bacc_g10" || grade.code === "G10" || grade.name.includes("أولى");
@@ -664,7 +664,7 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
                     className={`py-2 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
                       isSelected
                         ? "bg-[#800020] text-white shadow-xs"
-                        : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
+                        : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#12263F] dark:hover:text-white hover:bg-white dark:hover:bg-[#1E293B]"
                     }`}
                   >
                     <span>{isGrade10 ? "أولى بكالوريا (G10)" : "تانية بكالوريا (G11)"}</span>
@@ -672,7 +672,7 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
                       className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono ${
                         isSelected
                           ? "bg-white/20 text-white"
-                          : "bg-black/5 dark:bg-white/5 text-[#64748B] dark:text-[#94A3B8]"
+                          : "bg-slate-200/80 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
                       }`}
                     >
                       {count}
@@ -690,18 +690,18 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
                 <School className="w-4 h-4 text-[#800020] dark:text-[#FB7185]" />
                 <span>نوع المدرسة واللغة</span>
               </label>
-              <span className="text-[11px] font-bold text-[#800020] dark:text-[#FB7185]">
-                عزل تام للمحتوى
+              <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-2.5 py-0.5 rounded-full border border-emerald-200/70 dark:border-emerald-800/70">
+                منهج مستقل كلياً
               </span>
             </div>
-            <div className="grid grid-cols-2 p-1 rounded-xl bg-[#F1F5F9] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155]/60 gap-1">
+            <div className="grid grid-cols-2 p-1 rounded-xl bg-[#F8FAFA] dark:bg-[#0D1B2E] border border-[#E8E9ED] dark:border-[#22364F] gap-1">
               <button
                 type="button"
                 onClick={() => setSelectedCategory("ARABIC")}
                 className={`py-2 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
                   selectedCategory === "ARABIC"
                     ? "bg-[#800020] text-white shadow-xs"
-                    : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
+                    : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#12263F] dark:hover:text-white hover:bg-white dark:hover:bg-[#1E293B]"
                 }`}
               >
                 <span>مدارس عربي (Arabic)</span>
@@ -713,7 +713,7 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
                 className={`py-2 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
                   selectedCategory === "LANGUAGES"
                     ? "bg-[#800020] text-white shadow-xs"
-                    : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
+                    : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#12263F] dark:hover:text-white hover:bg-white dark:hover:bg-[#1E293B]"
                 }`}
               >
                 <span>مدارس لغات (Languages)</span>
@@ -724,10 +724,10 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
 
         {/* Row 2: Tracks Row (G11 ONLY) */}
         {isG11 && (
-          <div className="pt-3 border-t border-[#F1F5F9] dark:border-[#1E293B] space-y-2 animate-in fade-in duration-200">
+          <div className="pt-3 border-t border-[#E8E9ED] dark:border-[#22364F] space-y-2.5 animate-in fade-in duration-200">
             <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-1.5 text-xs font-bold text-[#0F172A] dark:text-white">
-                <Layers className="w-3.5 h-3.5 text-[#800020] dark:text-[#FB7185]" />
+              <div className="flex items-center gap-1.5 text-xs font-bold text-[#12263F] dark:text-white">
+                <Layers className="w-4 h-4 text-[#800020] dark:text-[#FB7185]" />
                 <span>المسار التخصصي (تانية بكالوريا):</span>
               </div>
 
@@ -735,14 +735,14 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
               <button
                 type="button"
                 onClick={() => setTrackModalState({ isOpen: true, initialTrack: null })}
-                className="text-[11px] font-bold text-[#800020] dark:text-[#FB7185] hover:underline flex items-center gap-1 cursor-pointer"
+                className="text-xs font-bold text-[#800020] dark:text-[#FB7185] hover:underline flex items-center gap-1 cursor-pointer"
               >
-                <Plus className="w-3 h-3" />
+                <Plus className="w-3.5 h-3.5" />
                 <span>إضافة مسار جديد</span>
               </button>
             </div>
 
-            {/* Track Pills */}
+            {/* Track Pills: Clean horizontal flow with discreet hover actions */}
             <div className="flex items-center gap-2 flex-wrap">
               {/* All Tracks Pill */}
               <button
@@ -751,16 +751,16 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
                   setSelectedTrackId("ALL");
                   setSubjectFilterTab("ALL");
                 }}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
                   selectedTrackId === "ALL"
-                    ? "bg-[#800020] text-white shadow-2xs"
-                    : "bg-[#F1F5F9] dark:bg-[#1E293B] text-[#64748B] dark:text-[#94A3B8] hover:bg-[#E2E8F0] dark:hover:bg-[#334155]"
+                    ? "bg-[#12263F] dark:bg-[#1E3A5F] text-white shadow-xs"
+                    : "bg-[#F8FAFA] dark:bg-[#0D1B2E] border border-[#E8E9ED] dark:border-[#22364F] text-[#64748B] dark:text-[#94A3B8] hover:bg-slate-100 dark:hover:bg-slate-800"
                 }`}
               >
                 <span>كافة المسارات</span>
                 <span
-                  className={`text-[10px] px-1.5 py-0.2 rounded-full ${
-                    selectedTrackId === "ALL" ? "bg-white/20 text-white" : "bg-black/5 dark:bg-white/10"
+                  className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono ${
+                    selectedTrackId === "ALL" ? "bg-white/20 text-white" : "bg-slate-200/80 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
                   }`}
                 >
                   {allGradeSubjects.length}
@@ -778,8 +778,8 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
                     key={track.id}
                     className={`group inline-flex items-center rounded-xl border text-xs font-bold transition-all ${
                       isSelected
-                        ? "bg-[#800020] text-white border-[#800020] shadow-2xs"
-                        : "bg-[#F1F5F9] dark:bg-[#1E293B] text-[#64748B] dark:text-[#94A3B8] border-transparent hover:border-[#CBD5E1] dark:hover:border-[#475569]"
+                        ? "bg-[#800020] text-white border-[#800020] shadow-xs"
+                        : "bg-[#F8FAFA] dark:bg-[#0D1B2E] border-[#E8E9ED] dark:border-[#22364F] text-[#64748B] dark:text-[#94A3B8] hover:border-[#800020]/40 hover:bg-slate-100 dark:hover:bg-slate-800"
                     }`}
                   >
                     <button
@@ -788,31 +788,31 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
                         setSelectedTrackId(track.id);
                         setSubjectFilterTab("TRACK");
                       }}
-                      className="px-3 py-1.5 flex items-center gap-1.5 cursor-pointer"
+                      className="px-3 py-1.5 flex items-center gap-2 cursor-pointer"
                     >
-                      <TrackIcon className="w-3.5 h-3.5" />
+                      <TrackIcon className="w-3.5 h-3.5 shrink-0" />
                       <span>{track.name}</span>
                       <span
-                        className={`text-[10px] px-1.5 py-0.2 rounded-full ${
-                          isSelected ? "bg-white/20 text-white" : "bg-black/5 dark:bg-white/10"
+                        className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono ${
+                          isSelected ? "bg-white/20 text-white" : "bg-slate-200/80 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
                         }`}
                       >
                         {trackSubjectCount}
                       </span>
                     </button>
 
-                    {/* Quick edit / delete track actions */}
-                    <div className="flex items-center pl-1.5 pr-0.5 gap-0.5">
+                    {/* Quick edit / delete track actions: Reveal on hover to avoid visual clutter */}
+                    <div className="flex items-center pl-1.5 pr-0.5 gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button
                         type="button"
                         onClick={(e) => {
                           e.stopPropagation();
                           setTrackModalState({ isOpen: true, initialTrack: track });
                         }}
-                        className={`w-5 h-5 rounded-md flex items-center justify-center transition-colors ${
+                        className={`w-5 h-5 rounded-md flex items-center justify-center transition-colors cursor-pointer ${
                           isSelected
                             ? "hover:bg-white/20 text-white"
-                            : "hover:bg-[#E2E8F0] dark:hover:bg-[#334155] text-[#64748B]"
+                            : "hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 hover:text-slate-800 dark:hover:text-white"
                         }`}
                         title="تعديل المسار"
                       >
@@ -825,10 +825,10 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
                           e.stopPropagation();
                           handleDirectDeleteTrack(track.id, track.name);
                         }}
-                        className={`w-5 h-5 rounded-md flex items-center justify-center transition-colors ${
+                        className={`w-5 h-5 rounded-md flex items-center justify-center transition-colors cursor-pointer ${
                           isSelected
-                            ? "hover:bg-red-500/30 text-white"
-                            : "hover:bg-red-50 dark:hover:bg-red-950/40 text-red-500"
+                            ? "hover:bg-rose-500/30 text-white"
+                            : "hover:bg-rose-50 dark:hover:bg-rose-950/40 text-rose-500"
                         }`}
                         title="حذف المسار"
                       >
