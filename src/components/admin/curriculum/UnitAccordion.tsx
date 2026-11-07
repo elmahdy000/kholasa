@@ -48,9 +48,8 @@ export function UnitAccordion({
             className="flex items-center gap-2 text-right font-black text-xs sm:text-sm text-[#12263F] dark:text-white hover:text-[#800020] transition-colors cursor-pointer truncate"
           >
             <ChevronDown
-              className={`w-4 h-4 text-slate-400 transition-transform shrink-0 ${
-                !isExpanded ? "-rotate-90" : ""
-              }`}
+              className={`w-4 h-4 text-slate-400 transition-transform shrink-0 ${!isExpanded ? "-rotate-90" : ""
+                }`}
             />
             <span className="truncate">{unit.title}</span>
           </button>
@@ -106,11 +105,10 @@ export function UnitAccordion({
             type="button"
             onClick={() => onTogglePublished("unit", unit.id, unit.isPublished)}
             disabled={togglingId === unit.id}
-            className={`h-8 px-2.5 rounded-lg text-xs font-bold flex items-center gap-1 transition-colors cursor-pointer border ${
-              unit.isPublished
+            className={`h-8 px-2.5 rounded-lg text-xs font-bold flex items-center gap-1 transition-colors cursor-pointer border ${unit.isPublished
                 ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800"
                 : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700"
-            }`}
+              }`}
           >
             {unit.isPublished ? (
               <>
@@ -182,7 +180,7 @@ export function UnitAccordion({
                 unitId={unit.id}
                 togglingId={togglingId}
                 onEditLesson={onEditLesson}
-                onDeleteLesson={onDeleteLesson || (() => {})}
+                onDeleteLesson={onDeleteLesson || (() => { })}
                 onTogglePublished={(id, status) => onTogglePublished("lesson", id, status)}
               />
             ))

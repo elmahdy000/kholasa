@@ -620,7 +620,7 @@ export function LessonViewer({
       />
 
       {/* 3. Main Navigation Tabs (4 Clear Student Tabs) */}
-      <div className="p-1 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/80 border border-[#E2E8F0]/80 dark:border-[#334155]/80 flex items-center gap-1 overflow-x-auto scrollbar-none">
+      <div className="p-1 rounded-2xl bg-slate-100/80 dark:bg-slate-900/70 border border-slate-200/60 dark:border-slate-800/80 flex items-center gap-1.5 overflow-x-auto scrollbar-none shadow-2xs">
         {[
           {
             id: "definitions",
@@ -651,10 +651,11 @@ export function LessonViewer({
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`flex-1 min-w-[130px] sm:min-w-[140px] py-2.5 px-3 rounded-lg text-[13px] sm:text-sm font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${isSelected
-                  ? "bg-[#800020] text-white shadow-sm"
-                  : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white hover:bg-white/50 dark:hover:bg-[#334155]/50"
-                }`}
+              className={`flex-1 min-w-[130px] sm:min-w-[140px] py-2 px-3.5 rounded-xl text-xs sm:text-[13px] font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                isSelected
+                  ? "bg-white dark:bg-[#1E3A5F] text-[#800020] dark:text-white shadow-xs border border-slate-200/80 dark:border-slate-700/80 font-black"
+                  : "text-slate-600 dark:text-slate-400 hover:text-[#12263F] dark:hover:text-white hover:bg-white/50 dark:hover:bg-slate-800/50"
+              }`}
             >
               <Icon
                 className="w-4 h-4 shrink-0"
@@ -663,10 +664,11 @@ export function LessonViewer({
               <span>{tab.label}</span>
               {"badge" in tab && tab.badge && (
                 <span
-                  className={`text-[11px] px-1.5 py-0.5 rounded-full font-bold font-mono ${isSelected
-                      ? "bg-white/20 text-white"
-                      : "bg-[#800020]/10 text-[#800020] dark:bg-[#FB7185]/20 dark:text-[#FB7185]"
-                    }`}
+                  className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono font-bold ${
+                    isSelected
+                      ? "bg-[#800020]/10 text-[#800020] dark:bg-white/15 dark:text-white"
+                      : "bg-slate-200/80 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
+                  }`}
                 >
                   {tab.badge}
                 </span>

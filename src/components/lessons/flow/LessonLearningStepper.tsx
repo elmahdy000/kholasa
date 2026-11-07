@@ -53,7 +53,6 @@ export function LessonLearningStepper({
       badge: definitionsCount > 0 ? `${definitionsCount} ${isLanguages ? "terms" : "مصطلحات"}` : (isLanguages ? "Overview" : "ملخص"),
       isCompleted: true,
       icon: BookmarkSimple,
-      color: "blue",
     },
     {
       id: "tf" as const,
@@ -62,7 +61,6 @@ export function LessonLearningStepper({
       badge: tfQuestionsCount > 0 ? `${tfAnsweredCount}/${tfQuestionsCount}` : (isLanguages ? "0 challenges" : "متاح"),
       isCompleted: isTfDone,
       icon: Lightning,
-      color: "sky",
     },
     {
       id: "exam" as const,
@@ -71,7 +69,6 @@ export function LessonLearningStepper({
       badge: examQuestionsCount > 0 ? `${examAnsweredCount}/${examQuestionsCount}` : (isLanguages ? "0 questions" : "متاح"),
       isCompleted: isExamDone,
       icon: Exam,
-      color: "purple",
     },
     {
       id: "mistakes" as const,
@@ -83,7 +80,6 @@ export function LessonLearningStepper({
           : `${unresolvedMistakesCount} ${isLanguages ? "mistakes" : "أخطاء"}`,
       isCompleted: isMistakesClean,
       icon: Sparkle,
-      color: "amber",
     },
   ];
 
@@ -92,27 +88,27 @@ export function LessonLearningStepper({
   return (
     <div
       dir={dir}
-      className="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] shadow-xs space-y-3 transition-all"
+      className="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-[#10233A] border border-[#E8E9ED] dark:border-[#22364F] shadow-xs space-y-3 transition-colors"
     >
       {/* Header bar */}
-      <div className="flex items-center justify-between gap-3 text-xs font-bold text-slate-500 dark:text-slate-400">
-        <div className="flex items-center gap-2 text-slate-800 dark:text-slate-200">
-          <div className="w-6 h-6 rounded-lg bg-[#800020]/10 text-[#800020] dark:text-[#FB7185] flex items-center justify-center shrink-0">
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <div className="w-7 h-7 rounded-lg bg-[#800020]/10 text-[#800020] dark:text-[#FB7185] flex items-center justify-center shrink-0">
             <Compass className="w-4 h-4" weight="bold" />
           </div>
-          <span className="text-[13px] font-bold">
+          <span className="text-xs sm:text-sm font-black text-[#12263F] dark:text-white">
             {isLanguages ? "Lesson Learning Path & Next Steps" : "خطة إنجاز الدرس خطوة بخطوة"}
           </span>
         </div>
 
-        <div className="flex items-center gap-2">
-          <div className="w-24 sm:w-32 h-2 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden hidden sm:block">
+        <div className="flex items-center gap-2.5">
+          <div className="w-24 sm:w-32 h-2 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden border border-slate-200/50 dark:border-slate-700/50 hidden sm:block">
             <div
-              className="h-full bg-[#800020] dark:bg-[#FB7185] transition-all duration-500 rounded-full"
+              className="h-full bg-gradient-to-l from-[#800020] to-[#D97706] rounded-full transition-all duration-500"
               style={{ width: `${progressPercent}%` }}
             />
           </div>
-          <span className="text-[11px] font-mono font-bold text-[#800020] dark:text-[#FB7185] bg-[#800020]/10 dark:bg-[#800020]/30 px-2 py-0.5 rounded-md">
+          <span className="text-xs font-mono font-black text-[#800020] dark:text-[#FB7185] bg-[#800020]/10 dark:bg-[#800020]/25 border border-[#800020]/20 px-2.5 py-0.5 rounded-full">
             {progressPercent}% {isLanguages ? "Ready" : "جاهزية"}
           </span>
         </div>
@@ -122,17 +118,16 @@ export function LessonLearningStepper({
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-2.5">
         {steps.map((st) => {
           const isActive = activeStep === st.id;
-          const Icon = st.icon;
 
-          let borderStyle = "border-[#E2E8F0] dark:border-[#334155]";
-          let bgStyle = "bg-[#F8FAFC] dark:bg-[#1E293B]/70";
+          let borderStyle = "border-[#E8E9ED] dark:border-[#22364F]";
+          let bgStyle = "bg-[#F8FAFA] dark:bg-[#0D1B2E]";
 
           if (isActive) {
             borderStyle = "border-[#800020] dark:border-[#FB7185] ring-2 ring-[#800020]/15 dark:ring-[#FB7185]/20";
-            bgStyle = "bg-[#800020]/5 dark:bg-[#800020]/20";
+            bgStyle = "bg-[#800020]/5 dark:bg-[#800020]/15";
           } else if (st.isCompleted) {
-            borderStyle = "border-emerald-500/40 dark:border-emerald-500/30";
-            bgStyle = "bg-emerald-500/[0.04] dark:bg-emerald-500/10";
+            borderStyle = "border-emerald-500/30 dark:border-emerald-500/30";
+            bgStyle = "bg-emerald-50/50 dark:bg-emerald-950/20";
           }
 
           return (
@@ -140,13 +135,13 @@ export function LessonLearningStepper({
               key={st.id}
               type="button"
               onClick={() => onSelectStep(st.id)}
-              className={`p-3 rounded-xl border text-right transition-all flex items-start gap-2.5 cursor-pointer relative overflow-hidden group hover:scale-[1.01] active:scale-[0.99] ${borderStyle} ${bgStyle} ${
+              className={`p-3 rounded-xl border transition-all flex items-center gap-2.5 cursor-pointer relative overflow-hidden group hover:scale-[1.01] active:scale-[0.99] ${borderStyle} ${bgStyle} ${
                 isLanguages ? "text-left" : "text-right"
               }`}
             >
-              {/* Step indicator circle */}
+              {/* Step indicator circle / checkmark */}
               <div
-                className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 font-mono font-bold text-xs transition-colors ${
+                className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 font-mono font-black text-xs transition-colors shadow-2xs ${
                   st.isCompleted
                     ? "bg-emerald-500 text-white"
                     : isActive
@@ -155,7 +150,7 @@ export function LessonLearningStepper({
                 }`}
               >
                 {st.isCompleted ? (
-                  <Check className="w-4 h-4" weight="bold" />
+                  <Check className="w-3.5 h-3.5" weight="bold" />
                 ) : (
                   st.stepNumber
                 )}
@@ -163,23 +158,15 @@ export function LessonLearningStepper({
 
               {/* Title & Badge */}
               <div className="min-w-0 flex-1">
-                <div className="flex items-center justify-between gap-1">
-                  <span
-                    className={`text-[12px] sm:text-[13px] font-bold leading-tight break-words block ${
-                      isActive
-                        ? "text-[#800020] dark:text-[#FB7185]"
-                        : "text-slate-800 dark:text-slate-100"
-                    }`}
-                  >
-                    {st.title}
-                  </span>
+                <div className="text-xs sm:text-[13px] font-bold text-[#12263F] dark:text-white truncate">
+                  {st.title}
                 </div>
 
-                <div className="flex items-center gap-1.5 mt-0.5">
+                <div className="mt-0.5">
                   <span
-                    className={`text-[11px] font-medium font-mono px-1.5 py-0.2 rounded ${
+                    className={`text-[11px] font-medium font-mono px-1.5 py-0.2 rounded-md ${
                       st.isCompleted
-                        ? "text-emerald-700 dark:text-emerald-400 bg-emerald-500/15"
+                        ? "text-emerald-700 dark:text-emerald-300 bg-emerald-500/15"
                         : "text-slate-500 dark:text-slate-400 bg-black/5 dark:bg-white/5"
                     }`}
                   >
@@ -194,4 +181,3 @@ export function LessonLearningStepper({
     </div>
   );
 }
-

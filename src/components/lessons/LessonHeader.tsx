@@ -54,60 +54,64 @@ export function LessonHeader({
   onOpenMistakesCapsule,
 }: LessonHeaderProps) {
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E2E8F0] dark:border-[#334155] pb-5">
-      <div>
+    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#E8E9ED] dark:border-[#22364F] pb-5">
+      {/* Lesson Breadcrumbs, Title and Meta */}
+      <div className="space-y-1.5 min-w-0 flex-1">
         {/* Breadcrumbs */}
-        <div className="flex items-center gap-2 text-[13px] font-medium text-[#64748B] dark:text-[#94A3B8] mb-2 flex-wrap">
+        <div className="flex items-center gap-2 text-xs font-semibold text-slate-500 dark:text-slate-400 flex-wrap">
           <Link href="/subjects" className="hover:text-[#800020] transition-colors">
             المواد
           </Link>
-          <span>/</span>
+          <span className="text-slate-300 dark:text-slate-600">/</span>
           <Link href={`/subjects/${subject.id}`} className="hover:text-[#800020] transition-colors">
             {subject.name}
           </Link>
-          <span>/</span>
-          <span className="text-[#0F172A] dark:text-white">{unit.title}</span>
+          <span className="text-slate-300 dark:text-slate-600">/</span>
+          <span className="text-[#12263F] dark:text-white truncate">{unit.title}</span>
         </div>
 
         {/* Title */}
-        <h1 className="text-xl sm:text-2xl font-bold text-[#0F172A] dark:text-white leading-tight flex items-center gap-3">
-          <span>{lessonTitle}</span>
+        <h1 className="text-xl sm:text-2xl font-black text-[#12263F] dark:text-white tracking-tight leading-snug">
+          {lessonTitle}
         </h1>
 
-        {/* Meta */}
-        <div className="flex items-center gap-3 text-[13px] text-[#64748B] dark:text-[#94A3B8] font-medium mt-2">
-          <span className="flex items-center gap-2">
+        {/* Meta badges */}
+        <div className="flex items-center gap-2.5 text-xs text-slate-500 dark:text-slate-400 font-medium pt-0.5 flex-wrap">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-[#10233A] border border-slate-200/80 dark:border-slate-800 text-slate-700 dark:text-slate-300 font-semibold">
             <Clock className="w-3.5 h-3.5 text-[#800020]" weight="bold" />
-            <span>مدة الدرس: {durationMinutes} دقيقة</span>
+            <span>{durationMinutes} دقيقة</span>
           </span>
-          <span>•</span>
-          <span className="text-[#059669]">{questionsCount} أسئلة تدريبية</span>
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/70 dark:border-emerald-800/70 text-emerald-700 dark:text-emerald-300 font-semibold">
+            <Target className="w-3.5 h-3.5" weight="bold" />
+            <span>{questionsCount} أسئلة تدريبية</span>
+          </span>
         </div>
       </div>
 
-      {/* Actions */}
-      <div className="flex items-center gap-2 relative flex-wrap sm:flex-nowrap">
+      {/* Action Toolbar: Unified, balanced row with Vercel aesthetic */}
+      <div className="flex items-center gap-2 self-start md:self-center shrink-0 flex-wrap relative">
         {/* Quick Mistakes Drill Button */}
         {unresolvedMistakesCount !== undefined && unresolvedMistakesCount > 0 && onOpenMistakesCapsule && (
           <button
             type="button"
             onClick={onOpenMistakesCapsule}
-            className="h-11 px-3 sm:px-4 rounded-lg bg-amber-500/10 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 border border-amber-500/30 hover:border-amber-500 hover:bg-amber-500/15 text-[13px] font-bold flex items-center gap-2 transition-all cursor-pointer shadow-2xs"
+            className="h-9.5 px-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800/70 hover:bg-amber-100 text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-2xs"
             title="مراجعة وتصحيح الأسئلة غير المتقنة في هذا الدرس"
           >
-            <ArrowClockwise className="w-4 h-4 text-amber-600 dark:text-amber-400" weight="bold" />
-            <span>معالجة الأخطاء ({unresolvedMistakesCount})</span>
+            <ArrowClockwise className="w-3.5 h-3.5 text-[#D97706]" weight="bold" />
+            <span>أخطاء ({unresolvedMistakesCount})</span>
           </button>
         )}
 
         {/* Lesson Flashcards Recitation Button */}
         {onStartFlashcards && (
           <button
+            type="button"
             onClick={onStartFlashcards}
-            className="h-11 px-3.5 sm:px-4 rounded-lg bg-white dark:bg-[#1E293B] border border-[#800020]/30 hover:border-[#800020] text-[#800020] dark:text-[#FB7185] hover:bg-[#800020]/10 text-[13px] font-bold flex items-center gap-2 transition-colors cursor-pointer"
+            className="h-9.5 px-3.5 rounded-xl bg-white dark:bg-[#10233A] border border-[#E8E9ED] dark:border-[#22364F] hover:border-[#800020]/40 text-[#12263F] dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
             title="سمّع لنفسك مفاهيم ومصطلحات الدرس"
           >
-            <Cards className="w-4 h-4" weight="bold" />
+            <Cards className="w-4 h-4 text-[#800020] dark:text-[#FB7185]" weight="bold" />
             <span>تسميع الدرس</span>
           </button>
         )}
@@ -116,76 +120,66 @@ export function LessonHeader({
         {lessonId && (
           <Link
             href={`/exams/builder?subjectId=${subject.id}&unitId=${unit.id}&lessonId=${lessonId}`}
-            className="h-11 px-3.5 sm:px-4 rounded-lg bg-white dark:bg-[#1E293B] border border-[#800020]/30 hover:border-[#800020] text-[#800020] dark:text-[#FB7185] hover:bg-[#800020]/10 text-[13px] font-bold flex items-center gap-2 transition-colors"
+            className="h-9.5 px-3.5 rounded-xl bg-white dark:bg-[#10233A] border border-[#E8E9ED] dark:border-[#22364F] hover:border-[#800020]/40 text-[#12263F] dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-bold flex items-center gap-1.5 transition-colors shadow-2xs"
             title="بدء امتحان مخصص على هذا الدرس"
           >
-            <Target className="w-4 h-4" weight="bold" />
+            <Target className="w-4 h-4 text-[#800020] dark:text-[#FB7185]" weight="bold" />
             <span>امتحان الدرس</span>
           </Link>
         )}
 
-        {/* Offline Save/Delete Button */}
-        {onToggleOffline && (
+        {/* Utility Icon Group: Offline & Bookmark */}
+        <div className="flex items-center border border-[#E8E9ED] dark:border-[#22364F] rounded-xl overflow-hidden bg-white dark:bg-[#10233A] shadow-2xs">
+          {onToggleOffline && (
+            <button
+              type="button"
+              onClick={onToggleOffline}
+              disabled={isSavingOffline}
+              className="h-9.5 w-9.5 flex items-center justify-center text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+              title={isSavedOffline ? "محفوظ بدون نت (اضغط للحذف)" : "حفظ الدرس أوفلاين"}
+            >
+              {isSavedOffline ? (
+                <CloudCheck className="w-4 h-4 text-emerald-600" weight="bold" />
+              ) : (
+                <CloudArrowDown className="w-4 h-4" weight="bold" />
+              )}
+            </button>
+          )}
+
           <button
             type="button"
-            onClick={onToggleOffline}
-            disabled={isSavingOffline}
-            className={`h-11 px-3 sm:px-3.5 rounded-lg border text-[13px] font-bold flex items-center gap-2 transition-colors cursor-pointer ${
-              isSavedOffline
-                ? "bg-[#059669]/10 border-[#059669]/30 text-[#059669] dark:text-[#34D399]"
-                : "bg-white dark:bg-[#1E293B] border-[#E2E8F0] dark:border-[#334155] text-[#64748B] dark:text-[#F8FAFC] hover:border-[#4F46E5]/50"
+            onClick={onToggleBookmark}
+            disabled={isTogglingBookmark}
+            className={`h-9.5 w-9.5 flex items-center justify-center transition-colors cursor-pointer border-r border-[#E8E9ED] dark:border-[#22364F] ${
+              isBookmarked
+                ? "bg-[#800020]/10 text-[#800020] dark:text-[#FB7185]"
+                : "text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800"
             }`}
-            title={isSavedOffline ? "محفوظ للمذاكرة بدون نت (اضغط للحذف)" : "حفظ الدرس للمذاكرة بدون إنترنت"}
+            title={isBookmarked ? "إزالة من المحفوظات" : "حفظ في المفضلة"}
           >
-            {isSavedOffline ? (
-              <CloudCheck className="w-4 h-4 text-[#059669] dark:text-[#34D399]" weight="bold" />
-            ) : (
-              <CloudArrowDown className="w-4 h-4 text-[#64748B] dark:text-[#94A3B8]" weight="bold" />
-            )}
-            <span className="hidden sm:inline">
-              {isSavingOffline ? "جاري الحفظ..." : isSavedOffline ? "محفوظ أوفلاين" : "حفظ أوفلاين"}
-            </span>
+            <BookmarkSimple className="w-4 h-4" weight={isBookmarked ? "fill" : "bold"} />
           </button>
-        )}
+        </div>
 
-        {/* Bookmark Button */}
+        {/* Complete Toggle Button (Primary CTA) */}
         <button
-          onClick={onToggleBookmark}
-          disabled={isTogglingBookmark}
-          className={`h-11 px-3.5 rounded-lg border text-[13px] font-bold flex items-center gap-2 transition-colors ${
-            isBookmarked
-              ? "bg-[#800020]/10 border-[#800020]/30 text-[#800020]"
-              : "bg-white dark:bg-[#1E293B] border-[#E2E8F0] dark:border-[#334155] text-[#64748B] dark:text-[#F8FAFC] hover:border-[#800020]/50"
-          }`}
-          title={isBookmarked ? "إزالة من المحفوظات" : "حفظ في المفضلة"}
-        >
-          <BookmarkSimple
-            className="w-4 h-4"
-            weight={isBookmarked ? "fill" : "bold"}
-          />
-          <span className="hidden sm:inline">
-            {isBookmarked ? "محفوظ" : "حفظ"}
-          </span>
-        </button>
-
-        {/* Complete Toggle Button */}
-        <button
+          type="button"
           onClick={onToggleComplete}
           disabled={isTogglingComplete}
-          className={`h-11 px-4 rounded-lg font-bold text-[13px] flex items-center gap-2 transition-colors ${
+          className={`h-9.5 px-4 rounded-xl font-bold text-xs flex items-center gap-1.5 shadow-xs transition-all cursor-pointer active:scale-95 ${
             isCompleted
-              ? "bg-[#059669] text-white hover:bg-[#047857]"
-              : "bg-[#800020] text-white hover:bg-[#66001A]"
+              ? "bg-emerald-600 hover:bg-emerald-700 text-white"
+              : "bg-[#800020] hover:bg-[#66001A] text-white"
           }`}
         >
           {isCompleted ? (
             <>
-              <Check className="w-4 h-4" weight="bold" />
+              <Check className="w-3.5 h-3.5" weight="bold" />
               <span>مكتمل</span>
             </>
           ) : (
             <>
-              <CheckCircle className="w-4 h-4" weight="bold" />
+              <CheckCircle className="w-3.5 h-3.5" weight="bold" />
               <span>تحديد كمكتمل</span>
             </>
           )}
@@ -193,7 +187,7 @@ export function LessonHeader({
 
         {/* Bookmark Feedback Toast */}
         {bookmarkNotice && (
-          <div className="absolute top-12 left-0 sm:left-auto sm:right-0 z-30 bg-[#0F172A] text-white text-[12px] font-medium py-2 px-3 rounded-lg shadow-lg whitespace-nowrap animate-in fade-in duration-200">
+          <div className="absolute top-12 left-0 sm:left-auto sm:right-0 z-30 bg-[#0F172A] text-white text-xs font-semibold py-1.5 px-3 rounded-lg shadow-lg whitespace-nowrap animate-in fade-in duration-200">
             {bookmarkNotice}
           </div>
         )}
