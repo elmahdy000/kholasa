@@ -17,6 +17,10 @@ import {
   Lock,
   CheckCircle2,
   X,
+  Send,
+  Smartphone,
+  RotateCcw,
+  Sparkles,
 } from "lucide-react";
 import type { UserItem } from "./types";
 import { useToast } from "@/components/ui/Toast";
@@ -40,6 +44,8 @@ export function EditRoleModal({
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [loginCode, setLoginCode] = useState("");
+  const [copiedCode, setCopiedCode] = useState(false);
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [copiedPassword, setCopiedPassword] = useState(false);
@@ -47,6 +53,7 @@ export function EditRoleModal({
   const [isActive, setIsActive] = useState(true);
 
   const [isUpdating, setIsUpdating] = useState(false);
+  const [isResettingDevices, setIsResettingDevices] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
@@ -55,6 +62,8 @@ export function EditRoleModal({
       setName(user.name || "");
       setEmail(user.email || "");
       setPhone(user.phone || "");
+      setLoginCode(user.loginCode || "");
+      setCopiedCode(false);
       setPassword("");
       setShowPassword(false);
       setCopiedPassword(false);
@@ -67,6 +76,69 @@ export function EditRoleModal({
   if (!user) return null;
 
   const isAssistant = role !== "STUDENT";
+
+  const generateRandomLoginCode = () => {
+    const chars = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ";
+    let res = "";
+    for (let i = 0; i < 6; i++) {
+      res += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    setLoginCode(res);
+    navigator.clipboard.writeText(res);
+    setCopiedCode(true);
+    toast.info(`تم توليد ونسخ كود الطالب الجديد: ${res}`);
+    setTimeout(() => setCopiedCode(false), 3000);
+  };
+
+  const handleCopyLoginCode = () => {
+    const code = loginCode.trim().toUpperCase() || user.loginCode;
+    if (!code) {
+      toast.warning("لا يوجد كود لنسخه");
+      return;
+    }
+    navigator.clipboard.writeText(code);
+    setCopiedCode(true);
+    toast.success(`تم نسخ كود الطالب: ${code}`);
+    setTimeout(() => setCopiedCode(false), 2500);
+  };
+
+  const handleShareWhatsApp = () => {
+    const code = loginCode.trim().toUpperCase() || user.loginCode;
+    if (!code) {
+      toast.warning("يرجى توليد كود الطالب أولاً قبل المشاركة");
+      return;
+    }
+    const cleanPhone = phone ? phone.replace(/[^0-9]/g, "") : "";
+    const phoneParam = cleanPhone.startsWith("01") ? `2${cleanPhone}` : cleanPhone;
+    const baseUrl = typeof window !== "undefined" ? window.location.origin : "https://el-kholasa.online";
+    const loginUrl = `${baseUrl}/login?code=${code}`;
+
+    const text = `أهلاً يا ${name || "بطل"}،
+تم تفعيل وتحديث حسابك على منصة «الخلاصة» 🎓
+🔑 كود الدخول الخاص بك: ${code}
+🔗 رابط الدخول المباشر: ${loginUrl}
+
+ادخل الكود وابدأ المذاكرة، بالتوفيق! ✨`;
+
+    const encodedText = encodeURIComponent(text);
+    const waUrl = phoneParam ? `https://wa.me/${phoneParam}?text=${encodedText}` : `https://wa.me/?text=${encodedText}`;
+    window.open(waUrl, "_blank");
+  };
+
+  const handleResetDevicesModal = async () => {
+    if (!user) return;
+    setIsResettingDevices(true);
+    try {
+      const res = await fetch(`/api/admin/users/${user.id}/reset-devices`, { method: "POST" });
+      if (!res.ok) throw new Error("تعذر فك ربط الأجهزة");
+      toast.success("تم فك ربط أجهزة الطالب بنجاح");
+      onUserSaved({ ...user, boundDevices: [] });
+    } catch (err: any) {
+      toast.error(err.message || "حدث خطأ أثناء فك الأجهزة");
+    } finally {
+      setIsResettingDevices(false);
+    }
+  };
 
   const generateSecurePassword = () => {
     const specials = ["@", "#", "!", "$", "%"];
@@ -110,6 +182,7 @@ export function EditRoleModal({
       }
 
       if (role === "STUDENT") {
+        payload.loginCode = loginCode.trim().toUpperCase() || null;
         payload.maxDevices = maxDevices;
       }
 
@@ -129,12 +202,15 @@ export function EditRoleModal({
         ...data.user,
         role,
         isActive,
+        loginCode: role === "STUDENT" ? (loginCode.trim().toUpperCase() || user.loginCode) : user.loginCode,
         maxDevices: role === "STUDENT" ? maxDevices : user.maxDevices,
       };
 
       onUserSaved(updatedUser);
 
-      if (password) {
+      if (role === "STUDENT" && loginCode.trim()) {
+        toast.success(`تم تحديث كود الطالب وتفعيل الحساب بنجاح.`);
+      } else if (password) {
         toast.success(`تم تحديث الصلاحيات وتغيير كلمة المرور للحساب بنجاح وإلغاء الجلسات القديمة.`);
       } else {
         toast.success(`تم تحديث بيانات وصلاحيات الحساب بنجاح.`);
@@ -161,10 +237,16 @@ export function EditRoleModal({
             </div>
             <div>
               <h3 className="text-base sm:text-lg font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
-                <span>إدارة الحساب وكلمة المرور والصلاحيات</span>
+                <span>
+                  {role === "STUDENT"
+                    ? "إدارة كود الطالب وتفعيل الحساب والأجهزة"
+                    : "إدارة الحساب وكلمة المرور والصلاحيات"}
+                </span>
               </h3>
               <p className="text-xs text-[#64748B] dark:text-[#94A3B8]">
-                التحكم الكامل في المساعدين، المعلمين، وصلاحيات الوصول للمنصة
+                {role === "STUDENT"
+                  ? "توليد كود الدخول المباشر، تفعيل الحساب، وإرسال البيانات للواتساب"
+                  : "التحكم الكامل في المساعدين، المعلمين، وصلاحيات الوصول للمنصة"}
               </p>
             </div>
           </div>
@@ -265,12 +347,88 @@ export function EditRoleModal({
             </select>
           </div>
 
-          {/* SECTION 2: Direct Password Change Section */}
+          {/* SECTION: Student Login Code & Quick WhatsApp Share */}
+          {role === "STUDENT" && (
+            <div className="p-4.5 rounded-2xl bg-[#800020]/5 dark:bg-[#800020]/15 border-2 border-[#800020]/20 dark:border-[#FB7185]/30 space-y-3.5">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-bold text-[#800020] dark:text-[#FB7185] flex items-center gap-1.5">
+                  <KeyRound className="w-4 h-4" />
+                  <span>كود دخول الطالب المباشر (Student Login Code)</span>
+                </label>
+                <button
+                  type="button"
+                  onClick={generateRandomLoginCode}
+                  className="px-2.5 py-1 rounded-lg bg-[#800020] text-white hover:bg-[#66001A] text-[11px] font-bold flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
+                  title="توليد كود دخول عشوائي جديد للطالب"
+                >
+                  <RefreshCw className="w-3 h-3" />
+                  <span>توليد كود جديد 🎲</span>
+                </button>
+              </div>
+
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                <div className="relative flex-1">
+                  <input
+                    type="text"
+                    value={loginCode}
+                    onChange={(e) => setLoginCode(e.target.value.toUpperCase())}
+                    placeholder="مثال: K9M7Q2"
+                    maxLength={12}
+                    className="w-full h-11 px-3.5 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] text-sm sm:text-base font-mono font-black text-center tracking-widest text-[#800020] dark:text-[#FB7185] focus:outline-none focus:border-[#800020]"
+                    dir="ltr"
+                  />
+                </div>
+
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <button
+                    type="button"
+                    onClick={handleCopyLoginCode}
+                    className="h-11 px-3.5 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B] hover:bg-slate-50 text-slate-700 dark:text-slate-200 text-xs font-bold inline-flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
+                    title="نسخ كود الطالب"
+                  >
+                    {copiedCode ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4 text-slate-500" />}
+                    <span>{copiedCode ? "تم النسخ!" : "نسخ"}</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleShareWhatsApp}
+                    className="h-11 px-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold inline-flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
+                    title="إرسال بيانات الكود ورابط الدخول إلى واتساب الطالب مباشرة"
+                  >
+                    <Send className="w-3.5 h-3.5" />
+                    <span>واتساب 💬</span>
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap items-center justify-between gap-2 pt-1 text-[11px] text-[#64748B] dark:text-[#94A3B8]">
+                <span>يدخل به الطالب مباشرة من شاشة الدخول دون الحاجة لكلمة مرور.</span>
+                {user.boundDevices && user.boundDevices.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={handleResetDevicesModal}
+                    disabled={isResettingDevices}
+                    className="text-amber-700 dark:text-amber-400 hover:underline font-bold inline-flex items-center gap-1 cursor-pointer disabled:opacity-50"
+                  >
+                    <RotateCcw className="w-3 h-3" />
+                    <span>فك الأجهزة المسجلة ({user.boundDevices.length})</span>
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* SECTION 2: Password Section */}
           <div className="p-4 rounded-2xl bg-amber-50/50 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-900/50 space-y-3">
             <div className="flex items-center justify-between">
               <label className="text-xs font-bold text-amber-900 dark:text-amber-300 flex items-center gap-1.5">
                 <Lock className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
-                <span>تعيين أو تغيير كلمة المرور للمساعد / المستخدم</span>
+                <span>
+                  {role === "STUDENT"
+                    ? "تعيين كلمة مرور إضافية للطالب (اختياري، للدخول بالهاتف/الإيميل)"
+                    : "تعيين أو تغيير كلمة المرور للمساعد / المستخدم"}
+                </span>
               </label>
               <button
                 type="button"

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Shield, Trash2, Smartphone, RotateCcw, Eye, Copy, KeyRound, Check, Clock, CheckCircle2, Ban } from "lucide-react";
+import { Shield, Trash2, Smartphone, RotateCcw, Eye, Copy, KeyRound, Check, Clock, CheckCircle2, Ban, RefreshCw, Send } from "lucide-react";
 import type { UserItem } from "./types";
 
 interface UserTableProps {
@@ -12,6 +12,7 @@ interface UserTableProps {
   onResetDevices: (userId: string, userName: string) => void;
   onInspectUser?: (userId: string) => void;
   onToggleStatus?: (userId: string, currentStatus: boolean, userName: string) => void;
+  onQuickRegenerateCode?: (userId: string, userName: string) => void;
 }
 
 function formatLastActive(dateStr?: string | Date | null) {
@@ -37,6 +38,7 @@ export function UserTable({
   onResetDevices,
   onInspectUser,
   onToggleStatus,
+  onQuickRegenerateCode,
 }: UserTableProps) {
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
 
@@ -46,6 +48,25 @@ export function UserTable({
     setTimeout(() => {
       setCopiedCode((prev) => (prev === code ? null : prev));
     }, 2000);
+  };
+
+  const handleShareStudentWhatsApp = (u: UserItem) => {
+    if (!u.loginCode) return;
+    const cleanPhone = u.phone ? u.phone.replace(/[^0-9]/g, "") : "";
+    const phoneParam = cleanPhone.startsWith("01") ? `2${cleanPhone}` : cleanPhone;
+    const baseUrl = typeof window !== "undefined" ? window.location.origin : "https://el-kholasa.online";
+    const loginUrl = `${baseUrl}/login?code=${u.loginCode}`;
+
+    const text = `أهلاً يا ${u.name || "بطل"}،
+تم تفعيل وتحديث حسابك على منصة «الخلاصة» 🎓
+🔑 كود الدخول الخاص بك: ${u.loginCode}
+🔗 رابط الدخول المباشر: ${loginUrl}
+
+ادخل الكود وابدأ المذاكرة، بالتوفيق! ✨`;
+
+    const encodedText = encodeURIComponent(text);
+    const waUrl = phoneParam ? `https://wa.me/${phoneParam}?text=${encodedText}` : `https://wa.me/?text=${encodedText}`;
+    window.open(waUrl, "_blank");
   };
 
   return (
@@ -92,34 +113,75 @@ export function UserTable({
                           {u.name || "مستخدم بدون اسم"}
                         </button>
                         <div className="flex items-center gap-1.5 mt-1 flex-wrap">
-                          {u.loginCode && (
+                          {u.loginCode ? (
+                            <div className="inline-flex items-center gap-1">
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleCopyCode(u.loginCode!);
+                                }}
+                                title="انقر لنسخ كود الطالب"
+                                className={`px-2 py-0.5 rounded-md font-mono text-[11px] font-bold transition-all inline-flex items-center gap-1 cursor-pointer shrink-0 border ${
+                                  isCopied
+                                    ? "bg-emerald-600 text-white border-emerald-700"
+                                    : "bg-[#800020]/10 hover:bg-[#800020]/20 text-[#800020] dark:text-[#FB7185] border-[#800020]/20"
+                                }`}
+                              >
+                                {isCopied ? (
+                                  <>
+                                    <Check className="w-3 h-3 text-white" />
+                                    <span>تم النسخ!</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <KeyRound className="w-3 h-3 text-[#800020] dark:text-[#FB7185]" />
+                                    <span>{u.loginCode}</span>
+                                    <Copy className="w-2.5 h-2.5 opacity-60" />
+                                  </>
+                                )}
+                              </button>
+
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleShareStudentWhatsApp(u);
+                                }}
+                                title="إرسال بيانات الكود ورابط الدخول إلى واتساب الطالب / ولي الأمر"
+                                className="p-1 rounded-md bg-emerald-50 hover:bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 dark:hover:bg-emerald-900 border border-emerald-200 dark:border-emerald-800 transition-colors cursor-pointer"
+                              >
+                                <Send className="w-3 h-3" />
+                              </button>
+
+                              {onQuickRegenerateCode && u.role === "STUDENT" && (
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    onQuickRegenerateCode(u.id, u.name || "");
+                                  }}
+                                  title="توليد واستعادة كود جديد للطالب"
+                                  className="p-1 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition-colors cursor-pointer"
+                                >
+                                  <RefreshCw className="w-3 h-3" />
+                                </button>
+                              )}
+                            </div>
+                          ) : u.role === "STUDENT" && onQuickRegenerateCode ? (
                             <button
                               type="button"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                handleCopyCode(u.loginCode!);
+                                onQuickRegenerateCode(u.id, u.name || "");
                               }}
-                              title="انقر لنسخ كود الطالب"
-                              className={`px-2 py-0.5 rounded-md font-mono text-[11px] font-bold transition-all inline-flex items-center gap-1 cursor-pointer shrink-0 border ${
-                                isCopied
-                                  ? "bg-emerald-600 text-white border-emerald-700"
-                                  : "bg-[#800020]/10 hover:bg-[#800020]/20 text-[#800020] dark:text-[#FB7185] border-[#800020]/20"
-                              }`}
+                              className="px-2 py-0.5 rounded-md font-mono text-[11px] font-bold bg-amber-500/15 hover:bg-amber-500/25 text-amber-800 dark:text-amber-300 border border-amber-300/40 transition-colors inline-flex items-center gap-1 cursor-pointer"
+                              title="توليد واستعادة كود دخول فوري لهذا الطالب"
                             >
-                              {isCopied ? (
-                                <>
-                                  <Check className="w-3 h-3 text-white" />
-                                  <span>تم النسخ!</span>
-                                </>
-                              ) : (
-                                <>
-                                  <KeyRound className="w-3 h-3 text-[#800020] dark:text-[#FB7185]" />
-                                  <span>{u.loginCode}</span>
-                                  <Copy className="w-2.5 h-2.5 opacity-60" />
-                                </>
-                              )}
+                              <KeyRound className="w-3 h-3" />
+                              <span>+ توليد كود دخول</span>
                             </button>
-                          )}
+                          ) : null}
                           <span className="text-[11px] text-[#94A3B8] font-mono whitespace-nowrap">
                             {new Date(u.createdAt).toLocaleDateString("ar-EG")}
                           </span>
@@ -381,11 +443,11 @@ export function UserTable({
                           <button
                             type="button"
                             onClick={() => onSelectUserToEdit(u)}
-                            className="h-8 px-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-[#1E293B] dark:hover:bg-[#334155] text-slate-600 dark:text-slate-300 text-xs font-semibold inline-flex items-center gap-1.5 transition-colors cursor-pointer"
-                            title="تعديل الرتبة أو عدد الأجهزة"
+                            className="h-8 px-3 rounded-lg bg-[#800020]/10 hover:bg-[#800020] hover:text-white dark:bg-[#800020]/20 text-[#800020] dark:text-[#FB7185] dark:hover:bg-[#800020] dark:hover:text-white text-xs font-bold inline-flex items-center gap-1.5 transition-colors cursor-pointer border border-[#800020]/20 shadow-2xs"
+                            title="إدارة كود الطالب، استعادة الحساب، وتعيين الصلاحيات"
                           >
-                            <Shield className="w-3.5 h-3.5 text-slate-400" />
-                            <span>الرتبة</span>
+                            <KeyRound className="w-3.5 h-3.5" />
+                            <span>الكود والحساب</span>
                           </button>
                         </>
                       )}

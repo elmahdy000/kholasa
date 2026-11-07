@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -15,6 +15,7 @@ import {
   MessageCircle,
   GraduationCap,
   Shield,
+  CheckCircle2,
 } from "lucide-react";
 
 import { BrandLogo } from "@/components/ui/BrandLogo";
@@ -34,6 +35,24 @@ export default function LoginPage() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [autoFilledNotice, setAutoFilledNotice] = useState(false);
+
+  // Read ?code=... from URL for 1-click WhatsApp credentials links
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const urlCode = params.get("code") || params.get("loginCode");
+      if (urlCode && urlCode.trim()) {
+        const clean = urlCode.trim().toUpperCase();
+        setStudentCode(clean);
+        setLoginMode("code");
+        setAutoFilledNotice(true);
+      }
+    } catch {
+      // Ignore URL parsing errors
+    }
+  }, []);
 
   const handleCodeLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -152,6 +171,12 @@ export default function LoginPage() {
           {/* MODE 1: STUDENT CODE LOGIN (DEFAULT) */}
           {loginMode === "code" ? (
             <form onSubmit={handleCodeLogin} className="space-y-5">
+              {autoFilledNotice && (
+                <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 flex items-center gap-2.5 text-xs text-emerald-800 dark:text-emerald-300 font-bold animate-in fade-in duration-200">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span>تم استرجاع وتعبئة كود الدخول الخاص بك تلقائياً. اضغط "دخول" للمتابعة.</span>
+                </div>
+              )}
               <div>
                 <label
                   htmlFor="studentCode"

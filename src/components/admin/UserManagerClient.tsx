@@ -221,6 +221,34 @@ export function UserManagerClient({
     }
   };
 
+  const handleQuickRegenerateCode = async (userId: string, userName: string) => {
+    try {
+      const chars = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ";
+      let newCode = "";
+      for (let i = 0; i < 6; i++) {
+        newCode += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+
+      const res = await fetch(`/api/admin/users/${userId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ loginCode: newCode, isActive: true }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "تعذر تجديد كود الدخول");
+
+      setUsers((prev) =>
+        prev.map((u) => (u.id === userId ? { ...u, loginCode: newCode, isActive: true } : u))
+      );
+      navigator.clipboard.writeText(newCode);
+      toast.success(
+        `تم توليد وتفعيل كود الطالب "${userName || "المستهدف"}" بنجاح (${newCode}) وتم نسخه للحافظة! 📋`
+      );
+    } catch (err: any) {
+      toast.error(err.message || "حدث خطأ أثناء تجديد كود الدخول");
+    }
+  };
+
   const handleBulkActivateStudents = () => {
     const suspendedStudents = users.filter((u) => u.role === "STUDENT" && u.isActive === false);
     const count = suspendedStudents.length;
@@ -334,6 +362,7 @@ export function UserManagerClient({
         onResetDevices={handleResetDevices}
         onInspectUser={(id) => setInspectUserId(id)}
         onToggleStatus={handleToggleStatus}
+        onQuickRegenerateCode={handleQuickRegenerateCode}
       />
 
       {/* Pagination Footer */}
