@@ -73,10 +73,12 @@ export async function POST(req: Request) {
         const fileName = file.name.toLowerCase();
         const isDocx = fileName.endsWith(".docx");
         const isPdf = fileName.endsWith(".pdf");
+        const isJson = fileName.endsWith(".json");
+        const isTxt = fileName.endsWith(".txt");
 
-        if (!isDocx && !isPdf) {
+        if (!isDocx && !isPdf && !isJson && !isTxt) {
           return NextResponse.json(
-            { error: "يرجى رفع ملف بصيغة Word (.docx) أو PDF (.pdf)" },
+            { error: "يرجى رفع ملف بصيغة Word (.docx) أو PDF (.pdf) أو JSON (.json) أو نص (.txt)" },
             { status: 400 }
           );
         }
@@ -92,16 +94,27 @@ export async function POST(req: Request) {
         const buffer = Buffer.from(arrayBuffer);
 
         try {
-          const { text, questions } = isDocx
-            ? await parseDocxBuffer(buffer, parseOptions)
-            : await parsePdfBuffer(buffer, parseOptions);
+          let text = "";
+          let questions: any[] = [];
+          if (isJson || isTxt) {
+            text = buffer.toString("utf-8");
+            questions = parseQuestionsFromText(text, parseOptions);
+          } else if (isDocx) {
+            const res = await parseDocxBuffer(buffer, parseOptions);
+            text = res.text;
+            questions = res.questions;
+          } else {
+            const res = await parsePdfBuffer(buffer, parseOptions);
+            text = res.text;
+            questions = res.questions;
+          }
 
           const stats = calculateStats(questions);
 
           return NextResponse.json({
             success: true,
             fileName: file.name,
-            fileType: isDocx ? "DOCX" : "PDF",
+            fileType: isDocx ? "DOCX" : isPdf ? "PDF" : isJson ? "JSON" : "TXT",
             questions,
             rawText: text,
             stats,

@@ -276,8 +276,13 @@ export function formatModelAnswer(text: string): string {
   if (!text) return "";
   let formatted = text.trim();
 
-  // If there are run-on numbered items like " 2. " or " 3) " or " 2- " or " (2) "
-  // Replace space before digit+punct with newline so items appear under each other
+  // If text already has multiple clean lines (like Python code or formatted answers), preserve them
+  const lineCount = formatted.split("\n").length;
+  if (lineCount >= 3) {
+    return formatted.replace(/\n{3,}/g, "\n\n").trim();
+  }
+
+  // If there are run-on numbered items like " 2. " or " 3) " or " 2- " or " (2) " on a single collapsed line
   formatted = formatted.replace(
     /(?:^|\s+)((?:[0-9]+|[٠-٩]+)[\.\-\)\:]|\([0-9]+|[٠-٩]+\)|[أ-دA-Da-d][\.\-\)])\s+/g,
     (match, prefix, offset) => {
@@ -285,8 +290,8 @@ export function formatModelAnswer(text: string): string {
     }
   );
 
-  // Also split bullet points: " • " or " - " or " * "
-  formatted = formatted.replace(/\s+([•\-–—\*])\s+/g, "\n$1 ");
+  // Split bullet points (• or –). Never split asterisk (*) or minus (-) which are math/code operators!
+  formatted = formatted.replace(/\s+([•–—])\s+/g, "\n$1 ");
 
   // Normalize multiple consecutive newlines to at most 2
   formatted = formatted.replace(/\n{3,}/g, "\n\n").trim();
@@ -303,16 +308,35 @@ export function parseQuestionsFromText(
   const text = cleanText(rawContent);
   if (!text) return [];
 
-  // Direct JSON Support (Arrays or Wrapped Objects)
-  const trimmed = text.trim();
+  // Direct JSON Support (Arrays, Wrapped Objects, and Markdown Code Fences)
+  let trimmed = text.trim();
+  if (trimmed.startsWith("```")) {
+    trimmed = trimmed
+      .replace(/^```(?:json)?\s*/i, "")
+      .replace(/\s*```$/i, "")
+      .trim();
+  }
+
   if ((trimmed.startsWith("[") && trimmed.endsWith("]")) || (trimmed.startsWith("{") && trimmed.endsWith("}"))) {
     try {
+      const parseJsonSafe = (raw: string) => {
+        try {
+          return JSON.parse(raw);
+        } catch {
+          // Normalize smart quotes if present from Word or mobile keyboards
+          const normalized = raw
+            .replace(/[“”«»]/g, '"')
+            .replace(/[‘’]/g, "'");
+          return JSON.parse(normalized);
+        }
+      };
+
       let parsedArray: any[] | null = null;
       if (trimmed.startsWith("[")) {
-        const parsed = JSON.parse(trimmed);
+        const parsed = parseJsonSafe(trimmed);
         if (Array.isArray(parsed)) parsedArray = parsed;
       } else {
-        const parsedObj = JSON.parse(trimmed);
+        const parsedObj = parseJsonSafe(trimmed);
         if (Array.isArray(parsedObj.questions)) parsedArray = parsedObj.questions;
         else if (Array.isArray(parsedObj.data)) parsedArray = parsedObj.data;
         else if (Array.isArray(parsedObj.items)) parsedArray = parsedObj.items;
@@ -433,11 +457,30 @@ export function parseQuestionsFromText(
           const statement = cleanQuestionStatement(rawStatement);
 
           const translation = rawItem.translation ? String(rawItem.translation).trim() : undefined;
-          const modelAnswer = rawItem.modelAnswer ? formatModelAnswer(String(rawItem.modelAnswer)) : undefined;
+          const rawModelAnswer =
+            rawItem.modelAnswer ||
+            rawItem.model_answer ||
+            (typeof rawItem.rubric === "object" && rawItem.rubric !== null
+              ? rawItem.rubric.modelAnswer || rawItem.rubric.model_answer
+              : undefined) ||
+            (type === "ESSAY" ? rawItem.answer || rawItem.modelAnswerText : undefined);
+          const modelAnswer = rawModelAnswer ? formatModelAnswer(String(rawModelAnswer)) : undefined;
           const modelAnswerTranslation = rawItem.modelAnswerTranslation
             ? String(rawItem.modelAnswerTranslation).trim()
             : undefined;
-          const concept = rawItem.concept ? String(rawItem.concept).trim() : undefined;
+          const concept = rawItem.concept
+            ? String(rawItem.concept).trim()
+            : rawItem.topic
+            ? String(rawItem.topic).trim()
+            : undefined;
+          const points =
+            typeof rawItem.points === "number"
+              ? rawItem.points
+              : typeof rawItem.maxScore === "number"
+              ? rawItem.maxScore
+              : typeof rawItem.rubric?.maxScore === "number"
+              ? rawItem.rubric.maxScore
+              : undefined;
           const rawExplanation = rawItem.explanation || rawItem.correctReason || rawItem.reason;
           const rawExplanationTrans = rawItem.explanationTranslation || rawItem.reasonTranslation;
           let correctReason: string | undefined = undefined;
@@ -558,6 +601,7 @@ export function parseQuestionsFromText(
             modelAnswerTranslation,
             concept,
             correctReason,
+            points,
             isValid,
             validationNotes,
             classificationConfidence: 1.0,
