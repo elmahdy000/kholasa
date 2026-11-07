@@ -14,6 +14,7 @@ import {
   ExternalLink,
   Move,
   Layers,
+  Rows,
   FileText,
   Sparkles,
 } from "lucide-react";
@@ -34,6 +35,8 @@ export function LessonMindMapTab({ mindMap }: LessonMindMapTabProps) {
 
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [isFullscreenImage, setIsFullscreenImage] = useState(false);
+  const [displayMode, setDisplayMode] = useState<"card" | "scroll">("card");
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
   const [imageZoom, setImageZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
@@ -79,6 +82,43 @@ export function LessonMindMapTab({ mindMap }: LessonMindMapTabProps) {
     setImageZoom(1);
     setPan({ x: 0, y: 0 });
     setIsDragging(false);
+  };
+
+  const handleNext = () => {
+    if (images.length <= 1) return;
+    switchImage(selectedImageIndex < images.length - 1 ? selectedImageIndex + 1 : 0);
+  };
+
+  const handlePrev = () => {
+    if (images.length <= 1) return;
+    switchImage(selectedImageIndex > 0 ? selectedImageIndex - 1 : images.length - 1);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length === 1) {
+      touchStartRef.current = {
+        x: e.touches[0].clientX,
+        y: e.touches[0].clientY,
+      };
+    }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!touchStartRef.current || e.changedTouches.length === 0) return;
+    const deltaX = e.changedTouches[0].clientX - touchStartRef.current.x;
+    const deltaY = e.changedTouches[0].clientY - touchStartRef.current.y;
+    touchStartRef.current = null;
+
+    // Detect horizontal swipe gesture: at least 40px, predominantly horizontal
+    if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > Math.abs(deltaY) * 1.3) {
+      if (deltaX < 0) {
+        // Swiped left -> Next board
+        handleNext();
+      } else {
+        // Swiped right -> Previous board
+        handlePrev();
+      }
+    }
   };
 
   // Pointer drag for smooth panning when zoomed in
@@ -140,30 +180,28 @@ export function LessonMindMapTab({ mindMap }: LessonMindMapTabProps) {
     };
   }, [isFullscreenImage]);
 
-  // Keyboard navigation inside lightbox
+  // Keyboard navigation for both lightbox and card mode
   useEffect(() => {
-    if (!isFullscreenImage) return;
-
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        setIsFullscreenImage(false);
-      } else if (e.key === "+" || e.key === "=") {
-        handleZoomChange(imageZoom + 0.25);
-      } else if (e.key === "-") {
-        handleZoomChange(imageZoom - 0.25);
-      } else if (e.key === "0") {
-        handleResetZoom();
-      } else if (e.key === "ArrowLeft") {
-        if (images.length > 1) {
-          switchImage(
-            selectedImageIndex < images.length - 1 ? selectedImageIndex + 1 : 0
-          );
+      if (isFullscreenImage) {
+        if (e.key === "Escape") {
+          setIsFullscreenImage(false);
+        } else if (e.key === "+" || e.key === "=") {
+          handleZoomChange(imageZoom + 0.25);
+        } else if (e.key === "-") {
+          handleZoomChange(imageZoom - 0.25);
+        } else if (e.key === "0") {
+          handleResetZoom();
+        } else if (e.key === "ArrowLeft") {
+          handleNext();
+        } else if (e.key === "ArrowRight") {
+          handlePrev();
         }
-      } else if (e.key === "ArrowRight") {
-        if (images.length > 1) {
-          switchImage(
-            selectedImageIndex > 0 ? selectedImageIndex - 1 : images.length - 1
-          );
+      } else if (displayMode === "card" && images.length > 1) {
+        if (e.key === "ArrowLeft") {
+          handleNext();
+        } else if (e.key === "ArrowRight") {
+          handlePrev();
         }
       }
     };
@@ -172,7 +210,7 @@ export function LessonMindMapTab({ mindMap }: LessonMindMapTabProps) {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [isFullscreenImage, imageZoom, selectedImageIndex, images.length]);
+  }, [isFullscreenImage, imageZoom, selectedImageIndex, images.length, displayMode]);
 
   // Empty state if mindMap is null or has neither images nor textual nodes
   if (!mindMap || (!hasImages && !hasNodes)) {
@@ -198,7 +236,7 @@ export function LessonMindMapTab({ mindMap }: LessonMindMapTabProps) {
 
     return (
       <div className="space-y-6">
-        {/* Header & Quick Navigation Bar */}
+        {/* Header Bar with Mode Switcher */}
         <div className="rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xs">
           <div>
             <div className="flex items-center gap-2">
@@ -220,56 +258,78 @@ export function LessonMindMapTab({ mindMap }: LessonMindMapTabProps) {
             </p>
           </div>
 
-          {/* Quick Jump Navigation Pills */}
+          {/* Mode Switcher: Card by Card (Slide) vs Scroll All */}
           {images.length > 1 && (
-            <div className="flex items-center gap-2 p-1.5 bg-[#F8FAFC] dark:bg-[#1E293B] rounded-xl border border-[#E2E8F0] dark:border-[#334155] overflow-x-auto scrollbar-none shrink-0">
-              <span className="text-[11px] font-bold text-[#64748B] dark:text-[#94A3B8] px-2 shrink-0">
-                انتقال سريع:
-              </span>
-              {images.map((_, idx) => (
-                <button
-                  key={idx}
-                  type="button"
-                  onClick={() => {
-                    document
-                      .getElementById(`mindmap-card-${idx}`)
-                      ?.scrollIntoView({ behavior: "smooth", block: "start" });
-                  }}
-                  className="px-3 py-1.5 rounded-lg text-xs font-bold bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] text-[#0F172A] dark:text-white hover:border-[#800020] hover:text-[#800020] dark:hover:text-[#FB7185] transition-all shrink-0 cursor-pointer shadow-2xs"
-                >
-                  لوحة {idx + 1}
-                </button>
-              ))}
+            <div className="flex items-center gap-1.5 p-1 bg-[#F8FAFC] dark:bg-[#1E293B] rounded-xl border border-[#E2E8F0] dark:border-[#334155] shrink-0 self-start sm:self-auto">
+              <button
+                type="button"
+                onClick={() => setDisplayMode("card")}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+                  displayMode === "card"
+                    ? "bg-white dark:bg-[#0F172A] text-[#800020] dark:text-[#FB7185] shadow-xs border border-[#E2E8F0]/60 dark:border-[#334155]"
+                    : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
+                }`}
+                title="عرض بطاقة تلو الأخرى (مريح وسلس للموبايل مع إمكانية السحب باللمس)"
+              >
+                <Layers className="w-3.5 h-3.5" />
+                <span>بطاقة تلو الأخرى</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setDisplayMode("scroll")}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+                  displayMode === "scroll"
+                    ? "bg-white dark:bg-[#0F172A] text-[#800020] dark:text-[#FB7185] shadow-xs border border-[#E2E8F0]/60 dark:border-[#334155]"
+                    : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
+                }`}
+                title="عرض كل اللوحات متتالية تحت بعضها"
+              >
+                <Rows className="w-3.5 h-3.5" />
+                <span>عرض الكل متتالي</span>
+              </button>
             </div>
           )}
         </div>
 
-        {/* All MindMap Images Stacked Vertically with Continuous Scroll */}
-        <div className="space-y-6">
-          {images.map((img, idx) => (
-            <div
-              key={idx}
-              id={`mindmap-card-${idx}`}
-              className="rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] overflow-hidden shadow-xs hover:shadow-md transition-shadow"
-            >
+        {displayMode === "card" ? (
+          /* CARD MODE: Single Active Portrait Card with Swipe & Thumb Navigation */
+          <div className="space-y-4">
+            <div className="rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] overflow-hidden shadow-xs hover:shadow-md transition-shadow">
               {/* Card Header Bar */}
-              <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 bg-[#F8FAFC] dark:bg-[#1E293B]/60 border-b border-[#E2E8F0] dark:border-[#334155]">
-                <div className="flex items-center gap-2.5">
-                  <span className="w-7 h-7 rounded-lg bg-[#800020]/10 dark:bg-[#800020]/25 text-[#800020] dark:text-[#FB7185] flex items-center justify-center font-bold text-xs">
-                    {idx + 1}
-                  </span>
-                  <span className="text-sm font-bold text-[#0F172A] dark:text-white">
+              <div className="flex items-center justify-between px-3.5 sm:px-6 py-3 bg-[#F8FAFC] dark:bg-[#1E293B]/60 border-b border-[#E2E8F0] dark:border-[#334155]">
+                <div className="flex items-center gap-2">
+                  <span className="px-2.5 py-1 rounded-lg bg-[#800020]/10 dark:bg-[#800020]/25 text-[#800020] dark:text-[#FB7185] font-bold text-xs">
                     {images.length > 1
-                      ? `لوحة المخطط (${idx + 1} من ${images.length})`
+                      ? `لوحة (${selectedImageIndex + 1} من ${images.length})`
                       : "المخطط الذهني للدرس"}
                   </span>
+
+                  {/* Direct board jump mini pills for larger screens */}
+                  {images.length > 1 && (
+                    <div className="hidden sm:flex items-center gap-1 mr-2">
+                      {images.map((_, i) => (
+                        <button
+                          key={i}
+                          type="button"
+                          onClick={() => switchImage(i)}
+                          className={`w-6 h-6 rounded-md text-xs font-bold font-mono transition-colors ${
+                            i === selectedImageIndex
+                              ? "bg-[#800020] text-white"
+                              : "bg-white dark:bg-[#1E293B] text-[#64748B] hover:text-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]"
+                          }`}
+                        >
+                          {i + 1}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5 sm:gap-2">
                   <button
                     type="button"
                     onClick={() => {
-                      setSelectedImageIndex(idx);
                       setImageZoom(1);
                       setPan({ x: 0, y: 0 });
                       setIsFullscreenImage(true);
@@ -278,67 +338,228 @@ export function LessonMindMapTab({ mindMap }: LessonMindMapTabProps) {
                     title="عرض بملء الشاشة وتكبير حر"
                   >
                     <Maximize2 className="w-3.5 h-3.5" />
-                    <span>ملء الشاشة</span>
+                    <span className="hidden sm:inline">ملء الشاشة</span>
                   </button>
 
                   <a
-                    href={img}
-                    download={`kholasa-mindmap-${idx + 1}.jpg`}
+                    href={currentFullscreenImage}
+                    download={`kholasa-mindmap-${selectedImageIndex + 1}.jpg`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-[#800020]/10 text-[#800020] dark:text-[#FB7185] hover:bg-[#800020]/20 transition-colors"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-[#800020]/10 text-[#800020] dark:text-[#FB7185] hover:bg-[#800020]/20 transition-colors"
                     title="تحميل المخطط بجودة عالية"
                   >
                     <Download className="w-3.5 h-3.5" />
-                    <span>تحميل</span>
+                    <span className="hidden sm:inline">تحميل</span>
                   </a>
 
                   <a
-                    href={img}
+                    href={currentFullscreenImage}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[#64748B] hover:text-[#0F172A] dark:hover:text-white transition-colors"
+                    className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[#64748B] hover:text-[#0F172A] dark:hover:text-white transition-colors"
                     title="فتح الصورة في نافذة مستقلة"
                   >
                     <ExternalLink className="w-3.5 h-3.5" />
-                    <span className="hidden md:inline">نافذة جديدة</span>
                   </a>
                 </div>
               </div>
 
-              {/* Card Image Display Area */}
+              {/* Card Image Display Area with Touch Swipe */}
               <div
+                onTouchStart={handleTouchStart}
+                onTouchEnd={handleTouchEnd}
                 onClick={() => {
-                  setSelectedImageIndex(idx);
                   setImageZoom(1);
                   setPan({ x: 0, y: 0 });
                   setIsFullscreenImage(true);
                 }}
-                className="relative group p-1.5 sm:p-6 bg-[#0F172A]/5 dark:bg-black/40 flex items-center justify-center min-h-[240px] sm:min-h-[360px] cursor-zoom-in"
+                className="relative group p-1.5 sm:p-6 bg-[#0F172A]/5 dark:bg-black/40 flex items-center justify-center min-h-[260px] sm:min-h-[360px] cursor-zoom-in select-none"
               >
                 <img
-                  src={img}
-                  alt={`${mindMap.title || "الخريطة الذهنية"} - لوحة ${idx + 1}`}
+                  key={selectedImageIndex}
+                  src={currentFullscreenImage}
+                  alt={`${mindMap.title || "الخريطة الذهنية"} - لوحة ${selectedImageIndex + 1}`}
                   loading="lazy"
                   decoding="async"
-                  className="w-full h-auto max-h-none sm:max-h-[85vh] object-contain rounded-xl shadow-xs transition-transform duration-200 group-hover:scale-[1.008]"
+                  className="w-full h-auto max-h-none sm:max-h-[85vh] object-contain rounded-xl shadow-xs transition-all duration-200 animate-in fade-in group-hover:scale-[1.008]"
                   onContextMenu={(e) => e.preventDefault()}
                   draggable={false}
                 />
 
                 {/* Subtle Hover Action Hint Badge */}
-                <div className="absolute bottom-4 sm:bottom-6 inset-x-0 flex justify-center pointer-events-none opacity-90 group-hover:opacity-100 transition-opacity">
-                  <div className="px-4 py-1.5 rounded-full bg-[#0F172A]/85 backdrop-blur-md text-white text-xs font-bold flex items-center gap-2 shadow-lg border border-white/10">
+                <div className="absolute bottom-3 sm:bottom-6 inset-x-0 flex justify-center pointer-events-none opacity-90 group-hover:opacity-100 transition-opacity">
+                  <div className="px-3.5 py-1.5 rounded-full bg-[#0F172A]/85 backdrop-blur-md text-white text-[11px] sm:text-xs font-bold flex items-center gap-2 shadow-lg border border-white/10">
                     <Maximize2 className="w-3.5 h-3.5 text-[#FB7185]" />
                     <span>انقر للتكبير والتنقل الحر بملء الشاشة</span>
                   </div>
                 </div>
               </div>
             </div>
-          ))}
-        </div>
 
-        {/* Fullscreen Interactive Lightbox Modal */}
+            {/* Bottom Thumb-Friendly Navigation Dock */}
+            {images.length > 1 && (
+              <div className="p-3 sm:p-4 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] shadow-xs space-y-2.5">
+                <div className="flex items-center justify-between gap-2">
+                  {/* Previous Button (Right arrow in RTL) */}
+                  <button
+                    type="button"
+                    onClick={handlePrev}
+                    className="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] hover:bg-slate-100 dark:hover:bg-slate-800 text-[#0F172A] dark:text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-95 shadow-2xs"
+                    title="اللوحة السابقة"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                    <span>السابق</span>
+                  </button>
+
+                  {/* Numbered Dots / Pills */}
+                  <div className="flex items-center justify-center gap-1.5 sm:gap-2 px-2 overflow-x-auto scrollbar-none">
+                    {images.map((_, i) => (
+                      <button
+                        key={i}
+                        type="button"
+                        onClick={() => switchImage(i)}
+                        className={`h-8 sm:h-9 min-w-[2rem] sm:min-w-[2.25rem] px-2 rounded-lg text-xs font-bold font-mono transition-all cursor-pointer flex items-center justify-center ${
+                          i === selectedImageIndex
+                            ? "bg-[#800020] text-white shadow-sm scale-105"
+                            : "bg-[#F8FAFC] dark:bg-[#1E293B] text-[#64748B] dark:text-[#94A3B8] border border-[#E2E8F0] dark:border-[#334155] hover:border-[#800020] hover:text-[#800020]"
+                        }`}
+                        title={`الانتقال إلى لوحة ${i + 1}`}
+                      >
+                        {i + 1}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Next Button (Left arrow in RTL) */}
+                  <button
+                    type="button"
+                    onClick={handleNext}
+                    className="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-95 shadow-xs"
+                    title="اللوحة التالية"
+                  >
+                    <span>التالي</span>
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+                </div>
+
+                {/* Mobile Touch Swipe Hint */}
+                <div className="text-center text-[11px] text-[#94A3B8] font-medium flex items-center justify-center gap-1.5">
+                  <Move className="w-3 h-3 text-[#800020] dark:text-[#FB7185]" />
+                  <span>اسحب يميناً أو يساراً باللمس للتنقل السريع بين اللوحات 👈 👉</span>
+                </div>
+              </div>
+            )}
+          </div>
+        ) : (
+          /* SCROLL MODE: Continuous Vertical Stack of All Boards */
+          <div className="space-y-6">
+            {/* Quick Jump Navigation Bar in Scroll Mode */}
+            {images.length > 1 && (
+              <div className="flex items-center gap-2 p-2 bg-[#F8FAFC] dark:bg-[#1E293B] rounded-xl border border-[#E2E8F0] dark:border-[#334155] overflow-x-auto scrollbar-none">
+                <span className="text-[11px] font-bold text-[#64748B] dark:text-[#94A3B8] px-2 shrink-0">
+                  انتقال سريع:
+                </span>
+                {images.map((_, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => {
+                      document
+                        .getElementById(`mindmap-card-${idx}`)
+                        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+                    }}
+                    className="px-3 py-1.5 rounded-lg text-xs font-bold bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] text-[#0F172A] dark:text-white hover:border-[#800020] hover:text-[#800020] dark:hover:text-[#FB7185] transition-all shrink-0 cursor-pointer shadow-2xs"
+                  >
+                    لوحة {idx + 1}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {images.map((img, idx) => (
+              <div
+                key={idx}
+                id={`mindmap-card-${idx}`}
+                className="rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] overflow-hidden shadow-xs hover:shadow-md transition-shadow"
+              >
+                {/* Card Header Bar */}
+                <div className="flex items-center justify-between px-3.5 sm:px-6 py-3 bg-[#F8FAFC] dark:bg-[#1E293B]/60 border-b border-[#E2E8F0] dark:border-[#334155]">
+                  <div className="flex items-center gap-2.5">
+                    <span className="w-7 h-7 rounded-lg bg-[#800020]/10 dark:bg-[#800020]/25 text-[#800020] dark:text-[#FB7185] flex items-center justify-center font-bold text-xs">
+                      {idx + 1}
+                    </span>
+                    <span className="text-xs sm:text-sm font-bold text-[#0F172A] dark:text-white">
+                      {images.length > 1
+                        ? `لوحة المخطط (${idx + 1} من ${images.length})`
+                        : "المخطط الذهني للدرس"}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedImageIndex(idx);
+                        setImageZoom(1);
+                        setPan({ x: 0, y: 0 });
+                        setIsFullscreenImage(true);
+                      }}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[#0F172A] dark:text-white hover:border-[#800020] hover:text-[#800020] dark:hover:text-[#FB7185] transition-colors cursor-pointer"
+                      title="عرض بملء الشاشة وتكبير حر"
+                    >
+                      <Maximize2 className="w-3.5 h-3.5" />
+                      <span className="hidden sm:inline">ملء الشاشة</span>
+                    </button>
+
+                    <a
+                      href={img}
+                      download={`kholasa-mindmap-${idx + 1}.jpg`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-[#800020]/10 text-[#800020] dark:text-[#FB7185] hover:bg-[#800020]/20 transition-colors"
+                      title="تحميل المخطط بجودة عالية"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      <span>تحميل</span>
+                    </a>
+                  </div>
+                </div>
+
+                {/* Card Image Display Area */}
+                <div
+                  onClick={() => {
+                    setSelectedImageIndex(idx);
+                    setImageZoom(1);
+                    setPan({ x: 0, y: 0 });
+                    setIsFullscreenImage(true);
+                  }}
+                  className="relative group p-1.5 sm:p-6 bg-[#0F172A]/5 dark:bg-black/40 flex items-center justify-center min-h-[240px] sm:min-h-[360px] cursor-zoom-in"
+                >
+                  <img
+                    src={img}
+                    alt={`${mindMap.title || "الخريطة الذهنية"} - لوحة ${idx + 1}`}
+                    loading="lazy"
+                    decoding="async"
+                    className="w-full h-auto max-h-none sm:max-h-[85vh] object-contain rounded-xl shadow-xs transition-transform duration-200 group-hover:scale-[1.008]"
+                    onContextMenu={(e) => e.preventDefault()}
+                    draggable={false}
+                  />
+
+                  {/* Subtle Hover Action Hint Badge */}
+                  <div className="absolute bottom-3 sm:bottom-6 inset-x-0 flex justify-center pointer-events-none opacity-90 group-hover:opacity-100 transition-opacity">
+                    <div className="px-3.5 py-1.5 rounded-full bg-[#0F172A]/85 backdrop-blur-md text-white text-[11px] sm:text-xs font-bold flex items-center gap-2 shadow-lg border border-white/10">
+                      <Maximize2 className="w-3.5 h-3.5 text-[#FB7185]" />
+                      <span>انقر للتكبير والتنقل الحر بملء الشاشة</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+                {/* Fullscreen Interactive Lightbox Modal */}
         {isFullscreenImage && (
           <div
             role="dialog"
@@ -437,6 +658,8 @@ export function LessonMindMapTab({ mindMap }: LessonMindMapTabProps) {
               onPointerCancel={handlePointerUp}
               onWheel={handleWheel}
               onDoubleClick={handleDoubleClick}
+              onTouchStart={imageZoom <= 1 ? handleTouchStart : undefined}
+              onTouchEnd={imageZoom <= 1 ? handleTouchEnd : undefined}
             >
               {/* Previous / Next Arrows for Multi-image */}
               {images.length > 1 && (
