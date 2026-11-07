@@ -8,14 +8,15 @@ import {
   Sparkle,
   Lightbulb,
   Check,
+  X,
   PaperPlaneTilt,
   Translate,
+  ChartBar,
+  Target,
 } from "@phosphor-icons/react";
 import { BidiStatement } from "@/components/ui/BidiStatement";
 import { FormattedAnswerView } from "@/components/ui/FormattedAnswerView";
-import { QuestionExplanationBox } from "@/components/ui/QuestionExplanationBox";
 import { QuestionImageAttachment } from "@/components/ui/QuestionImageAttachment";
-import { TranslationToggle } from "@/components/ui/TranslationToggle";
 import { Question, UserAnswerState, RevealedAnswer } from "./types";
 
 interface ExamQuestionCardProps {
@@ -35,6 +36,7 @@ interface ExamQuestionCardProps {
   onPrevQuestion: () => void;
   onNextQuestion: () => void;
   onOpenSubmitModal: () => void;
+  onSelectIndex?: (index: number) => void;
 }
 
 export function ExamQuestionCard({
@@ -54,6 +56,7 @@ export function ExamQuestionCard({
   onPrevQuestion,
   onNextQuestion,
   onOpenSubmitModal,
+  onSelectIndex,
 }: ExamQuestionCardProps) {
   const arabicLetters = ["أ", "ب", "ج", "د", "هـ"];
   const englishLetters = ["A", "B", "C", "D", "E"];
@@ -70,119 +73,124 @@ export function ExamQuestionCard({
     revealedAnswer?.explanation?.correctReason ||
     (currentQ as any)?.explanation?.correctReason ||
     "";
-  const hasExplanationTranslation =
-    /\n+\s*(?:الترجمة العربية للتفسير|الترجمة العربية|ترجمة التفسير|<!--\s*translation\s*-->|\[TRANSLATION\])/i.test(
-      rawExplanationReason
-    );
+
+  // Parse explanation into main explanation and Arabic translation if embedded
+  const splitRegex = /\n+\s*(?:الترجمة العربية للتفسير|الترجمة العربية|ترجمة التفسير|<!--\s*translation\s*-->|\[TRANSLATION\]):?\s*/i;
+  const match = rawExplanationReason.match(splitRegex);
+  const mainExplanation = match && match.index !== undefined ? rawExplanationReason.slice(0, match.index).trim() : rawExplanationReason.trim();
+  const arabicExplanation = match && match.index !== undefined ? rawExplanationReason.slice(match.index + match[0].length).trim() : "";
+
   const isEnglishStatement = !/[\u0600-\u06FF]/.test(currentQ.statement || "");
   const isEnglish = isLanguages && isEnglishStatement;
   const hasTranslation = Boolean(
     isLanguages &&
-    initialMode === "PRACTICE" &&
     ((currentQ.translation && currentQ.translation.trim().length > 0) ||
       currentQ.options?.some((o) => o.translation && o.translation.trim().length > 0) ||
-      hasExplanationTranslation)
+      arabicExplanation.length > 0)
   );
 
+  // Pagination sliding dots (5 dots centered around currentIndex)
+  const paginationRange = (() => {
+    const total = totalQuestions;
+    if (total <= 5) return Array.from({ length: total }, (_, i) => i);
+    let start = Math.max(0, currentIndex - 2);
+    let end = start + 5;
+    if (end > total) {
+      end = total;
+      start = Math.max(0, end - 5);
+    }
+    return Array.from({ length: end - start }, (_, i) => start + i);
+  })();
+
+  const difficultyText =
+    currentQ.difficulty === "EASY"
+      ? isEnglish ? "Easy" : "سهل"
+      : currentQ.difficulty === "MEDIUM"
+      ? isEnglish ? "Medium" : "متوسط"
+      : isEnglish ? "Hard" : "صعب";
+
   return (
-    <div className="rounded-2xl bg-white dark:bg-[#0F172A] border border-slate-200/90 dark:border-slate-800 shadow-xs p-5 sm:p-7 space-y-6 transition-colors">
-      {/* Question Header & Action Bar (Unified height h-9, balanced modern badges) */}
+    <div className="rounded-3xl sm:rounded-[32px] bg-white dark:bg-[#0D1B2E] border border-slate-200/90 dark:border-slate-800 shadow-sm p-5 sm:p-8 space-y-6 transition-colors">
+      {/* 1. Header Row: Difficulty Pill on Left, Question Pill on Right */}
       <div
         dir={isEnglish ? "ltr" : "rtl"}
-        className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-4"
+        className="flex items-center justify-between gap-3 pb-2"
       >
-        {/* Left: Question index and difficulty badges */}
+        {/* Left: Difficulty Pill & Toggles */}
         <div className="flex items-center gap-2">
-          {/* Question Index Pill */}
-          <span className="h-9 px-3.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold border border-slate-200 dark:border-slate-700 flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#800020] dark:bg-[#FB7185]" />
-            <span>
-              {isEnglish
-                ? `Question ${currentIndex + 1} of ${totalQuestions}`
-                : `السؤال ${currentIndex + 1} من ${totalQuestions}`}
-            </span>
-          </span>
+          {/* Difficulty Pill */}
+          <div className="inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-full bg-amber-100/90 dark:bg-amber-950/40 text-amber-900 dark:text-amber-300 border border-amber-200/80 dark:border-amber-800/80 text-xs font-black shadow-xs">
+            <ChartBar className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" weight="fill" />
+            <span>{difficultyText}</span>
+          </div>
 
-          {/* Difficulty Badge */}
-          <span
-            className={`h-9 px-3 rounded-xl text-xs font-bold border flex items-center gap-1 ${
-              currentQ.difficulty === "EASY"
-                ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800"
-                : currentQ.difficulty === "MEDIUM"
-                ? "bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800"
-                : "bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-800"
-            }`}
-          >
-            {currentQ.difficulty === "EASY"
-              ? isEnglish ? "Easy" : "سهل"
-              : currentQ.difficulty === "MEDIUM"
-              ? isEnglish ? "Medium" : "متوسط"
-              : isEnglish ? "Hard" : "صعب"}
-          </span>
-        </div>
-
-        {/* Right: Translation toggle & Flag for review button */}
-        <div className="flex items-center gap-2">
+          {/* Translation Toggle Pill */}
           {hasTranslation && (
             <button
               type="button"
               onClick={() => setIsQuestionTranslated((prev) => !prev)}
-              className={`h-9 px-3.5 rounded-xl border text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer select-none ${
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-bold transition-all cursor-pointer select-none ${
                 isQuestionTranslated
                   ? "bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800 shadow-xs"
-                  : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-indigo-300 hover:text-indigo-600"
+                  : "bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-indigo-300 hover:text-indigo-600"
               }`}
-              title={isQuestionTranslated ? "إخفاء الترجمة العربية" : "عرض الترجمة العربية"}
+              title={isQuestionTranslated ? "إخفاء الترجمة" : "عرض الترجمة العربية"}
             >
               <Translate className="w-3.5 h-3.5" weight="bold" />
-              <span>{isQuestionTranslated ? "إخفاء الترجمة" : "ترجمة السؤال"}</span>
+              <span className="hidden sm:inline">{isQuestionTranslated ? "إخفاء الترجمة" : "ترجمة"}</span>
             </button>
           )}
 
-          {/* Flag for review toggle */}
+          {/* Flag Toggle Pill */}
           <button
             type="button"
             onClick={onToggleFlag}
-            className={`h-9 px-3.5 rounded-xl border text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer select-none ${
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-bold transition-all cursor-pointer select-none ${
               isFlagged
                 ? "bg-amber-500 hover:bg-amber-600 text-white border-amber-600 shadow-xs"
-                : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-amber-50 dark:hover:bg-amber-950/30 hover:text-amber-700 hover:border-amber-300"
+                : "bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-amber-50 dark:hover:bg-amber-950/30 hover:text-amber-700 hover:border-amber-300"
             }`}
+            title={isFlagged ? "إلغاء التعليم للمراجعة" : "تعليم السؤال للمراجعة"}
           >
             <Flag
               className={`w-3.5 h-3.5 ${isFlagged ? "fill-current" : ""}`}
               weight={isFlagged ? "fill" : "bold"}
             />
-            <span>
-              {isFlagged
-                ? isEnglish ? "Flagged for review" : "متعلّم للمراجعة"
-                : isEnglish ? "Flag for review" : "علّم عليه للمراجعة"}
+            <span className="hidden sm:inline">
+              {isFlagged ? (isEnglish ? "Flagged" : "متعلّم") : (isEnglish ? "Flag" : "مراجعة")}
             </span>
           </button>
         </div>
+
+        {/* Right: Question Number Badge (Navy Pill + Golden Circle) */}
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#0B2545] dark:bg-[#1E3A8A] text-white shadow-xs">
+          <span className="text-xs font-black">{isEnglish ? "Question" : "سؤال"}</span>
+          <span className="w-6 h-6 rounded-full bg-amber-400 text-slate-950 font-black text-xs flex items-center justify-center shadow-xs">
+            {currentIndex + 1}
+          </span>
+        </div>
       </div>
 
-      {/* Statement Area */}
+      {/* 2. Question Statement */}
       <div
         dir={isEnglish ? "ltr" : "rtl"}
-        className={`space-y-4 ${isEnglish ? "text-left" : "text-right"}`}
+        className={`space-y-3 pt-1 ${isEnglish ? "text-left" : "text-right"}`}
       >
-        <BidiStatement
-          as="h2"
-          text={currentQ.statement}
-          className={`text-base sm:text-lg lg:text-xl font-bold text-slate-900 dark:text-white leading-relaxed ${
-            isEnglish ? "font-sans" : "font-content"
-          }`}
-        />
+        <div className={`text-base sm:text-xl font-extrabold text-slate-900 dark:text-white leading-relaxed ${
+          isEnglish ? "font-sans" : "font-content"
+        }`}>
+          <BidiStatement as="h2" text={currentQ.statement} />
+        </div>
+
         <QuestionImageAttachment imageUrl={currentQ.imageUrl} />
 
         {isQuestionTranslated && currentQ.translation && (
           <div
-            className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60 text-right animate-in fade-in duration-200 space-y-1"
+            className="p-3.5 rounded-2xl bg-blue-50/40 dark:bg-slate-800/60 border border-blue-100 dark:border-slate-700 text-right animate-in fade-in duration-200 space-y-1"
             dir="rtl"
           >
-            <div className="flex items-center gap-1.5 text-xs font-bold text-slate-500 dark:text-slate-400">
-              <Translate className="w-3.5 h-3.5 text-[#800020] dark:text-[#FB7185]" />
+            <div className="flex items-center gap-1.5 text-xs font-bold text-blue-700 dark:text-blue-400">
+              <Translate className="w-3.5 h-3.5" weight="bold" />
               <span>الترجمة العربية للسؤال:</span>
             </div>
             <p className="text-sm font-medium text-slate-800 dark:text-slate-200 leading-relaxed font-content">
@@ -192,7 +200,17 @@ export function ExamQuestionCard({
         )}
       </div>
 
-      {/* MCQ / TRUE_FALSE Options */}
+      {/* 3. Decorative Divider: ———— (?) ———— */}
+      <div className="relative flex items-center justify-center my-4 py-1">
+        <div className="w-full border-t border-amber-200/70 dark:border-slate-800" />
+        <div className="absolute px-3 bg-white dark:bg-[#0D1B2E]">
+          <span className="w-6 h-6 rounded-full border border-amber-300 dark:border-amber-600 bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 text-xs font-black flex items-center justify-center shadow-xs">
+            ?
+          </span>
+        </div>
+      </div>
+
+      {/* 4. Options List (True/False or MCQ) */}
       {(currentQ.type === "MCQ" || currentQ.type === "TRUE_FALSE") && (
         <div className="space-y-3">
           {currentQ.options.map((opt, optIdx) => {
@@ -202,28 +220,52 @@ export function ExamQuestionCard({
             const isOptionCorrect =
               revealedAnswer?.options?.find((o) => o.id === opt.id)?.isCorrect === true;
 
-            let cardStyle =
-              "bg-white dark:bg-slate-900/60 border-2 border-slate-200/90 dark:border-slate-800 text-slate-900 dark:text-slate-100 hover:border-slate-300 dark:hover:border-slate-700 hover:bg-slate-50/50";
-
-            if (isSelected) {
-              cardStyle =
-                "bg-[#800020]/5 dark:bg-[#800020]/20 border-2 border-[#800020] dark:border-[#FB7185] text-slate-900 dark:text-white font-bold shadow-xs";
-            }
-
-            if (isRevealed) {
-              if (isOptionCorrect) {
-                cardStyle =
-                  "bg-emerald-50 dark:bg-emerald-950/30 border-2 border-emerald-500 text-emerald-900 dark:text-emerald-100 font-bold shadow-xs";
-              } else if (isSelected && !isOptionCorrect) {
-                cardStyle =
-                  "bg-rose-50 dark:bg-rose-950/30 border-2 border-rose-500 text-rose-900 dark:text-rose-100 font-bold shadow-xs";
-              }
-            }
-
             const isEnglishOpt = isEnglish || !/[\u0600-\u06FF]/.test(opt.text || "");
             const letter = isEnglishOpt
               ? englishLetters[optIdx] || opt.order
               : arabicLetters[optIdx] || opt.order;
+
+            // Option states matching mock-up
+            let cardContainerClass =
+              "border-2 border-slate-200/90 dark:border-slate-800 bg-white dark:bg-slate-900/60 hover:bg-slate-50/70 dark:hover:bg-slate-800/40 hover:border-slate-300";
+            let leftIndicator = (
+              <div className="w-6 h-6 rounded-full border-2 border-slate-300 dark:border-slate-600 flex items-center justify-center shrink-0" />
+            );
+            let rightBadgeClass =
+              "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700";
+
+            if (isSelected) {
+              cardContainerClass =
+                "border-2 border-emerald-500 bg-emerald-50/70 dark:bg-emerald-950/30 shadow-xs";
+              leftIndicator = (
+                <div className="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-xs shrink-0">
+                  <Check className="w-3.5 h-3.5" weight="bold" />
+                </div>
+              );
+              rightBadgeClass = "bg-emerald-500 text-white shadow-xs font-bold";
+            }
+
+            if (isRevealed) {
+              if (isOptionCorrect) {
+                cardContainerClass =
+                  "border-2 border-emerald-500 bg-emerald-50/80 dark:bg-emerald-950/40 shadow-xs";
+                leftIndicator = (
+                  <div className="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-xs shrink-0">
+                    <Check className="w-3.5 h-3.5" weight="bold" />
+                  </div>
+                );
+                rightBadgeClass = "bg-emerald-500 text-white shadow-xs font-bold";
+              } else if (isSelected && !isOptionCorrect) {
+                cardContainerClass =
+                  "border-2 border-rose-500 bg-rose-50/80 dark:bg-rose-950/40 shadow-xs";
+                leftIndicator = (
+                  <div className="w-6 h-6 rounded-full bg-rose-500 text-white flex items-center justify-center shadow-xs shrink-0">
+                    <X className="w-3.5 h-3.5" weight="bold" />
+                  </div>
+                );
+                rightBadgeClass = "bg-rose-500 text-white shadow-xs font-bold";
+              }
+            }
 
             return (
               <button
@@ -231,35 +273,21 @@ export function ExamQuestionCard({
                 type="button"
                 dir={isEnglishOpt ? "ltr" : "rtl"}
                 onClick={() => onSelectOption(opt.id)}
-                className={`w-full p-4 rounded-xl transition-all cursor-pointer overflow-hidden flex items-start justify-between gap-3.5 text-left sm:text-right ${cardStyle}`}
+                className={`w-full p-3.5 sm:p-4 rounded-2xl transition-all cursor-pointer flex items-center justify-between gap-3 text-left sm:text-right ${cardContainerClass}`}
               >
-                <div className="flex items-start gap-3.5 min-w-0 flex-1">
-                  {/* Option Letter Indicator */}
-                  <div
-                    className={`w-8 h-8 rounded-lg flex items-center justify-center font-mono font-bold text-xs sm:text-sm shrink-0 transition-transform ${
-                      isRevealed && isOptionCorrect
-                        ? "bg-emerald-600 text-white shadow-xs"
-                        : isRevealed && isSelected && !isOptionCorrect
-                        ? "bg-rose-600 text-white shadow-xs"
-                        : isSelected
-                        ? "bg-[#800020] dark:bg-[#FB7185] text-white shadow-xs scale-105"
-                        : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700"
-                    }`}
-                  >
-                    {letter}
-                  </div>
+                {/* Left: Radio / Checkmark Icon */}
+                <div className="flex items-center gap-3.5 min-w-0 flex-1">
+                  {leftIndicator}
 
-                  {/* Option Text */}
-                  <div
-                    className={`min-w-0 flex-1 leading-relaxed break-words pt-1 text-sm sm:text-base font-medium ${
-                      isEnglishOpt ? "text-left font-sans" : "text-right font-content"
-                    }`}
-                  >
+                  {/* Middle: Option Text */}
+                  <div className={`min-w-0 flex-1 text-sm sm:text-base font-bold text-slate-900 dark:text-white leading-relaxed ${
+                    isEnglishOpt ? "text-left font-sans" : "text-right font-content"
+                  }`}>
                     <BidiStatement as="span" text={opt.text} />
 
                     {isQuestionTranslated && opt.translation && (
                       <div
-                        className="mt-2 pt-2 border-t border-slate-200/60 dark:border-slate-700/60 text-right text-xs text-slate-600 dark:text-slate-300 font-medium font-content animate-in fade-in duration-150"
+                        className="mt-1.5 pt-1.5 border-t border-slate-200/60 dark:border-slate-700/60 text-right text-xs text-slate-600 dark:text-slate-300 font-medium font-content animate-in fade-in duration-150"
                         dir="rtl"
                       >
                         <span className="text-[10px] text-slate-400 block mb-0.5 font-bold">الترجمة:</span>
@@ -269,28 +297,19 @@ export function ExamQuestionCard({
                   </div>
                 </div>
 
-                {/* Practice revealed check/incorrect badge */}
-                {isRevealed && (
-                  <div className="shrink-0 pt-1">
-                    {isOptionCorrect ? (
-                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 text-xs font-bold">
-                        <Check className="w-3.5 h-3.5" weight="bold" />
-                        <span>{isEnglish ? "Correct" : "صحيح"}</span>
-                      </span>
-                    ) : isSelected ? (
-                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-rose-100 dark:bg-rose-900/50 text-rose-700 dark:text-rose-300 text-xs font-bold">
-                        <span>{isEnglish ? "Incorrect" : "غير صحيح"}</span>
-                      </span>
-                    ) : null}
-                  </div>
-                )}
+                {/* Right: Letter Badge (A, B, C, D) */}
+                <div
+                  className={`w-8 h-8 rounded-xl font-mono font-bold text-xs sm:text-sm flex items-center justify-center shrink-0 transition-transform ${rightBadgeClass}`}
+                >
+                  {letter}
+                </div>
               </button>
             );
           })}
         </div>
       )}
 
-      {/* Essay Question Area */}
+      {/* Essay Question Area (if applicable) */}
       {currentQ.type === "ESSAY" && (
         <div className="space-y-4">
           <label
@@ -310,52 +329,16 @@ export function ExamQuestionCard({
                 : "اكتب خطوات الحل وشرحك هنا بالتفصيل..."
             }
             rows={5}
-            className={`w-full p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#800020] text-slate-900 dark:text-white leading-relaxed ${
+            className={`w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#0B2545] text-slate-900 dark:text-white leading-relaxed ${
               isEnglish ? "text-left font-sans" : "text-right font-content"
             }`}
           />
-
-          {initialMode === "PRACTICE" && currentAnswer.practiceRevealed && revealedAnswer?.modelAnswer && (
-            <div className="p-5 rounded-2xl bg-[#800020]/5 dark:bg-[#800020]/15 border border-[#800020]/20 dark:border-[#FB7185]/30 space-y-3">
-              <div className="flex items-center justify-between">
-                <h4 className="text-xs sm:text-sm font-bold text-[#800020] dark:text-[#FB7185] flex items-center gap-2">
-                  <Sparkle className="w-4 h-4" weight="fill" />
-                  <span>نموذج الإجابة ومعايير التقييم</span>
-                </h4>
-                {revealedAnswer.modelAnswerTranslation && (
-                  <TranslationToggle
-                    size="xs"
-                    isTranslated={isModelAnswerTranslated}
-                    onToggle={() => setIsModelAnswerTranslated((prev) => !prev)}
-                  />
-                )}
-              </div>
-              <FormattedAnswerView
-                text={revealedAnswer.modelAnswer}
-                colorScheme="burgundy"
-              />
-              {isModelAnswerTranslated && revealedAnswer.modelAnswerTranslation && (
-                <div
-                  className="p-3.5 rounded-xl bg-white/80 dark:bg-[#0F172A]/80 border border-slate-200 dark:border-slate-700 text-right animate-in fade-in duration-200"
-                  dir="rtl"
-                >
-                  <div className="flex items-center gap-1.5 mb-1.5 text-[11px] font-bold text-slate-500 dark:text-slate-400">
-                    <Translate className="w-3.5 h-3.5 text-[#800020] dark:text-[#FB7185]" />
-                    <span>الترجمة العربية لنموذج الإجابة</span>
-                  </div>
-                  <p className="text-xs sm:text-sm font-medium text-slate-800 dark:text-slate-200 leading-relaxed font-content whitespace-pre-wrap">
-                    {revealedAnswer.modelAnswerTranslation}
-                  </p>
-                </div>
-              )}
-            </div>
-          )}
         </div>
       )}
 
-      {/* Practice Mode: Reveal Button & In-depth Explanation */}
+      {/* 5. Practice Mode: Reveal Button or Explanation Box */}
       {initialMode === "PRACTICE" && (
-        <div className="pt-2">
+        <div className="pt-1">
           {!currentAnswer.practiceRevealed ? (
             <button
               type="button"
@@ -364,9 +347,9 @@ export function ExamQuestionCard({
                 isRevealing ||
                 (!currentAnswer.selectedOptionId && !currentAnswer.essayText)
               }
-              className="h-11 px-5 rounded-xl bg-gradient-to-r from-[#800020] to-[#991B1B] hover:from-[#66001A] hover:to-[#800020] text-white font-bold text-xs sm:text-sm flex items-center gap-2 shadow-xs hover:shadow transition-all active:scale-98 disabled:opacity-40 cursor-pointer select-none"
+              className="h-12 px-6 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-black text-xs sm:text-sm flex items-center gap-2 shadow-xs hover:shadow transition-all active:scale-98 disabled:opacity-40 cursor-pointer select-none"
             >
-              <Lightbulb className="w-4 h-4" weight="fill" />
+              <Lightbulb className="w-4 h-4 text-slate-950" weight="fill" />
               <span>
                 {isRevealing
                   ? "بنراجع إجابتك..."
@@ -374,50 +357,109 @@ export function ExamQuestionCard({
               </span>
             </button>
           ) : (
-            revealedAnswer?.explanation && (
-              <QuestionExplanationBox
-                concept={revealedAnswer.explanation.concept}
-                correctReason={revealedAnswer.explanation.correctReason}
-                isTranslated={isQuestionTranslated}
-                onToggleTranslation={() => setIsQuestionTranslated((prev) => !prev)}
-                forceEnglish={isEnglish}
-              />
+            mainExplanation && (
+              <div className="rounded-2xl border border-blue-200/80 dark:border-blue-900/60 bg-blue-50/20 dark:bg-slate-900/60 p-5 sm:p-6 space-y-4 animate-in fade-in duration-200">
+                {/* Header Dual Pill: Bulb Icon + Explanation + التفسير */}
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-full bg-amber-400 text-slate-950 flex items-center justify-center shadow-xs shrink-0">
+                    <Lightbulb className="w-4 h-4" weight="fill" />
+                  </div>
+                  <div className="inline-flex items-center rounded-full overflow-hidden shadow-xs border border-[#0B2545]/20">
+                    <span className="px-3.5 py-1 bg-[#0B2545] dark:bg-[#1E3A8A] text-white text-xs font-black">
+                      Explanation
+                    </span>
+                    <span className="px-3 py-1 bg-amber-400 text-slate-950 text-xs font-black">
+                      التفسير
+                    </span>
+                  </div>
+                </div>
+
+                {/* Main Explanation Text */}
+                <p className="text-sm sm:text-base font-semibold text-slate-800 dark:text-slate-200 leading-relaxed font-sans text-left" dir="ltr">
+                  {mainExplanation}
+                </p>
+
+                {/* Arabic Translation Box */}
+                {arabicExplanation && (
+                  <div
+                    className="p-4 rounded-xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-right space-y-1.5"
+                    dir="rtl"
+                  >
+                    <div className="flex items-center gap-1.5 text-xs font-bold text-blue-700 dark:text-blue-400">
+                      <Translate className="w-4 h-4" weight="bold" />
+                      <span>الترجمة العربية:</span>
+                    </div>
+                    <p className="text-xs sm:text-sm font-medium text-slate-800 dark:text-slate-200 leading-relaxed font-content">
+                      {arabicExplanation}
+                    </p>
+                  </div>
+                )}
+
+                {/* Concept Pill at Bottom */}
+                {revealedAnswer?.explanation?.concept && (
+                  <div className="pt-1">
+                    <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-100/90 dark:bg-amber-950/40 text-amber-900 dark:text-amber-200 border border-amber-200 dark:border-amber-800/80 text-xs font-bold shadow-xs">
+                      <Target className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" weight="bold" />
+                      <span dir="auto">Concept: {revealedAnswer.explanation.concept}</span>
+                    </div>
+                  </div>
+                )}
+              </div>
             )
           )}
         </div>
       )}
 
-      {/* Question Navigation Controls */}
-      <div
-        dir={isEnglish ? "ltr" : "rtl"}
-        className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-3 pt-4 border-t border-slate-100 dark:border-slate-800"
-      >
+      {/* 6. Navigation Bottom Row (Previous, Pagination Dots, Next / Submit) */}
+      <div className="flex items-center justify-between gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
+        {/* Left: Previous Button */}
         <button
           type="button"
           onClick={onPrevQuestion}
           disabled={currentIndex === 0}
-          className="h-11 px-4 sm:px-5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-30 transition-all cursor-pointer select-none"
+          className="h-11 sm:h-12 px-4 sm:px-6 rounded-full border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-30 font-bold text-xs sm:text-sm shadow-xs flex items-center gap-2 transition-all cursor-pointer select-none"
         >
-          {isEnglish ? <CaretLeft className="w-4 h-4" weight="bold" /> : <CaretRight className="w-4 h-4" weight="bold" />}
-          <span>{isEnglish ? "Previous Question" : "السؤال السابق"}</span>
+          <CaretLeft className="w-4 h-4" weight="bold" />
+          <span>السؤال السابق</span>
         </button>
 
+        {/* Center: Pagination Dots */}
+        <div className="hidden sm:flex items-center gap-2">
+          {paginationRange.map((dotIdx) => {
+            const isActive = dotIdx === currentIndex;
+            return (
+              <button
+                key={dotIdx}
+                type="button"
+                onClick={() => onSelectIndex?.(dotIdx)}
+                className={`transition-all rounded-full ${
+                  isActive
+                    ? "w-3 h-3 bg-amber-400 scale-125 shadow-xs"
+                    : "w-2.5 h-2.5 bg-slate-300 dark:bg-slate-600 hover:bg-slate-400"
+                }`}
+                title={`انتقال للسؤال ${dotIdx + 1}`}
+              />
+            );
+          })}
+        </div>
+
+        {/* Right: Next Question or Submit Exam */}
         {currentIndex < totalQuestions - 1 ? (
           <button
             type="button"
             onClick={onNextQuestion}
-            className="h-11 px-5 sm:px-6 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-xs sm:text-sm font-bold flex items-center gap-2 shadow-xs hover:shadow transition-all active:scale-98 cursor-pointer select-none"
+            className="h-11 sm:h-12 px-5 sm:px-7 rounded-full bg-[#0B2545] hover:bg-[#07192F] dark:bg-[#1E3A8A] dark:hover:bg-[#1E40AF] text-white font-bold text-xs sm:text-sm shadow-sm hover:shadow flex items-center gap-2 transition-all cursor-pointer select-none active:scale-95"
           >
-            <span>{isEnglish ? "Next Question" : "السؤال التالي"}</span>
-            {isEnglish ? <CaretRight className="w-4 h-4" weight="bold" /> : <CaretLeft className="w-4 h-4" weight="bold" />}
+            <span>السؤال التالي</span>
+            <CaretRight className="w-4 h-4" weight="bold" />
           </button>
         ) : (
           <button
             type="button"
             onClick={onOpenSubmitModal}
-            className="h-11 px-5 sm:px-6 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs sm:text-sm font-bold flex items-center gap-2 shadow-xs hover:shadow transition-all active:scale-98 cursor-pointer select-none"
+            className="h-11 sm:h-12 px-5 sm:px-7 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold text-xs sm:text-sm shadow-sm hover:shadow flex items-center gap-2 transition-all cursor-pointer select-none active:scale-95"
           >
-            <span>{isEnglish ? "Finished? Submit Exam" : "إنهاء وتسليم الامتحان"}</span>
+            <span>تسليم الامتحان</span>
             <PaperPlaneTilt className="w-4 h-4" weight="bold" />
           </button>
         )}

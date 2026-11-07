@@ -25,6 +25,7 @@ export function ExamSolver({ exam, attemptId, initialMode }: ExamSolverProps) {
   const [isRevealing, setIsRevealing] = useState(false);
   const [revealed, setRevealed] = useState<Record<string, RevealedAnswer>>({});
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [isPaletteOpen, setIsPaletteOpen] = useState(false);
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const executeSubmitRef = useRef<() => void>(() => {});
@@ -154,7 +155,7 @@ export function ExamSolver({ exam, attemptId, initialMode }: ExamSolverProps) {
     executeSubmitRef.current = executeSubmit;
   }, [executeSubmit]);
 
-  // Stats for modal
+  // Stats for modal & progress
   const answeredCount = Object.values(answers).filter(
     (a) => a.selectedOptionId || (a.essayText && a.essayText.trim().length > 0)
   ).length;
@@ -171,7 +172,8 @@ export function ExamSolver({ exam, attemptId, initialMode }: ExamSolverProps) {
     exam?.subject?.schoolCategory === "LANGUAGES";
 
   return (
-    <div className="max-w-4xl mx-auto px-3 sm:px-4 space-y-5 text-right font-ui pb-16">
+    <div className="max-w-3xl mx-auto px-3 sm:px-4 space-y-4 text-right font-ui pb-16">
+      {/* Top Header: Platform Logo, Banner, Status Row */}
       <ExamSolverHeader
         subjectName={exam.subject.name}
         examTitle={exam.title}
@@ -179,17 +181,27 @@ export function ExamSolver({ exam, attemptId, initialMode }: ExamSolverProps) {
         minutes={minutes}
         seconds={seconds}
         isUrgent={isUrgent}
+        currentIndex={currentIndex}
+        totalQuestions={totalQuestions}
+        answeredCount={answeredCount}
+        isPaletteOpen={isPaletteOpen}
+        onTogglePalette={() => setIsPaletteOpen((prev) => !prev)}
         onOpenSubmitModal={() => setShowConfirmModal(true)}
       />
 
-      <ExamQuestionPalette
-        questions={questions}
-        currentIndex={currentIndex}
-        answers={answers}
-        flaggedQuestions={flaggedQuestions}
-        onSelectIndex={setCurrentIndex}
-      />
+      {/* Collapsible Question Palette (Opened on clicking 2 من 30 سؤال) */}
+      {isPaletteOpen && (
+        <ExamQuestionPalette
+          questions={questions}
+          currentIndex={currentIndex}
+          answers={answers}
+          flaggedQuestions={flaggedQuestions}
+          onSelectIndex={setCurrentIndex}
+          onClose={() => setIsPaletteOpen(false)}
+        />
+      )}
 
+      {/* Main Question Card matching Mock-up */}
       {currentQ && (
         <ExamQuestionCard
           currentQ={currentQ}
@@ -208,9 +220,11 @@ export function ExamSolver({ exam, attemptId, initialMode }: ExamSolverProps) {
           onPrevQuestion={() => setCurrentIndex((idx) => Math.max(0, idx - 1))}
           onNextQuestion={() => setCurrentIndex((idx) => idx + 1)}
           onOpenSubmitModal={() => setShowConfirmModal(true)}
+          onSelectIndex={setCurrentIndex}
         />
       )}
 
+      {/* Submit Confirmation Modal */}
       <ExamSubmitModal
         isOpen={showConfirmModal}
         isSubmitting={isSubmitting}
