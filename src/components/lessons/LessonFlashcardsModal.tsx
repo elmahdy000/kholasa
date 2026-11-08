@@ -35,6 +35,7 @@ interface LessonFlashcardsModalProps {
   unitTitle?: string;
   definitions: Definition[];
   isLanguages?: boolean;
+  onCompleted?: () => void;
 }
 
 type StudyMode = "TERM_TO_DEF" | "DEF_TO_TERM";
@@ -113,6 +114,7 @@ export function LessonFlashcardsModal({
   unitTitle,
   definitions,
   isLanguages = false,
+  onCompleted,
 }: LessonFlashcardsModalProps) {
   // Deck items state (supports original list, shuffled, or unmastered retry)
   const [deck, setDeck] = useState<Definition[]>(definitions);
@@ -181,6 +183,12 @@ export function LessonFlashcardsModal({
 
   const totalCards = deck.length;
   const isCompleted = currentIndex >= totalCards && totalCards > 0;
+
+  useEffect(() => {
+    if (isCompleted) {
+      onCompleted?.();
+    }
+  }, [isCompleted, onCompleted]);
 
   // Toggle Flip
   const handleFlip = useCallback(() => {

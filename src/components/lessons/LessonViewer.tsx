@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
-import { BookOpen, Graph, BookmarkSimple, CheckCircle } from "@phosphor-icons/react";
+import { BookOpen, Graph, BookmarkSimple, CheckCircle, Sparkle, ArrowLeft, X } from "@phosphor-icons/react";
 import {
   LessonViewerProps,
   FlowFilterType,
@@ -91,6 +91,14 @@ export function LessonViewer({
   });
 
   const [essaySelfScores, setEssaySelfScores] = useState<Record<string, number>>({});
+  const [definitionsReviewed, setDefinitionsReviewed] = useState(false);
+  const [stepCelebration, setStepCelebration] = useState<{
+    step: "definitions" | "tf" | "exam";
+    title: string;
+    description: string;
+    nextStep?: "definitions" | "tf" | "exam" | "mistakes";
+    nextStepLabel?: string;
+  } | null>(null);
 
   // Mastery Ratings for Learning Objectives
   const [masteryRatings, setMasteryRatings] = useState<
@@ -367,6 +375,15 @@ export function LessonViewer({
     }
   }, []);
 
+  // Auto-dismiss step celebration toast after 10s
+  useEffect(() => {
+    if (!stepCelebration) return;
+    const timer = setTimeout(() => {
+      setStepCelebration(null);
+    }, 10000);
+    return () => clearTimeout(timer);
+  }, [stepCelebration]);
+
   // Siblings navigation
   const siblingLessons = lesson.unit.lessons;
   const currentIndex = siblingLessons.findIndex((l) => l.id === lesson.id);
@@ -522,6 +539,25 @@ export function LessonViewer({
         },
       }));
 
+      // Reactive Auto-Sync: Check if this answer completes all True/False challenges
+      const targetQ = lesson.questions.find((lq) => lq.question.id === questionId)?.question;
+      if (targetQ?.type === "TRUE_FALSE" && tfQuestions.length > 0) {
+        const willBeAnswered = tfQuestions.filter(
+          (q) => q.question.id === questionId || Boolean(questionAnswers[q.question.id]?.selectedOptionId)
+        ).length;
+        if (willBeAnswered >= tfQuestions.length && tfAnsweredCount < tfQuestions.length) {
+          setStepCelebration({
+            step: "tf",
+            title: isLanguagesSubject ? "Quick Challenges Complete! 🎯" : "رائع! أتممت جميع التحديات السريعة بنجاح 🎯",
+            description: isLanguagesSubject
+              ? "All True/False challenges completed. Ready for comprehensive exam questions?"
+              : "تم تسجيل كافة إجاباتك! الخطوة التالية هي أسئلة الامتحانات والتدريب المكثف.",
+            nextStep: "exam",
+            nextStepLabel: isLanguagesSubject ? "Go to Exam Practice" : "الانتقال لأسئلة الامتحانات",
+          });
+        }
+      }
+
       // Live reactive synchronization with the lesson mistakes capsule
       if (!isRight) {
         setMistakes((prev) => {
@@ -611,6 +647,7 @@ export function LessonViewer({
         activeStep={activeStep}
         onSelectStep={handleSelectStep}
         definitionsCount={definitions.length}
+        definitionsReviewed={definitionsReviewed}
         tfQuestionsCount={tfQuestions.length}
         tfAnsweredCount={tfAnsweredCount}
         examQuestionsCount={mcqQuestions.length + essayQuestions.length}
@@ -618,6 +655,52 @@ export function LessonViewer({
         unresolvedMistakesCount={mistakes.length}
         isLanguages={isLanguagesSubject}
       />
+
+      {/* 2.6 Step Completion Celebration Banner with Smooth Next-Step Transition */}
+      {stepCelebration && (
+        <div
+          dir={isLanguagesSubject ? "ltr" : "rtl"}
+          className="p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/40 dark:to-teal-950/40 border border-emerald-300 dark:border-emerald-800 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in slide-in-from-top-2 duration-300"
+        >
+          <div className="flex items-start sm:items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+              <Sparkle className="w-5 h-5" weight="fill" />
+            </div>
+            <div>
+              <h4 className="text-xs sm:text-sm font-black text-emerald-900 dark:text-emerald-200">
+                {stepCelebration.title}
+              </h4>
+              <p className="text-[11px] sm:text-xs text-emerald-800/80 dark:text-emerald-300/80 mt-0.5 leading-relaxed">
+                {stepCelebration.description}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 self-end sm:self-auto shrink-0">
+            {stepCelebration.nextStep && (
+              <button
+                type="button"
+                onClick={() => {
+                  handleSelectStep(stepCelebration.nextStep!);
+                  setStepCelebration(null);
+                }}
+                className="h-8 sm:h-9 px-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition-transform active:scale-95 cursor-pointer"
+              >
+                <span>{stepCelebration.nextStepLabel || (isLanguagesSubject ? "Next Step" : "الخطوة التالية")}</span>
+                <ArrowLeft className={`w-3.5 h-3.5 ${isLanguagesSubject ? "rotate-180" : ""}`} weight="bold" />
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => setStepCelebration(null)}
+              className="w-8 h-8 rounded-lg text-emerald-700 dark:text-emerald-300 hover:bg-emerald-200/50 dark:hover:bg-emerald-900/50 flex items-center justify-center transition-colors cursor-pointer"
+              title="إغلاق التنبيه"
+            >
+              <X className="w-4 h-4" weight="bold" />
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* 3. Main Navigation Tabs (4 Clear Student Tabs) */}
       <div
@@ -946,6 +1029,20 @@ export function LessonViewer({
         unitTitle={lesson.unit?.title}
         definitions={definitions}
         isLanguages={isLanguagesSubject}
+        onCompleted={() => {
+          setDefinitionsReviewed(true);
+          setStepCelebration({
+            step: "definitions",
+            title: isLanguagesSubject ? "Concepts Mastered! 👏" : "أحسنت! أتممت مراجعة المفاهيم والتعريفات 👏",
+            description: isLanguagesSubject
+              ? "All concepts reviewed. Continue to Quick Challenges to test your understanding."
+              : "المفاهيم جاهزة الآن، يمكنك الانتقال مباشرة للتحديات السريعة لتثبيت الفهم.",
+            nextStep: tfQuestions.length > 0 ? "tf" : "exam",
+            nextStepLabel: tfQuestions.length > 0
+              ? (isLanguagesSubject ? "Start Quick Challenges" : "بدء التحديات السريعة (صح وخطأ)")
+              : (isLanguagesSubject ? "Start Exam Questions" : "بدء أسئلة الامتحانات"),
+          });
+        }}
       />
       {/* Mistakes Quick Drill Capsule Modal (كبسولة تظبيط الغلطات) */}
       <LessonMistakesCapsuleModal

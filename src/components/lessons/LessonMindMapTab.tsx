@@ -46,6 +46,7 @@ export function LessonMindMapTab({ mindMap }: LessonMindMapTabProps) {
     initialPanX: number;
     initialPanY: number;
   } | null>(null);
+  const pinchStartRef = useRef<{ dist: number; initialZoom: number } | null>(null);
 
   // Textual Tree / Outline mode state
   const [zoomLevel, setZoomLevel] = useState(1);
@@ -118,6 +119,44 @@ export function LessonMindMapTab({ mindMap }: LessonMindMapTabProps) {
         // Swiped right -> Previous board
         handlePrev();
       }
+    }
+  };
+
+  // Fullscreen touch handlers with multi-touch pinch-to-zoom for mobile & tablet
+  const handleTouchStartFullscreen = (e: React.TouchEvent) => {
+    if (e.touches.length === 2) {
+      const dist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      pinchStartRef.current = { dist, initialZoom: imageZoom };
+    } else if (e.touches.length === 1 && imageZoom <= 1) {
+      touchStartRef.current = {
+        x: e.touches[0].clientX,
+        y: e.touches[0].clientY,
+      };
+    }
+  };
+
+  const handleTouchMoveFullscreen = (e: React.TouchEvent) => {
+    if (e.touches.length === 2 && pinchStartRef.current) {
+      const currentDist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      if (pinchStartRef.current.dist > 0) {
+        const factor = currentDist / pinchStartRef.current.dist;
+        handleZoomChange(pinchStartRef.current.initialZoom * factor);
+      }
+    }
+  };
+
+  const handleTouchEndFullscreen = (e: React.TouchEvent) => {
+    if (e.touches.length < 2) {
+      pinchStartRef.current = null;
+    }
+    if (touchStartRef.current && e.changedTouches.length > 0 && imageZoom <= 1) {
+      handleTouchEnd(e);
     }
   };
 
@@ -658,8 +697,9 @@ export function LessonMindMapTab({ mindMap }: LessonMindMapTabProps) {
               onPointerCancel={handlePointerUp}
               onWheel={handleWheel}
               onDoubleClick={handleDoubleClick}
-              onTouchStart={imageZoom <= 1 ? handleTouchStart : undefined}
-              onTouchEnd={imageZoom <= 1 ? handleTouchEnd : undefined}
+              onTouchStart={handleTouchStartFullscreen}
+              onTouchMove={handleTouchMoveFullscreen}
+              onTouchEnd={handleTouchEndFullscreen}
             >
               {/* Previous / Next Arrows for Multi-image */}
               {images.length > 1 && (
@@ -721,18 +761,57 @@ export function LessonMindMapTab({ mindMap }: LessonMindMapTabProps) {
                 />
               </div>
 
-              {/* Floating Helper Footer */}
-              <div className="absolute bottom-4 inset-x-0 flex justify-center pointer-events-none">
-                <div className="px-4 py-2 rounded-xl bg-black/70 backdrop-blur-md border border-white/10 text-white/80 text-xs font-bold flex items-center gap-3 shadow-lg">
+              {/* Floating Touch-Friendly Zoom Dock for Mobile & Desktop */}
+              <div className="absolute bottom-4 sm:bottom-6 inset-x-0 flex flex-col items-center gap-2 pointer-events-none z-30 px-3">
+                {/* On-screen tactile zoom controller (Crucial for mobile and tablets) */}
+                <div className="pointer-events-auto flex items-center gap-1 sm:gap-2 p-1.5 rounded-full bg-slate-900/90 backdrop-blur-md border border-white/20 shadow-2xl text-white">
+                  <button
+                    type="button"
+                    onClick={() => handleZoomChange(imageZoom - 0.3)}
+                    disabled={imageZoom <= 1}
+                    className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:hover:bg-white/10 flex items-center justify-center transition-all cursor-pointer active:scale-95"
+                    title="تصغير"
+                  >
+                    <ZoomOut className="w-4 h-4" />
+                  </button>
+
+                  <span className="px-2.5 font-mono font-bold text-xs min-w-[3.5rem] text-center" dir="ltr">
+                    {Math.round(imageZoom * 100)}%
+                  </span>
+
+                  <button
+                    type="button"
+                    onClick={() => handleZoomChange(imageZoom + 0.3)}
+                    disabled={imageZoom >= 3.5}
+                    className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:hover:bg-white/10 flex items-center justify-center transition-all cursor-pointer active:scale-95"
+                    title="تكبير"
+                  >
+                    <ZoomIn className="w-4 h-4" />
+                  </button>
+
+                  {imageZoom > 1 && (
+                    <button
+                      type="button"
+                      onClick={handleResetZoom}
+                      className="px-3 h-8 sm:h-9 rounded-full bg-white/15 hover:bg-white/25 text-xs font-bold transition-all cursor-pointer flex items-center gap-1 active:scale-95"
+                      title="إعادة ضبط الحجم"
+                    >
+                      <RotateCcw className="w-3.5 h-3.5" />
+                      <span>100%</span>
+                    </button>
+                  )}
+                </div>
+
+                {/* Helper hint */}
+                <div className="px-3.5 py-1.5 rounded-xl bg-black/60 backdrop-blur-xs border border-white/10 text-white/70 text-[11px] font-medium flex items-center gap-2 shadow-xs">
                   {imageZoom > 1 ? (
-                    <span className="flex items-center gap-1.5 text-[#FB7185]">
+                    <span className="flex items-center gap-1.5 text-amber-300">
                       <Move className="w-3.5 h-3.5" />
-                      اسحب بالماوس أو اللمس للتحريك • انقر مرتين لإعادة الضبط
+                      اسحب باللمس للتحريك والتنقل بين تفاصيل المخطط
                     </span>
                   ) : (
                     <span>
-                      انقر مرتين للتكبير السريع • Esc للإغلاق • عجلة الماوس
-                      للتحكم في الحجم
+                      قرّب بإصبعين للتكبير (Pinch-to-zoom) أو انقر مرتين للتقريب
                     </span>
                   )}
                 </div>
