@@ -25,7 +25,16 @@ import {
   ExternalLink,
   Trophy,
   Calendar,
+  Radio,
+  BarChart3,
 } from "lucide-react";
+import { RealtimeObservatoryClient } from "./analytics/RealtimeObservatoryClient";
+import type {
+  RealtimeMetrics,
+  RealtimeStudentItem,
+  RealtimeActivityEvent,
+} from "@/services/realtime-analytics.service";
+import type { EducationalSystem, Grade } from "./users/types";
 
 interface AnalyticsData {
   overview: {
@@ -131,9 +140,21 @@ interface AnalyticsData {
 
 interface AnalyticsManagerClientProps {
   data: AnalyticsData;
+  realtimeInitialData?: {
+    metrics: RealtimeMetrics;
+    students: RealtimeStudentItem[];
+    liveFeed: RealtimeActivityEvent[];
+  };
+  systems?: EducationalSystem[];
+  grades?: Grade[];
 }
 
-export function AnalyticsManagerClient({ data }: AnalyticsManagerClientProps) {
+export function AnalyticsManagerClient({
+  data,
+  realtimeInitialData,
+  systems = [],
+  grades = [],
+}: AnalyticsManagerClientProps) {
   const {
     overview,
     studentCohort,
@@ -145,6 +166,9 @@ export function AnalyticsManagerClient({ data }: AnalyticsManagerClientProps) {
     recentAttempts,
   } = data;
 
+  const [activeView, setActiveView] = useState<
+    "realtime" | "dau" | "cohort" | "questions" | "audit" | "all"
+  >("realtime");
   const [copiedCodeId, setCopiedCodeId] = useState<string | null>(null);
   const [selectedDayIndex, setSelectedDayIndex] = useState<number>(0);
 
@@ -232,8 +256,103 @@ export function AnalyticsManagerClient({ data }: AnalyticsManagerClientProps) {
         </div>
       </div>
 
-      {/* 4 Vercel-Style Key Metric Blocks */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      {/* Main View Switcher Tabs */}
+      <div className="flex items-center gap-1.5 p-1 rounded-xl bg-[#F1F5F9] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] overflow-x-auto no-scrollbar">
+        <button
+          type="button"
+          onClick={() => setActiveView("realtime")}
+          className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 shrink-0 ${
+            activeView === "realtime"
+              ? "bg-[#800020] text-white shadow-xs"
+              : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
+          }`}
+        >
+          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+          <span>المرصد الفوري المباشر (Realtime)</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveView("dau")}
+          className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 shrink-0 ${
+            activeView === "dau"
+              ? "bg-[#0F172A] text-white dark:bg-white dark:text-[#0F172A] shadow-xs"
+              : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
+          }`}
+        >
+          <Calendar className="w-3.5 h-3.5" />
+          <span>حضور 14 يوماً (DAU)</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveView("cohort")}
+          className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 shrink-0 ${
+            activeView === "cohort"
+              ? "bg-[#0F172A] text-white dark:bg-white dark:text-[#0F172A] shadow-xs"
+              : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
+          }`}
+        >
+          <GraduationCap className="w-3.5 h-3.5" />
+          <span>إحصائيات الدفعة والأجهزة</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveView("questions")}
+          className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 shrink-0 ${
+            activeView === "questions"
+              ? "bg-[#0F172A] text-white dark:bg-white dark:text-[#0F172A] shadow-xs"
+              : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
+          }`}
+        >
+          <BookOpen className="w-3.5 h-3.5" />
+          <span>بنك الأسئلة وصعوبة المحتوى</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveView("audit")}
+          className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 shrink-0 ${
+            activeView === "audit"
+              ? "bg-[#0F172A] text-white dark:bg-white dark:text-[#0F172A] shadow-xs"
+              : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
+          }`}
+        >
+          <Shield className="w-3.5 h-3.5" />
+          <span>سجل التدقيق ({auditLogs.length})</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveView("all")}
+          className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 shrink-0 ${
+            activeView === "all"
+              ? "bg-[#0F172A] text-white dark:bg-white dark:text-[#0F172A] shadow-xs"
+              : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
+          }`}
+        >
+          <BarChart3 className="w-3.5 h-3.5" />
+          <span>عرض التقرير الكامل</span>
+        </button>
+      </div>
+
+      {/* 1. Realtime Observatory View */}
+      {(activeView === "realtime" || activeView === "all") && (
+        <RealtimeObservatoryClient
+          initialMetrics={realtimeInitialData?.metrics}
+          initialStudents={realtimeInitialData?.students}
+          initialLiveFeed={realtimeInitialData?.liveFeed}
+          systems={systems}
+          grades={grades}
+        />
+      )}
+
+      {/* 2. Daily Active Students (DAU) & 14-Day Telemetry View */}
+      {(activeView === "dau" || activeView === "all") && (
+        <>
+          {/* 4 Vercel-Style Key Metric Blocks */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <div className="p-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A]  flex flex-col justify-between">
           <span className="text-[13px] font-mono uppercase tracking-wider text-[#64748B]">
             إجمالي الطلاب والمستخدمين
@@ -475,8 +594,11 @@ export function AnalyticsManagerClient({ data }: AnalyticsManagerClientProps) {
           </div>
         )}
       </div>
+      </>
+      )}
 
-      {/* 5. Dedicated Student Cohort Telemetry Section */}
+      {/* 3. Dedicated Student Cohort Telemetry Section */}
+      {(activeView === "cohort" || activeView === "all") && (
       <div className="p-6 rounded-2xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#E2E8F0] dark:border-[#334155]">
           <div>
@@ -715,9 +837,13 @@ export function AnalyticsManagerClient({ data }: AnalyticsManagerClientProps) {
           </div>
         </div>
       </div>
+      )}
 
-      {/* Two Column Visual Breakdowns */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      {/* 4. Question Bank & Database Objects View */}
+      {(activeView === "questions" || activeView === "all") && (
+        <>
+          {/* Two Column Visual Breakdowns */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Score Distribution Brackets */}
         <div className="p-5 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] space-y-4 ">
           <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#1E293B] pb-3">
@@ -881,6 +1007,74 @@ export function AnalyticsManagerClient({ data }: AnalyticsManagerClientProps) {
           </div>
         </div>
       </div>
+      </>
+      )}
+
+      {/* 5. System Audit Logs & Operational Security View */}
+      {(activeView === "audit" || activeView === "all") && (
+        <div className="p-6 rounded-2xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#E2E8F0] dark:border-[#334155]">
+            <div>
+              <div className="flex items-center gap-2">
+                <Shield className="w-5 h-5 text-[#800020] dark:text-[#FB7185]" />
+                <h2 className="text-base font-bold text-[#0F172A] dark:text-white">
+                  سجل تدقيق النظام والعمليات الإدارية (System Audit Logs)
+                </h2>
+              </div>
+              <p className="text-xs text-[#64748B] dark:text-[#94A3B8] mt-1">
+                سجل توثيق شامل للعمليات الإدارية وتعديلات بنك الأسئلة وصلاحيات المستخدمين
+              </p>
+            </div>
+            <span className="px-3 py-1 rounded-full text-xs font-mono font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+              {auditLogs.length} عملية مسجلة
+            </span>
+          </div>
+
+          {auditLogs.length === 0 ? (
+            <p className="text-xs text-[#64748B] py-8 text-center">
+              لا توجد سجلات تدقيق مسجلة حتى الآن.
+            </p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-right text-xs">
+                <thead>
+                  <tr className="border-b border-[#E2E8F0] dark:border-[#334155] text-[#64748B] dark:text-[#94A3B8]">
+                    <th className="pb-3 font-bold pr-2">العملية الإدارية</th>
+                    <th className="pb-3 font-bold">المصدر / المورد</th>
+                    <th className="pb-3 font-bold">المسؤول</th>
+                    <th className="pb-3 font-bold pl-2">الوقت والتاريخ</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[#E2E8F0] dark:divide-[#334155]">
+                  {auditLogs.map((log) => (
+                    <tr key={log.id} className="hover:bg-slate-50 dark:hover:bg-[#1E293B]/40 transition-colors">
+                      <td className="py-3 pr-2 font-bold text-[#0F172A] dark:text-white">
+                        <span className="px-2 py-0.5 rounded bg-[#800020]/10 text-[#800020] dark:text-[#FB7185] font-mono text-[11px]">
+                          {log.action}
+                        </span>
+                      </td>
+                      <td className="py-3 font-mono text-slate-600 dark:text-slate-400">
+                        {log.resource} {log.resourceId ? `(${log.resourceId.slice(0, 10)})` : ""}
+                      </td>
+                      <td className="py-3">
+                        <span className="font-bold text-[#0F172A] dark:text-white">
+                          {log.user?.name || "النظام"}
+                        </span>
+                        <span className="text-[10px] text-slate-400 mr-1.5 font-mono">
+                          ({log.user?.role || "ADMIN"})
+                        </span>
+                      </td>
+                      <td className="py-3 pl-2 text-slate-500 font-mono text-[11px]">
+                        {new Date(log.createdAt).toLocaleString("ar-EG")}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

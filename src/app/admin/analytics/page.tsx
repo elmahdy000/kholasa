@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentUser, canViewAnalytics } from "@/lib/auth";
 import { AdminShell } from "@/components/layout/AdminShell";
 import { AnalyticsManagerClient } from "@/components/admin/AnalyticsManagerClient";
+import { RealtimeAnalyticsService } from "@/services/realtime-analytics.service";
 
 export default async function AdminAnalyticsPage() {
   const user = await getCurrentUser();
@@ -46,6 +47,9 @@ export default async function AdminAnalyticsPage() {
     dailySessions,
     dailyAttempts,
     dailyProgress,
+    systems,
+    grades,
+    realtimeData,
   ] = await Promise.all([
     prisma.user.count(),
     prisma.user.count({ where: { role: "STUDENT" } }),
@@ -187,6 +191,9 @@ export default async function AdminAnalyticsPage() {
       },
       orderBy: { lastAccessedAt: "desc" },
     }),
+    prisma.educationalSystem.findMany({ select: { id: true, name: true } }),
+    prisma.grade.findMany({ select: { id: true, name: true, systemId: true } }),
+    RealtimeAnalyticsService.getRealtimeObservatory(),
   ]);
 
   let scoreHigh = 0;
@@ -432,7 +439,12 @@ export default async function AdminAnalyticsPage() {
 
   return (
     <AdminShell user={user}>
-      <AnalyticsManagerClient data={analyticsData} />
+      <AnalyticsManagerClient
+        data={analyticsData}
+        realtimeInitialData={realtimeData}
+        systems={systems}
+        grades={grades}
+      />
     </AdminShell>
   );
 }
