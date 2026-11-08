@@ -7,8 +7,7 @@ import {
   CaretLeft,
   PaperPlaneTilt,
   Translate,
-  ChartBar,
-  Check,
+    Check,
 } from "@phosphor-icons/react";
 import { BidiStatement } from "@/components/ui/BidiStatement";
 import { QuestionImageAttachment } from "@/components/ui/QuestionImageAttachment";
@@ -91,12 +90,6 @@ export function ExamQuestionCard({
       >
         {/* Difficulty Pill & Actions */}
         <div className="flex items-center gap-1.5 sm:gap-2">
-          {/* Difficulty Pill */}
-          <div className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-amber-50 dark:bg-amber-950/40 text-amber-900 dark:text-amber-300 border border-amber-200/80 dark:border-amber-800/80 text-[11px] sm:text-xs font-black shadow-xs">
-            <ChartBar className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#D97706]" weight="fill" />
-            <span>{difficultyText}</span>
-          </div>
-
           {/* Translation Toggle Pill (for Languages questions) */}
           {hasTranslation && (
             <button
