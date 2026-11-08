@@ -620,7 +620,11 @@ export function LessonViewer({
       />
 
       {/* 3. Main Navigation Tabs (4 Clear Student Tabs) */}
-      <div className="p-1 rounded-2xl bg-slate-100/80 dark:bg-slate-900/70 border border-slate-200/60 dark:border-slate-800/80 flex items-center gap-1.5 overflow-x-auto scrollbar-none shadow-2xs">
+      <div
+        role="tablist"
+        aria-label="أقسام محتوى الدرس"
+        className="p-1.5 rounded-2xl bg-[#F8FAFC] dark:bg-slate-900/90 border border-[#E2E8F0] dark:border-slate-800 flex items-center gap-1.5 overflow-x-auto scrollbar-none shadow-2xs"
+      >
         {[
           {
             id: "definitions",
@@ -650,11 +654,15 @@ export function LessonViewer({
           return (
             <button
               key={tab.id}
+              role="tab"
+              aria-selected={isSelected}
+              id={`tab-${tab.id}`}
+              aria-controls={`tabpanel-${tab.id}`}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`flex-1 min-w-[130px] sm:min-w-[140px] py-2 px-3.5 rounded-xl text-xs sm:text-[13px] font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
+              className={`flex-1 min-w-[130px] sm:min-w-0 py-2.5 px-3 rounded-xl text-xs sm:text-[13px] font-bold flex items-center justify-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
                 isSelected
-                  ? "bg-white dark:bg-[#1E3A5F] text-[#800020] dark:text-white shadow-xs border border-slate-200/80 dark:border-slate-700/80 font-black"
-                  : "text-slate-600 dark:text-slate-400 hover:text-[#12263F] dark:hover:text-white hover:bg-white/50 dark:hover:bg-slate-800/50"
+                  ? "bg-white dark:bg-[#14213D] text-[#0F172A] dark:text-white shadow-xs border border-[#E2E8F0] dark:border-slate-700 font-black"
+                  : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white hover:bg-white/60 dark:hover:bg-slate-800/50"
               }`}
             >
               <Icon
@@ -664,9 +672,9 @@ export function LessonViewer({
               <span>{tab.label}</span>
               {"badge" in tab && tab.badge && (
                 <span
-                  className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono font-bold ${
+                  className={`text-[11px] px-2 py-0.5 rounded-full font-mono font-bold ${
                     isSelected
-                      ? "bg-[#800020]/10 text-[#800020] dark:bg-white/15 dark:text-white"
+                      ? "bg-[#14213D]/10 text-[#0F172A] dark:bg-white/15 dark:text-white"
                       : "bg-slate-200/80 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
                   }`}
                 >
@@ -723,20 +731,24 @@ export function LessonViewer({
       {activeTab === "questions" && (
         <div className="space-y-6 print-content">
           {/* Difficulty & Type Filter Dock */}
-          <div className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] shadow-sm space-y-4">
+          <div className="p-4 sm:p-5 rounded-2xl bg-[#F8FAFC] dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] shadow-2xs space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#E2E8F0]/80 dark:border-[#334155]/80 pb-4">
-              <div>
-                <h3 className="text-base sm:text-lg font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
-                  <CheckCircle className="w-5 h-5 text-[#800020] dark:text-[#FB7185]" weight="fill" />
-                  <span>تدريبات وبنك أسئلة الدرس</span>
-                </h3>
-                <p className="text-[12px] sm:text-[13px] text-[#64748B] dark:text-[#94A3B8] mt-0.5">
-                  تدرج في الحل من المباشر للمتقدم، وجرب كل أنواع الأسئلة مع التصحيح الفوري
-                </p>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-[#2563EB] dark:text-blue-400 flex items-center justify-center shrink-0 border border-blue-100 dark:border-blue-900/50 shadow-2xs">
+                  <CheckCircle className="w-5 h-5" weight="bold" />
+                </div>
+                <div>
+                  <h3 className="text-base sm:text-lg font-black text-[#0F172A] dark:text-white">
+                    تدريبات وبنك أسئلة الدرس
+                  </h3>
+                  <p className="text-xs sm:text-[13px] text-[#64748B] dark:text-[#94A3B8] mt-0.5 leading-relaxed">
+                    تدرج في الحل من المباشر للمتقدم مع التصحيح الفوري وإرشادات الحل
+                  </p>
+                </div>
               </div>
 
-              <div className="flex items-center gap-2 self-start sm:self-auto">
-                <span className="px-3 py-1 rounded-xl bg-[#800020]/10 text-[#800020] dark:bg-[#800020]/30 dark:text-[#FB7185] text-xs font-bold font-mono">
+              <div className="flex items-center gap-2 self-start sm:self-auto shrink-0">
+                <span className="px-3 py-1.5 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[#0F172A] dark:text-slate-200 text-xs font-mono font-bold shadow-2xs">
                   {filteredByDifficulty.length} من {totalQuestionsCount} سؤال
                 </span>
               </div>
@@ -770,8 +782,8 @@ export function LessonViewer({
                       type="button"
                       onClick={() => setDifficultyFilter(item.id as any)}
                       className={`px-3 py-1.5 rounded-xl text-xs sm:text-[13px] font-bold transition-all flex items-center gap-2 border cursor-pointer ${isActive
-                          ? "bg-[#800020] text-white border-[#800020] shadow-sm"
-                          : "bg-[#F8FAFC] dark:bg-[#1E293B] text-[#64748B] dark:text-[#94A3B8] border-[#E2E8F0] dark:border-[#334155] hover:border-[#800020]/40"
+                          ? "bg-[#14213D] text-white border-[#14213D] shadow-2xs"
+                          : "bg-white dark:bg-[#1E293B] text-[#64748B] dark:text-[#94A3B8] border-[#E2E8F0] dark:border-[#334155] hover:border-slate-300"
                         }`}
                     >
                       <span>{item.label}</span>
@@ -808,7 +820,7 @@ export function LessonViewer({
                       type="button"
                       onClick={() => setQuestionTypeFilter(item.id as any)}
                       className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 border cursor-pointer ${isActive
-                          ? "bg-[#0F172A] text-white dark:bg-white dark:text-[#0F172A] border-transparent shadow-sm"
+                          ? "bg-[#2563EB] text-white border-[#2563EB] shadow-2xs"
                           : "bg-white dark:bg-[#0F172A] text-[#64748B] dark:text-[#94A3B8] border-[#E2E8F0] dark:border-[#334155] hover:text-[#0F172A] dark:hover:text-white"
                         }`}
                     >

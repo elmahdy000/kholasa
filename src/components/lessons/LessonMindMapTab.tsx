@@ -237,17 +237,17 @@ export function LessonMindMapTab({ mindMap }: LessonMindMapTabProps) {
     return (
       <div className="space-y-6">
         {/* Header Bar with Mode Switcher */}
-        <div className="rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xs">
+        <div className="rounded-2xl bg-[#F8FAFC] dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-2xs">
           <div>
             <div className="flex items-center gap-2">
-              <span className="w-8 h-8 rounded-xl bg-[#800020]/10 dark:bg-[#800020]/25 text-[#800020] dark:text-[#FB7185] flex items-center justify-center">
+              <span className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-[#2563EB] dark:text-blue-400 border border-blue-100 dark:border-blue-900/50 flex items-center justify-center shrink-0 shadow-2xs">
                 <ImageIcon className="w-4 h-4" />
               </span>
               <h3 className="text-base sm:text-lg font-bold text-[#0F172A] dark:text-white">
                 {mindMap.title || "ملخص ومخططات الدرس"}
               </h3>
               {images.length > 1 && (
-                <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#800020]/10 text-[#800020] dark:bg-[#FB7185]/20 dark:text-[#FB7185]">
+                <span className="px-2.5 py-0.5 rounded-full text-xs font-bold font-mono bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[#0F172A] dark:text-slate-200 shadow-2xs">
                   {images.length} لوحات
                 </span>
               )}

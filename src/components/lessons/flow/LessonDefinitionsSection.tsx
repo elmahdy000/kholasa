@@ -66,45 +66,43 @@ export function LessonDefinitionsSection({
   });
 
   return (
-    <div id="section-definitions" className="space-y-6 pt-4">
-      {/* Section Header */}
-      {/* Section Header: Vercel-inspired executive dark navy & burgundy hero card */}
-      <div className="p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-slate-900 via-[#12263F] to-slate-900 text-white border border-slate-800 shadow-sm relative overflow-hidden flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-3.5">
-          <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#800020] to-[#550015] text-white flex items-center justify-center shrink-0 shadow-xs border border-white/10">
+    <div id="section-definitions" className="space-y-5 pt-1">
+      {/* Section Header: Clean, lightweight professional educational card */}
+      <div className="p-4 sm:p-5 rounded-2xl bg-[#F8FAFC] dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-2xs">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-[#2563EB] dark:text-blue-400 flex items-center justify-center shrink-0 border border-blue-100 dark:border-blue-900/50 shadow-2xs">
             <BookOpen className="w-5 h-5" weight="bold" />
           </div>
           <div>
-            <div className="flex items-center gap-2">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-[#D97706] bg-[#D97706]/15 border border-[#D97706]/30 px-2.5 py-0.5 rounded-full">
-                قاموس المفاهيم
-              </span>
-              <h2 className="text-base sm:text-lg font-black text-white">
-                التعريفات والمصطلحات المهمة
-              </h2>
-            </div>
-            <p className="text-xs sm:text-sm text-slate-300 mt-1 leading-relaxed">
+            <h2 className="text-base sm:text-lg font-black text-[#0F172A] dark:text-white leading-tight">
+              {isLanguages ? "Key Definitions & Concepts" : "التعريفات والمصطلحات الأساسية"}
+            </h2>
+            <p className="text-xs sm:text-[13px] text-[#64748B] dark:text-[#94A3B8] mt-1 leading-relaxed">
               {isLanguages
-                ? "أهم المفاهيم باللغة الإنجليزية مع إمكانية عرض الترجمة العربية والتسميع بالكروت"
-                : "أهم المفاهيم والمصطلحات اللي محتاج تفهمها وتحفظها كويس، تقدر تبحث فيها وتسمع لنفسك بالكروت"}
+                ? "Core concepts in English with Arabic translations and interactive flashcards."
+                : "أهم المفاهيم والمصطلحات الأساسية في الدرس مع إمكانية التسميع الذاتي بالكروت."}
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2 flex-wrap">
+        <div className="flex items-center gap-2 flex-wrap self-start sm:self-auto shrink-0">
+          <span className="px-3 py-1.5 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[#0F172A] dark:text-slate-200 text-xs font-mono font-bold shadow-2xs">
+            {definitions.length} {isLanguages ? "terms" : "مصطلحات أساسية"}
+          </span>
+
           {hasAnyTranslation && (
             <button
               type="button"
               onClick={toggleAll}
               className={`px-3 py-1.5 rounded-xl border text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
                 isAllTranslated
-                  ? "bg-[#D97706] text-white border-[#D97706] shadow-xs"
-                  : "bg-white/10 border-white/20 text-white hover:bg-white/20"
+                  ? "bg-[#2563EB] text-white border-[#2563EB] shadow-xs"
+                  : "bg-white dark:bg-[#1E293B] border-[#E2E8F0] dark:border-[#334155] text-slate-700 dark:text-slate-300 hover:bg-slate-50"
               }`}
               title={isAllTranslated ? "إخفاء كل الترجمات" : "عرض ترجمة جميع المصطلحات"}
             >
               <Translate className="w-4 h-4" />
-              <span>{isAllTranslated ? "إخفاء كل الترجمات" : "ترجمة جميع المصطلحات"}</span>
+              <span>{isAllTranslated ? "إخفاء كل الترجمات" : "ترجمة الكل"}</span>
             </button>
           )}
 
@@ -112,16 +110,13 @@ export function LessonDefinitionsSection({
             <button
               type="button"
               onClick={onStartFlashcards}
-              className="px-3.5 py-2 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-xs font-bold flex items-center gap-2 shadow-xs transition-transform active:scale-95 cursor-pointer"
+              className="px-3.5 py-1.5 rounded-xl bg-[#14213D] hover:bg-[#1f315a] text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition-transform active:scale-95 cursor-pointer"
               title="سمّع لنفسك مفاهيم ومصطلحات الدرس بالكروت"
             >
               <Cards className="w-4 h-4" weight="bold" />
               <span>تسميع الدرس</span>
             </button>
           )}
-          <span className="px-3 py-1.5 rounded-xl bg-white/10 border border-white/10 text-white text-xs font-bold font-mono">
-            {definitions.length} مصطلح أساسي
-          </span>
         </div>
       </div>
 
@@ -134,8 +129,8 @@ export function LessonDefinitionsSection({
           type="text"
           value={definitionSearch}
           onChange={(e) => onSearchChange(e.target.value)}
-          placeholder="ابحث بالاسم أو المعنى داخل مصطلحات الدرس..."
-          className="w-full pr-10 pl-4 py-3 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E8E9ED] dark:border-[#22364F] text-[13px] sm:text-sm text-[#0F172A] dark:text-white placeholder-[#94A3B8] focus:outline-none focus:border-[#800020] focus:ring-1 focus:ring-[#800020]/20 transition-colors"
+          placeholder={isLanguages ? "Search terms and meanings..." : "ابحث بالاسم أو المعنى داخل مصطلحات الدرس..."}
+          className="w-full pr-10 pl-4 py-2.5 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#22364F] text-[13px] sm:text-sm text-[#0F172A] dark:text-white placeholder-[#94A3B8] focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]/20 transition-colors shadow-2xs"
         />
         {definitionSearch && (
           <button
@@ -166,7 +161,7 @@ export function LessonDefinitionsSection({
             return (
               <div
                 key={idx}
-                className="p-5 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E8E9ED] dark:border-[#22364F] hover:border-[#059669]/40 transition-all flex flex-col justify-between gap-3 shadow-sm"
+                className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#22364F] hover:border-[#059669]/40 transition-all flex flex-col justify-between gap-3 shadow-2xs"
               >
                 <div className="space-y-2.5">
                   <div className="flex items-start justify-between gap-2 border-b border-[#E2E8F0]/60 dark:border-[#334155]/60 pb-2.5">
@@ -227,7 +222,7 @@ export function LessonDefinitionsSection({
           })}
         </div>
       ) : (
-        <div className="text-center py-12 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E8E9ED] dark:border-[#22364F]">
+        <div className="text-center py-12 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#22364F]">
           <p className="text-sm font-medium text-[#64748B] dark:text-[#94A3B8]">
             {definitionSearch
               ? `لا توجد نتائج مطابقة لبحثك عن "${definitionSearch}"`
