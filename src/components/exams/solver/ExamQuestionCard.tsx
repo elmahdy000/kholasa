@@ -309,16 +309,27 @@ export function ExamQuestionCard({
           })}
         </div>
 
-        {/* Next Question: Solid Navy Pill Button with right chevron (Image 3) */}
+        {/* Next Question / Early Submit Option */}
         {currentIndex < totalQuestions - 1 ? (
-          <button
-            type="button"
-            onClick={onNextQuestion}
-            className="h-10 sm:h-11 px-6 sm:px-7 rounded-full bg-[#12263F] hover:bg-[#0D1B2E] text-white font-bold text-xs sm:text-sm shadow-sm flex items-center gap-2 transition-all cursor-pointer select-none active:scale-95"
-          >
-            <span>{isEnglish ? "Next Question" : "السؤال التالي"}</span>
-            <CaretRight className="w-4 h-4 text-white" weight="bold" />
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={onOpenSubmitModal}
+              className="h-10 sm:h-11 px-3 sm:px-4 rounded-full border border-slate-300 dark:border-slate-700 bg-white hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs sm:text-sm shadow-2xs flex items-center gap-1.5 transition-all cursor-pointer select-none active:scale-95"
+              title="تسليم الامتحان وإنهاء المحاولة"
+            >
+              <PaperPlaneTilt className="w-3.5 h-3.5 text-[#D97706]" weight="bold" />
+              <span>{isEnglish ? "Submit" : "تسليم الامتحان"}</span>
+            </button>
+            <button
+              type="button"
+              onClick={onNextQuestion}
+              className="h-10 sm:h-11 px-5 sm:px-6 rounded-full bg-[#12263F] hover:bg-[#0D1B2E] text-white font-bold text-xs sm:text-sm shadow-sm flex items-center gap-2 transition-all cursor-pointer select-none active:scale-95"
+            >
+              <span>{isEnglish ? "Next Question" : "السؤال التالي"}</span>
+              <CaretRight className="w-4 h-4 text-white" weight="bold" />
+            </button>
+          </div>
         ) : (
           <button
             type="button"

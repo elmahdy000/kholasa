@@ -39,6 +39,13 @@ export function ExamQuestionPalette({
   const flaggedTotal = Object.values(flaggedQuestions).filter(Boolean).length;
   const unansweredTotal = questions.length - answeredTotal;
 
+  const firstUnansweredIndex = questions.findIndex((q) => {
+    const ans = answers[q.id];
+    return !Boolean(ans?.selectedOptionId) && !Boolean(ans?.essayText && ans.essayText.trim().length > 0);
+  });
+
+  const firstFlaggedIndex = questions.findIndex((q) => flaggedQuestions[q.id]);
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200">
       {/* Click outside backdrop to close */}
@@ -61,6 +68,38 @@ export function ExamQuestionPalette({
             <X className="w-4 h-4" weight="bold" />
           </button>
         </div>
+
+        {/* Quick jump actions for fast navigation */}
+        {(firstUnansweredIndex !== -1 || firstFlaggedIndex !== -1) && (
+          <div className="flex items-center gap-2 flex-wrap">
+            {firstUnansweredIndex !== -1 && (
+              <button
+                type="button"
+                onClick={() => {
+                  onSelectIndex(firstUnansweredIndex);
+                  onClose();
+                }}
+                className="h-8 px-3 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
+              >
+                <span>الانتقال لأول سؤال غير مُجاب (#{firstUnansweredIndex + 1})</span>
+              </button>
+            )}
+
+            {firstFlaggedIndex !== -1 && (
+              <button
+                type="button"
+                onClick={() => {
+                  onSelectIndex(firstFlaggedIndex);
+                  onClose();
+                }}
+                className="h-8 px-3 rounded-lg bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/50 dark:hover:bg-amber-900/60 border border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-200 text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
+              >
+                <Flag className="w-3.5 h-3.5 text-[#D97706]" weight="fill" />
+                <span>مراجعة الأسئلة المؤجلة (#{firstFlaggedIndex + 1})</span>
+              </button>
+            )}
+          </div>
+        )}
 
         {/* 6-Column Grid of Question Numbers (Matches Image 4 Exactly) */}
         <div className="grid grid-cols-6 gap-2 sm:gap-2.5 max-h-[55vh] overflow-y-auto p-1 scrollbar-thin">

@@ -87,16 +87,18 @@ function playTone(type: "flip" | "master" | "review", enabled: boolean) {
 }
 
 /**
- * Client-side Web Speech Synthesis for clear pronunciation of terms
+ * Client-side Web Speech Synthesis for clear pronunciation of English terms only.
+ * Disabled completely for Arabic text/curricula as requested.
  */
 function speakText(text: string, forceEnglish?: boolean) {
   if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+  // Strictly prevent speech for Arabic text or Arabic curriculum
+  if (/[\u0600-\u06FF]/.test(text)) return;
   try {
     window.speechSynthesis.cancel();
-    const isEnglish = forceEnglish ?? !/[\u0600-\u06FF]/.test(text);
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = isEnglish ? "en-US" : "ar-SA";
-    utterance.rate = isEnglish ? 0.9 : 0.95;
+    utterance.lang = "en-US";
+    utterance.rate = 0.9;
     window.speechSynthesis.speak(utterance);
   } catch {
     // Ignore speech errors
@@ -724,17 +726,19 @@ export function LessonFlashcardsModal({
                               >
                                 <BidiStatement as="span" text={currentCard.term} />
                               </h2>
-                              <button
-                                type="button"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  speakText(currentCard.term, isEnglishTerm);
-                                }}
-                                className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-[#800020]/10 hover:text-[#800020] flex items-center justify-center transition-colors shrink-0"
-                                title="اسمع نطق المصطلح"
-                              >
-                                <SpeakerHigh className="w-4 h-4" weight="bold" />
-                              </button>
+                              {isEnglishTerm && (
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    speakText(currentCard.term, true);
+                                  }}
+                                  className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-[#800020]/10 hover:text-[#800020] flex items-center justify-center transition-colors shrink-0"
+                                  title="اسمع نطق المصطلح بالإنجليزي"
+                                >
+                                  <SpeakerHigh className="w-4 h-4" weight="bold" />
+                                </button>
+                              )}
                             </div>
                           </>
                         ) : (
@@ -830,14 +834,16 @@ export function LessonFlashcardsModal({
                                 className="text-xs sm:text-sm font-bold text-[#800020] dark:text-[#FB7185] break-words leading-snug"
                               />
                             </div>
-                            <button
-                              type="button"
-                              onClick={() => speakText(currentCard.term, isEnglishTerm)}
-                              className="p-1.5 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 hover:text-[#800020] dark:hover:text-[#FB7185] transition-colors shrink-0 cursor-pointer"
-                              title="اسمع نطق المصطلح"
-                            >
-                              <SpeakerHigh className="w-4 h-4" weight="bold" />
-                            </button>
+                            {isEnglishTerm && (
+                              <button
+                                type="button"
+                                onClick={() => speakText(currentCard.term, true)}
+                                className="p-1.5 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 hover:text-[#800020] dark:hover:text-[#FB7185] transition-colors shrink-0 cursor-pointer"
+                                title="اسمع نطق المصطلح بالإنجليزي"
+                              >
+                                <SpeakerHigh className="w-4 h-4" weight="bold" />
+                              </button>
+                            )}
                           </div>
                         ) : (
                           <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-center animate-in fade-in duration-200 shadow-2xs">
@@ -848,14 +854,16 @@ export function LessonFlashcardsModal({
                               <span className="text-lg sm:text-xl font-black text-emerald-900 dark:text-emerald-200 inline-block break-words">
                                 <BidiStatement as="span" text={currentCard.term} />
                               </span>
-                              <button
-                                type="button"
-                                onClick={() => speakText(currentCard.term, isEnglishTerm)}
-                                className="p-1 rounded-lg hover:bg-emerald-100 dark:hover:bg-emerald-900 text-emerald-700 dark:text-emerald-300 transition-colors shrink-0 cursor-pointer"
-                                title="اسمع نطق المصطلح"
-                              >
-                                <SpeakerHigh className="w-4 h-4" weight="bold" />
-                              </button>
+                              {isEnglishTerm && (
+                                <button
+                                  type="button"
+                                  onClick={() => speakText(currentCard.term, true)}
+                                  className="p-1 rounded-lg hover:bg-emerald-100 dark:hover:bg-emerald-900 text-emerald-700 dark:text-emerald-300 transition-colors shrink-0 cursor-pointer"
+                                  title="اسمع نطق المصطلح بالإنجليزي"
+                                >
+                                  <SpeakerHigh className="w-4 h-4" weight="bold" />
+                                </button>
+                              )}
                             </div>
                           </div>
                         )}
