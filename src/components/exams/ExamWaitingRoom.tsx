@@ -50,9 +50,10 @@ export function ExamWaitingRoom({ exam }: ExamWaitingRoomProps) {
     hours: number;
     minutes: number;
     seconds: number;
-  } | null>(calculateTimeLeft());
+  } | null>(null);
 
   useEffect(() => {
+    setTimeLeft(calculateTimeLeft());
     const interval = setInterval(() => {
       const remaining = calculateTimeLeft();
       setTimeLeft(remaining);

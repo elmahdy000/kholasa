@@ -43,11 +43,12 @@ describe("curriculum scoping", () => {
       examScopeWhere({ systemId: "s1", gradeId: "g1", schoolCategory: "ARABIC", trackId: null })
     ).toEqual({
       isCustom: false,
+      isPublished: true,
       schoolCategory: "ARABIC",
       subject: { is: { gradeId: "g1", schoolCategory: "ARABIC", systemId: "s1" } },
     });
 
-    expect(examScopeWhere(null)).toEqual({ isCustom: false });
+    expect(examScopeWhere(null)).toEqual({ isCustom: false, isPublished: true });
   });
 
   it("checks subject visibility including track-neutral material", () => {

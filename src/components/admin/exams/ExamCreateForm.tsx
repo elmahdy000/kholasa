@@ -43,6 +43,10 @@ interface PoolQuestion extends SimulatedQuestion {
   lessonIds?: string[];
 }
 
+function pickRandom<T>(arr: T[]): T {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
 export function ExamCreateForm({
   subjects,
   isStandaloneRoute = false,
@@ -243,7 +247,7 @@ export function ExamCreateForm({
       return;
     }
 
-    const replacement = candidates[Math.floor(Math.random() * candidates.length)];
+    const replacement = pickRandom(candidates);
     const updated = [...selectedQuestions];
     updated[indexToSwap] = replacement;
     setSelectedQuestions(updated);

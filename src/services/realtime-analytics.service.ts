@@ -397,7 +397,7 @@ export class RealtimeAnalyticsService {
         studyMode: u.studyMode,
         centerName: u.centerName,
         subscriptionStatus: u.subscriptionStatus,
-        createdAt: u.createdAt.toISOString(),
+        createdAt: u.createdAt ? u.createdAt.toISOString() : new Date().toISOString(),
       };
     });
 
