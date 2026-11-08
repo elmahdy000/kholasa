@@ -4,6 +4,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { getCurriculumScope, isSubjectInScope } from "@/lib/curriculum";
 import { StudentShell } from "@/components/layout/StudentShell";
 import { LessonViewer } from "@/components/lessons/LessonViewer";
+import { StudentPaywallView } from "@/components/student/subscription/StudentPaywallView";
 
 interface LessonPageProps {
   params: Promise<{ id: string }>;
@@ -83,6 +84,33 @@ export default async function LessonPage({ params }: LessonPageProps) {
   // Students may only open lessons from their own curriculum.
   if (!isSubjectInScope(getCurriculumScope(user), lesson.unit.subject)) {
     notFound();
+  }
+
+  // Subscription check:
+  // If user is not ACTIVE, only the first trial lesson is open (order === 1, isTrial === true, or first in unit)
+  // Staff/Admins are always exempt from subscription check
+  const isStaffUser =
+    user &&
+    (user.role === "ADMIN" ||
+      user.role === "SUPER_ADMIN");
+
+  const isFirstLessonOfUnit =
+    lesson.unit.lessons.length > 0 && lesson.unit.lessons[0].id === lesson.id;
+  const isFreeTrialLesson =
+    Boolean(lesson.isTrial) || lesson.order === 1 || isFirstLessonOfUnit;
+  const isSubscriptionActive =
+    Boolean(isStaffUser) || user?.subscriptionStatus === "ACTIVE";
+
+  if (user && !isSubscriptionActive && !isFreeTrialLesson) {
+    return (
+      <StudentShell user={user}>
+        <StudentPaywallView
+          lessonTitle={lesson.title}
+          unitTitle={lesson.unit.title}
+          user={user}
+        />
+      </StudentShell>
+    );
   }
 
   // Increment views count asynchronously

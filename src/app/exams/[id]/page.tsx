@@ -5,6 +5,7 @@ import { getCurriculumScope, isSubjectInScope } from "@/lib/curriculum";
 import { StudentShell } from "@/components/layout/StudentShell";
 import { ExamSolver } from "@/components/exams/ExamSolver";
 import { ExamWaitingRoom } from "@/components/exams/ExamWaitingRoom";
+import { StudentPaywallView } from "@/components/student/subscription/StudentPaywallView";
 import { AlertCircle, ArrowRight } from "lucide-react";
 import Link from "next/link";
 
@@ -67,6 +68,19 @@ export default async function ExamPage({ params, searchParams }: ExamPageProps) 
   // Draft exams are hidden from students
   if (!isStaff && exam.isPublished === false) {
     notFound();
+  }
+
+  // Subscription paywall for exams: only active subscribers can take exams
+  if (!isStaff && user.subscriptionStatus !== "ACTIVE") {
+    return (
+      <StudentShell user={user}>
+        <StudentPaywallView
+          isExam={true}
+          examTitle={exam.title}
+          user={user}
+        />
+      </StudentShell>
+    );
   }
 
   // Future scheduled exams: Show waiting room with countdown

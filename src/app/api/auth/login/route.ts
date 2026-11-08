@@ -14,6 +14,8 @@ const loginSchema = z
     identifier: z.string().trim().max(254).optional(),
     password: z.string().trim().max(200).optional(),
     deviceId: z.string().trim().max(128).optional(),
+    studyMode: z.enum(["ONLINE", "OFFLINE"]).optional(),
+    centerName: z.string().trim().max(100).optional(),
   })
   .refine(
     (data) => Boolean(data.code?.trim() || (data.identifier?.trim() && data.password?.trim())),
@@ -92,6 +94,22 @@ export async function POST(req: Request) {
       }
     }
 
+    // Attendance Mode (Online vs Offline/Center) update if provided on login
+    let updatedStudyMode = user.studyMode;
+    let updatedCenterName = user.centerName;
+
+    if (user.role === Role.STUDENT && body.studyMode) {
+      updatedStudyMode = body.studyMode;
+      updatedCenterName = body.studyMode === "OFFLINE" ? (body.centerName?.trim() || user.centerName || "السنتر الرئيسي") : null;
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          studyMode: updatedStudyMode,
+          centerName: updatedCenterName,
+        },
+      });
+    }
+
     await createSession(user.id, resolvedDeviceId || undefined);
 
     return NextResponse.json({
@@ -105,6 +123,10 @@ export async function POST(req: Request) {
         role: user.role,
         systemId: user.systemId,
         gradeId: user.gradeId,
+        schoolCategory: user.schoolCategory,
+        studyMode: updatedStudyMode,
+        centerName: updatedCenterName,
+        subscriptionStatus: user.subscriptionStatus,
       },
     });
   } catch (error) {

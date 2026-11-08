@@ -41,6 +41,9 @@ export interface RealtimeStudentItem {
   actualTimeSpentFormatted: string;
   boundDevicesCount: number;
   isActive: boolean;
+  studyMode?: "ONLINE" | "OFFLINE" | null;
+  centerName?: string | null;
+  subscriptionStatus?: "TRIAL" | "ACTIVE" | "PENDING_VERIFICATION" | "EXPIRED" | null;
   createdAt: string;
 }
 
@@ -182,6 +185,9 @@ export class RealtimeAnalyticsService {
           isActive: true,
           maxDevices: true,
           boundDevices: true,
+          studyMode: true,
+          centerName: true,
+          subscriptionStatus: true,
           createdAt: true,
           grade: { select: { id: true, name: true } },
           system: { select: { id: true, name: true } },
@@ -388,6 +394,9 @@ export class RealtimeAnalyticsService {
         actualTimeSpentFormatted,
         boundDevicesCount: u.boundDevices.length,
         isActive: u.isActive !== false,
+        studyMode: u.studyMode,
+        centerName: u.centerName,
+        subscriptionStatus: u.subscriptionStatus,
         createdAt: u.createdAt.toISOString(),
       };
     });
@@ -526,3 +535,4 @@ export class RealtimeAnalyticsService {
     };
   }
 }
+

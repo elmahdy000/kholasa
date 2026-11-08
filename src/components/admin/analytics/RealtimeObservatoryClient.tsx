@@ -22,6 +22,7 @@ import {
   Calendar,
   Zap,
   Globe,
+  Building2,
   GraduationCap,
   FileText,
   ChevronDown,
@@ -618,6 +619,35 @@ export function RealtimeObservatoryClient({
                                 }`}
                               >
                                 {student.schoolCategory === "LANGUAGES" ? "لغات" : "عربي"}
+                              </span>
+
+                              {/* Attendance Mode Badge */}
+                              <span
+                                className={`px-2 py-0.5 rounded-md text-[10px] font-bold border ${
+                                  student.studyMode === "OFFLINE"
+                                    ? "bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800"
+                                    : "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-800"
+                                }`}
+                                title={student.studyMode === "OFFLINE" ? `سنتر: ${student.centerName || "معتمد"}` : "أونلاين"}
+                              >
+                                {student.studyMode === "OFFLINE" ? `🏫 سنتر${student.centerName ? `: ${student.centerName}` : ""}` : "🌐 أونلاين"}
+                              </span>
+
+                              {/* Subscription Status Badge */}
+                              <span
+                                className={`px-2 py-0.5 rounded-md text-[10px] font-bold border ${
+                                  student.subscriptionStatus === "ACTIVE"
+                                    ? "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-400 dark:border-emerald-800"
+                                    : student.subscriptionStatus === "PENDING_VERIFICATION"
+                                    ? "bg-amber-50 text-amber-800 border-amber-300 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-700 animate-pulse"
+                                    : "bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700"
+                                }`}
+                              >
+                                {student.subscriptionStatus === "ACTIVE"
+                                  ? "🟢 مفعل 200ج"
+                                  : student.subscriptionStatus === "PENDING_VERIFICATION"
+                                  ? "🟡 إيصال"
+                                  : "⚪ تجريبي"}
                               </span>
                             </div>
 

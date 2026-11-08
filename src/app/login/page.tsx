@@ -16,6 +16,8 @@ import {
   GraduationCap,
   Shield,
   CheckCircle2,
+  Globe,
+  Building2,
 } from "lucide-react";
 
 import { BrandLogo } from "@/components/ui/BrandLogo";
@@ -27,6 +29,19 @@ export default function LoginPage() {
 
   // Code login state
   const [studentCode, setStudentCode] = useState("");
+  const [studyMode, setStudyMode] = useState<"ONLINE" | "OFFLINE">("ONLINE");
+  const [selectedCenter, setSelectedCenter] = useState<string>("سنتر الأوائل");
+  const [customCenter, setCustomCenter] = useState<string>("");
+
+  const POPULAR_CENTERS = [
+    "سنتر الأوائل",
+    "سنتر النخبة",
+    "سنتر رويال",
+    "سنتر الأهرام",
+    "سنتر فيوتشر",
+    "سنتر المستقبل",
+    "سنتر آخر (أدخل اسم السنتر)",
+  ];
 
   // Credentials login state
   const [identifier, setIdentifier] = useState("");
@@ -62,6 +77,18 @@ export default function LoginPage() {
       return;
     }
 
+    const finalCenterName =
+      studyMode === "OFFLINE"
+        ? selectedCenter === "سنتر آخر (أدخل اسم السنتر)"
+          ? customCenter.trim()
+          : selectedCenter
+        : null;
+
+    if (studyMode === "OFFLINE" && !finalCenterName) {
+      setError("يرجى كتابة أو اختيار اسم السنتر التابع له");
+      return;
+    }
+
     setError(null);
     setIsLoading(true);
 
@@ -72,6 +99,8 @@ export default function LoginPage() {
         body: JSON.stringify({
           code: cleanCode,
           deviceId: getOrCreateDeviceId(),
+          studyMode,
+          centerName: finalCenterName || undefined,
         }),
       });
 
@@ -207,6 +236,77 @@ export default function LoginPage() {
                 </div>
               </div>
 
+              {/* Attendance Mode (Online vs Offline/Center) */}
+              <div className="space-y-2 pt-1">
+                <label className="block text-[12px] sm:text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC]">
+                  نظام الحضور والدراسة
+                </label>
+                <div className="grid grid-cols-2 gap-2 p-1 bg-[#F1F5F9] dark:bg-[#1E293B] rounded-xl border border-[#E2E8F0] dark:border-[#334155]">
+                  <button
+                    type="button"
+                    onClick={() => setStudyMode("ONLINE")}
+                    className={`flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-lg text-xs font-bold transition-all ${
+                      studyMode === "ONLINE"
+                        ? "bg-white dark:bg-[#0F172A] text-[#800020] dark:text-rose-400 shadow-sm border border-[#E2E8F0] dark:border-[#334155]"
+                        : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
+                    }`}
+                  >
+                    <Globe className="w-3.5 h-3.5" />
+                    <span>🌐 أونلاين فقط</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setStudyMode("OFFLINE")}
+                    className={`flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-lg text-xs font-bold transition-all ${
+                      studyMode === "OFFLINE"
+                        ? "bg-white dark:bg-[#0F172A] text-[#800020] dark:text-rose-400 shadow-sm border border-[#E2E8F0] dark:border-[#334155]"
+                        : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
+                    }`}
+                  >
+                    <Building2 className="w-3.5 h-3.5" />
+                    <span>🏫 سنتر (أوفلاين)</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* If Center / Offline is selected */}
+              {studyMode === "OFFLINE" && (
+                <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20 space-y-2.5 animate-in fade-in duration-200">
+                  <label
+                    htmlFor="centerSelect"
+                    className="block text-xs font-bold text-amber-900 dark:text-amber-200"
+                  >
+                    اختر السنتر التابع له:
+                  </label>
+                  <select
+                    id="centerSelect"
+                    value={selectedCenter}
+                    onChange={(e) => setSelectedCenter(e.target.value)}
+                    className="w-full h-10 px-3 rounded-lg border border-amber-300 dark:border-amber-700 bg-white dark:bg-[#1E293B] text-xs font-bold text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#800020]"
+                  >
+                    {POPULAR_CENTERS.map((c) => (
+                      <option key={c} value={c}>
+                        {c}
+                      </option>
+                    ))}
+                  </select>
+
+                  {selectedCenter === "سنتر آخر (أدخل اسم السنتر)" && (
+                    <input
+                      type="text"
+                      required
+                      value={customCenter}
+                      onChange={(e) => setCustomCenter(e.target.value)}
+                      placeholder="اكتب اسم السنتر التابع له..."
+                      className="w-full h-9 px-3 rounded-lg border border-amber-300 dark:border-amber-700 bg-white dark:bg-[#1E293B] text-xs font-bold text-[#0F172A] dark:text-white placeholder:text-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#800020]"
+                    />
+                  )}
+                  <p className="text-[11px] text-amber-700 dark:text-amber-300 font-medium leading-relaxed">
+                    يتم ربط متابعتك ودرجاتك بالسنتر المعتمد لسهولة تواصل المساعد وولي الأمر.
+                  </p>
+                </div>
+              )}
+
               <button
                 type="submit"
                 disabled={isLoading}
@@ -328,7 +428,7 @@ export default function LoginPage() {
                     ليس لديك كود دخول أو واجهتك مشكلة؟
                   </span>
                   <a
-                    href="https://wa.me/201000000000?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%D8%8C%20%D8%A3%D8%AD%D8%AA%D8%A7%D8%AC%20%D9%85%D8%B3%D8%A7%D8%B9%D8%AF%D8%A9%20%D8%A8%D8%AE%D8%B5%D9%88%D8%B5%20%D9%83%D9%88%D8%AF%20%D8%A7%D9%84%D8%AF%D8%AE%D9%88%D9%84%20%D9%84%D9%85%D9%86%D8%B5%D8%A9%20%D8%A7%D9%84%D8%AE%D9%84%D8%A7%D8%B5%D8%A9"
+                    href="https://wa.me/201021482860?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%D8%8C%20%D8%A3%D8%AD%D8%AA%D8%A7%D8%AC%20%D9%85%D8%B3%D8%A7%D8%B9%D8%AF%D8%A9%20%D8%A8%D8%AE%D8%B5%D9%88%D8%B5%20%D9%83%D9%88%D8%AF%20%D8%A7%D9%84%D8%AF%D8%AE%D9%88%D9%84%20%D9%84%D9%85%D9%86%D8%B5%D8%A9%20%D8%A7%D9%84%D8%AE%D9%84%D8%A7%D8%B5%D8%A9"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1.5 font-bold text-emerald-600 dark:text-emerald-400 hover:underline"

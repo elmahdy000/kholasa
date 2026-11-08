@@ -30,6 +30,10 @@ import {
   TrendingUp,
   Sparkles,
   FileText,
+  Globe,
+  Building2,
+  ExternalLink,
+  CreditCard,
 } from "lucide-react";
 import type { EducationalSystem, Grade } from "./types";
 import { useToast } from "@/components/ui/Toast";
@@ -52,6 +56,14 @@ interface DetailedStudent {
   role: string;
   isActive?: boolean;
   schoolCategory: "ARABIC" | "LANGUAGES";
+  studyMode?: "ONLINE" | "OFFLINE" | null;
+  centerName?: string | null;
+  subscriptionStatus?: "TRIAL" | "ACTIVE" | "PENDING_VERIFICATION" | "EXPIRED" | null;
+  paymentReceiptUrl?: string | null;
+  paymentSenderPhone?: string | null;
+  paymentReference?: string | null;
+  paymentUploadedAt?: string | null;
+  subscriptionExpiresAt?: string | null;
   maxDevices: number;
   boundDevices: string[];
   createdAt: string;
@@ -161,6 +173,9 @@ export function StudentDetailsDrawer({
   const [schoolCategory, setSchoolCategory] = useState<"ARABIC" | "LANGUAGES">("ARABIC");
   const [maxDevices, setMaxDevices] = useState(1);
   const [isActive, setIsActive] = useState<boolean>(true);
+  const [studyMode, setStudyMode] = useState<"ONLINE" | "OFFLINE">("ONLINE");
+  const [centerName, setCenterName] = useState("");
+  const [subscriptionStatus, setSubscriptionStatus] = useState<"TRIAL" | "ACTIVE" | "PENDING_VERIFICATION" | "EXPIRED">("ACTIVE");
   const [isTogglingStatus, setIsTogglingStatus] = useState<boolean>(false);
   const [isSavingInfo, setIsSavingInfo] = useState(false);
   const [infoMessage, setInfoMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
@@ -206,6 +221,9 @@ export function StudentDetailsDrawer({
           setSchoolCategory(u.schoolCategory || "ARABIC");
           setMaxDevices(u.maxDevices || 2);
           setIsActive(u.isActive !== false);
+          setStudyMode(u.studyMode || "ONLINE");
+          setCenterName(u.centerName || "");
+          setSubscriptionStatus(u.subscriptionStatus || "TRIAL");
         }
       } catch (err) {
         console.error("Failed to load student details:", err);
@@ -224,6 +242,28 @@ export function StudentDetailsDrawer({
   if (!userId) return null;
 
   const currentGrades = grades.filter((g) => !systemId || g.systemId === systemId);
+
+  const handleQuickSubscriptionUpdate = async (newStatus: "ACTIVE" | "TRIAL") => {
+    try {
+      const res = await fetch(`/api/admin/users/${userId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ subscriptionStatus: newStatus }),
+      });
+      if (res.ok) {
+        setSubscriptionStatus(newStatus);
+        setStudent((prev) => (prev ? { ...prev, subscriptionStatus: newStatus } : prev));
+        toast.success(
+          newStatus === "ACTIVE"
+            ? "تم تفعيل اشتراك الطالب بنجاح (200 ج)"
+            : "تم تحويل الحساب لتجريبي"
+        );
+        onUserUpdated();
+      }
+    } catch {
+      toast.error("حدث خطأ أثناء تحديث حالة الاشتراك");
+    }
+  };
 
   const handleSaveInfo = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -244,6 +284,9 @@ export function StudentDetailsDrawer({
           schoolCategory,
           maxDevices,
           isActive,
+          studyMode,
+          centerName: studyMode === "OFFLINE" ? centerName.trim() : null,
+          subscriptionStatus,
         }),
       });
 
@@ -644,6 +687,164 @@ _منصة الخلاصة التعليمية - رفيقكم نحو التفوق_ 
               {/* TAB 1: OVERVIEW & CONTROLS */}
               {activeTab === "overview" && (
                 <div className="space-y-6">
+                  {/* Subscription & Attendance Status Card */}
+                  <div className="bg-white dark:bg-[#0F172A] p-5 rounded-2xl border border-[#E2E8F0] dark:border-[#334155] shadow-xs space-y-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#E2E8F0] dark:border-[#334155]">
+                      <div className="flex items-center gap-2.5">
+                        <CreditCard className="w-5 h-5 text-[#800020] dark:text-[#FB7185]" />
+                        <div>
+                          <h3 className="font-bold text-sm text-[#0F172A] dark:text-white">
+                            حالة الاشتراك ونظام الحضور
+                          </h3>
+                          <p className="text-[11px] text-[#64748B] dark:text-[#94A3B8]">
+                            قيمة الاشتراك الشهري: 200 جنيه مصري
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-wrap items-center gap-2">
+                        {/* Attendance Badge */}
+                        <span className="px-3 py-1 rounded-lg text-xs font-bold border flex items-center gap-1.5 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700">
+                          {student.studyMode === "OFFLINE" ? (
+                            <>
+                              <Building2 className="w-3.5 h-3.5 text-amber-600" />
+                              <span>سنتر: {student.centerName || "السنتر المعتمد"}</span>
+                            </>
+                          ) : (
+                            <>
+                              <Globe className="w-3.5 h-3.5 text-blue-600" />
+                              <span>🌐 أونلاين</span>
+                            </>
+                          )}
+                        </span>
+
+                        {/* Subscription Status Badge */}
+                        <span
+                          className={`px-3 py-1 rounded-lg text-xs font-bold border flex items-center gap-1.5 ${
+                            student.subscriptionStatus === "ACTIVE"
+                              ? "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800"
+                              : student.subscriptionStatus === "PENDING_VERIFICATION"
+                              ? "bg-amber-50 text-amber-800 border-amber-300 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-700 animate-pulse"
+                              : "bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-300"
+                          }`}
+                        >
+                          {student.subscriptionStatus === "ACTIVE"
+                            ? "🟢 اشتراك مفعل (200 ج)"
+                            : student.subscriptionStatus === "PENDING_VERIFICATION"
+                            ? "🟡 إيصال قيد المراجعة"
+                            : "⚪ زائر تجريبي (درس مجاني)"}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Receipt Verification Section (if uploaded) */}
+                    {student.paymentReceiptUrl ? (
+                      <div className="p-4 rounded-xl bg-amber-50/60 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-bold text-amber-900 dark:text-amber-200 flex items-center gap-1.5">
+                            <CheckCircle2 className="w-4 h-4 text-amber-600" />
+                            <span>إيصال سداد الاشتراك المرفوع بواسطة الطالب</span>
+                          </span>
+                          <a
+                            href={student.paymentReceiptUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 text-xs font-bold text-[#800020] dark:text-[#FB7185] hover:underline"
+                          >
+                            <span>فتح الصورة كاملة</span>
+                            <ExternalLink className="w-3 h-3" />
+                          </a>
+                        </div>
+
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                          <a
+                            href={student.paymentReceiptUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="block w-28 h-28 rounded-xl overflow-hidden border border-amber-300 dark:border-amber-700 bg-white shrink-0 group relative shadow-xs"
+                          >
+                            <img
+                              src={student.paymentReceiptUrl}
+                              alt="Receipt"
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                            />
+                          </a>
+
+                          <div className="space-y-1.5 text-xs">
+                            {student.paymentSenderPhone && (
+                              <p className="text-slate-700 dark:text-slate-300">
+                                <strong>رقم هاتف المحول:</strong>{" "}
+                                <span className="font-mono font-bold" dir="ltr">
+                                  {student.paymentSenderPhone}
+                                </span>
+                              </p>
+                            )}
+                            {student.paymentReference && (
+                              <p className="text-slate-700 dark:text-slate-300">
+                                <strong>الرقم المرجعي / الكود:</strong>{" "}
+                                <span className="font-mono font-bold">
+                                  {student.paymentReference}
+                                </span>
+                              </p>
+                            )}
+                            {student.paymentUploadedAt && (
+                              <p className="text-slate-500 text-[11px]">
+                                <strong>تاريخ الرفع:</strong>{" "}
+                                {new Date(student.paymentUploadedAt).toLocaleString("ar-EG")}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Quick Action Buttons */}
+                        <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-amber-200 dark:border-amber-800/60">
+                          <button
+                            type="button"
+                            onClick={() => handleQuickSubscriptionUpdate("ACTIVE")}
+                            className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-xs transition-colors cursor-pointer"
+                          >
+                            <Check className="w-3.5 h-3.5 stroke-[3]" />
+                            <span>تأكيد السداد وتفعيل الحساب فوراً (200 ج)</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleQuickSubscriptionUpdate("TRIAL")}
+                            className="px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-bold transition-colors cursor-pointer"
+                          >
+                            <span>تحويل إلى زائر تجريبي</span>
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex flex-wrap items-center justify-between gap-3 text-xs">
+                        <span className="text-[#64748B]">
+                          {student.subscriptionStatus === "ACTIVE"
+                            ? "حساب الطالب مفعل وله صلاحية الوصول لكافة الدروس والامتحانات."
+                            : "الطالب في وضع الزائر التجريبي (يفتح أول درس فقط)."}
+                        </span>
+                        <div className="flex items-center gap-2">
+                          {student.subscriptionStatus !== "ACTIVE" ? (
+                            <button
+                              type="button"
+                              onClick={() => handleQuickSubscriptionUpdate("ACTIVE")}
+                              className="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition-colors shadow-xs cursor-pointer"
+                            >
+                              تفعيل الاشتراك (200 ج)
+                            </button>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => handleQuickSubscriptionUpdate("TRIAL")}
+                              className="px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-bold transition-colors cursor-pointer"
+                            >
+                              إرجاع لتجريبي
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
                   {/* Master Curriculum Progress Card */}
                   <div className="bg-[#F8FAFC] dark:bg-[#1E293B]/30 p-5 rounded-2xl border border-[#E2E8F0] dark:border-[#334155] space-y-4">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
@@ -930,6 +1131,45 @@ _منصة الخلاصة التعليمية - رفيقكم نحو التفوق_ 
                             <option value={1}>جهاز واحد فقط (الافتراضي - منع مشاركة الحساب)</option>
                             <option value={2}>جهازين (تصريح إضافي للطالب)</option>
                             <option value={3}>3 أجهزة (استثناء خاص)</option>
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="block text-[#64748B] mb-1.5">نظام الحضور والدراسة</label>
+                          <select
+                            value={studyMode}
+                            onChange={(e) => setStudyMode(e.target.value as "ONLINE" | "OFFLINE")}
+                            className="w-full h-10 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] font-bold"
+                          >
+                            <option value="ONLINE">🌐 أونلاين</option>
+                            <option value="OFFLINE">🏫 سنتر (أوفلاين)</option>
+                          </select>
+                        </div>
+
+                        {studyMode === "OFFLINE" && (
+                          <div>
+                            <label className="block text-[#64748B] mb-1.5">اسم السنتر التابع له</label>
+                            <input
+                              type="text"
+                              value={centerName}
+                              onChange={(e) => setCenterName(e.target.value)}
+                              placeholder="مثال: سنتر الأوائل"
+                              className="w-full h-10 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] font-bold"
+                            />
+                          </div>
+                        )}
+
+                        <div>
+                          <label className="block text-[#64748B] mb-1.5">حالة الاشتراك (200 ج شهرياً)</label>
+                          <select
+                            value={subscriptionStatus}
+                            onChange={(e) => setSubscriptionStatus(e.target.value as any)}
+                            className="w-full h-10 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] font-bold"
+                          >
+                            <option value="ACTIVE">🟢 مفعل (ACTIVE)</option>
+                            <option value="PENDING_VERIFICATION">🟡 قيد المراجعة (PENDING)</option>
+                            <option value="TRIAL">⚪ زائر تجريبي (TRIAL)</option>
+                            <option value="EXPIRED">🔴 منتهي (EXPIRED)</option>
                           </select>
                         </div>
 

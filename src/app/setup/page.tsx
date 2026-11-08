@@ -51,7 +51,12 @@ export default async function SetupPage({ searchParams }: SetupPageProps) {
 
         {/* Setup Form Glassmorphic Card */}
         <div className="p-5 sm:p-8 rounded-3xl bg-white/95 dark:bg-[#0F172A]/90 backdrop-blur-md border border-[#E2E8F0] dark:border-[#334155] shadow-2xl shadow-black/5 dark:shadow-black/40">
-          <SetupForm systems={systems} userId={user.id} userName={user.name} />
+          <SetupForm
+            systems={systems}
+            userId={user.id}
+            userName={user.name}
+            initialSchoolCategory={user.schoolCategory}
+          />
         </div>
 
         {/* Footer Guarantee */}

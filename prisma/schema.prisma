@@ -45,6 +45,18 @@ enum SchoolCategory {
   LANGUAGES
 }
 
+enum StudyMode {
+  ONLINE
+  OFFLINE
+}
+
+enum SubscriptionStatus {
+  TRIAL
+  ACTIVE
+  PENDING_VERIFICATION
+  EXPIRED
+}
+
 enum NotificationType {
   ANNOUNCEMENT
   SYSTEM
@@ -66,11 +78,19 @@ model User {
   systemId       String?
   trackId        String?
   schoolCategory SchoolCategory @default(ARABIC)
-  maxDevices     Int            @default(1)
-  boundDevices   String[]       @default([])
-  isActive       Boolean        @default(true)
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
+  maxDevices            Int                @default(1)
+  boundDevices          String[]           @default([])
+  isActive              Boolean            @default(true)
+  studyMode             StudyMode          @default(ONLINE)
+  centerName            String?
+  subscriptionStatus    SubscriptionStatus @default(TRIAL)
+  paymentReceiptUrl     String?
+  paymentSenderPhone    String?
+  paymentReference      String?
+  paymentUploadedAt     DateTime?
+  subscriptionExpiresAt DateTime?
+  createdAt             DateTime           @default(now())
+  updatedAt             DateTime           @updatedAt
 
   grade           Grade?             @relation(fields: [gradeId], references: [id])
   system          EducationalSystem? @relation(fields: [systemId], references: [id])
@@ -235,6 +255,7 @@ model Lesson {
   unitId          String
   durationMinutes Int     @default(15)
   isPublished     Boolean @default(true)
+  isTrial         Boolean @default(false)
   viewsCount      Int     @default(0)
 
   unit      Unit              @relation(fields: [unitId], references: [id], onDelete: Cascade)

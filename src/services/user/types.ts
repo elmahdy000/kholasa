@@ -1,4 +1,4 @@
-import type { Role, SchoolCategory } from "@prisma/client";
+import type { Role, SchoolCategory, StudyMode, SubscriptionStatus } from "@prisma/client";
 
 export interface UserFilterParams {
   role?: Role | "ALL";
@@ -21,6 +21,13 @@ export interface CreateUserInput {
   schoolCategory?: SchoolCategory;
   maxDevices?: number;
   isActive?: boolean;
+  studyMode?: StudyMode;
+  centerName?: string | null;
+  subscriptionStatus?: SubscriptionStatus;
+  paymentReceiptUrl?: string | null;
+  paymentSenderPhone?: string | null;
+  paymentReference?: string | null;
+  subscriptionExpiresAt?: Date | string | null;
 }
 
 export interface UpdateUserInput {
@@ -36,6 +43,13 @@ export interface UpdateUserInput {
   schoolCategory?: SchoolCategory;
   maxDevices?: number;
   isActive?: boolean;
+  studyMode?: StudyMode;
+  centerName?: string | null;
+  subscriptionStatus?: SubscriptionStatus;
+  paymentReceiptUrl?: string | null;
+  paymentSenderPhone?: string | null;
+  paymentReference?: string | null;
+  subscriptionExpiresAt?: Date | string | null;
 }
 
 export interface StudentProfileUpdateInput {

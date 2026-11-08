@@ -17,6 +17,7 @@ import {
   ArrowRight,
   GraduationCap,
   Languages,
+  CheckCircle2,
   Check,
 } from "lucide-react";
 import { BidiStatement } from "@/components/ui/BidiStatement";
@@ -46,6 +47,7 @@ interface SetupFormProps {
   systems: EducationalSystem[];
   userId: string;
   userName?: string | null;
+  initialSchoolCategory?: "ARABIC" | "LANGUAGES" | null;
 }
 
 const SUPERPOWERS = [
@@ -106,7 +108,7 @@ const DAILY_GOALS = [
   },
 ];
 
-export function SetupForm({ systems }: SetupFormProps) {
+export function SetupForm({ systems, initialSchoolCategory }: SetupFormProps) {
   const router = useRouter();
 
   // Active step: 1 (Welcome & Superpowers), 2 (Grade), 3 (Category & Track), 4 (Daily Goal), 5 (Celebration)
@@ -115,7 +117,10 @@ export function SetupForm({ systems }: SetupFormProps) {
   // Selections
   const [systemId] = useState(systems[0]?.id || "");
   const [gradeId, setGradeId] = useState(systems[0]?.grades[0]?.id || "");
-  const [schoolCategory, setSchoolCategory] = useState<"ARABIC" | "LANGUAGES">("ARABIC");
+  const [schoolCategory, setSchoolCategory] = useState<"ARABIC" | "LANGUAGES">(
+    initialSchoolCategory || "ARABIC"
+  );
+  const isCategoryPredefined = Boolean(initialSchoolCategory);
   const [trackId, setTrackId] = useState("");
   const [dailyGoalMinutes, setDailyGoalMinutes] = useState<number>(30);
 
@@ -398,13 +403,31 @@ export function SetupForm({ systems }: SetupFormProps) {
             <div className="space-y-1">
               <h2 className="text-lg sm:text-xl font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
                 <Languages className="w-5 h-5 text-[#800020] dark:text-[#FB7185]" />
-                <span>بتدرس في مدرسة إيه؟ (لغة المنهج)</span>
+                <span>{isCategoryPredefined ? "لغة المنهج المعتمدة لحسابك" : "بتدرس في مدرسة إيه؟ (لغة المنهج)"}</span>
               </h2>
               <p className="text-xs text-[#64748B] dark:text-[#94A3B8]">
-                عشان نفصل المنهج والأسئلة والمصطلحات باللغة اللي بتدرس بيها في مدرستك:
+                {isCategoryPredefined
+                  ? "تم تحديد نوع مدرستك ومنهجك تلقائياً وبأمان من كود الحساب:"
+                  : "عشان نفصل المنهج والأسئلة والمصطلحات باللغة اللي بتدرس بيها في مدرستك:"}
               </p>
             </div>
 
+            {isCategoryPredefined ? (
+              <div className="p-4 sm:p-5 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 dark:bg-emerald-500/20 space-y-2.5">
+                <div className="flex items-center gap-2 text-emerald-800 dark:text-emerald-300 font-bold text-sm">
+                  <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                  <span>تم ضبط لغة منهجك تلقائياً بناءً على كود اشتراكك</span>
+                </div>
+                <div className="flex items-center gap-2 pt-1">
+                  <span className="px-3.5 py-1 rounded-full text-xs font-bold bg-emerald-600 text-white shadow-xs">
+                    {schoolCategory === "LANGUAGES" ? "🇬🇧 مدارس لغات وتجريبي (Languages)" : "🇪🇬 مدارس عربي (Arabic Curriculum)"}
+                  </span>
+                </div>
+                <p className="text-[11px] sm:text-xs text-emerald-700 dark:text-emerald-300/90 leading-relaxed">
+                  تم قفل لغة المنهج تلقائياً لمنع أي تداخل أو خطأ، وضمان ظهور المحتوى وبنك الأسئلة المخصص لك فقط.
+                </p>
+              </div>
+            ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
               {/* Arabic Schools */}
               <button
@@ -476,6 +499,8 @@ export function SetupForm({ systems }: SetupFormProps) {
                 </div>
               </button>
             </div>
+            )}
+
           </div>
 
           {/* Academic Track (if Grade 11) */}
