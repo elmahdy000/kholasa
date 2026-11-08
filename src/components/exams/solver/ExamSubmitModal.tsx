@@ -49,13 +49,13 @@ export function ExamSubmitModal({
         <div className="text-center space-y-2">
           <h3 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white">
             {isAllAnswered
-              ? "أحسنت! أتممت جميع الأسئلة"
-              : "هل ترغب حقاً في تسليم الامتحان الآن؟"}
+              ? "الله ينور عليك يا وحش! حليت كل الأسئلة كلها 👏"
+              : "متأكد إنك عاوز تسلّم الامتحان دلوقتي يا صاحبي؟"}
           </h3>
           <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-content leading-relaxed">
             {isAllAnswered
-              ? "بمجرد التسليم سنحسب درجتك ونعرض لك تقريراً تفصيلياً وفورياً بنتيجتك وإجاباتك النموذجية."
-              : "يمكنك تسليم الامتحان في أي وقت، وسيتم تقييم إجاباتك الحالية وعرض نتيجتك فوراً."}
+              ? "أول ما تدوس تسليم هنحسب درجتك ونوريك تقرير بروقان بنتيجتك وإجاباتك النموذجية خطوة بخطوة."
+              : "تقدر تسلّم في أي وقت، بس خلّي بالك الأسئلة اللي لسه ما حلتهاش هتتسجل غلط (صفر)."}
           </p>
         </div>
 
@@ -91,19 +91,19 @@ export function ExamSubmitModal({
           <div className="p-3.5 sm:p-4 rounded-xl bg-amber-50/90 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800 text-xs text-amber-900 dark:text-amber-200 space-y-2">
             <div className="flex items-center gap-2 font-black text-xs sm:text-sm text-amber-800 dark:text-amber-300">
               <Warning className="w-5 h-5 shrink-0 text-amber-600 dark:text-amber-400" weight="fill" />
-              <span>تنبيه بشأن الرسوب والأسئلة المتبقية:</span>
+              <span>خلّي بالك يا صاحبي قبل ما تسلّم:</span>
             </div>
             <div className="leading-relaxed space-y-1.5">
               <p>
-                لديك <strong>{unansweredCount} سؤال</strong> لم تقم بالإجابة عليها وستُحتسب إجاباتها خاطئة (صفر).
+                لسه عندك <strong>{unansweredCount} سؤال</strong> ما حلتهمش، وهيتحسبوا غلط (صفر).
               </p>
               {maxPossibleScorePct < 50 ? (
                 <div className="p-2.5 rounded-lg bg-rose-100 dark:bg-rose-950/70 border border-rose-300 dark:border-rose-800 text-rose-800 dark:text-rose-200 font-black">
-                  ⚠️ تنبيه رسوب مؤكد: حتى لو كانت كل إجاباتك الحالية صحيحة 100%، أقصى نسبة يمكنك الحصول عليها هي {maxPossibleScorePct}% فقط، مما يعني <strong>رسوبك المؤكد</strong> في هذا الامتحان (نسبة النجاح 50%). يُفضل الرجوع واستكمال الحل!
+                  ⚠️ تنبيه رسوب مؤكد: حتى لو كل اللي حليته طلع صح 100%، أقصى نسبة تقدر تجيبها هي {maxPossibleScorePct}% بس، يعني كدا <strong>هتسقط في الامتحان ده</strong> (نسبة النجاح 50%). ارجع كمّل حل أحسن واضمن نجاحك يا بطل!
                 </div>
               ) : (
                 <p className="font-bold text-amber-800 dark:text-amber-300">
-                  تسليمك للامتحان الآن قد يعرضك للرسوب إذا لم تحقق الأسئلة المحلولة نسبة النجاح المطلوبة (50%).
+                  تسليمك دلوقتي ممكن يوقعك في الرسوب لو الأسئلة اللي حلتها طلع فيها غلطات.. الأفضل ترجع تراجعها ع السريع!
                 </p>
               )}
             </div>

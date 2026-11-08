@@ -548,12 +548,12 @@ export function LessonViewer({
         if (willBeAnswered >= tfQuestions.length && tfAnsweredCount < tfQuestions.length) {
           setStepCelebration({
             step: "tf",
-            title: isLanguagesSubject ? "Quick Challenges Complete! 🎯" : "رائع! أتممت جميع التحديات السريعة بنجاح 🎯",
+            title: isLanguagesSubject ? "Quick Challenges Complete! 🎯" : "عاش يا بطل! قفلت التحديات السريعة كلها 🎯",
             description: isLanguagesSubject
               ? "All True/False challenges completed. Ready for comprehensive exam questions?"
-              : "تم تسجيل كافة إجاباتك! الخطوة التالية هي أسئلة الامتحانات والتدريب المكثف.",
+              : "كدا إجاباتك كلها متسجلة تمام التمام.. يلا بينا ندخل على أسئلة الامتحانات ونفرمها سوا 💪",
             nextStep: "exam",
-            nextStepLabel: isLanguagesSubject ? "Go to Exam Practice" : "الانتقال لأسئلة الامتحانات",
+            nextStepLabel: isLanguagesSubject ? "Go to Exam Practice" : "يلا بينا على أسئلة الامتحانات",
           });
         }
       }
@@ -1033,14 +1033,14 @@ export function LessonViewer({
           setDefinitionsReviewed(true);
           setStepCelebration({
             step: "definitions",
-            title: isLanguagesSubject ? "Concepts Mastered! 👏" : "أحسنت! أتممت مراجعة المفاهيم والتعريفات 👏",
+            title: isLanguagesSubject ? "Concepts Mastered! 👏" : "الله ينور عليك يا وحش! كدا المفاهيم في جيبك 👏",
             description: isLanguagesSubject
               ? "All concepts reviewed. Continue to Quick Challenges to test your understanding."
-              : "المفاهيم جاهزة الآن، يمكنك الانتقال مباشرة للتحديات السريعة لتثبيت الفهم.",
+              : "راجعت كل الكروت وظبطت المصطلحات.. تعالى بقى ع السريع ندخل ع التحديات ونثبت المعلومة سوا 😉",
             nextStep: tfQuestions.length > 0 ? "tf" : "exam",
             nextStepLabel: tfQuestions.length > 0
-              ? (isLanguagesSubject ? "Start Quick Challenges" : "بدء التحديات السريعة (صح وخطأ)")
-              : (isLanguagesSubject ? "Start Exam Questions" : "بدء أسئلة الامتحانات"),
+              ? (isLanguagesSubject ? "Start Quick Challenges" : "يلا بينا ع التحديات السريعة")
+              : (isLanguagesSubject ? "Start Exam Questions" : "يلا بينا على أسئلة الامتحانات"),
           });
         }}
       />

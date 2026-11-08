@@ -72,7 +72,7 @@ export function LessonLearningStepper({
   if (nextStepId === "definitions") nextStepTitle = isLanguages ? "Concepts & Notes" : "المفاهيم والشرح";
   else if (nextStepId === "tf") nextStepTitle = isLanguages ? "Quick Challenges" : "التحديات السريعة";
   else if (nextStepId === "exam") nextStepTitle = isLanguages ? "Exam Practice" : "أسئلة الامتحانات";
-  else if (nextStepId === "mistakes") nextStepTitle = isLanguages ? "Review Mistakes" : "تحليل الأخطاء";
+  else if (nextStepId === "mistakes") nextStepTitle = isLanguages ? "Review Mistakes" : "تظبيط الغلطات";
 
   // 4. Construct step items
   const steps = [
@@ -120,7 +120,7 @@ export function LessonLearningStepper({
     {
       id: "mistakes" as const,
       stepNumber: 4,
-      title: isLanguages ? "Mistakes Analysis" : "تحليل الأخطاء",
+      title: isLanguages ? "Mistakes Analysis" : "تظبيط الغلطات",
       metric: unresolvedMistakesCount > 0
         ? `${unresolvedMistakesCount} ${isLanguages ? "mistakes" : "أخطاء للمراجعة"}`
         : (hasPracticed ? (isLanguages ? "0 mistakes ✓" : "صفر أخطاء ✓") : (isLanguages ? "Ready" : "جاهز للتدريب")),
@@ -128,7 +128,7 @@ export function LessonLearningStepper({
       isInProgress: unresolvedMistakesCount > 0,
       isNext: nextStepId === "mistakes",
       statusText: unresolvedMistakesCount > 0
-        ? (isLanguages ? "Needs Review" : "يحتاج مراجعة")
+        ? (isLanguages ? "Needs Review" : "محتاج تظبيط")
         : (isMistakesDone ? (isLanguages ? "Completed" : "مكتمل") : (isLanguages ? "Ready" : "جاهز")),
       icon: Sparkle,
     },
@@ -175,7 +175,7 @@ export function LessonLearningStepper({
               className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/50 dark:hover:bg-blue-900/50 text-[#2563EB] dark:text-blue-300 border border-blue-200 dark:border-blue-800/80 text-xs font-bold transition-all cursor-pointer group shadow-2xs"
               title={isLanguages ? "Go to recommended next activity" : "الانتقال للنشاط المقترح التالي"}
             >
-              <span>{isLanguages ? "Next:" : "الخطوة التالية:"}</span>
+              <span>{isLanguages ? "Next:" : "يلا بينا:"}</span>
               <span className="font-black underline decoration-dotted">{nextStepTitle}</span>
               {isLanguages ? (
                 <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" weight="bold" />
@@ -186,7 +186,7 @@ export function LessonLearningStepper({
           ) : (
             <span className="inline-flex items-center gap-1 px-3 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-xs font-bold">
               <Check className="w-3.5 h-3.5" weight="bold" />
-              <span>{isLanguages ? "All activities completed" : "تمت جميع أنشطة الدرس"}</span>
+              <span>{isLanguages ? "All activities completed" : "عاش يا بطل! قفلت كل أنشطة الدرس 👏"}</span>
             </span>
           )}
         </div>
