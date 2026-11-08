@@ -92,6 +92,7 @@ export function QuestionImportWizard({
   const [isCommitting, setIsCommitting] = useState(false);
   const [commitError, setCommitError] = useState<string | null>(null);
   const [commitSuccess, setCommitSuccess] = useState(false);
+  const [enrichedCount, setEnrichedCount] = useState(0);
   const commitSuccessRef = useRef(false);
   const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [isCloseConfirmOpen, setIsCloseConfirmOpen] = useState(false);
@@ -617,6 +618,7 @@ export function QuestionImportWizard({
 
       commitSuccessRef.current = true;
       setCommitSuccess(true);
+      setEnrichedCount(data.enrichedExisting ?? 0);
       if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
       closeTimeoutRef.current = setTimeout(() => {
         onImportSuccess();
@@ -2006,7 +2008,11 @@ export function QuestionImportWizard({
               {commitSuccess && (
                 <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-300 text-xs font-bold flex items-center gap-2">
                   <CheckCircle2 className="w-5 h-5 shrink-0" />
-                  <span>تم اعتماد وحفظ الأسئلة بنجاح في بنك أسئلة الدرس! جارٍ التحديث...</span>
+                  <span>
+                    {enrichedCount > 0
+                      ? `تم تحديث واستبدال ${enrichedCount} سؤالاً بالتفسيرات والبيانات الجديدة بنجاح! جارٍ التحديث...`
+                      : "تم اعتماد وحفظ الأسئلة بنجاح في بنك أسئلة الدرس! جارٍ التحديث..."}
+                  </span>
                 </div>
               )}
 

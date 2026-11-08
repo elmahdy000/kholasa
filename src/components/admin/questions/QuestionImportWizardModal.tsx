@@ -124,6 +124,7 @@ export function QuestionImportWizardModal({
   const [commitSuccess, setCommitSuccess] = useState(false);
   const [committedCount, setCommittedCount] = useState(0);
   const [skippedDuplicates, setSkippedDuplicates] = useState(0);
+  const [enrichedCount, setEnrichedCount] = useState(0);
 
   // Complete reset function to prevent unit/lesson/staged state from getting stuck
   const resetAllWizardState = () => {
@@ -144,6 +145,7 @@ export function QuestionImportWizardModal({
     setCommitSuccess(false);
     setCommittedCount(0);
     setSkippedDuplicates(0);
+    setEnrichedCount(0);
   };
 
   const handleModalClose = () => {
@@ -462,6 +464,7 @@ export function QuestionImportWizardModal({
 
       setCommittedCount(data.importedCount ?? approvedList.length);
       setSkippedDuplicates(data.skippedDuplicates ?? 0);
+      setEnrichedCount(data.enrichedExisting ?? 0);
       setCommitSuccess(true);
       onSuccess();
     } catch (err: any) {
@@ -1417,14 +1420,22 @@ Explanation: الذكاء الاصطناعي مجال يضم أنظمة حاسو
                     <CheckCircle2 className="w-8 h-8" />
                   </div>
                   <h4 className="text-lg font-bold text-emerald-900 dark:text-emerald-200">
-                    تم اعتماد وحفظ {committedCount} سؤالاً بنجاح في بنك الأسئلة!
+                    {committedCount > 0 && enrichedCount > 0
+                      ? `تم إضافة ${committedCount} سؤال جديد وتحديث ${enrichedCount} سؤالاً بالتفسيرات والبيانات الجديدة!`
+                      : enrichedCount > 0
+                      ? `تم تحديث واستبدال ${enrichedCount} سؤالاً بالبيانات والتفسيرات الجديدة بنجاح!`
+                      : `تم اعتماد وحفظ ${committedCount} سؤالاً بنجاح في بنك الأسئلة!`}
                   </h4>
                   <p className="text-[13px] text-emerald-700 dark:text-emerald-300 max-w-md mx-auto">
-                    تم ربط الأسئلة بالمادة والمنهج وحفظ التفسيرات وخيارات الإجابة بدقة.
+                    {enrichedCount > 0 && committedCount === 0
+                      ? "تم التعرف على الأسئلة الموجودة وتحديث تفسيراتها وخياراتها بدقة دون إنشاء تكرارات."
+                      : "تم ربط الأسئلة بالمادة والمنهج وحفظ التفسيرات وخيارات الإجابة بدقة."}
                   </p>
                   {skippedDuplicates > 0 && (
                     <p className="text-[13px] font-bold text-amber-700 dark:text-amber-300 max-w-md mx-auto">
-                      تم تخطي {skippedDuplicates} سؤال مكرر موجود مسبقاً في بنك المادة.
+                      {enrichedCount > 0
+                        ? `تم مطابقة ${skippedDuplicates} سؤال موجود مسبقاً وتحديث التفسيرات الجديدة له.`
+                        : `تم تخطي ${skippedDuplicates} سؤال مكرر موجود مسبقاً في بنك المادة.`}
                     </p>
                   )}
                   <button

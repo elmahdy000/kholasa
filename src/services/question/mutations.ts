@@ -688,8 +688,9 @@ export class QuestionMutationsService {
       translation: string | null;
       type: QuestionType;
       difficulty: Difficulty;
-      explanation: { id: string } | null;
-      rubric: { id: string; modelAnswerTranslation: string | null } | null;
+      explanation: { id: string; concept: string; correctReason: string } | null;
+      rubric: { id: string; modelAnswer: string; modelAnswerTranslation: string | null; maxScore: number } | null;
+      options: { id: string; text: string; translation: string | null; isCorrect: boolean; order: number; explanation: string | null }[];
     };
     const existingByKey = new Map<string, ExistingQ>();
 
@@ -707,14 +708,15 @@ export class QuestionMutationsService {
               translation: true,
               type: true,
               difficulty: true,
-              explanation: { select: { id: true } },
-              rubric: { select: { id: true, modelAnswerTranslation: true } },
+              explanation: { select: { id: true, concept: true, correctReason: true } },
+              rubric: { select: { id: true, modelAnswer: true, modelAnswerTranslation: true, maxScore: true } },
+              options: { select: { id: true, text: true, translation: true, isCorrect: true, order: true, explanation: true } },
             },
           },
         },
       });
       for (const rec of existingLessonRecords) {
-        const key = `${rec.lessonId}:${rec.question.type}:${rec.question.difficulty}:${normalizeStatement(rec.question.statement)}`;
+        const key = `${rec.lessonId}:${rec.question.type}:${normalizeStatement(rec.question.statement)}`;
         if (!existingByKey.has(key)) existingByKey.set(key, rec.question);
       }
     }
@@ -736,12 +738,13 @@ export class QuestionMutationsService {
           translation: true,
           type: true,
           difficulty: true,
-          explanation: { select: { id: true } },
-          rubric: { select: { id: true, modelAnswerTranslation: true } },
+          explanation: { select: { id: true, concept: true, correctReason: true } },
+          rubric: { select: { id: true, modelAnswer: true, modelAnswerTranslation: true, maxScore: true } },
+          options: { select: { id: true, text: true, translation: true, isCorrect: true, order: true, explanation: true } },
         },
       });
       for (const r of existingSubjectBank) {
-        const key = `global:${r.type}:${r.difficulty}:${normalizeStatement(r.statement)}`;
+        const key = `global:${r.type}:${normalizeStatement(r.statement)}`;
         if (!existingByKey.has(key)) existingByKey.set(key, r);
       }
     }
@@ -764,7 +767,7 @@ export class QuestionMutationsService {
         (q.questionLesson && qUnitId ? lessonTitleMap.get(`${qUnitId}:${q.questionLesson.trim()}`) : null) ||
         null;
       const scopeKey = targetLesson ? targetLesson : "global";
-      const key = `${scopeKey}:${qType}:${qDiff}:${normalizeStatement(q.statement)}`;
+      const key = `${scopeKey}:${qType}:${normalizeStatement(q.statement)}`;
 
       const existing = existingByKey.get(key);
       if (existing) {
@@ -780,79 +783,137 @@ export class QuestionMutationsService {
       uniqueQuestions.push(q);
     }
 
-    // For questions already in this specific lesson, enrich any missing explanation or model answer.
+    // For questions already in this specific lesson, replace/enrich explanations, options, translations, and model answers!
     // Note: NEVER link questions across lessons (no cross-lesson QuestionLesson creation).
     let enrichedExisting = 0;
     if (duplicateMatches.length > 0) {
       await prisma.$transaction(async (tx) => {
         for (const { item, existing } of duplicateMatches) {
-          // 1. Enrich statement translation if missing
-          if (item.translation?.trim() && !existing.translation) {
+          let questionUpdated = false;
+
+          // 1. Update/replace explanation if provided
+          if (item.correctReason?.trim() || item.concept?.trim()) {
+            const conceptToSet = item.concept?.trim() || existing.explanation?.concept || "تفسير الإجابة";
+            const reasonToSet = item.correctReason?.trim() || existing.explanation?.correctReason || "";
+
+            if (reasonToSet) {
+              if (existing.explanation) {
+                if (
+                  existing.explanation.correctReason !== reasonToSet ||
+                  existing.explanation.concept !== conceptToSet
+                ) {
+                  await tx.questionExplanation.update({
+                    where: { id: existing.explanation.id },
+                    data: {
+                      concept: conceptToSet,
+                      correctReason: reasonToSet,
+                    },
+                  });
+                  questionUpdated = true;
+                }
+              } else {
+                await tx.questionExplanation.create({
+                  data: {
+                    questionId: existing.id,
+                    concept: conceptToSet,
+                    correctReason: reasonToSet,
+                  },
+                });
+                questionUpdated = true;
+              }
+            }
+          }
+
+          // 2. Update/replace question translation if provided and different
+          if (item.translation?.trim() && item.translation.trim() !== existing.translation) {
             await tx.question.update({
               where: { id: existing.id },
               data: { translation: item.translation.trim() },
             });
-            enrichedExisting++;
+            questionUpdated = true;
           }
 
-          // 2. Enrich explanation if missing
-          if (item.correctReason?.trim() && !existing.explanation) {
-            await tx.questionExplanation.create({
-              data: {
-                questionId: existing.id,
-                concept: item.concept?.trim() || "تفسير الإجابة",
-                correctReason: item.correctReason.trim(),
-              },
+          // 3. Update difficulty if provided and different
+          const incomingDiff = item.difficulty || batchMeta?.difficulty;
+          if (incomingDiff && incomingDiff !== existing.difficulty) {
+            await tx.question.update({
+              where: { id: existing.id },
+              data: { difficulty: incomingDiff },
             });
-            enrichedExisting++;
+            questionUpdated = true;
           }
 
-          // 3. Enrich essay rubric or rubric translation
-          if (existing.type === "ESSAY") {
-            if (item.modelAnswer?.trim() && !existing.rubric) {
-              await tx.essayRubric.create({
-                data: {
-                  questionId: existing.id,
-                  modelAnswer: item.modelAnswer.trim(),
-                  modelAnswerTranslation: item.modelAnswerTranslation?.trim() || null,
-                  maxScore: Number(item.points || 10),
-                },
-              });
-              enrichedExisting++;
-            } else if (
-              existing.rubric &&
-              item.modelAnswerTranslation?.trim() &&
-              !existing.rubric.modelAnswerTranslation
-            ) {
-              await tx.essayRubric.update({
-                where: { id: existing.rubric.id },
-                data: {
-                  modelAnswerTranslation: item.modelAnswerTranslation.trim(),
-                },
-              });
-              enrichedExisting++;
-            }
-          }
+          // 4. Update/replace options using safe syncOptions if provided
+          if (item.options && item.options.length > 0) {
+            const incomingOptions = item.options.map((opt, idx) => ({
+              text: opt.text.trim(),
+              translation: opt.translation?.trim() || null,
+              isCorrect: Boolean(opt.isCorrect),
+              order: opt.order ?? idx + 1,
+              explanation: opt.explanation?.trim() || null,
+            }));
 
-          // 4. Enrich option translations if missing
-          if (item.options && item.options.some((o) => o.translation?.trim())) {
-            const existingOptions = await tx.questionOption.findMany({
-              where: { questionId: existing.id },
-              orderBy: { order: "asc" },
-            });
-            for (let optIdx = 0; optIdx < existingOptions.length; optIdx++) {
-              const optItem = item.options[optIdx];
-              if (
-                optItem?.translation?.trim() &&
-                !existingOptions[optIdx].translation
-              ) {
-                await tx.questionOption.update({
-                  where: { id: existingOptions[optIdx].id },
-                  data: { translation: optItem.translation.trim() },
-                });
-                enrichedExisting++;
+            let optionsDiffer = existing.options.length !== incomingOptions.length;
+            if (!optionsDiffer) {
+              for (let i = 0; i < existing.options.length; i++) {
+                const exOpt = existing.options[i];
+                const incOpt = incomingOptions[i];
+                if (
+                  exOpt.text !== incOpt.text ||
+                  exOpt.isCorrect !== incOpt.isCorrect ||
+                  (incOpt.translation && exOpt.translation !== incOpt.translation)
+                ) {
+                  optionsDiffer = true;
+                  break;
+                }
               }
             }
+
+            if (optionsDiffer) {
+              await syncOptions(tx, existing.id, existing.options, incomingOptions);
+              questionUpdated = true;
+            }
+          }
+
+          // 5. Update/replace essay rubric if ESSAY question
+          if (existing.type === "ESSAY") {
+            if (item.modelAnswer?.trim()) {
+              const newModel = item.modelAnswer.trim();
+              const newTrans = item.modelAnswerTranslation?.trim() || null;
+              const newMax = Number(item.points || 10);
+
+              if (existing.rubric) {
+                if (
+                  existing.rubric.modelAnswer !== newModel ||
+                  existing.rubric.modelAnswerTranslation !== newTrans ||
+                  existing.rubric.maxScore !== newMax
+                ) {
+                  await tx.essayRubric.update({
+                    where: { id: existing.rubric.id },
+                    data: {
+                      modelAnswer: newModel,
+                      modelAnswerTranslation: newTrans,
+                      maxScore: newMax,
+                    },
+                  });
+                  questionUpdated = true;
+                }
+              } else {
+                await tx.essayRubric.create({
+                  data: {
+                    questionId: existing.id,
+                    modelAnswer: newModel,
+                    modelAnswerTranslation: newTrans,
+                    maxScore: newMax,
+                  },
+                });
+                questionUpdated = true;
+              }
+            }
+          }
+
+          if (questionUpdated) {
+            enrichedExisting++;
           }
         }
       }, BULK_TRANSACTION_OPTIONS);
@@ -862,7 +923,7 @@ export class QuestionMutationsService {
       if (enrichedExisting > 0) {
         const auditBatch = await prisma.importBatch.create({
           data: {
-            fileName: batchMeta?.fileName || "استيراد مباشر",
+            fileName: batchMeta?.fileName || "استيراد وتحديث مباشر",
             fileType: batchMeta?.fileType || "DOCX",
             questionType:
               batchMeta?.questionType ||
@@ -875,7 +936,7 @@ export class QuestionMutationsService {
             unitId: effectiveUnitId,
             lessonId: effectiveLessonId,
             trackId: effectiveTrackId,
-            importedCount: 0,
+            importedCount: enrichedExisting,
           },
         });
         return {
@@ -888,8 +949,8 @@ export class QuestionMutationsService {
       }
       throw new QuestionValidationError(
         effectiveLessonId
-          ? `جميع الأسئلة (${skippedDuplicates}) موجودة بالفعل في هذا الدرس ولا توجد بيانات جديدة لإضافتها`
-          : `جميع الأسئلة (${skippedDuplicates}) مكررة وموجودة بالفعل ولا توجد بيانات جديدة لإضافتها`,
+          ? `جميع الأسئلة (${skippedDuplicates}) موجودة بالفعل في هذا الدرس مع نفس البيانات (التفسيرات والخيارات متطابقة تماماً ولا توجد تحديثات جديدة).`
+          : `جميع الأسئلة (${skippedDuplicates}) مكررة وموجودة بالفعل ولا توجد بيانات أو تفسيرات جديدة لإضافتها.`,
         409
       );
     }
