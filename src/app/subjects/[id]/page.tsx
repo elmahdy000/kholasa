@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { getCurriculumScope, isSubjectInScope } from "@/lib/curriculum";
@@ -12,6 +12,7 @@ import {
   CheckCircle2,
   Layers,
   BookmarkCheck,
+  Lock,
 } from "lucide-react";
 
 interface SubjectDetailPageProps {
@@ -21,6 +22,13 @@ interface SubjectDetailPageProps {
 export default async function SubjectDetailPage({ params }: SubjectDetailPageProps) {
   const { id } = await params;
   const user = await getCurrentUser();
+
+  if (!user) {
+    redirect(`/login?callbackUrl=/subjects/${id}`);
+  }
+
+  const isStaff = user.role === "ADMIN" || user.role === "SUPER_ADMIN";
+  const isSubscriptionActive = isStaff || user.subscriptionStatus === "ACTIVE";
 
   const [subject, userProgress, masteredAttempts] = await Promise.all([
     prisma.subject.findUnique({
@@ -226,21 +234,31 @@ export default async function SubjectDetailPage({ params }: SubjectDetailPagePro
                       const lessonQuestions = lesson.questions.map((q) => q.questionId);
                       const lessonMasteredCount = lessonQuestions.filter((qid) => masteredSet.has(qid)).length;
                       const lessonMasteryPct = lessonQuestions.length > 0 ? Math.round((lessonMasteredCount / lessonQuestions.length) * 100) : 0;
+                      const isFreeTrialLesson = Boolean((lesson as any).isTrial) || (unit.order === 1 && lesson.order === 1);
+                      const isLessonLocked = !isSubscriptionActive && !isFreeTrialLesson;
 
                       return (
                         <div
                           key={lesson.id}
-                          className="p-4 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-[#F8FAFC]/60 dark:hover:bg-[#1E293B]/40 transition-colors"
+                          className={`p-4 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors ${
+                            isLessonLocked
+                              ? "bg-slate-50/50 dark:bg-[#121A28]/40 hover:bg-slate-100/50 dark:hover:bg-[#152033]"
+                              : "hover:bg-[#F8FAFC]/60 dark:hover:bg-[#1E293B]/40"
+                          }`}
                         >
                           <div className="flex items-start gap-4">
                             <div
                               className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 mt-1 ${
-                                isLessonCompleted
+                                isLessonLocked
+                                  ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20"
+                                  : isLessonCompleted
                                   ? "bg-[#059669]/10 dark:bg-[#1E293B] text-[#059669] dark:text-[#34D399]"
                                   : "bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185]"
                               }`}
                             >
-                              {isLessonCompleted ? (
+                              {isLessonLocked ? (
+                                <Lock className="w-4 h-4" />
+                              ) : isLessonCompleted ? (
                                 <CheckCircle2 className="w-4 h-4" />
                               ) : (
                                 <Play className="w-3.5 h-3.5 fill-current ml-1" />
@@ -251,12 +269,17 @@ export default async function SubjectDetailPage({ params }: SubjectDetailPagePro
                                 <h4 className="text-sm font-bold text-[#0F172A] dark:text-[#F8FAFC] leading-snug">
                                   {lesson.title}
                                 </h4>
-                                {isLessonCompleted && (
+                                {isLessonLocked ? (
+                                  <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20 inline-flex items-center gap-1">
+                                    <Lock className="w-2.5 h-2.5" />
+                                    مقفول للمشتركين
+                                  </span>
+                                ) : isLessonCompleted ? (
                                   <span className="text-[12px] font-bold px-2 py-0.5 rounded-full bg-[#059669]/10 dark:bg-[#1E293B] text-[#059669] dark:text-[#34D399]">
                                     مكتمل
                                   </span>
-                                )}
-                                {lessonQuestions.length > 0 && (
+                                ) : null}
+                                {lessonQuestions.length > 0 && !isLessonLocked && (
                                   <span
                                     className={`inline-flex items-center gap-1 text-[11px] font-mono font-bold px-2 py-0.5 rounded-full ${
                                       lessonMasteryPct >= 80
@@ -286,25 +309,38 @@ export default async function SubjectDetailPage({ params }: SubjectDetailPagePro
                           </div>
 
                           <div className="flex items-center gap-2 shrink-0 self-stretch sm:self-center">
-                            <Link
-                              href={`/exams/builder?subjectId=${subject.id}&unitId=${unit.id}&lessonId=${lesson.id}`}
-                              className="h-11 px-3.5 rounded-xl bg-white dark:bg-[#1E293B] hover:bg-[#F8FAFC] dark:hover:bg-[#334155] text-[#800020] dark:text-[#FB7185] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-bold flex items-center justify-center gap-1.5 transition-colors"
-                              title="امتحان على هذا الدرس"
-                            >
-                              <Target className="w-3.5 h-3.5" />
-                              <span className="hidden sm:inline">امتحان الدرس</span>
-                            </Link>
+                            {!isLessonLocked && (
+                              <Link
+                                href={`/exams/builder?subjectId=${subject.id}&unitId=${unit.id}&lessonId=${lesson.id}`}
+                                className="h-11 px-3.5 rounded-xl bg-white dark:bg-[#1E293B] hover:bg-[#F8FAFC] dark:hover:bg-[#334155] text-[#800020] dark:text-[#FB7185] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-bold flex items-center justify-center gap-1.5 transition-colors"
+                                title="امتحان على هذا الدرس"
+                              >
+                                <Target className="w-3.5 h-3.5" />
+                                <span className="hidden sm:inline">امتحان الدرس</span>
+                              </Link>
+                            )}
 
                             <Link
                               href={`/lessons/${lesson.id}`}
                               className={`h-11 px-4 rounded-xl text-[13px] font-bold flex items-center justify-center gap-2 transition-all shrink-0 active:opacity-80 flex-1 sm:flex-initial ${
-                                isLessonCompleted
+                                isLessonLocked
+                                  ? "bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-400 border border-amber-500/30"
+                                  : isLessonCompleted
                                   ? "bg-[#F8FAFC] dark:bg-[#1E293B] hover:bg-[#E2E8F0] dark:hover:bg-[#334155] text-[#0F172A] dark:text-[#F8FAFC] border border-[#E2E8F0] dark:border-[#334155]"
                                   : "bg-[#800020] hover:bg-[#66001A] text-white "
                               }`}
                             >
-                              <span>{isLessonCompleted ? "مراجعة الدرس" : "ابدأ المذاكرة"}</span>
-                              <ArrowLeft className="w-3.5 h-3.5" />
+                              {isLessonLocked ? (
+                                <>
+                                  <Lock className="w-3.5 h-3.5" />
+                                  <span>تفعيل الاشتراك (200 ج)</span>
+                                </>
+                              ) : (
+                                <>
+                                  <span>{isLessonCompleted ? "مراجعة الدرس" : "ابدأ المذاكرة"}</span>
+                                  <ArrowLeft className="w-3.5 h-3.5" />
+                                </>
+                              )}
                             </Link>
                           </div>
                         </div>

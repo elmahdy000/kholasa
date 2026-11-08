@@ -27,3 +27,4 @@ ALTER TABLE "Lesson" ADD COLUMN IF NOT EXISTS "isTrial" BOOLEAN NOT NULL DEFAULT
 
 -- Update existing registered students to ACTIVE subscription by default so we preserve existing users
 UPDATE "User" SET "subscriptionStatus" = 'ACTIVE' WHERE "role" = 'STUDENT' AND "subscriptionStatus" = 'TRIAL';
+

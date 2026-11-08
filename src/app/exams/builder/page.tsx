@@ -1,9 +1,11 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { getCurriculumScope, subjectScopeWhere } from "@/lib/curriculum";
 import { StudentShell } from "@/components/layout/StudentShell";
 import { ExamBuilderForm } from "@/components/exams/ExamBuilderForm";
+import { StudentPaywallView } from "@/components/student/subscription/StudentPaywallView";
 
 interface ExamBuilderPageProps {
   searchParams: Promise<{
@@ -20,6 +22,24 @@ export default async function ExamBuilderPage({
   searchParams,
 }: ExamBuilderPageProps) {
   const user = await getCurrentUser();
+
+  if (!user) {
+    redirect("/login?callbackUrl=/exams/builder");
+  }
+
+  const isStaff = user.role === "ADMIN" || user.role === "SUPER_ADMIN";
+  if (!isStaff && user.subscriptionStatus !== "ACTIVE") {
+    return (
+      <StudentShell user={user}>
+        <StudentPaywallView
+          isExam={true}
+          examTitle="تجهيز وتوليد الامتحانات المخصصة"
+          user={user}
+        />
+      </StudentShell>
+    );
+  }
+
   const scope = getCurriculumScope(user);
   const { subjectId, unitId, lessonId, questionCount } = await searchParams;
 

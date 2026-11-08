@@ -52,7 +52,7 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [autoFilledNotice, setAutoFilledNotice] = useState(false);
 
-  // Read ?code=... from URL for 1-click WhatsApp credentials links
+  // Read ?code=... from URL for 1-click WhatsApp credentials links and restore saved mode
   useEffect(() => {
     if (typeof window === "undefined") return;
     try {
@@ -64,8 +64,23 @@ export default function LoginPage() {
         setLoginMode("code");
         setAutoFilledNotice(true);
       }
+
+      // Restore saved studyMode and center
+      const savedMode = localStorage.getItem("kholasa_study_mode");
+      if (savedMode === "ONLINE" || savedMode === "OFFLINE") {
+        setStudyMode(savedMode);
+      }
+      const savedCenter = localStorage.getItem("kholasa_selected_center");
+      if (savedCenter) {
+        if (POPULAR_CENTERS.includes(savedCenter)) {
+          setSelectedCenter(savedCenter);
+        } else {
+          setSelectedCenter("سنتر آخر (أدخل اسم السنتر)");
+          setCustomCenter(savedCenter);
+        }
+      }
     } catch {
-      // Ignore URL parsing errors
+      // Ignore URL / localStorage parsing errors
     }
   }, []);
 
@@ -107,6 +122,17 @@ export default function LoginPage() {
       const data = await res.json();
       if (!res.ok) {
         throw new Error(data.error || "فشل تسجيل الدخول");
+      }
+
+      if (typeof window !== "undefined") {
+        try {
+          localStorage.setItem("kholasa_study_mode", studyMode);
+          if (studyMode === "OFFLINE" && finalCenterName) {
+            localStorage.setItem("kholasa_selected_center", finalCenterName);
+          }
+        } catch {
+          // Ignore localStorage errors
+        }
       }
 
       if (["TEACHER", "EDITOR", "ADMIN", "SUPER_ADMIN"].includes(data.user?.role)) {

@@ -11,6 +11,14 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "يرجى تسجيل الدخول لبدء الامتحان" }, { status: 401 });
     }
 
+    const isStaff = user.role === "ADMIN" || user.role === "SUPER_ADMIN";
+    if (!isStaff && user.subscriptionStatus !== "ACTIVE") {
+      return NextResponse.json(
+        { error: "هذه الخاصية متاحة فقط للمشتركين. يرجى تفعيل اشتراكك (200 ج شهرياً) للاستفادة من الامتحانات المخصصة." },
+        { status: 403 }
+      );
+    }
+
     rateLimit(`exam:create:${user.id}`, 10, 60 * 1000);
 
     const body = await req.json().catch(() => ({}));

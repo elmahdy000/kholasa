@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { getCurriculumScope, isSubjectInScope } from "@/lib/curriculum";
@@ -13,6 +13,10 @@ interface LessonPageProps {
 export default async function LessonPage({ params }: LessonPageProps) {
   const { id } = await params;
   const user = await getCurrentUser();
+
+  if (!user) {
+    redirect(`/login?callbackUrl=/lessons/${id}`);
+  }
 
   const lesson = await prisma.lesson.findFirst({
     where: {
@@ -94,14 +98,14 @@ export default async function LessonPage({ params }: LessonPageProps) {
     (user.role === "ADMIN" ||
       user.role === "SUPER_ADMIN");
 
-  const isFirstLessonOfUnit =
-    lesson.unit.lessons.length > 0 && lesson.unit.lessons[0].id === lesson.id;
+  // Single trial lesson: ONLY the first lesson of Unit 1 (or explicitly marked isTrial)
+  // All other lessons require an ACTIVE subscription
   const isFreeTrialLesson =
-    Boolean(lesson.isTrial) || lesson.order === 1 || isFirstLessonOfUnit;
+    Boolean(lesson.isTrial) || (lesson.unit.order === 1 && lesson.order === 1);
   const isSubscriptionActive =
     Boolean(isStaffUser) || user?.subscriptionStatus === "ACTIVE";
 
-  if (user && !isSubscriptionActive && !isFreeTrialLesson) {
+  if (!isSubscriptionActive && !isFreeTrialLesson) {
     return (
       <StudentShell user={user}>
         <StudentPaywallView
