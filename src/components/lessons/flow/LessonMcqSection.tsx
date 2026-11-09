@@ -36,14 +36,14 @@ export function LessonMcqSection({
   return (
     <div id="section-mcq" className="space-y-6 pt-4">
       {/* Section Header */}
-      <div className="p-6 rounded-2xl bg-[#800020]/10 border border-[#800020]/25 relative overflow-hidden flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="p-6 rounded-2xl bg-[#800B34]/10 border border-[#800B34]/25 relative overflow-hidden flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-xl bg-[#800020] text-white flex items-center justify-center shrink-0 shadow-sm">
+          <div className="w-12 h-12 rounded-xl bg-[#800B34] text-white flex items-center justify-center shrink-0 shadow-sm">
             <CheckCircle className="w-6 h-6" weight="fill" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-[#800020] dark:text-[#FB7185] bg-[#800020]/15 px-2 py-0.5 rounded-md">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[#800B34] dark:text-[#FB7185] bg-[#800B34]/15 px-2 py-0.5 rounded-md">
                 تدريب تفاعلي
               </span>
               <h2 className="text-lg font-bold text-[#0F172A] dark:text-white">
@@ -59,7 +59,7 @@ export function LessonMcqSection({
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="px-3 py-1.5 rounded-xl bg-white dark:bg-[#1E293B] border border-[#800020]/20 text-[#800020] dark:text-[#FB7185] text-[13px] font-bold font-mono">
+          <span className="px-3 py-1.5 rounded-xl bg-white dark:bg-[#1E293B] border border-[#800B34]/20 text-[#800B34] dark:text-[#FB7185] text-[13px] font-bold font-mono">
             {questions.length} سؤال اختيار
           </span>
         </div>
@@ -97,8 +97,8 @@ export function LessonMcqSection({
                   dir={isEnglish ? "ltr" : "rtl"}
                   className="flex items-center justify-between gap-2 border-b border-[#E2E8F0] dark:border-[#334155] pb-3"
                 >
-                  <span className="text-[13px] font-bold text-[#800020] dark:text-[#FB7185] flex items-center gap-2">
-                    <span className="w-6 h-6 rounded-lg bg-[#800020]/10 dark:bg-[#800020]/30 text-[#800020] dark:text-[#FB7185] flex items-center justify-center font-mono font-bold text-[12px]">
+                  <span className="text-[13px] font-bold text-[#800B34] dark:text-[#FB7185] flex items-center gap-2">
+                    <span className="w-6 h-6 rounded-lg bg-[#800B34]/10 dark:bg-[#800B34]/30 text-[#800B34] dark:text-[#FB7185] flex items-center justify-center font-mono font-bold text-[12px]">
                       {qIndex + 1}
                     </span>
                     <span>{isEnglish ? `Question ${qIndex + 1}` : `السؤال رقم ${qIndex + 1}`}</span>
@@ -140,7 +140,7 @@ export function LessonMcqSection({
                     dir="rtl"
                     className="p-3.5 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/60 border border-[#E2E8F0] dark:border-[#334155] text-right animate-in fade-in slide-in-from-top-1 duration-200"
                   >
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-[#800020]/10 text-[#800020] dark:text-[#FB7185] mb-1.5 inline-block">
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-[#800B34]/10 text-[#800B34] dark:text-[#FB7185] mb-1.5 inline-block">
                       الترجمة العربية للسؤال
                     </span>
                     <p className="text-[13px] sm:text-[14px] text-[#1E293B] dark:text-slate-200 leading-relaxed font-content">
@@ -162,7 +162,7 @@ export function LessonMcqSection({
                       Boolean(opt.isCorrect);
 
                     let btnStyle =
-                      "bg-[#F8FAFC] dark:bg-[#1E293B] border-[#E2E8F0] dark:border-[#334155] text-[#0F172A] dark:text-[#F8FAFC] hover:border-[#800020]/50";
+                      "bg-[#F8FAFC] dark:bg-[#1E293B] border-[#E2E8F0] dark:border-[#334155] text-[#0F172A] dark:text-[#F8FAFC] hover:border-[#800B34]/50";
 
                     if (isRevealed) {
                       if (isOptionCorrect) {

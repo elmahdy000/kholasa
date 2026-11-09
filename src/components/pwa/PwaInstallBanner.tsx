@@ -78,7 +78,7 @@ export function PwaInstallBanner() {
       aria-label="تثبيت تطبيق الخلاصة"
       className="fixed bottom-20 md:bottom-6 start-4 end-4 md:start-auto md:end-6 md:w-96 z-50 animate-in fade-in slide-in-from-bottom-4 duration-300"
     >
-      <div className="p-4 rounded-2xl bg-white dark:bg-[#10233A] border-2 border-[#800020]/20 dark:border-[#A30D36]/40 shadow-xl flex items-start gap-3.5 text-right font-sans">
+      <div className="p-4 rounded-2xl bg-white dark:bg-[#10233A] border-2 border-[#800B34]/20 dark:border-[#A30D36]/40 shadow-xl flex items-start gap-3.5 text-right font-sans">
         <BrandLogo variant="icon" size="sm" className="mt-0.5 shrink-0" />
 
         <div className="min-w-0 flex-1 space-y-1">
@@ -103,7 +103,7 @@ export function PwaInstallBanner() {
             <button
               type="button"
               onClick={handleInstallClick}
-              className="px-3.5 py-1.5 rounded-xl bg-[#800020] hover:bg-[#66001A] dark:bg-[#A30D36] dark:hover:bg-[#BD123F] text-white text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs cursor-pointer active:scale-95"
+              className="px-3.5 py-1.5 rounded-xl bg-[#800B34] hover:bg-[#680829] dark:bg-[#A30D36] dark:hover:bg-[#BD123F] text-white text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs cursor-pointer active:scale-95"
             >
               <Download className="w-3.5 h-3.5" />
               <span>تثبيت الآن</span>

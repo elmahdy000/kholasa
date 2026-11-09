@@ -36,7 +36,7 @@ export function LessonContentTab({
         <div className="p-6 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] space-y-4">
           <div>
             <h3 className="text-base font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
-              <Target className="w-5 h-5 text-[#800020]" />
+              <Target className="w-5 h-5 text-[#800B34]" />
               <span>هتتعلم إيه في الدرس دا؟</span>
             </h3>
             <p className="text-[12px] sm:text-[13px] text-[#64748B] dark:text-[#94A3B8] mt-1">
@@ -49,7 +49,7 @@ export function LessonContentTab({
                 key={i}
                 className="flex items-start gap-3 text-[13px] sm:text-sm font-medium text-[#0F172A] dark:text-[#F8FAFC] font-content"
               >
-                <div className="w-5 h-5 rounded-full bg-[#800020]/10 text-[#800020] flex items-center justify-center shrink-0 mt-0.5 text-[12px] font-bold">
+                <div className="w-5 h-5 rounded-full bg-[#800B34]/10 text-[#800B34] flex items-center justify-center shrink-0 mt-0.5 text-[12px] font-bold">
                   {i + 1}
                 </div>
                 <span className="leading-relaxed">{obj}</span>
@@ -61,14 +61,14 @@ export function LessonContentTab({
 
       {/* Lesson Material PDF File */}
       {content?.pdfUrl && (
-        <div className="p-5 sm:p-6 rounded-xl bg-white dark:bg-[#0F172A] border border-[#800020]/25 shadow-sm space-y-4">
+        <div className="p-5 sm:p-6 rounded-xl bg-white dark:bg-[#0F172A] border border-[#800B34]/25 shadow-sm space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-start sm:items-center gap-3.5">
-              <div className="w-12 h-12 rounded-xl bg-[#800020] text-white flex items-center justify-center shrink-0 shadow-md">
+              <div className="w-12 h-12 rounded-xl bg-[#800B34] text-white flex items-center justify-center shrink-0 shadow-md">
                 <FileText className="w-6 h-6" />
               </div>
               <div>
-                <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-[#800020]/15 text-[#800020] dark:text-[#FB7185]">
+                <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-[#800B34]/15 text-[#800B34] dark:text-[#FB7185]">
                   مذكرة الشرح الرسمية
                 </span>
                 <h3 className="text-base font-bold text-[#0F172A] dark:text-white mt-1">
@@ -84,7 +84,7 @@ export function LessonContentTab({
               <button
                 type="button"
                 onClick={() => setIsPdfOpen((prev) => !prev)}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold bg-[#800020] hover:bg-[#660019] text-white transition-all shadow-sm"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold bg-[#800B34] hover:bg-[#680829] text-white transition-all shadow-sm"
               >
                 {isPdfOpen ? (
                   <>
@@ -121,7 +121,7 @@ export function LessonContentTab({
           </div>
 
           {isPdfOpen && (
-            <div className="pt-4 border-t border-[#800020]/20 space-y-2">
+            <div className="pt-4 border-t border-[#800B34]/20 space-y-2">
               <div className="w-full h-[600px] rounded-xl overflow-hidden border border-[#E2E8F0] dark:border-[#334155] bg-slate-900">
                 <iframe
                   src={`${content.pdfUrl}#toolbar=1&navpanes=0`}
@@ -153,7 +153,7 @@ export function LessonContentTab({
                 return (
                   <h3
                     key={index}
-                    className="text-base sm:text-lg font-bold text-[#800020] pt-2"
+                    className="text-base sm:text-lg font-bold text-[#800B34] pt-2"
                   >
                     {paragraph.replace("### ", "")}
                   </h3>

@@ -116,6 +116,8 @@ export function LessonSummarySection({
     };
   }, [lightboxIndex, handleCloseLightbox, handleNextImage, handlePrevImage]);
 
+  if (!hasAnyContent) return null;
+
   return (
     <div id="section-summary" className="space-y-6">
       {/* Section Header */}
@@ -142,7 +144,7 @@ export function LessonSummarySection({
         {/* Quick Material Badges */}
         <div className="flex items-center gap-2 self-start sm:self-auto">
           {hasPdf && (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#800020]/10 text-[#800020] dark:bg-[#800020]/30 dark:text-[#FB7185] border border-[#800020]/20">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#800B34]/10 text-[#800B34] dark:bg-[#800B34]/30 dark:text-[#FB7185] border border-[#800B34]/20">
               <FilePdf className="w-4 h-4" weight="fill" />
               <span>ملخص PDF متاح</span>
             </span>
@@ -160,15 +162,15 @@ export function LessonSummarySection({
         <>
           {/* 1. PDF Summary Document Capsule */}
           {hasPdf && summary?.pdfUrl && (
-            <div className="rounded-2xl border border-[#800020]/25 bg-gradient-to-br from-[#800020]/5 via-white dark:via-[#0F172A] to-amber-500/5 dark:bg-[#0F172A] p-5 sm:p-6 shadow-sm space-y-4">
+            <div className="rounded-2xl border border-[#800B34]/25 bg-gradient-to-br from-[#800B34]/5 via-white dark:via-[#0F172A] to-amber-500/5 dark:bg-[#0F172A] p-5 sm:p-6 shadow-sm space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-start sm:items-center gap-3.5">
-                  <div className="w-12 h-12 rounded-xl bg-[#800020] text-white flex items-center justify-center shrink-0 shadow-md">
+                  <div className="w-12 h-12 rounded-xl bg-[#800B34] text-white flex items-center justify-center shrink-0 shadow-md">
                     <FilePdf className="w-6 h-6" weight="fill" />
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-[#800020]/15 text-[#800020] dark:text-[#FB7185]">
+                      <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-[#800B34]/15 text-[#800B34] dark:text-[#FB7185]">
                         وثيقة PDF الرسمية
                       </span>
                       <h3 className="text-base font-bold text-[#0F172A] dark:text-white">
@@ -186,7 +188,7 @@ export function LessonSummarySection({
                   <button
                     type="button"
                     onClick={() => setIsPdfEmbeddedOpen((prev) => !prev)}
-                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold bg-[#800020] hover:bg-[#660019] text-white transition-all shadow-sm active:scale-95"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold bg-[#800B34] hover:bg-[#680829] text-white transition-all shadow-sm active:scale-95"
                   >
                     {isPdfEmbeddedOpen ? (
                       <>
@@ -224,14 +226,14 @@ export function LessonSummarySection({
 
               {/* Embedded PDF Viewer */}
               {isPdfEmbeddedOpen && (
-                <div className="mt-4 pt-4 border-t border-[#800020]/20 space-y-3">
+                <div className="mt-4 pt-4 border-t border-[#800B34]/20 space-y-3">
                   <div className="flex items-center justify-between text-xs font-semibold text-[#64748B] dark:text-[#94A3B8]">
                     <span>قارئ المستند المباشر</span>
                     <div className="flex items-center gap-2">
                       <button
                         type="button"
                         onClick={() => setIsPdfExpanded((prev) => !prev)}
-                        className="inline-flex items-center gap-1 hover:text-[#800020] dark:hover:text-[#FB7185] transition-colors"
+                        className="inline-flex items-center gap-1 hover:text-[#800B34] dark:hover:text-[#FB7185] transition-colors"
                       >
                         {isPdfExpanded ? (
                           <>
@@ -338,7 +340,7 @@ export function LessonSummarySection({
           {formulas.length > 0 && (
             <div className="p-6 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] space-y-4">
               <h3 className="text-sm font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
-                <span className="font-mono text-base font-bold text-[#800020]">#</span>
+                <span className="font-mono text-base font-bold text-[#800B34]">#</span>
                 <span>القوانين والمعادلات الأساسية</span>
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -362,7 +364,7 @@ export function LessonSummarySection({
           {/* 5. Comparisons Table */}
           {comparisons.length > 0 && (
             <div className="p-6 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] space-y-4">
-              <h3 className="text-sm font-bold text-[#800020] dark:text-[#FB7185] flex items-center gap-2">
+              <h3 className="text-sm font-bold text-[#800B34] dark:text-[#FB7185] flex items-center gap-2">
                 <span className="text-base">⇄</span>
                 <span>المقارنات الهامة التي تتكرر في الامتحانات</span>
               </h3>
@@ -371,7 +373,7 @@ export function LessonSummarySection({
                   <thead>
                     <tr className="border-b border-[#E2E8F0] dark:border-[#334155]">
                       <th className="py-2.5 px-3 font-bold text-[#64748B]">وجه المقارنة</th>
-                      <th className="py-2.5 px-3 font-bold text-[#800020] dark:text-[#FB7185]">العنصر الأول</th>
+                      <th className="py-2.5 px-3 font-bold text-[#800B34] dark:text-[#FB7185]">العنصر الأول</th>
                       <th className="py-2.5 px-3 font-bold text-[#059669]">العنصر الثاني</th>
                     </tr>
                   </thead>

@@ -98,10 +98,10 @@ export function LessonDefinitionsSection({
             <button
               type="button"
               onClick={toggleAll}
-              className={`px-3 py-1.5 rounded-xl border text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+              className={`min-h-[44px] px-3.5 py-2 rounded-xl border text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
                 isAllTranslated
-                  ? "bg-[#2563EB] text-white border-[#2563EB] shadow-xs"
-                  : "bg-white dark:bg-[#1E293B] border-[#E2E8F0] dark:border-[#334155] text-slate-700 dark:text-slate-300 hover:bg-slate-50"
+                  ? "bg-[#091B40] text-white border-[#091B40] shadow-xs"
+                  : "bg-white dark:bg-[#1E293B] border-[#E2E8F0] dark:border-[#334155] text-[#536681] dark:text-slate-300 hover:bg-slate-50"
               }`}
               title={isAllTranslated ? "إخفاء كل الترجمات" : "عرض ترجمة جميع المصطلحات"}
             >
@@ -114,7 +114,7 @@ export function LessonDefinitionsSection({
             <button
               type="button"
               onClick={onStartFlashcards}
-              className="px-3.5 py-1.5 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition-transform active:scale-95 cursor-pointer min-h-[36px]"
+              className="min-h-[44px] px-4 py-2 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition-transform active:scale-95 cursor-pointer"
               title="سمّع لنفسك مفاهيم ومصطلحات الدرس بالكروت"
             >
               <Cards className="w-4 h-4" weight="bold" />

@@ -64,7 +64,7 @@ export function LessonAudioPlayer({
           <button
             type="button"
             onClick={onTogglePlay}
-            className="w-10 h-10 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white flex items-center justify-center shrink-0 shadow-xs transition-transform active:scale-95 cursor-pointer"
+            className="w-11 h-11 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white flex items-center justify-center shrink-0 shadow-xs transition-transform active:scale-95 cursor-pointer"
             title={isPlayingAudio ? "إيقاف مؤقت" : "تشغيل الملخص الصوتي"}
           >
             {isPlayingAudio ? (
@@ -93,7 +93,7 @@ export function LessonAudioPlayer({
         <div className="flex items-center gap-3 w-full sm:w-72">
           <div className="flex-1 h-2 rounded-full bg-slate-100 dark:bg-[#0D1B2E] overflow-hidden border border-slate-200/60 dark:border-slate-800">
             <div
-              className="h-full bg-gradient-to-l from-[#800020] to-[#D97706] rounded-full transition-all duration-300"
+              className="h-full bg-gradient-to-l from-[#800B34] to-[#E9AD32] rounded-full transition-all duration-300"
               style={{ width: `${audioProgress}%` }}
             />
           </div>
@@ -138,7 +138,7 @@ export function LessonAudioPlayer({
             <button
               type="button"
               onClick={onTogglePlay}
-              className="w-9 h-9 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white flex items-center justify-center shrink-0 shadow-xs transition-transform active:scale-95 cursor-pointer"
+              className="w-10 h-10 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white flex items-center justify-center shrink-0 shadow-xs transition-transform active:scale-95 cursor-pointer"
               title={isPlayingAudio ? "إيقاف مؤقت" : "متابعة الاستماع"}
             >
               {isPlayingAudio ? (
@@ -170,7 +170,7 @@ export function LessonAudioPlayer({
           <div className="flex items-center gap-2 shrink-0">
             <div className="w-16 sm:w-28 h-1.5 rounded-full bg-slate-100 dark:bg-[#0D1B2E] overflow-hidden border border-slate-200/60 dark:border-slate-800">
               <div
-                className="h-full bg-gradient-to-l from-[#800020] to-[#D97706] rounded-full transition-all duration-300"
+                className="h-full bg-gradient-to-l from-[#800B34] to-[#E9AD32] rounded-full transition-all duration-300"
                 style={{ width: `${audioProgress}%` }}
               />
             </div>
@@ -190,7 +190,7 @@ export function LessonAudioPlayer({
               onClick={() => {
                 containerRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
               }}
-              className="w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-[#800020] dark:hover:text-[#FB7185] flex items-center justify-center transition-colors cursor-pointer"
+              className="w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-[#800B34] dark:hover:text-[#FB7185] flex items-center justify-center transition-colors cursor-pointer"
               title="الرجوع لمشغل الدرس"
             >
               <CaretUp className="w-3.5 h-3.5" weight="bold" />

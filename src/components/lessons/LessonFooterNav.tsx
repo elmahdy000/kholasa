@@ -45,13 +45,13 @@ export function LessonFooterNav({
           1. HERO NEXT LESSON CALL-TO-ACTION (زر الانتقال التالي التلقائي)
       ───────────────────────────────────────────────────────────── */}
       {nextLesson ? (
-        <div className="p-6 sm:p-7 rounded-3xl bg-gradient-to-br from-[#800020]/10 via-[#800020]/5 to-transparent dark:from-[#800020]/25 dark:via-[#1E293B] dark:to-[#0F172A] border-2 border-[#800020]/30 dark:border-[#FB7185]/40 flex flex-col md:flex-row items-center justify-between gap-5 shadow-sm transition-all">
+        <div className="p-6 sm:p-7 rounded-3xl bg-gradient-to-br from-[#800B34]/10 via-[#800B34]/5 to-transparent dark:from-[#800B34]/25 dark:via-[#1E293B] dark:to-[#0F172A] border-2 border-[#800B34]/30 dark:border-[#FB7185]/40 flex flex-col md:flex-row items-center justify-between gap-5 shadow-sm transition-all">
           <div className={`flex items-center gap-4 ${isLanguages ? "text-left" : "text-right"} w-full md:w-auto`}>
-            <div className="w-14 h-14 rounded-2xl bg-[#800020] text-white flex items-center justify-center shrink-0 shadow-md">
+            <div className="w-14 h-14 rounded-2xl bg-[#800B34] text-white flex items-center justify-center shrink-0 shadow-md">
               <Sparkle className="w-7 h-7" weight="fill" />
             </div>
             <div>
-              <span className="text-xs font-bold text-[#800020] dark:text-[#FB7185] block mb-0.5">
+              <span className="text-xs font-bold text-[#800B34] dark:text-[#FB7185] block mb-0.5">
                 {isAllAnswered
                   ? isLanguages ? "🎉 Great job! You finished the challenges for this lesson" : "🎉 عاش يا بطل! خلصت أسئلة وتدريبات الدرس ده"
                   : isLanguages ? "Ready for the next challenge?" : "جاهز للخطوة القادمة؟"}
@@ -80,7 +80,7 @@ export function LessonFooterNav({
 
             <Link
               href={`/lessons/${nextLesson.id}`}
-              className="h-12 px-6 sm:px-8 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-sm sm:text-base font-bold flex items-center justify-center gap-2.5 transition-all shadow-md hover:shadow-lg active:scale-95 cursor-pointer"
+              className="h-12 px-6 sm:px-8 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white text-sm sm:text-base font-bold flex items-center justify-center gap-2.5 transition-all shadow-md hover:shadow-lg active:scale-95 cursor-pointer"
             >
               <span>{isLanguages ? "Proceed to Next Lesson" : `انتقل إلى: ${nextLesson.title}`}</span>
               <ArrowForward className="w-4 h-4 shrink-0" weight="bold" />
@@ -120,7 +120,7 @@ export function LessonFooterNav({
         {prevLesson ? (
           <Link
             href={`/lessons/${prevLesson.id}`}
-            className="flex items-center gap-2 text-xs sm:text-[13px] font-bold text-[#64748B] dark:text-[#94A3B8] hover:text-[#800020] transition-colors min-w-0"
+            className="flex items-center gap-2 text-xs sm:text-[13px] font-bold text-[#64748B] dark:text-[#94A3B8] hover:text-[#800B34] transition-colors min-w-0"
           >
             <CaretRight className="w-4 h-4 shrink-0" weight="bold" />
             <div className={`min-w-0 ${isLanguages ? "text-left" : "text-right"}`}>
@@ -139,7 +139,7 @@ export function LessonFooterNav({
         {nextLesson && (
           <Link
             href={`/lessons/${nextLesson.id}`}
-            className="flex items-center gap-2 text-xs sm:text-[13px] font-bold text-[#800020] dark:text-[#FB7185] hover:underline transition-colors min-w-0"
+            className="flex items-center gap-2 text-xs sm:text-[13px] font-bold text-[#800B34] dark:text-[#FB7185] hover:underline transition-colors min-w-0"
           >
             <div className={`min-w-0 ${isLanguages ? "text-right" : "text-left"}`}>
               <span className="block text-[11px] opacity-75">

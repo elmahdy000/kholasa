@@ -125,7 +125,7 @@ export default function OfflinePage() {
             <button
               type="button"
               onClick={() => window.location.reload()}
-              className="h-11 px-4 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[13px] font-bold flex items-center justify-center gap-2 transition-colors cursor-pointer"
+              className="h-11 px-4 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white text-[13px] font-bold flex items-center justify-center gap-2 transition-colors cursor-pointer"
             >
               <ArrowsClockwise className="w-4 h-4" weight="bold" />
               <span>إعادة فحص الاتصال</span>
@@ -147,7 +147,7 @@ export default function OfflinePage() {
         <section className="space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-base sm:text-lg font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
-              <BookOpen className="w-5 h-5 text-[#4F46E5]" weight="bold" />
+              <BookOpen className="w-5 h-5 text-[#800B34]" weight="bold" />
               <span>دروسك المتاحة للمذاكرة الآن ({savedLessons.length})</span>
             </h2>
 
@@ -179,11 +179,11 @@ export default function OfflinePage() {
               {savedLessons.map((item) => (
                 <div
                   key={item.id}
-                  className="p-5 rounded-2xl bg-white dark:bg-[#1E293B]/70 border border-[#E2E8F0] dark:border-[#334155] flex flex-col justify-between gap-4 hover:border-[#4F46E5]/40 transition-colors shadow-2xs"
+                  className="p-5 rounded-2xl bg-white dark:bg-[#1E293B]/70 border border-[#E2E8F0] dark:border-[#334155] flex flex-col justify-between gap-4 hover:border-[#800B34]/40 transition-colors shadow-2xs"
                 >
                   <div className="space-y-2">
                     <div className="flex items-center justify-between gap-2">
-                      <span className="text-[12px] font-bold text-[#800020] dark:text-[#FB7185]">
+                      <span className="text-[12px] font-bold text-[#800B34] dark:text-[#FB7185]">
                         {item.subjectName}
                       </span>
                       <span className="text-[11px] font-mono text-[#64748B] dark:text-[#94A3B8]">
@@ -211,7 +211,7 @@ export default function OfflinePage() {
                     <button
                       type="button"
                       onClick={() => handleOpenLesson(item)}
-                      className="flex-1 h-10 px-4 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[13px] font-bold flex items-center justify-center gap-2 transition-colors cursor-pointer"
+                      className="flex-1 h-10 px-4 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white text-[13px] font-bold flex items-center justify-center gap-2 transition-colors cursor-pointer"
                     >
                       <BookOpen className="w-4 h-4" weight="bold" />
                       <span>مذاكرة الدرس الآن</span>

@@ -95,7 +95,7 @@ export function LessonHeader({
           <button
             type="button"
             onClick={onOpenMistakesCapsule}
-            className="min-h-[42px] px-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800/70 hover:bg-amber-100 text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-2xs active:scale-95"
+            className="min-h-[44px] px-3.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800/70 hover:bg-amber-100 text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-2xs active:scale-95"
             title="مراجعة وتصحيح الأسئلة غير المتقنة في هذا الدرس"
           >
             <ArrowClockwise className="w-3.5 h-3.5 text-[#D97706]" weight="bold" />
@@ -108,7 +108,7 @@ export function LessonHeader({
           <button
             type="button"
             onClick={onStartFlashcards}
-            className="min-h-[42px] px-3.5 rounded-xl bg-white dark:bg-[#10233A] border border-[#E8E9ED] dark:border-[#22364F] hover:border-[#800B34]/40 text-[#12263F] dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs active:scale-95"
+            className="min-h-[44px] px-3.5 rounded-xl bg-white dark:bg-[#10233A] border border-[#E8E9ED] dark:border-[#22364F] hover:border-[#800B34]/40 text-[#12263F] dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs active:scale-95"
             title="سمّع لنفسك مفاهيم ومصطلحات الدرس"
           >
             <Cards className="w-4 h-4 text-[#800B34] dark:text-[#FB7185]" weight="bold" />
@@ -120,7 +120,7 @@ export function LessonHeader({
         {lessonId && (
           <Link
             href={`/exams/builder?subjectId=${subject.id}&unitId=${unit.id}&lessonId=${lessonId}`}
-            className="min-h-[42px] px-3.5 rounded-xl bg-white dark:bg-[#10233A] border border-[#E8E9ED] dark:border-[#22364F] hover:border-[#800B34]/40 text-[#12263F] dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-bold flex items-center gap-1.5 transition-colors shadow-2xs active:scale-95"
+            className="min-h-[44px] px-3.5 rounded-xl bg-white dark:bg-[#10233A] border border-[#E8E9ED] dark:border-[#22364F] hover:border-[#800B34]/40 text-[#12263F] dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-bold flex items-center gap-1.5 transition-colors shadow-2xs active:scale-95"
             title="بدء امتحان مخصص على هذا الدرس"
           >
             <Target className="w-4 h-4 text-[#800B34] dark:text-[#FB7185]" weight="bold" />
@@ -133,10 +133,10 @@ export function LessonHeader({
           type="button"
           onClick={onToggleComplete}
           disabled={isTogglingComplete}
-          className={`min-h-[42px] px-4 rounded-xl font-bold text-xs flex items-center gap-1.5 shadow-xs transition-all cursor-pointer active:scale-95 ${
+          className={`min-h-[44px] px-4 rounded-xl font-bold text-xs flex items-center gap-1.5 shadow-xs transition-all cursor-pointer active:scale-95 ${
             isCompleted
               ? "bg-[#D1FAE5] dark:bg-emerald-950/60 text-[#065F46] dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 hover:bg-[#A7F3D0]"
-              : "bg-[#800B34] hover:bg-[#66001A] text-white"
+              : "bg-[#800B34] hover:bg-[#680829] text-white"
           }`}
         >
           {isCompleted ? (
@@ -159,7 +159,7 @@ export function LessonHeader({
               type="button"
               onClick={onToggleOffline}
               disabled={isSavingOffline}
-              className="h-[42px] w-[42px] flex items-center justify-center text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+              className="h-11 w-11 flex items-center justify-center text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
               title={isSavedOffline ? "محفوظ بدون نت (اضغط للحذف)" : "حفظ الدرس أوفلاين"}
               aria-label={isSavedOffline ? "محفوظ بدون نت" : "حفظ الدرس أوفلاين"}
             >
@@ -175,7 +175,7 @@ export function LessonHeader({
             type="button"
             onClick={onToggleBookmark}
             disabled={isTogglingBookmark}
-            className={`h-[42px] w-[42px] flex items-center justify-center transition-colors cursor-pointer border-r border-[#E8E9ED] dark:border-[#22364F] ${
+            className={`h-11 w-11 flex items-center justify-center transition-colors cursor-pointer border-r border-[#E8E9ED] dark:border-[#22364F] ${
               isBookmarked
                 ? "bg-[#800B34]/10 text-[#800B34] dark:text-[#FB7185]"
                 : "text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800"

@@ -61,7 +61,7 @@ export function PaywallModal({
       role="dialog"
       aria-modal="true"
       aria-label="تفعيل الاشتراك لفتح كل الدروس"
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
+      className="fixed inset-0 z-[60] flex items-center justify-center p-3 sm:p-5 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
     >
       <div
         className="relative w-full max-w-lg rounded-3xl bg-white dark:bg-[#0D214D] border border-[#E2E8F0] dark:border-[#1E3A6E] shadow-2xl p-5 sm:p-7 text-right font-sans space-y-4 animate-in zoom-in-95 duration-200 max-h-[92vh] overflow-y-auto scrollbar-thin"

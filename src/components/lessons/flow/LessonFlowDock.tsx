@@ -52,8 +52,8 @@ export function LessonFlowDock({
             onClick={() => onFilterChange(pill.id as FlowFilterType)}
             className={`px-3 py-2 rounded-xl text-[12px] sm:text-[13px] font-bold flex items-center gap-1.5 shrink-0 transition-all ${
               isActive
-                ? "bg-[#800020] text-white shadow-sm"
-                : "bg-[#F8FAFC] dark:bg-[#1E293B] text-[#64748B] dark:text-[#94A3B8] border border-[#E2E8F0] dark:border-[#334155] hover:border-[#800020]/40 hover:text-[#0F172A] dark:hover:text-white"
+                ? "bg-[#800B34] text-white shadow-sm"
+                : "bg-[#F8FAFC] dark:bg-[#1E293B] text-[#64748B] dark:text-[#94A3B8] border border-[#E2E8F0] dark:border-[#334155] hover:border-[#800B34]/40 hover:text-[#0F172A] dark:hover:text-white"
             }`}
           >
             <PillIcon className="w-3.5 h-3.5 shrink-0" weight={isActive ? "fill" : "bold"} />

@@ -757,7 +757,7 @@ export function LessonViewer({
               id={`tab-${tab.id}`}
               aria-controls={`tabpanel-${tab.id}`}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`relative w-full min-h-[50px] sm:min-h-[44px] py-1.5 sm:py-2.5 px-0.5 sm:px-3 rounded-xl font-bold flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-2 transition-all cursor-pointer select-none active:scale-[0.97] overflow-hidden ${
+              className={`w-full min-h-[48px] py-1.5 sm:py-2.5 px-1 sm:px-3 rounded-xl font-bold flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 transition-all cursor-pointer select-none active:scale-[0.97] ${
                 isSelected
                   ? "bg-[#800B34] text-white shadow-xs border border-[#800B34] font-black"
                   : "bg-[#F8FAFC] dark:bg-[#071737] text-[#536681] dark:text-[#94A3B8] hover:text-[#091B40] dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#11244E]/80 border border-transparent"
@@ -767,10 +767,23 @@ export function LessonViewer({
                 className={`w-4 h-4 shrink-0 ${isSelected ? "text-[#E9AD32]" : "text-[#64748B] dark:text-[#94A3B8]"}`}
               />
               <span className="hidden sm:inline whitespace-nowrap text-xs sm:text-[13px]">{tab.label}</span>
-              <span className="sm:hidden text-[10px] xs:text-[11px] font-bold leading-tight truncate max-w-full px-0.5 block">{tab.mobileLabel}</span>
+              <div className="sm:hidden flex items-center justify-center gap-1 max-w-full">
+                <span className="text-[11px] font-bold leading-tight truncate">{tab.mobileLabel}</span>
+                {"badge" in tab && tab.badge && (
+                  <span
+                    className={`text-[10px] px-1 py-0.2 rounded-md font-mono font-bold leading-none ${
+                      isSelected
+                        ? "bg-white/25 text-white"
+                        : "bg-[#091B40]/10 dark:bg-white/10 text-[#091B40] dark:text-slate-200"
+                    }`}
+                  >
+                    {tab.badge}
+                  </span>
+                )}
+              </div>
               {"badge" in tab && tab.badge && (
                 <span
-                  className={`text-[9px] sm:text-[11px] px-1 sm:px-1.5 py-0.2 sm:py-0.5 rounded-full font-mono font-bold shrink-0 sm:static absolute top-1 end-1 leading-none ${
+                  className={`hidden sm:inline text-[11px] px-1.5 py-0.5 rounded-full font-mono font-bold shrink-0 ${
                     isSelected
                       ? "bg-white/25 text-white"
                       : "bg-[#091B40]/10 dark:bg-white/10 text-[#091B40] dark:text-slate-200"
@@ -953,7 +966,7 @@ export function LessonViewer({
           {/* Questions Rendered */}
           {filteredByDifficulty.length === 0 ? (
             <div className="py-14 px-6 rounded-2xl bg-white dark:bg-[#0F172A] border border-dashed border-[#E2E8F0] dark:border-[#334155] text-center space-y-3">
-              <div className="w-12 h-12 rounded-full bg-[#800020]/10 text-[#800020] flex items-center justify-center mx-auto">
+              <div className="w-12 h-12 rounded-full bg-[#800B34]/10 text-[#800B34] flex items-center justify-center mx-auto">
                 <CheckCircle className="w-6 h-6" />
               </div>
               <h4 className="text-base font-bold text-[#0F172A] dark:text-white">
@@ -968,7 +981,7 @@ export function LessonViewer({
                   setDifficultyFilter("ALL");
                   setQuestionTypeFilter("ALL");
                 }}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-[#800020] text-white hover:bg-[#660019] transition-all cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-[#800B34] text-white hover:bg-[#680829] transition-all cursor-pointer"
               >
                 عرض كل الأسئلة
               </button>
