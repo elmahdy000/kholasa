@@ -46,7 +46,7 @@ export default function LoginPage() {
   // Code login state
   const [studentCode, setStudentCode] = useState("");
   const [studyMode, setStudyMode] = useState<"ONLINE" | "OFFLINE">("ONLINE");
-  const [selectedCenter, setSelectedCenter] = useState<string>("سنتر إديوفيرس لغات");
+  const [selectedCenter, setSelectedCenter] = useState<string>("سنتر رافال عربي");
   const [customCenter, setCustomCenter] = useState<string>("");
 
   // Code Auto-Lookup State
@@ -491,20 +491,41 @@ export default function LoginPage() {
                       }}
                       className="w-full h-12 pr-11 pl-10 rounded-xl border border-[#E2E8F0] dark:border-[#1E3A6E] bg-white dark:bg-[#0D214D] text-xs sm:text-sm font-bold text-[#091B40] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#800B34] transition-all appearance-none cursor-pointer shadow-inner"
                     >
-                      <optgroup label="── سناتر مدارس اللغات (Languages) 🇬🇧 ──">
-                        {LANGUAGES_CENTERS.map((c) => (
-                          <option key={c.id} value={c.name}>
-                            {c.name}
-                          </option>
-                        ))}
-                      </optgroup>
-                      <optgroup label="── سناتر المدارس العامة (عربي) 🇪🇬 ──">
-                        {ARABIC_CENTERS.map((c) => (
-                          <option key={c.id} value={c.name}>
-                            {c.name}
-                          </option>
-                        ))}
-                      </optgroup>
+                      {detectedStudent?.schoolCategory === "LANGUAGES" ? (
+                        <>
+                          <optgroup label="── سناتر مدارس اللغات (Languages) 🇬🇧 ──">
+                            {LANGUAGES_CENTERS.map((c) => (
+                              <option key={c.id} value={c.name}>
+                                {c.name}
+                              </option>
+                            ))}
+                          </optgroup>
+                          <optgroup label="── سناتر المدارس العامة (عربي) 🇪🇬 ──">
+                            {ARABIC_CENTERS.map((c) => (
+                              <option key={c.id} value={c.name}>
+                                {c.name}
+                              </option>
+                            ))}
+                          </optgroup>
+                        </>
+                      ) : (
+                        <>
+                          <optgroup label="── سناتر المدارس العامة (عربي) 🇪🇬 ──">
+                            {ARABIC_CENTERS.map((c) => (
+                              <option key={c.id} value={c.name}>
+                                {c.name}
+                              </option>
+                            ))}
+                          </optgroup>
+                          <optgroup label="── سناتر مدارس اللغات (Languages) 🇬🇧 ──">
+                            {LANGUAGES_CENTERS.map((c) => (
+                              <option key={c.id} value={c.name}>
+                                {c.name}
+                              </option>
+                            ))}
+                          </optgroup>
+                        </>
+                      )}
                       <optgroup label="── خيارات أخرى ──">
                         <option value={OTHER_CENTER_NAME}>سنتر آخر (أدخل اسم السنتر يدوياً)</option>
                       </optgroup>

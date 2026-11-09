@@ -128,11 +128,16 @@ export async function POST(req: Request) {
         }
       }
 
-      // 2. Safeguard for missing or orphaned grade/system
-      const publishedCurriculum = await prisma.subject.findFirst({
-        where: { isPublished: true },
-        select: { gradeId: true, systemId: true },
-      });
+      // 2. Safeguard for missing or orphaned grade/system (matched to student's school category)
+      const publishedCurriculum =
+        (await prisma.subject.findFirst({
+          where: { isPublished: true, schoolCategory: targetSchoolCategory },
+          select: { gradeId: true, systemId: true },
+        })) ||
+        (await prisma.subject.findFirst({
+          where: { isPublished: true },
+          select: { gradeId: true, systemId: true },
+        }));
 
       if (publishedCurriculum) {
         if (user.loginCode?.startsWith("DEMO-")) {
@@ -153,7 +158,8 @@ export async function POST(req: Request) {
           schoolCategory: targetSchoolCategory,
           gradeId: targetGradeId,
           systemId: targetSystemId,
-          ...(user.name?.toLowerCase().includes("demo") || user.name?.toLowerCase().includes("languages")
+          ...(user.loginCode?.startsWith("DEMO-") &&
+          (user.name?.toLowerCase().includes("demo") || user.name?.toLowerCase().includes("languages"))
             ? { name: "طالب تجريبي" }
             : {}),
         },
