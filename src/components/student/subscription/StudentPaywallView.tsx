@@ -18,6 +18,7 @@ import {
   Smartphone,
   Building2,
   Globe,
+  FileCheck2,
 } from "lucide-react";
 
 interface StudentPaywallViewProps {
@@ -107,29 +108,29 @@ export function StudentPaywallView({
         <div className="w-16 h-16 rounded-2xl bg-amber-500/10 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center border border-amber-500/30 shadow-xs">
           <Lock className="w-8 h-8" />
         </div>
-        <div>
+        <div className="space-y-1">
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
             <Sparkles className="w-3.5 h-3.5" />
             <span>محتوى مخصص للمشتركين فقط</span>
           </span>
-          <h1 className="text-xl sm:text-2xl font-bold text-[#0F172A] dark:text-white mt-2">
-            {isExam ? examTitle : lessonTitle}
+          <h1 className="text-xl sm:text-2xl font-black text-[#0F172A] dark:text-white mt-2 leading-tight">
+            لازم تدفع 200 جنيه وترفع الإيصال لفتح كل الدروس
           </h1>
-          {unitTitle && (
-            <p className="text-xs text-[#64748B] dark:text-[#94A3B8] mt-1">
-              التابعة لـ: {unitTitle}
+          {(lessonTitle || examTitle) && (
+            <p className="text-xs sm:text-sm font-bold text-[#800020] dark:text-[#FB7185] mt-1">
+              المحتوى المطلوب: {isExam ? examTitle : lessonTitle} {unitTitle ? `• (${unitTitle})` : ""}
             </p>
           )}
         </div>
       </div>
 
       {/* 2. Explanatory Notice */}
-      <div className="p-4 rounded-2xl bg-slate-50 dark:bg-[#1E293B]/40 border border-[#E2E8F0] dark:border-[#334155] text-xs sm:text-sm text-[#475569] dark:text-[#CBD5E1] leading-relaxed space-y-2">
-        <p className="font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
+      <div className="p-4 rounded-2xl bg-amber-500/10 dark:bg-amber-500/15 border border-amber-500/30 text-xs sm:text-sm text-[#0F172A] dark:text-[#F8FAFC] leading-relaxed space-y-1.5">
+        <p className="font-bold flex items-center gap-2">
           <span>أهلاً بك يا {user.name || "بطل"} في منصة الخلاصة! 🎉</span>
         </p>
-        <p>
-          لقد استمتعت بالدرس الأول مجاناً للتجربة. للوصول إلى كافة دروس المنهج، بنك الأسئلة والمفاهيم، الكبسولات الصوتية، والامتحانات التفاعلية، يلزم تفعيل اشتراك المنصة الشهري.
+        <p className="text-[#475569] dark:text-[#CBD5E1]">
+          لقد حصلت على الدرس الأول مجاناً للتجربة. للوصول إلى كافة دروس ووحدات المنهج، بنك الأسئلة والمفاهيم، الكبسولات الصوتية والزتونة، والامتحانات التفاعلية، يلزم سداد اشتراك المنصة الشهري (200 جنيه) ورفع صورة الإيصال أدناه.
         </p>
       </div>
 
@@ -146,7 +147,7 @@ export function StudentPaywallView({
             </div>
           </div>
           <span className="px-3 py-1 rounded-full text-xs font-bold bg-[#800020] text-white">
-            شامل كل المنهج
+            شامل كل المنهج والامتحانات
           </span>
         </div>
 
@@ -212,7 +213,7 @@ export function StudentPaywallView({
           <div className="space-y-1">
             <h3 className="text-xs sm:text-sm font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
               <Upload className="w-4 h-4 text-[#800020] dark:text-[#FB7185]" />
-              <span>رفع إيصال الدفع للتفعيل (200 جنيه):</span>
+              <span>شاشة رفع إيصال الدفع للتفعيل (200 جنيه):</span>
             </h3>
             <p className="text-[11px] text-[#64748B] dark:text-[#94A3B8]">
               التقط سكرين شوت أو صورة لإيصال التحويل وأرفقها هنا ليتم تفعيل حسابك مباشرة.
@@ -248,7 +249,7 @@ export function StudentPaywallView({
                       انقر هنا لاختيار صورة إيصال التحويل
                     </span>
                     <span className="text-[10px] text-slate-400 block mt-0.5">
-                      JPG, PNG, WEBP أو PDF (الحد الأقصى 20 ميجابايت)
+                      JPG, PNG, WEBP أو PDF (الحد الأقصى 10 ميجابايت)
                     </span>
                   </>
                 )}
@@ -328,4 +329,3 @@ export function StudentPaywallView({
     </div>
   );
 }
-
