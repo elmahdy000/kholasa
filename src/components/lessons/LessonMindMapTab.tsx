@@ -727,42 +727,7 @@ export function LessonMindMapTab({ mindMap }: LessonMindMapTabProps) {
               onTouchMove={handleTouchMoveFullscreen}
               onTouchEnd={handleTouchEndFullscreen}
             >
-              {/* Previous / Next Arrows for Multi-image */}
-              {images.length > 1 && (
-                <>
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      switchImage(
-                        selectedImageIndex > 0
-                          ? selectedImageIndex - 1
-                          : images.length - 1
-                      );
-                    }}
-                    className={`absolute right-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-black/60 hover:bg-black/90 border border-white/20 flex items-center justify-center transition-all z-20 cursor-pointer shadow-lg hover:scale-105 ${imageZoom > 1.05 ? "opacity-0 pointer-events-none" : "opacity-100"}`}
-                    title="اللوحة السابقة (سهم يمين)"
-                  >
-                    <ChevronRight className="w-6 h-6" />
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      switchImage(
-                        selectedImageIndex < images.length - 1
-                          ? selectedImageIndex + 1
-                          : 0
-                      );
-                    }}
-                    className={`absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-black/60 hover:bg-black/90 border border-white/20 flex items-center justify-center transition-all z-20 cursor-pointer shadow-lg hover:scale-105 ${imageZoom > 1.05 ? "opacity-0 pointer-events-none" : "opacity-100"}`}
-                    title="اللوحة التالية (سهم يسار)"
-                  >
-                    <ChevronLeft className="w-6 h-6" />
-                  </button>
-                </>
-              )}
+              {/* Clean canvas: Navigation controls are safely housed in the top bar to never obscure mindmap diagrams */}
 
               {/* Main Image with Pan & Zoom Transform */}
               <div

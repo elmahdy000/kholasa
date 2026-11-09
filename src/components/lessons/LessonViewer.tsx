@@ -688,7 +688,7 @@ export function LessonViewer({
               id={`tab-${tab.id}`}
               aria-controls={`tabpanel-${tab.id}`}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`w-full min-h-[48px] py-1.5 sm:py-2.5 px-1 sm:px-3 rounded-xl font-bold flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 transition-all cursor-pointer select-none active:scale-[0.97] ${
+              className={`w-full min-h-[48px] py-1.5 sm:py-2.5 px-0.5 sm:px-3 rounded-xl font-bold flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-2 transition-all cursor-pointer select-none active:scale-[0.97] overflow-hidden ${
                 isSelected
                   ? "bg-[#800B34] text-white shadow-xs border border-[#800B34] font-black"
                   : "bg-[#F8FAFC] dark:bg-[#071737] text-[#536681] dark:text-[#94A3B8] hover:text-[#091B40] dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#11244E]/80 border border-transparent"
@@ -698,11 +698,11 @@ export function LessonViewer({
                 className={`w-4 h-4 shrink-0 ${isSelected ? "text-[#E9AD32]" : "text-[#64748B] dark:text-[#94A3B8]"}`}
               />
               <span className="hidden sm:inline whitespace-nowrap text-xs sm:text-[13px]">{tab.label}</span>
-              <div className="sm:hidden flex items-center justify-center gap-1 max-w-full">
-                <span className="text-[11px] font-bold leading-tight truncate">{tab.mobileLabel}</span>
+              <div className="sm:hidden flex items-center justify-center gap-0.5 max-w-full px-0.5">
+                <span className="text-[10.5px] xs:text-[11px] font-bold leading-tight truncate">{tab.mobileLabel}</span>
                 {"badge" in tab && tab.badge && (
                   <span
-                    className={`text-[10px] px-1 py-0.2 rounded-md font-mono font-bold leading-none ${
+                    className={`text-[9.5px] px-1 py-0.2 rounded font-mono font-bold leading-none shrink-0 ${
                       isSelected
                         ? "bg-white/25 text-white"
                         : "bg-[#091B40]/10 dark:bg-white/10 text-[#091B40] dark:text-slate-200"

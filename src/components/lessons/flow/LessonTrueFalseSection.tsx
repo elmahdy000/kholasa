@@ -206,6 +206,24 @@ export function LessonTrueFalseSection({
                   })}
                 </div>
 
+                {/* Immediate Celebratory Feedback ("برافو كمل!") */}
+                {state?.revealed && (
+                  <div
+                    className={`p-3.5 rounded-xl text-xs sm:text-[13px] font-bold flex items-center gap-2 animate-in zoom-in-95 duration-200 border shadow-2xs ${
+                      state.isCorrect
+                        ? "bg-emerald-50 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-700/60 text-emerald-900 dark:text-emerald-200"
+                        : "bg-red-50 dark:bg-red-950/40 border-red-300 dark:border-red-700/60 text-red-900 dark:text-red-200"
+                    }`}
+                  >
+                    <span className="text-lg">{state.isCorrect ? "🎉" : "💡"}</span>
+                    <span className="leading-relaxed">
+                      {state.isCorrect
+                        ? isEnglish ? "Bravo champion! Correct answer.. keep going!" : "برافو عليك يا بطل! إجابة صحيحة وممتازة.. كمل يا وحش!"
+                        : isEnglish ? "Not quite right.. review the explanation below to master the concept." : "إجابة غير دقيقة.. راجع التفسير التعليمي المعتمد بالأسفل عشان تفهم الفكرة كويس."}
+                    </span>
+                  </div>
+                )}
+
                 {/* Result & Explanation */}
                 {state?.revealed && (
                   <QuestionExplanationBox

@@ -191,8 +191,8 @@ export function LessonLearningStepper({
         </div>
       </div>
 
-      {/* 2. MOBILE COMPACT VERTICAL STEPPER (< lg screens): Content-driven, fits 320px+ with zero horizontal overflow */}
-      <div className="lg:hidden space-y-1.5">
+      {/* 2. MOBILE COMPACT VERTICAL STEPPER (< lg screens): Geometrically balanced, centered, fits 320px+ */}
+      <div className="lg:hidden space-y-2">
         {steps.map((st) => {
           const isActive = activeStep === st.id;
           const Icon = st.icon;
@@ -223,11 +223,11 @@ export function LessonLearningStepper({
               key={st.id}
               type="button"
               onClick={() => onSelectStep(st.id)}
-              className={`w-full min-h-[48px] py-2.5 px-3 rounded-xl border grid grid-cols-[26px_minmax(0,1fr)_auto_auto_14px] items-center gap-2 sm:gap-2.5 transition-all cursor-pointer text-start active:scale-[0.99] select-none ${rowClasses}`}
+              className={`w-full min-h-[50px] py-2 px-2.5 sm:px-3 rounded-xl border grid grid-cols-[28px_minmax(0,1fr)_auto_auto_14px] sm:grid-cols-[28px_minmax(0,1fr)_90px_80px_16px] items-center gap-2 transition-all cursor-pointer text-start active:scale-[0.99] select-none ${rowClasses}`}
             >
-              {/* Col 1: Step Number / Check Icon */}
+              {/* Col 1: Step Number / Check Icon - Perfectly centered */}
               <div
-                className={`w-6.5 h-6.5 rounded-lg flex items-center justify-center font-mono font-black text-xs shadow-2xs ${iconBoxClasses}`}
+                className={`w-7 h-7 rounded-lg flex items-center justify-center font-mono font-black text-xs shadow-2xs shrink-0 ${iconBoxClasses}`}
               >
                 {st.isCompleted ? (
                   <Check className="w-3.5 h-3.5" weight="bold" />
@@ -236,23 +236,23 @@ export function LessonLearningStepper({
                 )}
               </div>
 
-              {/* Col 2: Step Title */}
-              <div className="min-w-0">
+              {/* Col 2: Step Title - Vertically centered */}
+              <div className="min-w-0 flex items-center">
                 <span className="text-xs sm:text-[13px] font-bold text-[#0F172A] dark:text-white truncate block">
                   {st.title}
                 </span>
               </div>
 
-              {/* Col 3: Centered Structured Metric */}
-              <div className="text-center px-1">
-                <span className="text-[11px] font-mono font-semibold text-[#536681] dark:text-[#94A3B8] whitespace-nowrap">
+              {/* Col 3: Structured Metric - Aligned across all rows */}
+              <div className="flex items-center justify-center px-1">
+                <span className="text-[10px] sm:text-[11px] font-mono font-semibold text-[#536681] dark:text-[#94A3B8] whitespace-nowrap px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800/60 border border-slate-200/50 dark:border-slate-700/50">
                   {st.metric}
                 </span>
               </div>
 
-              {/* Col 4: Status Badge */}
-              <div className="flex justify-end">
-                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md whitespace-nowrap ${badgeClasses}`}>
+              {/* Col 4: Status Badge - Aligned and centered */}
+              <div className="flex items-center justify-center">
+                <span className={`text-[9.5px] sm:text-[10px] font-bold px-2 py-0.5 rounded-md whitespace-nowrap text-center block ${badgeClasses}`}>
                   {st.statusText}
                 </span>
               </div>
