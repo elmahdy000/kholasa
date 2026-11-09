@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
 import {
   Target,
   CheckCircle2,
@@ -8,7 +9,9 @@ import {
   ArrowLeft,
   ArrowRight,
   Loader2,
-  Lock,
+  Sparkles,
+  X,
+  Flame,
 } from "lucide-react";
 import {
   QuestionItem,
@@ -30,6 +33,7 @@ export function EntranceGatekeeperModal({
   userRole = "STUDENT",
   userId,
 }: EntranceGatekeeperModalProps) {
+  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [questions, setQuestions] = useState<QuestionItem[]>([]);
@@ -47,7 +51,33 @@ export function EntranceGatekeeperModal({
   const [submitError, setSubmitError] = useState<string | null>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
 
+  const handleDismiss = () => {
+    setIsOpen(false);
+    try {
+      sessionStorage.setItem("kholasa_daily_dismissed", "true");
+    } catch {
+      // Ignore sessionStorage errors
+    }
+  };
+
   const fetchQuestions = async (manual = false) => {
+    // If auto-opening, only suggest on the main dashboard and only if not dismissed in this session
+    if (!manual) {
+      const isDashboard = pathname === "/dashboard" || pathname === "/";
+      if (!isDashboard) {
+        setIsLoading(false);
+        return;
+      }
+      try {
+        if (sessionStorage.getItem("kholasa_daily_dismissed") === "true") {
+          setIsLoading(false);
+          return;
+        }
+      } catch {
+        // Continue if sessionStorage is restricted
+      }
+    }
+
     if (manual) setIsLoading(true);
     try {
       const res = await fetch("/api/student/daily-checkin");
@@ -81,10 +111,11 @@ export function EntranceGatekeeperModal({
       } else {
         setIsLoading(false);
       }
-    }, 0);
+    }, 150);
     return () => clearTimeout(timer);
-  }, [userRole, userId]);
+  }, [userRole, userId, pathname]);
 
+  // Listen to custom manual trigger (e.g. clicking Daily Challenge card on dashboard)
   useEffect(() => {
     const handleOpen = () => {
       fetchQuestions(true);
@@ -110,6 +141,11 @@ export function EntranceGatekeeperModal({
     dialogRef.current?.focus();
 
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        handleDismiss();
+        return;
+      }
+
       if (e.key === "Tab") {
         const focusable = dialogRef.current?.querySelectorAll<HTMLElement>(
           'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
@@ -202,36 +238,48 @@ export function EntranceGatekeeperModal({
 
   if (alreadyCompleted) {
     return (
-      <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 font-sans animate-in fade-in duration-300">
+      <div
+        className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 font-sans animate-in fade-in duration-200"
+        onClick={handleDismiss}
+      >
         <div
           ref={dialogRef}
           role="dialog"
           aria-modal="true"
           aria-labelledby="daily-gate-completed-title"
           tabIndex={-1}
-          className="w-full max-w-md bg-white dark:bg-[#1E293B] rounded-2xl border border-[#E2E8F0]/90 dark:border-[#334155] shadow-sm p-6 text-right space-y-4 focus:outline-none"
+          onClick={(e) => e.stopPropagation()}
+          className="w-full max-w-md bg-white dark:bg-[#1E293B] rounded-3xl border border-[#E2E8F0]/90 dark:border-[#334155] shadow-2xl p-6 text-right space-y-4 focus:outline-none animate-in zoom-in-95 duration-200 relative"
         >
-          <div className="w-12 h-12 rounded-xl bg-[#059669]/10 text-[#059669] flex items-center justify-center mx-auto">
-            <CheckCircle2 className="w-7 h-7" />
+          <button
+            type="button"
+            onClick={handleDismiss}
+            className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-white flex items-center justify-center absolute left-4 top-4 transition-colors cursor-pointer"
+            aria-label="إغلاق"
+          >
+            <X className="w-4 h-4" />
+          </button>
+
+          <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto">
+            <CheckCircle2 className="w-8 h-8" />
           </div>
-          <div className="text-center space-y-1">
+          <div className="text-center space-y-1.5">
             <h2
               id="daily-gate-completed-title"
-              className="text-lg font-bold text-[#0F172A] dark:text-white"
+              className="text-lg font-black text-[#0F172A] dark:text-white"
             >
-              أتممت تحدي اليوم بنجاح!
+              أتممت تحدي اليوم بنجاح! 🔥
             </h2>
-            <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8] leading-relaxed">
-              سجلت حضورك اليوم بالفعل. يمكنك الاستمرار في تصفح دروسك،
-              أو زيارة بنك الأسئلة والامتحانات متى شئت.
+            <p className="text-xs sm:text-[13px] text-[#64748B] dark:text-[#94A3B8] leading-relaxed">
+              سجلت حضورك اليوم بالفعل وحافظت على سلسلة التحدي الخاصة بك. استمر في المذاكرة وتفوق دائماً!
             </p>
           </div>
           <button
             type="button"
-            onClick={() => setIsOpen(false)}
-            className="w-full h-11 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] font-bold transition-colors"
+            onClick={handleDismiss}
+            className="w-full h-11 rounded-2xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] font-bold transition-colors cursor-pointer shadow-sm"
           >
-            إغلاق ومتابعة المذاكرة
+            متابعة للمذاكرة 🚀
           </button>
         </div>
       </div>
@@ -251,7 +299,10 @@ export function EntranceGatekeeperModal({
     objectiveTotal === 1 ? "سؤال موضوعي واحد" : `${objectiveTotal} أسئلة موضوعية`;
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 font-sans animate-in fade-in duration-300">
+    <div
+      className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5 font-sans animate-in fade-in duration-200"
+      onClick={handleDismiss}
+    >
       <div
         ref={dialogRef}
         role="dialog"
@@ -259,45 +310,55 @@ export function EntranceGatekeeperModal({
         aria-labelledby="daily-gate-title"
         aria-describedby="daily-gate-desc"
         tabIndex={-1}
-        className="w-full max-w-2xl bg-white dark:bg-[#1E293B] rounded-2xl border border-[#E2E8F0]/90 dark:border-[#334155] shadow-sm overflow-hidden flex flex-col text-right focus:outline-none"
+        onClick={(e) => e.stopPropagation()}
+        className="w-full max-w-2xl bg-white dark:bg-[#1E293B] rounded-3xl border border-[#E2E8F0]/90 dark:border-[#334155] shadow-2xl overflow-hidden flex flex-col text-right focus:outline-none animate-in zoom-in-95 duration-200"
       >
-        {/* Modal Top Header */}
+        {/* Modal Top Header - Encouraging & Friendly Companion Style */}
         <div className="p-5 sm:p-6 bg-[#0F172A] text-white space-y-3 relative overflow-hidden">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-xl bg-[#D97706]/10 text-[#D97706] flex items-center justify-center">
-                <Target className="w-5 h-5" />
+              <div className="w-11 h-11 rounded-2xl bg-amber-500/15 text-amber-400 flex items-center justify-center shrink-0 border border-amber-500/30">
+                <Flame className="w-5 h-5 text-amber-400" />
               </div>
               <div>
-                <span className="text-[13px] font-bold uppercase tracking-wider text-[#FBBF24]">
-                  بوابة الدخول اليومية
+                <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1">
+                  <span>الزتونة اليومية السريعة ⚡</span>
                 </span>
                 <h2
                   id="daily-gate-title"
-                  className="text-base sm:text-lg font-bold text-[#F8FAFC] flex items-center gap-2"
+                  className="text-base sm:text-lg font-black text-[#F8FAFC] flex items-center gap-2"
                 >
-                  <span>تحدي الدخول اليومي للمنصة</span>
+                  <span>تحدي تنشيط الذاكرة اليومي</span>
                 </h2>
               </div>
             </div>
 
             <div className="flex items-center gap-2">
-              <div className="px-3 py-1 rounded-full bg-[#1E293B] text-[13px] font-bold text-[#F8FAFC] flex items-center gap-2 border border-[#334155]">
-                <Lock className="w-3.5 h-3.5 text-[#D97706]" />
-                <span>أجب لتفتح المنصة</span>
+              <div className="px-3 py-1 rounded-full bg-white/10 text-[11px] sm:text-xs font-bold text-amber-300 flex items-center gap-1.5 border border-white/10">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>دقيقة واحدة · أسئلة خفيفة</span>
               </div>
+              {/* Close Button: Freedom to skip anytime */}
+              <button
+                type="button"
+                onClick={handleDismiss}
+                className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white/80 hover:text-white flex items-center justify-center transition-colors cursor-pointer shrink-0"
+                aria-label="إغلاق التحدي والحل لاحقاً"
+                title="تخطي والحل لاحقاً"
+              >
+                <X className="w-4 h-4" />
+              </button>
             </div>
           </div>
 
-          <p id="daily-gate-desc" className="text-[13px] text-[#94A3B8] leading-relaxed">
-            اختبار قصير ينشط ذاكرتك بأهم الأفكار المتنوعة، ويتيح لك المنصة
-            فور الانتهاء مع تحليل كامل لأخطائك.
+          <p id="daily-gate-desc" className="text-xs sm:text-[13px] text-[#94A3B8] leading-relaxed">
+            3 أسئلة خفيفة وسريعة لتثبيت أهم الأفكار وتنشيط ذاكرتك، وحفظ الـ Streak اليومي بتاعك 🔥 (تقدر تحلهم في دقيقة أو تأجلهم براحتك).
           </p>
 
           {/* Stepper Progress Bar (Only during exam phase) */}
           {!examResult && (
             <div className="pt-2 space-y-2">
-              <div className="flex flex-wrap items-center justify-between gap-2 text-[13px] font-bold text-[#F8FAFC]">
+              <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-bold text-[#F8FAFC]">
                 <span>
                   السؤال {currentStep + 1} من {questions.length}
                 </span>
@@ -305,9 +366,9 @@ export function EntranceGatekeeperModal({
                   تمت إجابة {answeredCount} من {questions.length}
                 </span>
               </div>
-              <div className="w-full h-2 rounded-full bg-[#334155] overflow-hidden">
+              <div className="w-full h-1.5 rounded-full bg-[#334155] overflow-hidden">
                 <div
-                  className="h-full bg-[#800020] rounded-full transition-all duration-300"
+                  className="h-full bg-gradient-to-r from-amber-500 to-[#800020] rounded-full transition-all duration-300"
                   style={{
                     width: `${((currentStep + 1) / questions.length) * 100}%`,
                   }}
@@ -318,11 +379,11 @@ export function EntranceGatekeeperModal({
         </div>
 
         {/* Modal Body */}
-        <div className="p-5 sm:p-7 space-y-6 flex-1 overflow-y-auto max-h-[65vh]">
+        <div className="p-5 sm:p-7 space-y-6 flex-1 overflow-y-auto max-h-[60vh]">
           {submitError && (
             <div
               role="alert"
-              className="p-3 rounded-lg bg-[#DC2626]/10 border border-[#DC2626]/30 text-[#DC2626] dark:text-[#F87171] text-[13px] font-bold flex items-start gap-2"
+              className="p-3.5 rounded-2xl bg-[#DC2626]/10 border border-[#DC2626]/30 text-[#DC2626] dark:text-[#F87171] text-xs font-bold flex items-start gap-2"
             >
               <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
               <span>{submitError}</span>
@@ -346,67 +407,80 @@ export function EntranceGatekeeperModal({
         </div>
 
         {/* Modal Footer Controls */}
-        <div className="p-4 sm:p-5 bg-[#F8FAFC] dark:bg-[#1E293B] border-t border-[#E2E8F0] dark:border-[#334155] flex items-center justify-between gap-3">
+        <div className="p-4 sm:p-5 bg-[#F8FAFC] dark:bg-[#1E293B] border-t border-[#E2E8F0] dark:border-[#334155] flex items-center justify-between gap-2.5">
           {!examResult ? (
             <>
-              {/* Previous Button */}
+              {/* Skip for now / Dismiss button */}
               <button
                 type="button"
-                onClick={() => setCurrentStep((prev) => Math.max(0, prev - 1))}
-                disabled={currentStep === 0}
-                className="h-11 px-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-bold text-[#64748B] dark:text-[#F8FAFC] hover:bg-white dark:hover:bg-[#334155] disabled:opacity-30 transition-all flex items-center gap-2"
+                onClick={handleDismiss}
+                className="h-10 px-3.5 rounded-xl text-xs font-bold text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-[#334155] transition-all flex items-center gap-1.5 cursor-pointer"
+                title="تخطي الآن والمتابعة للمذاكرة"
               >
-                <ArrowRight className="w-3.5 h-3.5" />
-                <span>السابق</span>
+                <span>سأحل لاحقاً</span>
+                <ArrowLeft className="w-3.5 h-3.5" />
               </button>
 
-              {/* Next or Submit Button */}
-              {!isLastQuestion ? (
+              <div className="flex items-center gap-2">
+                {/* Previous Button */}
                 <button
                   type="button"
-                  onClick={() =>
-                    setCurrentStep((prev) =>
-                      Math.min(questions.length - 1, prev + 1)
-                    )
-                  }
-                  className="h-11 px-6 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] font-bold shadow-sm flex items-center gap-2 transition-all"
+                  onClick={() => setCurrentStep((prev) => Math.max(0, prev - 1))}
+                  disabled={currentStep === 0}
+                  className="h-10 px-3.5 rounded-xl border border-[#E2E8F0] dark:border-[#334155] text-xs font-bold text-[#64748B] dark:text-[#F8FAFC] hover:bg-white dark:hover:bg-[#334155] disabled:opacity-30 transition-all flex items-center gap-1.5 cursor-pointer"
                 >
-                  <span>السؤال التالي</span>
-                  <ArrowLeft className="w-3.5 h-3.5" />
+                  <ArrowRight className="w-3.5 h-3.5" />
+                  <span>السابق</span>
                 </button>
-              ) : (
-                <button
-                  type="button"
-                  onClick={handleSubmitExam}
-                  disabled={isSubmitting}
-                  className="h-11 px-6 rounded-xl bg-[#059669] hover:bg-[#047857] text-white text-[13px] font-bold flex items-center gap-2 transition-colors"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      <span>جاري التصحيح والتحليل...</span>
-                    </>
-                  ) : (
-                    <>
-                      <CheckCircle2 className="w-4 h-4" />
-                      <span>تسليم الاختبار ومعرفة النتيجة</span>
-                    </>
-                  )}
-                </button>
-              )}
+
+                {/* Next or Submit Button */}
+                {!isLastQuestion ? (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setCurrentStep((prev) =>
+                        Math.min(questions.length - 1, prev + 1)
+                      )
+                    }
+                    className="h-10 px-5 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-xs font-bold shadow-sm flex items-center gap-1.5 transition-all cursor-pointer"
+                  >
+                    <span>السؤال التالي</span>
+                    <ArrowLeft className="w-3.5 h-3.5" />
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={handleSubmitExam}
+                    disabled={isSubmitting}
+                    className="h-10 px-5 rounded-xl bg-[#059669] hover:bg-[#047857] text-white text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer shadow-sm"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        <span>جاري الحفظ...</span>
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                        <span>تسليم ومعرفة النتيجة</span>
+                      </>
+                    )}
+                  </button>
+                )}
+              </div>
             </>
           ) : (
             <div className="w-full flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <span className="text-[13px] text-[#64748B] dark:text-[#94A3B8]">
-                تم فتح المنصة لك لهذا اليوم
+              <span className="text-xs text-[#64748B] dark:text-[#94A3B8]">
+                عاش يا بطل! تم تسجيل حضورك اليوم بنجاح 🔥
               </span>
               <button
                 type="button"
                 onClick={handleUnlockAndEnter}
-                className="w-full sm:w-auto h-11 px-8 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] sm:text-sm font-bold flex items-center justify-center gap-2 transition-colors active:opacity-80 shadow-sm"
+                className="w-full sm:w-auto h-10 px-6 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-xs sm:text-[13px] font-bold flex items-center justify-center gap-2 transition-colors active:opacity-80 shadow-sm cursor-pointer"
               >
-                <span>دخول المنصة الآن والمتابعة للمذاكرة</span>
-                <ArrowLeft className="w-4 h-4" />
+                <span>متابعة للمذاكرة 🚀</span>
+                <ArrowLeft className="w-3.5 h-3.5" />
               </button>
             </div>
           )}

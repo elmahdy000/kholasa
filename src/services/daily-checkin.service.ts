@@ -30,7 +30,7 @@ interface ReviewedDailyQuestion {
   modelAnswer: string | null;
 }
 
-const DAILY_QUESTION_COUNT = { mcq: 2, trueFalse: 1, essay: 1, fallbackMax: 4 };
+const DAILY_QUESTION_COUNT = { mcq: 2, trueFalse: 1, essay: 0, fallbackMax: 3 };
 
 /**
  * Server-issued daily challenge.
