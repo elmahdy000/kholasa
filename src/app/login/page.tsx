@@ -447,23 +447,24 @@ export default function LoginPage() {
               {studyMode === "OFFLINE" && (
                 <div className="p-4 rounded-2xl bg-amber-500/5 dark:bg-amber-950/20 border border-amber-500/20 space-y-3 animate-in fade-in duration-200">
                   <div className="flex items-center justify-between">
-                    <label
-                      htmlFor="centerSelect"
-                      className="flex items-center gap-1.5 text-xs font-bold text-amber-950 dark:text-amber-200"
-                    >
+                    <label className="flex items-center gap-1.5 text-xs font-bold text-amber-950 dark:text-amber-200">
                       <MapPin className="w-3.5 h-3.5 text-[#800020] dark:text-amber-400" />
                       <span>اختر السنتر التابع له:</span>
                     </label>
 
-                    {detectedStudent?.schoolCategory && (
-                      <span className="text-[10px] font-bold text-amber-700 dark:text-amber-300">
-                        {detectedStudent.schoolCategory === "LANGUAGES" ? "سناتر اللغات" : "سناتر العربي"}
+                    {detectedStudent?.schoolCategory ? (
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-200">
+                        {detectedStudent.schoolCategory === "LANGUAGES" ? "سناتر اللغات 🇬🇧" : "سناتر العربي 🇪🇬"}
+                      </span>
+                    ) : (
+                      <span className="text-[10px] text-[#64748B] dark:text-[#94A3B8]">
+                        اضغط لاختيار السنتر مباشرة
                       </span>
                     )}
                   </div>
 
-                  {/* Quick Click Badges for detected or top centers */}
-                  <div className="flex flex-wrap gap-1.5">
+                  {/* Single Unified Chips Grid (Eliminating redundant ComboBox) */}
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                     {(detectedStudent?.schoolCategory === "LANGUAGES"
                       ? LANGUAGES_CENTERS
                       : detectedStudent?.schoolCategory === "ARABIC"
@@ -475,61 +476,60 @@ export default function LoginPage() {
                         <button
                           key={c.id}
                           type="button"
-                          onClick={() => setSelectedCenter(c.name)}
-                          className={`px-2.5 py-1.5 rounded-lg text-[11px] font-bold transition-all border flex items-center gap-1 ${
+                          onClick={() => {
+                            setSelectedCenter(c.name);
+                            setCustomCenter("");
+                          }}
+                          className={`p-2.5 rounded-xl text-xs font-bold transition-all border flex items-center justify-between gap-1.5 text-right cursor-pointer ${
                             isSelected
-                              ? "bg-[#800020] text-white border-[#800020] shadow-xs"
-                              : "bg-white dark:bg-[#1E293B] text-[#0F172A] dark:text-white border-[#E2E8F0] dark:border-[#334155] hover:border-[#800020]"
+                              ? "bg-[#800020] text-white border-[#800020] shadow-sm shadow-[#800020]/25 ring-2 ring-[#800020]/30"
+                              : "bg-white dark:bg-[#1E293B] text-[#0F172A] dark:text-white border-[#E2E8F0] dark:border-[#334155] hover:border-[#800020]/40 hover:bg-slate-50 dark:hover:bg-[#24354D]"
                           }`}
                         >
-                          <School className="w-3 h-3" />
-                          <span>{c.name}</span>
-                          <span className={`text-[9px] px-1 rounded ${isSelected ? "bg-white/20" : "bg-slate-100 dark:bg-slate-800 text-[#64748B] dark:text-slate-300"}`}>
+                          <div className="flex items-center gap-1.5 min-w-0">
+                            <School className={`w-3.5 h-3.5 shrink-0 ${isSelected ? "text-white" : "text-[#800020] dark:text-rose-400"}`} />
+                            <span className="truncate">{c.name}</span>
+                          </div>
+                          <span
+                            className={`text-[9px] px-1.5 py-0.5 rounded font-mono shrink-0 ${
+                              isSelected
+                                ? "bg-white/20 text-white"
+                                : "bg-slate-100 dark:bg-slate-800 text-[#64748B] dark:text-slate-300"
+                            }`}
+                          >
                             {c.badge}
                           </span>
                         </button>
                       );
                     })}
-                  </div>
 
-                  {/* Categorized Dropdown Selector */}
-                  <select
-                    id="centerSelect"
-                    value={selectedCenter}
-                    onChange={(e) => setSelectedCenter(e.target.value)}
-                    className="w-full h-11 px-3 rounded-xl border border-amber-300 dark:border-amber-800 bg-white dark:bg-[#1E293B] text-xs font-bold text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#800020]"
-                  >
-                    <optgroup label="── سناتر مدارس اللغات (Languages) 🇬🇧 ──">
-                      {LANGUAGES_CENTERS.map((c) => (
-                        <option key={c.id} value={c.name}>
-                          {c.name} ({c.badge})
-                        </option>
-                      ))}
-                    </optgroup>
-                    <optgroup label="── سناتر المدارس العامة (عربي) 🇪🇬 ──">
-                      {ARABIC_CENTERS.map((c) => (
-                        <option key={c.id} value={c.name}>
-                          {c.name} ({c.badge})
-                        </option>
-                      ))}
-                    </optgroup>
-                    <optgroup label="── خيارات أخرى ──">
-                      <option value={OTHER_CENTER_NAME}>{OTHER_CENTER_NAME}</option>
-                    </optgroup>
-                  </select>
+                    {/* سنتر آخر Button */}
+                    <button
+                      type="button"
+                      onClick={() => setSelectedCenter(OTHER_CENTER_NAME)}
+                      className={`p-2.5 rounded-xl text-xs font-bold transition-all border flex items-center justify-center gap-1.5 text-center cursor-pointer ${
+                        selectedCenter === OTHER_CENTER_NAME
+                          ? "bg-amber-600 text-white border-amber-600 shadow-sm ring-2 ring-amber-500/30"
+                          : "bg-white dark:bg-[#1E293B] text-[#64748B] dark:text-slate-300 border-dashed border-slate-300 dark:border-slate-700 hover:border-amber-500 hover:text-amber-700 dark:hover:text-amber-400"
+                      }`}
+                    >
+                      <span>سنتر آخر (يدوي) ➕</span>
+                    </button>
+                  </div>
 
                   {/* If custom center is chosen */}
                   {selectedCenter === OTHER_CENTER_NAME && (
-                    <div className="relative animate-in fade-in">
+                    <div className="relative animate-in fade-in duration-150 pt-1">
                       <input
                         type="text"
                         required
+                        autoFocus
                         value={customCenter}
                         onChange={(e) => setCustomCenter(e.target.value)}
                         placeholder="اكتب اسم السنتر أو الفرع التابع له..."
-                        className="w-full h-10 pr-9 pl-3 rounded-xl border border-amber-300 dark:border-amber-700 bg-white dark:bg-[#1E293B] text-xs font-bold text-[#0F172A] dark:text-white placeholder:text-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#800020]"
+                        className="w-full h-11 pr-10 pl-3 rounded-xl border border-amber-300 dark:border-amber-700 bg-white dark:bg-[#1E293B] text-xs font-bold text-[#0F172A] dark:text-white placeholder:text-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#800020]"
                       />
-                      <MapPin className="w-3.5 h-3.5 text-amber-600 absolute right-3 top-1/2 -translate-y-1/2" />
+                      <MapPin className="w-4 h-4 text-amber-600 absolute right-3 top-1/2 -translate-y-1/2" />
                     </div>
                   )}
 
