@@ -22,7 +22,7 @@ interface Particle {
 }
 
 const COLORS = [
-  "#800020", // Kholasa burgundy
+  "#800B34", // Kholasa burgundy
   "#9E1B32", // Crimson
   "#D97706", // Amber gold
   "#F59E0B", // Bright gold

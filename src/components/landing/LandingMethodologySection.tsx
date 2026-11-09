@@ -6,7 +6,7 @@ export function LandingMethodologySection() {
   return (
     <section className="space-y-8">
       <div className="text-center max-w-2xl mx-auto space-y-2">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] text-[13px] font-bold border border-[#E2E8F0] dark:border-[#E11D48]">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#800B34]/10 dark:bg-[#1E293B] text-[#800B34] dark:text-[#FB7185] text-[13px] font-bold border border-[#E2E8F0] dark:border-[#E11D48]">
           <Target className="w-4 h-4" />
           <span>منهجية واضحة</span>
         </div>
@@ -17,7 +17,7 @@ export function LandingMethodologySection() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-5xl mx-auto">
         <div className="p-6 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] space-y-3">
-          <div className="w-11 h-11 rounded-lg bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] flex items-center justify-center">
+          <div className="w-11 h-11 rounded-lg bg-[#800B34]/10 dark:bg-[#1E293B] text-[#800B34] dark:text-[#FB7185] flex items-center justify-center">
             <Brain className="w-5 h-5" />
           </div>
           <h3 className="text-sm font-bold text-[#0F172A] dark:text-white">

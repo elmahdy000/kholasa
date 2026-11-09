@@ -55,7 +55,7 @@ export default function RegisterPage() {
 
             <div className="space-y-2.5 text-xs sm:text-sm">
               <div className="flex items-start gap-3 p-3 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/40 border border-[#E2E8F0] dark:border-[#334155]">
-                <div className="w-6 h-6 rounded-full bg-[#800020] text-white flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
+                <div className="w-6 h-6 rounded-full bg-[#800B34] text-white flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
                   1
                 </div>
                 <div>
@@ -69,7 +69,7 @@ export default function RegisterPage() {
               </div>
 
               <div className="flex items-start gap-3 p-3 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/40 border border-[#E2E8F0] dark:border-[#334155]">
-                <div className="w-6 h-6 rounded-full bg-[#800020] text-white flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
+                <div className="w-6 h-6 rounded-full bg-[#800B34] text-white flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
                   2
                 </div>
                 <div>
@@ -77,7 +77,7 @@ export default function RegisterPage() {
                     استلم كود الدخول الخاص بك (Login Code)
                   </span>
                   <span className="text-xs text-[#64748B] dark:text-[#94A3B8]">
-                    ستحصل على كود فوري مخصص لك (مثال: <code className="font-mono font-bold text-[#800020] dark:text-[#FB7185]">J9KFQY</code>).
+                    ستحصل على كود فوري مخصص لك (مثال: <code className="font-mono font-bold text-[#800B34] dark:text-[#FB7185]">J9KFQY</code>).
                   </span>
                 </div>
               </div>
@@ -112,7 +112,7 @@ export default function RegisterPage() {
 
             <Link
               href="/login"
-              className="w-full h-11 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-colors"
+              className="w-full h-11 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-colors"
             >
               <LogIn className="w-4 h-4" />
               <span>معك كود بالفعل؟ ادخل إلى حسابك الآن</span>

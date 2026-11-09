@@ -52,14 +52,14 @@ export function HowItWorks() {
               return (
                 <div
                   key={step.number}
-                  className="p-6 sm:p-7 rounded-2xl bg-white dark:bg-[#1E293B] border border-[#E8E9ED] dark:border-[#334155] hover:border-[#800020]/30 dark:hover:border-[#FB7185]/30 transition-colors shadow-xs flex flex-col justify-between space-y-4 text-right"
+                  className="p-6 sm:p-7 rounded-2xl bg-white dark:bg-[#1E293B] border border-[#E8E9ED] dark:border-[#334155] hover:border-[#800B34]/30 dark:hover:border-[#FB7185]/30 transition-colors shadow-xs flex flex-col justify-between space-y-4 text-right"
                 >
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <div className="w-12 h-12 rounded-xl bg-[#800020]/8 dark:bg-[#FB7185]/10 border border-[#800020]/15 dark:border-[#FB7185]/20 text-[#800020] dark:text-[#FB7185] flex items-center justify-center">
+                      <div className="w-12 h-12 rounded-xl bg-[#800B34]/8 dark:bg-[#FB7185]/10 border border-[#800B34]/15 dark:border-[#FB7185]/20 text-[#800B34] dark:text-[#FB7185] flex items-center justify-center">
                         <Icon className="w-5 h-5" strokeWidth={1.8} />
                       </div>
-                      <span className="font-mono text-sm font-bold text-[#800020] dark:text-[#FB7185] px-2.5 py-1 rounded-lg bg-[#800020]/5 dark:bg-[#FB7185]/10 border border-[#800020]/15 dark:border-[#FB7185]/20">
+                      <span className="font-mono text-sm font-bold text-[#800B34] dark:text-[#FB7185] px-2.5 py-1 rounded-lg bg-[#800B34]/5 dark:bg-[#FB7185]/10 border border-[#800B34]/15 dark:border-[#FB7185]/20">
                         {step.number}
                       </span>
                     </div>
@@ -83,7 +83,7 @@ export function HowItWorks() {
         <div className="text-center pt-2">
           <Link
             href="/login"
-            className="inline-flex items-center gap-2 h-11 px-7 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-sm font-bold transition-all shadow-xs active:scale-[0.99]"
+            className="inline-flex items-center gap-2 h-11 px-7 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white text-sm font-bold transition-all shadow-xs active:scale-[0.99]"
           >
             <span>ابدأ المذاكرة بكود الطالب</span>
             <ArrowLeft className="w-3.5 h-3.5" />

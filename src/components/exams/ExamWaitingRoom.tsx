@@ -83,7 +83,7 @@ export function ExamWaitingRoom({ exam }: ExamWaitingRoomProps) {
         <button
           type="button"
           onClick={() => router.push("/exams")}
-          className="inline-flex items-center gap-2 text-[13px] font-bold text-[#64748B] hover:text-[#800020] transition-colors cursor-pointer"
+          className="inline-flex items-center gap-2 text-[13px] font-bold text-[#64748B] hover:text-[#800B34] transition-colors cursor-pointer"
         >
           <ArrowRight className="w-4 h-4" />
           <span>العودة لقائمة الامتحانات</span>
@@ -93,7 +93,7 @@ export function ExamWaitingRoom({ exam }: ExamWaitingRoomProps) {
       <div className="bg-white dark:bg-[#0F172A] rounded-3xl border border-[#E2E8F0] dark:border-[#334155] p-6 sm:p-10 shadow-sm text-center space-y-8">
         {/* Subject Pill */}
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-white text-[13px] font-bold shadow-xs mx-auto"
-             style={{ backgroundColor: exam.subject.color || "#800020" }}>
+             style={{ backgroundColor: exam.subject.color || "#800B34" }}>
           <BookOpen className="w-3.5 h-3.5" />
           <span>{exam.subject.name}</span>
         </div>
@@ -117,8 +117,8 @@ export function ExamWaitingRoom({ exam }: ExamWaitingRoomProps) {
         </div>
 
         {/* Live Countdown Display */}
-        <div className="p-6 rounded-2xl bg-gradient-to-br from-[#800020]/5 via-[#800020]/10 to-transparent dark:from-[#800020]/20 border border-[#800020]/20 space-y-4">
-          <span className="text-[13px] font-bold text-[#800020] dark:text-[#FB7185] flex items-center justify-center gap-1.5">
+        <div className="p-6 rounded-2xl bg-gradient-to-br from-[#800B34]/5 via-[#800B34]/10 to-transparent dark:from-[#800B34]/20 border border-[#800B34]/20 space-y-4">
+          <span className="text-[13px] font-bold text-[#800B34] dark:text-[#FB7185] flex items-center justify-center gap-1.5">
             <Sparkles className="w-4 h-4" />
             <span>يبدأ الامتحان تلقائياً خلال:</span>
           </span>
@@ -149,10 +149,10 @@ export function ExamWaitingRoom({ exam }: ExamWaitingRoomProps) {
               </div>
 
               <div className="p-3 sm:p-4 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] shadow-xs">
-                <span className="block text-2xl sm:text-4xl font-black text-[#800020] dark:text-[#FB7185] font-mono animate-pulse">
+                <span className="block text-2xl sm:text-4xl font-black text-[#800B34] dark:text-[#FB7185] font-mono animate-pulse">
                   {String(timeLeft.seconds).padStart(2, "0")}
                 </span>
-                <span className="text-[11px] font-bold text-[#800020] dark:text-[#FB7185]">ثانية</span>
+                <span className="text-[11px] font-bold text-[#800B34] dark:text-[#FB7185]">ثانية</span>
               </div>
             </div>
           ) : (
@@ -163,7 +163,7 @@ export function ExamWaitingRoom({ exam }: ExamWaitingRoomProps) {
           )}
 
           <div className="text-[12px] text-[#64748B] flex items-center justify-center gap-1.5 pt-1">
-            <Calendar className="w-3.5 h-3.5 text-[#800020]" />
+            <Calendar className="w-3.5 h-3.5 text-[#800B34]" />
             <span>الموعد المحدد: {formattedStartTime}</span>
           </div>
         </div>
@@ -173,7 +173,7 @@ export function ExamWaitingRoom({ exam }: ExamWaitingRoomProps) {
           <div className="p-3 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155]">
             <span className="text-[11px] font-bold text-[#94A3B8] block">مدة الاختبار</span>
             <span className="text-[14px] font-bold text-[#0F172A] dark:text-white font-mono flex items-center justify-center gap-1 mt-0.5">
-              <Clock className="w-3.5 h-3.5 text-[#800020]" />
+              <Clock className="w-3.5 h-3.5 text-[#800B34]" />
               {exam.durationMinutes} دقيقة
             </span>
           </div>
@@ -181,7 +181,7 @@ export function ExamWaitingRoom({ exam }: ExamWaitingRoomProps) {
           <div className="p-3 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155]">
             <span className="text-[11px] font-bold text-[#94A3B8] block">عدد الأسئلة</span>
             <span className="text-[14px] font-bold text-[#0F172A] dark:text-white font-mono flex items-center justify-center gap-1 mt-0.5">
-              <HelpCircle className="w-3.5 h-3.5 text-[#800020]" />
+              <HelpCircle className="w-3.5 h-3.5 text-[#800B34]" />
               {exam.questionsCount} سؤال
             </span>
           </div>

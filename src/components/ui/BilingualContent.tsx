@@ -93,7 +93,7 @@ export function BilingualContent({
               <span
                 className={cn(
                   "text-[10px] font-bold px-2 py-0.5 rounded tracking-wide",
-                  variant === "statement" && "bg-[#800020]/10 text-[#800020] dark:text-[#FB7185]",
+                  variant === "statement" && "bg-[#800B34]/10 text-[#800B34] dark:text-[#FB7185]",
                   variant === "definition" && "bg-[#059669]/15 text-[#059669] dark:text-[#34D399]",
                   variant === "rubric" && "bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300"
                 )}

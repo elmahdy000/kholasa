@@ -197,11 +197,11 @@ const colorStyles = {
   },
   burgundy: {
     cardBg: "bg-white dark:bg-[#1E293B]",
-    border: "border-[#800020]/20 dark:border-[#E11D48]/30",
-    badgeBg: "bg-[#800020]/10 dark:bg-[#E11D48]/20 text-[#800020] dark:text-[#FB7185]",
-    title: "text-[#800020] dark:text-[#FDA4AF]",
+    border: "border-[#800B34]/20 dark:border-[#E11D48]/30",
+    badgeBg: "bg-[#800B34]/10 dark:bg-[#E11D48]/20 text-[#800B34] dark:text-[#FB7185]",
+    title: "text-[#800B34] dark:text-[#FDA4AF]",
     body: "text-[#0F172A] dark:text-[#F8FAFC]",
-    intro: "text-[#800020] dark:text-[#FB7185]",
+    intro: "text-[#800B34] dark:text-[#FB7185]",
   },
   blue: {
     cardBg: "bg-white dark:bg-[#1E293B]",

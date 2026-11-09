@@ -175,7 +175,7 @@ export function DailyChallengeCard({
               dir="rtl"
               className="p-3.5 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/60 border border-[#E2E8F0] dark:border-[#334155] text-right animate-in fade-in slide-in-from-top-1 duration-200"
             >
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-[#800020]/10 text-[#800020] dark:text-[#FB7185] mb-1.5 inline-block">
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-[#800B34]/10 text-[#800B34] dark:text-[#FB7185] mb-1.5 inline-block">
                 الترجمة العربية للسؤال
               </span>
               <p className="text-[13px] sm:text-[14px] text-[#1E293B] dark:text-slate-200 leading-relaxed font-content">
@@ -195,7 +195,7 @@ export function DailyChallengeCard({
             const isSelected = selectedOptionId === opt.id;
             const isOptCorrect = revealed?.correctOptionId === opt.id;
             let btnStyle =
-              "bg-[#F8FAFC] dark:bg-[#1E293B]/80 border-[#E2E8F0] dark:border-[#334155] text-[#0F172A] dark:text-[#F8FAFC] hover:border-[#800020] dark:hover:border-[#E11D48]/60 hover:bg-white dark:hover:bg-[#1E293B]";
+              "bg-[#F8FAFC] dark:bg-[#1E293B]/80 border-[#E2E8F0] dark:border-[#334155] text-[#0F172A] dark:text-[#F8FAFC] hover:border-[#800B34] dark:hover:border-[#E11D48]/60 hover:bg-white dark:hover:bg-[#1E293B]";
 
             if (isAnswered) {
               if (isOptCorrect) {
@@ -210,7 +210,7 @@ export function DailyChallengeCard({
               }
             } else if (isSelected) {
               btnStyle =
-                "bg-[#800020]/10 dark:bg-[#1E293B] border-2 border-[#800020] dark:border-[#E11D48] text-[#0F172A] dark:text-white  font-bold";
+                "bg-[#800B34]/10 dark:bg-[#1E293B] border-2 border-[#800B34] dark:border-[#E11D48] text-[#0F172A] dark:text-white  font-bold";
             }
 
             const isEnglishOpt = isEnglish || !/[\u0600-\u06FF]/.test(opt.text || "");
@@ -233,7 +233,7 @@ export function DailyChallengeCard({
                   <span
                     className={`w-6 h-6 rounded-lg flex items-center justify-center text-[13px] font-mono font-bold shrink-0 mt-0.5 transition-colors ${
                       isSelected
-                        ? "bg-[#800020] dark:bg-[#E11D48] text-white "
+                        ? "bg-[#800B34] dark:bg-[#E11D48] text-white "
                         : "bg-[#E2E8F0] dark:bg-[#334155] text-[#0F172A] dark:text-[#F8FAFC]"
                     }`}
                   >
@@ -274,7 +274,7 @@ export function DailyChallengeCard({
             <button
               onClick={handleSubmit}
               disabled={!selectedOptionId || isSubmitting}
-              className="w-full sm:w-auto h-11 px-8 rounded-xl bg-[#800020] hover:bg-[#66001A] dark:bg-[#E11D48] dark:hover:bg-[#BE123C] disabled:opacity-40 text-white text-[13px] font-bold flex items-center justify-center gap-2 transition-all active:opacity-80 shadow-sm"
+              className="w-full sm:w-auto h-11 px-8 rounded-xl bg-[#800B34] hover:bg-[#680829] dark:bg-[#E11D48] dark:hover:bg-[#BE123C] disabled:opacity-40 text-white text-[13px] font-bold flex items-center justify-center gap-2 transition-all active:opacity-80 shadow-sm"
             >
               <Sparkle className="w-4 h-4" weight="bold" />
               <span>{isSubmitting ? "بنراجع إجابتك..." : "أكّد إجابتك"}</span>
@@ -334,7 +334,7 @@ export function DailyChallengeCard({
               </span>
               <Link
                 href="/exams/builder"
-                className="text-[13px] font-bold text-[#800020] dark:text-[#FB7185] hover:underline flex items-center gap-1"
+                className="text-[13px] font-bold text-[#800B34] dark:text-[#FB7185] hover:underline flex items-center gap-1"
               >
                 <span>كمّل حل أسئلة في بنك الاختبارات</span>
                 <ArrowLeft className="w-3.5 h-3.5" weight="bold" />

@@ -83,7 +83,7 @@ export function StudentHeader({
           <button
             type="button"
             onClick={onOpenSearch}
-            className="w-9 h-9 sm:w-auto sm:h-10 sm:px-3 rounded-lg border border-[#E8E9ED] dark:border-[#22364F] bg-white dark:bg-[#10233A] text-[13px] font-medium text-[#64748B] dark:text-[#94A3B8] hover:border-[#800020]/40 dark:hover:border-[#A30D36]/60 hover:text-[#12263F] dark:hover:text-[#F5F7FB] flex items-center justify-center gap-2 transition-all cursor-pointer"
+            className="w-9 h-9 sm:w-auto sm:h-10 sm:px-3 rounded-lg border border-[#E8E9ED] dark:border-[#22364F] bg-white dark:bg-[#10233A] text-[13px] font-medium text-[#64748B] dark:text-[#94A3B8] hover:border-[#800B34]/40 dark:hover:border-[#A30D36]/60 hover:text-[#12263F] dark:hover:text-[#F5F7FB] flex items-center justify-center gap-2 transition-all cursor-pointer"
             title="بحث سريع (⌘K)"
             aria-label="بحث سريع"
           >
@@ -101,14 +101,14 @@ export function StudentHeader({
           <button
             type="button"
             onClick={toggleTheme}
-            className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg border border-[#E8E9ED] dark:border-[#22364F] bg-white dark:bg-[#10233A] flex items-center justify-center text-[#64748B] dark:text-[#94A3B8] hover:text-[#12263F] dark:hover:text-[#F5F7FB] hover:border-[#800020]/40 dark:hover:border-[#A30D36]/60 transition-colors cursor-pointer"
+            className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg border border-[#E8E9ED] dark:border-[#22364F] bg-white dark:bg-[#10233A] flex items-center justify-center text-[#64748B] dark:text-[#94A3B8] hover:text-[#12263F] dark:hover:text-[#F5F7FB] hover:border-[#800B34]/40 dark:hover:border-[#A30D36]/60 transition-colors cursor-pointer"
             title={isDark ? "تفعيل الوضع الفاتح" : "تفعيل الوضع الداكن"}
             aria-label={isDark ? "تفعيل الوضع الفاتح" : "تفعيل الوضع الداكن"}
           >
             {isDark ? (
               <Sun className="w-4 h-4 text-[#E59A18]" weight="bold" />
             ) : (
-              <Moon className="w-4 h-4 text-[#800020]" weight="bold" />
+              <Moon className="w-4 h-4 text-[#800B34]" weight="bold" />
             )}
           </button>
 

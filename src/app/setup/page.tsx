@@ -39,7 +39,7 @@ export default async function SetupPage({ searchParams }: SetupPageProps) {
   return (
     <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#090D16] text-[#0F172A] dark:text-[#F8FAFC] flex items-center justify-center p-3 sm:p-5 relative font-sans overflow-hidden">
       {/* Ambient background mesh & subtle glowing brand orbs */}
-      <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] rounded-full bg-[#800020]/10 dark:bg-[#800020]/20 blur-[120px] pointer-events-none" />
+      <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] rounded-full bg-[#800B34]/10 dark:bg-[#800B34]/20 blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] rounded-full bg-blue-600/10 dark:bg-blue-600/15 blur-[120px] pointer-events-none" />
       <div className="absolute inset-0 bg-grid-pattern opacity-40 dark:opacity-20 pointer-events-none" />
 

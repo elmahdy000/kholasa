@@ -20,9 +20,9 @@ export function DashboardStatsGrid({
   const stats = [
     {
       icon: BookOpen,
-      color: "#800020",
-      bgColor: "bg-[#800020]/10 dark:bg-[#800020]/20",
-      textColor: "text-[#800020] dark:text-[#FB7185]",
+      color: "#800B34",
+      bgColor: "bg-[#800B34]/10 dark:bg-[#800B34]/20",
+      textColor: "text-[#800B34] dark:text-[#FB7185]",
       value: completedLessonsCount,
       label: "دروس ذاكرتها",
       subtext: "فهمتها ومستعد ليها",
@@ -67,7 +67,7 @@ export function DashboardStatsGrid({
         <motion.div
           key={i}
           variants={fadeInUp}
-          className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E5E7EB] dark:border-[#334155] hover:border-[#800020]/40 dark:hover:border-[#E11D48]/60 transition-colors flex flex-col justify-between min-h-[118px] sm:min-h-[126px]"
+          className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E5E7EB] dark:border-[#334155] hover:border-[#800B34]/40 dark:hover:border-[#E11D48]/60 transition-colors flex flex-col justify-between min-h-[118px] sm:min-h-[126px]"
         >
           <div className="flex items-center justify-between gap-2">
             <span className="text-xs sm:text-[13px] text-[#64748B] dark:text-[#94A3B8] font-bold">

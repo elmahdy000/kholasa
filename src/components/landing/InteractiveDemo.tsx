@@ -73,7 +73,7 @@ export function InteractiveDemo() {
               onClick={() => setActiveTab("zatona")}
               className={`h-11 px-5 rounded-xl text-sm font-bold transition-colors flex items-center gap-2 cursor-pointer ${
                 activeTab === "zatona"
-                  ? "bg-[#800020] text-white shadow-xs"
+                  ? "bg-[#800B34] text-white shadow-xs"
                   : "bg-white dark:bg-[#0F172A] border border-[#E8E9ED] dark:border-[#334155] text-[#64748B] dark:text-[#94A3B8] hover:text-[#12263F] dark:hover:text-white"
               }`}
             >
@@ -86,7 +86,7 @@ export function InteractiveDemo() {
               onClick={() => setActiveTab("questions")}
               className={`h-11 px-5 rounded-xl text-sm font-bold transition-colors flex items-center gap-2 cursor-pointer ${
                 activeTab === "questions"
-                  ? "bg-[#800020] text-white shadow-xs"
+                  ? "bg-[#800B34] text-white shadow-xs"
                   : "bg-white dark:bg-[#0F172A] border border-[#E8E9ED] dark:border-[#334155] text-[#64748B] dark:text-[#94A3B8] hover:text-[#12263F] dark:hover:text-white"
               }`}
             >
@@ -99,7 +99,7 @@ export function InteractiveDemo() {
               onClick={() => setActiveTab("mistakes")}
               className={`h-11 px-5 rounded-xl text-sm font-bold transition-colors flex items-center gap-2 cursor-pointer ${
                 activeTab === "mistakes"
-                  ? "bg-[#800020] text-white shadow-xs"
+                  ? "bg-[#800B34] text-white shadow-xs"
                   : "bg-white dark:bg-[#0F172A] border border-[#E8E9ED] dark:border-[#334155] text-[#64748B] dark:text-[#94A3B8] hover:text-[#12263F] dark:hover:text-white"
               }`}
             >
@@ -112,7 +112,7 @@ export function InteractiveDemo() {
               onClick={() => setActiveTab("mindmap")}
               className={`h-11 px-5 rounded-xl text-sm font-bold transition-colors flex items-center gap-2 cursor-pointer ${
                 activeTab === "mindmap"
-                  ? "bg-[#800020] text-white shadow-xs"
+                  ? "bg-[#800B34] text-white shadow-xs"
                   : "bg-white dark:bg-[#0F172A] border border-[#E8E9ED] dark:border-[#334155] text-[#64748B] dark:text-[#94A3B8] hover:text-[#12263F] dark:hover:text-white"
               }`}
             >
@@ -127,7 +127,7 @@ export function InteractiveDemo() {
           <div className="max-w-4xl mx-auto p-6 sm:p-8 rounded-2xl bg-white dark:bg-[#1E293B] border border-[#E8E9ED] dark:border-[#334155] shadow-xs space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#E8E9ED] dark:border-[#334155] pb-4">
               <div>
-                <span className="text-xs font-semibold text-[#800020] dark:text-[#FB7185] block">
+                <span className="text-xs font-semibold text-[#800B34] dark:text-[#FB7185] block">
                   عينة حية من كبسولة الزتونة • مادة الأحياء
                 </span>
                 <h3 className="text-xl font-bold text-[#12263F] dark:text-white">
@@ -143,7 +143,7 @@ export function InteractiveDemo() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Concept Box */}
               <div className="p-5 rounded-xl bg-[#F7F8FA] dark:bg-[#0F172A] border border-[#E8E9ED] dark:border-[#334155] space-y-2">
-                <span className="text-xs font-bold text-[#800020] dark:text-[#FB7185] block">
+                <span className="text-xs font-bold text-[#800B34] dark:text-[#FB7185] block">
                   الفكرة ببساطة:
                 </span>
                 <p className="text-sm text-[#12263F] dark:text-[#F8FAFC] leading-relaxed font-normal">
@@ -186,7 +186,7 @@ export function InteractiveDemo() {
         {activeTab === "questions" && (
           <div className="max-w-4xl mx-auto p-6 sm:p-8 rounded-2xl bg-white dark:bg-[#1E293B] border border-[#E8E9ED] dark:border-[#334155] shadow-xs space-y-6">
             <div className="space-y-1.5">
-              <span className="text-xs font-semibold text-[#800020] dark:text-[#FB7185] block">
+              <span className="text-xs font-semibold text-[#800B34] dark:text-[#FB7185] block">
                 سؤال من امتحانات الوزارة السابقة
               </span>
               <h3 className="text-base sm:text-lg font-bold text-[#12263F] dark:text-white leading-relaxed">
@@ -198,7 +198,7 @@ export function InteractiveDemo() {
               {demoQuestions.map((opt) => {
                 const isSelected = selectedDemoOption === opt.id;
                 let optionStyle =
-                  "bg-[#F7F8FA] dark:bg-[#0F172A] border-[#E8E9ED] dark:border-[#334155] hover:border-[#800020]/40";
+                  "bg-[#F7F8FA] dark:bg-[#0F172A] border-[#E8E9ED] dark:border-[#334155] hover:border-[#800B34]/40";
 
                 if (selectedDemoOption !== null) {
                   if (opt.isCorrect) {
@@ -249,7 +249,7 @@ export function InteractiveDemo() {
           <div className="max-w-4xl mx-auto p-6 sm:p-8 rounded-2xl bg-white dark:bg-[#1E293B] border border-[#E8E9ED] dark:border-[#334155] shadow-xs space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#E8E9ED] dark:border-[#334155] pb-4">
               <div>
-                <span className="text-xs font-semibold text-[#800020] dark:text-[#FB7185] block">
+                <span className="text-xs font-semibold text-[#800B34] dark:text-[#FB7185] block">
                   ركن المذاكرة الأكثر فاعلية
                 </span>
                 <h3 className="text-xl font-bold text-[#12263F] dark:text-white">
@@ -257,7 +257,7 @@ export function InteractiveDemo() {
                 </h3>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-xs font-semibold text-[#800020] dark:text-[#FB7185] bg-[#800020]/10 px-3 py-1 rounded-full border border-[#800020]/20">
+                <span className="text-xs font-semibold text-[#800B34] dark:text-[#FB7185] bg-[#800B34]/10 px-3 py-1 rounded-full border border-[#800B34]/20">
                   سؤال محتاج تراجعه
                 </span>
                 <span className="text-xs font-semibold text-[#059669] dark:text-[#34D399] bg-[#059669]/10 px-3 py-1 rounded-full border border-[#059669]/20">
@@ -271,7 +271,7 @@ export function InteractiveDemo() {
                 <span className="text-xs font-medium text-[#64748B]">
                   سؤال كنت غلطت فيه في امتحان الكيمياء (العناصر الانتقالية)
                 </span>
-                <span className="text-xs font-semibold text-[#800020] dark:text-[#FB7185]">
+                <span className="text-xs font-semibold text-[#800B34] dark:text-[#FB7185]">
                   معاد جدولته
                 </span>
               </div>
@@ -279,7 +279,7 @@ export function InteractiveDemo() {
                 ما التوزيع الإلكتروني لأيون الحديد الثلاثي Fe³⁺ في مركب FeCl₃؟
               </p>
               <div className="p-3.5 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E8E9ED] dark:border-[#334155] text-xs text-[#12263F] dark:text-[#F8FAFC] leading-relaxed font-normal">
-                <span className="font-bold text-[#800020] dark:text-[#FB7185]">
+                <span className="font-bold text-[#800B34] dark:text-[#FB7185]">
                   ليه الإجابة دي؟{" "}
                 </span>
                 الحديد بيفقد أول اتنين إلكترون من المستوى 4s، وبعدين إلكترون كمان من 3d، فيبقى التوزيع [Ar] 3d⁵ (نصف ممتلئ وأكتر استقراراً كيميائياً).
@@ -287,7 +287,7 @@ export function InteractiveDemo() {
               <div className="flex items-center justify-end pt-1">
                 <Link
                   href="/mistakes"
-                  className="h-10 px-4 rounded-xl bg-[#800020] text-white text-xs font-bold hover:bg-[#66001A] flex items-center gap-1.5 transition-colors shadow-xs"
+                  className="h-10 px-4 rounded-xl bg-[#800B34] text-white text-xs font-bold hover:bg-[#680829] flex items-center gap-1.5 transition-colors shadow-xs"
                 >
                   <span>افتح ركن غلطاتك كامل</span>
                   <ArrowLeft className="w-3.5 h-3.5" />
@@ -301,7 +301,7 @@ export function InteractiveDemo() {
         {activeTab === "mindmap" && (
           <div className="max-w-4xl mx-auto p-6 sm:p-8 rounded-2xl bg-white dark:bg-[#1E293B] border border-[#E8E9ED] dark:border-[#334155] shadow-xs space-y-6 text-center">
             <div className="space-y-1">
-              <span className="text-xs font-semibold text-[#800020] dark:text-[#FB7185] block">
+              <span className="text-xs font-semibold text-[#800B34] dark:text-[#FB7185] block">
                 العلاقات المفاهيمية البصرية
               </span>
               <h3 className="text-xl font-bold text-[#12263F] dark:text-white">
@@ -310,8 +310,8 @@ export function InteractiveDemo() {
             </div>
 
             <div className="p-6 rounded-xl bg-[#F7F8FA] dark:bg-[#0F172A] border border-[#E8E9ED] dark:border-[#334155] grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="p-4 rounded-xl bg-white dark:bg-[#1E293B] border border-[#800020]/30 shadow-xs text-right space-y-1.5">
-                <span className="text-xs font-bold text-[#800020] dark:text-[#FB7185] block">
+              <div className="p-4 rounded-xl bg-white dark:bg-[#1E293B] border border-[#800B34]/30 shadow-xs text-right space-y-1.5">
+                <span className="text-xs font-bold text-[#800B34] dark:text-[#FB7185] block">
                   1. الفكرة الأساسية
                 </span>
                 <h4 className="text-sm font-bold text-[#12263F] dark:text-white">

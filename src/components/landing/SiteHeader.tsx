@@ -56,7 +56,7 @@ export function SiteHeader() {
 
           <Link
             href="/login"
-            className="h-10 px-5 rounded-xl bg-[#800020] hover:bg-[#66001A] dark:bg-[#A30D36] dark:hover:bg-[#BD123F] text-white text-sm font-bold flex items-center gap-2 transition-all shadow-xs active:scale-[0.99]"
+            className="h-10 px-5 rounded-xl bg-[#800B34] hover:bg-[#680829] dark:bg-[#A30D36] dark:hover:bg-[#BD123F] text-white text-sm font-bold flex items-center gap-2 transition-all shadow-xs active:scale-[0.99]"
           >
             <span>دخول بكود الطالب</span>
             <ArrowLeft className="w-3.5 h-3.5" />
@@ -107,7 +107,7 @@ export function SiteHeader() {
             <Link
               href="/login"
               onClick={() => setIsMobileMenuOpen(false)}
-              className="w-full h-11 rounded-xl bg-[#800020] hover:bg-[#66001A] dark:bg-[#A30D36] dark:hover:bg-[#BD123F] text-white text-sm font-bold text-center flex items-center justify-center gap-1.5 shadow-xs"
+              className="w-full h-11 rounded-xl bg-[#800B34] hover:bg-[#680829] dark:bg-[#A30D36] dark:hover:bg-[#BD123F] text-white text-sm font-bold text-center flex items-center justify-center gap-1.5 shadow-xs"
             >
               <span>تسجيل دخول الطالب (بالكود)</span>
               <ArrowLeft className="w-3.5 h-3.5" />

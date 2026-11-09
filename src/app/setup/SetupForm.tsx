@@ -191,7 +191,7 @@ export function SetupForm({ systems, initialSchoolCategory }: SetupFormProps) {
       {step <= 4 && (
         <div className="space-y-3 pb-3 border-b border-[#E2E8F0] dark:border-[#334155]">
           <div className="flex items-center justify-between text-xs font-bold text-[#64748B] dark:text-[#94A3B8]">
-            <span className="flex items-center gap-1.5 text-[#800020] dark:text-[#FB7185]">
+            <span className="flex items-center gap-1.5 text-[#800B34] dark:text-[#FB7185]">
               الخطوة {step} من ٤
             </span>
             <span>{stepsMeta[step - 1]?.title}</span>
@@ -208,14 +208,14 @@ export function SetupForm({ systems, initialSchoolCategory }: SetupFormProps) {
                       isPast
                         ? "bg-[#059669] dark:bg-[#34D399]"
                         : isCurrent
-                        ? "bg-[#800020] dark:bg-[#FB7185]"
+                        ? "bg-[#800B34] dark:bg-[#FB7185]"
                         : "bg-[#E2E8F0] dark:bg-[#334155]"
                     }`}
                   />
                   <span
                     className={`hidden sm:block text-[11px] truncate text-center ${
                       isCurrent
-                        ? "font-bold text-[#800020] dark:text-[#FB7185]"
+                        ? "font-bold text-[#800B34] dark:text-[#FB7185]"
                         : isPast
                         ? "text-[#059669] dark:text-[#34D399]"
                         : "text-[#94A3B8]"
@@ -243,7 +243,7 @@ export function SetupForm({ systems, initialSchoolCategory }: SetupFormProps) {
           className="space-y-6"
         >
           <div className="text-center space-y-2 max-w-lg mx-auto">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#800020]/10 text-[#800020] dark:text-[#FB7185] text-xs font-bold border border-[#800020]/20">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#800B34]/10 text-[#800B34] dark:text-[#FB7185] text-xs font-bold border border-[#800B34]/20">
               <Sparkles className="w-3.5 h-3.5" />
               <span>منور في منصة الخلاصة</span>
             </div>
@@ -283,7 +283,7 @@ export function SetupForm({ systems, initialSchoolCategory }: SetupFormProps) {
           <button
             type="button"
             onClick={() => setStep(2)}
-            className="w-full h-12 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 shadow-sm transition-all active:scale-[0.99] cursor-pointer"
+            className="w-full h-12 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 shadow-sm transition-all active:scale-[0.99] cursor-pointer"
           >
             <span>يلا نبدأ نجهز خطتك</span>
             <ChevronLeft className="w-4 h-4" />
@@ -305,7 +305,7 @@ export function SetupForm({ systems, initialSchoolCategory }: SetupFormProps) {
         >
           <div className="space-y-1">
             <h2 className="text-lg sm:text-xl font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
-              <GraduationCap className="w-5 h-5 text-[#800020] dark:text-[#FB7185]" />
+              <GraduationCap className="w-5 h-5 text-[#800B34] dark:text-[#FB7185]" />
               <span>أنت في سنة كام دلوقتي؟</span>
             </h2>
             <p className="text-xs text-[#64748B] dark:text-[#94A3B8]">
@@ -328,19 +328,19 @@ export function SetupForm({ systems, initialSchoolCategory }: SetupFormProps) {
                   }}
                   className={`p-5 rounded-2xl border text-right transition-all flex flex-col justify-between gap-4 cursor-pointer relative overflow-hidden ${
                     isSelected
-                      ? "border-[#800020] dark:border-[#FB7185] bg-[#800020]/5 dark:bg-[#800020]/20 shadow-md ring-2 ring-[#800020]/20"
-                      : "border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] hover:border-[#800020]/40"
+                      ? "border-[#800B34] dark:border-[#FB7185] bg-[#800B34]/5 dark:bg-[#800B34]/20 shadow-md ring-2 ring-[#800B34]/20"
+                      : "border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] hover:border-[#800B34]/40"
                   }`}
                 >
                   <div className="flex items-start justify-between gap-3">
-                    <div className="w-9 h-9 rounded-xl bg-[#800020]/10 dark:bg-[#800020]/30 text-[#800020] dark:text-[#FB7185] flex items-center justify-center font-bold text-sm shrink-0 font-mono">
+                    <div className="w-9 h-9 rounded-xl bg-[#800B34]/10 dark:bg-[#800B34]/30 text-[#800B34] dark:text-[#FB7185] flex items-center justify-center font-bold text-sm shrink-0 font-mono">
                       {isG10 ? "١٠" : "١١"}
                     </div>
 
                     <div
                       className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 transition-colors ${
                         isSelected
-                          ? "border-[#800020] dark:border-[#FB7185] bg-[#800020] dark:bg-[#FB7185] text-white"
+                          ? "border-[#800B34] dark:border-[#FB7185] bg-[#800B34] dark:bg-[#FB7185] text-white"
                           : "border-[#CBD5E1] dark:border-[#475569]"
                       }`}
                     >
@@ -377,7 +377,7 @@ export function SetupForm({ systems, initialSchoolCategory }: SetupFormProps) {
               type="button"
               onClick={() => setStep(3)}
               disabled={!gradeId}
-              className="px-6 h-11 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-xs sm:text-sm font-bold flex items-center gap-2 shadow-sm transition-all disabled:opacity-40 cursor-pointer"
+              className="px-6 h-11 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white text-xs sm:text-sm font-bold flex items-center gap-2 shadow-sm transition-all disabled:opacity-40 cursor-pointer"
             >
               <span>التالي: نوع مدرستك</span>
               <ChevronLeft className="w-4 h-4" />
@@ -402,7 +402,7 @@ export function SetupForm({ systems, initialSchoolCategory }: SetupFormProps) {
           <div className="space-y-3">
             <div className="space-y-1">
               <h2 className="text-lg sm:text-xl font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
-                <Languages className="w-5 h-5 text-[#800020] dark:text-[#FB7185]" />
+                <Languages className="w-5 h-5 text-[#800B34] dark:text-[#FB7185]" />
                 <span>{isCategoryPredefined ? "لغة المنهج المعتمدة لحسابك" : "بتدرس في مدرسة إيه؟ (لغة المنهج)"}</span>
               </h2>
               <p className="text-xs text-[#64748B] dark:text-[#94A3B8]">
@@ -525,15 +525,15 @@ export function SetupForm({ systems, initialSchoolCategory }: SetupFormProps) {
                       onClick={() => setTrackId(track.id)}
                       className={`p-3.5 rounded-xl border text-right transition-all flex items-center justify-between gap-3 cursor-pointer ${
                         isSelected
-                          ? "border-[#800020] dark:border-[#FB7185] bg-[#800020]/10 text-[#800020] dark:text-[#FB7185] font-bold"
-                          : "border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] text-[#334155] dark:text-[#CBD5E1] hover:border-[#800020]/40"
+                          ? "border-[#800B34] dark:border-[#FB7185] bg-[#800B34]/10 text-[#800B34] dark:text-[#FB7185] font-bold"
+                          : "border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] text-[#334155] dark:text-[#CBD5E1] hover:border-[#800B34]/40"
                       }`}
                     >
                       <BidiStatement as="span" text={track.name} className="text-xs truncate" />
                       <div
                         className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ${
                           isSelected
-                            ? "border-[#800020] dark:border-[#FB7185] bg-[#800020] dark:bg-[#FB7185] text-white"
+                            ? "border-[#800B34] dark:border-[#FB7185] bg-[#800B34] dark:bg-[#FB7185] text-white"
                             : "border-[#CBD5E1] dark:border-[#475569]"
                         }`}
                       >
@@ -559,7 +559,7 @@ export function SetupForm({ systems, initialSchoolCategory }: SetupFormProps) {
             <button
               type="button"
               onClick={() => setStep(4)}
-              className="px-6 h-11 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-xs sm:text-sm font-bold flex items-center gap-2 shadow-sm transition-all cursor-pointer"
+              className="px-6 h-11 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white text-xs sm:text-sm font-bold flex items-center gap-2 shadow-sm transition-all cursor-pointer"
             >
               <span>التالي: وقت مذاكرتك اليومي</span>
               <ChevronLeft className="w-4 h-4" />
@@ -676,7 +676,7 @@ export function SetupForm({ systems, initialSchoolCategory }: SetupFormProps) {
               type="button"
               onClick={handleFinalSubmit}
               disabled={isSubmitting}
-              className="px-6 h-12 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-xs sm:text-sm font-bold flex items-center gap-2 shadow-sm transition-all active:scale-[0.99] cursor-pointer disabled:opacity-50"
+              className="px-6 h-12 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white text-xs sm:text-sm font-bold flex items-center gap-2 shadow-sm transition-all active:scale-[0.99] cursor-pointer disabled:opacity-50"
             >
               {isSubmitting ? (
                 <>
@@ -765,7 +765,7 @@ export function SetupForm({ systems, initialSchoolCategory }: SetupFormProps) {
             <button
               type="button"
               onClick={handleLaunchDashboard}
-              className="w-full h-12 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-sm sm:text-base font-bold flex items-center justify-center gap-2 shadow-md transition-all cursor-pointer active:scale-98"
+              className="w-full h-12 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white text-sm sm:text-base font-bold flex items-center justify-center gap-2 shadow-md transition-all cursor-pointer active:scale-98"
             >
               <span>ادخل على لوحة التحكم</span>
               <ChevronLeft className="w-4 h-4" />

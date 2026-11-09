@@ -59,7 +59,7 @@ export default async function SubscriptionPage({ searchParams }: SubscriptionPag
             <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
               <Link
                 href="/subjects"
-                className="w-full sm:w-auto h-11 px-6 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-xs"
+                className="w-full sm:w-auto h-11 px-6 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-xs"
               >
                 <BookOpen className="w-4 h-4" />
                 <span>تصفح المواد والدروس</span>

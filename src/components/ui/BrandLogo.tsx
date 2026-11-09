@@ -152,8 +152,8 @@ export function BrandLogo({
       surfaceTheme === "dark"
         ? "text-white group-hover:text-[#FB7185]"
         : surfaceTheme === "light"
-        ? "text-[#12263F] group-hover:text-[#800020]"
-        : "text-[#12263F] dark:text-[#F5F7FB] group-hover:text-[#800020] dark:group-hover:text-[#FB7185]";
+        ? "text-[#12263F] group-hover:text-[#800B34]"
+        : "text-[#12263F] dark:text-[#F5F7FB] group-hover:text-[#800B34] dark:group-hover:text-[#FB7185]";
 
     const subtitleColors =
       surfaceTheme === "dark"
@@ -196,7 +196,7 @@ export function BrandLogo({
       <Link
         href={href}
         className={cn(
-          "inline-flex items-center group cursor-pointer focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[#800020] rounded-xl transition-transform active:scale-[0.98]",
+          "inline-flex items-center group cursor-pointer focus:outline-hidden focus-visible:ring-2 focus-visible:ring-[#800B34] rounded-xl transition-transform active:scale-[0.98]",
           className
         )}
       >

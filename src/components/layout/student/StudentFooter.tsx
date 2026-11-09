@@ -15,19 +15,19 @@ export function StudentFooter() {
         />
 
         <div className="hidden sm:flex flex-wrap items-center justify-center gap-5 font-medium">
-          <Link href="/dashboard" className="hover:text-[#800020] dark:hover:text-[#A30D36] transition-colors">
+          <Link href="/dashboard" className="hover:text-[#800B34] dark:hover:text-[#A30D36] transition-colors">
             الرئيسية
           </Link>
-          <Link href="/subjects" className="hover:text-[#800020] dark:hover:text-[#A30D36] transition-colors">
+          <Link href="/subjects" className="hover:text-[#800B34] dark:hover:text-[#A30D36] transition-colors">
             المواد الدراسية
           </Link>
-          <Link href="/exams/builder" className="hover:text-[#800020] dark:hover:text-[#A30D36] transition-colors">
+          <Link href="/exams/builder" className="hover:text-[#800B34] dark:hover:text-[#A30D36] transition-colors">
             بنك الأسئلة
           </Link>
-          <Link href="/mistakes" className="hover:text-[#800020] dark:hover:text-[#A30D36] transition-colors">
+          <Link href="/mistakes" className="hover:text-[#800B34] dark:hover:text-[#A30D36] transition-colors">
             ركن غلطاتي
           </Link>
-          <Link href="/profile" className="hover:text-[#800020] dark:hover:text-[#A30D36] transition-colors">
+          <Link href="/profile" className="hover:text-[#800B34] dark:hover:text-[#A30D36] transition-colors">
             حسابي
           </Link>
         </div>

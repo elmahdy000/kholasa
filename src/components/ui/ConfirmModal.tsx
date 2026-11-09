@@ -76,9 +76,9 @@ export function ConfirmModal({
       case "info":
       default:
         return {
-          icon: <Info className="w-5 h-5 text-[#800020] dark:text-[#FB7185]" />,
-          iconBg: "bg-[#800020]/10 border border-[#800020]/20 text-[#800020]",
-          btnBg: "bg-[#800020] hover:bg-[#66001A] text-white focus:ring-[#800020]",
+          icon: <Info className="w-5 h-5 text-[#800B34] dark:text-[#FB7185]" />,
+          iconBg: "bg-[#800B34]/10 border border-[#800B34]/20 text-[#800B34]",
+          btnBg: "bg-[#800B34] hover:bg-[#680829] text-white focus:ring-[#800B34]",
         };
     }
   };

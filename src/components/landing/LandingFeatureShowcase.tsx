@@ -50,7 +50,7 @@ export function LandingFeatureShowcase() {
   return (
     <section className="space-y-8">
       <div className="text-center max-w-2xl mx-auto space-y-3">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#800020]/10 dark:bg-[#1E293B] border border-[#800020]/20 text-[#800020] dark:text-[#FB7185] text-[13px] font-bold">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#800B34]/10 dark:bg-[#1E293B] border border-[#800B34]/20 text-[#800B34] dark:text-[#FB7185] text-[13px] font-bold">
           <Target className="w-3.5 h-3.5" />
           <span>معاينة حية للمنصة</span>
         </div>
@@ -69,11 +69,11 @@ export function LandingFeatureShowcase() {
           onClick={() => setActiveTab("zatona")}
           className={`h-11 px-4 rounded-lg text-[13px] font-bold transition-all flex items-center gap-2 interactive-tap ${
             activeTab === "zatona"
-              ? "bg-white dark:bg-[#0F172A] text-[#800020] dark:text-[#FB7185]"
+              ? "bg-white dark:bg-[#0F172A] text-[#800B34] dark:text-[#FB7185]"
               : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
           }`}
         >
-          <BookOpen className="w-4 h-4 text-[#800020]" />
+          <BookOpen className="w-4 h-4 text-[#800B34]" />
           <span>كبسولة الزتونة</span>
         </button>
 
@@ -82,7 +82,7 @@ export function LandingFeatureShowcase() {
           onClick={() => setActiveTab("questions")}
           className={`h-11 px-4 rounded-lg text-[13px] font-bold transition-all flex items-center gap-2 interactive-tap ${
             activeTab === "questions"
-              ? "bg-white dark:bg-[#0F172A] text-[#800020] dark:text-[#FB7185]"
+              ? "bg-white dark:bg-[#0F172A] text-[#800B34] dark:text-[#FB7185]"
               : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
           }`}
         >
@@ -108,11 +108,11 @@ export function LandingFeatureShowcase() {
           onClick={() => setActiveTab("mindmap")}
           className={`h-11 px-4 rounded-lg text-[13px] font-bold transition-all flex items-center gap-2 interactive-tap ${
             activeTab === "mindmap"
-              ? "bg-white dark:bg-[#0F172A] text-[#800020] dark:text-[#FB7185]"
+              ? "bg-white dark:bg-[#0F172A] text-[#800B34] dark:text-[#FB7185]"
               : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
           }`}
         >
-          <Brain className="w-4 h-4 text-[#800020]" />
+          <Brain className="w-4 h-4 text-[#800B34]" />
           <span>الخرائط الذهنية</span>
         </button>
       </div>
@@ -122,7 +122,7 @@ export function LandingFeatureShowcase() {
         <div className="max-w-4xl mx-auto p-6 sm:p-8 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] space-y-6 animate-in fade-in duration-300">
           <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#334155] pb-4">
             <div>
-              <span className="text-[13px] font-bold text-[#800020] dark:text-[#FB7185] block font-mono">
+              <span className="text-[13px] font-bold text-[#800B34] dark:text-[#FB7185] block font-mono">
                 عينة حقيقية من ملخص الزتونة • الأحياء
               </span>
               <h3 className="text-lg font-bold text-[#0F172A] dark:text-white">
@@ -136,8 +136,8 @@ export function LandingFeatureShowcase() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="p-4 rounded-xl bg-[#800020]/10 dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#E11D48]/40 space-y-2">
-              <span className="text-[13px] font-bold text-[#800020] dark:text-[#FB7185] block">
+            <div className="p-4 rounded-xl bg-[#800B34]/10 dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#E11D48]/40 space-y-2">
+              <span className="text-[13px] font-bold text-[#800B34] dark:text-[#FB7185] block">
                 المفهوم الجوهري (Concept):
               </span>
               <p className="text-[13px] text-[#0F172A] dark:text-[#F8FAFC] leading-relaxed">
@@ -178,7 +178,7 @@ export function LandingFeatureShowcase() {
       {activeTab === "questions" && (
         <div className="max-w-4xl mx-auto p-6 sm:p-8 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] space-y-6 animate-in fade-in duration-300">
           <div className="space-y-1">
-            <span className="text-[13px] font-bold text-[#800020] dark:text-[#FB7185] block font-mono">
+            <span className="text-[13px] font-bold text-[#800B34] dark:text-[#FB7185] block font-mono">
               سؤال تفاعلي من بنك الأسئلة الذكي
             </span>
             <h3 className="text-base sm:text-lg font-bold text-[#0F172A] dark:text-white leading-relaxed">
@@ -202,7 +202,7 @@ export function LandingFeatureShowcase() {
                 }
               } else if (isSelected) {
                 cardStyle =
-                  "bg-[#800020]/10 dark:bg-[#1E293B] border-[#800020] text-[#800020] dark:text-[#FB7185] font-bold";
+                  "bg-[#800B34]/10 dark:bg-[#1E293B] border-[#800B34] text-[#800B34] dark:text-[#FB7185] font-bold";
               }
 
               return (
@@ -285,7 +285,7 @@ export function LandingFeatureShowcase() {
               ما التوزيع الإلكتروني لأيون الحديد الثلاثي Fe³⁺ في مركب FeCl₃؟
             </p>
             <div className="p-3 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] text-[#0F172A] dark:text-[#F8FAFC] leading-relaxed">
-              <span className="font-bold text-[#800020] dark:text-[#FB7185]">
+              <span className="font-bold text-[#800B34] dark:text-[#FB7185]">
                 التحليل العلاجي:{" "}
               </span>
               يفقد الحديد إلكتروني المستوى الفرعي 4s أولاً ثم إلكتروناً واحداً من المستوى 3d ليصبح [Ar] 3d⁵ (نصف ممتلئ وأكثر استقراراً).
@@ -293,7 +293,7 @@ export function LandingFeatureShowcase() {
             <div className="flex items-center justify-end">
               <button
                 type="button"
-                className="h-11 px-4 rounded-lg bg-[#800020] hover:bg-[#66001A] text-white text-[13px] font-bold transition-colors interactive-tap flex items-center gap-2"
+                className="h-11 px-4 rounded-lg bg-[#800B34] hover:bg-[#680829] text-white text-[13px] font-bold transition-colors interactive-tap flex items-center gap-2"
               >
                 <Check className="w-3.5 h-3.5" />
                 <span>إعادة المحاولة وحذف الخطأ</span>
@@ -307,7 +307,7 @@ export function LandingFeatureShowcase() {
       {activeTab === "mindmap" && (
         <div className="max-w-4xl mx-auto p-6 sm:p-8 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] space-y-6 animate-in fade-in duration-300 text-center">
           <div className="space-y-1">
-            <span className="text-[13px] font-bold text-[#800020] dark:text-[#FB7185] block font-mono">
+            <span className="text-[13px] font-bold text-[#800B34] dark:text-[#FB7185] block font-mono">
               العلاقات المفاهيمية البصرية
             </span>
             <h3 className="text-lg font-bold text-[#0F172A] dark:text-white">
@@ -316,14 +316,14 @@ export function LandingFeatureShowcase() {
           </div>
 
           <div className="p-6 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/60 border border-[#E2E8F0] dark:border-[#334155] flex flex-col md:flex-row items-center justify-around gap-4">
-            <div className="p-4 rounded-xl bg-[#800020] text-white font-bold text-[13px]">
+            <div className="p-4 rounded-xl bg-[#800B34] text-white font-bold text-[13px]">
               المفهوم الأساسي
               <br />
-              <span className="text-[13px] text-[#800020] font-normal">
+              <span className="text-[13px] text-[#800B34] font-normal">
                 (مثال: القوانين الأساسية)
               </span>
             </div>
-            <div className="text-[#800020] font-bold text-lg rotate-90 md:rotate-0">
+            <div className="text-[#800B34] font-bold text-lg rotate-90 md:rotate-0">
               ↔
             </div>
             <div className="p-4 rounded-xl bg-[#0F172A] dark:bg-[#1E293B] text-white font-bold text-[13px] border border-[#94A3B8]">

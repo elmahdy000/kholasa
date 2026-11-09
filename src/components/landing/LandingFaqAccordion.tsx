@@ -49,12 +49,12 @@ export function LandingFaqAccordion() {
               <button
                 type="button"
                 onClick={() => setOpenFaqIndex(isOpen ? null : idx)}
-                className="w-full p-4 sm:p-5 flex items-center justify-between gap-3 text-right text-[13px] sm:text-sm font-bold text-[#0F172A] dark:text-white hover:text-[#800020] dark:hover:text-[#FB7185] transition-colors"
+                className="w-full p-4 sm:p-5 flex items-center justify-between gap-3 text-right text-[13px] sm:text-sm font-bold text-[#0F172A] dark:text-white hover:text-[#800B34] dark:hover:text-[#FB7185] transition-colors"
               >
                 <span>{faq.q}</span>
                 <ChevronDown
                   className={`w-4 h-4 text-[#94A3B8] transition-transform ${
-                    isOpen ? "rotate-180 text-[#800020] dark:text-[#FB7185]" : ""
+                    isOpen ? "rotate-180 text-[#800B34] dark:text-[#FB7185]" : ""
                   }`}
                 />
               </button>

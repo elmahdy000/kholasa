@@ -133,11 +133,10 @@ export function LessonHeader({
           type="button"
           onClick={onToggleComplete}
           disabled={isTogglingComplete}
-          className={`min-h-[44px] px-4 rounded-xl font-bold text-xs flex items-center gap-1.5 shadow-xs transition-all cursor-pointer active:scale-95 ${
-            isCompleted
+          className={`min-h-[44px] px-4 rounded-xl font-bold text-xs flex items-center gap-1.5 shadow-xs transition-all cursor-pointer active:scale-95 ${isCompleted
               ? "bg-[#D1FAE5] dark:bg-emerald-950/60 text-[#065F46] dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 hover:bg-[#A7F3D0]"
               : "bg-[#800B34] hover:bg-[#680829] text-white"
-          }`}
+            }`}
         >
           {isCompleted ? (
             <>
@@ -175,11 +174,10 @@ export function LessonHeader({
             type="button"
             onClick={onToggleBookmark}
             disabled={isTogglingBookmark}
-            className={`h-11 w-11 flex items-center justify-center transition-colors cursor-pointer border-r border-[#E8E9ED] dark:border-[#22364F] ${
-              isBookmarked
+            className={`h-11 w-11 flex items-center justify-center transition-colors cursor-pointer border-r border-[#E8E9ED] dark:border-[#22364F] ${isBookmarked
                 ? "bg-[#800B34]/10 text-[#800B34] dark:text-[#FB7185]"
                 : "text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800"
-            }`}
+              }`}
             title={isBookmarked ? "إزالة من المحفوظات" : "حفظ في المفضلة"}
             aria-label={isBookmarked ? "إزالة من المحفوظات" : "حفظ في المفضلة"}
           >

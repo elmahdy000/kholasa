@@ -24,7 +24,7 @@ export function SubjectsGrid({ subjects }: SubjectsGridProps) {
         </div>
         <Link
           href="/subjects"
-          className="text-xs sm:text-[13px] font-bold text-[#800020] dark:text-[#FB7185] hover:underline flex items-center gap-1"
+          className="text-xs sm:text-[13px] font-bold text-[#800B34] dark:text-[#FB7185] hover:underline flex items-center gap-1"
         >
           <span>عرض كل المواد</span>
           <ArrowLeft className="w-3.5 h-3.5" weight="bold" />
@@ -44,12 +44,12 @@ export function SubjectsGrid({ subjects }: SubjectsGridProps) {
 
           return (
             <motion.div key={subj.id} variants={fadeInUp}>
-              <div className="group p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E5E7EB] dark:border-[#334155] hover:border-[#800020]/40 dark:hover:border-[#E11D48]/60 transition-all flex flex-col justify-between space-y-4 h-full">
+              <div className="group p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E5E7EB] dark:border-[#334155] hover:border-[#800B34]/40 dark:hover:border-[#E11D48]/60 transition-all flex flex-col justify-between space-y-4 h-full">
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <div
                       className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-base shadow-sm"
-                      style={{ backgroundColor: subj.color || "#800020" }}
+                      style={{ backgroundColor: subj.color || "#800B34" }}
                     >
                       {subj.name[0]}
                     </div>
@@ -59,7 +59,7 @@ export function SubjectsGrid({ subjects }: SubjectsGridProps) {
                   </div>
 
                   <div>
-                    <h3 className="text-sm sm:text-base font-bold text-[#12263F] dark:text-[#F8FAFC] group-hover:text-[#800020] dark:group-hover:text-[#FB7185] transition-colors leading-snug">
+                    <h3 className="text-sm sm:text-base font-bold text-[#12263F] dark:text-[#F8FAFC] group-hover:text-[#800B34] dark:group-hover:text-[#FB7185] transition-colors leading-snug">
                       {subj.name}
                     </h3>
                     {subj.description && (
@@ -81,7 +81,7 @@ export function SubjectsGrid({ subjects }: SubjectsGridProps) {
                     </div>
                     <div className="w-full h-1.5 rounded-full bg-[#F3F4F6] dark:bg-[#334155] overflow-hidden">
                       <div
-                        className="h-full rounded-full bg-[#800020] dark:bg-[#E11D48] transition-all duration-500"
+                        className="h-full rounded-full bg-[#800B34] dark:bg-[#E11D48] transition-all duration-500"
                         style={{ width: `${progress}%` }}
                       />
                     </div>
@@ -100,7 +100,7 @@ export function SubjectsGrid({ subjects }: SubjectsGridProps) {
 
                   <Link
                     href={`/subjects/${subj.id}`}
-                    className="text-[#800020] dark:text-[#FB7185] font-bold flex items-center gap-1"
+                    className="text-[#800B34] dark:text-[#FB7185] font-bold flex items-center gap-1"
                   >
                     <span>فتح المادة</span>
                     <ArrowLeft className="w-3.5 h-3.5" weight="bold" />

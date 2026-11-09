@@ -120,7 +120,7 @@ export default async function ExamPage({ params, searchParams }: ExamPageProps) 
           <div className="pt-2">
             <Link
               href="/exams"
-              className="inline-flex items-center gap-2 h-11 px-6 rounded-xl bg-[#800020] text-white text-[13px] font-bold hover:bg-[#66001A] transition-colors"
+              className="inline-flex items-center gap-2 h-11 px-6 rounded-xl bg-[#800B34] text-white text-[13px] font-bold hover:bg-[#680829] transition-colors"
             >
               <span>العودة لقائمة الامتحانات</span>
               <ArrowRight className="w-4 h-4" />

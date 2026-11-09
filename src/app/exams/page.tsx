@@ -58,7 +58,7 @@ export default async function ExamsHubPage() {
           <div className="flex flex-col md:flex-row md:items-center md:justify-center gap-6">
             {/* Text & Actions */}
             <div className="space-y-3 max-w-3xl md:mx-auto md:text-center">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] text-[13px] font-bold border border-[#E2E8F0]/60 dark:border-[#E11D48]/60">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#800B34]/10 dark:bg-[#1E293B] text-[#800B34] dark:text-[#FB7185] text-[13px] font-bold border border-[#E2E8F0]/60 dark:border-[#E11D48]/60">
                 <Target className="w-3.5 h-3.5" />
                 <span>امتحانات وتدريبات متفصلة ليك</span>
               </div>
@@ -74,7 +74,7 @@ export default async function ExamsHubPage() {
               {/* Compact Value Points */}
               <div className="flex flex-wrap items-center gap-4 pt-1 text-[13px] sm:text-[13px] font-semibold text-[#64748B] dark:text-[#94A3B8] md:justify-center">
                 <span className="flex items-center gap-2">
-                  <Clock className="w-3.5 h-3.5 text-[#800020] shrink-0" />
+                  <Clock className="w-3.5 h-3.5 text-[#800B34] shrink-0" />
                   <span>مؤقت زي الامتحان بالظبط</span>
                 </span>
                 <span className="flex items-center gap-2">
@@ -91,7 +91,7 @@ export default async function ExamsHubPage() {
               <div className="pt-2 md:flex md:justify-center">
                 <Link
                   href="/exams/builder"
-                  className="h-11 px-5 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] sm:text-sm font-bold inline-flex items-center gap-2  transition-all active:opacity-80 group"
+                  className="h-11 px-5 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white text-[13px] sm:text-sm font-bold inline-flex items-center gap-2  transition-all active:opacity-80 group"
                 >
                   <SlidersHorizontal className="w-3.5 h-3.5" />
                   <span>فصّل امتحان على مزاجك دلوقتي</span>
@@ -106,12 +106,12 @@ export default async function ExamsHubPage() {
         <div className="space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h2 className="text-base sm:text-lg font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
-              <Target className="w-5 h-5 text-[#800020]" />
+              <Target className="w-5 h-5 text-[#800B34]" />
               <span>امتحانات شاملة وجاهزة تحلها فوراً</span>
             </h2>
             <Link
               href="/exams/builder"
-              className="text-[13px] font-bold text-[#800020] dark:text-[#FB7185] hover:underline"
+              className="text-[13px] font-bold text-[#800B34] dark:text-[#FB7185] hover:underline"
             >
               عاوز تختار أسئلة معينة؟ فصّل من هنا ←
             </Link>
@@ -144,7 +144,7 @@ export default async function ExamsHubPage() {
                 >
                   <div>
                     <div className="flex items-center justify-between gap-2 mb-3 flex-wrap">
-                      <span className="px-3 py-1 rounded-lg bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] text-[13px] font-bold border border-[#E2E8F0]/50 dark:border-[#E11D48]/50">
+                      <span className="px-3 py-1 rounded-lg bg-[#800B34]/10 dark:bg-[#1E293B] text-[#800B34] dark:text-[#FB7185] text-[13px] font-bold border border-[#E2E8F0]/50 dark:border-[#E11D48]/50">
                         <BidiStatement as="span" text={exam.subject.name} />
                       </span>
                       <div className="flex items-center gap-2">
@@ -155,7 +155,7 @@ export default async function ExamsHubPage() {
                           </span>
                         ) : (
                           <span className="flex items-center gap-1 text-[13px] font-bold text-[#64748B] dark:text-[#94A3B8]">
-                            <Clock className="w-3.5 h-3.5 text-[#800020]" />
+                            <Clock className="w-3.5 h-3.5 text-[#800B34]" />
                             <span>{exam.durationMinutes} دقيقة</span>
                           </span>
                         )}
@@ -182,7 +182,7 @@ export default async function ExamsHubPage() {
                       className={`h-11 px-4 rounded-xl text-white text-[13px] font-bold flex items-center gap-2 transition-colors active:opacity-80 ${
                         isScheduled
                           ? "bg-sky-700 hover:bg-sky-800"
-                          : "bg-[#800020] hover:bg-[#66001A]"
+                          : "bg-[#800B34] hover:bg-[#680829]"
                       }`}
                     >
                       <span>{isScheduled ? "غرفة الانتظار" : "يلا نحل"}</span>

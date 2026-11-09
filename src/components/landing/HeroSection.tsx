@@ -13,7 +13,7 @@ export function HeroSection() {
           {/* Right Column — Text & CTAs (7 cols on desktop) */}
           <div className="lg:col-span-7 text-right space-y-6 sm:space-y-7">
             {/* 1) Small top badge */}
-            <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-[#F7F8FA] dark:bg-[#1E293B] border border-[#E8E9ED] dark:border-[#334155] text-xs font-semibold text-[#800020] dark:text-[#FB7185] shadow-xs">
+            <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-[#F7F8FA] dark:bg-[#1E293B] border border-[#E8E9ED] dark:border-[#334155] text-xs font-semibold text-[#800B34] dark:text-[#FB7185] shadow-xs">
               <BrandLogo variant="icon" size="xs" glow={false} />
               <span>المنصة التعليمية الشاملة لطلاب الثانوية العامة 2026</span>
             </div>
@@ -23,7 +23,7 @@ export function HeroSection() {
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[50px] font-extrabold text-[#12263F] dark:text-white leading-[1.2] tracking-tight">
                 افهم المنهج بسهولة...
                 <br />
-                <span className="text-[#800020] dark:text-[#FB7185] inline-block mt-1 sm:mt-2">
+                <span className="text-[#800B34] dark:text-[#FB7185] inline-block mt-1 sm:mt-2">
                   وحوّل مذاكرتك لتفوّق حقيقي
                 </span>
               </h1>
@@ -40,7 +40,7 @@ export function HeroSection() {
             <div className="flex flex-wrap items-center gap-3.5 pt-1">
               <Link
                 href="/login"
-                className="h-12 px-7 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-sm font-bold flex items-center gap-2.5 transition-all shadow-xs active:scale-[0.99]"
+                className="h-12 px-7 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white text-sm font-bold flex items-center gap-2.5 transition-all shadow-xs active:scale-[0.99]"
               >
                 <span>دخول بكود الطالب</span>
                 <ArrowLeft className="w-4 h-4" />
@@ -48,9 +48,9 @@ export function HeroSection() {
 
               <Link
                 href="/exams/builder"
-                className="h-12 px-6 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E8E9ED] dark:border-[#334155] text-[#12263F] dark:text-white text-sm font-semibold flex items-center gap-2 hover:border-[#800020] hover:text-[#800020] dark:hover:border-[#FB7185] dark:hover:text-[#FB7185] transition-colors active:scale-[0.99] shadow-xs"
+                className="h-12 px-6 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E8E9ED] dark:border-[#334155] text-[#12263F] dark:text-white text-sm font-semibold flex items-center gap-2 hover:border-[#800B34] hover:text-[#800B34] dark:hover:border-[#FB7185] dark:hover:text-[#FB7185] transition-colors active:scale-[0.99] shadow-xs"
               >
-                <Target className="w-4 h-4 text-[#800020] dark:text-[#FB7185]" strokeWidth={2} />
+                <Target className="w-4 h-4 text-[#800B34] dark:text-[#FB7185]" strokeWidth={2} />
                 <span>جرّب بنك الأسئلة</span>
               </Link>
             </div>

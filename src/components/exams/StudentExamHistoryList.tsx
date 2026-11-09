@@ -78,7 +78,7 @@ export function StudentExamHistoryList({ attempts }: StudentExamHistoryListProps
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <h2 className="text-base sm:text-lg font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
-          <History className="w-5 h-5 text-[#800020] dark:text-[#FB7185]" />
+          <History className="w-5 h-5 text-[#800B34] dark:text-[#FB7185]" />
           <span>سجل امتحاناتك السابقة (محفوظة بالكامل للمراجعة)</span>
         </h2>
         <span className="text-xs font-bold text-[#64748B] dark:text-[#94A3B8]">
@@ -93,8 +93,8 @@ export function StudentExamHistoryList({ attempts }: StudentExamHistoryListProps
           onClick={() => setActiveTab("all")}
           className={`h-9 px-3.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer shrink-0 ${
             activeTab === "all"
-              ? "bg-[#800020] text-white shadow-xs"
-              : "bg-white dark:bg-[#1E293B] text-[#64748B] dark:text-[#94A3B8] border border-[#E2E8F0] dark:border-[#334155] hover:border-[#800020]/40"
+              ? "bg-[#800B34] text-white shadow-xs"
+              : "bg-white dark:bg-[#1E293B] text-[#64748B] dark:text-[#94A3B8] border border-[#E2E8F0] dark:border-[#334155] hover:border-[#800B34]/40"
           }`}
         >
           <span>الكل</span>
@@ -106,8 +106,8 @@ export function StudentExamHistoryList({ attempts }: StudentExamHistoryListProps
           onClick={() => setActiveTab("lessons")}
           className={`h-9 px-3.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer shrink-0 ${
             activeTab === "lessons"
-              ? "bg-[#800020] text-white shadow-xs"
-              : "bg-white dark:bg-[#1E293B] text-[#64748B] dark:text-[#94A3B8] border border-[#E2E8F0] dark:border-[#334155] hover:border-[#800020]/40"
+              ? "bg-[#800B34] text-white shadow-xs"
+              : "bg-white dark:bg-[#1E293B] text-[#64748B] dark:text-[#94A3B8] border border-[#E2E8F0] dark:border-[#334155] hover:border-[#800B34]/40"
           }`}
         >
           <BookOpen className="w-3.5 h-3.5" />
@@ -120,8 +120,8 @@ export function StudentExamHistoryList({ attempts }: StudentExamHistoryListProps
           onClick={() => setActiveTab("units")}
           className={`h-9 px-3.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer shrink-0 ${
             activeTab === "units"
-              ? "bg-[#800020] text-white shadow-xs"
-              : "bg-white dark:bg-[#1E293B] text-[#64748B] dark:text-[#94A3B8] border border-[#E2E8F0] dark:border-[#334155] hover:border-[#800020]/40"
+              ? "bg-[#800B34] text-white shadow-xs"
+              : "bg-white dark:bg-[#1E293B] text-[#64748B] dark:text-[#94A3B8] border border-[#E2E8F0] dark:border-[#334155] hover:border-[#800B34]/40"
           }`}
         >
           <Layers className="w-3.5 h-3.5" />
@@ -134,8 +134,8 @@ export function StudentExamHistoryList({ attempts }: StudentExamHistoryListProps
           onClick={() => setActiveTab("comprehensive")}
           className={`h-9 px-3.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer shrink-0 ${
             activeTab === "comprehensive"
-              ? "bg-[#800020] text-white shadow-xs"
-              : "bg-white dark:bg-[#1E293B] text-[#64748B] dark:text-[#94A3B8] border border-[#E2E8F0] dark:border-[#334155] hover:border-[#800020]/40"
+              ? "bg-[#800B34] text-white shadow-xs"
+              : "bg-white dark:bg-[#1E293B] text-[#64748B] dark:text-[#94A3B8] border border-[#E2E8F0] dark:border-[#334155] hover:border-[#800B34]/40"
           }`}
         >
           <Target className="w-3.5 h-3.5" />
@@ -209,7 +209,7 @@ export function StudentExamHistoryList({ attempts }: StudentExamHistoryListProps
                       ? `/exams/${attempt.examId}/results?attemptId=${attempt.id}`
                       : `/exams/${attempt.id}/results`
                   }
-                  className="h-10 px-4 rounded-xl border border-[#800020]/30 hover:border-[#800020] bg-white dark:bg-[#1E293B] hover:bg-[#800020]/10 text-[#800020] dark:text-[#FB7185] text-xs font-bold flex items-center justify-center gap-1.5 transition-colors shrink-0 self-stretch sm:self-center"
+                  className="h-10 px-4 rounded-xl border border-[#800B34]/30 hover:border-[#800B34] bg-white dark:bg-[#1E293B] hover:bg-[#800B34]/10 text-[#800B34] dark:text-[#FB7185] text-xs font-bold flex items-center justify-center gap-1.5 transition-colors shrink-0 self-stretch sm:self-center"
                 >
                   <span>مراجعة الامتحان والحل</span>
                   <ArrowLeft className="w-3.5 h-3.5" />

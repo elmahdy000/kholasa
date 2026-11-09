@@ -46,8 +46,8 @@ const TOUR_STEPS: TourStep[] = [
     description:
       "كل درس معمول في كبسولة سريعة تديك المفيد في دقايق، من غير رغي ولا حشو، ومركزة على النقط اللي بتيجي في الامتحان.",
     icon: BookOpen,
-    iconColor: "text-[#800020] dark:text-[#FB7185]",
-    iconBg: "bg-[#800020]/10 dark:bg-[#800020]/25",
+    iconColor: "text-[#800B34] dark:text-[#FB7185]",
+    iconBg: "bg-[#800B34]/10 dark:bg-[#800B34]/25",
     previewTitle: "كبسولة الدرس بتوفرلك إيه؟",
     previewHighlights: [
       { icon: Sparkles, text: "شرح مباشر وسريع لكل فكرة في الدرس" },
@@ -188,8 +188,8 @@ export function ProductTourModal({ isOpen, onClose, userName }: ProductTourModal
           {/* Top Bar with Dismiss */}
           <div className="p-4 sm:p-5 border-b border-[#F1F5F9] dark:border-[#1E293B] flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#800020] dark:bg-[#FB7185]" />
-              <span className="text-xs sm:text-[13px] font-bold text-[#800020] dark:text-[#FB7185]">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#800B34] dark:bg-[#FB7185]" />
+              <span className="text-xs sm:text-[13px] font-bold text-[#800B34] dark:text-[#FB7185]">
                 جولة سريعة في المنصة
               </span>
             </div>
@@ -239,7 +239,7 @@ export function ProductTourModal({ isOpen, onClose, userName }: ProductTourModal
                 {/* Interactive Visual Preview Box */}
                 <div className="p-4 sm:p-5 rounded-2xl bg-[#F8FAFC] dark:bg-[#1E293B]/60 border border-[#E2E8F0] dark:border-[#334155]/80 space-y-3">
                   <div className="text-xs font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
-                    <Sparkles className="w-4 h-4 text-[#800020] dark:text-[#FB7185]" />
+                    <Sparkles className="w-4 h-4 text-[#800B34] dark:text-[#FB7185]" />
                     <span>{step.previewTitle}</span>
                   </div>
 
@@ -258,7 +258,7 @@ export function ProductTourModal({ isOpen, onClose, userName }: ProductTourModal
                     })}
                   </div>
 
-                  <div className="pt-2 border-t border-[#E2E8F0] dark:border-[#334155]/60 text-[11px] font-bold text-[#800020] dark:text-[#FB7185]">
+                  <div className="pt-2 border-t border-[#E2E8F0] dark:border-[#334155]/60 text-[11px] font-bold text-[#800B34] dark:text-[#FB7185]">
                     {step.tagline}
                   </div>
                 </div>
@@ -277,7 +277,7 @@ export function ProductTourModal({ isOpen, onClose, userName }: ProductTourModal
                   onClick={() => setCurrentStepIndex(idx)}
                   className={`h-2 rounded-full transition-all cursor-pointer ${
                     idx === currentStepIndex
-                      ? "w-6 bg-[#800020] dark:bg-[#FB7185]"
+                      ? "w-6 bg-[#800B34] dark:bg-[#FB7185]"
                       : "w-2 bg-[#CBD5E1] dark:bg-[#475569] hover:bg-[#94A3B8]"
                   }`}
                   aria-label={`الخطوة ${idx + 1}`}
@@ -304,7 +304,7 @@ export function ProductTourModal({ isOpen, onClose, userName }: ProductTourModal
                 className={`px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-white flex items-center gap-2 shadow-sm transition-all cursor-pointer active:scale-98 ${
                   isLast
                     ? "bg-[#059669] hover:bg-[#047857]"
-                    : "bg-[#800020] hover:bg-[#66001A]"
+                    : "bg-[#800B34] hover:bg-[#680829]"
                 }`}
               >
                 {isLast ? (

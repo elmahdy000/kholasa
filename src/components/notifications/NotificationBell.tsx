@@ -256,20 +256,20 @@ export function NotificationBell() {
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
           "relative w-9 h-9 sm:w-10 sm:h-10 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#1E293B] flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:border-slate-300 dark:hover:border-slate-700 transition-colors cursor-pointer shadow-2xs",
-          isOpen && "border-[#800020] dark:border-[#FB7185] text-[#800020] dark:text-[#FB7185]"
+          isOpen && "border-[#800B34] dark:border-[#FB7185] text-[#800B34] dark:text-[#FB7185]"
         )}
         title="الإشعارات والتنبيهات"
         aria-label="الإشعارات"
         aria-expanded={isOpen}
       >
         <Bell
-          className={cn("w-4 h-4", hasUrgent && "text-[#800020] dark:text-[#FB7185]")}
+          className={cn("w-4 h-4", hasUrgent && "text-[#800B34] dark:text-[#FB7185]")}
           weight={unreadCount > 0 ? "fill" : "bold"}
         />
 
         {/* Unread Counter Badge */}
         {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-[#800020] text-white text-[10px] font-bold rounded-full flex items-center justify-center ring-2 ring-white dark:ring-[#0F172A] shadow-xs">
+          <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 bg-[#800B34] text-white text-[10px] font-bold rounded-full flex items-center justify-center ring-2 ring-white dark:ring-[#0F172A] shadow-xs">
             {unreadCount > 9 ? "+9" : unreadCount}
           </span>
         )}
@@ -290,7 +290,7 @@ export function NotificationBell() {
             <div className="flex items-center gap-2">
               <span className="font-bold text-sm text-slate-900 dark:text-white">الإشعارات والتنبيهات</span>
               {unreadCount > 0 && (
-                <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-[#800020]/10 text-[#800020] dark:text-[#FB7185]">
+                <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-[#800B34]/10 text-[#800B34] dark:text-[#FB7185]">
                   {unreadCount} جديد
                 </span>
               )}
@@ -301,7 +301,7 @@ export function NotificationBell() {
                 <button
                   type="button"
                   onClick={handleMarkAllAsRead}
-                  className="px-2 py-1 text-xs text-[#800020] dark:text-[#FB7185] hover:bg-[#800020]/10 rounded-lg font-bold transition-colors flex items-center gap-1 cursor-pointer"
+                  className="px-2 py-1 text-xs text-[#800B34] dark:text-[#FB7185] hover:bg-[#800B34]/10 rounded-lg font-bold transition-colors flex items-center gap-1 cursor-pointer"
                   title="تحديد الكل كمقروء"
                 >
                   <Checks className="w-3.5 h-3.5" weight="bold" />
@@ -360,7 +360,7 @@ export function NotificationBell() {
                 type="button"
                 onClick={handleEnablePush}
                 disabled={isSubscribing}
-                className="px-2.5 py-1 bg-[#800020] hover:bg-[#66001A] text-white rounded-lg text-[11px] font-bold shrink-0 transition-colors cursor-pointer disabled:opacity-50"
+                className="px-2.5 py-1 bg-[#800B34] hover:bg-[#680829] text-white rounded-lg text-[11px] font-bold shrink-0 transition-colors cursor-pointer disabled:opacity-50"
               >
                 {isSubscribing ? "جاري..." : "تفعيل"}
               </button>
@@ -438,7 +438,7 @@ export function NotificationBell() {
 
                       {/* Unread dot */}
                       {!notif.isRead && (
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#800020] dark:bg-[#FB7185] shrink-0 mt-1" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#800B34] dark:bg-[#FB7185] shrink-0 mt-1" />
                       )}
                     </div>
                   </Link>
@@ -452,7 +452,7 @@ export function NotificationBell() {
             <Link
               href="/dashboard"
               onClick={() => setIsOpen(false)}
-              className="text-[11px] font-bold text-[#800020] dark:text-[#FB7185] hover:underline"
+              className="text-[11px] font-bold text-[#800B34] dark:text-[#FB7185] hover:underline"
             >
               الانتقال للوحة الطالب ←
             </Link>

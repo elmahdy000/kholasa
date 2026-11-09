@@ -125,7 +125,7 @@ export function DailyGuidedStudyPlanCard({
       {/* 1. Header with Badge & Dynamic Progress */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E2E8F0] dark:border-[#334155] pb-4">
         <div className="space-y-1">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#800020]/10 dark:bg-[#FB7185]/15 border border-[#800020]/20 dark:border-[#FB7185]/25 text-[#800020] dark:text-[#FB7185] text-xs font-bold">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#800B34]/10 dark:bg-[#FB7185]/15 border border-[#800B34]/20 dark:border-[#FB7185]/25 text-[#800B34] dark:text-[#FB7185] text-xs font-bold">
             <Compass className="w-4 h-4" weight="bold" />
             <span>مسار المذاكرة اليومي الذكي</span>
           </div>
@@ -147,7 +147,7 @@ export function DailyGuidedStudyPlanCard({
               className={`px-2.5 py-0.5 rounded-full font-mono text-xs font-bold ${
                 isAllCompleted
                   ? "bg-[#059669]/15 text-[#059669] dark:text-[#34D399]"
-                  : "bg-[#800020]/10 text-[#800020] dark:text-[#FB7185]"
+                  : "bg-[#800B34]/10 text-[#800B34] dark:text-[#FB7185]"
               }`}
             >
               {completedCount} من 3 مهام ({progressPercentage}%)
@@ -160,7 +160,7 @@ export function DailyGuidedStudyPlanCard({
               className={`h-full transition-all duration-500 rounded-full ${
                 isAllCompleted
                   ? "bg-[#059669] dark:bg-[#34D399]"
-                  : "bg-[#800020] dark:bg-[#FB7185]"
+                  : "bg-[#800B34] dark:bg-[#FB7185]"
               }`}
               style={{ width: `${progressPercentage}%` }}
             />
@@ -202,7 +202,7 @@ export function DailyGuidedStudyPlanCard({
           className={`p-4 rounded-xl border flex flex-col justify-between gap-4 transition-all ${
             task1Done
               ? "bg-[#059669]/5 dark:bg-[#059669]/10 border-[#059669]/30"
-              : "bg-[#F8FAFC] dark:bg-[#1E293B]/60 border-[#E2E8F0] dark:border-[#334155] hover:border-[#800020]/40"
+              : "bg-[#F8FAFC] dark:bg-[#1E293B]/60 border-[#E2E8F0] dark:border-[#334155] hover:border-[#800B34]/40"
           }`}
         >
           <div className="space-y-3">
@@ -214,7 +214,7 @@ export function DailyGuidedStudyPlanCard({
                 className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold ${
                   task1Done
                     ? "bg-[#059669]/15 text-[#059669] dark:text-[#34D399]"
-                    : "bg-[#800020]/10 text-[#800020] dark:text-[#FB7185]"
+                    : "bg-[#800B34]/10 text-[#800B34] dark:text-[#FB7185]"
                 }`}
               >
                 {task1Done ? (
@@ -233,7 +233,7 @@ export function DailyGuidedStudyPlanCard({
                 className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${
                   task1Done
                     ? "bg-[#059669] text-white"
-                    : "bg-[#800020]/10 text-[#800020] dark:text-[#FB7185]"
+                    : "bg-[#800B34]/10 text-[#800B34] dark:text-[#FB7185]"
                 }`}
               >
                 <Lightning className="w-5 h-5" weight={task1Done ? "fill" : "bold"} />
@@ -259,7 +259,7 @@ export function DailyGuidedStudyPlanCard({
               <button
                 type="button"
                 onClick={handleStartChallenge}
-                className="h-9 px-4 rounded-lg bg-[#800020] hover:bg-[#66001A] text-white text-xs font-bold flex items-center justify-center gap-1.5 w-full transition-colors cursor-pointer shadow-xs active:scale-[0.99]"
+                className="min-h-[44px] px-4 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white text-xs font-bold flex items-center justify-center gap-1.5 w-full transition-colors cursor-pointer shadow-xs active:scale-[0.99]"
               >
                 <Lightning className="w-3.5 h-3.5" weight="bold" />
                 <span>ابدأ التحدي دلوقتي</span>

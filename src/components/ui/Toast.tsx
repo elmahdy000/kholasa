@@ -115,8 +115,8 @@ function ToastCard({
       case "info":
       default:
         return {
-          icon: <Info className="w-4 h-4 text-[#800020] dark:text-[#FB7185]" />,
-          badgeBg: "bg-[#800020]/10 border-[#800020]/20",
+          icon: <Info className="w-4 h-4 text-[#800B34] dark:text-[#FB7185]" />,
+          badgeBg: "bg-[#800B34]/10 border-[#800B34]/20",
           border: "border-slate-200 dark:border-slate-700/80",
         };
     }

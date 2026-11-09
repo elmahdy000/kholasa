@@ -17,8 +17,8 @@ export function QuickActionsGrid({ subjectsCount, unresolvedMistakesCount }: Qui
       href: "/subjects",
       icon: BookOpen,
       badge: `${subjectsCount} مواد`,
-      badgeColor: "bg-[#800020]/10 text-[#800020] dark:bg-[#800020]/30 dark:text-[#FB7185]",
-      iconBg: "bg-[#800020]/10 text-[#800020] dark:bg-[#1E293B] dark:text-[#FB7185]",
+      badgeColor: "bg-[#800B34]/10 text-[#800B34] dark:bg-[#800B34]/30 dark:text-[#FB7185]",
+      iconBg: "bg-[#800B34]/10 text-[#800B34] dark:bg-[#1E293B] dark:text-[#FB7185]",
       layoutClass: "col-span-2 sm:col-span-3 lg:col-span-1",
       isFeaturedOnMobile: true,
     },
@@ -65,8 +65,8 @@ export function QuickActionsGrid({ subjectsCount, unresolvedMistakesCount }: Qui
       href: "/leaderboard",
       icon: Trophy,
       badge: "تنافسي",
-      badgeColor: "bg-[#800020]/10 text-[#800020] dark:bg-[#800020]/30 dark:text-[#FB7185]",
-      iconBg: "bg-[#800020]/10 text-[#800020] dark:bg-[#1E293B] dark:text-[#FB7185]",
+      badgeColor: "bg-[#800B34]/10 text-[#800B34] dark:bg-[#800B34]/30 dark:text-[#FB7185]",
+      iconBg: "bg-[#800B34]/10 text-[#800B34] dark:bg-[#1E293B] dark:text-[#FB7185]",
       layoutClass: "col-span-1 sm:col-span-2 lg:col-span-1",
     },
   ];
@@ -89,7 +89,7 @@ export function QuickActionsGrid({ subjectsCount, unresolvedMistakesCount }: Qui
             <Link
               key={action.id}
               href={action.href}
-              className={`group p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E5E7EB] dark:border-[#334155] hover:border-[#800020]/40 dark:hover:border-[#E11D48]/60 transition-all flex flex-col justify-between text-right ${action.layoutClass}`}
+              className={`group p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E5E7EB] dark:border-[#334155] hover:border-[#800B34]/40 dark:hover:border-[#E11D48]/60 transition-all flex flex-col justify-between text-right ${action.layoutClass}`}
             >
               <div className="flex items-center justify-between gap-2 mb-3">
                 <div
@@ -107,7 +107,7 @@ export function QuickActionsGrid({ subjectsCount, unresolvedMistakesCount }: Qui
               </div>
 
               <div className="space-y-1">
-                <h3 className="text-[13px] sm:text-sm font-bold text-[#12263F] dark:text-[#F8FAFC] group-hover:text-[#800020] dark:group-hover:text-[#FB7185] transition-colors leading-snug">
+                <h3 className="text-[13px] sm:text-sm font-bold text-[#12263F] dark:text-[#F8FAFC] group-hover:text-[#800B34] dark:group-hover:text-[#FB7185] transition-colors leading-snug">
                   {action.title}
                 </h3>
                 <p className="text-[11px] sm:text-xs text-[#64748B] dark:text-[#94A3B8] leading-relaxed line-clamp-2">

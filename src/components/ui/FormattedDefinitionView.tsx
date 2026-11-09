@@ -192,15 +192,15 @@ export function FormattedDefinitionView({
       intro: "text-emerald-800 dark:text-emerald-300 font-bold",
     },
     burgundy: {
-      badge: "bg-[#800020]/15 text-[#800020] dark:text-[#FB7185] border border-[#800020]/30",
-      bullet: "bg-[#800020] dark:bg-[#FB7185]",
+      badge: "bg-[#800B34]/15 text-[#800B34] dark:text-[#FB7185] border border-[#800B34]/30",
+      bullet: "bg-[#800B34] dark:bg-[#FB7185]",
       itemBg:
         variant === "flashcard"
-          ? "bg-[#800020]/5 dark:bg-[#800020]/15 border border-[#800020]/20 dark:border-[#800020]/30"
-          : "bg-[#800020]/5 dark:bg-[#800020]/10 border border-[#800020]/15",
-      title: "text-[#800020] dark:text-[#FB7185] font-bold",
+          ? "bg-[#800B34]/5 dark:bg-[#800B34]/15 border border-[#800B34]/20 dark:border-[#800B34]/30"
+          : "bg-[#800B34]/5 dark:bg-[#800B34]/10 border border-[#800B34]/15",
+      title: "text-[#800B34] dark:text-[#FB7185] font-bold",
       body: "text-slate-800 dark:text-slate-100",
-      intro: "text-[#800020] dark:text-[#FB7185] font-bold",
+      intro: "text-[#800B34] dark:text-[#FB7185] font-bold",
     },
     slate: {
       badge: "bg-slate-200/80 dark:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-600",

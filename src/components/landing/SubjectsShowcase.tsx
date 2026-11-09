@@ -47,7 +47,7 @@ export function SubjectsShowcase({ subjects = [] }: SubjectsShowcaseProps) {
 
           <Link
             href="/subjects"
-            className="h-11 px-5 rounded-xl border border-[#E8E9ED] dark:border-[#334155] text-xs font-semibold text-[#12263F] dark:text-white flex items-center gap-2 hover:border-[#800020] hover:text-[#800020] dark:hover:border-[#FB7185] dark:hover:text-[#FB7185] transition-colors shrink-0 self-start md:self-auto shadow-xs"
+            className="h-11 px-5 rounded-xl border border-[#E8E9ED] dark:border-[#334155] text-xs font-semibold text-[#12263F] dark:text-white flex items-center gap-2 hover:border-[#800B34] hover:text-[#800B34] dark:hover:border-[#FB7185] dark:hover:text-[#FB7185] transition-colors shrink-0 self-start md:self-auto shadow-xs"
           >
             <span>تصفح كل المواد والوحدات</span>
             <ArrowLeft className="w-3.5 h-3.5" />
@@ -65,13 +65,13 @@ export function SubjectsShowcase({ subjects = [] }: SubjectsShowcaseProps) {
             return (
               <div
                 key={sub.id}
-                className="p-6 rounded-2xl bg-[#F7F8FA] dark:bg-[#1E293B] border border-[#E8E9ED] dark:border-[#334155] hover:border-[#800020]/30 dark:hover:border-[#FB7185]/30 transition-colors flex flex-col justify-between space-y-5 shadow-xs"
+                className="p-6 rounded-2xl bg-[#F7F8FA] dark:bg-[#1E293B] border border-[#E8E9ED] dark:border-[#334155] hover:border-[#800B34]/30 dark:hover:border-[#FB7185]/30 transition-colors flex flex-col justify-between space-y-5 shadow-xs"
               >
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div
                       className="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold"
-                      style={{ backgroundColor: sub.color || "#800020" }}
+                      style={{ backgroundColor: sub.color || "#800B34" }}
                     >
                       <Icon className="w-5 h-5 text-white" strokeWidth={1.8} />
                     </div>
@@ -92,7 +92,7 @@ export function SubjectsShowcase({ subjects = [] }: SubjectsShowcaseProps) {
 
                 <div className="pt-4 border-t border-[#E8E9ED] dark:border-[#334155] flex items-center justify-between text-xs text-[#64748B] dark:text-[#94A3B8] font-mono">
                   <span>{unitsCount > 0 ? `${unitsCount} وحدات وفصول` : "قيد الإعداد"}</span>
-                  <span className="font-semibold text-[#800020] dark:text-[#FB7185]">
+                  <span className="font-semibold text-[#800B34] dark:text-[#FB7185]">
                     {questionsCount > 0 ? `${questionsCount} أسئلة تدريبية` : "بنك الأسئلة قيد التحديث"}
                   </span>
                 </div>

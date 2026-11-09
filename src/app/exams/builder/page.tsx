@@ -70,14 +70,14 @@ export default async function ExamBuilderPage({
           <div className="flex items-center gap-2 text-xs font-semibold text-[#64748B] dark:text-[#94A3B8] mb-1">
             <Link
               href={user ? "/dashboard" : "/"}
-              className="hover:text-[#800020] dark:hover:text-[#BD123F] transition-colors"
+              className="hover:text-[#800B34] dark:hover:text-[#BD123F] transition-colors"
             >
               الرئيسية
             </Link>
             <span className="text-[#64748B]/60 dark:text-[#64748B]">/</span>
             <Link
               href="/subjects"
-              className="hover:text-[#800020] dark:hover:text-[#BD123F] transition-colors"
+              className="hover:text-[#800B34] dark:hover:text-[#BD123F] transition-colors"
             >
               المواد الدراسية
             </Link>

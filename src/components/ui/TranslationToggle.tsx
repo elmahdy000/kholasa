@@ -47,12 +47,12 @@ export function TranslationToggle({
         "inline-flex items-center justify-center font-bold rounded-lg border transition-all cursor-pointer select-none",
         sizeClasses,
         isTranslated
-          ? "bg-[#800020]/10 dark:bg-[#800020]/25 text-[#800020] dark:text-[#FB7185] border-[#800020]/30 shadow-xs"
-          : "bg-white dark:bg-[#1E293B] hover:bg-[#F8FAFC] dark:hover:bg-[#334155] text-[#64748B] hover:text-[#800020] dark:text-[#94A3B8] dark:hover:text-white border-[#E2E8F0] dark:border-[#334155]",
+          ? "bg-[#800B34]/10 dark:bg-[#800B34]/25 text-[#800B34] dark:text-[#FB7185] border-[#800B34]/30 shadow-xs"
+          : "bg-white dark:bg-[#1E293B] hover:bg-[#F8FAFC] dark:hover:bg-[#334155] text-[#64748B] hover:text-[#800B34] dark:text-[#94A3B8] dark:hover:text-white border-[#E2E8F0] dark:border-[#334155]",
         className
       )}
     >
-      <Translate className={cn(iconSizes, isTranslated ? "text-[#800020] dark:text-[#FB7185]" : "text-[#64748B] dark:text-[#94A3B8]")} weight="bold" />
+      <Translate className={cn(iconSizes, isTranslated ? "text-[#800B34] dark:text-[#FB7185]" : "text-[#64748B] dark:text-[#94A3B8]")} weight="bold" />
       <span>{isTranslated ? "إخفاء الترجمة" : "ترجمة"}</span>
     </button>
   );

@@ -64,7 +64,7 @@ export function ExamResultActions({
           </>
         ) : (
           <>
-            <Share2 className="w-3.5 h-3.5 text-[#800020]" />
+            <Share2 className="w-3.5 h-3.5 text-[#800B34]" />
             <span>مشاركة النتيجة</span>
           </>
         )}

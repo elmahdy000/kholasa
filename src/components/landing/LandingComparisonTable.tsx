@@ -18,7 +18,7 @@ export function LandingComparisonTable() {
         <div className="grid grid-cols-3 p-4 bg-[#F8FAFC] dark:bg-[#1E293B] font-bold text-[13px] sm:text-sm text-[#0F172A] dark:text-white border-b border-[#E2E8F0] dark:border-[#334155] text-center">
           <div>المعيار</div>
           <div className="text-[#DC2626] font-bold">الطرق التقليدية</div>
-          <div className="text-[#800020] dark:text-[#FB7185] font-bold">منصة الخلاصة</div>
+          <div className="text-[#800B34] dark:text-[#FB7185] font-bold">منصة الخلاصة</div>
         </div>
 
         <div className="divide-y divide-[#E2E8F0] dark:divide-[#334155] text-[13px] sm:text-sm">

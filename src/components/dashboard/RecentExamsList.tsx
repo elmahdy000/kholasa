@@ -18,7 +18,7 @@ export function RecentExamsList({ recentExams }: RecentExamsListProps) {
         </h2>
         <Link
           href="/exams/builder"
-          className="text-xs sm:text-[13px] font-bold text-[#800020] dark:text-[#FB7185] hover:underline"
+          className="text-xs sm:text-[13px] font-bold text-[#800B34] dark:text-[#FB7185] hover:underline"
         >
           ابدأ اختبار جديد
         </Link>
@@ -29,7 +29,7 @@ export function RecentExamsList({ recentExams }: RecentExamsListProps) {
           <Link
             key={exam.id}
             href={`/exams/${exam.id}/results`}
-            className="p-4 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E5E7EB] dark:border-[#334155] hover:border-[#800020]/40 dark:hover:border-[#E11D48]/60 transition-colors flex items-center justify-between"
+            className="p-4 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E5E7EB] dark:border-[#334155] hover:border-[#800B34]/40 dark:hover:border-[#E11D48]/60 transition-colors flex items-center justify-between"
           >
             <div>
               <h3 className="text-xs sm:text-[13px] font-bold text-[#12263F] dark:text-[#F8FAFC] line-clamp-1">

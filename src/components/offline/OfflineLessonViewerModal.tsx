@@ -51,7 +51,7 @@ export function OfflineLessonViewerModal({
         <div className="p-4 sm:p-5 border-b border-[#E2E8F0] dark:border-[#334155] flex items-center justify-between gap-4 shrink-0 bg-[#F8FAFC] dark:bg-[#1E293B]/70">
           <div className="space-y-1">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-[12px] font-bold text-[#800020] dark:text-[#FB7185]">
+              <span className="text-[12px] font-bold text-[#800B34] dark:text-[#FB7185]">
                 {lesson.subjectName}
               </span>
               <span className="text-[12px] text-[#64748B]">•</span>

@@ -72,7 +72,7 @@ export function GatekeeperResultPhase({
       <div className="space-y-4">
         <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#334155] pb-2">
           <h4 className="text-[13px] font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
-            <BookOpen className="w-4 h-4 text-[#800020]" />
+            <BookOpen className="w-4 h-4 text-[#800B34]" />
             <span>تفاصيل إجاباتك وتحليل كل سؤال:</span>
           </h4>
           <span className="text-[13px] text-[#94A3B8] font-bold">

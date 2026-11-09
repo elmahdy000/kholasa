@@ -17,7 +17,7 @@ export function MistakesEmptyState() {
       </p>
       <Link
         href="/exams"
-        className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] font-bold transition-all active:opacity-80"
+        className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white text-[13px] font-bold transition-all active:opacity-80"
       >
         <span>انتقل إلى الامتحانات</span>
         <ArrowLeft className="w-3.5 h-3.5" />

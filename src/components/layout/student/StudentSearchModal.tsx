@@ -56,7 +56,7 @@ export function StudentSearchModal({ isOpen, onClose }: StudentSearchModalProps)
         <div className="relative border-b border-[#E8E9ED] dark:border-[#22364F] flex items-center px-4">
           <div className="text-[#64748B] dark:text-[#94A3B8] shrink-0">
             {isSearching ? (
-              <SpinnerGap className="w-4 h-4 animate-spin text-[#800020] dark:text-[#FB7185]" weight="bold" />
+              <SpinnerGap className="w-4 h-4 animate-spin text-[#800B34] dark:text-[#FB7185]" weight="bold" />
             ) : (
               <MagnifyingGlass className="w-4 h-4" weight="bold" />
             )}
@@ -92,7 +92,7 @@ export function StudentSearchModal({ isOpen, onClose }: StudentSearchModalProps)
                 className="w-full p-3 rounded-xl hover:bg-[#F7F8FA] dark:hover:bg-[#132945] flex items-center justify-between text-right transition-colors group cursor-pointer"
               >
                 <div>
-                  <span className="text-[13px] font-bold text-[#12263F] dark:text-[#F5F7FB] block group-hover:text-[#800020] dark:group-hover:text-[#FB7185] transition-colors">
+                  <span className="text-[13px] font-bold text-[#12263F] dark:text-[#F5F7FB] block group-hover:text-[#800B34] dark:group-hover:text-[#FB7185] transition-colors">
                     {res.title}
                   </span>
                   <span className="text-[13px] text-[#64748B] dark:text-[#94A3B8] block mt-1">
@@ -131,7 +131,7 @@ export function StudentSearchModal({ isOpen, onClose }: StudentSearchModalProps)
               <span>للإغلاق</span>
             </span>
           </div>
-          <span className="text-[#800020] dark:text-[#FB7185] font-bold">الخلاصة للبحث السريع</span>
+          <span className="text-[#800B34] dark:text-[#FB7185] font-bold">الخلاصة للبحث السريع</span>
         </div>
       </div>
     </div>

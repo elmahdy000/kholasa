@@ -79,7 +79,7 @@ export function ExamBuilderSummaryCard({
             <span className="font-bold text-[#12263F] dark:text-[#F5F7FB] flex items-center gap-1.5 text-left break-words">
               <span
                 className="w-2 h-2 rounded-full shrink-0 mt-0.5"
-                style={{ backgroundColor: currentSubject?.color || "#800020" }}
+                style={{ backgroundColor: currentSubject?.color || "#800B34" }}
               />
               <bdi>{currentSubject?.name || "غير محدد"}</bdi>
             </span>
@@ -108,7 +108,7 @@ export function ExamBuilderSummaryCard({
 
           <div className="flex items-center justify-between py-1.5 border-b border-[#E8E9ED]/50 dark:border-[#22364F]/60">
             <span className="text-[#64748B] dark:text-[#94A3B8]">عدد الأسئلة:</span>
-            <span className="font-mono font-extrabold text-[#800020] dark:text-[#E59A18]">
+            <span className="font-mono font-extrabold text-[#800B34] dark:text-[#E59A18]">
               {effectiveCount} سؤال
             </span>
           </div>
@@ -133,9 +133,9 @@ export function ExamBuilderSummaryCard({
               في بنك الأسئلة المعتمد
             </span>
           </div>
-          <div className="flex items-baseline gap-1 text-[#800020] dark:text-[#E59A18]">
+          <div className="flex items-baseline gap-1 text-[#800B34] dark:text-[#E59A18]">
             {isCounting ? (
-              <Loader2 className="w-4 h-4 animate-spin text-[#800020] dark:text-[#E59A18]" />
+              <Loader2 className="w-4 h-4 animate-spin text-[#800B34] dark:text-[#E59A18]" />
             ) : (
               <span className="text-xl font-extrabold font-mono">
                 {availableCount ?? 0}
@@ -178,7 +178,7 @@ export function ExamBuilderSummaryCard({
         <button
           type="submit"
           disabled={!isReady || isSubmitting}
-          className="w-full h-12 px-4 rounded-xl bg-[#800020] hover:bg-[#66001A] dark:bg-[#A30D36] dark:hover:bg-[#BD123F] disabled:bg-[#E8E9ED] dark:disabled:bg-[#132945] disabled:text-[#94A3B8] dark:disabled:text-[#64748B] disabled:cursor-not-allowed text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all shadow-xs active:opacity-90 cursor-pointer"
+          className="w-full h-12 px-4 rounded-xl bg-[#800B34] hover:bg-[#680829] dark:bg-[#A30D36] dark:hover:bg-[#BD123F] disabled:bg-[#E8E9ED] dark:disabled:bg-[#132945] disabled:text-[#94A3B8] dark:disabled:text-[#64748B] disabled:cursor-not-allowed text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all shadow-xs active:opacity-90 cursor-pointer"
         >
           {isSubmitting ? (
             <>

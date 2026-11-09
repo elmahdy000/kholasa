@@ -29,7 +29,7 @@ export function QuestionFiltersSection({
       {/* 3. نوع الأسئلة (Question Types) */}
       <section className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#10233A] border border-[#E8E9ED] dark:border-[#22364F] shadow-xs space-y-3 flex flex-col justify-between">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-[#800020]/8 dark:bg-[#A30D36]/20 text-[#800020] dark:text-[#F5F7FB] flex items-center justify-center font-bold">
+          <div className="w-8 h-8 rounded-lg bg-[#800B34]/8 dark:bg-[#A30D36]/20 text-[#800B34] dark:text-[#F5F7FB] flex items-center justify-center font-bold">
             <HelpCircle className="w-4 h-4" />
           </div>
           <div>
@@ -58,8 +58,8 @@ export function QuestionFiltersSection({
                 onClick={() => setQuestionType(t.id)}
                 className={`min-h-[44px] h-auto p-2.5 rounded-xl border text-right transition-all flex items-center justify-between gap-1.5 cursor-pointer ${
                   isSelected
-                    ? "border-2 border-[#800020] dark:border-[#A30D36] bg-[#800020]/[0.03] dark:bg-[#A30D36]/15 text-[#800020] dark:text-[#F5F7FB] font-bold shadow-xs"
-                    : "border-[#E8E9ED] dark:border-[#22364F] bg-white dark:bg-[#0D1B2E] text-[#12263F] dark:text-[#C8D2E0] hover:border-[#800020]/40 dark:hover:border-[#2D4563] hover:bg-[#F7F8FA] dark:hover:bg-[#132945]"
+                    ? "border-2 border-[#800B34] dark:border-[#A30D36] bg-[#800B34]/[0.03] dark:bg-[#A30D36]/15 text-[#800B34] dark:text-[#F5F7FB] font-bold shadow-xs"
+                    : "border-[#E8E9ED] dark:border-[#22364F] bg-white dark:bg-[#0D1B2E] text-[#12263F] dark:text-[#C8D2E0] hover:border-[#800B34]/40 dark:hover:border-[#2D4563] hover:bg-[#F7F8FA] dark:hover:bg-[#132945]"
                 }`}
               >
                 <div className="flex items-center gap-1.5 min-w-0 flex-1">
@@ -71,7 +71,7 @@ export function QuestionFiltersSection({
                 <div
                   className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center shrink-0 ${
                     isSelected
-                      ? "bg-[#800020] dark:bg-[#A30D36] border-[#800020] dark:border-[#A30D36] text-white"
+                      ? "bg-[#800B34] dark:bg-[#A30D36] border-[#800B34] dark:border-[#A30D36] text-white"
                       : "border-[#E8E9ED] dark:border-[#22364F] bg-white dark:bg-[#10233A]"
                   }`}
                 >
@@ -86,7 +86,7 @@ export function QuestionFiltersSection({
       {/* 4. مستوى الصعوبة (Difficulty) */}
       <section className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#10233A] border border-[#E8E9ED] dark:border-[#22364F] shadow-xs space-y-3 flex flex-col justify-between">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-[#800020]/8 dark:bg-[#A30D36]/20 text-[#800020] dark:text-[#F5F7FB] flex items-center justify-center font-bold">
+          <div className="w-8 h-8 rounded-lg bg-[#800B34]/8 dark:bg-[#A30D36]/20 text-[#800B34] dark:text-[#F5F7FB] flex items-center justify-center font-bold">
             <SlidersHorizontal className="w-4 h-4" />
           </div>
           <div>
@@ -114,8 +114,8 @@ export function QuestionFiltersSection({
                 onClick={() => setDifficulty(d.id)}
                 className={`min-h-[44px] h-auto p-2.5 rounded-xl border text-right transition-all flex items-center justify-between gap-1.5 cursor-pointer ${
                   isSelected
-                    ? "border-2 border-[#800020] dark:border-[#A30D36] bg-[#800020]/[0.03] dark:bg-[#A30D36]/15 text-[#800020] dark:text-[#F5F7FB] font-bold shadow-xs"
-                    : "border-[#E8E9ED] dark:border-[#22364F] bg-white dark:bg-[#0D1B2E] text-[#12263F] dark:text-[#C8D2E0] hover:border-[#800020]/40 dark:hover:border-[#2D4563] hover:bg-[#F7F8FA] dark:hover:bg-[#132945]"
+                    ? "border-2 border-[#800B34] dark:border-[#A30D36] bg-[#800B34]/[0.03] dark:bg-[#A30D36]/15 text-[#800B34] dark:text-[#F5F7FB] font-bold shadow-xs"
+                    : "border-[#E8E9ED] dark:border-[#22364F] bg-white dark:bg-[#0D1B2E] text-[#12263F] dark:text-[#C8D2E0] hover:border-[#800B34]/40 dark:hover:border-[#2D4563] hover:bg-[#F7F8FA] dark:hover:bg-[#132945]"
                 }`}
               >
                 <div className="min-w-0 flex-1">
@@ -129,7 +129,7 @@ export function QuestionFiltersSection({
                 <div
                   className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center shrink-0 ${
                     isSelected
-                      ? "bg-[#800020] dark:bg-[#A30D36] border-[#800020] dark:border-[#A30D36] text-white"
+                      ? "bg-[#800B34] dark:bg-[#A30D36] border-[#800B34] dark:border-[#A30D36] text-white"
                       : "border-[#E8E9ED] dark:border-[#22364F] bg-white dark:bg-[#10233A]"
                   }`}
                 >

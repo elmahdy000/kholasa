@@ -15,7 +15,7 @@ export function ContinueLearningCard({ continueLesson }: ContinueLearningCardPro
     return (
       <div className="rounded-2xl p-5 sm:p-6 bg-white dark:bg-[#0F172A] border border-[#E5E7EB] dark:border-[#334155] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-start gap-3.5">
-          <div className="w-11 h-11 rounded-xl bg-[#800020]/10 text-[#800020] dark:bg-[#1E293B] dark:text-[#FB7185] flex items-center justify-center shrink-0">
+          <div className="w-11 h-11 rounded-xl bg-[#800B34]/10 text-[#800B34] dark:bg-[#1E293B] dark:text-[#FB7185] flex items-center justify-center shrink-0">
             <Compass className="w-5 h-5" weight="bold" />
           </div>
           <div className="space-y-1">
@@ -30,7 +30,7 @@ export function ContinueLearningCard({ continueLesson }: ContinueLearningCardPro
 
         <Link
           href="/subjects"
-          className="h-11 px-5 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] font-bold flex items-center justify-center gap-2 shadow-sm transition-all shrink-0 active:scale-[0.98]"
+          className="h-11 px-5 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white text-[13px] font-bold flex items-center justify-center gap-2 shadow-sm transition-all shrink-0 active:scale-[0.98]"
         >
           <span>تصفح المواد</span>
           <ArrowLeft className="w-3.5 h-3.5" weight="bold" />
@@ -47,23 +47,23 @@ export function ContinueLearningCard({ continueLesson }: ContinueLearningCardPro
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.22, delay: 0.04 }}
-      className="group relative rounded-2xl p-5 sm:p-6 bg-white dark:bg-[#0F172A] border border-[#E8E9ED] dark:border-[#22364F] hover:border-[#800020]/30 dark:hover:border-[#FB7185]/40 shadow-xs transition-all overflow-hidden"
+      className="group relative rounded-2xl p-5 sm:p-6 bg-white dark:bg-[#0F172A] border border-[#E8E9ED] dark:border-[#22364F] hover:border-[#800B34]/30 dark:hover:border-[#FB7185]/40 shadow-xs transition-all overflow-hidden"
     >
       {/* Subtle warm ambient background accent */}
-      <div className="absolute top-0 right-0 w-36 h-36 bg-gradient-to-bl from-[#800020]/5 dark:from-[#FB7185]/10 to-transparent rounded-bl-full pointer-events-none" />
+      <div className="absolute top-0 right-0 w-36 h-36 bg-gradient-to-bl from-[#800B34]/5 dark:from-[#FB7185]/10 to-transparent rounded-bl-full pointer-events-none" />
 
       <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-5 sm:gap-6">
         {/* Content */}
         <div className="flex items-start gap-4 min-w-0 flex-1">
           {/* Play Icon Squircle */}
-          <div className="w-12 h-12 sm:w-13 sm:h-13 rounded-2xl bg-gradient-to-br from-[#800020] to-[#550015] text-white flex items-center justify-center shrink-0 shadow-sm group-hover:scale-105 transition-transform mt-0.5">
+          <div className="w-12 h-12 sm:w-13 sm:h-13 rounded-2xl bg-gradient-to-br from-[#800B34] to-[#550015] text-white flex items-center justify-center shrink-0 shadow-sm group-hover:scale-105 transition-transform mt-0.5">
             <Play className="w-6 h-6 fill-current ml-0.5" />
           </div>
 
           <div className="space-y-2 min-w-0 flex-1">
             {/* Top Row */}
             <div className="flex items-center gap-2.5 flex-wrap">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold text-[#800020] dark:text-[#FB7185] bg-[#800020]/10 dark:bg-[#800020]/25 border border-[#800020]/20 dark:border-[#FB7185]/30">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold text-[#800B34] dark:text-[#FB7185] bg-[#800B34]/10 dark:bg-[#800B34]/25 border border-[#800B34]/20 dark:border-[#FB7185]/30">
                 <Play className="w-3 h-3 fill-current" />
                 <span>كمّل من مكان ما وقفت</span>
               </span>
@@ -108,7 +108,7 @@ export function ContinueLearningCard({ continueLesson }: ContinueLearningCardPro
         <div className="shrink-0 pt-1 md:pt-0">
           <Link
             href={`/lessons/${continueLesson.id}`}
-            className="h-11 px-6 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] sm:text-sm font-bold flex items-center justify-center gap-2 shadow-xs transition-all shrink-0 active:scale-[0.98] w-full sm:w-auto"
+            className="h-11 px-6 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white text-[13px] sm:text-sm font-bold flex items-center justify-center gap-2 shadow-xs transition-all shrink-0 active:scale-[0.98] w-full sm:w-auto"
           >
             <span>كمّل الدرس دلوقتي</span>
             <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" weight="bold" />

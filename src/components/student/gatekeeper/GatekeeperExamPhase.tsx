@@ -22,7 +22,7 @@ export function GatekeeperExamPhase({
       {/* Question Category & Badges */}
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#E2E8F0] dark:border-[#334155] pb-3">
         <div className="flex items-center gap-2">
-          <span className="px-3 py-1 rounded-lg bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] text-[13px] font-bold">
+          <span className="px-3 py-1 rounded-lg bg-[#800B34]/10 dark:bg-[#1E293B] text-[#800B34] text-[13px] font-bold">
             {currentQ.subjectName}
           </span>
           {currentQ.unitTitle && (
@@ -75,7 +75,7 @@ export function GatekeeperExamPhase({
                 onClick={() => onSelectOption(currentQ.id, opt.id)}
                 className={`w-full p-3 sm:p-4 rounded-xl border ${isEnglish ? "text-left font-sans" : "text-right font-content"} transition-all flex items-start justify-between gap-3 cursor-pointer overflow-hidden ${
                   isSelected
-                    ? "bg-[#800020]/10 dark:bg-[#1E293B] border-[#800020] text-[#0F172A] dark:text-white"
+                    ? "bg-[#800B34]/10 dark:bg-[#1E293B] border-[#800B34] text-[#0F172A] dark:text-white"
                     : "bg-[#F8FAFC] dark:bg-[#1E293B]/60 hover:bg-[#F8FAFC] dark:hover:bg-[#334155] border-[#E2E8F0] dark:border-[#334155] text-[#0F172A] dark:text-[#F8FAFC]"
                 }`}
               >
@@ -83,7 +83,7 @@ export function GatekeeperExamPhase({
                   <span
                     className={`w-6 h-6 rounded-lg text-[13px] font-bold flex items-center justify-center shrink-0 mt-0.5 ${
                       isSelected
-                        ? "bg-[#800020] text-white"
+                        ? "bg-[#800B34] text-white"
                         : "bg-[#E2E8F0] dark:bg-[#334155] text-[#64748B] dark:text-[#94A3B8]"
                     }`}
                   >
@@ -101,7 +101,7 @@ export function GatekeeperExamPhase({
                 <div
                   className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 mt-0.5 ${
                     isSelected
-                      ? "border-[#800020] bg-[#800020] text-white"
+                      ? "border-[#800B34] bg-[#800B34] text-white"
                       : "border-[#E2E8F0] dark:border-[#334155] text-transparent"
                   }`}
                 >
@@ -164,7 +164,7 @@ export function GatekeeperExamPhase({
             value={answers[currentQ.id]?.essayText || ""}
             onChange={(e) => onEssayChange(currentQ.id, e.target.value)}
             placeholder="اكتب هنا ما تتذكره من مفاهيم أو تعليلات... وسنعرض لك نموذج الإجابة والمفهوم لمقارنته فور التسليم."
-            className="w-full p-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#800020] leading-relaxed"
+            className="w-full p-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#800B34] leading-relaxed"
           />
         </div>
       )}

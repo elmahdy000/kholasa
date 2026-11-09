@@ -39,7 +39,7 @@ export function BidiStatement({
         <code
           dir="ltr"
           className={cn(
-            "inline-block font-mono font-bold bg-[#F8FAFC] dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] px-2 py-0.5 rounded-md border border-[#E2E8F0] dark:border-[#334155] text-[13px] sm:text-sm break-words [overflow-wrap:anywhere] whitespace-pre-wrap max-w-full align-baseline",
+            "inline-block font-mono font-bold bg-[#F8FAFC] dark:bg-[#1E293B] text-[#800B34] dark:text-[#FB7185] px-2 py-0.5 rounded-md border border-[#E2E8F0] dark:border-[#334155] text-[13px] sm:text-sm break-words [overflow-wrap:anywhere] whitespace-pre-wrap max-w-full align-baseline",
             className
           )}
           style={{ unicodeBidi: "isolate" }}
@@ -64,7 +64,7 @@ export function BidiStatement({
                 <code
                   key={pIdx}
                   dir="ltr"
-                  className="inline-block font-mono font-bold bg-[#F8FAFC] dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] px-1.5 py-0.5 rounded-md border border-[#E2E8F0] dark:border-[#334155] text-[13px] sm:text-sm break-words [overflow-wrap:anywhere] whitespace-pre-wrap max-w-full align-baseline mx-0.5"
+                  className="inline-block font-mono font-bold bg-[#F8FAFC] dark:bg-[#1E293B] text-[#800B34] dark:text-[#FB7185] px-1.5 py-0.5 rounded-md border border-[#E2E8F0] dark:border-[#334155] text-[13px] sm:text-sm break-words [overflow-wrap:anywhere] whitespace-pre-wrap max-w-full align-baseline mx-0.5"
                 >
                   {part.slice(1, -1)}
                 </code>
@@ -107,7 +107,7 @@ export function BidiStatement({
             <code
               key={index}
               dir="ltr"
-              className="inline-block font-mono font-bold bg-[#F8FAFC] dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] px-2 py-0.5 rounded-md border border-[#E2E8F0] dark:border-[#334155] text-[13px] sm:text-sm break-words [overflow-wrap:anywhere] whitespace-pre-wrap max-w-full mx-1 align-baseline"
+              className="inline-block font-mono font-bold bg-[#F8FAFC] dark:bg-[#1E293B] text-[#800B34] dark:text-[#FB7185] px-2 py-0.5 rounded-md border border-[#E2E8F0] dark:border-[#334155] text-[13px] sm:text-sm break-words [overflow-wrap:anywhere] whitespace-pre-wrap max-w-full mx-1 align-baseline"
               style={{ unicodeBidi: "isolate" }}
             >
               {rawCode}
@@ -121,7 +121,7 @@ export function BidiStatement({
             <bdi
               key={index}
               dir="ltr"
-              className="inline-block font-mono font-bold text-[#800020] dark:text-[#FB7185] bg-[#800020]/10 dark:bg-[#1E293B] px-1.5 py-0.5 rounded border border-[#800020]/20 dark:border-[#FB7185]/30 text-[13px] sm:text-sm mx-1 align-baseline whitespace-nowrap"
+              className="inline-block font-mono font-bold text-[#800B34] dark:text-[#FB7185] bg-[#800B34]/10 dark:bg-[#1E293B] px-1.5 py-0.5 rounded border border-[#800B34]/20 dark:border-[#FB7185]/30 text-[13px] sm:text-sm mx-1 align-baseline whitespace-nowrap"
               style={{ unicodeBidi: "isolate" }}
             >
               {token.trim()}
@@ -142,7 +142,7 @@ export function BidiStatement({
             <bdi
               key={index}
               dir="ltr"
-              className="inline-block font-sans font-bold text-[#800020] dark:text-[#FB7185] mx-1"
+              className="inline-block font-sans font-bold text-[#800B34] dark:text-[#FB7185] mx-1"
               style={{ unicodeBidi: "isolate" }}
             >
               {token}
@@ -196,7 +196,7 @@ export function BidiStatement({
             <code
               key={index}
               dir="ltr"
-              className="inline-block font-mono font-bold bg-[#F8FAFC] dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] px-2 py-0.5 rounded-md border border-[#E2E8F0] dark:border-[#334155] text-[13px] sm:text-sm break-words [overflow-wrap:anywhere] whitespace-pre-wrap max-w-full mx-1 align-baseline"
+              className="inline-block font-mono font-bold bg-[#F8FAFC] dark:bg-[#1E293B] text-[#800B34] dark:text-[#FB7185] px-2 py-0.5 rounded-md border border-[#E2E8F0] dark:border-[#334155] text-[13px] sm:text-sm break-words [overflow-wrap:anywhere] whitespace-pre-wrap max-w-full mx-1 align-baseline"
               style={{ unicodeBidi: "isolate" }}
             >
               {token.trim()}

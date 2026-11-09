@@ -188,7 +188,7 @@ export default function ForgotPasswordPage() {
                     value={identifier}
                     onChange={(e) => setIdentifier(e.target.value)}
                     placeholder="student@kholasa.app أو 01012345678"
-                    className="w-full h-11 pr-11 pl-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B]/50 text-[#0F172A] dark:text-white placeholder:text-[#94A3B8] text-[13px] sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#800020] focus:border-transparent transition-all"
+                    className="w-full h-11 pr-11 pl-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B]/50 text-[#0F172A] dark:text-white placeholder:text-[#94A3B8] text-[13px] sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#800B34] focus:border-transparent transition-all"
                     dir="ltr"
                   />
                   <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#94A3B8] pointer-events-none">
@@ -200,7 +200,7 @@ export default function ForgotPasswordPage() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full h-11 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] sm:text-sm font-bold flex items-center justify-center gap-2 shadow-sm transition-all disabled:opacity-50 interactive-tap"
+                className="w-full h-11 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white text-[13px] sm:text-sm font-bold flex items-center justify-center gap-2 shadow-sm transition-all disabled:opacity-50 interactive-tap"
               >
                 {isLoading ? (
                   <>
@@ -234,7 +234,7 @@ export default function ForgotPasswordPage() {
                       setStep("REQUEST_OTP");
                       setError(null);
                     }}
-                    className="text-[13px] font-bold text-[#800020] dark:text-[#FB7185] hover:underline flex items-center gap-1"
+                    className="text-[13px] font-bold text-[#800B34] dark:text-[#FB7185] hover:underline flex items-center gap-1"
                   >
                     <RefreshCw className="w-3 h-3" />
                     <span>تغيير المعرف</span>
@@ -249,7 +249,7 @@ export default function ForgotPasswordPage() {
                     value={otpToken}
                     onChange={(e) => setOtpToken(e.target.value)}
                     placeholder="123456"
-                    className="w-full h-12 pr-11 pl-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B]/50 text-[#0F172A] dark:text-white placeholder:text-[#94A3B8] text-lg font-mono tracking-widest text-center focus:outline-none focus:ring-2 focus:ring-[#800020] focus:border-transparent transition-all"
+                    className="w-full h-12 pr-11 pl-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B]/50 text-[#0F172A] dark:text-white placeholder:text-[#94A3B8] text-lg font-mono tracking-widest text-center focus:outline-none focus:ring-2 focus:ring-[#800B34] focus:border-transparent transition-all"
                     dir="ltr"
                   />
                   <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#94A3B8] pointer-events-none">
@@ -258,7 +258,7 @@ export default function ForgotPasswordPage() {
                 </div>
 
                 {devCodeHint && (
-                  <div className="mt-2 p-3 rounded-lg bg-[#800020]/10 dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#E11D48]/40 flex items-center justify-between text-[13px] text-[#800020] dark:text-[#FB7185]">
+                  <div className="mt-2 p-3 rounded-lg bg-[#800B34]/10 dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#E11D48]/40 flex items-center justify-between text-[13px] text-[#800B34] dark:text-[#FB7185]">
                     <span className="font-medium">رمز التحقق التجريبي:</span>
                     <span className="font-mono font-bold tracking-wider">{devCodeHint}</span>
                   </div>
@@ -268,7 +268,7 @@ export default function ForgotPasswordPage() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full h-11 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] sm:text-sm font-bold flex items-center justify-center gap-2 shadow-sm transition-all disabled:opacity-50 interactive-tap"
+                className="w-full h-11 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white text-[13px] sm:text-sm font-bold flex items-center justify-center gap-2 shadow-sm transition-all disabled:opacity-50 interactive-tap"
               >
                 {isLoading ? (
                   <>
@@ -303,7 +303,7 @@ export default function ForgotPasswordPage() {
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full h-11 pr-11 pl-11 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B]/50 text-[#0F172A] dark:text-white placeholder:text-[#94A3B8] text-[13px] sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#800020] focus:border-transparent transition-all"
+                    className="w-full h-11 pr-11 pl-11 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B]/50 text-[#0F172A] dark:text-white placeholder:text-[#94A3B8] text-[13px] sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#800B34] focus:border-transparent transition-all"
                     dir="ltr"
                   />
                   <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#94A3B8] pointer-events-none">
@@ -334,7 +334,7 @@ export default function ForgotPasswordPage() {
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full h-11 pr-11 pl-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B]/50 text-[#0F172A] dark:text-white placeholder:text-[#94A3B8] text-[13px] sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#800020] focus:border-transparent transition-all"
+                    className="w-full h-11 pr-11 pl-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B]/50 text-[#0F172A] dark:text-white placeholder:text-[#94A3B8] text-[13px] sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#800B34] focus:border-transparent transition-all"
                     dir="ltr"
                   />
                   <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#94A3B8] pointer-events-none">
@@ -346,7 +346,7 @@ export default function ForgotPasswordPage() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full h-11 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] sm:text-sm font-bold flex items-center justify-center gap-2 shadow-sm transition-all disabled:opacity-50 interactive-tap mt-2"
+                className="w-full h-11 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white text-[13px] sm:text-sm font-bold flex items-center justify-center gap-2 shadow-sm transition-all disabled:opacity-50 interactive-tap mt-2"
               >
                 {isLoading ? (
                   <>
@@ -380,7 +380,7 @@ export default function ForgotPasswordPage() {
 
               <Link
                 href="/login"
-                className="w-full h-11 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] sm:text-sm font-bold flex items-center justify-center gap-2 shadow-sm transition-all interactive-tap"
+                className="w-full h-11 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white text-[13px] sm:text-sm font-bold flex items-center justify-center gap-2 shadow-sm transition-all interactive-tap"
               >
                 <span>العودة لصفحة تسجيل الدخول</span>
                 <ArrowLeft className="w-4 h-4" />
@@ -393,7 +393,7 @@ export default function ForgotPasswordPage() {
             <div className="mt-6 pt-5 border-t border-[#E2E8F0] dark:border-[#1E293B] text-center">
               <Link
                 href="/login"
-                className="inline-flex items-center gap-2 text-[13px] font-bold text-[#64748B] hover:text-[#800020] dark:text-[#94A3B8] dark:hover:text-[#FB7185] transition-colors"
+                className="inline-flex items-center gap-2 text-[13px] font-bold text-[#64748B] hover:text-[#800B34] dark:text-[#94A3B8] dark:hover:text-[#FB7185] transition-colors"
               >
                 <ArrowRight className="w-3.5 h-3.5" />
                 <span>العودة إلى تسجيل الدخول</span>

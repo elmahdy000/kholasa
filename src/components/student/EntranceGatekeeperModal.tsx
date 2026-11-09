@@ -277,7 +277,7 @@ export function EntranceGatekeeperModal({
           <button
             type="button"
             onClick={handleDismiss}
-            className="w-full h-11 rounded-2xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] font-bold transition-colors cursor-pointer shadow-sm"
+            className="w-full h-11 rounded-2xl bg-[#800B34] hover:bg-[#680829] text-white text-[13px] font-bold transition-colors cursor-pointer shadow-sm"
           >
             متابعة للمذاكرة 🚀
           </button>
@@ -368,7 +368,7 @@ export function EntranceGatekeeperModal({
               </div>
               <div className="w-full h-1.5 rounded-full bg-[#334155] overflow-hidden">
                 <div
-                  className="h-full bg-gradient-to-r from-amber-500 to-[#800020] rounded-full transition-all duration-300"
+                  className="h-full bg-gradient-to-r from-amber-500 to-[#800B34] rounded-full transition-all duration-300"
                   style={{
                     width: `${((currentStep + 1) / questions.length) * 100}%`,
                   }}
@@ -442,7 +442,7 @@ export function EntranceGatekeeperModal({
                         Math.min(questions.length - 1, prev + 1)
                       )
                     }
-                    className="h-10 px-5 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-xs font-bold shadow-sm flex items-center gap-1.5 transition-all cursor-pointer"
+                    className="h-10 px-5 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white text-xs font-bold shadow-sm flex items-center gap-1.5 transition-all cursor-pointer"
                   >
                     <span>السؤال التالي</span>
                     <ArrowLeft className="w-3.5 h-3.5" />
@@ -477,7 +477,7 @@ export function EntranceGatekeeperModal({
               <button
                 type="button"
                 onClick={handleUnlockAndEnter}
-                className="w-full sm:w-auto h-10 px-6 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-xs sm:text-[13px] font-bold flex items-center justify-center gap-2 transition-colors active:opacity-80 shadow-sm cursor-pointer"
+                className="w-full sm:w-auto h-10 px-6 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white text-xs sm:text-[13px] font-bold flex items-center justify-center gap-2 transition-colors active:opacity-80 shadow-sm cursor-pointer"
               >
                 <span>متابعة للمذاكرة 🚀</span>
                 <ArrowLeft className="w-3.5 h-3.5" />
