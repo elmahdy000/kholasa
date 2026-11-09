@@ -59,7 +59,7 @@ export function StudentShell({ children, user: propUser }: StudentShellProps) {
   if (!user) {
     return (
       <StudentShellContext.Provider value={{ isInsideShell: true, user: null }}>
-        <div className="min-h-screen flex flex-col bg-white dark:bg-[#081426] text-[#12263F] dark:text-[#F5F7FB]">
+        <div className="min-h-screen flex flex-col bg-[#F7F9FC] dark:bg-[#081426] text-[#091B40] dark:text-[#F5F7FB]">
           <SiteHeader />
           <main className="flex-1 w-full max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 pb-28 lg:pb-12">
             {children}
@@ -73,7 +73,7 @@ export function StudentShell({ children, user: propUser }: StudentShellProps) {
 
   return (
     <StudentShellContext.Provider value={{ isInsideShell: true, user }}>
-      <div className="min-h-screen flex flex-col bg-white dark:bg-[#081426] text-[#12263F] dark:text-[#F5F7FB]">
+      <div className="min-h-screen flex flex-col bg-[#F7F9FC] dark:bg-[#081426] text-[#091B40] dark:text-[#F5F7FB]">
         {/* Desktop & Tablet Top Navbar */}
         <StudentHeader
           navItems={STUDENT_NAV_ITEMS}

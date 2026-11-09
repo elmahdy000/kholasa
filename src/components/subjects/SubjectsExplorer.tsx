@@ -94,15 +94,15 @@ export function SubjectsExplorer({ subjects, isStaff }: SubjectsExplorerProps) {
 
   if (subjects.length === 0) {
     return (
-      <div className="p-8 sm:p-14 text-center rounded-3xl bg-white dark:bg-[#1E293B] border border-[#E8E9ED] dark:border-[#334155] shadow-xs space-y-4">
-        <div className="w-14 h-14 rounded-2xl bg-[#800020]/10 text-[#800020] dark:text-[#FB7185] flex items-center justify-center mx-auto">
+      <div className="p-8 sm:p-14 text-center rounded-3xl bg-white dark:bg-[#0D214D] border border-[#E2E8F0] dark:border-[#1E3A6E] shadow-[0_8px_28px_rgba(9,27,64,0.07)] space-y-4">
+        <div className="w-14 h-14 rounded-2xl bg-[#800B34]/10 text-[#800B34] dark:bg-[#E9AD32]/15 dark:text-[#E9AD32] flex items-center justify-center mx-auto">
           <BookOpen className="w-7 h-7" />
         </div>
         <div className="space-y-1.5 max-w-md mx-auto">
-          <h3 className="text-lg font-bold text-[#12263F] dark:text-white">
+          <h3 className="text-lg font-bold text-[#091B40] dark:text-white">
             {isStaff ? "لسه مفيش مواد مضافة" : "لا توجد مواد دراسية متاحة حالياً لمسارك"}
           </h3>
-          <p className="text-xs sm:text-sm text-[#64748B] dark:text-[#94A3B8] leading-relaxed">
+          <p className="text-xs sm:text-sm text-[#536681] dark:text-[#94A3B8] leading-relaxed">
             {isStaff
               ? "المسارات والصفوف جاهزة ومتظبطة، وتقدر تبدأ تضيف المواد والوحدات والدروس من لوحة التحكم."
               : "يتم إعداد وتحديث المناهج الدراسية الخاصة بصفك الدراسي. إذا كنت تواجه مشكلة، يرجى مراجعة إدارة السنتر أو المساعد."}
@@ -112,7 +112,7 @@ export function SubjectsExplorer({ subjects, isStaff }: SubjectsExplorerProps) {
           {isStaff ? (
             <Link
               href="/admin/curriculum"
-              className="inline-flex items-center gap-2 h-10 px-5 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-xs font-bold transition-all shadow-xs"
+              className="inline-flex items-center gap-2 h-11 px-5 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white text-xs font-bold transition-all shadow-md"
             >
               <span>إضافة مادة من لوحة التحكم</span>
               <ArrowLeft className="w-4 h-4" />
@@ -120,7 +120,7 @@ export function SubjectsExplorer({ subjects, isStaff }: SubjectsExplorerProps) {
           ) : (
             <Link
               href="/dashboard"
-              className="inline-flex items-center gap-2 h-10 px-5 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-xs font-bold transition-all shadow-xs"
+              className="inline-flex items-center gap-2 h-11 px-5 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white text-xs font-bold transition-all shadow-md"
             >
               <span>العودة للرئيسية</span>
               <ArrowLeft className="w-4 h-4" />
@@ -134,23 +134,23 @@ export function SubjectsExplorer({ subjects, isStaff }: SubjectsExplorerProps) {
   return (
     <div className="space-y-8">
       {/* Search Bar & Filters */}
-      <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#1E293B] border border-[#E8E9ED] dark:border-[#334155] shadow-xs space-y-4">
+      <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#0D214D] border border-[#E2E8F0] dark:border-[#1E3A6E] shadow-sm space-y-4">
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
           {/* Search Input */}
           <div className="relative flex-1">
-            <Search className="w-4 h-4 text-[#64748B] dark:text-[#94A3B8] absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <Search className="w-4 h-4 text-[#536681] dark:text-[#94A3B8] absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="ابحث باسم المادة، الوحدة، أو الموضوع..."
-              className="w-full h-11 pr-10 pl-10 rounded-xl bg-[#F7F8FA] dark:bg-[#0F172A] border border-[#E8E9ED] dark:border-[#334155] text-xs font-semibold text-[#12263F] dark:text-white placeholder:text-[#64748B] dark:placeholder:text-[#94A3B8] focus:outline-none focus:border-[#800020] transition-colors"
+              className="w-full h-11 pr-10 pl-10 rounded-xl bg-[#F7F9FC] dark:bg-[#071737] border border-[#E2E8F0] dark:border-[#1E3A6E] text-xs font-semibold text-[#091B40] dark:text-white placeholder:text-[#94A3B8] focus:outline-none focus:border-[#800B34] transition-colors"
             />
             {searchQuery && (
               <button
                 type="button"
                 onClick={() => setSearchQuery("")}
-                className="absolute left-3 top-1/2 -translate-y-1/2 p-1 text-[#64748B] hover:text-[#12263F] dark:hover:text-white"
+                className="absolute left-3 top-1/2 -translate-y-1/2 p-1 text-[#536681] hover:text-[#091B40] dark:hover:text-white"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
@@ -158,14 +158,14 @@ export function SubjectsExplorer({ subjects, isStaff }: SubjectsExplorerProps) {
           </div>
 
           {/* Result Counter Pill */}
-          <div className="shrink-0 text-xs font-bold text-[#64748B] dark:text-[#94A3B8] bg-[#F7F8FA] dark:bg-[#0F172A] px-3.5 py-2.5 rounded-xl border border-[#E8E9ED] dark:border-[#334155] text-center">
+          <div className="shrink-0 text-xs font-bold text-[#536681] dark:text-[#94A3B8] bg-[#F7F9FC] dark:bg-[#071737] px-3.5 py-2.5 rounded-xl border border-[#E2E8F0] dark:border-[#1E3A6E] text-center">
             عرض {filteredSubjects.length} من {subjects.length} مادة
           </div>
         </div>
 
         {/* Filter Pills */}
         {filterTabs.length > 2 && (
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none pt-1 border-t border-[#E8E9ED]/60 dark:border-[#334155]/60">
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none pt-1 border-t border-[#E2E8F0] dark:border-[#1E3A6E]">
             {filterTabs.map((tab) => {
               const isSelected = selectedFilter === tab.id;
               return (
@@ -175,8 +175,8 @@ export function SubjectsExplorer({ subjects, isStaff }: SubjectsExplorerProps) {
                   onClick={() => setSelectedFilter(tab.id)}
                   className={`h-9 px-3.5 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer ${
                     isSelected
-                      ? "bg-[#800020] text-white shadow-xs"
-                      : "bg-[#F7F8FA] dark:bg-[#0F172A] text-[#64748B] dark:text-[#94A3B8] border border-[#E8E9ED] dark:border-[#334155] hover:text-[#12263F] dark:hover:text-white"
+                      ? "bg-[#800B34] text-white shadow-sm"
+                      : "bg-[#F7F9FC] dark:bg-[#071737] text-[#536681] dark:text-[#94A3B8] border border-[#E2E8F0] dark:border-[#1E3A6E] hover:text-[#091B40] dark:hover:text-white"
                   }`}
                 >
                   {tab.label}
@@ -199,50 +199,50 @@ export function SubjectsExplorer({ subjects, isStaff }: SubjectsExplorerProps) {
               <Link
                 key={subj.id}
                 href={`/subjects/${subj.id}`}
-                className="group p-6 sm:p-7 rounded-2xl bg-white dark:bg-[#10233A] border border-[#E8E9ED] dark:border-[#22364F] hover:border-[#800020]/40 dark:hover:border-[#A30D36]/60 transition-all flex flex-col justify-between space-y-6 shadow-xs hover:shadow-sm h-auto min-w-0"
+                className="group p-6 sm:p-7 rounded-3xl bg-white dark:bg-[#0D214D] border border-[#E2E8F0] dark:border-[#1E3A6E] hover:border-[#800B34]/50 transition-all flex flex-col justify-between space-y-6 shadow-[0_8px_28px_rgba(9,27,64,0.07)] hover:shadow-md h-auto min-w-0"
               >
                 <div className="space-y-4">
                   {/* Top Bar of Card */}
                   <div className="flex items-center justify-between">
                     <div
-                      className="w-12 h-12 rounded-xl flex items-center justify-center text-white shadow-xs"
-                      style={{ backgroundColor: subj.color || "#800020" }}
+                      className="w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-sm"
+                      style={{ backgroundColor: subj.color || "#800B34" }}
                     >
                       <Icon className="w-5 h-5" strokeWidth={1.8} />
                     </div>
-                    <span className="text-[11px] font-bold text-[#64748B] dark:text-[#94A3B8] bg-[#F7F8FA] dark:bg-[#081426] px-2.5 py-1 rounded-lg border border-[#E8E9ED] dark:border-[#22364F]">
+                    <span className="text-[11px] font-bold text-[#536681] dark:text-[#94A3B8] bg-[#F7F9FC] dark:bg-[#071737] px-2.5 py-1 rounded-lg border border-[#E2E8F0] dark:border-[#1E3A6E]">
                       {badgeLabel}
                     </span>
                   </div>
 
                   {/* Title & Description */}
                   <div className="space-y-2">
-                    <h3 className="text-xl font-bold text-[#12263F] dark:text-[#F5F7FB] group-hover:text-[#800020] dark:group-hover:text-[#A30D36] transition-colors leading-snug break-words">
+                    <h3 className="text-xl font-bold text-[#091B40] dark:text-[#F7F9FC] group-hover:text-[#800B34] dark:group-hover:text-[#E9AD32] transition-colors leading-snug break-words">
                       <bdi>{subj.name}</bdi>
                     </h3>
-                    <p className="text-xs text-[#64748B] dark:text-[#94A3B8] leading-relaxed font-normal break-words">
+                    <p className="text-xs text-[#536681] dark:text-[#94A3B8] leading-relaxed font-normal break-words">
                       {subj.description ||
                         "شرح كامل لوحدات المنهج، ملخص مركز، وأسئلة لكل درس."}
                     </p>
                   </div>
 
                   {/* Metadata Chips */}
-                  <div className="flex flex-wrap items-center gap-2 pt-1 text-[11px] font-medium text-[#64748B] dark:text-[#94A3B8]">
-                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#F7F8FA] dark:bg-[#081426] border border-[#E8E9ED] dark:border-[#22364F]">
-                      <Layers className="w-3.5 h-3.5 text-[#800020] dark:text-[#A30D36]" />
+                  <div className="flex flex-wrap items-center gap-2 pt-1 text-[11px] font-medium text-[#536681] dark:text-[#94A3B8]">
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#F7F9FC] dark:bg-[#071737] border border-[#E2E8F0] dark:border-[#1E3A6E]">
+                      <Layers className="w-3.5 h-3.5 text-[#800B34] dark:text-[#E9AD32]" />
                       <span>{subj.unitsCount} وحدات</span>
                     </span>
-                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#F7F8FA] dark:bg-[#081426] border border-[#E8E9ED] dark:border-[#22364F]">
-                      <BookmarkCheck className="w-3.5 h-3.5 text-[#D97706] dark:text-[#E59A18]" />
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#F7F9FC] dark:bg-[#071737] border border-[#E2E8F0] dark:border-[#1E3A6E]">
+                      <BookmarkCheck className="w-3.5 h-3.5 text-[#E9AD32]" />
                       <span>{subj.lessonsCount} درس</span>
                     </span>
                   </div>
                 </div>
 
                 {/* Card Action Footer */}
-                <div className="pt-4 border-t border-[#E8E9ED] dark:border-[#22364F] flex items-center justify-between text-xs font-bold text-[#800020] dark:text-[#A30D36]">
+                <div className="pt-4 border-t border-[#E2E8F0] dark:border-[#1E3A6E] flex items-center justify-between text-xs font-bold text-[#800B34] dark:text-[#E9AD32]">
                   <span>تصفح المنهج والدروس</span>
-                  <div className="w-8 h-8 rounded-lg bg-[#800020]/8 dark:bg-[#A30D36]/20 flex items-center justify-center group-hover:bg-[#800020] group-hover:text-white transition-all">
+                  <div className="w-8 h-8 rounded-lg bg-[#800B34]/10 dark:bg-[#E9AD32]/15 flex items-center justify-center group-hover:bg-[#800B34] group-hover:text-white transition-all">
                     <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" />
                   </div>
                 </div>
@@ -251,16 +251,16 @@ export function SubjectsExplorer({ subjects, isStaff }: SubjectsExplorerProps) {
           })}
         </div>
       ) : (
-        /* Empty State */
-        <div className="p-12 text-center rounded-2xl bg-white dark:bg-[#10233A] border border-[#E8E9ED] dark:border-[#22364F] space-y-4">
-          <div className="w-12 h-12 rounded-xl bg-[#F7F8FA] dark:bg-[#081426] border border-[#E8E9ED] dark:border-[#22364F] text-[#64748B] dark:text-[#94A3B8] flex items-center justify-center mx-auto">
+        /* Empty Search State */
+        <div className="p-12 text-center rounded-3xl bg-white dark:bg-[#0D214D] border border-[#E2E8F0] dark:border-[#1E3A6E] shadow-sm space-y-4">
+          <div className="w-12 h-12 rounded-xl bg-[#F7F9FC] dark:bg-[#071737] border border-[#E2E8F0] dark:border-[#1E3A6E] text-[#536681] dark:text-[#94A3B8] flex items-center justify-center mx-auto">
             <Search className="w-6 h-6" />
           </div>
           <div className="space-y-1">
-            <h3 className="text-base font-bold text-[#12263F] dark:text-[#F5F7FB]">
+            <h3 className="text-base font-bold text-[#091B40] dark:text-[#F7F9FC]">
               لم نعثر على مواد مطابقة للبحث
             </h3>
-            <p className="text-xs text-[#64748B] dark:text-[#94A3B8] max-w-sm mx-auto">
+            <p className="text-xs text-[#536681] dark:text-[#94A3B8] max-w-sm mx-auto">
               جرب البحث بكلمة تانية أو مسح الفلاتر لعرض كافة المقررات المتاحة.
             </p>
           </div>
@@ -270,7 +270,7 @@ export function SubjectsExplorer({ subjects, isStaff }: SubjectsExplorerProps) {
               setSearchQuery("");
               setSelectedFilter("ALL");
             }}
-            className="h-9 px-4 rounded-xl bg-[#800020] hover:bg-[#66001A] dark:bg-[#A30D36] dark:hover:bg-[#BD123F] text-white text-xs font-bold transition-all shadow-xs cursor-pointer"
+            className="h-10 px-5 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white text-xs font-bold transition-all shadow-md cursor-pointer"
           >
             عرض كل المواد
           </button>

@@ -78,29 +78,29 @@ export function SubjectUnitsList({
           return (
             <div
               key={unit.id}
-              className="rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] overflow-hidden shadow-xs"
+              className="rounded-3xl bg-white dark:bg-[#0D214D] border border-[#E2E8F0] dark:border-[#1E3A6E] overflow-hidden shadow-[0_8px_28px_rgba(9,27,64,0.07)]"
             >
               {/* Unit Header */}
-              <div className="p-4 sm:p-5 bg-[#F8FAFC]/80 dark:bg-[#1E293B]/40 border-b border-[#E2E8F0] dark:border-[#334155] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="p-4 sm:p-5 bg-[#EAF2FF]/40 dark:bg-[#071737] border-b border-[#E2E8F0] dark:border-[#1E3A6E] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-[13px] font-mono font-bold text-[#800020] dark:text-[#FB7185]">
+                    <span className="text-[13px] font-mono font-bold text-[#800B34] dark:text-[#E9AD32]">
                       الوحدة {index + 1}
                     </span>
-                    <span className="text-[13px] text-[#64748B]">•</span>
-                    <span className="text-[13px] font-mono text-[#64748B] dark:text-[#94A3B8]">
+                    <span className="text-[13px] text-[#536681]">•</span>
+                    <span className="text-[13px] font-mono text-[#536681] dark:text-[#94A3B8]">
                       {unitCompleted} من {unitTotal} منجز ({unitProgress}%)
                     </span>
                     {unitQuestions.length > 0 && (
                       <>
-                        <span className="text-[13px] text-[#64748B]">•</span>
+                        <span className="text-[13px] text-[#536681]">•</span>
                         <span
                           className={`text-[12px] font-mono font-bold px-2 py-0.5 rounded-full ${
                             unitMasteryPct >= 80
-                              ? "bg-[#059669]/10 text-[#059669] dark:text-[#34D399]"
+                              ? "bg-[#17834B]/10 text-[#17834B] dark:text-[#34D399]"
                               : unitMasteryPct >= 50
                               ? "bg-amber-500/10 text-amber-700 dark:text-amber-400"
-                              : "bg-[#64748B]/10 text-[#64748B] dark:text-[#94A3B8]"
+                              : "bg-[#536681]/10 text-[#536681] dark:text-[#94A3B8]"
                           }`}
                         >
                           إتقان الأسئلة: {unitMasteryPct}% ({unitMasteredCount}/{unitQuestions.length})
@@ -108,11 +108,11 @@ export function SubjectUnitsList({
                       </>
                     )}
                   </div>
-                  <h3 className="text-base font-bold text-[#0F172A] dark:text-[#F8FAFC]">
+                  <h3 className="text-base font-bold text-[#091B40] dark:text-white">
                     {unit.title}
                   </h3>
                   {unit.description && (
-                    <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8]">
+                    <p className="text-[13px] text-[#536681] dark:text-[#94A3B8]">
                       {unit.description}
                     </p>
                   )}
@@ -120,15 +120,15 @@ export function SubjectUnitsList({
 
                 <Link
                   href={`/exams/builder?subjectId=${subjectId}&unitId=${unit.id}`}
-                  className="h-10 px-4 rounded-xl bg-white dark:bg-[#1E293B] hover:bg-[#F8FAFC] dark:hover:bg-[#334155] text-[#0F172A] dark:text-[#F8FAFC] text-[13px] font-bold flex items-center justify-center gap-2 transition-all shrink-0 self-start sm:self-center border border-[#E2E8F0] dark:border-[#334155]"
+                  className="h-10 px-4 rounded-xl bg-white dark:bg-[#0D214D] hover:bg-[#F7F9FC] dark:hover:bg-[#1E3A6E] text-[#091B40] dark:text-white text-[13px] font-bold flex items-center justify-center gap-2 transition-all shrink-0 self-start sm:self-center border border-[#E2E8F0] dark:border-[#1E3A6E]"
                 >
-                  <Target className="w-3.5 h-3.5 text-[#800020] dark:text-[#FB7185]" />
+                  <Target className="w-3.5 h-3.5 text-[#800B34] dark:text-[#E9AD32]" />
                   <span>امتحان الوحدة</span>
                 </Link>
               </div>
 
               {/* Lessons in this Unit */}
-              <div className="divide-y divide-[#E2E8F0] dark:divide-[#334155]/80">
+              <div className="divide-y divide-[#E2E8F0] dark:divide-[#1E3A6E]">
                 {unit.lessons.map((lesson) => {
                   const isLessonCompleted = completedSet.has(lesson.id);
                   const lessonQuestions = lesson.questions.map((q) => q.questionId);
@@ -155,18 +155,18 @@ export function SubjectUnitsList({
                       }}
                       className={`p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors ${
                         isLessonLocked
-                          ? "bg-slate-50/50 dark:bg-[#121A28]/40 hover:bg-amber-50/20 dark:hover:bg-amber-950/20 cursor-pointer"
-                          : "hover:bg-[#F8FAFC]/60 dark:hover:bg-[#1E293B]/40"
+                          ? "bg-[#FAF6F7]/60 dark:bg-[#0A1A3A]/40 hover:bg-amber-50/20 dark:hover:bg-amber-950/20 cursor-pointer"
+                          : "hover:bg-[#F7F9FC]/80 dark:hover:bg-[#11244E]/40"
                       }`}
                     >
                       <div className="flex items-start gap-4">
                         <div
                           className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 mt-0.5 ${
                             isLessonLocked
-                              ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20"
+                              ? "bg-amber-500/10 text-[#800B34] dark:text-[#E9AD32] border border-amber-500/20"
                               : isLessonCompleted
-                              ? "bg-[#059669]/10 dark:bg-[#1E293B] text-[#059669] dark:text-[#34D399]"
-                              : "bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185]"
+                              ? "bg-[#17834B]/10 dark:bg-[#17834B]/20 text-[#17834B] dark:text-[#34D399]"
+                              : "bg-[#800B34]/10 dark:bg-[#800B34]/20 text-[#800B34] dark:text-[#E9AD32]"
                           }`}
                         >
                           {isLessonLocked ? (
@@ -180,17 +180,17 @@ export function SubjectUnitsList({
 
                         <div className="space-y-1">
                           <div className="flex items-center gap-2 flex-wrap">
-                            <h4 className="text-sm font-bold text-[#0F172A] dark:text-[#F8FAFC] leading-snug">
+                            <h4 className="text-sm font-bold text-[#091B40] dark:text-white leading-snug">
                               {lesson.title}
                             </h4>
 
                             {isLessonLocked ? (
-                              <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20 inline-flex items-center gap-1">
+                              <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-amber-500/10 text-[#800B34] dark:text-[#E9AD32] border border-amber-500/20 inline-flex items-center gap-1">
                                 <Lock className="w-2.5 h-2.5" />
                                 <span>مقفول للمشتركين</span>
                               </span>
                             ) : isLessonCompleted ? (
-                              <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-[#059669]/10 dark:bg-[#1E293B] text-[#059669] dark:text-[#34D399]">
+                              <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-[#17834B]/10 dark:bg-[#17834B]/20 text-[#17834B] dark:text-[#34D399]">
                                 مكتمل
                               </span>
                             ) : null}
@@ -199,10 +199,10 @@ export function SubjectUnitsList({
                               <span
                                 className={`inline-flex items-center gap-1 text-[11px] font-mono font-bold px-2 py-0.5 rounded-full ${
                                   lessonMasteryPct >= 80
-                                    ? "bg-[#059669]/10 text-[#059669] dark:text-[#34D399]"
+                                    ? "bg-[#17834B]/10 text-[#17834B] dark:text-[#34D399]"
                                     : lessonMasteryPct >= 40
                                     ? "bg-amber-500/10 text-amber-700 dark:text-amber-400"
-                                    : "bg-[#64748B]/10 text-[#64748B] dark:text-[#94A3B8]"
+                                    : "bg-[#536681]/10 text-[#536681] dark:text-[#94A3B8]"
                                 }`}
                               >
                                 إتقان {lessonMasteryPct}%
@@ -210,13 +210,13 @@ export function SubjectUnitsList({
                             )}
                           </div>
 
-                          <div className="flex items-center gap-3 text-[13px] text-[#64748B] dark:text-[#94A3B8] font-medium flex-wrap">
+                          <div className="flex items-center gap-3 text-[13px] text-[#536681] dark:text-[#94A3B8] font-medium flex-wrap">
                             <span className="flex items-center gap-1 font-mono text-[13px]">
-                              <Clock className="w-3 h-3 text-[#64748B]" />
+                              <Clock className="w-3 h-3 text-[#536681]" />
                               <span>{lesson.durationMinutes} دقيقة</span>
                             </span>
                             {lesson.summary && (
-                              <span className="inline-flex items-center gap-1 text-[#D97706] dark:text-[#FBBF24] font-bold">
+                              <span className="inline-flex items-center gap-1 text-[#E9AD32] font-bold">
                                 <BookmarkCheck className="w-3.5 h-3.5" />
                                 <span>الزتونة جاهزة</span>
                               </span>
@@ -232,7 +232,7 @@ export function SubjectUnitsList({
                         {!isLessonLocked && (
                           <Link
                             href={`/exams/builder?subjectId=${subjectId}&unitId=${unit.id}&lessonId=${lesson.id}`}
-                            className="h-10 px-3.5 rounded-xl bg-white dark:bg-[#1E293B] hover:bg-[#F8FAFC] dark:hover:bg-[#334155] text-[#800020] dark:text-[#FB7185] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-bold flex items-center justify-center gap-1.5 transition-colors"
+                            className="h-10 px-3.5 rounded-xl bg-white dark:bg-[#0D214D] hover:bg-[#F7F9FC] dark:hover:bg-[#1E3A6E] text-[#800B34] dark:text-[#E9AD32] border border-[#E2E8F0] dark:border-[#1E3A6E] text-[13px] font-bold flex items-center justify-center gap-1.5 transition-colors"
                             title="امتحان على هذا الدرس"
                           >
                             <Target className="w-3.5 h-3.5" />
@@ -249,9 +249,9 @@ export function SubjectUnitsList({
                                 unitTitle: unit.title,
                               })
                             }
-                            className="h-10 px-4 rounded-xl text-[13px] font-bold flex items-center justify-center gap-2 transition-all shrink-0 active:scale-98 flex-1 sm:flex-initial bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-400 border border-amber-500/30 cursor-pointer"
+                            className="h-10 px-4 rounded-xl text-[13px] font-bold flex items-center justify-center gap-2 transition-all shrink-0 active:scale-98 flex-1 sm:flex-initial bg-amber-500/10 hover:bg-amber-500/20 text-[#800B34] dark:text-[#E9AD32] border border-amber-500/30 cursor-pointer shadow-xs"
                           >
-                            <span>ادخل الدرس</span>
+                            <span>تفعيل الاشتراك (200 ج)</span>
                             <Lock className="w-3.5 h-3.5" />
                           </button>
                         ) : (
@@ -259,8 +259,8 @@ export function SubjectUnitsList({
                             href={`/lessons/${lesson.id}`}
                             className={`h-10 px-4 rounded-xl text-[13px] font-bold flex items-center justify-center gap-2 transition-all shrink-0 active:opacity-80 flex-1 sm:flex-initial ${
                               isLessonCompleted
-                                ? "bg-[#F8FAFC] dark:bg-[#1E293B] hover:bg-[#E2E8F0] dark:hover:bg-[#334155] text-[#0F172A] dark:text-[#F8FAFC] border border-[#E2E8F0] dark:border-[#334155]"
-                                : "bg-[#800020] hover:bg-[#66001A] text-white shadow-xs"
+                                ? "bg-[#F7F9FC] dark:bg-[#0D214D] hover:bg-[#E2E8F0] dark:hover:bg-[#1E3A6E] text-[#091B40] dark:text-[#F7F9FC] border border-[#E2E8F0] dark:border-[#1E3A6E]"
+                                : "bg-[#800B34] hover:bg-[#680829] text-white shadow-xs"
                             }`}
                           >
                             <span>{isLessonCompleted ? "مراجعة الدرس" : "ابدأ المذاكرة"}</span>

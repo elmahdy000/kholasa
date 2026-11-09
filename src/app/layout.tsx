@@ -76,7 +76,7 @@ export default async function RootLayout({
 
       <body
         suppressHydrationWarning
-        className="min-h-screen font-sans bg-[#FFFFFF] dark:bg-[#0F172A] text-[#12263F] dark:text-[#F8FAFC] antialiased selection:bg-[#800020]/15 dark:selection:bg-[#E11D48]/20 selection:text-[#800020] dark:selection:text-[#FB7185]"
+        className="min-h-screen font-sans bg-[#F7F9FC] dark:bg-[#091B40] text-[#091B40] dark:text-[#F7F9FC] antialiased selection:bg-[#800B34]/15 dark:selection:bg-[#E9AD32]/25 selection:text-[#800B34] dark:selection:text-[#E9AD32]"
       >
         <Script
           id="theme-initializer"
@@ -85,7 +85,8 @@ export default async function RootLayout({
             __html: `
               try {
                 const theme = localStorage.getItem('kholasa_theme');
-                const isDark = theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches);
+                // Default to the signature El-Kholasa Light Brand (Pearl White) unless dark is explicitly chosen
+                const isDark = theme === 'dark';
                 if (isDark) {
                   document.documentElement.classList.add('dark');
                   document.documentElement.setAttribute('data-theme', 'dark');

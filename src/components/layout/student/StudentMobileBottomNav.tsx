@@ -41,9 +41,9 @@ export function StudentMobileBottomNav({ items, pathname }: StudentMobileBottomN
                 className={cn(
                   "w-10 h-8 rounded-xl flex items-center justify-center transition-all duration-150",
                   isActive
-                    ? "bg-[#800020] dark:bg-[#A30D36] text-white shadow-xs"
+                    ? "bg-[#800B34] dark:bg-[#9E1043] text-white shadow-xs"
                     : item.isCenter
-                    ? "bg-[#D97706]/10 text-[#D97706] dark:text-[#FBBF24] hover:bg-[#D97706]/20"
+                    ? "bg-[#E9AD32]/10 text-[#E9AD32] dark:text-[#F0B843] hover:bg-[#E9AD32]/20"
                     : "text-[#64748B] dark:text-[#94A3B8] group-hover:text-[#12263F] dark:group-hover:text-[#F5F7FB] group-hover:bg-[#F7F8FA] dark:group-hover:bg-[#10233A]"
                 )}
               >
@@ -56,7 +56,7 @@ export function StudentMobileBottomNav({ items, pathname }: StudentMobileBottomN
                 className={cn(
                   "text-[10px] sm:text-[11px] leading-tight tracking-tight text-center truncate w-full mt-1 transition-colors",
                   isActive
-                    ? "font-extrabold text-[#800020] dark:text-[#FB7185]"
+                    ? "font-extrabold text-[#800B34] dark:text-[#E9AD32]"
                     : "font-bold text-[#64748B] dark:text-[#94A3B8] group-hover:text-[#12263F] dark:group-hover:text-[#F5F7FB]"
                 )}
               >

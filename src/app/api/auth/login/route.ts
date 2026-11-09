@@ -111,11 +111,14 @@ export async function POST(req: Request) {
             : null;
       }
 
-      // 1. Strict Category Scoping by Code or Selected Center
+      // 1. Strict Category Scoping: Respect student's registered curriculum
       if (user.loginCode === "DEMO-EN" || user.loginCode === "DEMO-PRO") {
         targetSchoolCategory = SchoolCategory.LANGUAGES;
       } else if (user.loginCode === "DEMO-AR") {
         targetSchoolCategory = SchoolCategory.ARABIC;
+      } else if (user.schoolCategory) {
+        // PRESERVE the student's assigned school category! Never let center selection overwrite it.
+        targetSchoolCategory = user.schoolCategory;
       } else if (updatedCenterName) {
         const matchedCenter = AUTHORIZED_CENTERS.find(
           (c) => c.name === updatedCenterName

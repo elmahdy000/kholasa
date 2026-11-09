@@ -95,44 +95,44 @@ export default async function SubjectDetailPage({ params }: SubjectDetailPagePro
     <StudentShell user={user}>
       <div className="space-y-7 text-right pb-16">
         {/* Breadcrumbs Navigation */}
-        <div className="flex items-center gap-2 text-[13px] font-medium text-[#64748B] dark:text-[#94A3B8]">
-          <Link href="/dashboard" className="hover:text-[#0F172A] dark:hover:text-[#F8FAFC]">
+        <div className="flex items-center gap-2 text-[13px] font-medium text-[#536681] dark:text-[#94A3B8]">
+          <Link href="/dashboard" className="hover:text-[#800B34] dark:hover:text-[#E9AD32]">
             الرئيسية
           </Link>
           <span>/</span>
-          <Link href="/subjects" className="hover:text-[#0F172A] dark:hover:text-[#F8FAFC]">
+          <Link href="/subjects" className="hover:text-[#800B34] dark:hover:text-[#E9AD32]">
             المواد
           </Link>
           <span>/</span>
-          <span className="text-[#0F172A] dark:text-[#F8FAFC] font-bold">{subject.name}</span>
+          <span className="text-[#091B40] dark:text-white font-bold">{subject.name}</span>
         </div>
 
         {/* Subject Header Banner */}
-        <section className="relative overflow-hidden rounded-2xl p-6 sm:p-8 bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] shadow-xs">
+        <section className="relative overflow-hidden rounded-3xl p-6 sm:p-8 bg-white dark:bg-[#0D214D] border border-[#E2E8F0] dark:border-[#1E3A6E] shadow-[0_8px_28px_rgba(9,27,64,0.07)]">
           <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="space-y-3">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0]/80 dark:border-[#334155] text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC]">
-                <Layers className="w-3.5 h-3.5 text-[#800020]" />
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#F7F9FC] dark:bg-[#071737] border border-[#E2E8F0] dark:border-[#1E3A6E] text-[13px] font-bold text-[#091B40] dark:text-[#F7F9FC]">
+                <Layers className="w-3.5 h-3.5 text-[#800B34]" />
                 <span>منهج معتمد • {subject.units.length} وحدات • {totalLessons} درس</span>
               </div>
-              <h1 className="text-2xl sm:text-4xl font-bold text-[#0F172A] dark:text-[#F8FAFC] tracking-tight">
+              <h1 className="text-2xl sm:text-4xl font-bold text-[#091B40] dark:text-white tracking-tight">
                 {subject.name}
               </h1>
               {subject.description && (
-                <p className="text-[13px] sm:text-sm text-[#64748B] dark:text-[#94A3B8] font-medium max-w-2xl leading-relaxed">
+                <p className="text-[13px] sm:text-sm text-[#536681] dark:text-[#94A3B8] font-medium max-w-2xl leading-relaxed">
                   {subject.description}
                 </p>
               )}
 
               {/* Progress Summary */}
               <div className="pt-2 flex items-center gap-3">
-                <div className="w-36 h-2 rounded-full bg-[#F8FAFC] dark:bg-[#334155] overflow-hidden">
+                <div className="w-36 h-2 rounded-full bg-[#E2E8F0] dark:bg-[#1E3A6E] overflow-hidden">
                   <div
-                    className="h-full rounded-full bg-[#800020] dark:bg-[#E11D48] transition-all duration-500"
+                    className="h-full rounded-full bg-[#800B34] dark:bg-[#E9AD32] transition-all duration-500"
                     style={{ width: `${subjectProgress}%` }}
                   />
                 </div>
-                <span className="text-[13px] font-mono font-bold text-[#64748B] dark:text-[#94A3B8]">
+                <span className="text-[13px] font-mono font-bold text-[#536681] dark:text-[#94A3B8]">
                   {completedCount} من {totalLessons} مكتمل ({subjectProgress}%)
                 </span>
               </div>
@@ -140,9 +140,9 @@ export default async function SubjectDetailPage({ params }: SubjectDetailPagePro
 
             <Link
               href={`/exams/builder?subjectId=${subject.id}`}
-              className="h-11 px-6 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] font-bold flex items-center justify-center gap-2 transition-all shrink-0 active:opacity-80"
+              className="h-11 px-6 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white text-[13px] font-bold flex items-center justify-center gap-2 transition-all shadow-md shrink-0 active:scale-98"
             >
-              <Target className="w-4 h-4 text-[#FDE047]" />
+              <Target className="w-4 h-4 text-[#E9AD32]" />
               <span>اختبار شامل على المادة</span>
             </Link>
           </div>
@@ -151,10 +151,10 @@ export default async function SubjectDetailPage({ params }: SubjectDetailPagePro
         {/* Units and Lessons List */}
         <div className="space-y-5">
           <div className="flex items-center justify-between">
-            <h2 className="text-base sm:text-lg font-bold text-[#0F172A] dark:text-[#F8FAFC]">
+            <h2 className="text-base sm:text-lg font-bold text-[#091B40] dark:text-[#F7F9FC]">
               الوحدات والدروس التفصيلية
             </h2>
-            <span className="text-[13px] text-[#64748B] dark:text-[#94A3B8] font-medium">
+            <span className="text-[13px] text-[#536681] dark:text-[#94A3B8] font-medium">
               مرتبة حسب خطة المنهج
             </span>
           </div>

@@ -24,7 +24,7 @@ export function StudentHeader({
   const { isDark, toggleTheme } = useTheme();
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-white/95 dark:bg-[#081426]/95 backdrop-blur-md border-b border-[#E8E9ED] dark:border-[#22364F] transition-colors">
+    <header className="sticky top-0 z-40 w-full bg-white/95 dark:bg-[#081426]/95 backdrop-blur-md border-b border-[#E2E8F0] dark:border-[#1E3352] transition-colors">
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 h-15 flex items-center justify-between gap-4">
         {/* Logo & Brand */}
         <div className="shrink-0 min-w-0">
@@ -49,7 +49,7 @@ export function StudentHeader({
         </div>
 
         {/* Desktop Nav Links (hidden on mobile and tablet, displayed on lg+) */}
-        <nav className="hidden lg:flex items-center gap-1 bg-[#F7F8FA] dark:bg-[#0D1B2E] p-1 rounded-xl border border-[#E8E9ED] dark:border-[#22364F]">
+        <nav className="hidden lg:flex items-center gap-1 bg-[#F7F9FC] dark:bg-[#0D1B2E] p-1 rounded-xl border border-[#E2E8F0] dark:border-[#1E3352]">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive =
@@ -63,12 +63,12 @@ export function StudentHeader({
                 className={cn(
                   "flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-[13px] font-bold transition-all whitespace-nowrap shrink-0",
                   isActive
-                    ? "bg-white dark:bg-[#10233A] text-[#800020] dark:text-[#F5F7FB] border border-[#E8E9ED] dark:border-[#2D4563] shadow-xs"
-                    : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#12263F] dark:hover:text-[#F5F7FB]"
+                    ? "bg-white dark:bg-[#0F1E36] text-[#800B34] dark:text-[#F5F7FB] border border-[#E2E8F0] dark:border-[#1E3352] shadow-xs"
+                    : "text-[#536681] dark:text-[#94A3B8] hover:text-[#091B40] dark:hover:text-[#F5F7FB]"
                 )}
               >
                 <Icon
-                  className={cn("w-3.5 h-3.5 shrink-0", isActive ? "text-[#800020] dark:text-[#A30D36]" : "")}
+                  className={cn("w-3.5 h-3.5 shrink-0", isActive ? "text-[#800B34] dark:text-[#E9AD32]" : "")}
                   weight={isActive ? "fill" : "bold"}
                 />
                 <span>{item.label}</span>
@@ -118,7 +118,7 @@ export function StudentHeader({
             className="flex items-center gap-2 p-1 sm:pl-2 rounded-lg hover:bg-[#F7F8FA] dark:hover:bg-[#132945] transition-colors border border-transparent hover:border-[#E8E9ED] dark:hover:border-[#22364F]"
             title="الملف الشخصي"
           >
-            <div className="w-8 h-8 rounded-lg bg-[#800020] text-white flex items-center justify-center font-bold text-xs shadow-xs">
+            <div className="w-8 h-8 rounded-lg bg-[#800B34] text-white flex items-center justify-center font-bold text-xs shadow-xs">
               {(getCleanStudentName(user?.name) || "ط")[0]}
             </div>
             <div className="hidden lg:block text-right">

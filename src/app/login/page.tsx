@@ -291,8 +291,8 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0B1120] text-[#0F172A] dark:text-[#F8FAFC] flex flex-col justify-center py-10 px-4 sm:px-6 lg:px-8 text-right font-sans relative">
-      <div className="absolute inset-0 bg-grid-pattern opacity-50 pointer-events-none" />
+    <div className="min-h-screen bg-[#F7F9FC] dark:bg-[#091B40] text-[#091B40] dark:text-[#F7F9FC] flex flex-col justify-center py-10 px-4 sm:px-6 lg:px-8 text-right font-sans relative">
+      <div className="absolute inset-0 bg-grid-pattern opacity-30 pointer-events-none" />
 
       <div className="w-full sm:mx-auto sm:w-full sm:max-w-lg relative z-10">
         {/* Brand Header */}
@@ -305,10 +305,10 @@ export default function LoginPage() {
             subtitleText="EL KHOLASA"
             className="mb-3"
           />
-          <h2 className="text-xl sm:text-2xl font-black text-[#0F172A] dark:text-white tracking-tight">
+          <h2 className="text-xl sm:text-2xl font-black text-[#091B40] dark:text-white tracking-tight">
             {loginMode === "code" ? "تسجيل دخول الطالب" : "تسجيل دخول الإدارة والمعلمين"}
           </h2>
-          <p className="mt-1 text-[13px] sm:text-sm text-[#64748B] dark:text-[#94A3B8]">
+          <p className="mt-1 text-[13px] sm:text-sm text-[#536681] dark:text-[#94A3B8]">
             {loginMode === "code"
               ? "ادخل كود المنصة المعتمد للبدء وربط حسابك بجهازك"
               : "تسجيل الدخول بالبريد الإلكتروني أو الهاتف"}
@@ -316,7 +316,7 @@ export default function LoginPage() {
         </div>
 
         {/* Card */}
-        <div className="bg-white dark:bg-[#111C35] py-7 px-5 sm:px-8 border border-[#E2E8F0] dark:border-[#1E293B] rounded-3xl shadow-xl shadow-slate-900/5">
+        <div className="bg-white dark:bg-[#0D214D] py-7 px-5 sm:px-8 border border-[#E2E8F0] dark:border-[#1E3A6E] rounded-3xl shadow-[0_8px_28px_rgba(9,27,64,0.07)]">
           {error && (
             <div className="mb-5 p-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-start gap-3 text-right animate-in fade-in">
               <AlertCircle className="w-5 h-5 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
@@ -330,8 +330,8 @@ export default function LoginPage() {
           {loginMode === "code" ? (
             <form onSubmit={handleCodeLogin} className="space-y-5">
               {autoFilledNotice && (
-                <div className="p-3.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 flex items-center gap-2.5 text-xs text-emerald-800 dark:text-emerald-300 font-bold animate-in fade-in duration-200">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                <div className="p-3.5 rounded-2xl bg-[#EAF2FF] dark:bg-[#112F66] border border-[#C5DCFA] dark:border-[#1E4D94] flex items-center gap-2.5 text-xs text-[#091B40] dark:text-[#EAF2FF] font-bold animate-in fade-in duration-200">
+                  <CheckCircle2 className="w-4 h-4 text-[#2C70BF] shrink-0" />
                   <span>{autoFilledNotice}</span>
                 </div>
               )}
@@ -341,20 +341,20 @@ export default function LoginPage() {
                 <div className="flex items-center justify-between mb-2">
                   <label
                     htmlFor="studentCode"
-                    className="block text-[13px] sm:text-sm font-bold text-[#0F172A] dark:text-[#F8FAFC]"
+                    className="block text-[13px] sm:text-sm font-bold text-[#091B40] dark:text-[#F7F9FC]"
                   >
                     كود الطالب (Login Code)
                   </label>
 
                   {/* Auto-Detection Indicator */}
                   {isLookingUp ? (
-                    <span className="inline-flex items-center gap-1 text-[11px] font-bold text-[#800020] dark:text-rose-400">
+                    <span className="inline-flex items-center gap-1 text-[11px] font-bold text-[#800B34] dark:text-[#E9AD32]">
                       <Loader2 className="w-3 h-3 animate-spin" />
                       <span>جارٍ التعرف على الكود...</span>
                     </span>
                   ) : detectedStudent?.found ? (
                     <span
-                      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold border ${
+                      className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${
                         detectedStudent.schoolCategory === "LANGUAGES"
                           ? "bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-950/50 dark:text-indigo-300 dark:border-indigo-800"
                           : "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-800"
@@ -378,24 +378,24 @@ export default function LoginPage() {
                     onChange={(e) => setStudentCode(e.target.value.toUpperCase())}
                     placeholder="ادخل كود الدخول المعتمد..."
                     maxLength={15}
-                    className="w-full h-12 pr-11 pl-4 rounded-2xl border border-[#E2E8F0] dark:border-[#27344D] bg-[#F8FAFC] dark:bg-[#0B1120] text-[#0F172A] dark:text-white placeholder:text-[#94A3B8] text-base font-black font-mono tracking-widest text-center focus:outline-none focus:ring-2 focus:ring-[#800020] dark:focus:ring-rose-500 focus:border-transparent transition-all shadow-inner"
+                    className="w-full h-12 pr-11 pl-4 rounded-xl border border-[#E2E8F0] dark:border-[#1E3A6E] bg-[#F7F9FC] dark:bg-[#071737] text-[#091B40] dark:text-white placeholder:text-[#94A3B8] text-base font-black font-mono tracking-widest text-center focus:outline-none focus:ring-2 focus:ring-[#800B34] focus:border-transparent transition-all shadow-inner"
                     dir={studentCode ? "ltr" : "rtl"}
                   />
                   <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#94A3B8] pointer-events-none">
-                    <KeyRound className="w-4 h-4 text-[#800020] dark:text-rose-400" />
+                    <KeyRound className="w-4 h-4 text-[#800B34] dark:text-[#E9AD32]" />
                   </div>
                 </div>
 
                 {/* Personalized Welcome Banner if code is verified */}
                 {detectedStudent?.found && (
-                  <div className="mt-2.5 p-2.5 rounded-xl bg-slate-50 dark:bg-[#1E293B]/60 border border-slate-200 dark:border-slate-700 flex items-center justify-between text-xs animate-in fade-in">
+                  <div className="mt-2.5 p-3 rounded-xl bg-[#EAF2FF] dark:bg-[#112F66] border border-[#C5DCFA] dark:border-[#1E4D94] flex items-center justify-between text-xs animate-in fade-in">
                     <div className="flex items-center gap-2">
-                      <UserCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                      <span className="font-bold text-[#0F172A] dark:text-white">
+                      <UserCheck className="w-4 h-4 text-[#17834B] dark:text-[#34D399]" />
+                      <span className="font-bold text-[#091B40] dark:text-white">
                         {formatStudentGreeting(detectedStudent.name)} 👋
                       </span>
                     </div>
-                    <span className="text-[11px] text-[#64748B] dark:text-[#94A3B8]">
+                    <span className="text-[11px] font-semibold text-[#536681] dark:text-[#CBD5E1]">
                       {detectedStudent.schoolCategory === "LANGUAGES"
                         ? "منهج اللغات المعتمد"
                         : "منهج المدارس العامة"}
@@ -403,25 +403,25 @@ export default function LoginPage() {
                   </div>
                 )}
 
-                <div className="mt-2 flex items-center gap-1.5 text-[11px] text-[#64748B] dark:text-[#94A3B8]">
-                  <Shield className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                <div className="mt-2 flex items-center gap-1.5 text-[11px] text-[#536681] dark:text-[#94A3B8]">
+                  <Shield className="w-3.5 h-3.5 text-[#17834B] dark:text-[#34D399] shrink-0" />
                   <span>يقترن الحساب بجهازك الشخصي المعتمد تلقائياً (جهاز واحد فقط للحماية).</span>
                 </div>
               </div>
 
               {/* Attendance Mode (Online vs Offline/Center) */}
               <div className="space-y-2 pt-1">
-                <label className="block text-[12px] sm:text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC]">
+                <label className="block text-[12px] sm:text-[13px] font-bold text-[#091B40] dark:text-[#F7F9FC]">
                   نظام الحضور والدراسة
                 </label>
-                <div className="grid grid-cols-2 gap-2.5 p-1.5 bg-[#F1F5F9] dark:bg-[#0B1120] rounded-2xl border border-[#E2E8F0] dark:border-[#27344D]">
+                <div className="grid grid-cols-2 gap-2.5 p-1.5 bg-[#F1F5F9] dark:bg-[#071737] rounded-2xl border border-[#E2E8F0] dark:border-[#1E3A6E]">
                   <button
                     type="button"
                     onClick={() => setStudyMode("ONLINE")}
                     className={`flex flex-col items-center justify-center p-3 rounded-xl transition-all duration-200 border ${
                       studyMode === "ONLINE"
-                        ? "bg-white dark:bg-[#1E293B] text-[#800020] dark:text-rose-400 border-[#800020]/20 dark:border-rose-500/40 shadow-sm"
-                        : "border-transparent text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
+                        ? "bg-white dark:bg-[#0D214D] text-[#800B34] dark:text-[#E9AD32] border-[#800B34]/30 dark:border-[#E9AD32]/40 shadow-sm"
+                        : "border-transparent text-[#536681] dark:text-[#94A3B8] hover:text-[#091B40] dark:hover:text-white"
                     }`}
                   >
                     <div className="flex items-center gap-1.5 font-bold text-xs">
@@ -437,8 +437,8 @@ export default function LoginPage() {
                     onClick={() => setStudyMode("OFFLINE")}
                     className={`flex flex-col items-center justify-center p-3 rounded-xl transition-all duration-200 border ${
                       studyMode === "OFFLINE"
-                        ? "bg-white dark:bg-[#1E293B] text-[#800020] dark:text-rose-400 border-[#800020]/20 dark:border-rose-500/40 shadow-sm"
-                        : "border-transparent text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
+                        ? "bg-white dark:bg-[#0D214D] text-[#800B34] dark:text-[#E9AD32] border-[#800B34]/30 dark:border-[#E9AD32]/40 shadow-sm"
+                        : "border-transparent text-[#536681] dark:text-[#94A3B8] hover:text-[#091B40] dark:hover:text-white"
                     }`}
                   >
                     <div className="flex items-center gap-1.5 font-bold text-xs">
@@ -453,13 +453,13 @@ export default function LoginPage() {
 
               {/* If Center / Offline is selected */}
               {studyMode === "OFFLINE" && (
-                <div className="p-4 rounded-2xl bg-[#F8FAFC] dark:bg-[#0B1120] border border-[#E2E8F0] dark:border-[#27344D] space-y-3 animate-in fade-in duration-200">
+                <div className="p-4 rounded-2xl bg-[#F7F9FC] dark:bg-[#071737] border border-[#E2E8F0] dark:border-[#1E3A6E] space-y-3 animate-in fade-in duration-200">
                   <div className="flex items-center justify-between">
                     <label
                       htmlFor="centerSelect"
-                      className="flex items-center gap-2 text-xs sm:text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC]"
+                      className="flex items-center gap-2 text-xs sm:text-[13px] font-bold text-[#091B40] dark:text-[#F7F9FC]"
                     >
-                      <Building2 className="w-4 h-4 text-[#800020] dark:text-rose-400" />
+                      <Building2 className="w-4 h-4 text-[#800B34] dark:text-[#E9AD32]" />
                       <span>اختر السنتر التابع له</span>
                     </label>
 
@@ -489,7 +489,7 @@ export default function LoginPage() {
                           setCustomCenter("");
                         }
                       }}
-                      className="w-full h-12 pr-11 pl-10 rounded-2xl border border-[#E2E8F0] dark:border-[#27344D] bg-white dark:bg-[#111C35] text-xs sm:text-sm font-bold text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#800020] dark:focus:ring-rose-500 transition-all appearance-none cursor-pointer shadow-inner"
+                      className="w-full h-12 pr-11 pl-10 rounded-xl border border-[#E2E8F0] dark:border-[#1E3A6E] bg-white dark:bg-[#0D214D] text-xs sm:text-sm font-bold text-[#091B40] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#800B34] transition-all appearance-none cursor-pointer shadow-inner"
                     >
                       <optgroup label="── سناتر مدارس اللغات (Languages) 🇬🇧 ──">
                         {LANGUAGES_CENTERS.map((c) => (
@@ -509,7 +509,7 @@ export default function LoginPage() {
                         <option value={OTHER_CENTER_NAME}>سنتر آخر (أدخل اسم السنتر يدوياً)</option>
                       </optgroup>
                     </select>
-                    <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#800020] dark:text-rose-400 pointer-events-none">
+                    <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#800B34] dark:text-[#E9AD32] pointer-events-none">
                       <School className="w-4 h-4" />
                     </div>
                     <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#94A3B8] pointer-events-none">
@@ -527,13 +527,13 @@ export default function LoginPage() {
                         value={customCenter}
                         onChange={(e) => setCustomCenter(e.target.value)}
                         placeholder="اكتب اسم السنتر أو الفرع التابع له..."
-                        className="w-full h-11 pr-10 pl-3 rounded-xl border border-rose-300 dark:border-rose-900/60 bg-white dark:bg-[#111C35] text-xs font-bold text-[#0F172A] dark:text-white placeholder:text-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#800020]"
+                        className="w-full h-11 pr-10 pl-3 rounded-xl border border-rose-300 dark:border-rose-900/60 bg-white dark:bg-[#0D214D] text-xs font-bold text-[#091B40] dark:text-white placeholder:text-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#800B34]"
                       />
-                      <MapPin className="w-4 h-4 text-[#800020] dark:text-rose-400 absolute right-3 top-1/2 -translate-y-1/2" />
+                      <MapPin className="w-4 h-4 text-[#800B34] dark:text-[#E9AD32] absolute right-3 top-1/2 -translate-y-1/2" />
                     </div>
                   )}
 
-                  <p className="text-[11px] text-[#64748B] dark:text-[#94A3B8] leading-relaxed">
+                  <p className="text-[11px] text-[#536681] dark:text-[#94A3B8] leading-relaxed">
                     يتم ربط حضورك ودرجاتك بالسنتر المعتمد لسهولة استلام الشيتات والتواصل مع ولي الأمر.
                   </p>
                 </div>
@@ -543,7 +543,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full h-12 rounded-2xl bg-[#800020] hover:bg-[#66001A] text-white font-black text-sm flex items-center justify-center gap-2 transition-all duration-200 disabled:opacity-50 interactive-tap shadow-lg shadow-[#800020]/20"
+                className="w-full min-h-[52px] rounded-xl bg-[#800B34] hover:bg-[#680829] text-white font-black text-sm flex items-center justify-center gap-2 transition-all duration-200 disabled:opacity-50 interactive-tap shadow-lg shadow-[#800B34]/25"
               >
                 {isLoading ? (
                   <>
@@ -560,13 +560,13 @@ export default function LoginPage() {
 
               {/* Demo Account Quick Access Card */}
               <div className="pt-2">
-                <div className="p-3.5 rounded-2xl bg-[#F8FAFC] dark:bg-[#0B1120] border border-[#E2E8F0] dark:border-[#1E293B] space-y-2">
-                  <div className="flex items-center justify-between text-xs font-bold text-[#64748B] dark:text-[#94A3B8]">
+                <div className="p-3.5 rounded-2xl bg-[#F7F9FC] dark:bg-[#071737] border border-[#E2E8F0] dark:border-[#1E3A6E] space-y-2">
+                  <div className="flex items-center justify-between text-xs font-bold text-[#536681] dark:text-[#94A3B8]">
                     <span className="flex items-center gap-1.5">
-                      <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                      <Sparkles className="w-3.5 h-3.5 text-[#E9AD32]" />
                       <span>حسابات تجريبية للمعاينة السريعة:</span>
                     </span>
-                    <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-normal">
+                    <span className="text-[10px] text-[#17834B] dark:text-[#34D399] font-normal">
                       ضغطة واحدة للتجربة
                     </span>
                   </div>
@@ -575,28 +575,28 @@ export default function LoginPage() {
                     <button
                       type="button"
                       onClick={() => handleApplyDemoAccount("DEMO-EN")}
-                      className="py-2 px-2 rounded-xl bg-white dark:bg-[#1E293B] hover:bg-indigo-50 dark:hover:bg-indigo-950/40 border border-[#E2E8F0] dark:border-slate-700 text-[11px] font-bold text-indigo-700 dark:text-indigo-300 text-center transition-all flex flex-col items-center gap-0.5"
+                      className="py-2 px-2 rounded-xl bg-white dark:bg-[#0D214D] hover:bg-indigo-50 dark:hover:bg-indigo-950/40 border border-[#E2E8F0] dark:border-[#1E3A6E] text-[11px] font-bold text-indigo-700 dark:text-indigo-300 text-center transition-all flex flex-col items-center gap-0.5"
                     >
                       <span>طالب لغات 🇬🇧</span>
-                      <span className="text-[9px] font-mono text-[#64748B] dark:text-[#94A3B8]">DEMO-EN</span>
+                      <span className="text-[9px] font-mono text-[#536681] dark:text-[#94A3B8]">DEMO-EN</span>
                     </button>
 
                     <button
                       type="button"
                       onClick={() => handleApplyDemoAccount("DEMO-AR")}
-                      className="py-2 px-2 rounded-xl bg-white dark:bg-[#1E293B] hover:bg-emerald-50 dark:hover:bg-emerald-950/40 border border-[#E2E8F0] dark:border-slate-700 text-[11px] font-bold text-emerald-700 dark:text-emerald-300 text-center transition-all flex flex-col items-center gap-0.5"
+                      className="py-2 px-2 rounded-xl bg-white dark:bg-[#0D214D] hover:bg-emerald-50 dark:hover:bg-emerald-950/40 border border-[#E2E8F0] dark:border-[#1E3A6E] text-[11px] font-bold text-emerald-700 dark:text-emerald-300 text-center transition-all flex flex-col items-center gap-0.5"
                     >
                       <span>طالب عربي 🇪🇬</span>
-                      <span className="text-[9px] font-mono text-[#64748B] dark:text-[#94A3B8]">DEMO-AR</span>
+                      <span className="text-[9px] font-mono text-[#536681] dark:text-[#94A3B8]">DEMO-AR</span>
                     </button>
 
                     <button
                       type="button"
                       onClick={() => handleApplyDemoAccount("DEMO-PRO")}
-                      className="py-2 px-2 rounded-xl bg-white dark:bg-[#1E293B] hover:bg-amber-50 dark:hover:bg-amber-950/40 border border-[#E2E8F0] dark:border-slate-700 text-[11px] font-bold text-amber-700 dark:text-amber-300 text-center transition-all flex flex-col items-center gap-0.5"
+                      className="py-2 px-2 rounded-xl bg-white dark:bg-[#0D214D] hover:bg-amber-50 dark:hover:bg-amber-950/40 border border-[#E2E8F0] dark:border-[#1E3A6E] text-[11px] font-bold text-amber-700 dark:text-amber-300 text-center transition-all flex flex-col items-center gap-0.5"
                     >
                       <span>حساب مفعل ⭐</span>
-                      <span className="text-[9px] font-mono text-[#64748B] dark:text-[#94A3B8]">DEMO-PRO</span>
+                      <span className="text-[9px] font-mono text-[#536681] dark:text-[#94A3B8]">DEMO-PRO</span>
                     </button>
                   </div>
                 </div>
@@ -608,7 +608,7 @@ export default function LoginPage() {
               <div>
                 <label
                   htmlFor="identifier"
-                  className="block text-[13px] sm:text-sm font-bold text-[#0F172A] dark:text-[#F8FAFC] mb-2"
+                  className="block text-[13px] sm:text-sm font-bold text-[#091B40] dark:text-[#F7F9FC] mb-2"
                 >
                   البريد الإلكتروني أو رقم الهاتف
                 </label>
@@ -620,7 +620,7 @@ export default function LoginPage() {
                     value={identifier}
                     onChange={(e) => setIdentifier(e.target.value)}
                     placeholder="admin@kholasa.app أو 01012345678"
-                    className="w-full h-11 pr-11 pl-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B]/50 text-[#0F172A] dark:text-white placeholder:text-[#94A3B8] text-[13px] sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#800020] focus:border-transparent transition-all"
+                    className="w-full h-11 pr-11 pl-4 rounded-xl border border-[#E2E8F0] dark:border-[#1E3A6E] bg-[#F7F9FC] dark:bg-[#071737] text-[#091B40] dark:text-white placeholder:text-[#94A3B8] text-[13px] sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#800B34] focus:border-transparent transition-all"
                     dir="ltr"
                   />
                   <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#94A3B8] pointer-events-none">
@@ -633,13 +633,13 @@ export default function LoginPage() {
                 <div className="flex items-center justify-between mb-2">
                   <label
                     htmlFor="password"
-                    className="block text-[13px] sm:text-sm font-bold text-[#0F172A] dark:text-[#F8FAFC]"
+                    className="block text-[13px] sm:text-sm font-bold text-[#091B40] dark:text-[#F7F9FC]"
                   >
                     كلمة المرور
                   </label>
                   <Link
                     href="/forgot-password"
-                    className="text-[12px] font-bold text-[#800020] dark:text-[#FB7185] hover:underline"
+                    className="text-[12px] font-bold text-[#800B34] dark:text-[#E9AD32] hover:underline"
                   >
                     نسيت كلمة المرور؟
                   </Link>
@@ -652,7 +652,7 @@ export default function LoginPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full h-11 pr-11 pl-11 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B]/50 text-[#0F172A] dark:text-white placeholder:text-[#94A3B8] text-[13px] sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#800020] focus:border-transparent transition-all"
+                    className="w-full h-11 pr-11 pl-11 rounded-xl border border-[#E2E8F0] dark:border-[#1E3A6E] bg-[#F7F9FC] dark:bg-[#071737] text-[#091B40] dark:text-white placeholder:text-[#94A3B8] text-[13px] sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#800B34] focus:border-transparent transition-all"
                     dir="ltr"
                   />
                   <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#94A3B8] pointer-events-none">
@@ -661,7 +661,7 @@ export default function LoginPage() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#94A3B8] hover:text-[#64748B] dark:hover:text-[#94A3B8] transition-colors"
+                    className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#94A3B8] hover:text-[#536681] dark:hover:text-[#94A3B8] transition-colors"
                   >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -671,7 +671,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full h-11 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white font-bold text-[13px] sm:text-sm flex items-center justify-center gap-2 transition-colors disabled:opacity-50 interactive-tap shadow-xs"
+                className="w-full min-h-[50px] rounded-xl bg-[#800B34] hover:bg-[#680829] text-white font-bold text-[13px] sm:text-sm flex items-center justify-center gap-2 transition-colors disabled:opacity-50 interactive-tap shadow-md"
               >
                 {isLoading ? (
                   <>
@@ -686,7 +686,7 @@ export default function LoginPage() {
           )}
 
           {/* Toggle Between Modes */}
-          <div className="mt-6 pt-5 border-t border-[#E2E8F0] dark:border-[#1E293B] flex flex-col gap-3 text-center text-xs">
+          <div className="mt-6 pt-5 border-t border-[#E2E8F0] dark:border-[#1E3A6E] flex flex-col gap-3 text-center text-xs">
             {loginMode === "code" ? (
               <>
                 <button
@@ -695,20 +695,20 @@ export default function LoginPage() {
                     setError(null);
                     setLoginMode("credentials");
                   }}
-                  className="font-bold text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white transition-colors"
+                  className="font-bold text-[#536681] dark:text-[#94A3B8] hover:text-[#091B40] dark:hover:text-white transition-colors"
                 >
                   دخول المعلمين والمشرفين (بكلمة المرور) ←
                 </button>
 
-                <div className="p-3.5 rounded-2xl bg-[#F8FAFC] dark:bg-[#0B1120] border border-[#E2E8F0] dark:border-[#1E293B] space-y-1.5">
-                  <span className="block font-bold text-[#0F172A] dark:text-white text-[11px]">
+                <div className="p-3.5 rounded-2xl bg-[#F7F9FC] dark:bg-[#071737] border border-[#E2E8F0] dark:border-[#1E3A6E] space-y-1.5">
+                  <span className="block font-bold text-[#091B40] dark:text-white text-[11px]">
                     ليس لديك كود دخول أو واجهتك مشكلة؟
                   </span>
                   <a
                     href="https://wa.me/201021482860?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%D8%8C%20%D8%A3%D8%AD%D8%AA%D8%A7%D8%AC%20%D9%85%D8%B3%D8%A7%D8%B9%D8%AF%D8%A9%20%D8%A8%D8%AE%D8%B5%D9%88%D8%B5%20%D9%83%D9%88%D8%AF%20%D8%A7%D9%84%D8%AF%D8%AE%D9%88%D9%84%20%D9%84%D9%85%D9%86%D8%B5%D8%A9%20%D8%A7%D9%84%D8%AE%D9%84%D8%A7%D8%B5%D8%A9"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 font-bold text-emerald-600 dark:text-emerald-400 hover:underline"
+                    className="inline-flex items-center gap-1.5 font-bold text-[#17834B] dark:text-[#34D399] hover:underline"
                   >
                     <MessageCircle className="w-3.5 h-3.5" />
                     <span>تواصل مع المساعد عبر واتساب</span>
@@ -722,7 +722,7 @@ export default function LoginPage() {
                   setError(null);
                   setLoginMode("code");
                 }}
-                className="font-bold text-[#800020] dark:text-[#FB7185] hover:underline"
+                className="font-bold text-[#800B34] dark:text-[#E9AD32] hover:underline"
               >
                 ← العودة لتسجيل دخول الطالب بالكود
               </button>
@@ -733,7 +733,7 @@ export default function LoginPage() {
         <div className="mt-5 text-center">
           <Link
             href="/"
-            className="inline-flex items-center gap-1 text-[13px] font-bold text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white transition-colors"
+            className="inline-flex items-center gap-1 text-[13px] font-bold text-[#536681] dark:text-[#94A3B8] hover:text-[#091B40] dark:hover:text-white transition-colors"
           >
             <ArrowRight className="w-3.5 h-3.5" />
             <span>العودة للصفحة الرئيسية</span>

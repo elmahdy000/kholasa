@@ -27,9 +27,20 @@
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
-
-
 @theme inline {
+  --color-brand-primary: var(--brand-primary);
+  --color-brand-primary-hover: var(--brand-primary-hover);
+  --color-brand-navy: var(--brand-navy);
+  --color-brand-gold: var(--brand-gold);
+  --color-brand-blue: var(--brand-blue);
+  --color-page-bg: var(--page-bg);
+  --color-surface: var(--surface);
+  --color-surface-soft: var(--surface-soft);
+  --color-surface-warm: var(--surface-warm);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -42,6 +53,10 @@
   --color-accent-foreground: var(--accent-foreground);
   --color-navy: var(--navy);
   --color-navy-light: var(--navy-light);
+  --color-gold: var(--gold);
+  --color-ice-blue: var(--ice-blue);
+  --color-pearl-white: var(--pearl-white);
+  --color-action-blue: var(--action-blue);
   --color-success: var(--success);
   --color-success-foreground: var(--success-foreground);
   --color-destructive: var(--destructive);
@@ -52,88 +67,140 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
   --font-sans: var(--font-sans);
+  --font-arabic: var(--font-arabic);
+  --font-english: var(--font-english);
 }
 
 @custom-variant dark (&:where(.dark, .dark *, [data-theme="dark"], [data-theme="dark"] *));
 
 :root {
-  /* Brand Tokens — EL KHOLASA (Pristine White, Deep Navy & Academic Burgundy) */
-  --font-cairo: "Cairo", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-sans: var(--font-cairo), system-ui, -apple-system, sans-serif;
-  
-  --background: #FFFFFF;
-  --foreground: #12263F;
-  --card: #FFFFFF;
-  --card-foreground: #12263F;
-  
-  /* Unified Signature Primary — Regal Burgundy */
-  --primary: #800020;
-  --primary-hover: #66001A;
-  --primary-foreground: #FFFFFF;
-  
-  /* Dedicated Single Accent for "الزتونة" — Regal Academic Gold */
-  --accent: #D97706;
-  --accent-hover: #B45309;
-  --accent-foreground: #FFFFFF;
-  
-  /* Deep Navy for headings and structural typography */
-  --navy: #12263F;
-  --navy-light: #1E3A5F;
-  
-  /* Functional Feedback States */
-  --success: #059669;
+  /* =========================================================================
+     EL-KHOLASA DESIGN SYSTEM — VERSION 1.0 (APPROVED BRAND TOKENS)
+     ========================================================================= */
+
+  /* 1. Brand identity */
+  --brand-primary: #800B34;       /* Royal Burgundy: primary buttons, prices, active selection */
+  --brand-primary-hover: #680829;
+  --brand-navy: #091B40;          /* Deep Navy: headings, main text, navbar */
+  --brand-gold: #E9AD32;          /* Signature Gold: accents, checkmarks, badges */
+  --brand-blue: #2C70BF;          /* Action Blue: upload zones, links, interactive info */
+
+  /* 2. Surfaces */
+  --page-bg: #F7F9FC;             /* Pearl White: platform background */
+  --surface: #FFFFFF;             /* Crisp cards */
+  --surface-soft: #EAF2FF;        /* Ice Blue: calm welcome notice, info boxes */
+  --surface-warm: #FAF6F7;        /* Soft burgundy-tinted surface */
+
+  /* 3. Typography */
+  --text-primary: #091B40;        /* Deep Navy text */
+  --text-secondary: #536681;      /* Balanced secondary text */
+  --text-muted: #64748B;          /* Muted meta labels */
+
+  /* 4. Functional states */
+  --success: #17834B;             /* Standardized success green */
   --success-foreground: #FFFFFF;
-  
-  --destructive: #DC2626;
+  --danger: #C43D49;              /* Standardized error red */
+  --destructive: #C43D49;
   --destructive-foreground: #FFFFFF;
-  
-  --muted: #F7F8FA;
-  --muted-foreground: #64748B;
-  
-  --border: #E8E9ED;
-  --input: #E8E9ED;
-  --ring: #800020;
-  
-  --radius: 1rem;
+  --border: #E2E8F0;              /* Clean 1px border */
+
+  /* 5. Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 24px;
+  --radius: 1.25rem;
+
+  /* 6. Spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  /* 7. Shadows */
+  --shadow-card: 0 8px 28px rgba(9, 27, 64, 0.07);
+
+  /* 8. Fonts */
+  --font-arabic: "Cairo", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-english: "Inter", system-ui, -apple-system, sans-serif;
+  --font-sans: var(--font-arabic);
+
+  /* 9. Animation */
+  --transition-fast: 150ms ease;
+  --transition-normal: 220ms ease;
+
+  /* 10. System Compatibility Bindings */
+  --background: var(--page-bg);
+  --foreground: var(--text-primary);
+  --card: var(--surface);
+  --card-foreground: var(--text-primary);
+  --primary: var(--brand-primary);
+  --primary-hover: var(--brand-primary-hover);
+  --primary-foreground: #FFFFFF;
+  --accent: var(--brand-gold);
+  --accent-hover: #D49B24;
+  --accent-foreground: #FFFFFF;
+  --navy: var(--brand-navy);
+  --navy-light: #1A315E;
+  --gold: var(--brand-gold);
+  --ice-blue: var(--surface-soft);
+  --pearl-white: var(--page-bg);
+  --action-blue: var(--brand-blue);
+  --muted: var(--surface-soft);
+  --muted-foreground: var(--text-muted);
+  --input: #FFFFFF;
+  --ring: var(--brand-primary);
 }
 
 .dark,
 [data-theme="dark"] {
   color-scheme: dark;
-  --background: #081426;
-  --foreground: #F5F7FB;
-  --section: #0D1B2E;
-  --card: #10233A;
-  --card-foreground: #F5F7FB;
-  --elevated: #132945;
-  
-  --primary: #A30D36;
-  --primary-hover: #BD123F;
-  --primary-foreground: #FFFFFF;
-  
-  --accent: #E59A18;
-  --accent-hover: #D97706;
-  --accent-foreground: #081426;
-  
-  --navy: #081426;
-  --navy-light: #0D1B2E;
-  
-  --success: #34D399;
+  --page-bg: #081426;
+  --surface: #0F1E36;
+  --surface-soft: #142747;
+  --surface-warm: #181F30;
+
+  --brand-primary: #9E1043;
+  --brand-primary-hover: #BA1752;
+  --brand-navy: #091B40;
+  --brand-gold: #F0B843;
+  --brand-blue: #4088DC;
+
+  --text-primary: #F5F7FB;
+  --text-secondary: #94A3B8;
+  --text-muted: #64748B;
+
+  --success: #1FB366;
   --success-foreground: #081426;
-  
-  --destructive: #F87171;
+  --danger: #E05360;
+  --destructive: #E05360;
   --destructive-foreground: #081426;
-  
-  --muted: #0D1B2E;
-  --muted-foreground: #94A3B8;
-  
-  --text-secondary: #C8D2E0;
-  --text-disabled: #64748B;
-  
-  --border: #22364F;
-  --border-strong: #2D4563;
-  --input: #10233A;
-  --ring: #A30D36;
+  --border: #1E3352;
+
+  --shadow-card: 0 8px 28px rgba(0, 0, 0, 0.35);
+
+  --background: var(--page-bg);
+  --foreground: var(--text-primary);
+  --card: var(--surface);
+  --card-foreground: var(--text-primary);
+  --primary: var(--brand-primary);
+  --primary-hover: var(--brand-primary-hover);
+  --primary-foreground: #FFFFFF;
+  --accent: var(--brand-gold);
+  --accent-hover: #E9AD32;
+  --accent-foreground: #091B40;
+  --navy: #091B40;
+  --navy-light: #142747;
+  --gold: var(--brand-gold);
+  --ice-blue: var(--surface-soft);
+  --pearl-white: var(--page-bg);
+  --action-blue: var(--brand-blue);
+  --muted: var(--surface-soft);
+  --muted-foreground: var(--text-muted);
+  --input: #0F1E36;
+  --ring: var(--brand-primary);
 }
 
 * {
@@ -157,7 +224,7 @@ body {
   min-height: 100vh;
   min-height: 100dvh;
   overflow-x: clip;
-  line-height: 1.6;
+  line-height: 1.75;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -167,25 +234,76 @@ h1, h2, h3, h4, h5, h6 {
   color: inherit;
 }
 
-/* Solid surfaces only: no glassmorphism, blur or gradients. */
+/* =========================================================================
+   EL-KHOLASA DESIGN SYSTEM SPECIFIC UTILITY CLASSES
+   ========================================================================= */
+
+.brand-button {
+  background: var(--brand-primary);
+  color: #fff;
+  border-radius: var(--radius-md);
+  min-height: 52px;
+  font-weight: 700;
+  transition: background var(--transition-fast), transform var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.brand-button:hover {
+  background: var(--brand-primary-hover);
+}
+
+.brand-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-6);
+}
+
+.brand-focus:focus-visible {
+  outline: 3px solid var(--brand-gold);
+  outline-offset: 3px;
+}
+
+/* Kholasa Signature Curve — Elegant separator curve */
+.kholasa-signature-curve {
+  position: relative;
+  overflow: hidden;
+}
+
+.kholasa-signature-curve::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--brand-gold) 0%, var(--brand-primary) 50%, var(--brand-blue) 100%);
+  pointer-events: none;
+}
+
+/* Solid surfaces only */
 .glass-panel {
-  background: #FFFFFF;
-  border: 1px solid #E8E9ED;
+  background: var(--surface);
+  border: 1px solid var(--border);
 }
 
 .dark .glass-panel {
-  background: #0D1B2E;
-  border: 1px solid #22364F;
+  background: var(--surface);
+  border: 1px solid var(--border);
 }
 
 .glass-card {
-  background: #FFFFFF;
-  border: 1px solid #E8E9ED;
+  background: var(--surface);
+  border: 1px solid var(--border);
 }
 
 .dark .glass-card {
-  background: #10233A;
-  border: 1px solid #22364F;
+  background: var(--surface);
+  border: 1px solid var(--border);
 }
 
 /* Custom Scrollbar */
@@ -199,47 +317,25 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #E8E9ED;
+  background: var(--border);
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #800020;
-}
-
-.dark ::-webkit-scrollbar-thumb {
-  background: #22364F;
+  background: var(--brand-primary);
 }
 
 .dark ::-webkit-scrollbar-thumb:hover {
-  background: #A30D36;
+  background: var(--brand-primary-hover);
 }
 
-/* No decorative background patterns. */
-.bg-grid-pattern {
-  background-image: none;
-}
-
-/* Interactive feedback without layout-shifting scale transforms. */
+/* Interactive feedback */
 .interactive-tap {
   transition: opacity 0.15s ease, background-color 0.15s ease;
 }
 
 .interactive-tap:active {
-  opacity: 0.85;
-}
-
-/* Design system radius: interactive controls are 8px, cards remain 12px. */
-button.rounded-xl,
-button.rounded-2xl,
-a.h-10.rounded-xl,
-a.h-11.rounded-xl,
-a.h-12.rounded-xl,
-input.rounded-xl,
-select.rounded-xl,
-textarea.rounded-xl,
-a[role="button"].rounded-xl {
-  border-radius: 0.5rem;
+  opacity: 0.88;
 }
 
 /* Zero Text Truncation System — AL-KHOLASA */
@@ -252,7 +348,7 @@ a[role="button"].rounded-xl {
   overflow: visible;
   overflow-wrap: break-word;
   word-break: normal;
-  line-height: 1.65;
+  line-height: 1.7;
 }
 
 .subject-card {
@@ -269,7 +365,7 @@ a[role="button"].rounded-xl {
 .subject-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
+  gap: 16px;
   width: 100%;
   align-items: stretch;
 }
@@ -300,7 +396,7 @@ a[role="button"].rounded-xl {
 @media print {
   body {
     background: #FFFFFF !important;
-    color: #1A0A10 !important;
+    color: #091B40 !important;
     font-size: 12pt !important;
   }
 
@@ -335,14 +431,11 @@ a[role="button"].rounded-xl {
   }
 
   .border {
-    border-color: #F0E6E8 !important;
+    border-color: #E2E8F0 !important;
   }
 }
 
-
-/* =========================================================================
-   Flashcards 3D Flip & Slide System
-   ========================================================================= */
+/* Flashcards 3D Flip & Slide System */
 .perspective-1000 {
   perspective: 1000px;
   -webkit-perspective: 1000px;
