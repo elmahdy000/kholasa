@@ -14,45 +14,45 @@ export function MistakeAnalyticsBar({
   masteryPercentage,
 }: MistakeAnalyticsBarProps) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-      <div className="p-5 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] flex items-center justify-between">
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+      <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] flex items-center justify-between shadow-xs">
         <div>
           <span className="text-2xl sm:text-3xl font-bold text-[#DC2626] block tracking-tight">
             {unresolvedCount}
           </span>
-          <span className="text-[13px] font-bold text-[#64748B] dark:text-[#94A3B8]">
+          <span className="text-xs sm:text-[13px] font-bold text-[#64748B] dark:text-[#94A3B8]">
             أسئلة محتاجة تتظبّط
           </span>
         </div>
-        <div className="w-11 h-11 rounded-xl bg-[#DC2626]/10 dark:bg-[#1E293B] text-[#DC2626] flex items-center justify-center">
+        <div className="w-11 h-11 rounded-xl bg-[#DC2626]/10 dark:bg-[#1E293B] text-[#DC2626] flex items-center justify-center shrink-0">
           <AlertTriangle className="w-5 h-5" />
         </div>
       </div>
 
-      <div className="p-5 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] flex items-center justify-between">
+      <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] flex items-center justify-between shadow-xs">
         <div>
           <span className="text-2xl sm:text-3xl font-bold text-[#059669] block tracking-tight">
             {resolvedCount}
           </span>
-          <span className="text-[13px] font-bold text-[#64748B] dark:text-[#94A3B8]">
+          <span className="text-xs sm:text-[13px] font-bold text-[#64748B] dark:text-[#94A3B8]">
             أسئلة قفلتها وظبّطتها
           </span>
         </div>
-        <div className="w-11 h-11 rounded-xl bg-[#059669]/10 dark:bg-[#1E293B] text-[#059669] flex items-center justify-center">
+        <div className="w-11 h-11 rounded-xl bg-[#059669]/10 dark:bg-[#1E293B] text-[#059669] flex items-center justify-center shrink-0">
           <CheckCircle2 className="w-5 h-5" />
         </div>
       </div>
 
-      <div className="p-5 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] flex items-center justify-between">
+      <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] flex items-center justify-between shadow-xs">
         <div>
-          <span className="text-2xl sm:text-3xl font-bold text-[#800020] dark:text-[#FB7185] block tracking-tight">
+          <span className="text-2xl sm:text-3xl font-bold text-[#800B34] dark:text-[#FB7185] block tracking-tight">
             {masteryPercentage !== null ? `${masteryPercentage}%` : "—"}
           </span>
-          <span className="text-[13px] font-bold text-[#64748B] dark:text-[#94A3B8]">
+          <span className="text-xs sm:text-[13px] font-bold text-[#64748B] dark:text-[#94A3B8]">
             نسبة التمكّن والتثبيت
           </span>
         </div>
-        <div className="w-11 h-11 rounded-xl bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] flex items-center justify-center">
+        <div className="w-11 h-11 rounded-xl bg-[#800B34]/10 dark:bg-[#1E293B] text-[#800B34] dark:text-[#FB7185] flex items-center justify-center shrink-0">
           <Trophy className="w-5 h-5" />
         </div>
       </div>

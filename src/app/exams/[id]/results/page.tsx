@@ -135,48 +135,48 @@ export default async function ExamResultsPage({
   } else if (percentage < 90) {
     gradeBadge = {
       label: "أداء عالي جداً وفاضل تكة وتقفّل",
-      bgClass: "bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] border-[#E2E8F0] dark:border-[#E11D48]",
-      textColor: "text-[#800020] dark:text-[#FB7185]",
+      bgClass: "bg-[#800B34]/10 dark:bg-[#1E293B] text-[#800B34] dark:text-[#FB7185] border-[#E2E8F0] dark:border-[#E11D48]",
+      textColor: "text-[#800B34] dark:text-[#FB7185]",
     };
   }
 
   return (
     <StudentShell user={user}>
-      <div className="max-w-4xl mx-auto space-y-6 text-right font-sans pb-28">
+      <div className="max-w-4xl mx-auto space-y-4 sm:space-y-6 text-right font-sans pb-28">
         {/* Breadcrumb */}
-        <div className="flex items-center gap-2 text-[13px] font-medium text-[#64748B] dark:text-[#94A3B8]">
-          <Link href="/exams" className="hover:text-[#800020] transition-colors">
+        <div className="flex items-center gap-2 text-xs sm:text-[13px] font-medium text-[#64748B] dark:text-[#94A3B8] flex-wrap">
+          <Link href="/exams" className="hover:text-[#800B34] transition-colors">
             الامتحانات
           </Link>
           <span>/</span>
           <span>نتائج الاختبار</span>
           <span>/</span>
-          <span className="text-[#0F172A] dark:text-white font-bold">{attempt.title}</span>
+          <span className="text-[#091B40] dark:text-white font-bold">{attempt.title}</span>
         </div>
 
         {/* Hero Performance Card */}
-        <div className="relative overflow-hidden rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] p-6 sm:p-8  flex flex-col md:flex-row md:items-center justify-between gap-8">
+        <div className="relative overflow-hidden rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] p-4 sm:p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 sm:gap-8 shadow-xs">
           <div className="absolute inset-0 bg-grid-pattern opacity-40 pointer-events-none" />
 
           <div className="space-y-3 relative z-10">
             <span
-              className={`inline-block px-3 py-1 rounded-full text-[13px] font-bold border ${gradeBadge.bgClass}`}
+              className={`inline-block px-3 py-1 rounded-full text-xs sm:text-[13px] font-bold border ${gradeBadge.bgClass}`}
             >
               {gradeBadge.label}
             </span>
 
-            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#0F172A] dark:text-white">
+            <h1 className="text-lg sm:text-2xl font-bold tracking-tight text-[#091B40] dark:text-white">
               تقرير نتيجة: <BidiStatement as="span" text={attempt.title} />
             </h1>
 
-            <p className="text-[13px] sm:text-sm text-[#64748B] dark:text-[#94A3B8] max-w-lg leading-relaxed">
+            <p className="text-xs sm:text-sm text-[#64748B] dark:text-[#94A3B8] max-w-lg leading-relaxed">
               سجلنا إجاباتك كلها، والأسئلة اللي وقعت فيها اتحفظت في ركن "غلطاتي" عشان تراجعها وتثبتها وقت ما تحب.
             </p>
 
-            <div className="flex flex-wrap items-center gap-3 pt-2">
+            <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-2.5 sm:gap-3 pt-2">
               <Link
                 href="/mistakes"
-                className="h-11 px-4 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] font-bold flex items-center gap-2 transition-colors interactive-tap"
+                className="w-full sm:w-auto min-h-[44px] h-11 px-4 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white text-xs sm:text-[13px] font-bold flex items-center justify-center gap-2 transition-colors interactive-tap shadow-xs"
               >
                 <AlertTriangle className="w-3.5 h-3.5 text-amber-300" />
                 <span>راجع أخطاءك في "غلطاتي"</span>
@@ -184,7 +184,7 @@ export default async function ExamResultsPage({
 
               <Link
                 href={`/exams/${examId}`}
-                className="h-11 px-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B] hover:bg-[#F8FAFC] dark:hover:bg-[#334155] text-[13px] font-bold text-[#0F172A] dark:text-white flex items-center gap-2 transition-colors interactive-tap"
+                className="w-full sm:w-auto min-h-[44px] h-11 px-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B] hover:bg-[#F8FAFC] dark:hover:bg-[#334155] text-xs sm:text-[13px] font-bold text-[#091B40] dark:text-white flex items-center justify-center gap-2 transition-colors interactive-tap"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
                 <span>حل الامتحان ده تاني</span>
@@ -200,19 +200,19 @@ export default async function ExamResultsPage({
           </div>
 
           {/* Score Badge */}
-          <div className="flex flex-col items-center justify-center p-6 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/60 border border-[#E2E8F0] dark:border-[#334155] shrink-0 self-center md:self-auto relative z-10 min-w-[140px]">
+          <div className="flex flex-col items-center justify-center p-5 sm:p-6 rounded-2xl bg-[#F8FAFC] dark:bg-[#1E293B]/60 border border-[#E2E8F0] dark:border-[#334155] shrink-0 self-center md:self-auto relative z-10 min-w-[140px] shadow-2xs">
             <div className="relative flex items-center justify-center">
               <div
-                className={`text-[28px] sm:text-4xl font-bold font-mono tracking-tight ${gradeBadge.textColor}`}
+                className={`text-[32px] sm:text-4xl font-bold font-mono tracking-tight ${gradeBadge.textColor}`}
               >
                 {Math.round(percentage)}%
               </div>
             </div>
             <div className="text-center mt-2">
-              <span className="text-[13px] font-bold font-mono text-[#0F172A] dark:text-white block">
+              <span className="text-xs sm:text-[13px] font-bold font-mono text-[#091B40] dark:text-white block">
                 {attempt.score} / {attempt.totalQuestions}
               </span>
-              <span className="text-[13px] text-[#94A3B8] font-medium">
+              <span className="text-xs text-[#94A3B8] font-medium">
                 الدرجة المستحقة
               </span>
             </div>
@@ -220,51 +220,51 @@ export default async function ExamResultsPage({
         </div>
 
         {/* 4 Stats Cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <div className="p-4 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]  text-right">
-            <div className="w-11 h-11 rounded-lg bg-[#059669]/10 dark:bg-[#1E293B] text-[#059669] dark:text-[#34D399] flex items-center justify-center mb-2">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4">
+          <div className="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] text-right shadow-2xs">
+            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-[#059669]/10 dark:bg-[#1E293B] text-[#059669] dark:text-[#34D399] flex items-center justify-center mb-2">
               <CheckCircle2 className="w-4 h-4" />
             </div>
-            <span className="text-xl font-bold font-mono text-[#059669] dark:text-[#34D399] block">
+            <span className="text-lg sm:text-xl font-bold font-mono text-[#059669] dark:text-[#34D399] block">
               {correctAnswers.length}
             </span>
-            <span className="text-[13px] font-medium text-[#64748B]">
+            <span className="text-xs sm:text-[13px] font-medium text-[#64748B]">
               إجابات صح
             </span>
           </div>
 
-          <div className="p-4 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]  text-right">
-            <div className="w-11 h-11 rounded-lg bg-[#DC2626]/10 dark:bg-[#1E293B] text-[#DC2626] dark:text-[#F87171] flex items-center justify-center mb-2">
+          <div className="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] text-right shadow-2xs">
+            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-[#DC2626]/10 dark:bg-[#1E293B] text-[#DC2626] dark:text-[#F87171] flex items-center justify-center mb-2">
               <XCircle className="w-4 h-4" />
             </div>
-            <span className="text-xl font-bold font-mono text-[#DC2626] dark:text-[#F87171] block">
+            <span className="text-lg sm:text-xl font-bold font-mono text-[#DC2626] dark:text-[#F87171] block">
               {wrongAnswers.length}
             </span>
-            <span className="text-[13px] font-medium text-[#64748B]">
+            <span className="text-xs sm:text-[13px] font-medium text-[#64748B]">
               إجابات غلط
             </span>
           </div>
 
-          <div className="p-4 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]  text-right">
-            <div className="w-11 h-11 rounded-lg bg-[#D97706]/10 dark:bg-[#1E293B] text-[#D97706] dark:text-[#FBBF24] flex items-center justify-center mb-2">
+          <div className="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] text-right shadow-2xs">
+            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-[#D97706]/10 dark:bg-[#1E293B] text-[#D97706] dark:text-[#FBBF24] flex items-center justify-center mb-2">
               <HelpCircle className="w-4 h-4" />
             </div>
-            <span className="text-xl font-bold font-mono text-[#D97706] dark:text-[#FBBF24] block">
+            <span className="text-lg sm:text-xl font-bold font-mono text-[#D97706] dark:text-[#FBBF24] block">
               {unansweredCount}
             </span>
-            <span className="text-[13px] font-medium text-[#64748B]">
+            <span className="text-xs sm:text-[13px] font-medium text-[#64748B]">
               سبتهم بدون حل
             </span>
           </div>
 
-          <div className="p-4 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]  text-right">
-            <div className="w-11 h-11 rounded-lg bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] flex items-center justify-center mb-2">
+          <div className="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] text-right shadow-2xs">
+            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-[#800B34]/10 dark:bg-[#1E293B] text-[#800B34] dark:text-[#FB7185] flex items-center justify-center mb-2">
               <Clock className="w-4 h-4" />
             </div>
-            <span className="text-xl font-bold font-mono text-[#0F172A] dark:text-white block" dir="ltr">
+            <span className="text-lg sm:text-xl font-bold font-mono text-[#091B40] dark:text-white block" dir="ltr">
               {minutesSpent}m {secondsSpent}s
             </span>
-            <span className="text-[13px] font-medium text-[#64748B]">
+            <span className="text-xs sm:text-[13px] font-medium text-[#64748B]">
               الوقت اللي أخدته
             </span>
           </div>
@@ -272,8 +272,8 @@ export default async function ExamResultsPage({
 
         {/* Detailed Question Review */}
         <div className="space-y-4">
-          <h2 className="text-base sm:text-lg font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
-            <BookOpen className="w-4 h-4 text-[#800020] dark:text-[#FB7185]" />
+          <h2 className="text-base sm:text-lg font-bold text-[#091B40] dark:text-white flex items-center gap-2">
+            <BookOpen className="w-4 h-4 text-[#800B34] dark:text-[#FB7185]" />
             <span>مراجعة تفصيلية لجميع الأسئلة والتفسيرات</span>
           </h2>
 
@@ -286,7 +286,7 @@ export default async function ExamResultsPage({
               return (
                 <div
                   key={ans.id}
-                  className={`p-5 sm:p-6 rounded-xl border  space-y-4 bg-white dark:bg-[#0F172A] ${
+                  className={`p-4 sm:p-6 rounded-2xl border space-y-4 bg-white dark:bg-[#0F172A] shadow-xs ${
                     q.type === "ESSAY"
                       ? "border-[#E2E8F0] dark:border-[#E11D48]/50"
                       : isCorrect
@@ -295,19 +295,19 @@ export default async function ExamResultsPage({
                   }`}
                 >
                   {/* Status header */}
-                  <div className="flex items-center justify-between gap-2 border-b border-[#E2E8F0] dark:border-[#334155] pb-3">
-                    <div className="flex items-center gap-2">
-                      <span className="text-[13px] font-mono font-bold text-[#800020] dark:text-[#FB7185]">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#E2E8F0] dark:border-[#334155] pb-3">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-xs sm:text-[13px] font-mono font-bold text-[#800B34] dark:text-[#FB7185]">
                         سؤال {idx + 1}
                       </span>
                       {q.type === "ESSAY" ? (
-                        <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-[13px] font-bold bg-[#800020]/10 dark:bg-[#1E293B] text-[#800020] dark:text-[#FB7185] border border-[#E2E8F0] dark:border-[#E11D48]">
+                        <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs sm:text-[13px] font-bold bg-[#800B34]/10 dark:bg-[#1E293B] text-[#800B34] dark:text-[#FB7185] border border-[#E2E8F0] dark:border-[#E11D48]">
                           <BookOpen className="w-3 h-3" />
                           <span>سؤال مقالي • قارن إجابتك بالنموذج المثالي</span>
                         </span>
                       ) : (
                         <span
-                          className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-[13px] font-bold ${
+                          className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs sm:text-[13px] font-bold ${
                             isCorrect
                               ? "bg-[#059669]/10 dark:bg-[#1E293B] text-[#059669] dark:text-[#34D399]"
                               : "bg-[#DC2626]/10 dark:bg-[#1E293B] text-[#DC2626] dark:text-[#F87171]"
@@ -331,7 +331,7 @@ export default async function ExamResultsPage({
                     {relatedLesson && (
                       <Link
                         href={`/lessons/${relatedLesson.id}`}
-                        className="text-[13px] font-bold text-[#800020] dark:text-[#FB7185] hover:underline flex items-center gap-1"
+                        className="text-xs sm:text-[13px] font-bold text-[#800B34] dark:text-[#FB7185] hover:underline flex items-center gap-1"
                       >
                         <span>شرح الدرس: <BidiStatement as="span" text={relatedLesson.title} /></span>
                         <ArrowLeft className="w-3 h-3" />
@@ -343,7 +343,7 @@ export default async function ExamResultsPage({
                   <BidiStatement
                     as="h3"
                     text={q.statement}
-                    className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-white leading-relaxed"
+                    className="text-sm sm:text-base font-bold text-[#091B40] dark:text-white leading-relaxed"
                   />
 
                   <QuestionImageAttachment imageUrl={q.imageUrl} />
@@ -352,8 +352,8 @@ export default async function ExamResultsPage({
                   {q.type === "ESSAY" ? (
                     <div className="space-y-3 pt-1">
                       {/* Notice banner */}
-                      <div className="p-3 rounded-xl bg-[#800020]/10 dark:bg-[#1E293B] border border-[#E2E8F0]/60 dark:border-[#E11D48]/40 text-[13px] text-[#800020] dark:text-[#FB7185] flex items-start gap-2">
-                        <BookmarkCheck className="w-4 h-4 text-[#800020] dark:text-[#FB7185] shrink-0 mt-1" />
+                      <div className="p-3 rounded-xl bg-[#800B34]/10 dark:bg-[#1E293B] border border-[#E2E8F0]/60 dark:border-[#E11D48]/40 text-xs sm:text-[13px] text-[#800B34] dark:text-[#FB7185] flex items-start gap-2">
+                        <BookmarkCheck className="w-4 h-4 text-[#800B34] dark:text-[#FB7185] shrink-0 mt-0.5" />
                         <span>الأسئلة المقالية لا يتم تقييمها آلياً؛ قارن إجابتك المكتوبة بنموذج الإجابة الرسمي من بنك الأسئلة أدناه لتحديد مدى تغطيتك للنقاط المطلوبة.</span>
                       </div>
 
@@ -455,14 +455,14 @@ export default async function ExamResultsPage({
           </div>
 
           {/* Bottom Action Banner (Clear Next Step for the Student) */}
-          <div className="rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] p-6 sm:p-8 shadow-sm text-center sm:text-right space-y-4">
+          <div className="rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] p-5 sm:p-8 shadow-xs text-center sm:text-right space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5">
               <div>
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#800020]/10 text-[#800020] dark:text-[#FB7185] dark:bg-[#FB7185]/10 mb-2">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#800B34]/10 text-[#800B34] dark:text-[#FB7185] dark:bg-[#FB7185]/10 mb-2">
                   <CheckCircle2 className="w-3.5 h-3.5" />
                   <span>الخطوة التالية يا بطل</span>
                 </span>
-                <h2 className="text-lg sm:text-xl font-bold text-[#0F172A] dark:text-white">
+                <h2 className="text-base sm:text-xl font-bold text-[#091B40] dark:text-white">
                   راجعنا كل الأسئلة! حابب تكمل إيه دلوقتي؟
                 </h2>
                 <p className="text-xs sm:text-sm text-[#64748B] dark:text-[#94A3B8] mt-1">
@@ -473,11 +473,11 @@ export default async function ExamResultsPage({
               </div>
 
               {/* Action Buttons */}
-              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3">
+              <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center justify-center sm:justify-start gap-2.5 sm:gap-3">
                 {wrongAnswers.length > 0 && (
                   <Link
                     href="/mistakes"
-                    className="h-11 px-5 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-xs sm:text-sm font-bold flex items-center gap-2 transition-all shadow-sm hover:shadow active:scale-95"
+                    className="w-full sm:w-auto min-h-[44px] h-11 px-5 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all shadow-xs active:scale-95"
                   >
                     <AlertTriangle className="w-4 h-4 text-amber-300" />
                     <span>تظبيط أخطاءك في "غلطاتي" ({wrongAnswers.length})</span>
@@ -487,9 +487,9 @@ export default async function ExamResultsPage({
                 {attempt.exam?.subjectId && (
                   <Link
                     href={`/subjects/${attempt.exam.subjectId}`}
-                    className="h-11 px-5 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B] hover:bg-[#F8FAFC] dark:hover:bg-[#334155] text-xs sm:text-sm font-bold text-[#0F172A] dark:text-white flex items-center gap-2 transition-colors active:scale-95"
+                    className="w-full sm:w-auto min-h-[44px] h-11 px-5 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B] hover:bg-[#F8FAFC] dark:hover:bg-[#334155] text-xs sm:text-sm font-bold text-[#091B40] dark:text-white flex items-center justify-center gap-2 transition-colors active:scale-95"
                   >
-                    <BookOpen className="w-4 h-4 text-[#800020] dark:text-[#FB7185]" />
+                    <BookOpen className="w-4 h-4 text-[#800B34] dark:text-[#FB7185]" />
                     <span>فهرس {attempt.exam.subject?.name || "المادة"}</span>
                   </Link>
                 )}
@@ -497,7 +497,7 @@ export default async function ExamResultsPage({
                 {attempt.exam?.subjectId && (
                   <Link
                     href={`/exams/builder?subjectId=${attempt.exam.subjectId}`}
-                    className="h-11 px-5 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B] hover:bg-[#F8FAFC] dark:hover:bg-[#334155] text-xs sm:text-sm font-bold text-[#0F172A] dark:text-white flex items-center gap-2 transition-colors active:scale-95"
+                    className="w-full sm:w-auto min-h-[44px] h-11 px-5 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B] hover:bg-[#F8FAFC] dark:hover:bg-[#334155] text-xs sm:text-sm font-bold text-[#091B40] dark:text-white flex items-center justify-center gap-2 transition-colors active:scale-95"
                   >
                     <RotateCcw className="w-4 h-4" />
                     <span>امتحان جديد عالـمادة</span>
@@ -506,7 +506,7 @@ export default async function ExamResultsPage({
 
                 <Link
                   href="/dashboard"
-                  className="h-11 px-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B] hover:bg-[#F8FAFC] dark:hover:bg-[#334155] text-xs sm:text-sm font-bold text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white flex items-center gap-2 transition-colors active:scale-95"
+                  className="w-full sm:w-auto min-h-[44px] h-11 px-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B] hover:bg-[#F8FAFC] dark:hover:bg-[#334155] text-xs sm:text-sm font-bold text-[#64748B] dark:text-[#94A3B8] hover:text-[#091B40] dark:hover:text-white flex items-center justify-center gap-2 transition-colors active:scale-95"
                 >
                   <Home className="w-4 h-4" />
                   <span>الرئيسية</span>

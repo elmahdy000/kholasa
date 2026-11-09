@@ -12,14 +12,14 @@ export function DeviceSecurityCard({
   const isAtLimit = boundDevicesCount >= maxDevices;
 
   return (
-    <div className="bg-white dark:bg-[#0F172A] rounded-2xl border border-[#E2E8F0] dark:border-[#334155] p-6 shadow-sm">
-      <div className="flex items-center justify-between pb-4 border-b border-[#E2E8F0] dark:border-[#334155]">
+    <div className="bg-white dark:bg-[#0F172A] rounded-2xl border border-[#E2E8F0] dark:border-[#334155] p-4 sm:p-6 shadow-xs space-y-3.5 sm:space-y-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3.5 border-b border-[#E2E8F0] dark:border-[#334155]">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[#800020]/10 text-[#800020] dark:text-[#FB7185] flex items-center justify-center">
+          <div className="w-10 h-10 rounded-xl bg-[#800B34]/10 text-[#800B34] dark:text-[#FB7185] flex items-center justify-center shrink-0">
             <ShieldCheck className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="font-bold text-base text-[#0F172A] dark:text-white">
+            <h3 className="font-bold text-sm sm:text-base text-[#091B40] dark:text-white">
               أمان الحساب وربط الأجهزة
             </h3>
             <p className="text-xs text-[#64748B] dark:text-[#94A3B8]">
@@ -28,7 +28,7 @@ export function DeviceSecurityCard({
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 self-start sm:self-auto">
           <span
             className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${
               isAtLimit
@@ -44,8 +44,8 @@ export function DeviceSecurityCard({
         </div>
       </div>
 
-      <div className="mt-4 flex items-start gap-3 bg-[#F8FAFC] dark:bg-[#1E293B]/50 p-4 rounded-xl text-xs text-[#64748B] dark:text-[#94A3B8] leading-relaxed">
-        <Info className="w-4 h-4 text-[#800020] dark:text-[#FB7185] shrink-0 mt-0.5" />
+      <div className="flex items-start gap-3 bg-[#F8FAFC] dark:bg-[#1E293B]/50 p-3.5 sm:p-4 rounded-xl text-xs text-[#64748B] dark:text-[#94A3B8] leading-relaxed">
+        <Info className="w-4 h-4 text-[#800B34] dark:text-[#FB7185] shrink-0 mt-0.5" />
         <p>
           حسابك محمي بنظام ربط الأجهزة الآلي (بحد أقصى {maxDevices} أجهزة للدراسة). إذا قمت بتغيير جهازك وترغب في فك ربط جهاز قديم، يمكنك التواصل مع إدارة المنصة لإعادة ضبط أجهزتك المعتمدة.
         </p>
@@ -53,4 +53,3 @@ export function DeviceSecurityCard({
     </div>
   );
 }
-

@@ -31,20 +31,20 @@ export function PasswordChangeCard({
   onSubmit,
 }: PasswordChangeCardProps) {
   return (
-    <div className="p-6 sm:p-7 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] space-y-4">
+    <div className="p-4 sm:p-6 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] space-y-4 shadow-xs">
       <div className="flex items-center gap-2 border-b border-[#E2E8F0] dark:border-[#334155] pb-3">
-        <KeyRound className="w-5 h-5 text-[#800020] dark:text-[#FB7185]" />
-        <h2 className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-white">
+        <KeyRound className="w-5 h-5 text-[#800B34] dark:text-[#FB7185]" />
+        <h2 className="text-sm sm:text-base font-bold text-[#091B40] dark:text-white">
           تغيير كلمة المرور
         </h2>
       </div>
 
       <form onSubmit={onSubmit} className="space-y-4">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
           <div>
             <label
               htmlFor="current-password"
-              className="block text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC] mb-2"
+              className="block text-xs sm:text-[13px] font-bold text-[#091B40] dark:text-[#F8FAFC] mb-1.5"
             >
               كلمة المرور الحالية
             </label>
@@ -60,14 +60,14 @@ export function PasswordChangeCard({
                   current: e.target.value,
                 }))
               }
-              className="w-full h-11 px-3 rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#800020]"
+              className="w-full min-h-[44px] h-11 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] text-sm text-[#091B40] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#800B34]"
             />
           </div>
 
           <div>
             <label
               htmlFor="new-password"
-              className="block text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC] mb-2"
+              className="block text-xs sm:text-[13px] font-bold text-[#091B40] dark:text-[#F8FAFC] mb-1.5"
             >
               كلمة المرور الجديدة
             </label>
@@ -84,14 +84,14 @@ export function PasswordChangeCard({
                   next: e.target.value,
                 }))
               }
-              className="w-full h-11 px-3 rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#800020]"
+              className="w-full min-h-[44px] h-11 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] text-sm text-[#091B40] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#800B34]"
             />
           </div>
 
           <div>
             <label
               htmlFor="confirm-password"
-              className="block text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC] mb-2"
+              className="block text-xs sm:text-[13px] font-bold text-[#091B40] dark:text-[#F8FAFC] mb-1.5"
             >
               تأكيد كلمة المرور
             </label>
@@ -108,37 +108,31 @@ export function PasswordChangeCard({
                   confirm: e.target.value,
                 }))
               }
-              className="w-full h-11 px-3 rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] text-sm text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#800020]"
+              className="w-full min-h-[44px] h-11 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] text-sm text-[#091B40] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#800B34]"
             />
           </div>
         </div>
 
         {passwordStatus && (
-          <p
-            role="alert"
-            className={`text-[13px] font-bold ${
-              passwordStatus.type === "success"
-                ? "text-[#059669] dark:text-[#34D399]"
-                : "text-[#DC2626] dark:text-[#F87171]"
+          <div
+            className={`p-3 rounded-xl text-xs sm:text-[13px] font-bold ${
+              passwordStatus.type === "error"
+                ? "bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-400 border border-rose-200 dark:border-rose-800"
+                : "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800"
             }`}
           >
             {passwordStatus.text}
-          </p>
+          </div>
         )}
 
-        <div className="flex items-center gap-3">
-          <button
-            type="submit"
-            disabled={isChangingPassword}
-            className="h-11 px-5 rounded-lg bg-[#800020] hover:bg-[#66001A] disabled:opacity-50 text-white text-sm font-bold flex items-center gap-2 transition-colors"
-          >
-            {isChangingPassword && <Loader2 className="w-4 h-4 animate-spin" />}
-            <span>تحديث كلمة المرور</span>
-          </button>
-          <span className="text-[13px] text-[#64748B] dark:text-[#94A3B8]">
-            سيتم تسجيل الخروج من الأجهزة الأخرى.
-          </span>
-        </div>
+        <button
+          type="submit"
+          disabled={isChangingPassword}
+          className="w-full sm:w-auto min-h-[44px] h-11 px-6 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white text-xs sm:text-[13px] font-bold flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-[0.98] disabled:opacity-50 shadow-xs"
+        >
+          {isChangingPassword && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+          <span>تحديث كلمة المرور</span>
+        </button>
       </form>
     </div>
   );

@@ -114,7 +114,7 @@ export function LessonDefinitionsSection({
             <button
               type="button"
               onClick={onStartFlashcards}
-              className="px-3.5 py-1.5 rounded-xl bg-[#14213D] hover:bg-[#1f315a] text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition-transform active:scale-95 cursor-pointer"
+              className="px-3.5 py-1.5 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition-transform active:scale-95 cursor-pointer min-h-[36px]"
               title="سمّع لنفسك مفاهيم ومصطلحات الدرس بالكروت"
             >
               <Cards className="w-4 h-4" weight="bold" />
@@ -124,9 +124,9 @@ export function LessonDefinitionsSection({
         </div>
       </div>
 
-      {/* Search Bar */}
+      {/* Search Bar with BiDi-safe Logical Properties */}
       <div className="relative">
-        <div className="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-[#64748B]">
+        <div className="absolute inset-y-0 start-0 ps-3.5 flex items-center pointer-events-none text-[#64748B]">
           <MagnifyingGlass className="w-4 h-4" weight="bold" />
         </div>
         <input
@@ -134,13 +134,15 @@ export function LessonDefinitionsSection({
           value={definitionSearch}
           onChange={(e) => onSearchChange(e.target.value)}
           placeholder={isLanguages ? "Search terms and meanings..." : "ابحث بالاسم أو المعنى داخل مصطلحات الدرس..."}
-          className="w-full pr-10 pl-4 py-2.5 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#22364F] text-[13px] sm:text-sm text-[#0F172A] dark:text-white placeholder-[#94A3B8] focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]/20 transition-colors shadow-2xs"
+          className="w-full ps-10 pe-10 py-2.5 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#22364F] text-[13px] sm:text-sm text-[#0F172A] dark:text-white placeholder-[#94A3B8] focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]/20 transition-colors shadow-2xs min-h-[44px]"
         />
         {definitionSearch && (
           <button
             type="button"
             onClick={onClearSearch}
-            className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-[#64748B] hover:text-[#0F172A] dark:hover:text-white"
+            className="absolute inset-y-0 end-0 pe-2.5 w-10 flex items-center justify-center text-[#64748B] hover:text-[#0F172A] dark:hover:text-white cursor-pointer min-h-[44px]"
+            title="مسح البحث"
+            aria-label="مسح البحث"
           >
             <X className="w-4 h-4" weight="bold" />
           </button>

@@ -29,20 +29,20 @@ export function DashboardHero({ userName, studentMeta, continueLesson, onStartTo
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.22 }}
-      className="rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E8E9ED] dark:border-[#22364F] p-5 sm:p-6 lg:p-7 relative overflow-hidden shadow-xs"
+      className="rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E8E9ED] dark:border-[#22364F] p-4 sm:p-6 lg:p-7 relative overflow-hidden shadow-xs"
     >
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5 lg:gap-6">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 sm:gap-5 lg:gap-6">
         {/* Welcome Text & Clean Metadata */}
-        <div className="space-y-2 max-w-2xl">
+        <div className="space-y-1.5 sm:space-y-2 max-w-2xl">
           {academicScope ? (
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-[#F8FAFC] dark:bg-[#1E293B] text-[#475569] dark:text-[#CBD5E1] border border-[#E2E8F0] dark:border-[#334155]">
-              <GraduationCap className="w-3.5 h-3.5 text-[#800020] dark:text-[#FB7185] shrink-0" weight="fill" />
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#F8FAFC] dark:bg-[#1E293B] text-[#475569] dark:text-[#CBD5E1] border border-[#E2E8F0] dark:border-[#334155]">
+              <GraduationCap className="w-3.5 h-3.5 text-[#800B34] dark:text-[#FB7185] shrink-0" weight="fill" />
               <BidiStatement as="span" text={academicScope} />
             </div>
           ) : null}
 
           {/* Welcome Heading */}
-          <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-[#12263F] dark:text-[#F8FAFC] tracking-tight">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-[#091B40] dark:text-[#F8FAFC] tracking-tight">
             أهلًا بيك، {displayName}
           </h1>
 
@@ -53,12 +53,12 @@ export function DashboardHero({ userName, studentMeta, continueLesson, onStartTo
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center gap-2.5 sm:gap-3 shrink-0 flex-wrap">
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0 flex-wrap w-full sm:w-auto">
           {onStartTour && (
             <button
               onClick={onStartTour}
               type="button"
-              className="h-10 px-3.5 sm:px-4 rounded-xl bg-gradient-to-r from-amber-50 to-amber-100/70 dark:from-amber-950/40 dark:to-amber-900/20 border border-amber-200/80 dark:border-amber-700/50 text-amber-900 dark:text-amber-200 hover:border-amber-300 dark:hover:border-amber-600 text-[13px] sm:text-sm font-bold flex items-center justify-center gap-1.5 transition-all active:scale-[0.98] shadow-xs cursor-pointer"
+              className="flex-1 sm:flex-initial min-h-[44px] h-11 px-3.5 sm:px-4 rounded-xl bg-gradient-to-r from-amber-50 to-amber-100/70 dark:from-amber-950/40 dark:to-amber-900/20 border border-amber-200/80 dark:border-amber-700/50 text-amber-900 dark:text-amber-200 hover:border-amber-300 dark:hover:border-amber-600 text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 transition-all active:scale-[0.98] shadow-xs cursor-pointer"
               title="جولة في مميزات الخلاصة"
             >
               <Sparkles className="w-4 h-4 text-amber-500 fill-amber-500" />
@@ -68,7 +68,7 @@ export function DashboardHero({ userName, studentMeta, continueLesson, onStartTo
 
           <Link
             href={continueLesson ? `/lessons/${continueLesson.id}` : "/subjects"}
-            className="h-10 px-5 sm:px-6 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] sm:text-sm font-bold flex items-center justify-center gap-2 shadow-xs transition-all active:scale-[0.98]"
+            className="flex-1 sm:flex-initial min-h-[44px] h-11 px-5 sm:px-6 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 shadow-xs transition-all active:scale-[0.98]"
           >
             <Play className="w-4 h-4 fill-current ml-0.5" />
             <span>كمّل مذاكرتك</span>
@@ -76,7 +76,7 @@ export function DashboardHero({ userName, studentMeta, continueLesson, onStartTo
 
           <Link
             href="/exams/builder"
-            className="h-10 px-4 sm:px-5 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[#12263F] dark:text-[#F8FAFC] hover:bg-[#F8FAFC] dark:hover:bg-[#1E293B]/80 text-[13px] sm:text-sm font-bold flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+            className="flex-1 sm:flex-initial min-h-[44px] h-11 px-4 sm:px-5 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[#091B40] dark:text-[#F8FAFC] hover:bg-[#F8FAFC] dark:hover:bg-[#1E293B]/80 text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
           >
             <Target className="w-4 h-4 text-[#D97706]" weight="fill" />
             <span>اختبار سريع</span>

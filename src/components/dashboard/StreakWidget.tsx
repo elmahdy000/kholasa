@@ -263,7 +263,7 @@ export function StreakWidget({
                       }
                     }
                   }}
-                  className="flex-1 sm:flex-initial h-10 px-4 rounded-xl bg-[#D97706] hover:bg-[#B45309] text-white text-xs sm:text-[13px] font-bold flex items-center justify-center gap-1.5 shadow-xs transition-all active:scale-[0.98] cursor-pointer"
+                  className="flex-1 sm:flex-initial min-h-[44px] h-11 px-4 rounded-xl bg-[#D97706] hover:bg-[#B45309] text-white text-xs sm:text-[13px] font-bold flex items-center justify-center gap-1.5 shadow-xs transition-all active:scale-[0.98] cursor-pointer"
                 >
                   <Lightning className="w-4 h-4 shrink-0" weight="fill" />
                   <span>حل سؤال النهاردة</span>
@@ -272,7 +272,7 @@ export function StreakWidget({
                   type="button"
                   disabled={isCheckingIn}
                   onClick={handleQuickCheckin}
-                  className="h-10 px-3 rounded-xl border border-[#D97706]/30 dark:border-[#FBBF24]/30 bg-white dark:bg-[#1E293B] hover:bg-[#D97706]/10 text-[#D97706] dark:text-[#FBBF24] text-xs font-semibold flex items-center justify-center gap-1.5 transition-all active:scale-[0.98] disabled:opacity-50 cursor-pointer"
+                  className="min-h-[44px] h-11 px-3 rounded-xl border border-[#D97706]/30 dark:border-[#FBBF24]/30 bg-white dark:bg-[#1E293B] hover:bg-[#D97706]/10 text-[#D97706] dark:text-[#FBBF24] text-xs font-semibold flex items-center justify-center gap-1.5 transition-all active:scale-[0.98] disabled:opacity-50 cursor-pointer"
                   title="تسجيل سريع لحضور النهاردة"
                 >
                   <CalendarCheck className="w-3.5 h-3.5 shrink-0" weight="bold" />
@@ -285,7 +285,7 @@ export function StreakWidget({
                 onClick={() => {
                   window.dispatchEvent(new CustomEvent("kholasa_open_entrance_exam"));
                 }}
-                className="flex-1 sm:flex-initial h-10 px-4 rounded-xl bg-[#059669]/10 hover:bg-[#059669]/15 border border-[#059669]/25 text-[#059669] dark:text-[#34D399] text-xs sm:text-[13px] font-bold flex items-center justify-center gap-2 transition-all active:scale-[0.98] cursor-pointer"
+                className="flex-1 sm:flex-initial min-h-[44px] h-11 px-4 rounded-xl bg-[#059669]/10 hover:bg-[#059669]/15 border border-[#059669]/25 text-[#059669] dark:text-[#34D399] text-xs sm:text-[13px] font-bold flex items-center justify-center gap-2 transition-all active:scale-[0.98] cursor-pointer"
               >
                 <Trophy className="w-4 h-4 shrink-0 text-[#059669] dark:text-[#34D399]" weight="fill" />
                 <span>سؤال إضافي</span>

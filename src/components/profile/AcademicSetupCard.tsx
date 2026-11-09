@@ -35,16 +35,16 @@ export function AcademicSetupCard({
   const currentGrades = systems.find((s) => s.id === selectedSystemId)?.grades || [];
 
   return (
-    <div className="p-6 sm:p-7 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] space-y-4">
+    <div className="p-4 sm:p-6 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] space-y-4 shadow-xs">
       <div className="flex items-center justify-between border-b border-[#E2E8F0] dark:border-[#334155] pb-3">
-        <h2 className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
-          <GraduationCap className="w-5 h-5 text-[#800020] dark:text-[#FB7185]" />
+        <h2 className="text-sm sm:text-base font-bold text-[#091B40] dark:text-white flex items-center gap-2">
+          <GraduationCap className="w-5 h-5 text-[#800B34] dark:text-[#FB7185]" />
           <span>المسار التعليمي والصف الدراسي</span>
         </h2>
         {!isEditingAcademic && (
           <button
             onClick={onStartEditing}
-            className="text-[13px] font-bold text-[#800020] dark:text-[#FB7185] hover:underline flex items-center gap-1"
+            className="text-xs sm:text-[13px] font-bold text-[#800B34] dark:text-[#FB7185] hover:underline flex items-center gap-1 cursor-pointer"
           >
             <Edit2 className="w-3.5 h-3.5" />
             <span>تعديل</span>
@@ -53,36 +53,36 @@ export function AcademicSetupCard({
       </div>
 
       {!isEditingAcademic ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="p-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/50 border border-[#E2E8F0] dark:border-[#334155]">
-            <span className="text-[13px] font-bold text-[#64748B] dark:text-[#94A3B8] block mb-1">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+          <div className="p-3.5 sm:p-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/50 border border-[#E2E8F0] dark:border-[#334155]">
+            <span className="text-xs sm:text-[13px] font-bold text-[#64748B] dark:text-[#94A3B8] block mb-1">
               النظام التعليمي
             </span>
-            <span className="text-sm font-bold text-[#0F172A] dark:text-white">
+            <span className="text-sm font-bold text-[#091B40] dark:text-white">
               {userSystemName || "غير محدد"}
             </span>
           </div>
 
-          <div className="p-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/50 border border-[#E2E8F0] dark:border-[#334155]">
-            <span className="text-[13px] font-bold text-[#64748B] dark:text-[#94A3B8] block mb-1">
+          <div className="p-3.5 sm:p-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/50 border border-[#E2E8F0] dark:border-[#334155]">
+            <span className="text-xs sm:text-[13px] font-bold text-[#64748B] dark:text-[#94A3B8] block mb-1">
               الصف الدراسي
             </span>
-            <span className="text-sm font-bold text-[#0F172A] dark:text-white">
+            <span className="text-sm font-bold text-[#091B40] dark:text-white">
               {userGradeName || "غير محدد"}
             </span>
           </div>
         </div>
       ) : (
-        <div className="space-y-4 pt-2">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="space-y-4 pt-1">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div>
-              <label className="block text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC] mb-2">
+              <label className="block text-xs sm:text-[13px] font-bold text-[#091B40] dark:text-[#F8FAFC] mb-1.5">
                 النظام التعليمي
               </label>
               <select
                 value={selectedSystemId}
                 onChange={(e) => onSystemChange(e.target.value)}
-                className="w-full h-11 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#800020]"
+                className="w-full min-h-[44px] h-11 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] text-xs sm:text-[13px] font-bold text-[#091B40] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#800B34]"
               >
                 {systems.map((s) => (
                   <option key={s.id} value={s.id}>
@@ -93,13 +93,13 @@ export function AcademicSetupCard({
             </div>
 
             <div>
-              <label className="block text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC] mb-2">
+              <label className="block text-xs sm:text-[13px] font-bold text-[#091B40] dark:text-[#F8FAFC] mb-1.5">
                 الصف الدراسي
               </label>
               <select
                 value={selectedGradeId}
                 onChange={(e) => onGradeChange(e.target.value)}
-                className="w-full h-11 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] text-[13px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#800020]"
+                className="w-full min-h-[44px] h-11 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] text-xs sm:text-[13px] font-bold text-[#091B40] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#800B34]"
               >
                 {currentGrades.map((g) => (
                   <option key={g.id} value={g.id}>
@@ -110,18 +110,18 @@ export function AcademicSetupCard({
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3">
             <button
               onClick={onSaveAcademic}
               disabled={isSaving}
-              className="h-11 px-4 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[13px] font-bold flex items-center gap-2 interactive-tap"
+              className="min-h-[44px] h-11 px-5 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white text-xs sm:text-[13px] font-bold flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98] shadow-xs"
             >
               {isSaving && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
               <span>حفظ التعديلات</span>
             </button>
             <button
               onClick={onCancelEditing}
-              className="h-11 px-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-medium text-[#64748B] hover:text-[#0F172A] dark:hover:text-white transition-colors"
+              className="min-h-[44px] h-11 px-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] text-xs sm:text-[13px] font-medium text-[#64748B] hover:text-[#091B40] dark:hover:text-white transition-colors flex items-center justify-center cursor-pointer"
             >
               إلغاء
             </button>

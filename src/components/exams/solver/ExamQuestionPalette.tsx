@@ -47,15 +47,15 @@ export function ExamQuestionPalette({
   const firstFlaggedIndex = questions.findIndex((q) => flaggedQuestions[q.id]);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200">
       {/* Click outside backdrop to close */}
       <div className="fixed inset-0" onClick={onClose} />
 
-      {/* Modal Dialog Card (Matches Image 4) */}
-      <div className="relative w-full max-w-lg rounded-3xl bg-white dark:bg-[#10233A] border border-[#E8E9ED] dark:border-[#22364F] shadow-2xl p-5 sm:p-6 space-y-4 z-10 animate-in zoom-in-95 duration-200">
+      {/* Modal Dialog Card */}
+      <div className="relative w-full max-w-lg rounded-3xl bg-white dark:bg-[#10233A] border border-[#E8E9ED] dark:border-[#22364F] shadow-2xl p-4 sm:p-6 space-y-3.5 sm:space-y-4 z-10 animate-in zoom-in-95 duration-200">
         {/* Header Row: Title on right, Close 'X' on left (in RTL) */}
         <div className="flex items-center justify-between pb-3 border-b border-[#E8E9ED] dark:border-[#22364F]">
-          <h3 className="text-sm sm:text-base font-black text-[#12263F] dark:text-white">
+          <h3 className="text-sm sm:text-base font-black text-[#091B40] dark:text-white">
             خريطة الأسئلة ({answeredTotal} مُجاب • {questions.length} سؤال)
           </h3>
 
@@ -101,8 +101,8 @@ export function ExamQuestionPalette({
           </div>
         )}
 
-        {/* 6-Column Grid of Question Numbers (Matches Image 4 Exactly) */}
-        <div className="grid grid-cols-6 gap-2 sm:gap-2.5 max-h-[55vh] overflow-y-auto p-1 scrollbar-thin">
+        {/* 5-col on mobile, 6-col on desktop: Question Numbers */}
+        <div className="grid grid-cols-5 sm:grid-cols-6 gap-2 sm:gap-2.5 max-h-[50vh] overflow-y-auto p-1 scrollbar-thin">
           {questions.map((q, idx) => {
             const ans = answers[q.id];
             const hasAnswer =
@@ -110,20 +110,16 @@ export function ExamQuestionPalette({
             const flagged = flaggedQuestions[q.id];
             const isActive = idx === currentIndex;
 
-            // Default: Light grayish-white button (Unanswered)
             let btnStyle =
-              "bg-[#F7F8FA] dark:bg-[#0D1B2E] border border-[#E8E9ED] dark:border-[#22364F] text-[#12263F] dark:text-slate-300 hover:bg-slate-100";
+              "bg-[#F7F8FA] dark:bg-[#0D1B2E] border border-[#E8E9ED] dark:border-[#22364F] text-[#091B40] dark:text-slate-300 hover:bg-slate-100";
 
             if (isActive) {
-              // Current Active Question: Deep burgundy with golden amber border & ring (Image 4 button 2)
               btnStyle =
-                "bg-[#800020] text-white border-2 border-[#D97706] font-black shadow-md ring-2 ring-[#D97706]/50 scale-105 z-10";
+                "bg-[#800B34] text-white border-2 border-[#D97706] font-black shadow-md ring-2 ring-[#D97706]/50 scale-105 z-10";
             } else if (flagged) {
-              // Flagged: Light warm cream with orange flag pin (Image 4 button 1)
               btnStyle =
                 "bg-[#FEF9C3] dark:bg-amber-950/60 border border-amber-300 dark:border-amber-700 text-amber-900 dark:text-amber-200 font-bold hover:bg-amber-100";
             } else if (hasAnswer) {
-              // Answered: Soft emerald / slate tint
               btnStyle =
                 "bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-700 text-emerald-800 dark:text-emerald-300 font-bold hover:bg-emerald-100";
             }
@@ -139,7 +135,7 @@ export function ExamQuestionPalette({
                   onSelectIndex(idx);
                   onClose();
                 }}
-                className={`relative h-10 sm:h-11 rounded-xl text-xs sm:text-sm font-mono font-bold flex items-center justify-center transition-all cursor-pointer active:scale-95 ${btnStyle}`}
+                className={`relative min-h-[44px] h-10 sm:h-11 rounded-xl text-xs sm:text-sm font-mono font-bold flex items-center justify-center transition-all cursor-pointer active:scale-95 ${btnStyle}`}
               >
                 <span>{idx + 1}</span>
                 {!isActive && flagged && (

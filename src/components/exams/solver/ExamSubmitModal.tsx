@@ -28,26 +28,26 @@ export function ExamSubmitModal({
   const isAllAnswered = unansweredCount === 0;
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200">
-      <div className="w-full max-w-md bg-white dark:bg-[#0F172A] rounded-2xl p-6 sm:p-7 space-y-5 text-right border border-slate-200 dark:border-slate-800 shadow-xl">
+    <div className="fixed inset-0 z-[60] bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 animate-in fade-in duration-200">
+      <div className="w-full max-w-md bg-white dark:bg-[#0F172A] rounded-2xl sm:rounded-3xl p-5 sm:p-7 space-y-4 sm:space-y-5 text-right border border-slate-200 dark:border-slate-800 shadow-2xl">
         {/* Top Icon */}
         <div
-          className={`w-14 h-14 rounded-2xl flex items-center justify-center mx-auto shadow-xs border ${
+          className={`w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center mx-auto shadow-xs border ${
             isAllAnswered
               ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border-emerald-200/60 dark:border-emerald-800/60"
               : "bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 border-amber-200/60 dark:border-amber-800/60"
           }`}
         >
           {isAllAnswered ? (
-            <CheckCircle className="w-8 h-8" weight="fill" />
+            <CheckCircle className="w-7 h-7 sm:w-8 sm:h-8" weight="fill" />
           ) : (
-            <Warning className="w-8 h-8" weight="fill" />
+            <Warning className="w-7 h-7 sm:w-8 sm:h-8" weight="fill" />
           )}
         </div>
 
         {/* Modal Title & Subtitle */}
-        <div className="text-center space-y-2">
-          <h3 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white">
+        <div className="text-center space-y-1.5 sm:space-y-2">
+          <h3 className="text-base sm:text-xl font-black text-slate-900 dark:text-white">
             {isAllAnswered
               ? "الله ينور عليك يا وحش! حليت كل الأسئلة كلها 👏"
               : "متأكد إنك عاوز تسلّم الامتحان دلوقتي يا صاحبي؟"}
@@ -60,9 +60,9 @@ export function ExamSubmitModal({
         </div>
 
         {/* Answered vs Unanswered Stats Card */}
-        <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 flex items-center justify-around text-center">
-          <div className="space-y-1">
-            <span className="block text-xl font-extrabold text-emerald-600 dark:text-emerald-400 font-mono">
+        <div className="p-3.5 sm:p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 flex items-center justify-around text-center">
+          <div className="space-y-0.5 sm:space-y-1">
+            <span className="block text-lg sm:text-xl font-extrabold text-emerald-600 dark:text-emerald-400 font-mono">
               {answeredCount}
             </span>
             <span className="text-xs font-bold text-slate-600 dark:text-slate-300">
@@ -70,11 +70,11 @@ export function ExamSubmitModal({
             </span>
           </div>
 
-          <div className="w-px h-10 bg-slate-200 dark:bg-slate-700" />
+          <div className="w-px h-8 sm:h-10 bg-slate-200 dark:bg-slate-700" />
 
-          <div className="space-y-1">
+          <div className="space-y-0.5 sm:space-y-1">
             <span
-              className={`block text-xl font-extrabold font-mono ${
+              className={`block text-lg sm:text-xl font-extrabold font-mono ${
                 unansweredCount > 0 ? "text-amber-600 dark:text-amber-400" : "text-slate-400"
               }`}
             >
@@ -88,17 +88,17 @@ export function ExamSubmitModal({
 
         {/* Passing / Failing Explicit Warning when questions are left unanswered */}
         {unansweredCount > 0 && !submitError && (
-          <div className="p-3.5 sm:p-4 rounded-xl bg-amber-50/90 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800 text-xs text-amber-900 dark:text-amber-200 space-y-2">
-            <div className="flex items-center gap-2 font-black text-xs sm:text-sm text-amber-800 dark:text-amber-300">
-              <Warning className="w-5 h-5 shrink-0 text-amber-600 dark:text-amber-400" weight="fill" />
+          <div className="p-3 sm:p-4 rounded-xl bg-amber-50/90 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800 text-xs text-amber-900 dark:text-amber-200 space-y-1.5 sm:space-y-2">
+            <div className="flex items-center gap-1.5 sm:gap-2 font-black text-xs sm:text-sm text-amber-800 dark:text-amber-300">
+              <Warning className="w-4 h-4 sm:w-5 sm:h-5 shrink-0 text-amber-600 dark:text-amber-400" weight="fill" />
               <span>خلّي بالك يا صاحبي قبل ما تسلّم:</span>
             </div>
-            <div className="leading-relaxed space-y-1.5">
+            <div className="leading-relaxed space-y-1 sm:space-y-1.5">
               <p>
                 لسه عندك <strong>{unansweredCount} سؤال</strong> ما حلتهمش، وهيتحسبوا غلط (صفر).
               </p>
               {maxPossibleScorePct < 50 ? (
-                <div className="p-2.5 rounded-lg bg-rose-100 dark:bg-rose-950/70 border border-rose-300 dark:border-rose-800 text-rose-800 dark:text-rose-200 font-black">
+                <div className="p-2 sm:p-2.5 rounded-lg bg-rose-100 dark:bg-rose-950/70 border border-rose-300 dark:border-rose-800 text-rose-800 dark:text-rose-200 font-black text-[11px] sm:text-xs">
                   ⚠️ تنبيه رسوب مؤكد: حتى لو كل اللي حليته طلع صح 100%، أقصى نسبة تقدر تجيبها هي {maxPossibleScorePct}% بس، يعني كدا <strong>هتسقط في الامتحان ده</strong> (نسبة النجاح 50%). ارجع كمّل حل أحسن واضمن نجاحك يا بطل!
                 </div>
               ) : (
@@ -112,19 +112,19 @@ export function ExamSubmitModal({
 
         {/* Submission Error Banner */}
         {submitError && (
-          <div className="p-3.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/80 text-xs font-bold text-rose-800 dark:text-rose-300 flex items-center gap-2.5">
-            <Warning className="w-5 h-5 shrink-0 text-rose-600 dark:text-rose-400" weight="fill" />
+          <div className="p-3 sm:p-3.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/80 text-xs font-bold text-rose-800 dark:text-rose-300 flex items-center gap-2">
+            <Warning className="w-4 h-4 sm:w-5 sm:h-5 shrink-0 text-rose-600 dark:text-rose-400" weight="fill" />
             <span>{submitError}</span>
           </div>
         )}
 
         {/* Action Buttons */}
-        <div className="flex items-center gap-3 pt-2">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 pt-1">
           <button
             type="button"
             disabled={isSubmitting}
             onClick={onConfirmSubmit}
-            className="flex-1 h-11 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-xs hover:shadow transition-all disabled:opacity-50 cursor-pointer select-none"
+            className="flex-1 min-h-[44px] h-11 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-xs hover:shadow transition-all disabled:opacity-50 cursor-pointer select-none active:scale-[0.98]"
           >
             {isSubmitting ? (
               <>
@@ -139,7 +139,7 @@ export function ExamSubmitModal({
             type="button"
             disabled={isSubmitting}
             onClick={onClose}
-            className="flex-1 h-11 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs sm:text-sm hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex items-center justify-center gap-2 cursor-pointer select-none"
+            className="flex-1 min-h-[44px] h-11 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs sm:text-sm hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex items-center justify-center gap-2 cursor-pointer select-none active:scale-[0.98]"
           >
             <ArrowArcLeft className="w-4 h-4" />
             <span>رجوع للاستكمال</span>
