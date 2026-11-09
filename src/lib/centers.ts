@@ -91,3 +91,4 @@ export function getCentersForCategory(category?: SchoolCategory | null): Educati
   }
   return AUTHORIZED_CENTERS;
 }
+
