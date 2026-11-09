@@ -728,26 +728,6 @@ export function StudentPaywallView({
             </div>
           </div>
         </div>
-
-        {/* --------------------------------------------------------------------- */}
-        {/* SIGNATURE CURVED GOLD DIVIDER (DESKTOP ONLY)                         */}
-        {/* --------------------------------------------------------------------- */}
-        <div className="hidden lg:block absolute top-0 bottom-0 left-[30%] w-[20px] pointer-events-none -translate-x-1/2 z-10 overflow-visible">
-          <svg
-            className="h-full w-[20px]"
-            viewBox="0 0 20 600"
-            fill="none"
-            preserveAspectRatio="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M 16,0 Q 4,300 16,600"
-              stroke="#E9AD32"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-            />
-          </svg>
-        </div>
       </div>
 
       {/* ========================================================================= */}
