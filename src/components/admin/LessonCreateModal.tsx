@@ -27,6 +27,7 @@ export function LessonCreateModal({
   const [audioUrl, setAudioUrl] = useState("");
   const [showPairUploadModal, setShowPairUploadModal] = useState(false);
   const [isPublished, setIsPublished] = useState(true);
+  const [isTrial, setIsTrial] = useState(false);
 
   const [uploadingMedia, setUploadingMedia] = useState<"video" | "audio" | null>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
@@ -156,7 +157,7 @@ export function LessonCreateModal({
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div className="space-y-2">
               <label className="text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC]">
                 المدة (دقائق)

@@ -289,6 +289,13 @@ export function QuestionBankManagerClient({
     }
   };
 
+  // Export Selected Questions to JSON
+  const handleExportSelected = () => {
+    const ids = Array.from(selectedIds);
+    if (ids.length === 0) return;
+    window.location.href = `/api/admin/questions/export?download=true&ids=${ids.join(",")}`;
+  };
+
   // Bulk Delete Selected Questions
   const handleBulkDelete = () => {
     const idsToDelete = Array.from(selectedIds);
@@ -533,6 +540,7 @@ export function QuestionBankManagerClient({
           onToggleSelectAll={handleToggleSelectAll}
           onClearSelection={handleClearSelection}
           onDeleteSelected={handleBulkDelete}
+          onExportSelected={handleExportSelected}
           isDeleting={isBulkDeleting}
         />
 

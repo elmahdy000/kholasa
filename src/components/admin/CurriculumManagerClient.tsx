@@ -12,6 +12,7 @@ import {
   Palette,
   Plus,
   UploadCloud,
+  Download,
   Edit3,
   Trash2,
   CheckCircle2,

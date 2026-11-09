@@ -1,6 +1,6 @@
 "use client";
 
-import { Trash2, CheckSquare, Square, X, AlertTriangle } from "lucide-react";
+import { Trash2, Download, CheckSquare, Square, X, AlertTriangle } from "lucide-react";
 
 interface QuestionBulkActionsBarProps {
   totalCount: number;
@@ -9,6 +9,7 @@ interface QuestionBulkActionsBarProps {
   onToggleSelectAll: () => void;
   onClearSelection: () => void;
   onDeleteSelected: () => void;
+  onExportSelected?: () => void;
   isDeleting: boolean;
 }
 

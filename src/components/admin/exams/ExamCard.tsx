@@ -7,6 +7,7 @@ import {
   Users,
   ExternalLink,
   Trash2,
+  Edit3,
   Calendar,
   Sparkles,
 } from "lucide-react";
@@ -17,6 +18,7 @@ interface ExamCardProps {
   onTogglePractice: (examId: string, currentIsPractice: boolean) => void;
   onDeleteExam: (examId: string, title: string) => void;
   onSimulate?: (exam: ExamItem) => void;
+  onEdit?: (exam: ExamItem) => void;
 }
 
 export function ExamCard({
@@ -24,6 +26,7 @@ export function ExamCard({
   onTogglePractice,
   onDeleteExam,
   onSimulate,
+  onEdit,
 }: ExamCardProps) {
   const now = new Date();
   const startsAtDate = exam.startsAt ? new Date(exam.startsAt) : null;
@@ -164,6 +167,16 @@ export function ExamCard({
           >
             تبديل الوضع
           </button>
+          {onEdit && (
+            <button
+              type="button"
+              onClick={() => onEdit(exam)}
+              className="p-2 rounded-lg text-[#64748B] hover:text-[#800020] hover:bg-[#800020]/10 dark:hover:bg-[#1E293B] transition-colors cursor-pointer"
+              title="تعديل بيانات الامتحان"
+            >
+              <Edit3 className="w-4 h-4" />
+            </button>
+          )}
           <button
             type="button"
             onClick={() => onDeleteExam(exam.id, exam.title)}

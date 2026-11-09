@@ -78,6 +78,7 @@ export class CurriculumLessonsService {
         order: Number(lessonOrder),
         durationMinutes: Number(data.durationMinutes || 15),
         isPublished: data.isPublished !== undefined ? Boolean(data.isPublished) : true,
+        isTrial: data.isTrial !== undefined ? Boolean(data.isTrial) : false,
         content: {
           create: {
             body: data.bodyText?.trim() || "محتوى وشرح تفصيلي للدرس...",
@@ -164,6 +165,7 @@ export class CurriculumLessonsService {
         durationMinutes: data.durationMinutes !== undefined ? Number(data.durationMinutes) : undefined,
         order: data.order !== undefined ? Number(data.order) : undefined,
         isPublished: data.isPublished !== undefined ? Boolean(data.isPublished) : undefined,
+        isTrial: data.isTrial !== undefined ? Boolean(data.isTrial) : undefined,
       },
     });
 

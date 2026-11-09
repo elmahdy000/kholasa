@@ -39,8 +39,15 @@ export function LessonRow({
 
         {/* Title and Stats */}
         <div className="min-w-0 flex-1">
-          <div className="text-xs sm:text-sm font-bold text-[#12263F] dark:text-white truncate">
-            {lesson.title}
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-xs sm:text-sm font-bold text-[#12263F] dark:text-white truncate">
+              {lesson.title}
+            </span>
+            {lesson.isTrial && (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/30">
+                ⭐️ تجريبي للزوار
+              </span>
+            )}
           </div>
           <div className="flex items-center gap-2.5 text-[11px] text-slate-500 dark:text-slate-400 font-medium mt-0.5">
             <span className="flex items-center gap-1">

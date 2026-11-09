@@ -17,6 +17,7 @@ const updateSchema = z.object({
   durationMinutes: z.coerce.number().int().min(1).max(1000).optional(),
   order: z.coerce.number().int().min(0).max(100000).optional(),
   isPublished: z.boolean().optional(),
+  isTrial: z.boolean().optional(),
   videoUrl: url,
   audioUrl: url,
   pdfUrl: url,

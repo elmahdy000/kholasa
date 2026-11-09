@@ -90,7 +90,7 @@ export function LessonMediaTab({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="space-y-2">
           <label className="text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC]">
             ترتيب الدرس داخل الوحدة

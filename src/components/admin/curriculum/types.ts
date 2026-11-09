@@ -4,6 +4,7 @@ export interface Lesson {
   order: number;
   durationMinutes: number;
   isPublished: boolean;
+  isTrial?: boolean;
   viewsCount: number;
 }
 

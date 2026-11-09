@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Search, Plus, FileText, X, Layers, Sparkles, Check, ChevronDown, Upload } from "lucide-react";
+import { Search, Plus, FileText, Download, X, Layers, Sparkles, Check, ChevronDown, Upload } from "lucide-react";
 import { Subject } from "./types";
 
 interface QuestionFilterBarProps {
@@ -52,6 +52,19 @@ export function QuestionFilterBar({
     selectedType !== "all" ||
     selectedDifficulty !== "all" ||
     searchQuery.trim().length > 0;
+
+  const handleExportQuestionsJson = () => {
+    const params = new URLSearchParams();
+    params.set("download", "true");
+    if (selectedGradeCode !== "all") params.set("gradeId", selectedGradeCode);
+    if (selectedCategory !== "all") params.set("schoolCategory", selectedCategory);
+    if (selectedSubjectId !== "all") params.set("subjectId", selectedSubjectId);
+    if (selectedType !== "all") params.set("type", selectedType);
+    if (selectedDifficulty !== "all") params.set("difficulty", selectedDifficulty);
+    if (searchQuery.trim()) params.set("search", searchQuery.trim());
+
+    window.location.href = `/api/admin/questions/export?${params.toString()}`;
+  };
 
   const handleResetFilters = () => {
     setSelectedGradeCode("all");
@@ -256,6 +269,17 @@ export function QuestionFilterBar({
                 )}
               </div>
             )}
+
+            {/* Export Questions JSON Button */}
+            <button
+              type="button"
+              onClick={handleExportQuestionsJson}
+              className="h-10 px-3.5 rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-[12px] font-bold text-emerald-700 dark:text-emerald-300 flex items-center gap-2 cursor-pointer transition-colors shadow-2xs"
+              title="تصدير جميع الأسئلة الحالية المطابقة للتصفية كملف JSON"
+            >
+              <Download className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+              <span>تصدير JSON ({filteredCount})</span>
+            </button>
 
             <button
               type="button"

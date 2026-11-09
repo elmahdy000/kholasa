@@ -4,6 +4,7 @@ export interface LessonData {
   order: number;
   durationMinutes: number;
   isPublished: boolean;
+  isTrial?: boolean;
   unitId: string;
   unit?: {
     id: string;

@@ -2,12 +2,15 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
     const user = await getCurrentUser();
     if (!user || (user.role !== "ADMIN" && user.role !== "SUPER_ADMIN")) {
       return NextResponse.json({ error: "غير مصرح لك بالوصول" }, { status: 403 });
     }
+
+    const { searchParams } = new URL(req.url);
+    const format = searchParams.get("format") || "csv";
 
     const students = await prisma.user.findMany({
       orderBy: { createdAt: "desc" },
@@ -19,11 +22,17 @@ export async function GET() {
         loginCode: true,
         role: true,
         schoolCategory: true,
+        studyMode: true,
+        centerName: true,
+        subscriptionStatus: true,
+        subscriptionExpiresAt: true,
         maxDevices: true,
         boundDevices: true,
+        isActive: true,
         createdAt: true,
         system: { select: { name: true } },
         grade: { select: { name: true } },
+        track: { select: { name: true } },
         _count: {
           select: {
             attempts: true,
@@ -33,6 +42,52 @@ export async function GET() {
         },
       },
     });
+
+    const dateStr = new Date().toISOString().split("T")[0];
+
+    // JSON Format Export
+    if (format === "json") {
+      const payload = {
+        exportMetadata: {
+          exportedAt: new Date().toISOString(),
+          version: "1.0",
+          platform: "منصة الخلاصة التعليمية",
+          totalStudents: students.length,
+        },
+        students: students.map((s) => ({
+          id: s.id,
+          name: s.name,
+          loginCode: s.loginCode,
+          phone: s.phone,
+          email: s.email,
+          role: s.role,
+          schoolCategory: s.schoolCategory,
+          studyMode: s.studyMode,
+          centerName: s.centerName,
+          subscriptionStatus: s.subscriptionStatus,
+          subscriptionExpiresAt: s.subscriptionExpiresAt ? s.subscriptionExpiresAt.toISOString() : null,
+          isActive: s.isActive,
+          system: s.system?.name || null,
+          grade: s.grade?.name || null,
+          track: s.track?.name || null,
+          activeDevicesCount: s.boundDevices?.length || 0,
+          maxDevices: s.maxDevices,
+          boundDevices: s.boundDevices,
+          attemptsCount: s._count.attempts,
+          completedLessonsCount: s._count.progress,
+          mistakesCount: s._count.mistakes,
+          createdAt: s.createdAt.toISOString(),
+        })),
+      };
+
+      return new Response(JSON.stringify(payload, null, 2), {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json; charset=utf-8",
+          "Content-Disposition": `attachment; filename="students_kholasa_${dateStr}.json"`,
+        },
+      });
+    }
 
     // Generate CSV string with UTF-8 BOM so Excel opens Arabic correctly
     const headers = [
@@ -44,7 +99,12 @@ export async function GET() {
       "الرتبة",
       "النظام التعليمي",
       "الصف الدراسي",
+      "المسار التخصصي",
       "نوع المدرسة",
+      "طريقة الحضور",
+      "اسم السنتر",
+      "حالة الاشتراك",
+      "حالة الحساب",
       "الأجهزة المستخدمة",
       "الحد الأقصى للأجهزة",
       "عدد الامتحانات",
@@ -68,7 +128,20 @@ export async function GET() {
       escapeCsv(s.role === "STUDENT" ? "طالب" : s.role),
       escapeCsv(s.system?.name || "غير محدد"),
       escapeCsv(s.grade?.name || "غير محدد"),
+      escapeCsv(s.track?.name || "عام"),
       escapeCsv(s.schoolCategory === "LANGUAGES" ? "لغات" : "عربي"),
+      escapeCsv(s.studyMode === "OFFLINE" ? "سنتر / أوفلاين" : "أونلاين"),
+      escapeCsv(s.centerName || "—"),
+      escapeCsv(
+        s.subscriptionStatus === "ACTIVE"
+          ? "مفعل"
+          : s.subscriptionStatus === "PENDING_VERIFICATION"
+          ? "قيد المراجعة"
+          : s.subscriptionStatus === "TRIAL"
+          ? "تجريبي"
+          : "منتهي"
+      ),
+      escapeCsv(s.isActive ? "نشط" : "معطل"),
       escapeCsv(s.boundDevices?.length || 0),
       escapeCsv(s.maxDevices || 2),
       escapeCsv(s._count.attempts),
@@ -79,7 +152,6 @@ export async function GET() {
 
     const csvContent = "\uFEFF" + [headers.join(","), ...rows.map((r) => r.join(","))].join("\r\n");
 
-    const dateStr = new Date().toISOString().split("T")[0];
     return new Response(csvContent, {
       status: 200,
       headers: {
@@ -92,4 +164,3 @@ export async function GET() {
     return NextResponse.json({ error: "تعذر تصدير بيانات الطلاب" }, { status: 500 });
   }
 }
-

@@ -6,6 +6,7 @@ import { Subject, ExamItem } from "./exams/types";
 import { ExamFilterBar } from "./exams/ExamFilterBar";
 import { ExamCard } from "./exams/ExamCard";
 import { ExamCreateForm } from "./exams/ExamCreateForm";
+import { ExamEditModal } from "./exams/ExamEditModal";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import { ExamSimulatorModal, SimulatedQuestion } from "./exams/ExamSimulatorModal";
 
@@ -25,6 +26,7 @@ export function ExamManagerClient({
   const [selectedSubjectId, setSelectedSubjectId] = useState("all");
   const [selectedType, setSelectedType] = useState("all");
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [editingExam, setEditingExam] = useState<ExamItem | null>(null);
   const [toggleError, setToggleError] = useState<string | null>(null);
   const pendingToggles = useRef(new Set<string>());
 
@@ -106,6 +108,10 @@ export function ExamManagerClient({
         }
       },
     });
+  };
+
+  const handleExamUpdated = (updated: ExamItem) => {
+    setExams((prev) => prev.map((e) => (e.id === updated.id ? updated : e)));
   };
 
   const handleExamCreated = (newExam: ExamItem) => {
@@ -209,6 +215,7 @@ export function ExamManagerClient({
               onTogglePractice={handleTogglePractice}
               onDeleteExam={handleDeleteExam}
               onSimulate={handleSimulateExam}
+              onEdit={(e) => setEditingExam(e)}
             />
           ))}
         </div>
@@ -247,6 +254,16 @@ export function ExamManagerClient({
             <span>جارٍ تجهيز محاكاة الامتحان...</span>
           </div>
         </div>
+      )}
+
+      {/* Edit Exam Modal */}
+      {editingExam && (
+        <ExamEditModal
+          isOpen={Boolean(editingExam)}
+          exam={editingExam}
+          onClose={() => setEditingExam(null)}
+          onSaved={handleExamUpdated}
+        />
       )}
 
       {/* Confirmation Dialog */}

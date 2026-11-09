@@ -108,6 +108,16 @@ export function UserFilterBar({
             <span className="hidden sm:inline">تصدير CSV</span>
           </a>
 
+          <a
+            href="/api/admin/users/export?format=json"
+            download
+            className="h-10 px-3.5 rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-xs font-bold text-emerald-700 dark:text-emerald-300 flex items-center gap-1.5 transition-colors"
+            title="تصدير كشف بيانات الطلاب كملف JSON"
+          >
+            <Download className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+            <span className="hidden sm:inline">تصدير JSON</span>
+          </a>
+
           <button
             onClick={onOpenCreate}
             className="h-10 px-4 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-xs font-bold flex items-center gap-2 cursor-pointer transition-colors shadow-2xs"

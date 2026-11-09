@@ -4,6 +4,7 @@ export interface LessonCreateInput {
   durationMinutes?: number;
   order?: number;
   isPublished?: boolean;
+  isTrial?: boolean;
   videoUrl?: string | null;
   audioUrl?: string | null;
   pdfUrl?: string | null;
@@ -26,6 +27,7 @@ export interface LessonUpdateInput {
   durationMinutes?: number;
   order?: number;
   isPublished?: boolean;
+  isTrial?: boolean;
   videoUrl?: string | null;
   audioUrl?: string | null;
   pdfUrl?: string | null;

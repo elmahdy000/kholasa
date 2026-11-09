@@ -45,6 +45,7 @@ export function useLessonEditor({
   const [order, setOrder] = useState<number>(0);
   const [durationMinutes, setDurationMinutes] = useState<number>(15);
   const [isPublished, setIsPublished] = useState(true);
+  const [isTrial, setIsTrial] = useState(false);
   const [unitInfo, setUnitInfo] = useState<UnitInfo>({
     unitTitle: "",
     subjectName: "",
@@ -145,6 +146,7 @@ export function useLessonEditor({
         setOrder(data.order ?? 0);
         setDurationMinutes(data.durationMinutes ?? 15);
         setIsPublished(data.isPublished ?? true);
+        setIsTrial(Boolean(data.isTrial));
 
         if (data.unit) {
           setUnitInfo({
@@ -428,6 +430,7 @@ export function useLessonEditor({
       order: Number(order),
       durationMinutes: Number(durationMinutes),
       isPublished: Boolean(isPublished),
+      isTrial: Boolean(isTrial),
       content: {
         body: bodyText,
         videoUrl: videoUrl.trim() || null,
