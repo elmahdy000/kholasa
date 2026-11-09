@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { fetchWithRetry } from "@/lib/network";
 import Link from "next/link";
 import {
   Lightning,
@@ -68,7 +69,7 @@ export function DailyChallengeCard({
     setIsSubmitting(true);
     setSubmitError(null);
     try {
-      const res = await fetch(`/api/questions/${question.id}/answer`, {
+      const res = await fetchWithRetry(`/api/questions/${question.id}/answer`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ selectedOptionId, isDailyChallenge: true }),

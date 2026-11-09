@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import { fetchWithRetry } from "@/lib/network";
 import { useRouter } from "next/navigation";
 import { ExamSolverProps, UserAnswerState } from "./solver/types";
 import { ExamSolverHeader } from "./solver/ExamSolverHeader";
@@ -142,7 +143,9 @@ export function ExamSolver({ exam, attemptId, attemptStartedAt }: ExamSolverProp
     setIsSubmitting(true);
     setSubmitError(null);
     try {
-      const res = await fetch(`/api/exams/${exam.id}/submit`, {
+      const res = await fetchWithRetry(`/api/exams/${exam.id}/submit`, {
+        maxRetries: 3,
+        timeoutMs: 15000,
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

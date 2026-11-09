@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useMemo } from "react";
+import { fetchWithRetry } from "@/lib/network";
 import {
   X,
   CheckCircle,
@@ -115,7 +116,7 @@ export function LessonMistakesCapsuleModal({
     setFeedbackNotice(null);
 
     try {
-      const res = await fetch(`/api/questions/${currentQ.id}/answer`, {
+      const res = await fetchWithRetry(`/api/questions/${currentQ.id}/answer`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ selectedOptionId: optionId }),
@@ -187,7 +188,7 @@ export function LessonMistakesCapsuleModal({
 
     setIsSubmitting(true);
     try {
-      await fetch(`/api/questions/${currentQ.id}/answer`, {
+      await fetchWithRetry(`/api/questions/${currentQ.id}/answer`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ resolve: true }),

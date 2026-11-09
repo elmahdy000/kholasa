@@ -3,16 +3,30 @@ import Link from "next/link";
 import { getCurrentUser } from "@/lib/auth";
 import { StudentShell } from "@/components/layout/StudentShell";
 import { StudentPaywallView } from "@/components/student/subscription/StudentPaywallView";
-import { CheckCircle2, BookOpen, LayoutDashboard, ArrowLeft } from "lucide-react";
+import { CheckCircle2, BookOpen, LayoutDashboard, Upload, ArrowLeft } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
-export default async function SubscriptionPage() {
+interface SubscriptionPageProps {
+  searchParams?: Promise<{
+    force?: string;
+    manage?: string;
+    renew?: string;
+  }>;
+}
+
+export default async function SubscriptionPage({ searchParams }: SubscriptionPageProps) {
   const user = await getCurrentUser();
 
   if (!user) {
     redirect("/login?callbackUrl=/subscription");
   }
+
+  const resolvedParams = searchParams ? await searchParams : {};
+  const isForceView =
+    resolvedParams?.force === "true" ||
+    resolvedParams?.manage === "true" ||
+    resolvedParams?.renew === "true";
 
   const isStaff = user.role === "ADMIN" || user.role === "SUPER_ADMIN";
   const isActive = isStaff || user.subscriptionStatus === "ACTIVE";
@@ -29,8 +43,8 @@ export default async function SubscriptionPage() {
           <span className="text-[#091B40] font-bold">شاشة تفعيل الاشتراك ورفع الإيصال</span>
         </nav>
 
-        {isActive ? (
-          <div className="max-w-xl mx-auto my-12 p-8 sm:p-10 rounded-3xl bg-white dark:bg-[#0F172A] border-2 border-emerald-500/30 shadow-xl text-center space-y-4">
+        {isActive && !isForceView ? (
+          <div className="max-w-xl mx-auto my-8 sm:my-12 p-8 sm:p-10 rounded-3xl bg-white dark:bg-[#0F172A] border-2 border-emerald-500/30 shadow-xl text-center space-y-4">
             <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto">
               <CheckCircle2 className="w-8 h-8" />
             </div>
@@ -49,6 +63,13 @@ export default async function SubscriptionPage() {
               >
                 <BookOpen className="w-4 h-4" />
                 <span>تصفح المواد والدروس</span>
+              </Link>
+              <Link
+                href="/subscription?renew=true"
+                className="w-full sm:w-auto h-11 px-5 rounded-xl bg-[#FAF6F7] hover:bg-[#F3E8EC] text-[#800B34] border border-[#800B34]/20 text-xs font-bold flex items-center justify-center gap-2 transition-all"
+              >
+                <Upload className="w-4 h-4" />
+                <span>رفع إيصال جديد أو تجديد الاشتراك</span>
               </Link>
               <Link
                 href="/dashboard"

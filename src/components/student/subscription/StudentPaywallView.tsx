@@ -20,6 +20,7 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import { getCleanStudentName } from "@/lib/utils";
+import { fetchWithRetry } from "@/lib/network";
 
 interface StudentPaywallViewProps {
   user: {
@@ -323,7 +324,8 @@ export function StudentPaywallView({
       formData.append("senderPhone", senderPhone.trim());
       if (reference.trim()) formData.append("reference", reference.trim());
 
-      const res = await fetch("/api/student/subscription/receipt", {
+      const res = await fetchWithRetry("/api/student/subscription/receipt", {
+        timeoutMs: 35000,
         method: "POST",
         body: formData,
       });

@@ -38,6 +38,7 @@ import Script from "next/script";
 import { PwaRegister } from "@/components/pwa/PwaRegister";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import { ToastProvider } from "@/components/ui/Toast";
+import { NetworkStatusIndicator } from "@/components/ui/NetworkStatusIndicator";
 import { AppShell } from "@/components/layout/AppShell";
 import { getCurrentUser } from "@/lib/auth";
 
@@ -65,15 +66,6 @@ export default async function RootLayout({
       suppressHydrationWarning
       data-scroll-behavior="smooth"
     >
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap"
-          rel="stylesheet"
-        />
-      </head>
-
       <body
         suppressHydrationWarning
         className="min-h-screen font-sans bg-[#F7F9FC] dark:bg-[#091B40] text-[#091B40] dark:text-[#F7F9FC] antialiased selection:bg-[#800B34]/15 dark:selection:bg-[#E9AD32]/25 selection:text-[#800B34] dark:selection:text-[#E9AD32]"
@@ -103,6 +95,7 @@ export default async function RootLayout({
         <ThemeProvider>
           <ToastProvider>
             <PwaRegister />
+            <NetworkStatusIndicator />
             <AppShell user={shellUser}>{children}</AppShell>
           </ToastProvider>
         </ThemeProvider>

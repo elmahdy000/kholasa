@@ -29,6 +29,7 @@ import { LessonLearningStepper } from "./flow/LessonLearningStepper";
 import { LessonFlashcardsModal } from "./LessonFlashcardsModal";
 import { LessonMistakesCapsuleModal } from "./LessonMistakesCapsuleModal";
 import { offlineStorage } from "@/lib/offline-db";
+import { fetchWithRetry } from "@/lib/network";
 
 function getEmbedUrl(url?: string | null): string | null {
   if (!url) return null;
@@ -401,7 +402,7 @@ export function LessonViewer({
       isQuestionsFullyAnswered &&
       lesson.questions.length > 0
     ) {
-      fetch(`/api/lessons/${lesson.id}/progress`, {
+      fetchWithRetry(`/api/lessons/${lesson.id}/progress`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -462,7 +463,7 @@ export function LessonViewer({
     setBookmarkNotice(null);
     setIsTogglingBookmark(true);
     try {
-      const res = await fetch("/api/bookmarks", {
+      const res = await fetchWithRetry("/api/bookmarks", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ lessonId: lesson.id }),
@@ -486,7 +487,7 @@ export function LessonViewer({
     setIsTogglingComplete(true);
     try {
       const newStatus = !isCompleted;
-      const res = await fetch(`/api/lessons/${lesson.id}/progress`, {
+      const res = await fetchWithRetry(`/api/lessons/${lesson.id}/progress`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -519,7 +520,7 @@ export function LessonViewer({
     }));
 
     try {
-      const res = await fetch(`/api/questions/${questionId}/answer`, {
+      const res = await fetchWithRetry(`/api/questions/${questionId}/answer`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ selectedOptionId: optionId }),
@@ -993,7 +994,7 @@ export function LessonViewer({
                     setRevealedEssays((prev) => {
                       const next = !prev[qId];
                       if (next) {
-                        fetch(`/api/questions/${qId}/answer`, {
+                        fetchWithRetry(`/api/questions/${qId}/answer`, {
                           method: "POST",
                           headers: { "Content-Type": "application/json" },
                           body: JSON.stringify({
