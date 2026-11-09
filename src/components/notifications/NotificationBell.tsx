@@ -277,7 +277,14 @@ export function NotificationBell() {
 
       {/* Flyout Dropdown Menu */}
       {isOpen && (
-        <div className="absolute left-0 sm:left-auto sm:right-0 mt-2 w-[calc(100vw-2rem)] sm:w-[380px] max-w-[400px] bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+        <>
+          {/* Mobile backdrop to easily dismiss */}
+          <div
+            className="fixed inset-0 z-40 bg-black/40 backdrop-blur-xs sm:hidden"
+            onClick={() => setIsOpen(false)}
+          />
+
+          <div className="fixed sm:absolute inset-x-3 sm:inset-x-auto top-16 sm:top-auto sm:end-0 mt-0 sm:mt-2 sm:w-[380px] max-w-[420px] mx-auto sm:mx-0 bg-white dark:bg-[#1E293B] border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-150 flex flex-col max-h-[80vh]">
           {/* Header */}
           <div className="px-4 py-3.5 border-b border-slate-100 dark:border-slate-800/80 flex items-center justify-between bg-slate-50/70 dark:bg-slate-900/40">
             <div className="flex items-center gap-2">
@@ -452,7 +459,8 @@ export function NotificationBell() {
             <span className="text-[10px] text-slate-400">منصة الخلاصة</span>
           </div>
         </div>
-      )}
-    </div>
-  );
+      </>
+    )}
+  </div>
+);
 }

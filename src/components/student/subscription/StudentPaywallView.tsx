@@ -196,21 +196,24 @@ export function StudentPaywallView({
   const [isUploading, setIsUploading] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [copiedNumber, setCopiedNumber] = useState(false);
+  const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const paymentNumber = "01021482860"; // Vodafone Cash & InstaPay
+  const instapayNumber = "01025131212";
+  const vodafoneNumber1 = "01025131212";
+  const vodafoneNumber2 = "01066711545";
+  const whatsappNumber = "01025131212";
 
   const studentDisplayName = getCleanStudentName(user?.name);
   const welcomeGreeting = studentDisplayName
     ? `أهلاً بك يا ${studentDisplayName} في منصة الخلاصة! 🎉`
     : "أهلاً بيك في منصة الخلاصة! 🎉";
 
-  const handleCopyNumber = () => {
-    navigator.clipboard.writeText(paymentNumber);
-    setCopiedNumber(true);
-    setTimeout(() => setCopiedNumber(false), 2200);
+  const handleCopy = (num: string, key: string) => {
+    navigator.clipboard.writeText(num);
+    setCopiedKey(key);
+    setTimeout(() => setCopiedKey(null), 2200);
   };
 
   const validateAndSetFile = (selectedFile: File) => {
@@ -345,7 +348,7 @@ export function StudentPaywallView({
 
   const handleWhatsApp = () => {
     const text = `مرحباً بك يا مستر! 🌟\nأنا الطالب: *${studentDisplayName || "طالب المنصة"}*\nكود المنصة: *${user.loginCode || "—"}*\nقمت بسداد اشتراك المنصة الشهري (200 جنيه) وأريد تفعيل حسابي للوصول لكافة دروس المنهج.`;
-    window.open(`https://wa.me/2${paymentNumber}?text=${encodeURIComponent(text)}`, "_blank");
+    window.open(`https://wa.me/201025131212?text=${encodeURIComponent(text)}`, "_blank");
   };
 
   return (
@@ -458,42 +461,112 @@ export function StudentPaywallView({
             {/* Row 2: Payment Methods Notice */}
             <div className="flex items-center gap-2 text-[13.5px] sm:text-[15px] font-bold text-[#091B40]">
               <Wallet className="w-4 h-4 text-[#800B34] shrink-0" />
-              <span>طرق التحويل المعتمدة (فودافون كاش / إنستاباي / أي محفظة إلكترونية):</span>
+              <span>طرق التحويل المعتمدة (إنستاباي / فودافون كاش / أي محفظة إلكترونية):</span>
             </div>
 
-            {/* Row 3: Official Payment Phone Number Box */}
-            <div className="rounded-xl sm:rounded-2xl border border-[#E2E8F0] bg-[#FAF8F5]/50 sm:bg-white p-3 sm:p-4 flex items-center justify-between gap-2 sm:gap-3 shadow-2xs">
-              <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
-                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-[#FAF6F7] text-[#800B34] flex items-center justify-center shrink-0">
-                  <Smartphone className="w-4.5 h-4.5 sm:w-5 sm:h-5" />
+            {/* Row 3: Official Payment Numbers Grid (InstaPay + Vodafone Cash) */}
+            <div className="space-y-3">
+              {/* 1. InstaPay Card */}
+              <div className="rounded-xl sm:rounded-2xl border border-[#E2E8F0] bg-[#FAF8F5]/60 p-3 sm:p-4 flex items-center justify-between gap-2 sm:gap-3 shadow-2xs">
+                <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                  <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center shrink-0 border border-purple-200/60 font-bold text-xs">
+                    IP
+                  </div>
+                  <div className="min-w-0">
+                    <span className="text-[11px] sm:text-[12px] font-bold text-[#536681] block truncate">
+                      إنستاباي (InstaPay):
+                    </span>
+                    <span className="text-[17px] sm:text-[19px] font-black font-mono text-[#091B40] tracking-wider block" dir="ltr">
+                      {instapayNumber}
+                    </span>
+                  </div>
                 </div>
-                <div className="min-w-0">
-                  <span className="text-[11px] sm:text-[12px] text-[#536681] block truncate">
-                    رقم التحويل المعتمد (فودافون كاش / إنستاباي):
-                  </span>
-                  <span className="text-[17px] sm:text-[20px] font-black font-mono text-[#091B40] tracking-wider block" dir="ltr">
-                    {paymentNumber}
-                  </span>
-                </div>
+
+                <button
+                  type="button"
+                  onClick={() => handleCopy(instapayNumber, "insta")}
+                  className="h-10 px-3 sm:px-4 rounded-xl border border-[#E2E8F0] bg-white hover:bg-[#F7F9FC] text-[12px] sm:text-[13px] font-bold text-[#091B40] flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer shrink-0 active:scale-98 min-h-[44px]"
+                  title="نسخ رقم إنستاباي"
+                >
+                  {copiedKey === "insta" ? (
+                    <>
+                      <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#17834B]" />
+                      <span className="text-[#17834B]">تم النسخ</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#536681]" />
+                      <span>نسخ الرقم</span>
+                    </>
+                  )}
+                </button>
               </div>
 
-              <button
-                type="button"
-                onClick={handleCopyNumber}
-                className="h-10 px-3 sm:px-4 rounded-xl border border-[#E2E8F0] bg-white hover:bg-[#F7F9FC] text-[12px] sm:text-[13px] font-bold text-[#091B40] flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer shrink-0 active:scale-98 min-h-[44px]"
-              >
-                {copiedNumber ? (
-                  <>
-                    <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#17834B]" />
-                    <span className="text-[#17834B]">تم النسخ</span>
-                  </>
-                ) : (
-                  <>
-                    <Copy className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#536681]" />
-                    <span>نسخ الرقم</span>
-                  </>
-                )}
-              </button>
+              {/* 2. Vodafone Cash Cards */}
+              <div className="rounded-xl sm:rounded-2xl border border-[#E2E8F0] bg-[#FAF8F5]/60 p-3 sm:p-4 space-y-2.5 shadow-2xs">
+                <div className="flex items-center gap-2 text-xs font-bold text-[#800B34]">
+                  <Smartphone className="w-4 h-4 shrink-0" />
+                  <span>فودافون كاش (Vodafone Cash) — متاح التحويل على أي من الرقمين:</span>
+                </div>
+
+                {/* Number 1 */}
+                <div className="flex items-center justify-between gap-2 p-2.5 rounded-xl bg-white border border-[#E2E8F0]">
+                  <div className="min-w-0">
+                    <span className="text-[11px] text-[#536681] block font-bold">
+                      رقم فودافون كاش (1):
+                    </span>
+                    <span className="text-sm sm:text-base font-black font-mono text-[#091B40] tracking-wider block" dir="ltr">
+                      {vodafoneNumber1}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleCopy(vodafoneNumber1, "voda1")}
+                    className="h-9 px-3 rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] hover:bg-[#F1F5F9] text-xs font-bold text-[#091B40] flex items-center gap-1.5 transition-colors cursor-pointer shrink-0 active:scale-98 min-h-[40px]"
+                  >
+                    {copiedKey === "voda1" ? (
+                      <>
+                        <Check className="w-3.5 h-3.5 text-[#17834B]" />
+                        <span className="text-[#17834B]">تم النسخ</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3.5 h-3.5 text-[#536681]" />
+                        <span>نسخ</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                {/* Number 2 */}
+                <div className="flex items-center justify-between gap-2 p-2.5 rounded-xl bg-white border border-[#E2E8F0]">
+                  <div className="min-w-0">
+                    <span className="text-[11px] text-[#536681] block font-bold">
+                      رقم فودافون كاش (2):
+                    </span>
+                    <span className="text-sm sm:text-base font-black font-mono text-[#091B40] tracking-wider block" dir="ltr">
+                      {vodafoneNumber2}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleCopy(vodafoneNumber2, "voda2")}
+                    className="h-9 px-3 rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] hover:bg-[#F1F5F9] text-xs font-bold text-[#091B40] flex items-center gap-1.5 transition-colors cursor-pointer shrink-0 active:scale-98 min-h-[40px]"
+                  >
+                    {copiedKey === "voda2" ? (
+                      <>
+                        <Check className="w-3.5 h-3.5 text-[#17834B]" />
+                        <span className="text-[#17834B]">تم النسخ</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3.5 h-3.5 text-[#536681]" />
+                        <span>نسخ</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
             </div>
 
             {/* Row 4: Receipt Upload Form & Status */}
