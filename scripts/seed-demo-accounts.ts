@@ -55,7 +55,7 @@ async function main() {
     },
     {
       id: "demo-student-en",
-      name: "Demo Student (Languages)",
+      name: "طالب لغات",
       loginCode: "DEMO-EN",
       phone: "01099999992",
       email: "demo-en@kholasa.app",

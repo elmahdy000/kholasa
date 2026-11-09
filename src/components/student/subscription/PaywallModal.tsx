@@ -14,6 +14,7 @@ import {
   ArrowRight,
   ShieldAlert,
 } from "lucide-react";
+import { getCleanStudentName } from "@/lib/utils";
 
 interface PaywallModalProps {
   isOpen: boolean;
@@ -46,7 +47,8 @@ export function PaywallModal({
   };
 
   const handleWhatsApp = () => {
-    const text = `مرحباً بك يا مستر! 🌟\nأنا الطالب: *${user?.name || "طالب"}*\nكود المنصة: *${user?.loginCode || "—"}*\nأريد تفعيل اشتراك المنصة الشهري (200 جنيه) لفتح جميع الدروس.`;
+    const studentDisplayName = getCleanStudentName(user?.name) || "طالب المنصة";
+    const text = `مرحباً بك يا مستر! 🌟\nأنا الطالب: *${studentDisplayName}*\nكود المنصة: *${user?.loginCode || "—"}*\nأريد تفعيل اشتراك المنصة الشهري (200 جنيه) لفتح جميع الدروس.`;
     window.open(`https://wa.me/2${paymentNumber}?text=${encodeURIComponent(text)}`, "_blank");
   };
 
@@ -177,3 +179,4 @@ export function PaywallModal({
     </div>
   );
 }
+

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { MagnifyingGlass, Moon, Sun } from "@phosphor-icons/react";
-import { cn } from "@/lib/utils";
+import { cn, getCleanStudentName } from "@/lib/utils";
 import { BrandLogo } from "@/components/ui/BrandLogo";
 import { useTheme } from "@/components/theme/ThemeProvider";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
@@ -119,11 +119,11 @@ export function StudentHeader({
             title="الملف الشخصي"
           >
             <div className="w-8 h-8 rounded-lg bg-[#800020] text-white flex items-center justify-center font-bold text-xs shadow-xs">
-              {user?.name ? user.name[0] : "ط"}
+              {(getCleanStudentName(user?.name) || "ط")[0]}
             </div>
             <div className="hidden lg:block text-right">
               <span className="text-xs font-bold text-[#12263F] dark:text-[#F5F7FB] block line-clamp-1 max-w-[90px]">
-                {user?.name || "طالب"}
+                {getCleanStudentName(user?.name) || "طالب"}
               </span>
             </div>
           </Link>

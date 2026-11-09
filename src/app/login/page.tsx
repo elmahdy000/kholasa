@@ -37,6 +37,7 @@ import {
   OTHER_CENTER_NAME,
   ALL_CENTER_NAMES,
 } from "@/lib/centers";
+import { formatStudentGreeting } from "@/lib/utils";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -386,12 +387,12 @@ export default function LoginPage() {
                 </div>
 
                 {/* Personalized Welcome Banner if code is verified */}
-                {detectedStudent?.found && detectedStudent.name && (
+                {detectedStudent?.found && (
                   <div className="mt-2.5 p-2.5 rounded-xl bg-slate-50 dark:bg-[#1E293B]/60 border border-slate-200 dark:border-slate-700 flex items-center justify-between text-xs animate-in fade-in">
                     <div className="flex items-center gap-2">
                       <UserCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                       <span className="font-bold text-[#0F172A] dark:text-white">
-                        أهلاً بك يا {detectedStudent.name} 👋
+                        {formatStudentGreeting(detectedStudent.name)} 👋
                       </span>
                     </div>
                     <span className="text-[11px] text-[#64748B] dark:text-[#94A3B8]">

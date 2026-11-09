@@ -20,6 +20,7 @@ import {
   Globe,
   FileCheck2,
 } from "lucide-react";
+import { formatStudentGreeting, getCleanStudentName } from "@/lib/utils";
 
 interface StudentPaywallViewProps {
   user: {
@@ -97,7 +98,8 @@ export function StudentPaywallView({
   };
 
   const handleWhatsApp = () => {
-    const text = `مرحباً بك يا مستر! 🌟\nأنا الطالب: *${user.name || "طالب"}*\nكود المنصة: *${user.loginCode || "—"}*\nقمت بسداد اشتراك المنصة الشهري (200 جنيه) وأريد تفعيل حسابي للوصول لكافة دروس المنهج.`;
+    const studentDisplayName = getCleanStudentName(user.name) || "طالب المنصة";
+    const text = `مرحباً بك يا مستر! 🌟\nأنا الطالب: *${studentDisplayName}*\nكود المنصة: *${user.loginCode || "—"}*\nقمت بسداد اشتراك المنصة الشهري (200 جنيه) وأريد تفعيل حسابي للوصول لكافة دروس المنهج.`;
     window.open(`https://wa.me/2${paymentNumber}?text=${encodeURIComponent(text)}`, "_blank");
   };
 
@@ -127,7 +129,7 @@ export function StudentPaywallView({
       {/* 2. Explanatory Notice */}
       <div className="p-4 rounded-2xl bg-amber-500/10 dark:bg-amber-500/15 border border-amber-500/30 text-xs sm:text-sm text-[#0F172A] dark:text-[#F8FAFC] leading-relaxed space-y-1.5">
         <p className="font-bold flex items-center gap-2">
-          <span>أهلاً بك يا {user.name || "بطل"} في منصة الخلاصة! 🎉</span>
+          <span>{formatStudentGreeting(user.name)} في منصة الخلاصة! 🎉</span>
         </p>
         <p className="text-[#475569] dark:text-[#CBD5E1]">
           لقد حصلت على الدرس الأول مجاناً للتجربة. للوصول إلى كافة دروس ووحدات المنهج، بنك الأسئلة والمفاهيم، الكبسولات الصوتية والزتونة، والامتحانات التفاعلية، يلزم سداد اشتراك المنصة الشهري (200 جنيه) ورفع صورة الإيصال أدناه.

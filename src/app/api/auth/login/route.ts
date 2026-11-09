@@ -150,6 +150,9 @@ export async function POST(req: Request) {
           schoolCategory: targetSchoolCategory,
           gradeId: targetGradeId,
           systemId: targetSystemId,
+          ...(user.name?.toLowerCase().includes("demo") || user.name?.toLowerCase().includes("languages")
+            ? { name: "طالب تجريبي" }
+            : {}),
         },
       });
     }
