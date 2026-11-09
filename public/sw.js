@@ -4,7 +4,7 @@
 //  - cache-first for /_next/static/** (content-hashed), fonts and icons
 //  - network-first for navigations; only public pages are cached, otherwise fall back to /offline
 //  - never touch /api/** or non-GET requests (lessons for offline use live in IndexedDB)
-const VERSION = "v2";
+const VERSION = "v3";
 const STATIC_CACHE = `kholasa-static-${VERSION}`;
 const PAGE_CACHE = `kholasa-pages-${VERSION}`;
 const CACHE_PREFIX = "kholasa-";
@@ -60,7 +60,7 @@ async function precache() {
 
 self.addEventListener("install", (event) => {
   event.waitUntil(precache());
-  // No automatic skipWaiting: the page asks the user, then sends SKIP_WAITING.
+  self.skipWaiting();
 });
 
 self.addEventListener("activate", (event) => {
@@ -117,12 +117,30 @@ async function handleNavigation(request) {
     }
     return response;
   } catch (_) {
+    // 1. Retry once after a brief 250ms pause for momentary network switch (e.g. ERR_NETWORK_CHANGED)
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 250));
+      const retryResponse = await fetch(request);
+      if (retryResponse.ok) return retryResponse;
+    } catch (_) {
+      /* still offline */
+    }
+
+    // 2. Serve cached page if available for cacheable public routes
     if (cacheable) {
       const cache = await caches.open(PAGE_CACHE);
       const cached = await cache.match(url.pathname);
       if (cached) return cached;
     }
-    return offlineFallback();
+
+    // 3. If already on offline page, return cached offline HTML
+    if (url.pathname === OFFLINE_URL) {
+      return offlineFallback();
+    }
+
+    // 4. Redirect cleanly to /offline so the browser address bar matches the rendered view,
+    // completely eliminating React hydration mismatch Error #418!
+    return Response.redirect(OFFLINE_URL, 307);
   }
 }
 

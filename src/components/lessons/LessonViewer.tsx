@@ -708,13 +708,18 @@ export function LessonViewer({
         </div>
       )}
 
-      {/* 3. Main Navigation Tabs (4 Clear Student Tabs) */}
+      {/* 3. Main Navigation Tabs (4 Clear Student Tabs with Premium UI/UX) */}
       <div
         role="tablist"
         aria-label="أقسام محتوى الدرس"
-        className="p-1.5 rounded-2xl bg-[#F8FAFC] dark:bg-slate-900/90 border border-[#E2E8F0] dark:border-slate-800 flex items-center gap-1.5 overflow-x-auto scrollbar-none shadow-2xs"
+        className="w-full p-1.5 sm:p-2 rounded-2xl bg-white dark:bg-[#0D214D] border border-[#E2E8F0] dark:border-[#1E3A6E] shadow-2xs flex items-center gap-1.5 sm:gap-2 overflow-x-auto lg:grid lg:grid-cols-4 scrollbar-none"
       >
         {[
+          {
+            id: "content",
+            label: "شرح الدرس",
+            icon: BookOpen,
+          },
           {
             id: "definitions",
             label: "التعريفات والمفاهيم",
@@ -736,7 +741,6 @@ export function LessonViewer({
             icon: CheckCircle,
             badge: totalQuestionsCount > 0 ? `${totalQuestionsCount}` : undefined,
           },
-          { id: "content", label: "شرح الدرس", icon: BookOpen },
         ].map((tab) => {
           const isSelected = activeTab === tab.id;
           const Icon = tab.icon;
@@ -748,23 +752,23 @@ export function LessonViewer({
               id={`tab-${tab.id}`}
               aria-controls={`tabpanel-${tab.id}`}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`flex-1 min-w-[130px] sm:min-w-0 py-2.5 px-3 rounded-xl text-xs sm:text-[13px] font-bold flex items-center justify-center gap-2 transition-all cursor-pointer whitespace-nowrap ${
+              className={`shrink-0 min-w-max lg:min-w-0 lg:w-full min-h-[44px] py-2.5 px-3.5 sm:px-4 rounded-xl text-xs sm:text-[13px] font-bold flex items-center justify-center gap-2 transition-all cursor-pointer select-none active:scale-[0.98] ${
                 isSelected
-                  ? "bg-white dark:bg-[#14213D] text-[#0F172A] dark:text-white shadow-xs border border-[#E2E8F0] dark:border-slate-700 font-black"
-                  : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white hover:bg-white/60 dark:hover:bg-slate-800/50"
+                  ? "bg-[#800B34] text-white shadow-xs border border-[#800B34] font-black"
+                  : "bg-[#F8FAFC] dark:bg-[#071737] text-[#536681] dark:text-[#94A3B8] hover:text-[#091B40] dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#11244E]/80 border border-transparent"
               }`}
             >
               <Icon
-                className="w-4 h-4 shrink-0"
+                className={`w-4 h-4 shrink-0 ${isSelected ? "text-[#E9AD32]" : "text-[#64748B] dark:text-[#94A3B8]"}`}
                 weight={isSelected ? "fill" : "bold"}
               />
-              <span>{tab.label}</span>
+              <span className="whitespace-nowrap">{tab.label}</span>
               {"badge" in tab && tab.badge && (
                 <span
-                  className={`text-[11px] px-2 py-0.5 rounded-full font-mono font-bold ${
+                  className={`text-[11px] px-2 py-0.5 rounded-full font-mono font-bold shrink-0 ${
                     isSelected
-                      ? "bg-[#14213D]/10 text-[#0F172A] dark:bg-white/15 dark:text-white"
-                      : "bg-slate-200/80 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
+                      ? "bg-white/20 text-white"
+                      : "bg-slate-200/80 dark:bg-slate-800 text-[#536681] dark:text-[#94A3B8]"
                   }`}
                 >
                   {tab.badge}
