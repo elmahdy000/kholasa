@@ -86,7 +86,7 @@ export default function OfflinePage() {
           href="/"
           variant="combined"
           size="sm"
-          subtitleText="وضع عدم الاتصال (PWA)"
+          subtitleText="وضع عدم الاتصال"
         />
 
         <div className="flex items-center gap-2">

@@ -4,7 +4,7 @@
 //  - cache-first for /_next/static/** (content-hashed), fonts and icons
 //  - network-first for navigations; only public pages are cached, otherwise fall back to /offline
 //  - never touch /api/** or non-GET requests (lessons for offline use live in IndexedDB)
-const VERSION = "v3";
+const VERSION = "v4";
 const STATIC_CACHE = `kholasa-static-${VERSION}`;
 const PAGE_CACHE = `kholasa-pages-${VERSION}`;
 const CACHE_PREFIX = "kholasa-";

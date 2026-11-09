@@ -142,7 +142,7 @@ export function FeaturesBento() {
             </div>
           </div>
 
-          {/* Feature 6: وضع أوفلاين (PWA) */}
+          {/* Feature 6: وضع أوفلاين */}
           <div className="p-7 rounded-2xl bg-white dark:bg-[#1E293B] border border-[#E8E9ED] dark:border-[#334155] hover:border-[#800020]/30 dark:hover:border-[#FB7185]/30 transition-colors flex flex-col justify-between space-y-4 shadow-xs">
             <div className="space-y-4">
               <div className="w-12 h-12 rounded-xl bg-[#059669]/10 dark:bg-[#059669]/15 border border-[#059669]/20 text-[#059669] dark:text-[#34D399] flex items-center justify-center">
@@ -150,7 +150,7 @@ export function FeaturesBento() {
               </div>
               <div className="space-y-2">
                 <h3 className="text-xl font-bold text-[#12263F] dark:text-white">
-                  شغال من غير نت (PWA)
+                  شغال من غير نت
                 </h3>
                 <p className="text-sm text-[#64748B] dark:text-[#94A3B8] leading-relaxed font-normal">
                   نزّل المنصة على موبايلك في ثواني، وذاكر ملخصاتك والزتونة في أي وقت ومن غير ما تشتتك إشعارات السوشيال ميديا.

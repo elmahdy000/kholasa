@@ -62,7 +62,7 @@ export function LandingComparisonTable() {
             <div className="text-[#64748B]">تتوقف تماماً عند انقطاع النت</div>
             <div className="text-[#059669] dark:text-[#34D399] font-bold flex items-center justify-center gap-1">
               <Check className="w-4 h-4 text-[#059669]" />
-              <span>تطبيق PWA يحفظ الملخصات تلقائياً</span>
+              <span>تطبيق ذكي يحفظ الملخصات تلقائياً بدون إنترنت</span>
             </div>
           </div>
         </div>

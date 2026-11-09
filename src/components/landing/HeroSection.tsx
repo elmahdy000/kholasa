@@ -57,7 +57,7 @@ export function HeroSection() {
 
             {/* Reassurance line below buttons */}
             <p className="text-xs text-[#64748B] dark:text-[#94A3B8] pt-1 font-medium">
-              تغطية كاملة لمنهج الثانوية العامة الجديد • شغال كتطبيق PWA من غير نت • على موبايلك في أي وقت
+              تغطية كاملة لمنهج الثانوية العامة الجديد • شغال بدون إنترنت • على موبايلك في أي وقت
             </p>
           </div>
 

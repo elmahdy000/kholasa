@@ -161,13 +161,13 @@ export function LessonLearningStepper({
               />
             </div>
             <span className="text-[11px] font-mono font-bold text-[#0F172A] dark:text-slate-200 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2 py-0.5 rounded-full">
-              {completedCount} من 4 {isLanguages ? "done" : "مكتملة"}
+              {isLanguages ? `${completedCount}/4 completed` : `${completedCount} من 4 مكتملة`}
             </span>
           </div>
         </div>
 
         {/* Next Recommended Activity CTA / All Done badge */}
-        <div className="self-start sm:self-auto shrink-0">
+        <div className="w-full sm:w-auto flex justify-end sm:justify-start shrink-0">
           {nextStepId ? (
             <button
               type="button"

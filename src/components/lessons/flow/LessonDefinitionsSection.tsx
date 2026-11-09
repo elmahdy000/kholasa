@@ -66,9 +66,13 @@ export function LessonDefinitionsSection({
   });
 
   return (
-    <div id="section-definitions" className="space-y-5 pt-1">
+    <div id="section-definitions" dir={isLanguages ? "ltr" : "rtl"} className="space-y-5 pt-1">
       {/* Section Header: Clean, lightweight professional educational card */}
-      <div className="p-4 sm:p-5 rounded-2xl bg-[#F8FAFC] dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-2xs">
+      <div
+        className={`p-4 sm:p-5 rounded-2xl bg-[#F8FAFC] dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-2xs ${
+          isLanguages ? "text-left" : "text-right"
+        }`}
+      >
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-[#2563EB] dark:text-blue-400 flex items-center justify-center shrink-0 border border-blue-100 dark:border-blue-900/50 shadow-2xs">
             <BookOpen className="w-5 h-5" weight="bold" />
