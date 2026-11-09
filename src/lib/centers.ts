@@ -65,6 +65,14 @@ export const AUTHORIZED_CENTERS: EducationalCenter[] = [
     badge: "عربي 🇪🇬",
     description: "الفرع المعتمد لطلاب المدارس العامة واللغات المشتركة",
   },
+  {
+    id: "center-elqanayat",
+    name: "سنتر القنايات عربي",
+    category: SchoolCategory.ARABIC,
+    categoryLabel: "المدارس العامة (عربي)",
+    badge: "عربي 🇪🇬",
+    description: "الفرع المعتمد لطلاب المدارس العامة بالقنايات والمناطق المجاورة",
+  },
 ];
 
 export const OTHER_CENTER_NAME = "سنتر آخر (أدخل اسم السنتر يدويًا)";
