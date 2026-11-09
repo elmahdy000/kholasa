@@ -84,25 +84,25 @@ export function QuestionFilterBar({
     <div className="space-y-3 font-sans text-right">
       <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] shadow-xs space-y-4">
         {/* Tier 1: Academic Hierarchy Controls & Action Buttons */}
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-[#E2E8F0] dark:border-[#334155]">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3.5 pb-4 border-b border-[#E2E8F0] dark:border-[#334155]">
           {/* Right: Grade & Category Segmented Controls */}
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full lg:w-auto">
             {/* Grade Selector */}
             <div className="flex items-center gap-2">
-              <span className="text-[12px] font-bold text-[#64748B] dark:text-[#94A3B8] shrink-0">
+              <span className="text-[12px] font-bold text-[#536681] dark:text-[#94A3B8] shrink-0">
                 الصف:
               </span>
-              <div className="inline-flex items-center bg-[#F1F5F9] dark:bg-[#1E293B] p-1 rounded-xl border border-[#E2E8F0] dark:border-[#334155]">
+              <div className="grid grid-cols-3 p-1 rounded-xl bg-[#F1F5F9] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] flex-1">
                 <button
                   type="button"
                   onClick={() => {
                     setSelectedGradeCode("all");
                     setSelectedSubjectId("all");
                   }}
-                  className={`px-3 py-1.5 rounded-lg text-[12px] font-bold transition-all cursor-pointer ${
+                  className={`py-1.5 text-center rounded-lg text-[12px] font-bold transition-all cursor-pointer ${
                     selectedGradeCode === "all"
-                      ? "bg-white dark:bg-[#0F172A] text-[#0F172A] dark:text-white shadow-xs"
-                      : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A]"
+                      ? "bg-white dark:bg-[#0F172A] text-[#091B40] dark:text-white shadow-xs"
+                      : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#091B40]"
                   }`}
                 >
                   الكل
@@ -113,10 +113,10 @@ export function QuestionFilterBar({
                     setSelectedGradeCode("bacc_g10");
                     setSelectedSubjectId("all");
                   }}
-                  className={`px-3 py-1.5 rounded-lg text-[12px] font-bold transition-all cursor-pointer ${
+                  className={`py-1.5 text-center rounded-lg text-[12px] font-bold transition-all cursor-pointer ${
                     selectedGradeCode === "bacc_g10"
-                      ? "bg-[#800020] text-white shadow-xs"
-                      : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A]"
+                      ? "bg-[#800B34] text-white shadow-xs"
+                      : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#091B40]"
                   }`}
                 >
                   أولى بكالوريا
@@ -127,10 +127,10 @@ export function QuestionFilterBar({
                     setSelectedGradeCode("bacc_g11");
                     setSelectedSubjectId("all");
                   }}
-                  className={`px-3 py-1.5 rounded-lg text-[12px] font-bold transition-all cursor-pointer ${
+                  className={`py-1.5 text-center rounded-lg text-[12px] font-bold transition-all cursor-pointer ${
                     selectedGradeCode === "bacc_g11"
-                      ? "bg-[#800020] text-white shadow-xs"
-                      : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A]"
+                      ? "bg-[#800B34] text-white shadow-xs"
+                      : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#091B40]"
                   }`}
                 >
                   تانية بكالوريا
@@ -140,20 +140,20 @@ export function QuestionFilterBar({
 
             {/* School Category Selector */}
             <div className="flex items-center gap-2">
-              <span className="text-[12px] font-bold text-[#64748B] dark:text-[#94A3B8] shrink-0">
+              <span className="text-[12px] font-bold text-[#536681] dark:text-[#94A3B8] shrink-0">
                 الفئة:
               </span>
-              <div className="inline-flex items-center bg-[#F1F5F9] dark:bg-[#1E293B] p-1 rounded-xl border border-[#E2E8F0] dark:border-[#334155]">
+              <div className="grid grid-cols-3 p-1 rounded-xl bg-[#F1F5F9] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] flex-1">
                 <button
                   type="button"
                   onClick={() => {
                     setSelectedCategory("all");
                     setSelectedSubjectId("all");
                   }}
-                  className={`px-3 py-1.5 rounded-lg text-[12px] font-bold transition-all cursor-pointer ${
+                  className={`py-1.5 text-center rounded-lg text-[12px] font-bold transition-all cursor-pointer ${
                     selectedCategory === "all"
-                      ? "bg-white dark:bg-[#0F172A] text-[#0F172A] dark:text-white shadow-xs"
-                      : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A]"
+                      ? "bg-white dark:bg-[#0F172A] text-[#091B40] dark:text-white shadow-xs"
+                      : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#091B40]"
                   }`}
                 >
                   الكل
@@ -164,10 +164,10 @@ export function QuestionFilterBar({
                     setSelectedCategory("ARABIC");
                     setSelectedSubjectId("all");
                   }}
-                  className={`px-3 py-1.5 rounded-lg text-[12px] font-bold transition-all cursor-pointer ${
+                  className={`py-1.5 text-center rounded-lg text-[12px] font-bold transition-all cursor-pointer ${
                     selectedCategory === "ARABIC"
-                      ? "bg-slate-800 text-white dark:bg-slate-200 dark:text-slate-900 shadow-xs"
-                      : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A]"
+                      ? "bg-[#091B40] text-white shadow-xs"
+                      : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#091B40]"
                   }`}
                 >
                   عربي
@@ -178,10 +178,10 @@ export function QuestionFilterBar({
                     setSelectedCategory("LANGUAGES");
                     setSelectedSubjectId("all");
                   }}
-                  className={`px-3 py-1.5 rounded-lg text-[12px] font-bold transition-all cursor-pointer ${
+                  className={`py-1.5 text-center rounded-lg text-[12px] font-bold transition-all cursor-pointer ${
                     selectedCategory === "LANGUAGES"
                       ? "bg-blue-600 text-white shadow-xs"
-                      : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A]"
+                      : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#091B40]"
                   }`}
                 >
                   لغات
@@ -190,17 +190,17 @@ export function QuestionFilterBar({
             </div>
           </div>
 
-          {/* Left: Action Buttons (Unified Import Dropdown + Create Question) */}
-          <div className="flex items-center gap-2.5 shrink-0">
+          {/* Left: Action Buttons (Unified Import Dropdown + Export + Create Question) */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 w-full lg:w-auto shrink-0">
             {onOpenImport && (
               <div className="relative">
                 <button
                   type="button"
                   onClick={() => setImportMenuOpen(!importMenuOpen)}
-                  className="h-10 px-3.5 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] hover:bg-[#F1F5F9] dark:hover:bg-[#334155] text-[12px] font-bold text-[#0F172A] dark:text-white flex items-center gap-2 cursor-pointer transition-colors shadow-2xs"
+                  className="w-full h-10 px-3.5 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] hover:bg-[#F1F5F9] dark:hover:bg-[#334155] text-[12px] font-bold text-[#091B40] dark:text-white flex items-center justify-center gap-2 cursor-pointer transition-colors shadow-2xs"
                   title="استيراد الأسئلة من ملفات Word"
                 >
-                  <Upload className="w-4 h-4 text-[#800020] dark:text-[#FB7185]" />
+                  <Upload className="w-4 h-4 text-[#800B34] dark:text-[#FB7185]" />
                   <span>استيراد أسئلة Word</span>
                   <ChevronDown className={`w-3.5 h-3.5 transition-transform ${importMenuOpen ? "rotate-180" : ""}`} />
                 </button>
@@ -219,9 +219,9 @@ export function QuestionFilterBar({
                         <button
                           type="button"
                           onClick={() => handleSelectImport("ALL")}
-                          className="w-full px-3 py-2 text-right text-xs font-bold text-[#0F172A] dark:text-white hover:bg-[#F8FAFC] dark:hover:bg-[#1E293B] flex items-center gap-2 cursor-pointer"
+                          className="w-full px-3 py-2 text-right text-xs font-bold text-[#091B40] dark:text-white hover:bg-[#F8FAFC] dark:hover:bg-[#1E293B] flex items-center gap-2 cursor-pointer"
                         >
-                          <Layers className="w-4 h-4 text-[#800020] dark:text-[#FB7185]" />
+                          <Layers className="w-4 h-4 text-[#800B34] dark:text-[#FB7185]" />
                           <div>
                             <div>استيراد شامل (كافة الأنواع)</div>
                             <div className="text-[10px] text-[#94A3B8] font-normal">استيراد بنك أسئلة متكامل دفعة واحدة</div>
@@ -231,7 +231,7 @@ export function QuestionFilterBar({
                         <button
                           type="button"
                           onClick={() => handleSelectImport("MCQ")}
-                          className="w-full px-3 py-2 text-right text-xs font-bold text-[#0F172A] dark:text-white hover:bg-[#F8FAFC] dark:hover:bg-[#1E293B] flex items-center gap-2 cursor-pointer"
+                          className="w-full px-3 py-2 text-right text-xs font-bold text-[#091B40] dark:text-white hover:bg-[#F8FAFC] dark:hover:bg-[#1E293B] flex items-center gap-2 cursor-pointer"
                         >
                           <Sparkles className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                           <div>
@@ -243,7 +243,7 @@ export function QuestionFilterBar({
                         <button
                           type="button"
                           onClick={() => handleSelectImport("TRUE_FALSE")}
-                          className="w-full px-3 py-2 text-right text-xs font-bold text-[#0F172A] dark:text-white hover:bg-[#F8FAFC] dark:hover:bg-[#1E293B] flex items-center gap-2 cursor-pointer"
+                          className="w-full px-3 py-2 text-right text-xs font-bold text-[#091B40] dark:text-white hover:bg-[#F8FAFC] dark:hover:bg-[#1E293B] flex items-center gap-2 cursor-pointer"
                         >
                           <Check className="w-4 h-4 text-purple-600 dark:text-purple-400" />
                           <div>
@@ -255,7 +255,7 @@ export function QuestionFilterBar({
                         <button
                           type="button"
                           onClick={() => handleSelectImport("ESSAY")}
-                          className="w-full px-3 py-2 text-right text-xs font-bold text-[#0F172A] dark:text-white hover:bg-[#F8FAFC] dark:hover:bg-[#1E293B] flex items-center gap-2 cursor-pointer"
+                          className="w-full px-3 py-2 text-right text-xs font-bold text-[#091B40] dark:text-white hover:bg-[#F8FAFC] dark:hover:bg-[#1E293B] flex items-center gap-2 cursor-pointer"
                         >
                           <FileText className="w-4 h-4 text-amber-600 dark:text-amber-400" />
                           <div>
@@ -274,17 +274,18 @@ export function QuestionFilterBar({
             <button
               type="button"
               onClick={handleExportQuestionsJson}
-              className="h-10 px-3.5 rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-[12px] font-bold text-emerald-700 dark:text-emerald-300 flex items-center gap-2 cursor-pointer transition-colors shadow-2xs"
+              className="w-full h-10 px-3.5 rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-[12px] font-bold text-emerald-700 dark:text-emerald-300 flex items-center justify-center gap-2 cursor-pointer transition-colors shadow-2xs"
               title="تصدير جميع الأسئلة الحالية المطابقة للتصفية كملف JSON"
             >
               <Download className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
               <span>تصدير JSON ({filteredCount})</span>
             </button>
 
+            {/* Create Question Button */}
             <button
               type="button"
               onClick={onOpenCreate}
-              className="h-10 px-4 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-[12px] font-bold flex items-center gap-1.5 cursor-pointer transition-colors shadow-2xs active:scale-[0.98]"
+              className="w-full h-10 px-4 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white text-[12px] font-bold flex items-center justify-center gap-1.5 cursor-pointer transition-colors shadow-2xs active:scale-[0.98]"
             >
               <Plus className="w-4 h-4" />
               <span>إضافة سؤال جديد</span>
@@ -292,82 +293,91 @@ export function QuestionFilterBar({
           </div>
         </div>
 
-        {/* Tier 2: Search Input and Secondary Dropdowns */}
-        <div className="flex flex-wrap items-center gap-2.5">
-          {/* Search Input with Clear Button */}
-          <div className="relative min-w-[240px] flex-1 max-w-sm">
+        {/* Tier 2: Search Input and Secondary Dropdowns (Responsive 12-col Grid on Desktop) */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-2.5 items-center">
+          {/* Search Input: spans 5 cols on desktop */}
+          <div className="relative w-full sm:col-span-2 lg:col-span-5">
             <Search className="w-4 h-4 text-[#94A3B8] absolute right-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               placeholder="ابحث في نص السؤال، المفهوم، أو التفسير..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full h-10 pr-9 pl-8 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold text-[#0F172A] dark:text-white placeholder:text-[#94A3B8] focus:outline-none focus:border-[#800020] focus:bg-white transition-colors"
+              className="w-full h-10 pr-9 pl-8 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold text-[#091B40] dark:text-white placeholder:text-[#94A3B8] focus:outline-none focus:border-[#800B34] focus:bg-white transition-colors"
             />
             {searchQuery && (
               <button
                 type="button"
                 onClick={() => setSearchQuery("")}
-                className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#94A3B8] hover:text-[#0F172A] cursor-pointer"
+                className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#94A3B8] hover:text-[#091B40] cursor-pointer"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
             )}
           </div>
 
-          {/* Subject Dropdown */}
-          <select
-            value={selectedSubjectId}
-            onChange={(e) => setSelectedSubjectId(e.target.value)}
-            className="h-10 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[12px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#800020]"
-          >
-            <option value="all">كل المواد ({availableSubjects.length})</option>
-            {availableSubjects.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.name} ({s.schoolCategory === "LANGUAGES" ? "لغات" : "عربي"})
-              </option>
-            ))}
-          </select>
-
-          {/* Type Dropdown */}
-          <select
-            value={selectedType}
-            onChange={(e) => setSelectedType(e.target.value)}
-            className="h-10 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[12px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#800020]"
-          >
-            <option value="all">كل أنواع الأسئلة</option>
-            <option value="MCQ">اختيار من متعدد (MCQ)</option>
-            <option value="TRUE_FALSE">صح أو خطأ</option>
-            <option value="ESSAY">سؤال مقالي</option>
-          </select>
-
-          {/* Difficulty Dropdown */}
-          <select
-            value={selectedDifficulty}
-            onChange={(e) => setSelectedDifficulty(e.target.value)}
-            className="h-10 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[12px] font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#800020]"
-          >
-            <option value="all">كل الصعوبات</option>
-            <option value="EASY">سهل</option>
-            <option value="MEDIUM">متوسط</option>
-            <option value="HARD">متقدم</option>
-          </select>
-
-          {/* Reset Filters if Active */}
-          {hasActiveFilters && (
-            <button
-              type="button"
-              onClick={handleResetFilters}
-              className="h-10 px-3 rounded-xl text-[12px] font-bold text-[#800020] hover:bg-[#800020]/10 cursor-pointer transition-colors"
+          {/* Subject Dropdown: spans 3 cols on desktop */}
+          <div className="w-full lg:col-span-3">
+            <select
+              value={selectedSubjectId}
+              onChange={(e) => setSelectedSubjectId(e.target.value)}
+              className="w-full h-10 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[12px] font-bold text-[#091B40] dark:text-white focus:outline-none focus:border-[#800B34]"
             >
-              إعادة ضبط الفلاتر
-            </button>
-          )}
+              <option value="all">كل المواد ({availableSubjects.length})</option>
+              {availableSubjects.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.name} ({s.schoolCategory === "LANGUAGES" ? "لغات" : "عربي"})
+                </option>
+              ))}
+            </select>
+          </div>
 
-          <div className="mr-auto text-[12px] text-[#94A3B8] font-bold hidden lg:block">
-            عرض {filteredCount} من {totalQuestions} سؤال
+          {/* Type Dropdown: spans 2 cols on desktop */}
+          <div className="w-full lg:col-span-2">
+            <select
+              value={selectedType}
+              onChange={(e) => setSelectedType(e.target.value)}
+              className="w-full h-10 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[12px] font-bold text-[#091B40] dark:text-white focus:outline-none focus:border-[#800B34]"
+            >
+              <option value="all">كل أنواع الأسئلة</option>
+              <option value="MCQ">اختيار من متعدد (MCQ)</option>
+              <option value="TRUE_FALSE">صح أو خطأ</option>
+              <option value="ESSAY">سؤال مقالي</option>
+            </select>
+          </div>
+
+          {/* Difficulty Dropdown: spans 2 cols on desktop */}
+          <div className="w-full lg:col-span-2">
+            <select
+              value={selectedDifficulty}
+              onChange={(e) => setSelectedDifficulty(e.target.value)}
+              className="w-full h-10 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[12px] font-bold text-[#091B40] dark:text-white focus:outline-none focus:border-[#800B34]"
+            >
+              <option value="all">كل الصعوبات</option>
+              <option value="EASY">سهل</option>
+              <option value="MEDIUM">متوسط</option>
+              <option value="HARD">متقدم</option>
+            </select>
           </div>
         </div>
+
+        {/* Filter Summary & Reset Bar */}
+        {(hasActiveFilters || filteredCount !== totalQuestions) && (
+          <div className="flex items-center justify-between pt-2 border-t border-[#E2E8F0]/60 dark:border-[#334155]/60 text-[12px] font-bold">
+            <span className="text-[#536681] dark:text-[#94A3B8]">
+              عرض {filteredCount} من إجمالي {totalQuestions} سؤال
+            </span>
+            {hasActiveFilters && (
+              <button
+                type="button"
+                onClick={handleResetFilters}
+                className="text-[#800B34] dark:text-[#FB7185] hover:underline cursor-pointer"
+              >
+                إعادة ضبط جميع الفلاتر
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

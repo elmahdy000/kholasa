@@ -595,11 +595,11 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#800020] animate-pulse" />
+            <span className="w-2.5 h-2.5 rounded-full bg-[#800B34] animate-pulse" />
             <h2 className="text-base sm:text-lg font-bold text-[#0F172A] dark:text-white">
               هيكل المناهج والمقررات
             </h2>
-            <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-[#800020]/10 text-[#800020] dark:text-[#FB7185] border border-[#800020]/20">
+            <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-[#800B34]/10 text-[#800B34] dark:text-[#FB7185] border border-[#800B34]/20">
               البكالوريا المصرية
             </span>
           </div>
@@ -618,14 +618,14 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
             }}
             className="h-10 px-3.5 rounded-xl border border-[#CBD5E1] dark:border-[#334155] bg-white dark:bg-[#0F172A] hover:bg-[#F8FAFC] dark:hover:bg-[#1E293B] text-[#0F172A] dark:text-white text-xs font-bold flex items-center justify-center gap-2 cursor-pointer transition-colors shadow-2xs"
           >
-            <UploadCloud className="w-4 h-4 text-[#800020] dark:text-[#FB7185]" />
+            <UploadCloud className="w-4 h-4 text-[#800B34] dark:text-[#FB7185]" />
             <span>استيراد هيكل المنهج</span>
           </button>
 
           <button
             type="button"
             onClick={() => setSubjectModalState({ isOpen: true, initialSubject: null })}
-            className="h-10 px-4 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-xs font-bold flex items-center justify-center gap-2 cursor-pointer shadow-xs transition-colors"
+            className="h-10 px-4 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white text-xs font-bold flex items-center justify-center gap-2 cursor-pointer shadow-xs transition-colors"
           >
             <Plus className="w-4 h-4" />
             <span>+ إضافة مادة جديدة</span>
@@ -643,7 +643,7 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
           <div>
             <div className="flex items-center justify-between mb-2">
               <label className="text-xs font-bold text-[#475569] dark:text-[#94A3B8] flex items-center gap-1.5">
-                <GraduationCap className="w-4 h-4 text-[#800020] dark:text-[#FB7185]" />
+                <GraduationCap className="w-4 h-4 text-[#800B34] dark:text-[#FB7185]" />
                 <span>الصف الدراسي</span>
               </label>
             </div>
@@ -664,8 +664,8 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
                     }}
                     className={`py-2 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
                       isSelected
-                        ? "bg-[#800020] text-white shadow-xs"
-                        : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#12263F] dark:hover:text-white hover:bg-white dark:hover:bg-[#1E293B]"
+                        ? "bg-[#800B34] text-white shadow-xs"
+                        : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#091B40] dark:hover:text-white hover:bg-white dark:hover:bg-[#1E293B]"
                     }`}
                   >
                     <span>{isGrade10 ? "أولى بكالوريا (G10)" : "تانية بكالوريا (G11)"}</span>
@@ -688,7 +688,7 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
           <div>
             <div className="flex items-center justify-between mb-2">
               <label className="text-xs font-bold text-[#475569] dark:text-[#94A3B8] flex items-center gap-1.5">
-                <School className="w-4 h-4 text-[#800020] dark:text-[#FB7185]" />
+                <School className="w-4 h-4 text-[#800B34] dark:text-[#FB7185]" />
                 <span>نوع المدرسة واللغة</span>
               </label>
               <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-2.5 py-0.5 rounded-full border border-emerald-200/70 dark:border-emerald-800/70">
@@ -701,8 +701,8 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
                 onClick={() => setSelectedCategory("ARABIC")}
                 className={`py-2 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
                   selectedCategory === "ARABIC"
-                    ? "bg-[#800020] text-white shadow-xs"
-                    : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#12263F] dark:hover:text-white hover:bg-white dark:hover:bg-[#1E293B]"
+                    ? "bg-[#800B34] text-white shadow-xs"
+                    : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#091B40] dark:hover:text-white hover:bg-white dark:hover:bg-[#1E293B]"
                 }`}
               >
                 <span>مدارس عربي (Arabic)</span>
@@ -713,8 +713,8 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
                 onClick={() => setSelectedCategory("LANGUAGES")}
                 className={`py-2 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
                   selectedCategory === "LANGUAGES"
-                    ? "bg-[#800020] text-white shadow-xs"
-                    : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#12263F] dark:hover:text-white hover:bg-white dark:hover:bg-[#1E293B]"
+                    ? "bg-[#800B34] text-white shadow-xs"
+                    : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#091B40] dark:hover:text-white hover:bg-white dark:hover:bg-[#1E293B]"
                 }`}
               >
                 <span>مدارس لغات (Languages)</span>
@@ -723,12 +723,12 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
           </div>
         </div>
 
-        {/* Row 2: Tracks Row (G11 ONLY) */}
+        {/* Row 2: Tracks Row (G11 ONLY) - Balanced Responsive Grid */}
         {isG11 && (
           <div className="pt-3 border-t border-[#E8E9ED] dark:border-[#22364F] space-y-2.5 animate-in fade-in duration-200">
             <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-1.5 text-xs font-bold text-[#12263F] dark:text-white">
-                <Layers className="w-4 h-4 text-[#800020] dark:text-[#FB7185]" />
+              <div className="flex items-center gap-1.5 text-xs font-bold text-[#091B40] dark:text-white">
+                <Layers className="w-4 h-4 text-[#800B34] dark:text-[#FB7185]" />
                 <span>المسار التخصصي (تانية بكالوريا):</span>
               </div>
 
@@ -736,15 +736,15 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
               <button
                 type="button"
                 onClick={() => setTrackModalState({ isOpen: true, initialTrack: null })}
-                className="text-xs font-bold text-[#800020] dark:text-[#FB7185] hover:underline flex items-center gap-1 cursor-pointer"
+                className="text-xs font-bold text-[#800B34] dark:text-[#FB7185] hover:underline flex items-center gap-1 cursor-pointer"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>إضافة مسار جديد</span>
               </button>
             </div>
 
-            {/* Track Pills: Clean horizontal flow with discreet hover actions */}
-            <div className="flex items-center gap-2 flex-wrap">
+            {/* Track Pills: Balanced Responsive Grid (2 cols mobile / 3 cols tablet / 5 cols desktop) */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
               {/* All Tracks Pill */}
               <button
                 type="button"
@@ -752,16 +752,16 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
                   setSelectedTrackId("ALL");
                   setSubjectFilterTab("ALL");
                 }}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
+                className={`min-h-[40px] px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-between gap-1.5 border cursor-pointer select-none active:scale-[0.98] ${
                   selectedTrackId === "ALL"
-                    ? "bg-[#12263F] dark:bg-[#1E3A5F] text-white shadow-xs"
-                    : "bg-[#F8FAFA] dark:bg-[#0D1B2E] border border-[#E8E9ED] dark:border-[#22364F] text-[#64748B] dark:text-[#94A3B8] hover:bg-slate-100 dark:hover:bg-slate-800"
+                    ? "bg-[#091B40] dark:bg-[#1E3A5F] text-white border-[#091B40] shadow-xs"
+                    : "bg-[#F8FAFA] dark:bg-[#0D1B2E] border-[#E8E9ED] dark:border-[#22364F] text-[#536681] dark:text-[#94A3B8] hover:bg-slate-100 dark:hover:bg-slate-800"
                 }`}
               >
-                <span>كافة المسارات</span>
+                <span className="truncate">كافة المسارات</span>
                 <span
-                  className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono ${
-                    selectedTrackId === "ALL" ? "bg-white/20 text-white" : "bg-slate-200/80 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
+                  className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono font-bold shrink-0 ${
+                    selectedTrackId === "ALL" ? "bg-white/20 text-white" : "bg-slate-200/80 dark:bg-slate-800 text-[#091B40] dark:text-slate-300"
                   }`}
                 >
                   {allGradeSubjects.length}
@@ -777,10 +777,10 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
                 return (
                   <div
                     key={track.id}
-                    className={`group inline-flex items-center rounded-xl border text-xs font-bold transition-all ${
+                    className={`group min-h-[40px] px-2.5 py-1.5 rounded-xl border text-xs font-bold transition-all flex items-center justify-between gap-1.5 select-none ${
                       isSelected
-                        ? "bg-[#800020] text-white border-[#800020] shadow-xs"
-                        : "bg-[#F8FAFA] dark:bg-[#0D1B2E] border-[#E8E9ED] dark:border-[#22364F] text-[#64748B] dark:text-[#94A3B8] hover:border-[#800020]/40 hover:bg-slate-100 dark:hover:bg-slate-800"
+                        ? "bg-[#800B34] text-white border-[#800B34] shadow-xs"
+                        : "bg-[#F8FAFA] dark:bg-[#0D1B2E] border-[#E8E9ED] dark:border-[#22364F] text-[#536681] dark:text-[#94A3B8] hover:border-[#800B34]/40 hover:bg-slate-100 dark:hover:bg-slate-800"
                     }`}
                   >
                     <button
@@ -789,52 +789,55 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
                         setSelectedTrackId(track.id);
                         setSubjectFilterTab("TRACK");
                       }}
-                      className="px-3 py-1.5 flex items-center gap-2 cursor-pointer"
+                      className="flex items-center gap-1.5 cursor-pointer min-w-0 flex-1 text-right active:scale-[0.98]"
                     >
                       <TrackIcon className="w-3.5 h-3.5 shrink-0" />
-                      <span>{track.name}</span>
+                      <span className="truncate">{track.name}</span>
+                    </button>
+
+                    <div className="flex items-center gap-1 shrink-0">
                       <span
-                        className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono ${
-                          isSelected ? "bg-white/20 text-white" : "bg-slate-200/80 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
+                        className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono font-bold shrink-0 ${
+                          isSelected ? "bg-white/20 text-white" : "bg-slate-200/80 dark:bg-slate-800 text-[#091B40] dark:text-slate-300"
                         }`}
                       >
                         {trackSubjectCount}
                       </span>
-                    </button>
 
-                    {/* Quick edit / delete track actions: Reveal on hover to avoid visual clutter */}
-                    <div className="flex items-center pl-1.5 pr-0.5 gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setTrackModalState({ isOpen: true, initialTrack: track });
-                        }}
-                        className={`w-5 h-5 rounded-md flex items-center justify-center transition-colors cursor-pointer ${
-                          isSelected
-                            ? "hover:bg-white/20 text-white"
-                            : "hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 hover:text-slate-800 dark:hover:text-white"
-                        }`}
-                        title="تعديل المسار"
-                      >
-                        <Edit3 className="w-3 h-3" />
-                      </button>
+                      {/* Quick edit / delete track actions: Reveal on hover */}
+                      <div className="hidden group-hover:flex items-center gap-0.5">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setTrackModalState({ isOpen: true, initialTrack: track });
+                          }}
+                          className={`w-4.5 h-4.5 rounded flex items-center justify-center transition-colors cursor-pointer ${
+                            isSelected
+                              ? "hover:bg-white/20 text-white"
+                              : "hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 hover:text-slate-800 dark:hover:text-white"
+                          }`}
+                          title="تعديل المسار"
+                        >
+                          <Edit3 className="w-3 h-3" />
+                        </button>
 
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDirectDeleteTrack(track.id, track.name);
-                        }}
-                        className={`w-5 h-5 rounded-md flex items-center justify-center transition-colors cursor-pointer ${
-                          isSelected
-                            ? "hover:bg-rose-500/30 text-white"
-                            : "hover:bg-rose-50 dark:hover:bg-rose-950/40 text-rose-500"
-                        }`}
-                        title="حذف المسار"
-                      >
-                        <Trash2 className="w-3 h-3" />
-                      </button>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDirectDeleteTrack(track.id, track.name);
+                          }}
+                          className={`w-4.5 h-4.5 rounded flex items-center justify-center transition-colors cursor-pointer ${
+                            isSelected
+                              ? "hover:bg-rose-500/30 text-white"
+                              : "hover:bg-rose-50 dark:hover:bg-rose-950/40 text-rose-500"
+                          }`}
+                          title="حذف المسار"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 );
@@ -853,7 +856,7 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
             <h3 className="text-base font-bold text-[#0F172A] dark:text-white">
               المواد الدراسية ومحتوى المنهج
             </h3>
-            <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-[#800020]/10 text-[#800020] dark:text-[#FB7185]">
+            <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-[#800B34]/10 text-[#800B34] dark:text-[#FB7185]">
               {filteredSubjects.length} مادة
             </span>
           </div>
@@ -866,7 +869,7 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
             {isG11 && selectedTrackId !== "ALL" && (
               <>
                 <span>•</span>
-                <span className="font-bold text-[#800020] dark:text-[#FB7185]">
+                <span className="font-bold text-[#800B34] dark:text-[#FB7185]">
                   {eligibleTracks.find((t) => t.id === selectedTrackId)?.name || "مسار محدد"}
                 </span>
               </>
@@ -884,7 +887,7 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
                   onClick={() => setSubjectFilterTab("TRACK")}
                   className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                     subjectFilterTab === "TRACK"
-                      ? "bg-white dark:bg-[#0F172A] text-[#800020] dark:text-[#FB7185] shadow-xs"
+                      ? "bg-white dark:bg-[#0F172A] text-[#800B34] dark:text-[#FB7185] shadow-xs"
                       : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
                   }`}
                 >
@@ -895,7 +898,7 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
                   onClick={() => setSubjectFilterTab("COMMON")}
                   className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                     subjectFilterTab === "COMMON"
-                      ? "bg-white dark:bg-[#0F172A] text-[#800020] dark:text-[#FB7185] shadow-xs"
+                      ? "bg-white dark:bg-[#0F172A] text-[#800B34] dark:text-[#FB7185] shadow-xs"
                       : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
                   }`}
                 >
@@ -906,7 +909,7 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
                   onClick={() => setSubjectFilterTab("ALL")}
                   className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                     subjectFilterTab === "ALL"
-                      ? "bg-white dark:bg-[#0F172A] text-[#800020] dark:text-[#FB7185] shadow-xs"
+                      ? "bg-white dark:bg-[#0F172A] text-[#800B34] dark:text-[#FB7185] shadow-xs"
                       : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
                   }`}
                 >
@@ -920,7 +923,7 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
                   onClick={() => setSubjectFilterTab("ALL")}
                   className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                     subjectFilterTab === "ALL"
-                      ? "bg-white dark:bg-[#0F172A] text-[#800020] dark:text-[#FB7185] shadow-xs"
+                      ? "bg-white dark:bg-[#0F172A] text-[#800B34] dark:text-[#FB7185] shadow-xs"
                       : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
                   }`}
                 >
@@ -931,7 +934,7 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
                   onClick={() => setSubjectFilterTab("COMMON")}
                   className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                     subjectFilterTab === "COMMON"
-                      ? "bg-white dark:bg-[#0F172A] text-[#800020] dark:text-[#FB7185] shadow-xs"
+                      ? "bg-white dark:bg-[#0F172A] text-[#800B34] dark:text-[#FB7185] shadow-xs"
                       : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
                   }`}
                 >
@@ -942,7 +945,7 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
                   onClick={() => setSubjectFilterTab("TRACK")}
                   className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                     subjectFilterTab === "TRACK"
-                      ? "bg-white dark:bg-[#0F172A] text-[#800020] dark:text-[#FB7185] shadow-xs"
+                      ? "bg-white dark:bg-[#0F172A] text-[#800B34] dark:text-[#FB7185] shadow-xs"
                       : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
                   }`}
                 >
@@ -957,7 +960,7 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
         <div className="space-y-5">
           {filteredSubjects.length === 0 ? (
             <div className="p-12 text-center rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] space-y-3">
-              <div className="w-12 h-12 rounded-2xl bg-[#800020]/10 text-[#800020] dark:text-[#FB7185] flex items-center justify-center mx-auto">
+              <div className="w-12 h-12 rounded-2xl bg-[#800B34]/10 text-[#800B34] dark:text-[#FB7185] flex items-center justify-center mx-auto">
                 <BookOpen className="w-6 h-6" />
               </div>
               <h4 className="text-base font-bold text-[#0F172A] dark:text-white">
@@ -969,7 +972,7 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
               <button
                 type="button"
                 onClick={() => setSubjectModalState({ isOpen: true, initialSubject: null })}
-                className="h-10 px-5 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-xs font-bold inline-flex items-center gap-2 cursor-pointer transition-colors mt-2"
+                className="h-10 px-5 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white text-xs font-bold inline-flex items-center gap-2 cursor-pointer transition-colors mt-2"
               >
                 <Plus className="w-4 h-4" />
                 <span>إضافة أول مادة دراسية</span>
