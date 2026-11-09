@@ -371,7 +371,7 @@ export default function LoginPage() {
                     placeholder="مثال: J9KFQY"
                     maxLength={15}
                     className="w-full h-12 pr-11 pl-4 rounded-2xl border border-[#E2E8F0] dark:border-[#27344D] bg-[#F8FAFC] dark:bg-[#0B1120] text-[#0F172A] dark:text-white placeholder:text-[#94A3B8] text-base font-black font-mono tracking-widest text-center focus:outline-none focus:ring-2 focus:ring-[#800020] dark:focus:ring-rose-500 focus:border-transparent transition-all shadow-inner"
-                    dir="ltr"
+                    dir={studentCode ? "ltr" : "rtl"}
                   />
                   <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#94A3B8] pointer-events-none">
                     <KeyRound className="w-4 h-4 text-[#800020] dark:text-rose-400" />
