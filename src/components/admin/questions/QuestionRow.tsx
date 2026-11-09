@@ -57,7 +57,7 @@ export function QuestionRow({
     <div
       className={`rounded-2xl border transition-all text-right font-sans shadow-xs ${
         isSelected
-          ? "border-[#800020] bg-[#800020]/[0.02]"
+          ? "border-[#800B34] bg-[#800B34]/[0.02]"
           : "border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] hover:border-[#CBD5E1] dark:hover:border-[#475569]"
       }`}
     >
@@ -72,12 +72,12 @@ export function QuestionRow({
                 e.stopPropagation();
                 onToggleSelect();
               }}
-              className="mt-0.5 cursor-pointer text-[#94A3B8] hover:text-[#800020] transition-colors p-0.5 shrink-0"
+              className="mt-0.5 cursor-pointer text-[#94A3B8] hover:text-[#800B34] transition-colors p-0.5 shrink-0"
               title={isSelected ? "إلغاء تحديد السؤال" : "تحديد السؤال"}
               aria-label="تحديد السؤال"
             >
               {isSelected ? (
-                <CheckSquare className="w-4 h-4 text-[#800020]" />
+                <CheckSquare className="w-4 h-4 text-[#800B34]" />
               ) : (
                 <Square className="w-4 h-4 text-[#94A3B8]" />
               )}
@@ -182,7 +182,7 @@ export function QuestionRow({
                 onClick={onToggleExpand}
                 className={`h-7.5 px-2.5 rounded-lg border text-[11px] font-bold flex items-center gap-1 transition-colors cursor-pointer ${
                   isExpanded
-                    ? "bg-[#800020] text-white border-[#800020]"
+                    ? "bg-[#800B34] text-white border-[#800B34]"
                     : "border-[#E2E8F0] dark:border-[#334155] text-[#64748B] hover:text-[#0F172A] dark:hover:text-white bg-[#F8FAFC] dark:bg-[#1E293B]"
                 }`}
                 title={isExpanded ? "طي التفاصيل" : "عرض الخيارات والتفسير"}
@@ -203,7 +203,7 @@ export function QuestionRow({
               title="تعديل السؤال"
               aria-label="تعديل السؤال"
             >
-              <Edit2 className="w-3.5 h-3.5 text-[#800020] dark:text-[#FB7185]" />
+              <Edit2 className="w-3.5 h-3.5 text-[#800B34] dark:text-[#FB7185]" />
             </button>
 
             <button
@@ -225,7 +225,7 @@ export function QuestionRow({
           {/* Secondary Academic Hierarchy & Source Metadata */}
           <div className="flex flex-wrap items-center gap-2 text-[12px] text-[#64748B] dark:text-[#94A3B8] pb-3 border-b border-[#E2E8F0]/70 dark:border-[#334155]/70">
             <span className="flex items-center gap-1 font-bold text-[#0F172A] dark:text-white">
-              <BookOpen className="w-3.5 h-3.5 text-[#800020]" />
+              <BookOpen className="w-3.5 h-3.5 text-[#800B34]" />
               <span>المادة: {q.subject?.name}</span>
             </span>
 
@@ -264,7 +264,7 @@ export function QuestionRow({
               </span>
               <div
                 onClick={() => setIsImageModalOpen(true)}
-                className="group relative inline-flex max-w-sm rounded-xl overflow-hidden border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B] p-2 cursor-pointer hover:border-[#800020] transition-colors"
+                className="group relative inline-flex max-w-sm rounded-xl overflow-hidden border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B] p-2 cursor-pointer hover:border-[#800B34] transition-colors"
                 title="اضغط لتكبير الصورة"
               >
                 <img
@@ -335,7 +335,7 @@ export function QuestionRow({
           {/* Model Answer / Rubric for Essay */}
           {q.type === "ESSAY" && q.rubric && (
             <div className="p-4 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] space-y-2">
-              <div className="flex items-center justify-between text-[12px] font-bold text-[#800020] dark:text-[#FB7185]">
+              <div className="flex items-center justify-between text-[12px] font-bold text-[#800B34] dark:text-[#FB7185]">
                 <span className="flex items-center gap-1.5">
                   <FileCheck2 className="w-4 h-4" />
                   <span>نموذج الإجابة الاسترشادي (Model Answer)</span>
@@ -354,7 +354,7 @@ export function QuestionRow({
           {/* Explanation Section */}
           {q.explanation && (
             <div className="p-4 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] space-y-1.5">
-              <div className="flex items-center gap-1.5 text-[12px] font-bold text-[#800020] dark:text-[#FB7185]">
+              <div className="flex items-center gap-1.5 text-[12px] font-bold text-[#800B34] dark:text-[#FB7185]">
                 <Lightbulb className="w-4 h-4" />
                 <span>
                   {q.explanation.concept
@@ -383,7 +383,7 @@ export function QuestionRow({
           >
             <div className="w-full flex items-center justify-between pb-3 border-b border-[#E2E8F0] dark:border-[#334155] mb-3">
               <span className="text-[13px] font-bold text-[#0F172A] dark:text-white flex items-center gap-1.5">
-                <ImageIcon className="w-4 h-4 text-[#800020]" />
+                <ImageIcon className="w-4 h-4 text-[#800B34]" />
                 معاينة الرسم التوضيحي للسؤال
               </span>
               <button

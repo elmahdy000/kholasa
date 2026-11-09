@@ -191,18 +191,18 @@ export function QuestionFilterBar({
           </div>
 
           {/* Left: Action Buttons (Unified Import Dropdown + Export + Create Question) */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 w-full lg:w-auto shrink-0">
+          <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full lg:w-auto shrink-0">
             {onOpenImport && (
-              <div className="relative">
+              <div className="relative flex-1 sm:flex-initial">
                 <button
                   type="button"
                   onClick={() => setImportMenuOpen(!importMenuOpen)}
-                  className="w-full h-10 px-3.5 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] hover:bg-[#F1F5F9] dark:hover:bg-[#334155] text-[12px] font-bold text-[#091B40] dark:text-white flex items-center justify-center gap-2 cursor-pointer transition-colors shadow-2xs"
+                  className="w-full sm:w-auto h-10 px-3.5 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] hover:bg-[#F1F5F9] dark:hover:bg-[#334155] text-xs font-bold text-[#091B40] dark:text-white flex items-center justify-center gap-2 cursor-pointer transition-colors shadow-2xs whitespace-nowrap"
                   title="استيراد الأسئلة من ملفات Word"
                 >
-                  <Upload className="w-4 h-4 text-[#800B34] dark:text-[#FB7185]" />
-                  <span>استيراد أسئلة Word</span>
-                  <ChevronDown className={`w-3.5 h-3.5 transition-transform ${importMenuOpen ? "rotate-180" : ""}`} />
+                  <Upload className="w-4 h-4 text-[#800B34] dark:text-[#FB7185] shrink-0" />
+                  <span className="whitespace-nowrap">استيراد أسئلة Word</span>
+                  <ChevronDown className={`w-3.5 h-3.5 shrink-0 transition-transform ${importMenuOpen ? "rotate-180" : ""}`} />
                 </button>
 
                 {importMenuOpen && (
@@ -274,30 +274,30 @@ export function QuestionFilterBar({
             <button
               type="button"
               onClick={handleExportQuestionsJson}
-              className="w-full h-10 px-3.5 rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-[12px] font-bold text-emerald-700 dark:text-emerald-300 flex items-center justify-center gap-2 cursor-pointer transition-colors shadow-2xs"
+              className="flex-1 sm:flex-initial w-full sm:w-auto h-10 px-3.5 rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-xs font-bold text-emerald-700 dark:text-emerald-300 flex items-center justify-center gap-2 cursor-pointer transition-colors shadow-2xs whitespace-nowrap"
               title="تصدير جميع الأسئلة الحالية المطابقة للتصفية كملف JSON"
             >
-              <Download className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-              <span>تصدير JSON ({filteredCount})</span>
+              <Download className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+              <span className="whitespace-nowrap">تصدير JSON ({filteredCount})</span>
             </button>
 
             {/* Create Question Button */}
             <button
               type="button"
               onClick={onOpenCreate}
-              className="w-full h-10 px-4 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white text-[12px] font-bold flex items-center justify-center gap-1.5 cursor-pointer transition-colors shadow-2xs active:scale-[0.98]"
+              className="flex-1 sm:flex-initial w-full sm:w-auto h-10 px-4 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer transition-colors shadow-2xs active:scale-[0.98] whitespace-nowrap"
             >
-              <Plus className="w-4 h-4" />
-              <span>إضافة سؤال جديد</span>
+              <Plus className="w-4 h-4 shrink-0" />
+              <span className="whitespace-nowrap">إضافة سؤال جديد</span>
             </button>
           </div>
         </div>
 
-        {/* Tier 2: Search Input and Secondary Dropdowns (Responsive 12-col Grid on Desktop) */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-2.5 items-center">
-          {/* Search Input: spans 5 cols on desktop */}
-          <div className="relative w-full sm:col-span-2 lg:col-span-5">
-            <Search className="w-4 h-4 text-[#94A3B8] absolute right-3 top-1/2 -translate-y-1/2" />
+        {/* Tier 2: Search Input and Secondary Dropdowns (Responsive Balanced Grid) */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-12 gap-2.5 items-center">
+          {/* Search Input: spans full width on mobile/tablet (3 cols on sm), 5 cols on desktop */}
+          <div className="relative w-full sm:col-span-3 lg:col-span-5">
+            <Search className="w-4 h-4 text-[#94A3B8] absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
               placeholder="ابحث في نص السؤال، المفهوم، أو التفسير..."
@@ -316,8 +316,8 @@ export function QuestionFilterBar({
             )}
           </div>
 
-          {/* Subject Dropdown: spans 3 cols on desktop */}
-          <div className="w-full lg:col-span-3">
+          {/* Subject Dropdown: 1 col on sm, 3 cols on desktop */}
+          <div className="w-full sm:col-span-1 lg:col-span-3">
             <select
               value={selectedSubjectId}
               onChange={(e) => setSelectedSubjectId(e.target.value)}
@@ -332,8 +332,8 @@ export function QuestionFilterBar({
             </select>
           </div>
 
-          {/* Type Dropdown: spans 2 cols on desktop */}
-          <div className="w-full lg:col-span-2">
+          {/* Type Dropdown: 1 col on sm, 2 cols on desktop */}
+          <div className="w-full sm:col-span-1 lg:col-span-2">
             <select
               value={selectedType}
               onChange={(e) => setSelectedType(e.target.value)}
@@ -346,8 +346,8 @@ export function QuestionFilterBar({
             </select>
           </div>
 
-          {/* Difficulty Dropdown: spans 2 cols on desktop */}
-          <div className="w-full lg:col-span-2">
+          {/* Difficulty Dropdown: 1 col on sm, 2 cols on desktop */}
+          <div className="w-full sm:col-span-1 lg:col-span-2">
             <select
               value={selectedDifficulty}
               onChange={(e) => setSelectedDifficulty(e.target.value)}

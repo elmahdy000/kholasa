@@ -607,13 +607,16 @@ export function LessonMindMapTab({ mindMap }: LessonMindMapTabProps) {
             className="fixed inset-0 z-50 bg-[#0B0F17]/95 backdrop-blur-md flex flex-col text-white animate-in fade-in duration-150 select-none"
           >
             {/* Top Toolbar */}
-            <div className="flex items-center justify-between px-4 sm:px-6 py-3 border-b border-white/10 shrink-0 bg-[#0F172A]/80">
-              <div className="flex items-center gap-3 min-w-0">
-                <span className="text-sm sm:text-base font-bold break-words leading-tight">
+            <div className="flex items-center justify-between px-3 sm:px-6 py-2.5 sm:py-3 border-b border-white/10 shrink-0 bg-[#0F172A]/90 gap-2 sm:gap-4">
+              <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                <span
+                  className="text-xs sm:text-base font-bold truncate max-w-[130px] sm:max-w-xs md:max-w-md whitespace-nowrap text-white"
+                  title={mindMap.title || "الخريطة الذهنية"}
+                >
                   {mindMap.title || "الخريطة الذهنية"}
                 </span>
                 {images.length > 1 && (
-                  <div className="flex items-center gap-1 bg-white/10 rounded-lg p-0.5 shrink-0 border border-white/10">
+                  <div className="flex items-center gap-0.5 sm:gap-1 bg-white/10 rounded-lg p-0.5 shrink-0 border border-white/10">
                     <button
                       type="button"
                       onClick={() =>
@@ -626,7 +629,7 @@ export function LessonMindMapTab({ mindMap }: LessonMindMapTabProps) {
                     >
                       <ChevronRight className="w-3.5 h-3.5" />
                     </button>
-                    <span className="px-1.5 text-xs font-bold text-[#FB7185] select-none font-mono">
+                    <span className="px-1 sm:px-1.5 text-[11px] sm:text-xs font-bold text-[#FB7185] select-none font-mono whitespace-nowrap">
                       لوحة {selectedImageIndex + 1} من {images.length}
                     </span>
                     <button
@@ -646,21 +649,21 @@ export function LessonMindMapTab({ mindMap }: LessonMindMapTabProps) {
               </div>
 
               {/* Viewer Controls */}
-              <div className="flex items-center gap-1.5 sm:gap-2">
+              <div className="flex items-center gap-1 sm:gap-2 shrink-0">
                 {/* Zoom Out */}
                 <button
                   type="button"
                   onClick={() => handleZoomChange(imageZoom - 0.25)}
                   disabled={imageZoom <= 1}
-                  className="w-9 h-9 rounded-lg bg-white/10 hover:bg-white/20 disabled:opacity-40 disabled:hover:bg-white/10 flex items-center justify-center transition-colors cursor-pointer"
+                  className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-white/10 hover:bg-white/20 disabled:opacity-40 disabled:hover:bg-white/10 flex items-center justify-center transition-colors cursor-pointer"
                   title="تصغير (-)"
                 >
-                  <ZoomOut className="w-4 h-4" />
+                  <ZoomOut className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </button>
 
                 {/* Zoom Badge */}
                 <span
-                  className="font-mono text-xs px-2 min-w-[3.25rem] text-center font-bold"
+                  className="font-mono text-[11px] sm:text-xs px-1 sm:px-2 min-w-[2.75rem] sm:min-w-[3.25rem] text-center font-bold"
                   dir="ltr"
                 >
                   {Math.round(imageZoom * 100)}%
@@ -671,24 +674,24 @@ export function LessonMindMapTab({ mindMap }: LessonMindMapTabProps) {
                   type="button"
                   onClick={() => handleZoomChange(imageZoom + 0.25)}
                   disabled={imageZoom >= 3.5}
-                  className="w-9 h-9 rounded-lg bg-white/10 hover:bg-white/20 disabled:opacity-40 disabled:hover:bg-white/10 flex items-center justify-center transition-colors cursor-pointer"
+                  className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-white/10 hover:bg-white/20 disabled:opacity-40 disabled:hover:bg-white/10 flex items-center justify-center transition-colors cursor-pointer"
                   title="تكبير (+)"
                 >
-                  <ZoomIn className="w-4 h-4" />
+                  <ZoomIn className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </button>
 
                 {/* Reset Zoom */}
                 <button
                   type="button"
                   onClick={handleResetZoom}
-                  className="h-9 px-2.5 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-bold transition-colors cursor-pointer flex items-center gap-1"
+                  className="h-8 px-2 sm:h-9 sm:px-2.5 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-bold transition-colors cursor-pointer flex items-center gap-1"
                   title="إعادة ضبط الحجم (0)"
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
                   <span className="hidden sm:inline">100%</span>
                 </button>
 
-                <div className="w-px h-6 bg-white/15 mx-1" />
+                <div className="w-px h-5 sm:h-6 bg-white/15 mx-0.5 sm:mx-1" />
 
                 {/* Download Image */}
                 <a
@@ -696,20 +699,20 @@ export function LessonMindMapTab({ mindMap }: LessonMindMapTabProps) {
                   download={`kholasa-mindmap-${selectedImageIndex + 1}.jpg`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-9 h-9 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors cursor-pointer"
+                  className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors cursor-pointer"
                   title="تحميل الصورة بجودة عالية"
                 >
-                  <Download className="w-4 h-4" />
+                  <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </a>
 
                 {/* Close Button */}
                 <button
                   type="button"
                   onClick={() => setIsFullscreenImage(false)}
-                  className="w-9 h-9 rounded-lg bg-red-600/80 hover:bg-red-600 flex items-center justify-center transition-colors cursor-pointer mr-1"
+                  className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-red-600/80 hover:bg-red-600 flex items-center justify-center transition-colors cursor-pointer mr-0.5 sm:mr-1"
                   title="إغلاق (Esc)"
                 >
-                  <X className="w-5 h-5" />
+                  <X className="w-4 h-4 sm:w-5 sm:h-5" />
                 </button>
               </div>
             </div>
