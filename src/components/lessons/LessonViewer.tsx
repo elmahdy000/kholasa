@@ -30,6 +30,7 @@ import { LessonFlashcardsModal } from "./LessonFlashcardsModal";
 import { LessonMistakesCapsuleModal } from "./LessonMistakesCapsuleModal";
 import { offlineStorage } from "@/lib/offline-db";
 import { fetchWithRetry } from "@/lib/network";
+import { ListChecks, SlidersHorizontal } from "lucide-react";
 
 function getEmbedUrl(url?: string | null): string | null {
   if (!url) return null;
@@ -708,27 +709,30 @@ export function LessonViewer({
         </div>
       )}
 
-      {/* 3. Main Navigation Tabs (4 Clear Student Tabs with Premium UI/UX) */}
+      {/* 3. Main Navigation Tabs (4 Clear Student Tabs with Zero Cutoff & Mobile Optimization) */}
       <div
         role="tablist"
         aria-label="أقسام محتوى الدرس"
-        className="w-full p-1.5 sm:p-2 rounded-2xl bg-white dark:bg-[#0D214D] border border-[#E2E8F0] dark:border-[#1E3A6E] shadow-2xs flex items-center gap-1.5 sm:gap-2 overflow-x-auto lg:grid lg:grid-cols-4 scrollbar-none"
+        className="w-full p-1.5 sm:p-2 rounded-2xl bg-white dark:bg-[#0D214D] border border-[#E2E8F0] dark:border-[#1E3A6E] shadow-2xs grid grid-cols-4 gap-1 sm:gap-2"
       >
         {[
           {
             id: "content",
             label: "شرح الدرس",
+            mobileLabel: "الشرح",
             icon: BookOpen,
           },
           {
             id: "definitions",
             label: "التعريفات والمفاهيم",
+            mobileLabel: "المفاهيم",
             icon: BookmarkSimple,
             badge: definitions.length > 0 ? `${definitions.length}` : undefined,
           },
           {
             id: "mindmap",
             label: "الملخص الذهني",
+            mobileLabel: "الملخص",
             icon: Graph,
             badge:
               lesson.mindMap?.images && lesson.mindMap.images.length > 1
@@ -738,7 +742,8 @@ export function LessonViewer({
           {
             id: "questions",
             label: "تدريبات وبنك الأسئلة",
-            icon: CheckCircle,
+            mobileLabel: "الأسئلة",
+            icon: ListChecks,
             badge: totalQuestionsCount > 0 ? `${totalQuestionsCount}` : undefined,
           },
         ].map((tab) => {
@@ -752,7 +757,7 @@ export function LessonViewer({
               id={`tab-${tab.id}`}
               aria-controls={`tabpanel-${tab.id}`}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`shrink-0 min-w-max lg:min-w-0 lg:w-full min-h-[44px] py-2.5 px-3.5 sm:px-4 rounded-xl text-xs sm:text-[13px] font-bold flex items-center justify-center gap-2 transition-all cursor-pointer select-none active:scale-[0.98] ${
+              className={`w-full min-h-[44px] py-2 px-1 sm:px-3 rounded-xl text-xs sm:text-[13px] font-bold flex items-center justify-center gap-1 sm:gap-2 transition-all cursor-pointer select-none active:scale-[0.98] ${
                 isSelected
                   ? "bg-[#800B34] text-white shadow-xs border border-[#800B34] font-black"
                   : "bg-[#F8FAFC] dark:bg-[#071737] text-[#536681] dark:text-[#94A3B8] hover:text-[#091B40] dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#11244E]/80 border border-transparent"
@@ -760,12 +765,12 @@ export function LessonViewer({
             >
               <Icon
                 className={`w-4 h-4 shrink-0 ${isSelected ? "text-[#E9AD32]" : "text-[#64748B] dark:text-[#94A3B8]"}`}
-                weight={isSelected ? "fill" : "bold"}
               />
-              <span className="whitespace-nowrap">{tab.label}</span>
+              <span className="hidden sm:inline whitespace-nowrap">{tab.label}</span>
+              <span className="sm:hidden whitespace-nowrap">{tab.mobileLabel}</span>
               {"badge" in tab && tab.badge && (
                 <span
-                  className={`text-[11px] px-2 py-0.5 rounded-full font-mono font-bold shrink-0 ${
+                  className={`text-[10px] sm:text-[11px] px-1.5 py-0.5 rounded-full font-mono font-bold shrink-0 ${
                     isSelected
                       ? "bg-white/20 text-white"
                       : "bg-slate-200/80 dark:bg-slate-800 text-[#536681] dark:text-[#94A3B8]"
@@ -823,38 +828,42 @@ export function LessonViewer({
       {/* TAB 4: PRACTICE QUESTIONS WITH DIFFICULTY FILTER (تدريبات وبنك أسئلة الدرس) */}
       {activeTab === "questions" && (
         <div className="space-y-6 print-content">
-          {/* Difficulty & Type Filter Dock */}
-          <div className="p-4 sm:p-5 rounded-2xl bg-[#F8FAFC] dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] shadow-2xs space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#E2E8F0]/80 dark:border-[#334155]/80 pb-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-[#2563EB] dark:text-blue-400 flex items-center justify-center shrink-0 border border-blue-100 dark:border-blue-900/50 shadow-2xs">
-                  <CheckCircle className="w-5 h-5" weight="bold" />
+          {/* Difficulty & Type Filter Dock (Redesigned UI/UX - Compact, Balanced 2x2/4x1 Grids, Unified Burgundy) */}
+          <div className="p-3.5 sm:p-4.5 rounded-2xl bg-white dark:bg-[#0D214D] border border-[#E2E8F0] dark:border-[#1E3A6E] shadow-2xs space-y-3.5">
+            {/* Header: Action Title + Single Primary Counter */}
+            <div className="flex items-center justify-between gap-3 pb-3 border-b border-[#E2E8F0]/80 dark:border-[#1E3A6E]/80">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-[#800B34]/10 dark:bg-[#800B34]/20 text-[#800B34] dark:text-[#E9AD32] flex items-center justify-center shrink-0 border border-[#800B34]/20 shadow-2xs">
+                  <SlidersHorizontal className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="text-base sm:text-lg font-black text-[#0F172A] dark:text-white">
-                    تدريبات وبنك أسئلة الدرس
+                  <h3 className="text-sm sm:text-base font-black text-[#091B40] dark:text-white leading-tight">
+                    تخصيص وتصفية التدريب
                   </h3>
-                  <p className="text-xs sm:text-[13px] text-[#64748B] dark:text-[#94A3B8] mt-0.5 leading-relaxed">
-                    تدرج في الحل من المباشر للمتقدم مع التصحيح الفوري وإرشادات الحل
+                  <p className="text-[11px] sm:text-xs font-medium text-[#536681] dark:text-[#CBD5E1] mt-0.5">
+                    اختر مستوى الصعوبة ونوع السؤال للتركيز على ما تحتاجه
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 self-start sm:self-auto shrink-0">
-                <span className="px-3 py-1.5 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[#0F172A] dark:text-slate-200 text-xs font-mono font-bold shadow-2xs">
-                  {filteredByDifficulty.length} من {totalQuestionsCount} سؤال
+              {/* Single Primary Counter Badge */}
+              <div className="shrink-0">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#F8FAFC] dark:bg-[#071737] border border-[#E2E8F0] dark:border-[#1E3A6E] text-xs font-mono font-bold shadow-2xs">
+                  <span className="text-[#800B34] dark:text-[#E9AD32] font-black">{filteredByDifficulty.length}</span>
+                  <span className="text-[#536681] dark:text-[#94A3B8]">من</span>
+                  <span className="text-[#091B40] dark:text-white">{totalQuestionsCount} سؤال</span>
                 </span>
               </div>
             </div>
 
-            {/* Filter by Difficulty */}
-            <div className="space-y-2">
-              <span className="text-[12px] font-bold text-[#64748B] dark:text-[#94A3B8] block">
+            {/* Filter 1: Difficulty Levels (Balanced 2x2 Mobile / 4x1 Desktop Grid) */}
+            <div className="space-y-1.5">
+              <span className="text-xs font-black text-[#091B40] dark:text-white block">
                 مستوى الصعوبة:
               </span>
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {[
-                  { id: "ALL", label: "كل المستويات", count: totalQuestionsCount },
+                  { id: "ALL", label: "كل المستويات", count: null },
                   { id: "EASY", label: "سهل ومباشر", count: easyCount },
                   {
                     id: "MEDIUM",
@@ -863,7 +872,7 @@ export function LessonViewer({
                       mediumCount > 0
                         ? mediumCount
                         : easyCount + hardCount > 0
-                          ? `${easyCount + hardCount} (بديل)`
+                          ? `${easyCount + hardCount}`
                           : 0,
                   },
                   { id: "HARD", label: "متقدم وللتفوق", count: hardCount },
@@ -874,34 +883,38 @@ export function LessonViewer({
                       key={item.id}
                       type="button"
                       onClick={() => setDifficultyFilter(item.id as any)}
-                      className={`px-3 py-1.5 rounded-xl text-xs sm:text-[13px] font-bold transition-all flex items-center gap-2 border cursor-pointer ${isActive
-                          ? "bg-[#14213D] text-white border-[#14213D] shadow-2xs"
-                          : "bg-white dark:bg-[#1E293B] text-[#64748B] dark:text-[#94A3B8] border-[#E2E8F0] dark:border-[#334155] hover:border-slate-300"
-                        }`}
+                      className={`min-h-[44px] px-3 py-2 rounded-xl text-xs sm:text-[13px] font-bold transition-all flex items-center justify-center gap-1.5 border cursor-pointer select-none active:scale-[0.98] ${
+                        isActive
+                          ? "bg-[#800B34] text-white border-[#800B34] shadow-xs font-black"
+                          : "bg-[#F8FAFC] dark:bg-[#071737] text-[#536681] dark:text-[#94A3B8] border-[#E2E8F0] dark:border-[#1E3A6E] hover:border-[#800B34]/30 hover:text-[#091B40] dark:hover:text-white"
+                      }`}
                     >
-                      <span>{item.label}</span>
-                      <span
-                        className={`text-[11px] px-1.5 py-0.5 rounded-md font-mono ${isActive
-                            ? "bg-white/20 text-white"
-                            : "bg-black/5 dark:bg-white/10 text-inherit"
+                      <span className="truncate">{item.label}</span>
+                      {item.count !== null && (
+                        <span
+                          className={`text-[11px] px-1.5 py-0.5 rounded-md font-mono shrink-0 ${
+                            isActive
+                              ? "bg-white/20 text-white font-bold"
+                              : "bg-slate-200/80 dark:bg-slate-800 text-[#091B40] dark:text-slate-200 font-bold"
                           }`}
-                      >
-                        {item.count}
-                      </span>
+                        >
+                          {item.count}
+                        </span>
+                      )}
                     </button>
                   );
                 })}
               </div>
             </div>
 
-            {/* Filter by Question Type */}
-            <div className="space-y-2 pt-1">
-              <span className="text-[12px] font-bold text-[#64748B] dark:text-[#94A3B8] block">
+            {/* Filter 2: Question Types (Balanced 2x2 Mobile / 4x1 Desktop Grid, Unified Burgundy) */}
+            <div className="space-y-1.5 pt-0.5">
+              <span className="text-xs font-black text-[#091B40] dark:text-white block">
                 نوع السؤال:
               </span>
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {[
-                  { id: "ALL", label: "جميع الأنواع", count: filteredByDifficulty.length },
+                  { id: "ALL", label: "جميع الأنواع", count: null },
                   { id: "MCQ", label: "اختيار من متعدد", count: mcqQuestions.length },
                   { id: "TRUE_FALSE", label: "صح وغلط", count: tfQuestions.length },
                   { id: "ESSAY", label: "أسئلة مقالية", count: essayQuestions.length },
@@ -912,13 +925,24 @@ export function LessonViewer({
                       key={item.id}
                       type="button"
                       onClick={() => setQuestionTypeFilter(item.id as any)}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 border cursor-pointer ${isActive
-                          ? "bg-[#2563EB] text-white border-[#2563EB] shadow-2xs"
-                          : "bg-white dark:bg-[#0F172A] text-[#64748B] dark:text-[#94A3B8] border-[#E2E8F0] dark:border-[#334155] hover:text-[#0F172A] dark:hover:text-white"
-                        }`}
+                      className={`min-h-[44px] px-3 py-2 rounded-xl text-xs sm:text-[13px] font-bold transition-all flex items-center justify-center gap-1.5 border cursor-pointer select-none active:scale-[0.98] ${
+                        isActive
+                          ? "bg-[#800B34] text-white border-[#800B34] shadow-xs font-black"
+                          : "bg-[#F8FAFC] dark:bg-[#071737] text-[#536681] dark:text-[#94A3B8] border-[#E2E8F0] dark:border-[#1E3A6E] hover:border-[#800B34]/30 hover:text-[#091B40] dark:hover:text-white"
+                      }`}
                     >
-                      <span>{item.label}</span>
-                      <span className="text-[11px] font-mono opacity-80">({item.count})</span>
+                      <span className="truncate">{item.label}</span>
+                      {item.count !== null && (
+                        <span
+                          className={`text-[11px] px-1.5 py-0.5 rounded-md font-mono shrink-0 ${
+                            isActive
+                              ? "bg-white/20 text-white font-bold"
+                              : "bg-slate-200/80 dark:bg-slate-800 text-[#091B40] dark:text-slate-200 font-bold"
+                          }`}
+                        >
+                          {item.count}
+                        </span>
+                      )}
                     </button>
                   );
                 })}
