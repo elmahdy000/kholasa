@@ -270,8 +270,56 @@ export function StudentPaywallView({
     setError(null);
 
     try {
+      // Compress image client-side before uploading (turns 8MB photos into ~200KB instantly)
+      let uploadFile = file;
+      if (file.type.startsWith("image/") && file.size > 400 * 1024) {
+        uploadFile = await new Promise<File>((resolve) => {
+          const img = new Image();
+          const url = URL.createObjectURL(file);
+          img.onload = () => {
+            URL.revokeObjectURL(url);
+            const maxDim = 1600;
+            let { width, height } = img;
+            if (width > maxDim || height > maxDim) {
+              if (width > height) {
+                height = Math.round((height * maxDim) / width);
+                width = maxDim;
+              } else {
+                width = Math.round((width * maxDim) / height);
+                height = maxDim;
+              }
+            }
+            const canvas = document.createElement("canvas");
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext("2d");
+            if (!ctx) return resolve(file);
+            ctx.drawImage(img, 0, 0, width, height);
+            canvas.toBlob(
+              (blob) => {
+                if (!blob || blob.size >= file.size) return resolve(file);
+                resolve(
+                  new File([blob], file.name.replace(/\.[^.]+$/, ".jpg"), {
+                    type: "image/jpeg",
+                    lastModified: Date.now(),
+                  })
+                );
+              },
+              "image/jpeg",
+              0.82
+            );
+          };
+          img.onerror = () => {
+            URL.revokeObjectURL(url);
+            resolve(file);
+          };
+          img.src = url;
+        });
+      }
+
       const formData = new FormData();
-      formData.append("receipt", file);
+      formData.append("receipt", uploadFile);
+      formData.append("file", uploadFile);
       formData.append("senderPhone", senderPhone.trim());
       if (reference.trim()) formData.append("reference", reference.trim());
 

@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { MediaService } from "@/services/media.service";
 import { AnalyticsService } from "@/services/analytics.service";
 
-const MAX_RECEIPT_BYTES = 10 * 1024 * 1024; // 10 MB limit for receipt photos
+const MAX_RECEIPT_BYTES = 25 * 1024 * 1024; // 25 MB limit for receipt photos
 
 export async function POST(req: Request) {
   try {
@@ -13,16 +13,16 @@ export async function POST(req: Request) {
     if (!user) throw unauthorized("يرجى تسجيل الدخول أولاً للمتابعة");
 
     const formData = await req.formData();
-    const file = formData.get("file");
+    const file = (formData.get("receipt") || formData.get("file")) as File | null;
     const senderPhone = (formData.get("senderPhone") as string)?.trim() || null;
     const reference = (formData.get("reference") as string)?.trim() || null;
 
-    if (!(file instanceof File)) {
+    if (!(file instanceof File) || file.size === 0) {
       throw badRequest("يرجى اختيار صورة إيصال التحويل");
     }
 
     if (file.size > MAX_RECEIPT_BYTES) {
-      throw badRequest("حجم صورة الإيصال يتجاوز الحد المسموح به (10 ميجابايت)");
+      throw badRequest("حجم صورة الإيصال يتجاوز الحد المسموح به (25 ميجابايت)");
     }
 
     const buffer = Buffer.from(await file.arrayBuffer());
