@@ -170,9 +170,9 @@ export function LessonDefinitionsSection({
                 className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#22364F] hover:border-[#059669]/40 transition-all flex flex-col justify-between gap-3 shadow-2xs"
               >
                 <div className="space-y-2.5">
-                  <div className="flex items-start justify-between gap-2 border-b border-[#E2E8F0]/60 dark:border-[#334155]/60 pb-2.5">
-                    <div className="font-bold text-[14px] sm:text-[15px] text-[#059669] flex items-start gap-2 min-w-0 flex-1 leading-snug break-words">
-                      <span className="w-2 h-2 rounded-full bg-[#059669] shrink-0 mt-1.5" />
+                  <div className="flex items-center justify-between gap-2 border-b border-[#E2E8F0]/60 dark:border-[#334155]/60 pb-2.5">
+                    <div className="font-bold text-[14px] sm:text-[15px] text-[#059669] flex items-center gap-2 min-w-0 flex-1 leading-snug break-words">
+                      <span className="w-2 h-2 rounded-full bg-[#059669] shrink-0" />
                       <BidiStatement as="span" text={item.term} className="break-words" />
                     </div>
 

@@ -226,12 +226,12 @@ export function FormattedDefinitionView({
           {parsed.points.map((pt, idx) => (
             <div
               key={idx}
-              className={`p-2.5 sm:p-3 rounded-xl ${theme.itemBg} shadow-2xs flex items-start gap-2.5 transition-all ${alignClass}`}
+              className={`p-2.5 sm:p-3 rounded-xl ${theme.itemBg} shadow-2xs flex items-center sm:items-start gap-2.5 transition-all ${alignClass}`}
               dir={dir}
             >
               {/* Badge: Number or Bullet Dot */}
               <div
-                className={`w-5 h-5 sm:w-6 sm:h-6 rounded-lg ${theme.badge} font-mono font-bold text-[11px] sm:text-xs flex items-center justify-center shrink-0 mt-0.5 shadow-2xs`}
+                className={`w-5 h-5 sm:w-6 sm:h-6 rounded-lg ${theme.badge} font-mono font-bold text-[11px] sm:text-xs flex items-center justify-center shrink-0 sm:mt-0.5 shadow-2xs`}
               >
                 {pt.badge}
               </div>

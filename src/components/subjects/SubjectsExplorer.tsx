@@ -199,7 +199,7 @@ export function SubjectsExplorer({ subjects, isStaff }: SubjectsExplorerProps) {
               <Link
                 key={subj.id}
                 href={`/subjects/${subj.id}`}
-                className="group p-6 sm:p-7 rounded-3xl bg-white dark:bg-[#0D214D] border border-[#E2E8F0] dark:border-[#1E3A6E] hover:border-[#800B34]/50 transition-all flex flex-col justify-between space-y-6 shadow-[0_8px_28px_rgba(9,27,64,0.07)] hover:shadow-md h-auto min-w-0"
+                className="group p-4 sm:p-6 rounded-2xl bg-white dark:bg-[#0D214D] border border-[#E2E8F0] dark:border-[#1E3A6E] hover:border-[#800B34]/50 transition-all flex flex-col justify-between space-y-5 shadow-xs hover:shadow-md h-auto min-w-0"
               >
                 <div className="space-y-4">
                   {/* Top Bar of Card */}

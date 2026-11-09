@@ -40,7 +40,7 @@ export function LessonTrueFalseSection({
   return (
     <div id="section-true-false" className="space-y-6 pt-4">
       {/* Section Header */}
-      <div className="p-6 rounded-2xl bg-[#0284C7]/10 border border-[#0284C7]/25 relative overflow-hidden flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="p-4 sm:p-6 rounded-2xl bg-[#0284C7]/10 border border-[#0284C7]/25 relative overflow-hidden flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 rounded-xl bg-[#0284C7] text-white flex items-center justify-center shrink-0 shadow-sm">
             <QuestionIcon className="w-6 h-6" weight="bold" />
@@ -93,7 +93,7 @@ export function LessonTrueFalseSection({
             return (
               <div
                 key={question.id}
-                className="p-6 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] space-y-4 shadow-sm"
+                className="p-4 sm:p-6 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] space-y-4 shadow-sm"
               >
                 <div
                   dir={isEnglishStatement ? "ltr" : "rtl"}

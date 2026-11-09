@@ -54,7 +54,7 @@ export function SubjectCard({
           {/* Subject Color Pill / Accent */}
           <div
             className="w-3.5 h-3.5 rounded-full shrink-0 mt-1 sm:mt-0 ring-4 ring-black/5 dark:ring-white/10"
-            style={{ backgroundColor: subject.color || "#800020" }}
+            style={{ backgroundColor: subject.color || "#800B34" }}
           />
 
           <div className="min-w-0 flex-1">
@@ -69,7 +69,7 @@ export function SubjectCard({
 
               {/* Classification Badges */}
               {subject.trackId ? (
-                <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-[#800020]/10 text-[#800020] dark:text-[#FB7185] border border-[#800020]/20 flex items-center gap-1">
+                <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-[#800B34]/10 text-[#800B34] dark:text-[#FB7185] border border-[#800B34]/20 flex items-center gap-1">
                   <Layers className="w-3 h-3" />
                   <span>تخصصي: {trackName || "مسار محدد"}</span>
                 </span>
@@ -93,7 +93,7 @@ export function SubjectCard({
               <span>•</span>
               <span>{totalLessons} درساً</span>
               <span>•</span>
-              <span className="text-[#800020] dark:text-[#FB7185] font-black">{questionsCount} سؤالاً</span>
+              <span className="text-[#800B34] dark:text-[#FB7185] font-black">{questionsCount} سؤالاً</span>
             </div>
           </div>
         </div>
@@ -106,7 +106,7 @@ export function SubjectCard({
             className="h-9 px-3 rounded-xl border border-[#E8E9ED] dark:border-[#22364F] bg-white dark:bg-[#0D1B2E] hover:bg-slate-50 dark:hover:bg-slate-800 text-[#12263F] dark:text-slate-200 text-xs font-bold flex items-center gap-1.5 transition-colors shadow-2xs"
             title="فتح بنك الأسئلة والمفاهيم لهذه المادة"
           >
-            <HelpCircle className="w-3.5 h-3.5 text-[#800020] dark:text-[#FB7185]" />
+            <HelpCircle className="w-3.5 h-3.5 text-[#800B34] dark:text-[#FB7185]" />
             <span>بنك الأسئلة</span>
           </Link>
 
@@ -127,7 +127,7 @@ export function SubjectCard({
           <button
             type="button"
             onClick={() => onOpenCreateUnit(subject.id, subject.name)}
-            className="h-9 px-3.5 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-xs font-bold flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer shadow-xs"
+            className="h-9 px-3.5 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white text-xs font-bold flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer shadow-xs"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>إضافة وحدة</span>

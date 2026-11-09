@@ -31,7 +31,7 @@ export function LessonAssessmentSection({
   return (
     <div id="section-assessments" className="space-y-6 pt-4">
       {/* Section Header */}
-      <div className="p-6 rounded-2xl bg-[#4F46E5]/10 border border-[#4F46E5]/25 relative overflow-hidden flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="p-4 sm:p-6 rounded-2xl bg-[#4F46E5]/10 border border-[#4F46E5]/25 relative overflow-hidden flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 rounded-xl bg-[#4F46E5] text-white flex items-center justify-center shrink-0 shadow-sm">
             <ChartLineUp className="w-6 h-6" weight="bold" />
@@ -59,7 +59,7 @@ export function LessonAssessmentSection({
       </div>
 
       {/* Dynamic Readiness Gauge Card */}
-      <div className="p-6 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] space-y-4 shadow-sm">
+      <div className="p-4 sm:p-6 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] space-y-4 shadow-sm">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <h3 className="text-sm font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
@@ -108,7 +108,7 @@ export function LessonAssessmentSection({
           return (
             <div
               key={idx}
-              className="p-5 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm"
+              className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm"
             >
               <div className="flex items-start gap-3 flex-1">
                 <span className="w-6 h-6 rounded-lg bg-[#4F46E5]/10 text-[#4F46E5] flex items-center justify-center font-mono font-bold text-[12px] shrink-0 mt-0.5">
@@ -122,7 +122,7 @@ export function LessonAssessmentSection({
               </div>
 
               {/* 3 Interactive Buttons */}
-              <div className="flex items-center gap-1.5 shrink-0 self-end md:self-auto">
+              <div className="grid grid-cols-3 sm:flex items-center gap-1.5 shrink-0 w-full md:w-auto">
                 <button
                   type="button"
                   onClick={() => onRatingChange(idx, "mastered")}

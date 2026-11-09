@@ -333,7 +333,7 @@ export default async function ExamResultsPage({
                         href={`/lessons/${relatedLesson.id}`}
                         className="text-xs sm:text-[13px] font-bold text-[#800B34] dark:text-[#FB7185] hover:underline flex items-center gap-1"
                       >
-                        <span>شرح الدرس: <BidiStatement as="span" text={relatedLesson.title} /></span>
+                        <span>الدرس: <BidiStatement as="span" text={relatedLesson.title} /></span>
                         <ArrowLeft className="w-3 h-3" />
                       </Link>
                     )}

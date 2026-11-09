@@ -92,7 +92,7 @@ export function MistakeCard({
           >
             <BookOpen className="w-3.5 h-3.5 shrink-0 text-[#800B34]" />
             <span className="break-words">
-              {isEnglish ? "Lesson: " : "شرح الدرس: "}<BidiStatement as="span" text={relatedLesson.title} />
+              {isEnglish ? "Lesson: " : "الدرس: "}<BidiStatement as="span" text={relatedLesson.title} />
             </span>
             <ArrowLeft className="w-3 h-3 shrink-0" />
           </Link>
@@ -171,12 +171,12 @@ export function MistakeCard({
                 dir={isEnglishOpt ? "ltr" : "rtl"}
                 disabled={isChecked || answerState?.isChecking}
                 onClick={() => onRetakeAnswer(q.id, opt.id)}
-                className={`w-full min-h-[48px] p-3.5 sm:p-4 rounded-xl border ${isEnglishOpt ? "text-left font-sans" : "text-right font-content"} text-xs sm:text-sm font-medium flex items-start sm:items-center justify-between gap-3 transition-colors overflow-hidden active:scale-[0.99] cursor-pointer ${rowStyle} ${
+                className={`w-full min-h-[48px] p-3.5 sm:p-4 rounded-xl border ${isEnglishOpt ? "text-left font-sans" : "text-right font-content"} text-xs sm:text-sm font-medium flex items-center justify-between gap-3 transition-colors overflow-hidden active:scale-[0.99] cursor-pointer ${rowStyle} ${
                   isChecked || answerState?.isChecking ? "cursor-default" : "cursor-pointer"
                 }`}
               >
-                <div className="flex items-start sm:items-center gap-3 min-w-0 flex-1">
-                  <span className="w-6 h-6 rounded-lg bg-[#F8FAFC] dark:bg-[#1E293B] text-[#64748B] dark:text-[#F8FAFC] flex items-center justify-center text-xs sm:text-[13px] font-mono font-bold shrink-0 mt-0.5 sm:mt-0 border border-[#E2E8F0]/60 dark:border-[#334155]/60">
+                <div className="flex items-center gap-3 min-w-0 flex-1">
+                  <span className="w-6 h-6 rounded-lg bg-[#F8FAFC] dark:bg-[#1E293B] text-[#64748B] dark:text-[#F8FAFC] flex items-center justify-center text-xs sm:text-[13px] font-mono font-bold shrink-0 border border-[#E2E8F0]/60 dark:border-[#334155]/60">
                     {letter}
                   </span>
                   <div className={`min-w-0 flex-1 leading-relaxed break-words ${isEnglishOpt ? "text-left" : "text-right"}`}>
@@ -185,7 +185,7 @@ export function MistakeCard({
                 </div>
 
                 {isChecked && (
-                  <div className="shrink-0">
+                  <div className="shrink-0 flex items-center">
                     {opt.isCorrect ? (
                       <span className="text-[#059669] dark:text-[#34D399] text-xs sm:text-[13px] font-bold flex items-center gap-1">
                         <Check className="w-3.5 h-3.5" />

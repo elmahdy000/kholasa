@@ -36,7 +36,7 @@ export function LessonMcqSection({
   return (
     <div id="section-mcq" className="space-y-6 pt-4">
       {/* Section Header */}
-      <div className="p-6 rounded-2xl bg-[#800B34]/10 border border-[#800B34]/25 relative overflow-hidden flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="p-4 sm:p-6 rounded-2xl bg-[#800B34]/10 border border-[#800B34]/25 relative overflow-hidden flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 rounded-xl bg-[#800B34] text-white flex items-center justify-center shrink-0 shadow-sm">
             <CheckCircle className="w-6 h-6" weight="fill" />
@@ -90,7 +90,7 @@ export function LessonMcqSection({
             return (
               <div
                 key={question.id}
-                className="p-6 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] space-y-4 shadow-sm"
+                className="p-4 sm:p-6 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] space-y-4 shadow-sm"
               >
                 {/* Question Header & Controls */}
                 <div
@@ -186,10 +186,10 @@ export function LessonMcqSection({
                         dir={isEnglishOpt ? "ltr" : "rtl"}
                         disabled={isSelected}
                         onClick={() => onSelectOption(question.id, opt.id)}
-                        className={`w-full p-4 rounded-xl border ${isEnglishOpt ? "text-left font-sans" : "text-right font-content"} text-[13px] sm:text-sm font-medium flex items-start justify-between gap-3 transition-all cursor-pointer overflow-hidden ${btnStyle}`}
+                        className={`w-full p-3.5 sm:p-4 rounded-xl border ${isEnglishOpt ? "text-left font-sans" : "text-right font-content"} text-xs sm:text-sm font-medium flex items-center justify-between gap-3 transition-all cursor-pointer overflow-hidden ${btnStyle}`}
                       >
-                        <div className="flex items-start gap-3 min-w-0 flex-1">
-                          <span className="w-7 h-7 rounded-lg bg-[#F8FAFC] dark:bg-[#1E293B] text-[#64748B] dark:text-[#F8FAFC] flex items-center justify-center text-[13px] font-mono font-bold shrink-0 mt-0.5 border border-[#E2E8F0]/80 dark:border-[#334155]/80">
+                        <div className="flex items-center gap-3 min-w-0 flex-1">
+                          <span className="w-7 h-7 rounded-lg bg-[#F8FAFC] dark:bg-[#1E293B] text-[#64748B] dark:text-[#F8FAFC] flex items-center justify-center text-[13px] font-mono font-bold shrink-0 border border-[#E2E8F0]/80 dark:border-[#334155]/80">
                             {letter}
                           </span>
                           <div className={`min-w-0 flex-1 leading-relaxed break-words ${isEnglishOpt ? "text-left" : "text-right"}`}>
@@ -210,14 +210,14 @@ export function LessonMcqSection({
                         </div>
 
                         {isRevealed && (
-                          <div className="shrink-0">
+                          <div className="shrink-0 flex items-center">
                             {isOptionCorrect ? (
-                              <span className="text-[#059669] text-[13px] font-bold flex items-center gap-1">
+                              <span className="text-[#059669] text-xs sm:text-[13px] font-bold flex items-center gap-1">
                                 <Check className="w-4 h-4" weight="bold" />
                                 <span>{isEnglish ? "Correct!" : "صح! ممتاز"}</span>
                               </span>
                             ) : isSelected ? (
-                              <span className="text-[#DC2626] text-[13px] font-bold">
+                              <span className="text-[#DC2626] text-xs sm:text-[13px] font-bold">
                                 {isEnglish ? "Incorrect" : "مش مضبوطة"}
                               </span>
                             ) : null}
