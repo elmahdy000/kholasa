@@ -95,7 +95,7 @@ export function BrandLogo({
   subtitleText = "افهمها صح.. هتفضل معاك",
   href,
   className,
-  priority = false,
+  priority = true,
   glow = true,
 }: BrandLogoProps) {
   const cfg = sizeConfig[size] || sizeConfig.md;
