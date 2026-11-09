@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import {
   Lock,
   Sparkles,
@@ -145,14 +144,17 @@ export function PaywallModal({
         {/* Action Buttons */}
         <div className="space-y-2.5 pt-1">
           {/* Main Action: Go to Receipt Upload Screen */}
-          <Link
-            href="/subscription"
-            onClick={onClose}
-            className="w-full min-h-[52px] rounded-xl bg-[#800B34] hover:bg-[#680829] text-white font-extrabold text-sm flex items-center justify-center gap-2 transition-all shadow-lg shadow-[#800B34]/25 active:scale-[0.99]"
+          <button
+            type="button"
+            onClick={() => {
+              onClose();
+              window.location.href = "/subscription";
+            }}
+            className="w-full min-h-[52px] rounded-xl bg-[#800B34] hover:bg-[#680829] text-white font-extrabold text-sm flex items-center justify-center gap-2 transition-all shadow-lg shadow-[#800B34]/25 active:scale-[0.99] cursor-pointer"
           >
             <Upload className="w-4 h-4" />
-            <span>التوجه لشاشة رفع الإيصال الآن</span>
-          </Link>
+            <span>التوجه لشاشة رفع الإيصال وتفعيل الحساب</span>
+          </button>
 
           {/* Secondary Action: Direct WhatsApp */}
           <button

@@ -121,13 +121,30 @@ export async function getCurrentUser() {
 
     // Device binding check: ensure student's device is still authorized
     const boundDevices = session.user.boundDevices || [];
+    const isDemoStudent = Boolean(session.user.loginCode?.startsWith("DEMO-"));
+
     if (
       session.user.role === Role.STUDENT &&
+      !isDemoStudent &&
       session.deviceId &&
+      boundDevices.length > 0 &&
       !boundDevices.includes(session.deviceId)
     ) {
       await prisma.session.delete({ where: { id: session.id } }).catch(() => {});
       return null;
+    }
+
+    // Auto-bind device if student has a deviceId but boundDevices is empty
+    if (
+      session.user.role === Role.STUDENT &&
+      !isDemoStudent &&
+      session.deviceId &&
+      boundDevices.length === 0
+    ) {
+      await prisma.user.update({
+        where: { id: session.user.id },
+        data: { boundDevices: [session.deviceId] },
+      }).catch(() => {});
     }
 
     // Sliding renewal

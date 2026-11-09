@@ -249,10 +249,11 @@ export function SubjectUnitsList({
                                 unitTitle: unit.title,
                               })
                             }
-                            className="h-10 px-4 rounded-xl text-[13px] font-bold flex items-center justify-center gap-2 transition-all shrink-0 active:scale-98 flex-1 sm:flex-initial bg-amber-500/10 hover:bg-amber-500/20 text-[#800B34] dark:text-[#E9AD32] border border-amber-500/30 cursor-pointer shadow-xs"
+                            className="h-10 px-4 rounded-xl text-[13px] font-bold flex items-center justify-center gap-2 transition-all shrink-0 active:scale-98 flex-1 sm:flex-initial bg-[#800B34] hover:bg-[#680829] text-white shadow-xs cursor-pointer"
+                            title="ابدأ المذاكرة (محتوى مخصص للمشتركين)"
                           >
-                            <span>تفعيل الاشتراك (200 ج)</span>
-                            <Lock className="w-3.5 h-3.5" />
+                            <span>ابدأ المذاكرة</span>
+                            <Lock className="w-3.5 h-3.5 text-[#E9AD32]" />
                           </button>
                         ) : (
                           <Link
