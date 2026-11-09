@@ -299,43 +299,93 @@ export function StudentPaywallView({
   };
 
   return (
-    <div className="w-full max-w-[1080px] mx-auto space-y-5 px-2 sm:px-4 py-4 sm:py-6 text-right font-sans">
+    <div className="w-full max-w-[1080px] mx-auto space-y-3.5 sm:space-y-5 px-0 sm:px-2 py-1 sm:py-4 text-right font-sans">
       {/* ========================================================================= */}
-      {/* SECTION A: WELCOME BANNER (LIGHT BLUE, HORIZONTALLY BALANCED)            */}
+      {/* SECTION A: COMPACT WELCOME BANNER                                         */}
       {/* ========================================================================= */}
-      <div className="bg-[#EAF2FF] border border-[#D0E2FF] rounded-[20px] p-5 sm:p-6 flex flex-col-reverse md:flex-row-reverse items-center justify-between gap-5 relative overflow-hidden shadow-xs">
-        {/* Right on Desktop in RTL: 3D Graduation Cap */}
-        <div className="shrink-0 flex items-center justify-center">
-          <GraduationCapIcon className="w-20 h-20 sm:w-24 sm:h-24 drop-shadow-sm" />
-        </div>
-
-        {/* Left on Desktop in RTL: Welcome Text */}
-        <div className="space-y-1.5 flex-1 text-right">
-          <h1 className="text-[20px] sm:text-[24px] font-extrabold text-[#091B40] leading-snug tracking-tight">
+      <div className="bg-[#EAF2FF] border border-[#D0E2FF] rounded-2xl sm:rounded-[20px] p-3.5 sm:p-5 lg:p-6 flex items-center justify-between gap-3 sm:gap-5 relative overflow-hidden shadow-2xs">
+        {/* Welcome Text */}
+        <div className="space-y-1 flex-1 text-right">
+          <h1 className="text-[17px] sm:text-[20px] lg:text-[24px] font-extrabold text-[#091B40] leading-snug tracking-tight">
             {welcomeGreeting}
           </h1>
-          <p className="text-[13px] sm:text-[15px] text-[#475569] leading-relaxed max-w-2xl">
+          <p className="text-[12.5px] sm:text-[14px] lg:text-[15px] text-[#475569] leading-relaxed max-w-2xl">
             لقد استمتعت بالدرس الأول مجاناً للتجربة. للوصول إلى كافة دروس المنهج، بنك الأسئلة والمفاهيم، الكبسولات الصوتية، والامتحانات التفاعلية، يلزم تفعيل اشتراك المنصة الشهري.
           </p>
           {(lessonTitle || examTitle) && (
-            <p className="text-xs font-bold text-[#800B34] pt-1">
+            <p className="text-xs font-bold text-[#800B34] pt-0.5">
               المحتوى المطلوب: {isExam ? examTitle : lessonTitle} {unitTitle ? `• (${unitTitle})` : ""}
             </p>
           )}
         </div>
+
+        {/* Small Graduation Cap beside text on mobile, larger on desktop */}
+        <div className="shrink-0 flex items-center justify-center">
+          <GraduationCapIcon className="w-12 h-12 sm:w-16 sm:h-16 lg:w-22 lg:h-22 drop-shadow-2xs" />
+        </div>
       </div>
 
       {/* ========================================================================= */}
-      {/* SECTION B: MAIN SUBSCRIPTION CARD (SPLIT 70% FORM / 30% BENEFITS)          */}
+      {/* SECTION B: MAIN SUBSCRIPTION CARD                                        */}
+      {/* Mobile: Summary (Price + Badge + 2-Col Benefits) -> Payment Info -> Upload -> Form */}
+      {/* Desktop: Split 70% Right Form / 30% Left Benefits with 3D Illustration   */}
       {/* ========================================================================= */}
-      <div className="bg-white rounded-[24px] border border-[#E2E8F0] shadow-[0_10px_35px_rgba(9,27,64,0.06)] relative overflow-hidden">
-        <div className="flex flex-col-reverse lg:flex-row">
+      <div className="bg-white rounded-2xl sm:rounded-[24px] border border-[#E2E8F0] shadow-[0_8px_30px_rgba(9,27,64,0.06)] relative overflow-hidden">
+        {/* --------------------------------------------------------------------- */}
+        {/* MOBILE ONLY: Price + "شامل كل المنهج" Badge + 4 Benefits (2-Col Grid)   */}
+        {/* --------------------------------------------------------------------- */}
+        <div className="block lg:hidden p-4 sm:p-5 border-b border-[#E2E8F0] bg-gradient-to-b from-[#FFFDF9] to-[#FFFFFF]">
+          <div className="flex items-center justify-between gap-2 mb-3">
+            {/* Monthly Subscription Price */}
+            <div>
+              <span className="text-[11px] font-bold text-[#64748B] block">
+                قيمة الاشتراك الشهري
+              </span>
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-[28px] sm:text-[34px] font-black text-[#800B34] font-mono leading-none">
+                  200
+                </span>
+                <span className="text-[14px] sm:text-[15px] font-bold text-[#091B40]">
+                  جنيه / شهرياً
+                </span>
+              </div>
+            </div>
+
+            {/* Badge: شامل كل المنهج */}
+            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#800B34] text-white text-[12px] font-bold shadow-2xs shrink-0">
+              <CheckCircle2 className="w-3.5 h-3.5 text-[#E9AD32]" />
+              <span>شامل كل المنهج</span>
+            </div>
+          </div>
+
+          {/* 4 Benefits in Compact 2-Column Grid */}
+          <div className="grid grid-cols-2 gap-2 pt-2 border-t border-[#F1F5F9]">
+            <div className="flex items-center gap-1.5 text-[13px] sm:text-[14px] font-bold text-[#091B40]">
+              <CheckCheck className="w-4 h-4 text-[#E9AD32] shrink-0" strokeWidth={2.5} />
+              <span>جميع الدروس</span>
+            </div>
+            <div className="flex items-center gap-1.5 text-[13px] sm:text-[14px] font-bold text-[#091B40]">
+              <CheckCheck className="w-4 h-4 text-[#E9AD32] shrink-0" strokeWidth={2.5} />
+              <span>بنك الأسئلة</span>
+            </div>
+            <div className="flex items-center gap-1.5 text-[13px] sm:text-[14px] font-bold text-[#091B40]">
+              <CheckCheck className="w-4 h-4 text-[#E9AD32] shrink-0" strokeWidth={2.5} />
+              <span>الكبسولات الصوتية</span>
+            </div>
+            <div className="flex items-center gap-1.5 text-[13px] sm:text-[14px] font-bold text-[#091B40]">
+              <CheckCheck className="w-4 h-4 text-[#E9AD32] shrink-0" strokeWidth={2.5} />
+              <span>الامتحانات التفاعلية</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-col lg:flex-row">
           {/* --------------------------------------------------------------------- */}
-          {/* RIGHT AREA IN RTL (70%): PAYMENT AND ACTIVATION FORM                  */}
+          {/* RIGHT AREA IN RTL (70% on Desktop, 100% on Mobile): PAYMENT FORM      */}
           {/* --------------------------------------------------------------------- */}
-          <div className="lg:w-[70%] p-6 sm:p-8 space-y-6 bg-white">
-            {/* Row 1: Monthly Price & Wallet Icon */}
-            <div className="flex items-start justify-between pb-4 border-b border-[#E2E8F0]">
+          <div className="w-full lg:w-[70%] p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-6 bg-white">
+            {/* Desktop Only: Row 1: Monthly Price & Wallet Icon */}
+            <div className="hidden lg:flex items-start justify-between pb-4 border-b border-[#E2E8F0]">
               <div className="space-y-0.5">
                 <span className="text-[13px] font-bold text-[#64748B] block">
                   قيمة الاشتراك الشهري
@@ -356,52 +406,49 @@ export function StudentPaywallView({
             </div>
 
             {/* Row 2: Payment Methods Notice */}
-            <div className="flex items-center gap-2 text-[14px] sm:text-[15px] font-bold text-[#091B40]">
+            <div className="flex items-center gap-2 text-[13.5px] sm:text-[15px] font-bold text-[#091B40]">
               <Wallet className="w-4 h-4 text-[#800B34] shrink-0" />
               <span>طرق التحويل المعتمدة (فودافون كاش / إنستاباي / أي محفظة إلكترونية):</span>
             </div>
 
             {/* Row 3: Official Payment Phone Number Box */}
-            <div className="rounded-2xl border border-[#E2E8F0] bg-white p-3.5 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-[#FAF6F7] text-[#800B34] flex items-center justify-center shrink-0">
-                  <Smartphone className="w-5 h-5" />
+            <div className="rounded-xl sm:rounded-2xl border border-[#E2E8F0] bg-[#FAF8F5]/50 sm:bg-white p-3 sm:p-4 flex items-center justify-between gap-2 sm:gap-3 shadow-2xs">
+              <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-[#FAF6F7] text-[#800B34] flex items-center justify-center shrink-0">
+                  <Smartphone className="w-4.5 h-4.5 sm:w-5 sm:h-5" />
                 </div>
-                <div>
-                  <span className="text-[12px] text-[#536681] block">
+                <div className="min-w-0">
+                  <span className="text-[11px] sm:text-[12px] text-[#536681] block truncate">
                     رقم التحويل المعتمد (فودافون كاش / إنستاباي):
                   </span>
-                  <span className="text-[18px] sm:text-[20px] font-black font-mono text-[#091B40] tracking-wider block" dir="ltr">
+                  <span className="text-[17px] sm:text-[20px] font-black font-mono text-[#091B40] tracking-wider block" dir="ltr">
                     {paymentNumber}
                   </span>
                 </div>
               </div>
 
-              <div className="flex items-center gap-3 self-end sm:self-center">
-                <div className="hidden sm:block h-8 w-px bg-[#E2E8F0]" />
-                <button
-                  type="button"
-                  onClick={handleCopyNumber}
-                  className="h-10 px-4 rounded-xl border border-[#E2E8F0] bg-white hover:bg-[#F7F9FC] text-[13px] font-bold text-[#091B40] flex items-center gap-2 shadow-2xs transition-colors cursor-pointer active:scale-98"
-                >
-                  {copiedNumber ? (
-                    <>
-                      <Check className="w-4 h-4 text-[#17834B]" />
-                      <span className="text-[#17834B]">تم النسخ</span>
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="w-4 h-4 text-[#536681]" />
-                      <span>نسخ الرقم</span>
-                    </>
-                  )}
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={handleCopyNumber}
+                className="h-10 px-3 sm:px-4 rounded-xl border border-[#E2E8F0] bg-white hover:bg-[#F7F9FC] text-[12px] sm:text-[13px] font-bold text-[#091B40] flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer shrink-0 active:scale-98 min-h-[44px]"
+              >
+                {copiedNumber ? (
+                  <>
+                    <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#17834B]" />
+                    <span className="text-[#17834B]">تم النسخ</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#536681]" />
+                    <span>نسخ الرقم</span>
+                  </>
+                )}
+              </button>
             </div>
 
             {/* Row 4: Receipt Upload Form & Status */}
             {uploadSuccess ? (
-              <div className="p-6 rounded-2xl bg-emerald-50 border-2 border-[#17834B]/40 space-y-4 animate-in fade-in">
+              <div className="p-5 sm:p-6 rounded-2xl bg-emerald-50 border-2 border-[#17834B]/40 space-y-3.5 animate-in fade-in">
                 <div className="flex items-center gap-3 text-[#17834B] font-bold text-base">
                   <CheckCircle2 className="w-6 h-6 shrink-0" />
                   <span>تم استلام إيصال التحويل بنجاح وهو قيد المراجعة الفورية! 🎉</span>
@@ -412,17 +459,17 @@ export function StudentPaywallView({
                 <button
                   type="button"
                   onClick={handleWhatsApp}
-                  className="w-full min-h-[50px] rounded-xl bg-[#25D366] hover:bg-[#20BD5A] text-white font-bold text-sm flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer"
+                  className="w-full min-h-[48px] sm:min-h-[50px] rounded-xl bg-[#25D366] hover:bg-[#20BD5A] text-white font-bold text-sm flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer"
                 >
                   <Send className="w-4 h-4" />
                   <span>تأكيد الإيصال والتفعيل اللحظي عبر واتساب</span>
                 </button>
               </div>
             ) : (
-              <form onSubmit={handleUploadReceipt} className="space-y-5">
+              <form onSubmit={handleUploadReceipt} className="space-y-4 sm:space-y-5">
                 {/* Upload Title & Instructions */}
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2 text-[15px] sm:text-[16px] font-bold text-[#091B40]">
+                <div className="space-y-0.5">
+                  <div className="flex items-center gap-2 text-[14px] sm:text-[16px] font-bold text-[#091B40]">
                     <Upload className="w-4 h-4 text-[#800B34]" />
                     <span>رفع إيصال الدفع للتفعيل (200 جنيه):</span>
                   </div>
@@ -452,7 +499,7 @@ export function StudentPaywallView({
                     if (dropped) validateAndSetFile(dropped);
                   }}
                   onClick={() => fileInputRef.current?.click()}
-                  className={`border-2 border-dashed rounded-2xl p-6 sm:p-7 text-center transition-all cursor-pointer relative ${
+                  className={`border-2 border-dashed rounded-xl sm:rounded-2xl p-4 sm:p-7 text-center transition-all cursor-pointer relative ${
                     isDragging
                       ? "border-[#2C70BF] bg-[#EAF2FF]"
                       : file
@@ -470,21 +517,21 @@ export function StudentPaywallView({
                   />
 
                   {file ? (
-                    <div className="space-y-3">
+                    <div className="space-y-2.5">
                       <div className="flex items-center justify-center gap-2 text-[#17834B]">
                         {file.type === "application/pdf" ? (
-                          <FileText className="w-8 h-8" />
+                          <FileText className="w-6 h-6 sm:w-8 sm:h-8" />
                         ) : (
-                          <ImageIcon className="w-8 h-8" />
+                          <ImageIcon className="w-6 h-6 sm:w-8 sm:h-8" />
                         )}
-                        <span className="font-extrabold text-[15px] sm:text-[16px] max-w-sm truncate">
+                        <span className="font-extrabold text-[14px] sm:text-[16px] max-w-[200px] sm:max-w-sm truncate">
                           {file.name}
                         </span>
                       </div>
                       <span className="text-[11px] text-[#536681] block font-mono">
                         {(file.size / (1024 * 1024)).toFixed(2)} MB
                       </span>
-                      <div className="flex items-center justify-center gap-3 pt-1">
+                      <div className="flex items-center justify-center gap-2.5 pt-0.5">
                         <button
                           type="button"
                           onClick={(e) => {
@@ -506,15 +553,15 @@ export function StudentPaywallView({
                       </div>
                     </div>
                   ) : (
-                    <div className="space-y-2">
-                      <div className="w-12 h-12 rounded-xl bg-[#EAF2FF] text-[#2C70BF] flex items-center justify-center mx-auto">
-                        <Upload className="w-6 h-6" strokeWidth={2.2} />
+                    <div className="space-y-1.5 sm:space-y-2">
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-[#EAF2FF] text-[#2C70BF] flex items-center justify-center mx-auto">
+                        <Upload className="w-5 h-5 sm:w-6 sm:h-6" strokeWidth={2.2} />
                       </div>
-                      <div className="space-y-1">
-                        <span className="text-[15px] sm:text-[16px] font-extrabold text-[#800B34] block">
+                      <div className="space-y-0.5">
+                        <span className="text-[14px] sm:text-[16px] font-extrabold text-[#800B34] block">
                           انقر هنا لاختيار صورة إيصال التحويل
                         </span>
-                        <span className="text-[12px] text-[#64748B] block font-medium">
+                        <span className="text-[11.5px] sm:text-[12px] text-[#64748B] block font-medium">
                           JPG, PNG, WEBP أو PDF | بحد أقصى 20 ميجابايت
                         </span>
                       </div>
@@ -522,15 +569,15 @@ export function StudentPaywallView({
                   )}
                 </div>
 
-                {/* Row 5: Sender Phone & Reference in One Row */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+                {/* Form Fields: Sender Phone & Optional Reference */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 pt-0.5">
                   <div>
-                    <label className="block text-[13px] font-bold text-[#091B40] mb-1.5">
-                      رقم الموبايل المحول منه:
+                    <label className="block text-[13px] font-bold text-[#091B40] mb-1">
+                      رقم الموبايل المحول منه <span className="text-[#800B34]">*</span>
                     </label>
                     <div className="relative">
                       <input
-                        type="text"
+                        type="tel"
                         required
                         value={senderPhone}
                         onChange={(e) => setSenderPhone(e.target.value)}
@@ -544,7 +591,7 @@ export function StudentPaywallView({
                   </div>
 
                   <div>
-                    <label className="block text-[13px] font-bold text-[#091B40] mb-1.5">
+                    <label className="block text-[13px] font-bold text-[#091B40] mb-1">
                       كود العملية / الرقم المرجعي (اختياري):
                     </label>
                     <input
@@ -559,21 +606,35 @@ export function StudentPaywallView({
                   </div>
                 </div>
 
-                {/* Row 6: Primary Full-Width Burgundy Action Button */}
+                {/* Explanatory feedback banner when submit button is disabled */}
+                {(!file || !senderPhone.trim()) && (
+                  <div className="px-3.5 py-2.5 rounded-xl bg-amber-500/10 border border-amber-500/25 text-[12.5px] font-semibold text-amber-900 flex items-center gap-2 animate-in fade-in">
+                    <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
+                    <span>
+                      {!file && !senderPhone.trim()
+                        ? "يرجى اختيار صورة الإيصال وإدخال رقم الموبايل المحول منه لتفعيل الإرسال."
+                        : !file
+                        ? "يرجى اختيار صورة أو ملف إيصال التحويل لتفعيل الإرسال."
+                        : "يرجى إدخال رقم الموبايل المحول منه لتفعيل الإرسال."}
+                    </span>
+                  </div>
+                )}
+
+                {/* Primary Full-Width Burgundy Action Button */}
                 <button
                   type="submit"
                   disabled={isUploading || !file || !senderPhone.trim()}
-                  className="w-full min-h-[52px] sm:min-h-[56px] rounded-xl bg-[#800B34] hover:bg-[#680829] text-white font-black text-[16px] flex items-center justify-center gap-2.5 transition-all shadow-md shadow-[#800B34]/25 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer active:scale-[0.99]"
+                  className="w-full min-h-[50px] sm:min-h-[56px] rounded-xl bg-[#800B34] hover:bg-[#680829] text-white font-black text-[15px] sm:text-[16px] flex items-center justify-center gap-2.5 transition-all shadow-md shadow-[#800B34]/25 disabled:opacity-45 disabled:bg-[#800B34]/60 disabled:cursor-not-allowed cursor-pointer active:scale-[0.99]"
                 >
                   {isUploading ? (
                     <>
                       <Loader2 className="w-5 h-5 animate-spin" />
-                      <span>جاري رفع وتوثيق الإيصال...</span>
+                      <span>جاري إرسال الإيصال للمراجعة...</span>
                     </>
                   ) : (
                     <>
-                      <Upload className="w-5 h-5" strokeWidth={2.2} />
-                      <span>رفع إيصال الدفع وتفعيل الحساب (200 ج)</span>
+                      <Upload className="w-4.5 h-4.5" strokeWidth={2.2} />
+                      <span>إرسال إيصال الدفع للمراجعة</span>
                     </>
                   )}
                 </button>
@@ -582,13 +643,13 @@ export function StudentPaywallView({
           </div>
 
           {/* --------------------------------------------------------------------- */}
-          {/* LEFT AREA IN RTL (30%): SUBSCRIPTION BENEFITS                         */}
+          {/* DESKTOP ONLY: LEFT AREA IN RTL (30%): SUBSCRIPTION BENEFITS          */}
           {/* --------------------------------------------------------------------- */}
-          <div className="lg:w-[30%] p-6 sm:p-7 flex flex-col justify-between relative bg-gradient-to-b from-[#FFFDF9] via-[#FFFFFF] to-[#F7F9FC] border-t lg:border-t-0 lg:border-r border-[#E2E8F0]">
+          <div className="hidden lg:flex lg:w-[30%] p-6 sm:p-7 flex-col justify-between relative bg-gradient-to-b from-[#FFFDF9] via-[#FFFFFF] to-[#F7F9FC] border-r border-[#E2E8F0]">
             <div>
               {/* Badge: شامل كل المنهج */}
               <div className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[#800B34] text-white text-[13px] font-bold shadow-xs">
-                <CheckCircle2 className="w-4 h-4" />
+                <CheckCircle2 className="w-4 h-4 text-[#E9AD32]" />
                 <span>شامل كل المنهج</span>
               </div>
 
@@ -613,17 +674,15 @@ export function StudentPaywallView({
               </ul>
             </div>
 
-            {/* 3D Payment Theme Illustration */}
+            {/* 3D Payment Theme Illustration (Desktop Only) */}
             <div className="pt-2 pb-1 flex justify-center">
-              <PaymentIllustration3D className="w-full max-w-[230px] sm:max-w-[250px]" />
+              <PaymentIllustration3D className="w-full max-w-[250px]" />
             </div>
           </div>
         </div>
 
         {/* --------------------------------------------------------------------- */}
-        {/* SIGNATURE CURVED GOLD DIVIDER (DESKTOP)                              */}
-        {/* Placed at boundary between 70% right form and 30% left benefits       */}
-        {/* In RTL: 70% from right is left: 30%                                   */}
+        {/* SIGNATURE CURVED GOLD DIVIDER (DESKTOP ONLY)                         */}
         {/* --------------------------------------------------------------------- */}
         <div className="hidden lg:block absolute top-0 bottom-0 left-[30%] w-[20px] pointer-events-none -translate-x-1/2 z-10 overflow-visible">
           <svg
@@ -644,23 +703,23 @@ export function StudentPaywallView({
       </div>
 
       {/* ========================================================================= */}
-      {/* SECTION C: FOOTER LINKS                                                  */}
+      {/* SECTION C: COMPACT FOOTER LINKS                                          */}
       {/* ========================================================================= */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2 text-[13px] font-bold">
-        {/* In RTL: First child is on the RIGHT (WhatsApp) */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-2.5 sm:gap-4 pt-1 text-[13px] font-bold">
+        {/* WhatsApp Link */}
         <button
           type="button"
           onClick={handleWhatsApp}
-          className="text-[#17834B] hover:underline flex items-center gap-2 cursor-pointer"
+          className="text-[#17834B] hover:underline flex items-center gap-1.5 cursor-pointer py-1 min-h-[44px]"
         >
           <Send className="w-4 h-4" />
           <span>تواصل مع الإدارة عبر واتساب للاستفسار أو السداد</span>
         </button>
 
-        {/* In RTL: Second child is on the LEFT (Back to dashboard) */}
+        {/* Back Link */}
         <Link
           href="/dashboard"
-          className="text-[#536681] hover:text-[#091B40] flex items-center gap-1.5 transition-colors"
+          className="text-[#536681] hover:text-[#091B40] flex items-center gap-1.5 transition-colors py-1 min-h-[44px]"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>العودة إلى لوحة التحكم والدرس التجريبي</span>

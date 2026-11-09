@@ -19,9 +19,9 @@ export default async function SubscriptionPage() {
 
   return (
     <StudentShell user={user}>
-      <div className="w-full max-w-[1080px] mx-auto space-y-4 pb-16 px-2 sm:px-4">
+      <div className="w-full max-w-[1080px] mx-auto space-y-3 sm:space-y-4 pb-6 sm:pb-10 px-3 sm:px-4">
         {/* Breadcrumb */}
-        <nav aria-label="مسار التصفح" className="flex items-center gap-2 text-xs font-semibold text-[#64748B] pt-2">
+        <nav aria-label="مسار التصفح" className="flex items-center gap-2 text-xs font-semibold text-[#64748B] pt-1 sm:pt-2">
           <Link href="/dashboard" className="hover:text-[#800B34] transition-colors">
             الرئيسية
           </Link>
