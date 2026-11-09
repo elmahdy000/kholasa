@@ -32,7 +32,7 @@ export function MistakeCard({
   const q = mistake.question;
   const isEssay = q.type === "ESSAY" || (!q.options || q.options.length === 0);
   const relatedLesson = q.lessons?.[0]?.lesson;
-  const isChecked = !answerState?.result;
+  const isChecked = Boolean(answerState?.result);
 
   const isEnglishStatement = !/[\u0600-\u06FF]/.test(q.statement || "");
   const isEnglish =
@@ -165,11 +165,11 @@ export function MistakeCard({
                     {opt.isCorrect ? (
                       <span className="text-[#059669] dark:text-[#34D399] text-xs sm:text-[13px] font-bold flex items-center gap-1">
                         <Check className="w-3.5 h-3.5" />
-                        <span>{isEnglishOpt ? "Correct!" : "صح! برافو عليك"}</span>
+                        <span>{isEnglishOpt ? "Correct" : "إجابة صحيحة ✓"}</span>
                       </span>
                     ) : isSelected ? (
                       <span className="text-[#DC2626] dark:text-[#F87171] text-xs sm:text-[13px] font-bold">
-                        {isEnglishOpt ? "Incorrect" : "مش صحيحة"}
+                        {isEnglishOpt ? "Incorrect" : "إجابة غير صحيحة"}
                       </span>
                     ) : null}
                   </div>

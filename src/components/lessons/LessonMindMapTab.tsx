@@ -255,7 +255,7 @@ export function LessonMindMapTab({ mindMap }: LessonMindMapTabProps) {
   if (!mindMap || (!hasImages && !hasNodes)) {
     return (
       <div className="p-8 sm:p-12 text-center rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] shadow-xs flex flex-col items-center justify-center gap-3">
-        <div className="w-14 h-14 rounded-2xl bg-[#800020]/10 dark:bg-[#800020]/25 text-[#800020] dark:text-[#FB7185] flex items-center justify-center">
+        <div className="w-14 h-14 rounded-2xl bg-[#800B34]/10 dark:bg-[#800B34]/25 text-[#800B34] dark:text-[#FB7185] flex items-center justify-center">
           <ImageIcon className="w-7 h-7" />
         </div>
         <h4 className="text-base font-bold text-[#0F172A] dark:text-white">
@@ -305,7 +305,7 @@ export function LessonMindMapTab({ mindMap }: LessonMindMapTabProps) {
                 onClick={() => setDisplayMode("card")}
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
                   displayMode === "card"
-                    ? "bg-white dark:bg-[#0F172A] text-[#800020] dark:text-[#FB7185] shadow-xs border border-[#E2E8F0]/60 dark:border-[#334155]"
+                    ? "bg-white dark:bg-[#0F172A] text-[#800B34] dark:text-[#FB7185] shadow-xs border border-[#E2E8F0]/60 dark:border-[#334155]"
                     : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
                 }`}
                 title="عرض بطاقة تلو الأخرى (مريح وسلس للموبايل مع إمكانية السحب باللمس)"
@@ -319,7 +319,7 @@ export function LessonMindMapTab({ mindMap }: LessonMindMapTabProps) {
                 onClick={() => setDisplayMode("scroll")}
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
                   displayMode === "scroll"
-                    ? "bg-white dark:bg-[#0F172A] text-[#800020] dark:text-[#FB7185] shadow-xs border border-[#E2E8F0]/60 dark:border-[#334155]"
+                    ? "bg-white dark:bg-[#0F172A] text-[#800B34] dark:text-[#FB7185] shadow-xs border border-[#E2E8F0]/60 dark:border-[#334155]"
                     : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
                 }`}
                 title="عرض كل اللوحات متتالية تحت بعضها"
@@ -338,7 +338,7 @@ export function LessonMindMapTab({ mindMap }: LessonMindMapTabProps) {
               {/* Card Header Bar */}
               <div className="flex items-center justify-between px-3.5 sm:px-6 py-3 bg-[#F8FAFC] dark:bg-[#1E293B]/60 border-b border-[#E2E8F0] dark:border-[#334155]">
                 <div className="flex items-center gap-2">
-                  <span className="px-2.5 py-1 rounded-lg bg-[#800020]/10 dark:bg-[#800020]/25 text-[#800020] dark:text-[#FB7185] font-bold text-xs">
+                  <span className="px-2.5 py-1 rounded-lg bg-[#800B34]/10 dark:bg-[#800B34]/25 text-[#800B34] dark:text-[#FB7185] font-bold text-xs">
                     {images.length > 1
                       ? `لوحة (${selectedImageIndex + 1} من ${images.length})`
                       : "المخطط الذهني للدرس"}
@@ -354,7 +354,7 @@ export function LessonMindMapTab({ mindMap }: LessonMindMapTabProps) {
                           onClick={() => switchImage(i)}
                           className={`w-6 h-6 rounded-md text-xs font-bold font-mono transition-colors ${
                             i === selectedImageIndex
-                              ? "bg-[#800020] text-white"
+                              ? "bg-[#800B34] text-white"
                               : "bg-white dark:bg-[#1E293B] text-[#64748B] hover:text-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]"
                           }`}
                         >
@@ -373,7 +373,7 @@ export function LessonMindMapTab({ mindMap }: LessonMindMapTabProps) {
                       setPan({ x: 0, y: 0 });
                       setIsFullscreenImage(true);
                     }}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[#0F172A] dark:text-white hover:border-[#800020] hover:text-[#800020] dark:hover:text-[#FB7185] transition-colors cursor-pointer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[#0F172A] dark:text-white hover:border-[#800B34] hover:text-[#800B34] dark:hover:text-[#FB7185] transition-colors cursor-pointer"
                     title="عرض بملء الشاشة وتكبير حر"
                   >
                     <Maximize2 className="w-3.5 h-3.5" />
@@ -385,7 +385,7 @@ export function LessonMindMapTab({ mindMap }: LessonMindMapTabProps) {
                     download={`kholasa-mindmap-${selectedImageIndex + 1}.jpg`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-[#800020]/10 text-[#800020] dark:text-[#FB7185] hover:bg-[#800020]/20 transition-colors"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-[#800B34]/10 text-[#800B34] dark:text-[#FB7185] hover:bg-[#800B34]/20 transition-colors"
                     title="تحميل المخطط بجودة عالية"
                   >
                     <Download className="w-3.5 h-3.5" />
@@ -460,8 +460,8 @@ export function LessonMindMapTab({ mindMap }: LessonMindMapTabProps) {
                         onClick={() => switchImage(i)}
                         className={`h-8 sm:h-9 min-w-[2rem] sm:min-w-[2.25rem] px-2 rounded-lg text-xs font-bold font-mono transition-all cursor-pointer flex items-center justify-center ${
                           i === selectedImageIndex
-                            ? "bg-[#800020] text-white shadow-sm scale-105"
-                            : "bg-[#F8FAFC] dark:bg-[#1E293B] text-[#64748B] dark:text-[#94A3B8] border border-[#E2E8F0] dark:border-[#334155] hover:border-[#800020] hover:text-[#800020]"
+                            ? "bg-[#800B34] text-white shadow-sm scale-105"
+                            : "bg-[#F8FAFC] dark:bg-[#1E293B] text-[#64748B] dark:text-[#94A3B8] border border-[#E2E8F0] dark:border-[#334155] hover:border-[#800B34] hover:text-[#800B34]"
                         }`}
                         title={`الانتقال إلى لوحة ${i + 1}`}
                       >
@@ -474,7 +474,7 @@ export function LessonMindMapTab({ mindMap }: LessonMindMapTabProps) {
                   <button
                     type="button"
                     onClick={handleNext}
-                    className="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-95 shadow-xs"
+                    className="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-95 shadow-xs"
                     title="اللوحة التالية"
                   >
                     <span>التالي</span>
@@ -484,7 +484,7 @@ export function LessonMindMapTab({ mindMap }: LessonMindMapTabProps) {
 
                 {/* Mobile Touch Swipe Hint */}
                 <div className="text-center text-[11px] text-[#94A3B8] font-medium flex items-center justify-center gap-1.5">
-                  <Move className="w-3 h-3 text-[#800020] dark:text-[#FB7185]" />
+                  <Move className="w-3 h-3 text-[#800B34] dark:text-[#FB7185]" />
                   <span>اسحب يميناً أو يساراً باللمس للتنقل السريع بين اللوحات 👈 👉</span>
                 </div>
               </div>
@@ -508,7 +508,7 @@ export function LessonMindMapTab({ mindMap }: LessonMindMapTabProps) {
                         .getElementById(`mindmap-card-${idx}`)
                         ?.scrollIntoView({ behavior: "smooth", block: "start" });
                     }}
-                    className="px-3 py-1.5 rounded-lg text-xs font-bold bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] text-[#0F172A] dark:text-white hover:border-[#800020] hover:text-[#800020] dark:hover:text-[#FB7185] transition-all shrink-0 cursor-pointer shadow-2xs"
+                    className="px-3 py-1.5 rounded-lg text-xs font-bold bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] text-[#0F172A] dark:text-white hover:border-[#800B34] hover:text-[#800B34] dark:hover:text-[#FB7185] transition-all shrink-0 cursor-pointer shadow-2xs"
                   >
                     لوحة {idx + 1}
                   </button>
@@ -525,7 +525,7 @@ export function LessonMindMapTab({ mindMap }: LessonMindMapTabProps) {
                 {/* Card Header Bar */}
                 <div className="flex items-center justify-between px-3.5 sm:px-6 py-3 bg-[#F8FAFC] dark:bg-[#1E293B]/60 border-b border-[#E2E8F0] dark:border-[#334155]">
                   <div className="flex items-center gap-2.5">
-                    <span className="w-7 h-7 rounded-lg bg-[#800020]/10 dark:bg-[#800020]/25 text-[#800020] dark:text-[#FB7185] flex items-center justify-center font-bold text-xs">
+                    <span className="w-7 h-7 rounded-lg bg-[#800B34]/10 dark:bg-[#800B34]/25 text-[#800B34] dark:text-[#FB7185] flex items-center justify-center font-bold text-xs">
                       {idx + 1}
                     </span>
                     <span className="text-xs sm:text-sm font-bold text-[#0F172A] dark:text-white">
@@ -544,7 +544,7 @@ export function LessonMindMapTab({ mindMap }: LessonMindMapTabProps) {
                         setPan({ x: 0, y: 0 });
                         setIsFullscreenImage(true);
                       }}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[#0F172A] dark:text-white hover:border-[#800020] hover:text-[#800020] dark:hover:text-[#FB7185] transition-colors cursor-pointer"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[#0F172A] dark:text-white hover:border-[#800B34] hover:text-[#800B34] dark:hover:text-[#FB7185] transition-colors cursor-pointer"
                       title="عرض بملء الشاشة وتكبير حر"
                     >
                       <Maximize2 className="w-3.5 h-3.5" />
@@ -556,7 +556,7 @@ export function LessonMindMapTab({ mindMap }: LessonMindMapTabProps) {
                       download={`kholasa-mindmap-${idx + 1}.jpg`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-[#800020]/10 text-[#800020] dark:text-[#FB7185] hover:bg-[#800020]/20 transition-colors"
+                      className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-[#800B34]/10 text-[#800B34] dark:text-[#FB7185] hover:bg-[#800B34]/20 transition-colors"
                       title="تحميل المخطط بجودة عالية"
                     >
                       <Download className="w-3.5 h-3.5" />
@@ -613,9 +613,35 @@ export function LessonMindMapTab({ mindMap }: LessonMindMapTabProps) {
                   {mindMap.title || "الخريطة الذهنية"}
                 </span>
                 {images.length > 1 && (
-                  <span className="px-2 py-0.5 rounded-md text-xs font-bold bg-white/10 text-[#FB7185] shrink-0">
-                    لوحة {selectedImageIndex + 1} من {images.length}
-                  </span>
+                  <div className="flex items-center gap-1 bg-white/10 rounded-lg p-0.5 shrink-0 border border-white/10">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        switchImage(
+                          selectedImageIndex > 0 ? selectedImageIndex - 1 : images.length - 1
+                        )
+                      }
+                      className="p-1 hover:bg-white/20 rounded transition-colors text-white cursor-pointer"
+                      title="اللوحة السابقة"
+                    >
+                      <ChevronRight className="w-3.5 h-3.5" />
+                    </button>
+                    <span className="px-1.5 text-xs font-bold text-[#FB7185] select-none font-mono">
+                      لوحة {selectedImageIndex + 1} من {images.length}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        switchImage(
+                          selectedImageIndex < images.length - 1 ? selectedImageIndex + 1 : 0
+                        )
+                      }
+                      className="p-1 hover:bg-white/20 rounded transition-colors text-white cursor-pointer"
+                      title="اللوحة التالية"
+                    >
+                      <ChevronLeft className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 )}
               </div>
 
@@ -714,7 +740,7 @@ export function LessonMindMapTab({ mindMap }: LessonMindMapTabProps) {
                           : images.length - 1
                       );
                     }}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-black/60 hover:bg-black/90 border border-white/20 flex items-center justify-center transition-all z-20 cursor-pointer shadow-lg hover:scale-105"
+                    className={`absolute right-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-black/60 hover:bg-black/90 border border-white/20 flex items-center justify-center transition-all z-20 cursor-pointer shadow-lg hover:scale-105 ${imageZoom > 1.05 ? "opacity-0 pointer-events-none" : "opacity-100"}`}
                     title="اللوحة السابقة (سهم يمين)"
                   >
                     <ChevronRight className="w-6 h-6" />
@@ -730,7 +756,7 @@ export function LessonMindMapTab({ mindMap }: LessonMindMapTabProps) {
                           : 0
                       );
                     }}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-black/60 hover:bg-black/90 border border-white/20 flex items-center justify-center transition-all z-20 cursor-pointer shadow-lg hover:scale-105"
+                    className={`absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-black/60 hover:bg-black/90 border border-white/20 flex items-center justify-center transition-all z-20 cursor-pointer shadow-lg hover:scale-105 ${imageZoom > 1.05 ? "opacity-0 pointer-events-none" : "opacity-100"}`}
                     title="اللوحة التالية (سهم يسار)"
                   >
                     <ChevronLeft className="w-6 h-6" />
@@ -864,7 +890,7 @@ export function LessonMindMapTab({ mindMap }: LessonMindMapTabProps) {
       <div className="p-4 border-b border-[#E2E8F0] dark:border-[#334155] flex flex-wrap items-center justify-between gap-3 bg-[#F8FAFC] dark:bg-[#1E293B]/60">
         <div>
           <h3 className="text-base font-bold text-[#0F172A] dark:text-white flex items-center gap-2">
-            <Layers className="w-5 h-5 text-[#800020] dark:text-[#FB7185]" />
+            <Layers className="w-5 h-5 text-[#800B34] dark:text-[#FB7185]" />
             <span>{mindMap.title || "شجرة المفاهيم الذهنية"}</span>
           </h3>
           <p className="text-xs text-[#64748B] dark:text-[#94A3B8] mt-0.5">
@@ -913,8 +939,8 @@ export function LessonMindMapTab({ mindMap }: LessonMindMapTabProps) {
             onClick={() => setIsOutlineMode(!isOutlineMode)}
             className={`h-9 px-3.5 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${
               isOutlineMode
-                ? "bg-[#800020] text-white shadow-xs"
-                : "border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] text-[#0F172A] dark:text-white hover:border-[#800020]"
+                ? "bg-[#800B34] text-white shadow-xs"
+                : "border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] text-[#0F172A] dark:text-white hover:border-[#800B34]"
             }`}
           >
             {isOutlineMode ? (
@@ -957,8 +983,8 @@ export function LessonMindMapTab({ mindMap }: LessonMindMapTabProps) {
                       }
                       className={`px-6 py-3.5 rounded-2xl text-sm font-bold cursor-pointer transition-all shadow-md text-center max-w-sm ${
                         selectedMindNode === root.id
-                          ? "bg-[#66001A] text-white ring-4 ring-[#800020]/20 scale-105"
-                          : "bg-[#800020] text-white hover:bg-[#66001A]"
+                          ? "bg-[#680829] text-white ring-4 ring-[#800B34]/20 scale-105"
+                          : "bg-[#800B34] text-white hover:bg-[#680829]"
                       }`}
                     >
                       <div className="text-[11px] font-medium text-white/80 mb-0.5">
@@ -1010,8 +1036,8 @@ export function LessonMindMapTab({ mindMap }: LessonMindMapTabProps) {
                                           }
                                           className={`px-3 py-2 rounded-lg text-xs font-semibold cursor-pointer transition-all text-center border shadow-2xs ${
                                             selectedMindNode === l2.id
-                                              ? "bg-[#800020]/10 border-[#800020] text-[#800020] dark:text-[#FB7185] ring-2 ring-[#800020]/20"
-                                              : "bg-[#F8FAFC] dark:bg-[#1E293B] border-[#E2E8F0] dark:border-[#334155] text-[#0F172A] dark:text-[#F8FAFC] hover:border-[#800020]"
+                                              ? "bg-[#800B34]/10 border-[#800B34] text-[#800B34] dark:text-[#FB7185] ring-2 ring-[#800B34]/20"
+                                              : "bg-[#F8FAFC] dark:bg-[#1E293B] border-[#E2E8F0] dark:border-[#334155] text-[#0F172A] dark:text-[#F8FAFC] hover:border-[#800B34]"
                                           }`}
                                         >
                                           {l2.label}
@@ -1044,13 +1070,13 @@ export function LessonMindMapTab({ mindMap }: LessonMindMapTabProps) {
                 }
                 className={`p-4 rounded-xl border transition-all cursor-pointer ${
                   n.level === 0
-                    ? "bg-[#800020]/5 border-[#800020]/25 mr-0"
+                    ? "bg-[#800B34]/5 border-[#800B34]/25 mr-0"
                     : n.level === 1
                     ? "bg-[#059669]/5 border-[#059669]/20 mr-4"
                     : "bg-[#F8FAFC] dark:bg-[#1E293B] border-[#E2E8F0] dark:border-[#334155] mr-8"
                 } ${
                   selectedMindNode === n.id
-                    ? "ring-2 ring-[#800020] dark:ring-[#FB7185]"
+                    ? "ring-2 ring-[#800B34] dark:ring-[#FB7185]"
                     : ""
                 }`}
               >
@@ -1059,7 +1085,7 @@ export function LessonMindMapTab({ mindMap }: LessonMindMapTabProps) {
                     <span
                       className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${
                         n.level === 0
-                          ? "bg-[#800020] text-white"
+                          ? "bg-[#800B34] text-white"
                           : n.level === 1
                           ? "bg-[#059669] text-white"
                           : "bg-[#64748B] text-white"
@@ -1074,7 +1100,7 @@ export function LessonMindMapTab({ mindMap }: LessonMindMapTabProps) {
                     <h4
                       className={`text-sm font-bold ${
                         n.level === 0
-                          ? "text-[#800020] dark:text-[#FB7185] text-base"
+                          ? "text-[#800B34] dark:text-[#FB7185] text-base"
                           : "text-[#0F172A] dark:text-white"
                       }`}
                     >
@@ -1097,8 +1123,8 @@ export function LessonMindMapTab({ mindMap }: LessonMindMapTabProps) {
           <div className="mt-6 p-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] flex items-start justify-between gap-4">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-[#800020] dark:text-[#FB7185]" />
-                <span className="text-xs font-bold text-[#800020] dark:text-[#FB7185]">
+                <Sparkles className="w-4 h-4 text-[#800B34] dark:text-[#FB7185]" />
+                <span className="text-xs font-bold text-[#800B34] dark:text-[#FB7185]">
                   تفاصيل المفهوم المحدد
                 </span>
               </div>

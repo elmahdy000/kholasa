@@ -150,7 +150,7 @@ export function LessonLearningStepper({
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           {/* Main Title with dynamic progress */}
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-[#14213D]/10 dark:bg-blue-900/30 text-[#14213D] dark:text-blue-300 flex items-center justify-center shrink-0">
+            <div className="w-7 h-7 rounded-lg bg-[#091B40]/10 dark:bg-blue-900/30 text-[#091B40] dark:text-blue-300 flex items-center justify-center shrink-0">
               <Compass className="w-4 h-4" weight="bold" />
             </div>
             <h3 className="text-xs sm:text-sm font-black text-[#0F172A] dark:text-white">
@@ -223,11 +223,11 @@ export function LessonLearningStepper({
               key={st.id}
               type="button"
               onClick={() => onSelectStep(st.id)}
-              className={`w-full min-h-[44px] py-2 px-3 rounded-xl border flex items-center justify-between gap-2.5 transition-all cursor-pointer text-start active:scale-[0.99] select-none ${rowClasses}`}
+              className={`w-full min-h-[48px] py-2.5 px-3 rounded-xl border grid grid-cols-[26px_minmax(0,1fr)_auto_auto_14px] items-center gap-2 sm:gap-2.5 transition-all cursor-pointer text-start active:scale-[0.99] select-none ${rowClasses}`}
             >
-              {/* Step Icon / Number */}
+              {/* Col 1: Step Number / Check Icon */}
               <div
-                className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 font-mono font-black text-xs shadow-2xs ${iconBoxClasses}`}
+                className={`w-6.5 h-6.5 rounded-lg flex items-center justify-center font-mono font-black text-xs shadow-2xs ${iconBoxClasses}`}
               >
                 {st.isCompleted ? (
                   <Check className="w-3.5 h-3.5" weight="bold" />
@@ -236,22 +236,30 @@ export function LessonLearningStepper({
                 )}
               </div>
 
-              {/* Step Title & Metric */}
-              <div className="min-w-0 flex-1 flex items-center justify-between gap-2">
-                <span className="text-xs sm:text-sm font-bold text-[#0F172A] dark:text-white truncate">
+              {/* Col 2: Step Title */}
+              <div className="min-w-0">
+                <span className="text-xs sm:text-[13px] font-bold text-[#0F172A] dark:text-white truncate block">
                   {st.title}
                 </span>
-                <span className="text-[11px] font-mono text-[#64748B] dark:text-[#94A3B8] font-medium shrink-0">
+              </div>
+
+              {/* Col 3: Centered Structured Metric */}
+              <div className="text-center px-1">
+                <span className="text-[11px] font-mono font-semibold text-[#536681] dark:text-[#94A3B8] whitespace-nowrap">
                   {st.metric}
                 </span>
               </div>
 
-              {/* Status Badge + Arrow */}
-              <div className="flex items-center gap-1.5 shrink-0">
-                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${badgeClasses}`}>
+              {/* Col 4: Status Badge */}
+              <div className="flex justify-end">
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md whitespace-nowrap ${badgeClasses}`}>
                   {st.statusText}
                 </span>
-                <CaretNav className="w-3 h-3 text-slate-400 shrink-0" weight="bold" />
+              </div>
+
+              {/* Col 5: Centered Chevron Icon */}
+              <div className="flex justify-center items-center">
+                <CaretNav className="w-3.5 h-3.5 text-slate-400 shrink-0" weight="bold" />
               </div>
             </button>
           );
@@ -268,8 +276,8 @@ export function LessonLearningStepper({
           let iconBoxClasses = "bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300";
 
           if (isActive) {
-            cardClasses = "border-[#14213D] dark:border-blue-400 ring-2 ring-[#14213D]/10 dark:ring-blue-400/20 bg-white dark:bg-[#14213D]/30 shadow-xs";
-            iconBoxClasses = "bg-[#14213D] dark:bg-blue-600 text-white";
+            cardClasses = "border-[#091B40] dark:border-blue-400 ring-2 ring-[#091B40]/10 dark:ring-blue-400/20 bg-white dark:bg-[#091B40]/30 shadow-xs";
+            iconBoxClasses = "bg-[#091B40] dark:bg-blue-600 text-white";
           } else if (st.isCompleted) {
             cardClasses = "border-emerald-200 dark:border-emerald-800/60 bg-emerald-50/40 dark:bg-emerald-950/20 hover:border-emerald-300";
             badgeClasses = "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300";
