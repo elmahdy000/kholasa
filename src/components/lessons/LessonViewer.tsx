@@ -15,7 +15,6 @@ import {
 } from "./types";
 import { LessonHeader } from "./LessonHeader";
 import { LessonAudioPlayer } from "./LessonAudioPlayer";
-import { LessonContentTab } from "./LessonContentTab";
 import { LessonMindMapTab } from "./LessonMindMapTab";
 import { LessonFooterNav } from "./LessonFooterNav";
 import { LessonFlowDock } from "./flow/LessonFlowDock";
@@ -51,9 +50,9 @@ export function LessonViewer({
   initialQuestionAttempts = [],
   userId,
 }: LessonViewerProps) {
-  // 4 Main Student Navigation Tabs (Defaults to "definitions" if available, else mindmap, questions, or content)
+  // 3 Main Student Navigation Tabs: Definitions, Mindmap & Summary, Questions Pool
   const [activeTab, setActiveTab] = useState<
-    "content" | "mindmap" | "definitions" | "questions"
+    "definitions" | "mindmap" | "questions"
   >(() => {
     const rawDefs = lesson.summary?.definitions;
     const hasDefs = Array.isArray(rawDefs) && rawDefs.length > 0;
@@ -347,7 +346,7 @@ export function LessonViewer({
   }, [tfQuestions.length, mcqQuestions.length, essayQuestions.length, tfAnsweredCount, examAnsweredCount]);
 
   const activeStep = useMemo(() => {
-    if (activeTab === "definitions" || activeTab === "content" || activeTab === "mindmap") {
+    if (activeTab === "definitions" || activeTab === "mindmap") {
       return "definitions";
     }
     if (activeTab === "questions") {
@@ -640,19 +639,13 @@ export function LessonViewer({
         isLanguages={isLanguagesSubject}
       />
 
-      {/* 3. Main Navigation Tabs (Mobile-Native 4 Segmented Control + Desktop Tabs) */}
+      {/* 3. Main Navigation Tabs (Mobile-Native 3 Balanced Segmented Control + Desktop Tabs) */}
       <div
         role="tablist"
         aria-label="أقسام محتوى الدرس"
-        className="w-full p-1 sm:p-2 rounded-2xl bg-white dark:bg-[#0D214D] border border-[#E2E8F0] dark:border-[#1E3A6E] shadow-2xs grid grid-cols-4 gap-1 sm:gap-2"
+        className="w-full p-1.5 sm:p-2 rounded-2xl bg-white dark:bg-[#0D214D] border border-[#E2E8F0] dark:border-[#1E3A6E] shadow-2xs grid grid-cols-3 gap-1.5 sm:gap-2.5"
       >
         {[
-          {
-            id: "content",
-            label: "شرح الدرس",
-            mobileLabel: "الشرح",
-            icon: BookOpen,
-          },
           {
             id: "definitions",
             label: "التعريفات والمفاهيم",
@@ -662,7 +655,7 @@ export function LessonViewer({
           },
           {
             id: "mindmap",
-            label: "الملخص الذهني",
+            label: "الملخص والخرائط",
             mobileLabel: "الملخص",
             icon: Graph,
             badge:
@@ -688,21 +681,21 @@ export function LessonViewer({
               id={`tab-${tab.id}`}
               aria-controls={`tabpanel-${tab.id}`}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`w-full min-h-[48px] py-1.5 sm:py-2.5 px-0.5 sm:px-3 rounded-xl font-bold flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-2 transition-all cursor-pointer select-none active:scale-[0.97] overflow-hidden ${
+              className={`w-full min-h-[48px] py-2 px-1.5 sm:px-3 rounded-xl font-bold flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 transition-all cursor-pointer select-none active:scale-[0.98] ${
                 isSelected
                   ? "bg-[#800B34] text-white shadow-xs border border-[#800B34] font-black"
                   : "bg-[#F8FAFC] dark:bg-[#071737] text-[#536681] dark:text-[#94A3B8] hover:text-[#091B40] dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#11244E]/80 border border-transparent"
               }`}
             >
               <Icon
-                className={`w-4 h-4 shrink-0 ${isSelected ? "text-[#E9AD32]" : "text-[#64748B] dark:text-[#94A3B8]"}`}
+                className={`w-4 h-4 sm:w-4.5 sm:h-4.5 shrink-0 ${isSelected ? "text-[#E9AD32]" : "text-[#64748B] dark:text-[#94A3B8]"}`}
               />
               <span className="hidden sm:inline whitespace-nowrap text-xs sm:text-[13px]">{tab.label}</span>
-              <div className="sm:hidden flex items-center justify-center gap-0.5 max-w-full px-0.5">
-                <span className="text-[10.5px] xs:text-[11px] font-bold leading-tight truncate">{tab.mobileLabel}</span>
+              <div className="sm:hidden flex items-center justify-center gap-1 max-w-full">
+                <span className="text-xs font-black leading-tight truncate">{tab.mobileLabel}</span>
                 {"badge" in tab && tab.badge && (
                   <span
-                    className={`text-[9.5px] px-1 py-0.2 rounded font-mono font-bold leading-none shrink-0 ${
+                    className={`text-[10px] px-1.5 py-0.2 rounded-md font-mono font-bold leading-none shrink-0 ${
                       isSelected
                         ? "bg-white/25 text-white"
                         : "bg-[#091B40]/10 dark:bg-white/10 text-[#091B40] dark:text-slate-200"
@@ -714,7 +707,7 @@ export function LessonViewer({
               </div>
               {"badge" in tab && tab.badge && (
                 <span
-                  className={`hidden sm:inline text-[11px] px-1.5 py-0.5 rounded-full font-mono font-bold shrink-0 ${
+                  className={`hidden sm:inline text-[11px] px-2 py-0.5 rounded-full font-mono font-bold shrink-0 ${
                     isSelected
                       ? "bg-white/25 text-white"
                       : "bg-[#091B40]/10 dark:bg-white/10 text-[#091B40] dark:text-slate-200"
@@ -727,15 +720,6 @@ export function LessonViewer({
           );
         })}
       </div>
-
-      {/* TAB 1: CONTENT (شرح الدرس) */}
-      {activeTab === "content" && (
-        <LessonContentTab
-          content={lesson.content}
-          lessonTitle={lesson.title}
-          embedUrl={getEmbedUrl(lesson.content?.videoUrl)}
-        />
-      )}
 
       {/* TAB 2: MIND MAP (الملخص الذهني) */}
       {activeTab === "mindmap" && (

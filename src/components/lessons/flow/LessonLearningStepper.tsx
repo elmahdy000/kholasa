@@ -191,7 +191,7 @@ export function LessonLearningStepper({
         </div>
       </div>
 
-      {/* 2. MOBILE COMPACT VERTICAL STEPPER (< lg screens): Geometrically balanced, centered, fits 320px+ */}
+      {/* 2. MOBILE COMPACT VERTICAL STEPPER (< lg screens): Unclipped, spacious & perfectly organized */}
       <div className="lg:hidden space-y-2">
         {steps.map((st) => {
           const isActive = activeStep === st.id;
@@ -223,43 +223,40 @@ export function LessonLearningStepper({
               key={st.id}
               type="button"
               onClick={() => onSelectStep(st.id)}
-              className={`w-full min-h-[50px] py-2 px-2.5 sm:px-3 rounded-xl border grid grid-cols-[28px_minmax(0,1fr)_auto_auto_14px] sm:grid-cols-[28px_minmax(0,1fr)_90px_80px_16px] items-center gap-2 transition-all cursor-pointer text-start active:scale-[0.99] select-none ${rowClasses}`}
+              className={`w-full py-2.5 px-3 rounded-2xl border transition-all cursor-pointer text-start active:scale-[0.99] select-none ${rowClasses}`}
             >
-              {/* Col 1: Step Number / Check Icon - Perfectly centered */}
-              <div
-                className={`w-7 h-7 rounded-lg flex items-center justify-center font-mono font-black text-xs shadow-2xs shrink-0 ${iconBoxClasses}`}
-              >
-                {st.isCompleted ? (
-                  <Check className="w-3.5 h-3.5" weight="bold" />
-                ) : (
-                  st.stepNumber
-                )}
-              </div>
+              <div className="flex items-center justify-between gap-2.5">
+                {/* Number Circle + Full Title & Metric */}
+                <div className="flex items-center gap-3 min-w-0 flex-1">
+                  <div
+                    className={`w-8 h-8 rounded-xl flex items-center justify-center font-mono font-black text-xs shadow-2xs shrink-0 ${iconBoxClasses}`}
+                  >
+                    {st.isCompleted ? (
+                      <Check className="w-4 h-4" weight="bold" />
+                    ) : (
+                      st.stepNumber
+                    )}
+                  </div>
 
-              {/* Col 2: Step Title - Vertically centered */}
-              <div className="min-w-0 flex items-center">
-                <span className="text-xs sm:text-[13px] font-bold text-[#0F172A] dark:text-white truncate block">
-                  {st.title}
-                </span>
-              </div>
+                  <div className="min-w-0 flex-1">
+                    <span className="text-[13px] sm:text-sm font-black text-[#0F172A] dark:text-white leading-tight block">
+                      {st.title}
+                    </span>
+                    <span className="text-[11px] font-mono font-medium text-[#536681] dark:text-[#94A3B8] block mt-0.5">
+                      {st.metric}
+                    </span>
+                  </div>
+                </div>
 
-              {/* Col 3: Structured Metric - Aligned across all rows */}
-              <div className="flex items-center justify-center px-1">
-                <span className="text-[10px] sm:text-[11px] font-mono font-semibold text-[#536681] dark:text-[#94A3B8] whitespace-nowrap px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800/60 border border-slate-200/50 dark:border-slate-700/50">
-                  {st.metric}
-                </span>
-              </div>
-
-              {/* Col 4: Status Badge - Aligned and centered */}
-              <div className="flex items-center justify-center">
-                <span className={`text-[9.5px] sm:text-[10px] font-bold px-2 py-0.5 rounded-md whitespace-nowrap text-center block ${badgeClasses}`}>
-                  {st.statusText}
-                </span>
-              </div>
-
-              {/* Col 5: Centered Chevron Icon */}
-              <div className="flex justify-center items-center">
-                <CaretNav className="w-3.5 h-3.5 text-slate-400 shrink-0" weight="bold" />
+                {/* Status Badge & Chevron */}
+                <div className="flex items-center gap-2 shrink-0">
+                  <span className={`text-[10px] sm:text-[11px] font-bold px-2.5 py-1 rounded-lg whitespace-nowrap shadow-2xs ${badgeClasses}`}>
+                    {st.statusText}
+                  </span>
+                  <div className="w-5 h-5 flex items-center justify-center text-slate-400">
+                    <CaretNav className="w-4 h-4" weight="bold" />
+                  </div>
+                </div>
               </div>
             </button>
           );
