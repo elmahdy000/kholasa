@@ -19,14 +19,14 @@ export default async function SubscriptionPage() {
 
   return (
     <StudentShell user={user}>
-      <div className="space-y-6 pb-16">
+      <div className="w-full max-w-[1080px] mx-auto space-y-4 pb-16 px-2 sm:px-4">
         {/* Breadcrumb */}
-        <nav aria-label="مسار التصفح" className="flex items-center gap-2 text-xs font-semibold text-[#64748B] dark:text-[#94A3B8]">
-          <Link href="/dashboard" className="hover:text-[#800020] dark:hover:text-[#FB7185] transition-colors">
+        <nav aria-label="مسار التصفح" className="flex items-center gap-2 text-xs font-semibold text-[#64748B] pt-2">
+          <Link href="/dashboard" className="hover:text-[#800B34] transition-colors">
             الرئيسية
           </Link>
           <span>/</span>
-          <span className="text-[#12263F] dark:text-white font-bold">شاشة تفعيل الاشتراك ورفع الإيصال</span>
+          <span className="text-[#091B40] font-bold">شاشة تفعيل الاشتراك ورفع الإيصال</span>
         </nav>
 
         {isActive ? (

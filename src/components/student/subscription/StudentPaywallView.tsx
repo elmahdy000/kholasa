@@ -1,10 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useTransition } from "react";
 import Link from "next/link";
 import {
-  Lock,
-  Sparkles,
   Upload,
   CheckCircle2,
   AlertCircle,
@@ -15,8 +13,13 @@ import {
   ArrowRight,
   Smartphone,
   CheckCheck,
+  Wallet,
+  X,
+  FileText,
+  Image as ImageIcon,
+  ArrowLeft,
 } from "lucide-react";
-import { formatStudentGreeting, getCleanStudentName } from "@/lib/utils";
+import { getCleanStudentName } from "@/lib/utils";
 
 interface StudentPaywallViewProps {
   user: {
@@ -33,6 +36,151 @@ interface StudentPaywallViewProps {
   isExam?: boolean;
 }
 
+/**
+ * 3D Graduation Cap Vector Illustration (Matching Screenshot 2 Top-Right Banner)
+ */
+function GraduationCapIcon({ className = "w-20 h-20" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 120 100" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+      <defs>
+        <radialGradient
+          id="capGlow"
+          cx="0"
+          cy="0"
+          r="1"
+          gradientUnits="userSpaceOnUse"
+          gradientTransform="translate(60 50) rotate(90) scale(45 55)"
+        >
+          <stop stopColor="#2563EB" stopOpacity="0.25" />
+          <stop offset="1" stopColor="#2563EB" stopOpacity="0" />
+        </radialGradient>
+        <linearGradient id="capTopGrad" x1="20" y1="20" x2="100" y2="55" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#1E3A8A" />
+          <stop offset="0.5" stopColor="#0F2856" />
+          <stop offset="1" stopColor="#0A1E48" />
+        </linearGradient>
+        <linearGradient id="capSkullGrad" x1="35" y1="50" x2="85" y2="85" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#1E3A8A" />
+          <stop offset="1" stopColor="#091B40" />
+        </linearGradient>
+        <linearGradient id="goldGrad" x1="60" y1="35" x2="95" y2="75" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#FDE68A" />
+          <stop offset="0.4" stopColor="#E9AD32" />
+          <stop offset="1" stopColor="#B45309" />
+        </linearGradient>
+        <filter id="capShadow" x="10" y="30" width="100" height="70" filterUnits="userSpaceOnUse">
+          <feDropShadow dx="0" dy="8" stdDeviation="6" floodColor="#091B40" floodOpacity="0.25" />
+        </filter>
+      </defs>
+      {/* Soft floor shadow */}
+      <ellipse cx="60" cy="85" rx="36" ry="7" fill="url(#capGlow)" />
+      {/* Cap Skull Base */}
+      <path d="M38 52 C38 52 39 74 60 74 C81 74 82 52 82 52 Z" fill="url(#capSkullGrad)" filter="url(#capShadow)" />
+      {/* Cap Diamond Top (Rhombus in 3D perspective) */}
+      <polygon points="60,20 102,40 60,56 18,38" fill="url(#capTopGrad)" stroke="#3B82F6" strokeWidth="1" strokeOpacity="0.3" />
+      {/* Center Button */}
+      <ellipse cx="60" cy="38" rx="4" ry="2.5" fill="#E9AD32" stroke="#B45309" strokeWidth="0.8" />
+      {/* Gold Tassel String */}
+      <path d="M60 38 Q78 40 88 56 Q90 64 91 75" fill="none" stroke="url(#goldGrad)" strokeWidth="2.5" strokeLinecap="round" />
+      {/* Tassel Bobble & Fringe */}
+      <circle cx="91" cy="74" r="3.5" fill="#F59E0B" />
+      <path d="M88 77 L94 77 L95 86 L87 86 Z" fill="url(#goldGrad)" />
+    </svg>
+  );
+}
+
+/**
+ * 3D Payment Illustration (Matching Screenshot 2 Left Panel: Smartphone, Receipt, Card, Gold Coins)
+ */
+function PaymentIllustration3D({ className = "w-full max-w-[260px] mx-auto" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 280 260" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+      <defs>
+        <linearGradient id="phoneBody" x1="50" y1="30" x2="190" y2="230" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#3B82F6" />
+          <stop offset="0.5" stopColor="#1D4ED8" />
+          <stop offset="1" stopColor="#1E3A8A" />
+        </linearGradient>
+        <linearGradient id="phoneScreen" x1="65" y1="40" x2="175" y2="220" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#EFF6FF" />
+          <stop offset="1" stopColor="#DBEAFE" />
+        </linearGradient>
+        <linearGradient id="cardGrad" x1="30" y1="160" x2="160" y2="220" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#2563EB" />
+          <stop offset="0.7" stopColor="#1D4ED8" />
+          <stop offset="1" stopColor="#0F2856" />
+        </linearGradient>
+        <linearGradient id="goldCoinTop" x1="0" y1="0" x2="1" y2="1">
+          <stop stopColor="#FDE68A" />
+          <stop offset="0.6" stopColor="#E9AD32" />
+          <stop offset="1" stopColor="#D97706" />
+        </linearGradient>
+        <linearGradient id="goldCoinSide" x1="0" y1="0" x2="0" y2="1">
+          <stop stopColor="#D97706" />
+          <stop offset="1" stopColor="#92400E" />
+        </linearGradient>
+        <filter id="illusShadow" x="10" y="20" width="260" height="235" filterUnits="userSpaceOnUse">
+          <feDropShadow dx="0" dy="12" stdDeviation="10" floodColor="#091B40" floodOpacity="0.12" />
+        </filter>
+      </defs>
+
+      <g filter="url(#illusShadow)">
+        {/* Soft background glow */}
+        <circle cx="120" cy="140" r="75" fill="#EAF2FF" fillOpacity="0.7" />
+
+        {/* Smartphone body (tilted slightly) */}
+        <rect x="75" y="45" width="115" height="185" rx="22" fill="url(#phoneBody)" />
+        <rect x="80" y="50" width="105" height="175" rx="18" fill="url(#phoneScreen)" />
+        {/* Phone speaker notch */}
+        <rect x="117" y="56" width="32" height="4" rx="2" fill="#94A3B8" />
+
+        {/* White Receipt Sliding Out */}
+        <g>
+          <path d="M92 68 L172 68 L172 165 C172 165 155 160 132 165 C109 170 92 165 92 165 Z" fill="#FFFFFF" />
+          {/* Green Checkmark Circle on Receipt */}
+          <circle cx="132" cy="98" r="15" fill="#17834B" />
+          <path d="M125 98 L130 103 L139 94" stroke="#FFFFFF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+          {/* Receipt Lines */}
+          <rect x="106" y="122" width="52" height="4" rx="2" fill="#E2E8F0" />
+          <rect x="112" y="132" width="40" height="3" rx="1.5" fill="#CBD5E1" />
+          <rect x="118" y="141" width="28" height="3" rx="1.5" fill="#E2E8F0" />
+        </g>
+
+        {/* Blue Credit Card in front */}
+        <g transform="rotate(-10 35 170)">
+          <rect x="35" y="165" width="112" height="68" rx="10" fill="url(#cardGrad)" stroke="#93C5FD" strokeWidth="1" strokeOpacity="0.4" />
+          {/* Chip */}
+          <rect x="47" y="180" width="16" height="12" rx="3" fill="url(#goldCoinTop)" />
+          {/* Contactless waves */}
+          <path d="M115 180 A6 6 0 0 1 115 192" stroke="#FFFFFF" strokeWidth="1.8" strokeLinecap="round" fill="none" opacity="0.8" />
+          <path d="M120 176 A11 11 0 0 1 120 196" stroke="#FFFFFF" strokeWidth="1.8" strokeLinecap="round" fill="none" opacity="0.6" />
+          {/* Card subtle text bars */}
+          <rect x="47" y="206" width="34" height="4" rx="2" fill="#FFFFFF" opacity="0.6" />
+          <rect x="47" y="214" width="48" height="3" rx="1.5" fill="#FFFFFF" opacity="0.4" />
+        </g>
+
+        {/* Stack of Gold Coins (Front right) */}
+        {/* Coin 1 */}
+        <g transform="translate(132, 206)">
+          <path d="M0 8 C0 3.5 16 0 35 0 C54 0 70 3.5 70 8 L70 16 C70 20.5 54 24 35 24 C16 24 0 20.5 0 16 Z" fill="url(#goldCoinSide)" />
+          <ellipse cx="35" cy="8" rx="35" ry="8" fill="url(#goldCoinTop)" stroke="#FDE68A" strokeWidth="0.8" />
+        </g>
+        {/* Coin 2 */}
+        <g transform="translate(132, 196)">
+          <path d="M0 8 C0 3.5 16 0 35 0 C54 0 70 3.5 70 8 L70 16 C70 20.5 54 24 35 24 C16 24 0 20.5 0 16 Z" fill="url(#goldCoinSide)" />
+          <ellipse cx="35" cy="8" rx="35" ry="8" fill="url(#goldCoinTop)" stroke="#FDE68A" strokeWidth="0.8" />
+        </g>
+        {/* Coin 3 */}
+        <g transform="translate(132, 186)">
+          <path d="M0 8 C0 3.5 16 0 35 0 C54 0 70 3.5 70 8 L70 16 C70 20.5 54 24 35 24 C16 24 0 20.5 0 16 Z" fill="url(#goldCoinSide)" />
+          <ellipse cx="35" cy="8" rx="35" ry="8" fill="url(#goldCoinTop)" stroke="#FDE68A" strokeWidth="0.8" />
+          <ellipse cx="35" cy="8" rx="28" ry="6" fill="none" stroke="#D97706" strokeWidth="0.8" opacity="0.7" />
+        </g>
+      </g>
+    </svg>
+  );
+}
+
 export function StudentPaywallView({
   user,
   lessonTitle,
@@ -41,25 +189,80 @@ export function StudentPaywallView({
   isExam = false,
 }: StudentPaywallViewProps) {
   const [file, setFile] = useState<File | null>(null);
+  const [filePreview, setFilePreview] = useState<string | null>(null);
   const [senderPhone, setSenderPhone] = useState(user.phone || "");
   const [reference, setReference] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [copiedNumber, setCopiedNumber] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const paymentNumber = "01021482860"; // Vodafone Cash & InstaPay
+
+  const studentDisplayName = getCleanStudentName(user?.name);
+  const welcomeGreeting = studentDisplayName
+    ? `أهلاً بك يا ${studentDisplayName} في منصة الخلاصة! 🎉`
+    : "أهلاً بيك في منصة الخلاصة! 🎉";
 
   const handleCopyNumber = () => {
     navigator.clipboard.writeText(paymentNumber);
     setCopiedNumber(true);
-    setTimeout(() => setCopiedNumber(false), 2000);
+    setTimeout(() => setCopiedNumber(false), 2200);
+  };
+
+  const validateAndSetFile = (selectedFile: File) => {
+    setError(null);
+    const maxSizeBytes = 20 * 1024 * 1024; // 20 MB
+    if (selectedFile.size > maxSizeBytes) {
+      setError("حجم الملف يتجاوز الحد الأقصى المسموح به (20 ميجابايت).");
+      return;
+    }
+
+    const validTypes = ["image/jpeg", "image/png", "image/webp", "application/pdf"];
+    if (!validTypes.includes(selectedFile.type)) {
+      setError("صيغة الملف غير مدعومة. يرجى اختيار ملف JPG أو PNG أو WEBP أو PDF.");
+      return;
+    }
+
+    setFile(selectedFile);
+    if (selectedFile.type.startsWith("image/")) {
+      const url = URL.createObjectURL(selectedFile);
+      setFilePreview(url);
+    } else {
+      setFilePreview(null);
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selected = e.target.files?.[0];
+    if (selected) {
+      validateAndSetFile(selected);
+    }
+  };
+
+  const handleRemoveFile = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setFile(null);
+    if (filePreview) {
+      URL.revokeObjectURL(filePreview);
+      setFilePreview(null);
+    }
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
   const handleUploadReceipt = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!file) {
-      setError("يرجى اختيار صورة إيصال التحويل أولاً");
+      setError("يرجى اختيار صورة إيصال التحويل أولاً.");
+      return;
+    }
+
+    if (!senderPhone.trim()) {
+      setError("يرجى إدخال رقم الموبايل المحول منه لربط العملية بحسابك.");
       return;
     }
 
@@ -69,8 +272,8 @@ export function StudentPaywallView({
     try {
       const formData = new FormData();
       formData.append("receipt", file);
-      if (senderPhone) formData.append("senderPhone", senderPhone);
-      if (reference) formData.append("reference", reference);
+      formData.append("senderPhone", senderPhone.trim());
+      if (reference.trim()) formData.append("reference", reference.trim());
 
       const res = await fetch("/api/student/subscription/receipt", {
         method: "POST",
@@ -91,259 +294,375 @@ export function StudentPaywallView({
   };
 
   const handleWhatsApp = () => {
-    const studentDisplayName = getCleanStudentName(user.name) || "طالب المنصة";
-    const text = `مرحباً بك يا مستر! 🌟\nأنا الطالب: *${studentDisplayName}*\nكود المنصة: *${user.loginCode || "—"}*\nقمت بسداد اشتراك المنصة الشهري (200 جنيه) وأريد تفعيل حسابي للوصول لكافة دروس المنهج.`;
+    const text = `مرحباً بك يا مستر! 🌟\nأنا الطالب: *${studentDisplayName || "طالب المنصة"}*\nكود المنصة: *${user.loginCode || "—"}*\nقمت بسداد اشتراك المنصة الشهري (200 جنيه) وأريد تفعيل حسابي للوصول لكافة دروس المنهج.`;
     window.open(`https://wa.me/2${paymentNumber}?text=${encodeURIComponent(text)}`, "_blank");
   };
 
   return (
-    <div className="max-w-2xl mx-auto my-8 p-6 sm:p-8 rounded-3xl bg-white dark:bg-[#0F1E36] border border-[#E2E8F0] dark:border-[#1E3352] shadow-card text-right font-sans space-y-6 kholasa-signature-curve">
-      {/* 1. Header with Lock Icon */}
-      <div className="flex flex-col items-center text-center space-y-3 pt-2">
-        <div className="w-16 h-16 rounded-2xl bg-[#EAF2FF] dark:bg-[#142747] text-[#2C70BF] dark:text-[#60A5FA] flex items-center justify-center border border-[#2C70BF]/30 shadow-xs">
-          <Lock className="w-8 h-8 text-[#2C70BF] dark:text-[#60A5FA]" />
+    <div className="w-full max-w-[1080px] mx-auto space-y-5 px-2 sm:px-4 py-4 sm:py-6 text-right font-sans">
+      {/* ========================================================================= */}
+      {/* SECTION A: WELCOME BANNER (LIGHT BLUE, HORIZONTALLY BALANCED)            */}
+      {/* ========================================================================= */}
+      <div className="bg-[#EAF2FF] border border-[#D0E2FF] rounded-[20px] p-5 sm:p-6 flex flex-col-reverse md:flex-row-reverse items-center justify-between gap-5 relative overflow-hidden shadow-xs">
+        {/* Right on Desktop in RTL: 3D Graduation Cap */}
+        <div className="shrink-0 flex items-center justify-center">
+          <GraduationCapIcon className="w-20 h-20 sm:w-24 sm:h-24 drop-shadow-sm" />
         </div>
-        <div className="space-y-1">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#EAF2FF] text-[#2C70BF] dark:bg-[#142747] dark:text-[#60A5FA] border border-[#2C70BF]/30">
-            <Sparkles className="w-3.5 h-3.5 text-[#E9AD32]" />
-            <span>محتوى مخصص للمشتركين فقط</span>
-          </span>
-          <h1 className="text-xl sm:text-2xl font-black text-[#091B40] dark:text-white mt-2 leading-tight">
-            لازم تدفع 200 جنيه وترفع الإيصال لفتح كل الدروس
+
+        {/* Left on Desktop in RTL: Welcome Text */}
+        <div className="space-y-1.5 flex-1 text-right">
+          <h1 className="text-[20px] sm:text-[24px] font-extrabold text-[#091B40] leading-snug tracking-tight">
+            {welcomeGreeting}
           </h1>
+          <p className="text-[13px] sm:text-[15px] text-[#475569] leading-relaxed max-w-2xl">
+            لقد استمتعت بالدرس الأول مجاناً للتجربة. للوصول إلى كافة دروس المنهج، بنك الأسئلة والمفاهيم، الكبسولات الصوتية، والامتحانات التفاعلية، يلزم تفعيل اشتراك المنصة الشهري.
+          </p>
           {(lessonTitle || examTitle) && (
-            <p className="text-xs sm:text-sm font-bold text-[#800B34] dark:text-[#F0B843] mt-1">
+            <p className="text-xs font-bold text-[#800B34] pt-1">
               المحتوى المطلوب: {isExam ? examTitle : lessonTitle} {unitTitle ? `• (${unitTitle})` : ""}
             </p>
           )}
         </div>
       </div>
 
-      {/* 2. Explanatory Notice (Ice Blue Surface) */}
-      <div className="p-4 rounded-2xl bg-[#EAF2FF] dark:bg-[#142747] border border-[#2C70BF]/25 text-xs sm:text-sm text-[#091B40] dark:text-[#F8FAFC] leading-relaxed space-y-1.5">
-        <p className="font-bold flex items-center gap-2 text-[#091B40] dark:text-white text-sm sm:text-base">
-          <span>{formatStudentGreeting(user.name)} في منصة الخلاصة! 🎉</span>
-        </p>
-        <p className="text-[#536681] dark:text-[#CBD5E1]">
-          لقد حصلت على الدرس الأول مجاناً للتجربة. للوصول إلى كافة دروس ووحدات المنهج، بنك الأسئلة والمفاهيم، الكبسولات الصوتية والزتونة، والامتحانات التفاعلية، يلزم سداد اشتراك المنصة الشهري (200 جنيه) ورفع صورة الإيصال أدناه.
-        </p>
-      </div>
-
-      {/* 3. Pricing & Payment Details Box (Royal Burgundy & Signature Gold Accents) */}
-      <div className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#0F1E36] border-2 border-[#800B34]/20 dark:border-[#800B34]/40 shadow-xs space-y-5">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#E2E8F0] dark:border-[#1E3352]">
-          <div>
-            <span className="text-xs font-bold text-[#536681] dark:text-[#94A3B8] block">قيمة الاشتراك الشهري</span>
-            <div className="flex items-baseline gap-1.5 mt-0.5">
-              <span className="text-3xl sm:text-4xl font-extrabold text-[#800B34] dark:text-[#F0B843] font-mono">
-                200
-              </span>
-              <span className="text-sm font-bold text-[#091B40] dark:text-white">جنيه مصري / شهرياً</span>
-            </div>
-          </div>
-          <span className="self-start sm:self-center px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#800B34] text-white shadow-xs">
-            شامل كل المنهج والمميزات
-          </span>
-        </div>
-
-        {/* Feature Highlights with Signature Gold Checkmarks */}
-        <div className="grid grid-cols-2 gap-2 text-xs font-bold text-[#091B40] dark:text-[#F8FAFC]">
-          <div className="flex items-center gap-2">
-            <CheckCheck className="w-4 h-4 text-[#E9AD32] shrink-0" />
-            <span>جميع دروس ووحدات المنهج</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <CheckCheck className="w-4 h-4 text-[#E9AD32] shrink-0" />
-            <span>بنك الأسئلة والتدريبات الذكية</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <CheckCheck className="w-4 h-4 text-[#E9AD32] shrink-0" />
-            <span>ملخصات الزتونة والكبسولات</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <CheckCheck className="w-4 h-4 text-[#E9AD32] shrink-0" />
-            <span>الامتحانات التفاعلية وقياس الإتقان</span>
-          </div>
-        </div>
-
-        {/* Transfer Methods */}
-        <div className="space-y-2.5 text-xs pt-2">
-          <span className="font-bold text-[#091B40] dark:text-white block">
-            طرق التحويل المعتمدة (فودافون كاش / إنستاباي / أي محفظة إلكترونية):
-          </span>
-          <div className="flex items-center justify-between p-3.5 rounded-xl bg-[#F7F9FC] dark:bg-[#142747] border border-[#E2E8F0] dark:border-[#1E3352]">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-[#800B34]/10 dark:bg-[#800B34]/30 flex items-center justify-center text-[#800B34] dark:text-[#F0B843]">
-                <Smartphone className="w-5 h-5" />
-              </div>
-              <div>
-                <span className="text-[11px] text-[#536681] dark:text-[#94A3B8] block">رقم التحويل المعتمد (فودافون كاش / إنستاباي):</span>
-                <span className="text-base font-mono font-extrabold text-[#091B40] dark:text-white tracking-wider" dir="ltr">
-                  {paymentNumber}
+      {/* ========================================================================= */}
+      {/* SECTION B: MAIN SUBSCRIPTION CARD (SPLIT 70% FORM / 30% BENEFITS)          */}
+      {/* ========================================================================= */}
+      <div className="bg-white rounded-[24px] border border-[#E2E8F0] shadow-[0_10px_35px_rgba(9,27,64,0.06)] relative overflow-hidden">
+        <div className="flex flex-col-reverse lg:flex-row">
+          {/* --------------------------------------------------------------------- */}
+          {/* RIGHT AREA IN RTL (70%): PAYMENT AND ACTIVATION FORM                  */}
+          {/* --------------------------------------------------------------------- */}
+          <div className="lg:w-[70%] p-6 sm:p-8 space-y-6 bg-white">
+            {/* Row 1: Monthly Price & Wallet Icon */}
+            <div className="flex items-start justify-between pb-4 border-b border-[#E2E8F0]">
+              <div className="space-y-0.5">
+                <span className="text-[13px] font-bold text-[#64748B] block">
+                  قيمة الاشتراك الشهري
                 </span>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-[34px] sm:text-[40px] font-black text-[#800B34] font-mono leading-none">
+                    200
+                  </span>
+                  <span className="text-[16px] sm:text-[17px] font-bold text-[#091B40]">
+                    جنيه مصري / شهرياً
+                  </span>
+                </div>
+              </div>
+
+              <div className="w-12 h-12 rounded-xl border border-[#E2E8F0] flex items-center justify-center text-[#800B34] shadow-2xs">
+                <Wallet className="w-6 h-6" strokeWidth={1.8} />
               </div>
             </div>
 
-            <button
-              type="button"
-              onClick={handleCopyNumber}
-              className="h-10 px-4 rounded-xl border border-[#E2E8F0] dark:border-[#1E3352] bg-white dark:bg-[#0F1E36] hover:bg-[#F7F9FC] dark:hover:bg-[#1E3352] text-xs font-bold text-[#091B40] dark:text-white flex items-center gap-1.5 transition-colors cursor-pointer"
-            >
-              {copiedNumber ? (
-                <>
-                  <Check className="w-3.5 h-3.5 text-[#17834B]" />
-                  <span className="text-[#17834B]">تم النسخ</span>
-                </>
-              ) : (
-                <>
-                  <Copy className="w-3.5 h-3.5 text-[#536681]" />
-                  <span>نسخ الرقم</span>
-                </>
-              )}
-            </button>
+            {/* Row 2: Payment Methods Notice */}
+            <div className="flex items-center gap-2 text-[14px] sm:text-[15px] font-bold text-[#091B40]">
+              <Wallet className="w-4 h-4 text-[#800B34] shrink-0" />
+              <span>طرق التحويل المعتمدة (فودافون كاش / إنستاباي / أي محفظة إلكترونية):</span>
+            </div>
+
+            {/* Row 3: Official Payment Phone Number Box */}
+            <div className="rounded-2xl border border-[#E2E8F0] bg-white p-3.5 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-[#FAF6F7] text-[#800B34] flex items-center justify-center shrink-0">
+                  <Smartphone className="w-5 h-5" />
+                </div>
+                <div>
+                  <span className="text-[12px] text-[#536681] block">
+                    رقم التحويل المعتمد (فودافون كاش / إنستاباي):
+                  </span>
+                  <span className="text-[18px] sm:text-[20px] font-black font-mono text-[#091B40] tracking-wider block" dir="ltr">
+                    {paymentNumber}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 self-end sm:self-center">
+                <div className="hidden sm:block h-8 w-px bg-[#E2E8F0]" />
+                <button
+                  type="button"
+                  onClick={handleCopyNumber}
+                  className="h-10 px-4 rounded-xl border border-[#E2E8F0] bg-white hover:bg-[#F7F9FC] text-[13px] font-bold text-[#091B40] flex items-center gap-2 shadow-2xs transition-colors cursor-pointer active:scale-98"
+                >
+                  {copiedNumber ? (
+                    <>
+                      <Check className="w-4 h-4 text-[#17834B]" />
+                      <span className="text-[#17834B]">تم النسخ</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-4 h-4 text-[#536681]" />
+                      <span>نسخ الرقم</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* Row 4: Receipt Upload Form & Status */}
+            {uploadSuccess ? (
+              <div className="p-6 rounded-2xl bg-emerald-50 border-2 border-[#17834B]/40 space-y-4 animate-in fade-in">
+                <div className="flex items-center gap-3 text-[#17834B] font-bold text-base">
+                  <CheckCircle2 className="w-6 h-6 shrink-0" />
+                  <span>تم استلام إيصال التحويل بنجاح وهو قيد المراجعة الفورية! 🎉</span>
+                </div>
+                <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
+                  يقوم فريق العمل بمراجعة إيصالك وتفعيل حسابك خلال دقائق معدودة. لتسريع عملية التفعيل بشكل لحظي، يمكنك أيضاً إرسال صورة الإيصال للمساعد عبر واتساب.
+                </p>
+                <button
+                  type="button"
+                  onClick={handleWhatsApp}
+                  className="w-full min-h-[50px] rounded-xl bg-[#25D366] hover:bg-[#20BD5A] text-white font-bold text-sm flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer"
+                >
+                  <Send className="w-4 h-4" />
+                  <span>تأكيد الإيصال والتفعيل اللحظي عبر واتساب</span>
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleUploadReceipt} className="space-y-5">
+                {/* Upload Title & Instructions */}
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2 text-[15px] sm:text-[16px] font-bold text-[#091B40]">
+                    <Upload className="w-4 h-4 text-[#800B34]" />
+                    <span>رفع إيصال الدفع للتفعيل (200 جنيه):</span>
+                  </div>
+                  <p className="text-[12px] sm:text-[13px] text-[#536681]">
+                    التقط سكرين شوت أو صورة لإيصال التحويل وارفعها هنا ليتم تفعيل حسابك مباشرة.
+                  </p>
+                </div>
+
+                {error && (
+                  <div className="p-3.5 rounded-xl bg-red-50 border border-[#C43D49]/30 text-xs sm:text-sm text-[#C43D49] font-bold flex items-center gap-2 animate-in fade-in">
+                    <AlertCircle className="w-4 h-4 shrink-0 text-[#C43D49]" />
+                    <span>{error}</span>
+                  </div>
+                )}
+
+                {/* Upload Dropzone (Dashed Action-Blue Box) */}
+                <div
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    setIsDragging(true);
+                  }}
+                  onDragLeave={() => setIsDragging(false)}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    setIsDragging(false);
+                    const dropped = e.dataTransfer.files?.[0];
+                    if (dropped) validateAndSetFile(dropped);
+                  }}
+                  onClick={() => fileInputRef.current?.click()}
+                  className={`border-2 border-dashed rounded-2xl p-6 sm:p-7 text-center transition-all cursor-pointer relative ${
+                    isDragging
+                      ? "border-[#2C70BF] bg-[#EAF2FF]"
+                      : file
+                      ? "border-[#17834B]/50 bg-[#F4FBF7]"
+                      : "border-[#93C5FD] hover:border-[#2C70BF] bg-[#F8FAFD]"
+                  }`}
+                >
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    id="receiptFileInput"
+                    accept="image/jpeg,image/png,image/webp,application/pdf"
+                    onChange={handleFileChange}
+                    className="hidden"
+                  />
+
+                  {file ? (
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-center gap-2 text-[#17834B]">
+                        {file.type === "application/pdf" ? (
+                          <FileText className="w-8 h-8" />
+                        ) : (
+                          <ImageIcon className="w-8 h-8" />
+                        )}
+                        <span className="font-extrabold text-[15px] sm:text-[16px] max-w-sm truncate">
+                          {file.name}
+                        </span>
+                      </div>
+                      <span className="text-[11px] text-[#536681] block font-mono">
+                        {(file.size / (1024 * 1024)).toFixed(2)} MB
+                      </span>
+                      <div className="flex items-center justify-center gap-3 pt-1">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            fileInputRef.current?.click();
+                          }}
+                          className="px-3 py-1.5 rounded-lg border border-[#E2E8F0] bg-white text-xs font-bold text-[#091B40] hover:bg-[#F7F9FC]"
+                        >
+                          تغيير الملف
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleRemoveFile}
+                          className="px-3 py-1.5 rounded-lg border border-red-200 bg-red-50 text-xs font-bold text-red-700 hover:bg-red-100 flex items-center gap-1"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                          <span>إزالة</span>
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <div className="w-12 h-12 rounded-xl bg-[#EAF2FF] text-[#2C70BF] flex items-center justify-center mx-auto">
+                        <Upload className="w-6 h-6" strokeWidth={2.2} />
+                      </div>
+                      <div className="space-y-1">
+                        <span className="text-[15px] sm:text-[16px] font-extrabold text-[#800B34] block">
+                          انقر هنا لاختيار صورة إيصال التحويل
+                        </span>
+                        <span className="text-[12px] text-[#64748B] block font-medium">
+                          JPG, PNG, WEBP أو PDF | بحد أقصى 20 ميجابايت
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Row 5: Sender Phone & Reference in One Row */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+                  <div>
+                    <label className="block text-[13px] font-bold text-[#091B40] mb-1.5">
+                      رقم الموبايل المحول منه:
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        required
+                        value={senderPhone}
+                        onChange={(e) => setSenderPhone(e.target.value)}
+                        placeholder="01XXXXXXXXX"
+                        maxLength={15}
+                        className="w-full h-12 px-4 rounded-xl border border-[#E2E8F0] bg-white text-sm font-mono text-[#091B40] placeholder:text-[#94A3B8] focus:ring-2 focus:ring-[#800B34] focus:outline-none transition-all shadow-2xs"
+                        dir="ltr"
+                      />
+                      <Smartphone className="w-4 h-4 text-[#94A3B8] absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-[13px] font-bold text-[#091B40] mb-1.5">
+                      كود العملية / الرقم المرجعي (اختياري):
+                    </label>
+                    <input
+                      type="text"
+                      value={reference}
+                      onChange={(e) => setReference(e.target.value)}
+                      placeholder="مثال: REF-987654"
+                      maxLength={30}
+                      className="w-full h-12 px-4 rounded-xl border border-[#E2E8F0] bg-white text-sm font-mono text-[#091B40] placeholder:text-[#94A3B8] focus:ring-2 focus:ring-[#800B34] focus:outline-none transition-all shadow-2xs"
+                      dir="ltr"
+                    />
+                  </div>
+                </div>
+
+                {/* Row 6: Primary Full-Width Burgundy Action Button */}
+                <button
+                  type="submit"
+                  disabled={isUploading || !file || !senderPhone.trim()}
+                  className="w-full min-h-[52px] sm:min-h-[56px] rounded-xl bg-[#800B34] hover:bg-[#680829] text-white font-black text-[16px] flex items-center justify-center gap-2.5 transition-all shadow-md shadow-[#800B34]/25 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer active:scale-[0.99]"
+                >
+                  {isUploading ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      <span>جاري رفع وتوثيق الإيصال...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="w-5 h-5" strokeWidth={2.2} />
+                      <span>رفع إيصال الدفع وتفعيل الحساب (200 ج)</span>
+                    </>
+                  )}
+                </button>
+              </form>
+            )}
           </div>
+
+          {/* --------------------------------------------------------------------- */}
+          {/* LEFT AREA IN RTL (30%): SUBSCRIPTION BENEFITS                         */}
+          {/* --------------------------------------------------------------------- */}
+          <div className="lg:w-[30%] p-6 sm:p-7 flex flex-col justify-between relative bg-gradient-to-b from-[#FFFDF9] via-[#FFFFFF] to-[#F7F9FC] border-t lg:border-t-0 lg:border-r border-[#E2E8F0]">
+            <div>
+              {/* Badge: شامل كل المنهج */}
+              <div className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[#800B34] text-white text-[13px] font-bold shadow-xs">
+                <CheckCircle2 className="w-4 h-4" />
+                <span>شامل كل المنهج</span>
+              </div>
+
+              {/* Four Subscription Benefits with Signature Gold Checkmarks */}
+              <ul className="space-y-4 my-6 sm:my-8">
+                <li className="flex items-center gap-2.5 text-[15px] font-bold text-[#091B40]">
+                  <CheckCheck className="w-5 h-5 text-[#E9AD32] shrink-0" strokeWidth={2.5} />
+                  <span>جميع الدروس</span>
+                </li>
+                <li className="flex items-center gap-2.5 text-[15px] font-bold text-[#091B40]">
+                  <CheckCheck className="w-5 h-5 text-[#E9AD32] shrink-0" strokeWidth={2.5} />
+                  <span>بنك الأسئلة</span>
+                </li>
+                <li className="flex items-center gap-2.5 text-[15px] font-bold text-[#091B40]">
+                  <CheckCheck className="w-5 h-5 text-[#E9AD32] shrink-0" strokeWidth={2.5} />
+                  <span>الكبسولات الصوتية</span>
+                </li>
+                <li className="flex items-center gap-2.5 text-[15px] font-bold text-[#091B40]">
+                  <CheckCheck className="w-5 h-5 text-[#E9AD32] shrink-0" strokeWidth={2.5} />
+                  <span>الامتحانات التفاعلية</span>
+                </li>
+              </ul>
+            </div>
+
+            {/* 3D Payment Theme Illustration */}
+            <div className="pt-2 pb-1 flex justify-center">
+              <PaymentIllustration3D className="w-full max-w-[230px] sm:max-w-[250px]" />
+            </div>
+          </div>
+        </div>
+
+        {/* --------------------------------------------------------------------- */}
+        {/* SIGNATURE CURVED GOLD DIVIDER (DESKTOP)                              */}
+        {/* Placed at boundary between 70% right form and 30% left benefits       */}
+        {/* In RTL: 70% from right is left: 30%                                   */}
+        {/* --------------------------------------------------------------------- */}
+        <div className="hidden lg:block absolute top-0 bottom-0 left-[30%] w-[20px] pointer-events-none -translate-x-1/2 z-10 overflow-visible">
+          <svg
+            className="h-full w-[20px]"
+            viewBox="0 0 20 600"
+            fill="none"
+            preserveAspectRatio="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M 16,0 Q 4,300 16,600"
+              stroke="#E9AD32"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+            />
+          </svg>
         </div>
       </div>
 
-      {/* 4. Upload Receipt Form or Status */}
-      {uploadSuccess ? (
-        <div className="p-5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border-2 border-[#17834B]/40 space-y-3 animate-in fade-in">
-          <div className="flex items-center gap-2.5 text-[#17834B] dark:text-emerald-300 font-bold text-sm">
-            <CheckCircle2 className="w-5 h-5 text-[#17834B] shrink-0" />
-            <span>تم استلام إيصال التحويل بنجاح وهو قيد المراجعة! 🎉</span>
-          </div>
-          <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
-            يقوم فريق العمل بمراجعة إيصالك وتفعيل حسابك خلال دقائق. يمكنك أيضاً الضغط أدناه لإرسال الإيصال مباشرة للمساعد عبر واتساب للتفعيل اللحظي.
-          </p>
-
-          <button
-            type="button"
-            onClick={handleWhatsApp}
-            className="w-full min-h-[50px] rounded-xl bg-[#25D366] hover:bg-[#20BD5A] text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer"
-          >
-            <Send className="w-4 h-4" />
-            <span>تأكيد الإيصال والتفعيل الفوري عبر واتساب</span>
-          </button>
-        </div>
-      ) : (
-        <form onSubmit={handleUploadReceipt} className="space-y-4">
-          <div className="space-y-1">
-            <h3 className="text-xs sm:text-sm font-bold text-[#091B40] dark:text-white flex items-center gap-2">
-              <Upload className="w-4 h-4 text-[#2C70BF]" />
-              <span>رفع إيصال الدفع للتفعيل (200 جنيه):</span>
-            </h3>
-            <p className="text-[11px] text-[#536681] dark:text-[#94A3B8]">
-              التقط سكرين شوت أو صورة لإيصال التحويل وأرفقها هنا ليتم تفعيل حسابك مباشرة.
-            </p>
-          </div>
-
-          {error && (
-            <div className="p-3 rounded-xl bg-red-50 dark:bg-red-950/40 border border-[#C43D49]/30 text-xs text-[#C43D49] font-bold flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 shrink-0 text-[#C43D49]" />
-              <span>{error}</span>
-            </div>
-          )}
-
-          {/* Action Blue Upload Box */}
-          <div className="border-2 border-dashed border-[#2C70BF]/40 hover:border-[#2C70BF] rounded-2xl p-6 text-center transition-colors bg-[#F7F9FC] dark:bg-[#081426]/60">
-            <input
-              type="file"
-              id="receiptFile"
-              accept="image/*,application/pdf"
-              onChange={(e) => setFile(e.target.files?.[0] || null)}
-              className="hidden"
-            />
-            <label htmlFor="receiptFile" className="cursor-pointer block space-y-2">
-              <div className="w-12 h-12 rounded-xl bg-[#EAF2FF] dark:bg-[#142747] text-[#2C70BF] flex items-center justify-center mx-auto">
-                <Upload className="w-6 h-6" />
-              </div>
-              <div className="text-xs space-y-1">
-                {file ? (
-                  <span className="font-bold text-[#800B34] dark:text-[#F0B843] block truncate max-w-xs mx-auto text-sm">
-                    تم اختيار: {file.name}
-                  </span>
-                ) : (
-                  <>
-                    <span className="font-bold text-[#2C70BF] hover:underline block text-sm">
-                      انقر هنا لاختيار صورة إيصال التحويل
-                    </span>
-                    <span className="text-[11px] text-[#536681] dark:text-[#94A3B8] block">
-                      JPG, PNG, WEBP أو PDF | بحد أقصى 20 ميجابايت
-                    </span>
-                  </>
-                )}
-              </div>
-            </label>
-          </div>
-
-          {/* Form Fields: Height 48-52px, Radius 12px */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label className="block text-[11px] font-bold text-[#091B40] dark:text-[#F8FAFC] mb-1">
-                رقم الموبايل المحول منه:
-              </label>
-              <input
-                type="text"
-                value={senderPhone}
-                onChange={(e) => setSenderPhone(e.target.value)}
-                placeholder="01XXXXXXXXX"
-                className="w-full h-12 px-4 rounded-xl border border-[#E2E8F0] dark:border-[#1E3352] bg-white dark:bg-[#0F1E36] text-xs sm:text-sm font-mono text-[#091B40] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#800B34]"
-                dir="ltr"
-              />
-            </div>
-
-            <div>
-              <label className="block text-[11px] font-bold text-[#091B40] dark:text-[#F8FAFC] mb-1">
-                كود العملية / الرقم المرجعي (اختياري):
-              </label>
-              <input
-                type="text"
-                value={reference}
-                onChange={(e) => setReference(e.target.value)}
-                placeholder="مثال: REF-987654"
-                className="w-full h-12 px-4 rounded-xl border border-[#E2E8F0] dark:border-[#1E3352] bg-white dark:bg-[#0F1E36] text-xs sm:text-sm font-mono text-[#091B40] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#800B34]"
-                dir="ltr"
-              />
-            </div>
-          </div>
-
-          {/* Primary Action Button: Royal Burgundy #800B34, Height 52px */}
-          <button
-            type="submit"
-            disabled={isUploading || !file}
-            className="w-full min-h-[52px] rounded-xl bg-[#800B34] hover:bg-[#680829] text-white font-bold text-sm sm:text-base flex items-center justify-center gap-2 shadow-xs transition-colors disabled:opacity-50 cursor-pointer"
-          >
-            {isUploading ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                <span>جاري رفع وتوثيق الإيصال...</span>
-              </>
-            ) : (
-              <>
-                <Upload className="w-4 h-4" />
-                <span>إرسال إيصال الدفع للمراجعة (200 ج)</span>
-              </>
-            )}
-          </button>
-        </form>
-      )}
-
-      {/* 5. Direct WhatsApp Alternative */}
-      <div className="pt-4 border-t border-[#E2E8F0] dark:border-[#1E3352] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+      {/* ========================================================================= */}
+      {/* SECTION C: FOOTER LINKS                                                  */}
+      {/* ========================================================================= */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2 text-[13px] font-bold">
+        {/* In RTL: First child is on the RIGHT (WhatsApp) */}
         <button
           type="button"
           onClick={handleWhatsApp}
-          className="text-[#17834B] hover:underline font-bold flex items-center gap-1.5 cursor-pointer"
+          className="text-[#17834B] hover:underline flex items-center gap-2 cursor-pointer"
         >
-          <Send className="w-3.5 h-3.5" />
+          <Send className="w-4 h-4" />
           <span>تواصل مع الإدارة عبر واتساب للاستفسار أو السداد</span>
         </button>
 
+        {/* In RTL: Second child is on the LEFT (Back to dashboard) */}
         <Link
           href="/dashboard"
-          className="text-[#536681] hover:text-[#091B40] dark:hover:text-white flex items-center gap-1 font-semibold"
+          className="text-[#536681] hover:text-[#091B40] flex items-center gap-1.5 transition-colors"
         >
-          <ArrowRight className="w-3.5 h-3.5" />
+          <ArrowLeft className="w-4 h-4" />
           <span>العودة إلى لوحة التحكم والدرس التجريبي</span>
         </Link>
       </div>
