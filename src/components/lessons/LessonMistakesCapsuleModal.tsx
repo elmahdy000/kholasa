@@ -112,6 +112,7 @@ export function LessonMistakesCapsuleModal({
 
     setSelectedOptionId(optionId);
     setIsSubmitting(true);
+    setFeedbackNotice(null);
 
     try {
       const res = await fetch(`/api/questions/${currentQ.id}/answer`, {
@@ -120,12 +121,22 @@ export function LessonMistakesCapsuleModal({
         body: JSON.stringify({ selectedOptionId: optionId }),
       });
 
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || "تعذر التحقق من الإجابة من الخادم");
+      }
+
       const data = await res.json();
       const answerCorrect = Boolean(data.isCorrect);
 
       setRevealed(true);
       setIsCorrect(answerCorrect);
-      setCorrectOptionId(data.reveal?.correctOptionId || data.correctOptionId || null);
+      setCorrectOptionId(
+        data.reveal?.correctOptionId ||
+        data.correctOptionId ||
+        (answerCorrect ? optionId : null)
+      );
+
       if (data.reveal?.explanation || data.explanation) {
         setServerExplanation(data.reveal?.explanation || data.explanation);
       }
@@ -135,7 +146,6 @@ export function LessonMistakesCapsuleModal({
         setResolvedIds((prev) => new Set([...prev, currentQ.id]));
         onMistakeResolved(currentQ.id);
 
-        // If there are more unresolved questions, automatically advance after short delay
         if (currentIndex < totalCount - 1) {
           setTimeout(() => {
             goToQuestion(currentIndex + 1);
@@ -145,15 +155,26 @@ export function LessonMistakesCapsuleModal({
         setFeedbackNotice("إجابة غير دقيقة، راجع التفسير التعليمي المرفق أدناه");
         setShowExplanation(true);
       }
-    } catch {
-      // Fallback local check
+    } catch (err) {
+      // Local fallback ONLY if opt.isCorrect is explicitly boolean
       const opt = currentQ.options.find((o) => o.id === optionId);
-      const isRight = Boolean(opt?.isCorrect);
-      setRevealed(true);
-      setIsCorrect(isRight);
-      if (isRight) {
-        setResolvedIds((prev) => new Set([...prev, currentQ.id]));
-        onMistakeResolved(currentQ.id);
+      if (typeof opt?.isCorrect === "boolean") {
+        const isRight = Boolean(opt.isCorrect);
+        setRevealed(true);
+        setIsCorrect(isRight);
+        if (isRight) {
+          setCorrectOptionId(optionId);
+          setFeedbackNotice("إجابة صحيحة، تم حذف السؤال من قائمة الأخطاء");
+          setResolvedIds((prev) => new Set([...prev, currentQ.id]));
+          onMistakeResolved(currentQ.id);
+        } else {
+          setFeedbackNotice("إجابة غير دقيقة، راجع التفسير التعليمي المرفق أدناه");
+          setShowExplanation(true);
+        }
+      } else {
+        // Network or server glitch: do NOT mark student's answer as wrong
+        setSelectedOptionId(null);
+        setFeedbackNotice("تعذر التحقق من الإجابة بسبب انقطاع الاتصال، يرجى النقر مرة أخرى");
       }
     } finally {
       setIsSubmitting(false);
@@ -393,7 +414,7 @@ export function LessonMistakesCapsuleModal({
                   <div className="space-y-2.5 pt-1">
                     {currentQ.options.map((opt, optIdx) => {
                       const isSelected = selectedOptionId === opt.id;
-                      const isOptionCorrect = correctOptionId ? correctOptionId === opt.id : Boolean(opt.isCorrect);
+                      const isOptionCorrect = (correctOptionId ? correctOptionId === opt.id : false) || (isCorrect && isSelected) || Boolean(opt.isCorrect);
 
                       let btnStyle =
                         "bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white hover:border-amber-500/50";

@@ -583,6 +583,11 @@ export function LessonViewer({
       }
     } catch (err) {
       console.error(err);
+      setQuestionAnswers((prev) => {
+        const next = { ...prev };
+        delete next[questionId];
+        return next;
+      });
     }
   };
 
