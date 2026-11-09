@@ -28,10 +28,10 @@ export interface ScopedUser {
 }
 
 export function getCurriculumScope(user: ScopedUser | null): CurriculumScope | null {
-  if (!user || user.role !== "STUDENT" || !user.gradeId) return null;
+  if (!user || user.role !== "STUDENT") return null;
   return {
     systemId: user.systemId ?? null,
-    gradeId: user.gradeId,
+    gradeId: user.gradeId ?? null,
     schoolCategory: user.schoolCategory ?? "ARABIC",
     trackId: user.trackId ?? null,
   };
@@ -41,10 +41,10 @@ export function getCurriculumScope(user: ScopedUser | null): CurriculumScope | n
 export function subjectScopeWhere(
   scope: CurriculumScope | null
 ): Prisma.SubjectWhereInput {
-  if (!scope?.gradeId) return {};
+  if (!scope) return {};
 
   return {
-    gradeId: scope.gradeId,
+    ...(scope.gradeId ? { gradeId: scope.gradeId } : {}),
     ...(scope.schoolCategory ? { schoolCategory: scope.schoolCategory } : {}),
     ...(scope.systemId ? { systemId: scope.systemId } : {}),
     // Track-neutral material is always visible; track-specific material only
@@ -59,7 +59,7 @@ export function subjectScopeWhere(
 export function questionScopeWhere(
   scope: CurriculumScope | null
 ): Prisma.QuestionWhereInput {
-  if (!scope?.gradeId) return {};
+  if (!scope) return {};
 
   return {
     ...(scope.schoolCategory ? { schoolCategory: scope.schoolCategory } : {}),
@@ -71,7 +71,7 @@ export function questionScopeWhere(
 export function examScopeWhere(
   scope: CurriculumScope | null
 ): Prisma.ExamWhereInput {
-  if (!scope?.gradeId) return { isCustom: false, isPublished: true };
+  if (!scope) return { isCustom: false, isPublished: true };
 
   return {
     isCustom: false,
@@ -91,9 +91,8 @@ export function isSubjectInScope(
     schoolCategory?: SchoolCategory | string | null;
   } | null
 ): boolean {
-  if (!scope?.gradeId) return true;
   if (!subject) return false;
-  if (subject.gradeId !== scope.gradeId) return false;
+  if (!scope) return true;
 
   // Strict separation: Arabic Schools vs Language Schools
   if (
@@ -101,6 +100,10 @@ export function isSubjectInScope(
     subject.schoolCategory &&
     subject.schoolCategory !== scope.schoolCategory
   ) {
+    return false;
+  }
+
+  if (scope.gradeId && subject.gradeId && subject.gradeId !== scope.gradeId) {
     return false;
   }
 

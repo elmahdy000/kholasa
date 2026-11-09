@@ -9,12 +9,31 @@ async function main() {
   const defaultPassword = "Student@Kholasa2026!";
   const passwordHash = await bcrypt.hash(defaultPassword, 10);
 
-  // Find standard grade
-  const grade = await prisma.grade.findFirst({
-    where: { name: { contains: "الأول الثانوي" } },
+  // Find grade and system hosting the active curriculum
+  const publishedSubject = await prisma.subject.findFirst({
+    where: { isPublished: true },
+    include: { grade: true, system: true },
   });
 
-  const gradeId = grade?.id || null;
+  const gradeId =
+    publishedSubject?.gradeId ||
+    (
+      await prisma.grade.findFirst({
+        where: {
+          OR: [
+            { name: { contains: "الثاني" } },
+            { name: { contains: "تانية" } },
+            { code: { contains: "g11" } },
+          ],
+        },
+      })
+    )?.id ||
+    null;
+
+  const systemId =
+    publishedSubject?.systemId ||
+    (await prisma.educationalSystem.findFirst())?.id ||
+    null;
 
   const demoAccounts = [
     {
@@ -32,6 +51,7 @@ async function main() {
       boundDevices: [],
       isActive: true,
       gradeId,
+      systemId,
     },
     {
       id: "demo-student-en",
@@ -48,6 +68,7 @@ async function main() {
       boundDevices: [],
       isActive: true,
       gradeId,
+      systemId,
     },
     {
       id: "demo-student-pro",
@@ -64,6 +85,7 @@ async function main() {
       boundDevices: [],
       isActive: true,
       gradeId,
+      systemId,
     },
   ];
 
@@ -92,7 +114,8 @@ async function main() {
           boundDevices: [],
           isActive: true,
           password: passwordHash,
-          gradeId: acc.gradeId || existing.gradeId,
+          gradeId: acc.gradeId,
+          systemId: acc.systemId,
         },
       });
       console.log(`Updated existing account -> ${acc.loginCode} (${acc.name})`);

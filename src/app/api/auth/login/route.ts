@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { z } from "zod";
-import { Role } from "@prisma/client";
+import { Role, SchoolCategory } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { UserService } from "@/services";
 import { verifyPassword, createSession } from "@/lib/auth";
 import { forbidden, jsonError, parseJson, unauthorized } from "@/lib/http";
 import { getClientIp, rateLimit, withRetryAfter } from "@/lib/rate-limit";
+import { AUTHORIZED_CENTERS } from "@/lib/centers";
 
 const loginSchema = z
   .object({
@@ -94,18 +95,61 @@ export async function POST(req: Request) {
       }
     }
 
-    // Attendance Mode (Online vs Offline/Center) update if provided on login
+    // Attendance Mode, School Category & Curriculum Sync for Students
     let updatedStudyMode = user.studyMode;
     let updatedCenterName = user.centerName;
+    let targetSchoolCategory = user.schoolCategory || SchoolCategory.ARABIC;
+    let targetGradeId = user.gradeId;
+    let targetSystemId = user.systemId;
 
-    if (user.role === Role.STUDENT && body.studyMode) {
-      updatedStudyMode = body.studyMode;
-      updatedCenterName = body.studyMode === "OFFLINE" ? (body.centerName?.trim() || user.centerName || "السنتر الرئيسي") : null;
+    if (user.role === Role.STUDENT) {
+      if (body.studyMode) {
+        updatedStudyMode = body.studyMode;
+        updatedCenterName =
+          body.studyMode === "OFFLINE"
+            ? body.centerName?.trim() || user.centerName || "سنتر رافال عربي"
+            : null;
+      }
+
+      // 1. Strict Category Scoping by Code or Selected Center
+      if (user.loginCode === "DEMO-EN" || user.loginCode === "DEMO-PRO") {
+        targetSchoolCategory = SchoolCategory.LANGUAGES;
+      } else if (user.loginCode === "DEMO-AR") {
+        targetSchoolCategory = SchoolCategory.ARABIC;
+      } else if (updatedCenterName) {
+        const matchedCenter = AUTHORIZED_CENTERS.find(
+          (c) => c.name === updatedCenterName
+        );
+        if (matchedCenter) {
+          targetSchoolCategory = matchedCenter.category;
+        }
+      }
+
+      // 2. Safeguard for missing or orphaned grade/system
+      const publishedCurriculum = await prisma.subject.findFirst({
+        where: { isPublished: true },
+        select: { gradeId: true, systemId: true },
+      });
+
+      if (publishedCurriculum) {
+        if (user.loginCode?.startsWith("DEMO-")) {
+          // Demo accounts always mirror the active published curriculum grade
+          targetGradeId = publishedCurriculum.gradeId;
+          targetSystemId = publishedCurriculum.systemId;
+        } else {
+          targetGradeId = targetGradeId || publishedCurriculum.gradeId;
+          targetSystemId = targetSystemId || publishedCurriculum.systemId;
+        }
+      }
+
       await prisma.user.update({
         where: { id: user.id },
         data: {
           studyMode: updatedStudyMode,
           centerName: updatedCenterName,
+          schoolCategory: targetSchoolCategory,
+          gradeId: targetGradeId,
+          systemId: targetSystemId,
         },
       });
     }
@@ -121,9 +165,9 @@ export async function POST(req: Request) {
         phone: user.phone,
         loginCode: user.loginCode,
         role: user.role,
-        systemId: user.systemId,
-        gradeId: user.gradeId,
-        schoolCategory: user.schoolCategory,
+        systemId: targetSystemId,
+        gradeId: targetGradeId,
+        schoolCategory: targetSchoolCategory,
         studyMode: updatedStudyMode,
         centerName: updatedCenterName,
         subscriptionStatus: user.subscriptionStatus,

@@ -36,6 +36,7 @@ export interface SubjectItemData {
 
 interface SubjectsExplorerProps {
   subjects: SubjectItemData[];
+  isStaff?: boolean;
 }
 
 function getSubjectIcon(code: string, name: string) {
@@ -52,7 +53,7 @@ function getSubjectIcon(code: string, name: string) {
   return BookMarked;
 }
 
-export function SubjectsExplorer({ subjects }: SubjectsExplorerProps) {
+export function SubjectsExplorer({ subjects, isStaff }: SubjectsExplorerProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFilter, setSelectedFilter] = useState<string>("ALL");
 
@@ -99,20 +100,32 @@ export function SubjectsExplorer({ subjects }: SubjectsExplorerProps) {
         </div>
         <div className="space-y-1.5 max-w-md mx-auto">
           <h3 className="text-lg font-bold text-[#12263F] dark:text-white">
-            لسه مفيش مواد مضافة
+            {isStaff ? "لسه مفيش مواد مضافة" : "لا توجد مواد دراسية متاحة حالياً لمسارك"}
           </h3>
           <p className="text-xs sm:text-sm text-[#64748B] dark:text-[#94A3B8] leading-relaxed">
-            المسارات والصفوف جاهزة ومتظبطة، وتقدر تبدأ تضيف المواد والوحدات والدروس من لوحة التحكم.
+            {isStaff
+              ? "المسارات والصفوف جاهزة ومتظبطة، وتقدر تبدأ تضيف المواد والوحدات والدروس من لوحة التحكم."
+              : "يتم إعداد وتحديث المناهج الدراسية الخاصة بصفك الدراسي. إذا كنت تواجه مشكلة، يرجى مراجعة إدارة السنتر أو المساعد."}
           </p>
         </div>
-        <div className="pt-2">
-          <Link
-            href="/admin/curriculum"
-            className="inline-flex items-center gap-2 h-10 px-5 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-xs font-bold transition-all shadow-xs"
-          >
-            <span>إضافة مادة من لوحة التحكم</span>
-            <ArrowLeft className="w-4 h-4" />
-          </Link>
+        <div className="pt-2 flex items-center justify-center gap-3">
+          {isStaff ? (
+            <Link
+              href="/admin/curriculum"
+              className="inline-flex items-center gap-2 h-10 px-5 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-xs font-bold transition-all shadow-xs"
+            >
+              <span>إضافة مادة من لوحة التحكم</span>
+              <ArrowLeft className="w-4 h-4" />
+            </Link>
+          ) : (
+            <Link
+              href="/dashboard"
+              className="inline-flex items-center gap-2 h-10 px-5 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white text-xs font-bold transition-all shadow-xs"
+            >
+              <span>العودة للرئيسية</span>
+              <ArrowLeft className="w-4 h-4" />
+            </Link>
+          )}
         </div>
       </div>
     );

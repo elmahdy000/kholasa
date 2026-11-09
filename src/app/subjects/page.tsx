@@ -149,7 +149,10 @@ export default async function SubjectsPage() {
 
         {/* Subjects Explorer with Live Search, Filter Tabs & Grid */}
         <section aria-label="قائمة المواد الدراسية">
-          <SubjectsExplorer subjects={formattedSubjects} />
+          <SubjectsExplorer
+            subjects={formattedSubjects}
+            isStaff={user?.role === "ADMIN" || user?.role === "SUPER_ADMIN" || user?.role === "TEACHER"}
+          />
         </section>
       </div>
     </StudentShell>
