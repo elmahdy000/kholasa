@@ -38,6 +38,7 @@ import {
 import type { EducationalSystem, Grade } from "./types";
 import { useToast } from "@/components/ui/Toast";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
+import { AUTHORIZED_CENTERS, LANGUAGES_CENTERS, ARABIC_CENTERS, OTHER_CENTER_NAME } from "@/lib/centers";
 
 interface StudentDetailsDrawerProps {
   userId: string | null;
@@ -1147,15 +1148,52 @@ _منصة الخلاصة التعليمية - رفيقكم نحو التفوق_ 
                         </div>
 
                         {studyMode === "OFFLINE" && (
-                          <div>
-                            <label className="block text-[#64748B] mb-1.5">اسم السنتر التابع له</label>
-                            <input
-                              type="text"
-                              value={centerName}
-                              onChange={(e) => setCenterName(e.target.value)}
-                              placeholder="مثال: سنتر الأوائل"
-                              className="w-full h-10 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] font-bold"
-                            />
+                          <div className="space-y-2">
+                            <label className="block text-[#64748B] mb-1.5">السنتر المعتمد التابع له</label>
+                            <select
+                              value={
+                                AUTHORIZED_CENTERS.some((c) => c.name === centerName)
+                                  ? centerName
+                                  : centerName
+                                  ? "CUSTOM"
+                                  : ""
+                              }
+                              onChange={(e) => {
+                                if (e.target.value !== "CUSTOM") {
+                                  setCenterName(e.target.value);
+                                } else {
+                                  setCenterName("");
+                                }
+                              }}
+                              className="w-full h-10 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] font-bold text-xs"
+                            >
+                              <option value="">-- اختر السنتر المعتمد --</option>
+                              <optgroup label="── سناتر مدارس اللغات (Languages) 🇬🇧 ──">
+                                {LANGUAGES_CENTERS.map((c) => (
+                                  <option key={c.id} value={c.name}>
+                                    {c.name} ({c.badge})
+                                  </option>
+                                ))}
+                              </optgroup>
+                              <optgroup label="── سناتر المدارس العامة (عربي) 🇪🇬 ──">
+                                {ARABIC_CENTERS.map((c) => (
+                                  <option key={c.id} value={c.name}>
+                                    {c.name} ({c.badge})
+                                  </option>
+                                ))}
+                              </optgroup>
+                              <option value="CUSTOM">✍️ سنتر آخر (كتابة اسم مخصص)</option>
+                            </select>
+
+                            {(!AUTHORIZED_CENTERS.some((c) => c.name === centerName) || centerName === "") && (
+                              <input
+                                type="text"
+                                value={centerName}
+                                onChange={(e) => setCenterName(e.target.value)}
+                                placeholder="اكتب اسم السنتر التابع له..."
+                                className="w-full h-10 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] font-bold text-xs"
+                              />
+                            )}
                           </div>
                         )}
 

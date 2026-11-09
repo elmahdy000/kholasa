@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -18,10 +18,24 @@ import {
   CheckCircle2,
   Globe,
   Building2,
+  MapPin,
+  Sparkles,
+  School,
+  Check,
+  UserCheck,
+  Flame,
+  HelpCircle,
 } from "lucide-react";
 
 import { BrandLogo } from "@/components/ui/BrandLogo";
 import { getOrCreateDeviceId } from "@/lib/device";
+import {
+  AUTHORIZED_CENTERS,
+  LANGUAGES_CENTERS,
+  ARABIC_CENTERS,
+  OTHER_CENTER_NAME,
+  ALL_CENTER_NAMES,
+} from "@/lib/centers";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -30,18 +44,18 @@ export default function LoginPage() {
   // Code login state
   const [studentCode, setStudentCode] = useState("");
   const [studyMode, setStudyMode] = useState<"ONLINE" | "OFFLINE">("ONLINE");
-  const [selectedCenter, setSelectedCenter] = useState<string>("سنتر الأوائل");
+  const [selectedCenter, setSelectedCenter] = useState<string>("سنتر إديوفيرس لغات");
   const [customCenter, setCustomCenter] = useState<string>("");
 
-  const POPULAR_CENTERS = [
-    "سنتر الأوائل",
-    "سنتر النخبة",
-    "سنتر رويال",
-    "سنتر الأهرام",
-    "سنتر فيوتشر",
-    "سنتر المستقبل",
-    "سنتر آخر (أدخل اسم السنتر)",
-  ];
+  // Code Auto-Lookup State
+  const [detectedStudent, setDetectedStudent] = useState<{
+    found: boolean;
+    name?: string | null;
+    schoolCategory?: "ARABIC" | "LANGUAGES";
+    studyMode?: "ONLINE" | "OFFLINE";
+    centerName?: string | null;
+  } | null>(null);
+  const [isLookingUp, setIsLookingUp] = useState(false);
 
   // Credentials login state
   const [identifier, setIdentifier] = useState("");
@@ -50,7 +64,7 @@ export default function LoginPage() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [autoFilledNotice, setAutoFilledNotice] = useState(false);
+  const [autoFilledNotice, setAutoFilledNotice] = useState<string | null>(null);
 
   // Read ?code=... from URL for 1-click WhatsApp credentials links and restore saved mode
   useEffect(() => {
@@ -62,7 +76,7 @@ export default function LoginPage() {
         const clean = urlCode.trim().toUpperCase();
         setStudentCode(clean);
         setLoginMode("code");
-        setAutoFilledNotice(true);
+        setAutoFilledNotice("تم استرجاع وتعبئة كود الدخول الخاص بك تلقائياً.");
       }
 
       // Restore saved studyMode and center
@@ -72,10 +86,10 @@ export default function LoginPage() {
       }
       const savedCenter = localStorage.getItem("kholasa_selected_center");
       if (savedCenter) {
-        if (POPULAR_CENTERS.includes(savedCenter)) {
+        if (ALL_CENTER_NAMES.includes(savedCenter)) {
           setSelectedCenter(savedCenter);
         } else {
-          setSelectedCenter("سنتر آخر (أدخل اسم السنتر)");
+          setSelectedCenter(OTHER_CENTER_NAME);
           setCustomCenter(savedCenter);
         }
       }
@@ -83,6 +97,87 @@ export default function LoginPage() {
       // Ignore URL / localStorage parsing errors
     }
   }, []);
+
+  // Real-time lookup for student code (debounced)
+  useEffect(() => {
+    const cleanCode = studentCode.trim().toUpperCase();
+    if (cleanCode.length < 4) {
+      setDetectedStudent(null);
+      return;
+    }
+
+    let isMounted = true;
+    const timer = setTimeout(async () => {
+      try {
+        setIsLookingUp(true);
+        const res = await fetch(`/api/auth/lookup-code?code=${encodeURIComponent(cleanCode)}`);
+        const data = await res.json();
+        if (!isMounted) return;
+
+        if (data.found && data.user) {
+          setDetectedStudent({
+            found: true,
+            name: data.user.name,
+            schoolCategory: data.user.schoolCategory,
+            studyMode: data.user.studyMode,
+            centerName: data.user.centerName,
+          });
+
+          // Auto-align attendance mode if student has an existing center recorded
+          if (data.user.centerName && data.user.studyMode === "OFFLINE") {
+            setStudyMode("OFFLINE");
+            if (ALL_CENTER_NAMES.includes(data.user.centerName)) {
+              setSelectedCenter(data.user.centerName);
+            } else {
+              setSelectedCenter(OTHER_CENTER_NAME);
+              setCustomCenter(data.user.centerName);
+            }
+          } else if (data.user.schoolCategory === "LANGUAGES") {
+            // Suggest first languages center if currently an Arabic center was selected
+            if (ARABIC_CENTERS.some((c) => c.name === selectedCenter)) {
+              setSelectedCenter(LANGUAGES_CENTERS[0].name);
+            }
+          } else if (data.user.schoolCategory === "ARABIC") {
+            // Suggest first arabic center if currently a Languages center was selected
+            if (LANGUAGES_CENTERS.some((c) => c.name === selectedCenter)) {
+              setSelectedCenter(ARABIC_CENTERS[0].name);
+            }
+          }
+        } else {
+          setDetectedStudent({ found: false });
+        }
+      } catch {
+        // Silently ignore lookup failure; full verification runs on submit
+      } finally {
+        if (isMounted) setIsLookingUp(false);
+      }
+    }, 350);
+
+    return () => {
+      isMounted = false;
+      clearTimeout(timer);
+    };
+  }, [studentCode]);
+
+  const handleApplyDemoAccount = (code: "DEMO-EN" | "DEMO-AR" | "DEMO-PRO") => {
+    setError(null);
+    setStudentCode(code);
+    setLoginMode("code");
+
+    if (code === "DEMO-EN") {
+      setStudyMode("OFFLINE");
+      setSelectedCenter("سنتر إديوفيرس لغات");
+      setAutoFilledNotice("تم تجهيز الحساب التجريبي (طالب لغات - تجريبي) بنجاح!");
+    } else if (code === "DEMO-AR") {
+      setStudyMode("OFFLINE");
+      setSelectedCenter("سنتر رافال عربي");
+      setAutoFilledNotice("تم تجهيز الحساب التجريبي (طالب عربي - تجريبي) بنجاح!");
+    } else {
+      setStudyMode("ONLINE");
+      setSelectedCenter("سنتر إديوفيرس لغات");
+      setAutoFilledNotice("تم تجهيز الحساب التجريبي (اشتراك كامل مفعل) بنجاح!");
+    }
+  };
 
   const handleCodeLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -94,7 +189,7 @@ export default function LoginPage() {
 
     const finalCenterName =
       studyMode === "OFFLINE"
-        ? selectedCenter === "سنتر آخر (أدخل اسم السنتر)"
+        ? selectedCenter === OTHER_CENTER_NAME
           ? customCenter.trim()
           : selectedCenter
         : null;
@@ -188,36 +283,36 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0F172A] text-[#0F172A] dark:text-[#F8FAFC] flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 text-right font-sans relative">
-      <div className="absolute inset-0 bg-grid-pattern opacity-60 pointer-events-none" />
+    <div className="min-h-screen bg-[#F8FAFC] dark:bg-[#0B1120] text-[#0F172A] dark:text-[#F8FAFC] flex flex-col justify-center py-10 px-4 sm:px-6 lg:px-8 text-right font-sans relative">
+      <div className="absolute inset-0 bg-grid-pattern opacity-50 pointer-events-none" />
 
-      <div className="w-full sm:mx-auto sm:w-full sm:max-w-md relative z-10">
+      <div className="w-full sm:mx-auto sm:w-full sm:max-w-lg relative z-10">
         {/* Brand Header */}
-        <div className="flex flex-col items-center text-center mb-6">
+        <div className="flex flex-col items-center text-center mb-5">
           <BrandLogo
             href="/"
             variant="combined"
             size="lg"
             priority
             subtitleText="EL KHOLASA"
-            className="mb-4"
+            className="mb-3"
           />
-          <h2 className="text-xl sm:text-2xl font-bold text-[#0F172A] dark:text-white tracking-tight">
+          <h2 className="text-xl sm:text-2xl font-black text-[#0F172A] dark:text-white tracking-tight">
             {loginMode === "code" ? "تسجيل دخول الطالب" : "تسجيل دخول الإدارة والمعلمين"}
           </h2>
           <p className="mt-1 text-[13px] sm:text-sm text-[#64748B] dark:text-[#94A3B8]">
             {loginMode === "code"
-              ? "ادخل كود المنصة الخاص بك للبدء مباشرة"
+              ? "ادخل كود المنصة المعتمد للبدء وربط حسابك بجهازك"
               : "تسجيل الدخول بالبريد الإلكتروني أو الهاتف"}
           </p>
         </div>
 
         {/* Card */}
-        <div className="bg-white dark:bg-[#0F172A] py-8 px-6 sm:px-8 border border-[#E2E8F0] dark:border-[#334155] rounded-2xl shadow-sm">
+        <div className="bg-white dark:bg-[#111C35] py-7 px-5 sm:px-8 border border-[#E2E8F0] dark:border-[#1E293B] rounded-3xl shadow-xl shadow-slate-900/5">
           {error && (
-            <div className="mb-6 p-4 rounded-xl bg-[#DC2626]/10 dark:bg-[#1E293B] border border-[#DC2626]/20 dark:border-[#F87171]/40 flex items-start gap-3 text-right">
-              <AlertCircle className="w-5 h-5 text-[#DC2626] shrink-0 mt-0.5" />
-              <p className="text-[13px] sm:text-sm font-bold text-[#DC2626] dark:text-[#F87171] leading-relaxed">
+            <div className="mb-5 p-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-start gap-3 text-right animate-in fade-in">
+              <AlertCircle className="w-5 h-5 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
+              <p className="text-[13px] sm:text-sm font-bold text-rose-700 dark:text-rose-300 leading-relaxed">
                 {error}
               </p>
             </div>
@@ -227,18 +322,44 @@ export default function LoginPage() {
           {loginMode === "code" ? (
             <form onSubmit={handleCodeLogin} className="space-y-5">
               {autoFilledNotice && (
-                <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 flex items-center gap-2.5 text-xs text-emerald-800 dark:text-emerald-300 font-bold animate-in fade-in duration-200">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                  <span>تم استرجاع وتعبئة كود الدخول الخاص بك تلقائياً. اضغط "دخول" للمتابعة.</span>
+                <div className="p-3.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 flex items-center gap-2.5 text-xs text-emerald-800 dark:text-emerald-300 font-bold animate-in fade-in duration-200">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                  <span>{autoFilledNotice}</span>
                 </div>
               )}
+
+              {/* Student Code Field */}
               <div>
-                <label
-                  htmlFor="studentCode"
-                  className="block text-[13px] sm:text-sm font-bold text-[#0F172A] dark:text-[#F8FAFC] mb-2"
-                >
-                  كود الطالب (Login Code)
-                </label>
+                <div className="flex items-center justify-between mb-2">
+                  <label
+                    htmlFor="studentCode"
+                    className="block text-[13px] sm:text-sm font-bold text-[#0F172A] dark:text-[#F8FAFC]"
+                  >
+                    كود الطالب (Login Code)
+                  </label>
+
+                  {/* Auto-Detection Indicator */}
+                  {isLookingUp ? (
+                    <span className="inline-flex items-center gap-1 text-[11px] font-bold text-[#800020] dark:text-rose-400">
+                      <Loader2 className="w-3 h-3 animate-spin" />
+                      <span>جارٍ التعرف على الكود...</span>
+                    </span>
+                  ) : detectedStudent?.found ? (
+                    <span
+                      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold border ${
+                        detectedStudent.schoolCategory === "LANGUAGES"
+                          ? "bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-950/50 dark:text-indigo-300 dark:border-indigo-800"
+                          : "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-800"
+                      }`}
+                    >
+                      <Sparkles className="w-3 h-3" />
+                      <span>
+                        {detectedStudent.schoolCategory === "LANGUAGES" ? "طالب لغات 🇬🇧" : "طالب عربي 🇪🇬"}
+                      </span>
+                    </span>
+                  ) : null}
+                </div>
+
                 <div className="relative">
                   <input
                     id="studentCode"
@@ -249,16 +370,34 @@ export default function LoginPage() {
                     onChange={(e) => setStudentCode(e.target.value.toUpperCase())}
                     placeholder="مثال: J9KFQY"
                     maxLength={15}
-                    className="w-full h-12 pr-11 pl-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B]/50 text-[#0F172A] dark:text-white placeholder:text-[#94A3B8] text-base font-bold font-mono tracking-widest text-center focus:outline-none focus:ring-2 focus:ring-[#800020] focus:border-transparent transition-all"
+                    className="w-full h-12 pr-11 pl-4 rounded-2xl border border-[#E2E8F0] dark:border-[#27344D] bg-[#F8FAFC] dark:bg-[#0B1120] text-[#0F172A] dark:text-white placeholder:text-[#94A3B8] text-base font-black font-mono tracking-widest text-center focus:outline-none focus:ring-2 focus:ring-[#800020] dark:focus:ring-rose-500 focus:border-transparent transition-all shadow-inner"
                     dir="ltr"
                   />
                   <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#94A3B8] pointer-events-none">
-                    <KeyRound className="w-4 h-4 text-[#800020]" />
+                    <KeyRound className="w-4 h-4 text-[#800020] dark:text-rose-400" />
                   </div>
                 </div>
+
+                {/* Personalized Welcome Banner if code is verified */}
+                {detectedStudent?.found && detectedStudent.name && (
+                  <div className="mt-2.5 p-2.5 rounded-xl bg-slate-50 dark:bg-[#1E293B]/60 border border-slate-200 dark:border-slate-700 flex items-center justify-between text-xs animate-in fade-in">
+                    <div className="flex items-center gap-2">
+                      <UserCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                      <span className="font-bold text-[#0F172A] dark:text-white">
+                        أهلاً بك يا {detectedStudent.name} 👋
+                      </span>
+                    </div>
+                    <span className="text-[11px] text-[#64748B] dark:text-[#94A3B8]">
+                      {detectedStudent.schoolCategory === "LANGUAGES"
+                        ? "منهج اللغات المعتمد"
+                        : "منهج المدارس العامة"}
+                    </span>
+                  </div>
+                )}
+
                 <div className="mt-2 flex items-center gap-1.5 text-[11px] text-[#64748B] dark:text-[#94A3B8]">
                   <Shield className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                  <span>يقترن الحساب بجهازك الشخصي المعتمد تلقائياً (جهاز واحد فقط).</span>
+                  <span>يقترن الحساب بجهازك الشخصي المعتمد تلقائياً (جهاز واحد فقط للحماية).</span>
                 </div>
               </div>
 
@@ -267,76 +406,144 @@ export default function LoginPage() {
                 <label className="block text-[12px] sm:text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC]">
                   نظام الحضور والدراسة
                 </label>
-                <div className="grid grid-cols-2 gap-2 p-1 bg-[#F1F5F9] dark:bg-[#1E293B] rounded-xl border border-[#E2E8F0] dark:border-[#334155]">
+                <div className="grid grid-cols-2 gap-2.5 p-1.5 bg-[#F1F5F9] dark:bg-[#0B1120] rounded-2xl border border-[#E2E8F0] dark:border-[#27344D]">
                   <button
                     type="button"
                     onClick={() => setStudyMode("ONLINE")}
-                    className={`flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-lg text-xs font-bold transition-all ${
+                    className={`flex flex-col items-center justify-center p-3 rounded-xl transition-all duration-200 border ${
                       studyMode === "ONLINE"
-                        ? "bg-white dark:bg-[#0F172A] text-[#800020] dark:text-rose-400 shadow-sm border border-[#E2E8F0] dark:border-[#334155]"
-                        : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
+                        ? "bg-white dark:bg-[#1E293B] text-[#800020] dark:text-rose-400 border-[#800020]/20 dark:border-rose-500/40 shadow-sm"
+                        : "border-transparent text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
                     }`}
                   >
-                    <Globe className="w-3.5 h-3.5" />
-                    <span>🌐 أونلاين فقط</span>
+                    <div className="flex items-center gap-1.5 font-bold text-xs">
+                      <Globe className="w-4 h-4" />
+                      <span>أونلاين فقط</span>
+                      {studyMode === "ONLINE" && <Check className="w-3.5 h-3.5" />}
+                    </div>
+                    <span className="text-[10px] mt-0.5 opacity-80 font-medium">متابعة رقمية من المنزل</span>
                   </button>
+
                   <button
                     type="button"
                     onClick={() => setStudyMode("OFFLINE")}
-                    className={`flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-lg text-xs font-bold transition-all ${
+                    className={`flex flex-col items-center justify-center p-3 rounded-xl transition-all duration-200 border ${
                       studyMode === "OFFLINE"
-                        ? "bg-white dark:bg-[#0F172A] text-[#800020] dark:text-rose-400 shadow-sm border border-[#E2E8F0] dark:border-[#334155]"
-                        : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
+                        ? "bg-white dark:bg-[#1E293B] text-[#800020] dark:text-rose-400 border-[#800020]/20 dark:border-rose-500/40 shadow-sm"
+                        : "border-transparent text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
                     }`}
                   >
-                    <Building2 className="w-3.5 h-3.5" />
-                    <span>🏫 سنتر (أوفلاين)</span>
+                    <div className="flex items-center gap-1.5 font-bold text-xs">
+                      <Building2 className="w-4 h-4" />
+                      <span>سنتر (أوفلاين)</span>
+                      {studyMode === "OFFLINE" && <Check className="w-3.5 h-3.5" />}
+                    </div>
+                    <span className="text-[10px] mt-0.5 opacity-80 font-medium">حضور وشيتات ومتابعة</span>
                   </button>
                 </div>
               </div>
 
               {/* If Center / Offline is selected */}
               {studyMode === "OFFLINE" && (
-                <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20 space-y-2.5 animate-in fade-in duration-200">
-                  <label
-                    htmlFor="centerSelect"
-                    className="block text-xs font-bold text-amber-900 dark:text-amber-200"
-                  >
-                    اختر السنتر التابع له:
-                  </label>
+                <div className="p-4 rounded-2xl bg-amber-500/5 dark:bg-amber-950/20 border border-amber-500/20 space-y-3 animate-in fade-in duration-200">
+                  <div className="flex items-center justify-between">
+                    <label
+                      htmlFor="centerSelect"
+                      className="flex items-center gap-1.5 text-xs font-bold text-amber-950 dark:text-amber-200"
+                    >
+                      <MapPin className="w-3.5 h-3.5 text-[#800020] dark:text-amber-400" />
+                      <span>اختر السنتر التابع له:</span>
+                    </label>
+
+                    {detectedStudent?.schoolCategory && (
+                      <span className="text-[10px] font-bold text-amber-700 dark:text-amber-300">
+                        {detectedStudent.schoolCategory === "LANGUAGES" ? "سناتر اللغات" : "سناتر العربي"}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Quick Click Badges for detected or top centers */}
+                  <div className="flex flex-wrap gap-1.5">
+                    {(detectedStudent?.schoolCategory === "LANGUAGES"
+                      ? LANGUAGES_CENTERS
+                      : detectedStudent?.schoolCategory === "ARABIC"
+                      ? ARABIC_CENTERS
+                      : AUTHORIZED_CENTERS
+                    ).map((c) => {
+                      const isSelected = selectedCenter === c.name;
+                      return (
+                        <button
+                          key={c.id}
+                          type="button"
+                          onClick={() => setSelectedCenter(c.name)}
+                          className={`px-2.5 py-1.5 rounded-lg text-[11px] font-bold transition-all border flex items-center gap-1 ${
+                            isSelected
+                              ? "bg-[#800020] text-white border-[#800020] shadow-xs"
+                              : "bg-white dark:bg-[#1E293B] text-[#0F172A] dark:text-white border-[#E2E8F0] dark:border-[#334155] hover:border-[#800020]"
+                          }`}
+                        >
+                          <School className="w-3 h-3" />
+                          <span>{c.name}</span>
+                          <span className={`text-[9px] px-1 rounded ${isSelected ? "bg-white/20" : "bg-slate-100 dark:bg-slate-800 text-[#64748B] dark:text-slate-300"}`}>
+                            {c.badge}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Categorized Dropdown Selector */}
                   <select
                     id="centerSelect"
                     value={selectedCenter}
                     onChange={(e) => setSelectedCenter(e.target.value)}
-                    className="w-full h-10 px-3 rounded-lg border border-amber-300 dark:border-amber-700 bg-white dark:bg-[#1E293B] text-xs font-bold text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#800020]"
+                    className="w-full h-11 px-3 rounded-xl border border-amber-300 dark:border-amber-800 bg-white dark:bg-[#1E293B] text-xs font-bold text-[#0F172A] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#800020]"
                   >
-                    {POPULAR_CENTERS.map((c) => (
-                      <option key={c} value={c}>
-                        {c}
-                      </option>
-                    ))}
+                    <optgroup label="── سناتر مدارس اللغات (Languages) 🇬🇧 ──">
+                      {LANGUAGES_CENTERS.map((c) => (
+                        <option key={c.id} value={c.name}>
+                          {c.name} ({c.badge})
+                        </option>
+                      ))}
+                    </optgroup>
+                    <optgroup label="── سناتر المدارس العامة (عربي) 🇪🇬 ──">
+                      {ARABIC_CENTERS.map((c) => (
+                        <option key={c.id} value={c.name}>
+                          {c.name} ({c.badge})
+                        </option>
+                      ))}
+                    </optgroup>
+                    <optgroup label="── خيارات أخرى ──">
+                      <option value={OTHER_CENTER_NAME}>{OTHER_CENTER_NAME}</option>
+                    </optgroup>
                   </select>
 
-                  {selectedCenter === "سنتر آخر (أدخل اسم السنتر)" && (
-                    <input
-                      type="text"
-                      required
-                      value={customCenter}
-                      onChange={(e) => setCustomCenter(e.target.value)}
-                      placeholder="اكتب اسم السنتر التابع له..."
-                      className="w-full h-9 px-3 rounded-lg border border-amber-300 dark:border-amber-700 bg-white dark:bg-[#1E293B] text-xs font-bold text-[#0F172A] dark:text-white placeholder:text-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#800020]"
-                    />
+                  {/* If custom center is chosen */}
+                  {selectedCenter === OTHER_CENTER_NAME && (
+                    <div className="relative animate-in fade-in">
+                      <input
+                        type="text"
+                        required
+                        value={customCenter}
+                        onChange={(e) => setCustomCenter(e.target.value)}
+                        placeholder="اكتب اسم السنتر أو الفرع التابع له..."
+                        className="w-full h-10 pr-9 pl-3 rounded-xl border border-amber-300 dark:border-amber-700 bg-white dark:bg-[#1E293B] text-xs font-bold text-[#0F172A] dark:text-white placeholder:text-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#800020]"
+                      />
+                      <MapPin className="w-3.5 h-3.5 text-amber-600 absolute right-3 top-1/2 -translate-y-1/2" />
+                    </div>
                   )}
-                  <p className="text-[11px] text-amber-700 dark:text-amber-300 font-medium leading-relaxed">
-                    يتم ربط متابعتك ودرجاتك بالسنتر المعتمد لسهولة تواصل المساعد وولي الأمر.
+
+                  <p className="text-[11px] text-amber-800 dark:text-amber-300/90 font-medium leading-relaxed">
+                    يتم ربط حضورك ودرجاتك بالسنتر المعتمد لسهولة استلام الشيتات والتواصل مع ولي الأمر.
                   </p>
                 </div>
               )}
 
+              {/* Submit Button */}
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full h-12 rounded-xl bg-[#800020] hover:bg-[#66001A] text-white font-bold text-sm flex items-center justify-center gap-2 transition-colors disabled:opacity-50 interactive-tap shadow-xs"
+                className="w-full h-12 rounded-2xl bg-[#800020] hover:bg-[#66001A] text-white font-black text-sm flex items-center justify-center gap-2 transition-all duration-200 disabled:opacity-50 interactive-tap shadow-lg shadow-[#800020]/20"
               >
                 {isLoading ? (
                   <>
@@ -350,6 +557,50 @@ export default function LoginPage() {
                   </>
                 )}
               </button>
+
+              {/* Demo Account Quick Access Card */}
+              <div className="pt-2">
+                <div className="p-3.5 rounded-2xl bg-[#F8FAFC] dark:bg-[#0B1120] border border-[#E2E8F0] dark:border-[#1E293B] space-y-2">
+                  <div className="flex items-center justify-between text-xs font-bold text-[#64748B] dark:text-[#94A3B8]">
+                    <span className="flex items-center gap-1.5">
+                      <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                      <span>حسابات تجريبية للمعاينة السريعة:</span>
+                    </span>
+                    <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-normal">
+                      ضغطة واحدة للتجربة
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => handleApplyDemoAccount("DEMO-EN")}
+                      className="py-2 px-2 rounded-xl bg-white dark:bg-[#1E293B] hover:bg-indigo-50 dark:hover:bg-indigo-950/40 border border-[#E2E8F0] dark:border-slate-700 text-[11px] font-bold text-indigo-700 dark:text-indigo-300 text-center transition-all flex flex-col items-center gap-0.5"
+                    >
+                      <span>طالب لغات 🇬🇧</span>
+                      <span className="text-[9px] font-mono text-[#64748B] dark:text-[#94A3B8]">DEMO-EN</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => handleApplyDemoAccount("DEMO-AR")}
+                      className="py-2 px-2 rounded-xl bg-white dark:bg-[#1E293B] hover:bg-emerald-50 dark:hover:bg-emerald-950/40 border border-[#E2E8F0] dark:border-slate-700 text-[11px] font-bold text-emerald-700 dark:text-emerald-300 text-center transition-all flex flex-col items-center gap-0.5"
+                    >
+                      <span>طالب عربي 🇪🇬</span>
+                      <span className="text-[9px] font-mono text-[#64748B] dark:text-[#94A3B8]">DEMO-AR</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => handleApplyDemoAccount("DEMO-PRO")}
+                      className="py-2 px-2 rounded-xl bg-white dark:bg-[#1E293B] hover:bg-amber-50 dark:hover:bg-amber-950/40 border border-[#E2E8F0] dark:border-slate-700 text-[11px] font-bold text-amber-700 dark:text-amber-300 text-center transition-all flex flex-col items-center gap-0.5"
+                    >
+                      <span>حساب مفعل ⭐</span>
+                      <span className="text-[9px] font-mono text-[#64748B] dark:text-[#94A3B8]">DEMO-PRO</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
             </form>
           ) : (
             /* MODE 2: STAFF & CREDENTIALS LOGIN */
@@ -435,7 +686,7 @@ export default function LoginPage() {
           )}
 
           {/* Toggle Between Modes */}
-          <div className="mt-6 pt-5 border-t border-[#E2E8F0] dark:border-[#334155] flex flex-col gap-3 text-center text-xs">
+          <div className="mt-6 pt-5 border-t border-[#E2E8F0] dark:border-[#1E293B] flex flex-col gap-3 text-center text-xs">
             {loginMode === "code" ? (
               <>
                 <button
@@ -449,7 +700,7 @@ export default function LoginPage() {
                   دخول المعلمين والمشرفين (بكلمة المرور) ←
                 </button>
 
-                <div className="p-3 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/40 border border-[#E2E8F0] dark:border-[#334155] space-y-1.5">
+                <div className="p-3.5 rounded-2xl bg-[#F8FAFC] dark:bg-[#0B1120] border border-[#E2E8F0] dark:border-[#1E293B] space-y-1.5">
                   <span className="block font-bold text-[#0F172A] dark:text-white text-[11px]">
                     ليس لديك كود دخول أو واجهتك مشكلة؟
                   </span>
@@ -479,7 +730,7 @@ export default function LoginPage() {
           </div>
         </div>
 
-        <div className="mt-6 text-center">
+        <div className="mt-5 text-center">
           <Link
             href="/"
             className="inline-flex items-center gap-1 text-[13px] font-bold text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white transition-colors"
