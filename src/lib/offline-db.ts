@@ -134,19 +134,40 @@ export async function cacheOfflineLessonAssets(
   }
 
   const cache = await window.caches.open(OFFLINE_MEDIA_CACHE);
-  for (const assetUrl of assetUrls) {
-    try {
-      const response = await fetch(assetUrl, { credentials: "same-origin" });
-      if (response.ok && response.status === 200) {
-        await cache.put(assetUrl, response.clone());
-        cachedUrls.push(assetUrl);
-      } else {
-        failedUrls.push(assetUrl);
+  const queue = [...assetUrls];
+  const workerCount = Math.min(4, queue.length);
+
+  await Promise.all(
+    Array.from({ length: workerCount }, async () => {
+      while (queue.length > 0) {
+        const assetUrl = queue.shift();
+        if (!assetUrl) break;
+        try {
+          const existing = await cache.match(assetUrl);
+          if (existing) {
+            cachedUrls.push(assetUrl);
+            continue;
+          }
+          const signal =
+            typeof AbortSignal !== "undefined" && "timeout" in AbortSignal
+              ? AbortSignal.timeout(25_000)
+              : undefined;
+          const response = await fetch(assetUrl, {
+            credentials: "same-origin",
+            ...(signal ? { signal } : {}),
+          });
+          if (response.ok && response.status === 200) {
+            await cache.put(assetUrl, response.clone());
+            cachedUrls.push(assetUrl);
+          } else {
+            failedUrls.push(assetUrl);
+          }
+        } catch {
+          failedUrls.push(assetUrl);
+        }
       }
-    } catch {
-      failedUrls.push(assetUrl);
-    }
-  }
+    })
+  );
 
   return {
     cachedUrls,
