@@ -99,6 +99,21 @@ export async function purgeDemoSandboxUser(userId: string): Promise<void> {
     await prisma.user.delete({
       where: { id: user.id },
     });
+
+    // Clean up any synthetic flashcard review essay questions that became unreferenced
+    await prisma.question.deleteMany({
+      where: {
+        OR: [
+          { statement: { startsWith: "ما المقصود بمصطلح:" } },
+          { statement: { startsWith: "What is meant by the term:" } },
+        ],
+        mistakes: { none: {} },
+        studentAnswers: { none: {} },
+        questionAttempts: { none: {} },
+        examQuestions: { none: {} },
+        bookmarks: { none: {} },
+      },
+    });
   } catch (err) {
     console.warn("Non-fatal error purging demo sandbox user:", err);
   }

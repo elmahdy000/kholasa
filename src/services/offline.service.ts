@@ -1,10 +1,15 @@
 import { prisma } from "@/lib/prisma";
+import { forbidden, notFound } from "@/lib/http";
+import { canUserAccessLesson, type LessonAccessUser } from "@/lib/lesson-access";
 
 export class OfflineService {
   /**
    * Package full lesson contents, golden summary, and mindmap assets into an offline-ready payload
    */
-  static async generateLessonOfflinePackage(lessonId: string) {
+  static async generateLessonOfflinePackage(
+    lessonId: string,
+    user?: LessonAccessUser | null
+  ) {
     const lesson = await prisma.lesson.findUnique({
       where: {
         id: lessonId,
@@ -16,7 +21,19 @@ export class OfflineService {
           select: {
             id: true,
             title: true,
-            subject: { select: { id: true, name: true, color: true } },
+            order: true,
+            isPublished: true,
+            subject: {
+              select: {
+                id: true,
+                name: true,
+                color: true,
+                isPublished: true,
+                gradeId: true,
+                trackId: true,
+                schoolCategory: true,
+              },
+            },
           },
         },
         content: true,
@@ -26,7 +43,17 @@ export class OfflineService {
     });
 
     if (!lesson) {
-      throw new Error("الدرس غير موجود لتحميله أوفلاين");
+      throw notFound("الدرس غير موجود لتحميله أوفلاين");
+    }
+
+    if (user) {
+      const access = canUserAccessLesson(user, lesson);
+      if (!access.allowed) {
+        if (access.reason === "OUT_OF_SCOPE") {
+          throw notFound("الدرس غير متاح في مسارك الدراسي");
+        }
+        throw forbidden("يلزم تفعيل الاشتراك للوصول إلى هذا الدرس وتحميله أوفلاين");
+      }
     }
 
     return {

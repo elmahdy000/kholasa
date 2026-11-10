@@ -45,11 +45,13 @@ export interface DailyStudyPlanData {
 
 interface DailyGuidedStudyPlanCardProps {
   plan: DailyStudyPlanData;
+  isSubscribed?: boolean;
   onOpenDailyChallenge?: () => void;
 }
 
 export function DailyGuidedStudyPlanCard({
   plan,
+  isSubscribed = true,
   onOpenDailyChallenge,
 }: DailyGuidedStudyPlanCardProps) {
   const [task1Done, setTask1Done] = useState(plan.task1.isCompleted);
@@ -144,7 +146,7 @@ export function DailyGuidedStudyPlanCard({
               نسبة إنجاز اليوم:
             </span>
             <span
-              className={`px-2.5 py-0.5 rounded-full font-mono text-xs font-bold ${
+              className={`px-2.5 py-0.5 rounded-full font-sans tabular-nums text-xs font-bold ${
                 isAllCompleted
                   ? "bg-[#059669]/15 text-[#059669] dark:text-[#34D399]"
                   : "bg-[#800B34]/10 text-[#800B34] dark:text-[#FB7185]"
@@ -410,7 +412,7 @@ export function DailyGuidedStudyPlanCard({
 
           <div>
             {task3Done ? (
-              <div className="h-9 px-3 rounded-lg bg-[#059669]/10 text-[#059669] dark:text-[#34D399] text-xs font-bold flex items-center justify-center gap-1.5 w-full font-mono">
+              <div className="h-9 px-3 rounded-lg bg-[#059669]/10 text-[#059669] dark:text-[#34D399] text-xs font-bold flex items-center justify-center gap-1.5 w-full font-sans tabular-nums">
                 <Check className="w-4 h-4" weight="bold" />
                 <span>
                   {plan.task3.examAttempt
@@ -418,6 +420,24 @@ export function DailyGuidedStudyPlanCard({
                     : "أتممت امتحان اليوم بنجاح"}
                 </span>
               </div>
+            ) : !isSubscribed ? (
+              focus ? (
+                <Link
+                  href={`/lessons/${focus.lessonId}#section-assessment`}
+                  className="h-9 px-4 rounded-lg bg-[#4F46E5] hover:bg-[#4338CA] text-white text-xs font-bold flex items-center justify-center gap-1.5 w-full transition-colors cursor-pointer shadow-xs active:scale-[0.99]"
+                >
+                  <Target className="w-3.5 h-3.5" weight="bold" />
+                  <span>اختبر نفسك في الدرس المجاني</span>
+                </Link>
+              ) : (
+                <Link
+                  href="/subjects"
+                  className="h-9 px-4 rounded-lg bg-[#4F46E5] hover:bg-[#4338CA] text-white text-xs font-bold flex items-center justify-center gap-1.5 w-full transition-colors cursor-pointer shadow-xs active:scale-[0.99]"
+                >
+                  <Target className="w-3.5 h-3.5" weight="bold" />
+                  <span>تصفح الدروس والتدريبات</span>
+                </Link>
+              )
             ) : focus ? (
               <Link
                 href={`/exams/builder?subjectId=${focus.subjectId}&lessonId=${focus.lessonId}&questionCount=30`}

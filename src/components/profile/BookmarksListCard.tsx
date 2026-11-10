@@ -9,16 +9,18 @@ interface BookmarksListCardProps {
 }
 
 export function BookmarksListCard({ bookmarks }: BookmarksListCardProps) {
+  const lessonBookmarks = bookmarks.filter((b) => Boolean(b.lesson));
+
   return (
     <div className="p-4 sm:p-6 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] space-y-4 shadow-xs">
       <h2 className="text-sm sm:text-base font-bold text-[#091B40] dark:text-white flex items-center gap-2">
         <Bookmark className="w-5 h-5 text-[#D97706] fill-[#D97706]" />
-        <span>الدروس المحفوظة في المفضلة ({bookmarks.length})</span>
+        <span>الدروس المحفوظة في المفضلة ({lessonBookmarks.length})</span>
       </h2>
 
-      {bookmarks.length > 0 ? (
+      {lessonBookmarks.length > 0 ? (
         <div className="divide-y divide-[#E2E8F0] dark:divide-[#334155]">
-          {bookmarks.map((b) => {
+          {lessonBookmarks.map((b) => {
             if (!b.lesson) return null;
             return (
               <div

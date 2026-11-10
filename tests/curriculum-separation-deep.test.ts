@@ -206,13 +206,14 @@ describe("Strict Curriculum Segregation: Arabic vs Languages", () => {
       expect(mockPrisma.lesson.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
           where: expect.objectContaining({
-            unit: {
+            unit: expect.objectContaining({
+              isPublished: true,
               subject: {
                 is: expect.objectContaining({
                   schoolCategory: "ARABIC",
                 }),
               },
-            },
+            }),
           }),
         })
       );

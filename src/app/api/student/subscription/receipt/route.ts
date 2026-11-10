@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
-import { unauthorized, badRequest, jsonError } from "@/lib/http";
+import { isAnyDemoCode } from "@/lib/demo-shared";
+import { unauthorized, badRequest, forbidden, jsonError } from "@/lib/http";
 import { prisma } from "@/lib/prisma";
 import { MediaService } from "@/services/media.service";
 import { AnalyticsService } from "@/services/analytics.service";
@@ -11,6 +12,12 @@ export async function POST(req: Request) {
   try {
     const user = await getCurrentUser();
     if (!user) throw unauthorized("يرجى تسجيل الدخول أولاً للمتابعة");
+
+    if (isAnyDemoCode(user.loginCode)) {
+      throw forbidden(
+        "أنت تتصفح الآن بحساب تجريبي مؤقت. للاشتراك وتفعيل الحساب الدائم، تواصل مع فريق الدعم عبر واتساب للحصول على كود الطالب الخاص بك."
+      );
+    }
 
     const formData = await req.formData();
     const file = (formData.get("receipt") || formData.get("file")) as File | null;

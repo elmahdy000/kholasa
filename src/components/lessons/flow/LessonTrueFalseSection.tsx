@@ -191,9 +191,12 @@ export function LessonTrueFalseSection({
                       <button
                         key={opt.id}
                         type="button"
-                        disabled={isSelected}
+                        dir={isEnglish ? "ltr" : "rtl"}
+                        disabled={Boolean(isRevealed) || isSelected}
                         onClick={() => onSelectOption(question.id, opt.id)}
-                        className={`h-14 rounded-2xl border text-[14px] sm:text-base font-bold flex items-center justify-center gap-2 transition-all cursor-pointer overflow-hidden active:scale-95 ${btnStyle}`}
+                        className={`h-14 rounded-2xl border text-[14px] sm:text-base font-bold flex items-center justify-center gap-2 transition-all overflow-hidden ${
+                          isRevealed || isSelected ? "cursor-default" : "cursor-pointer active:scale-95"
+                        } ${btnStyle}`}
                       >
                         {isTrueOption ? (
                           <Check className="w-5 h-5 shrink-0" weight="bold" />

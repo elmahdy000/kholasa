@@ -31,6 +31,7 @@ export interface ProfileViewProps {
     phone?: string | null;
     loginCode?: string | null;
     role: string;
+    schoolCategory?: "ARABIC" | "LANGUAGES" | null;
     maxDevices?: number;
     boundDevices?: string[];
     system?: { id: string; name: string } | null;

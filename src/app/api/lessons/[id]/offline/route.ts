@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
+import { jsonError, unauthorized } from "@/lib/http";
 import { OfflineService } from "@/services/offline.service";
 
 export async function GET(
@@ -9,7 +10,7 @@ export async function GET(
   try {
     const user = await getCurrentUser();
     if (!user) {
-      return NextResponse.json({ error: "غير مصرح" }, { status: 401 });
+      throw unauthorized("غير مصرح");
     }
 
     const { id } = await params;
@@ -17,13 +18,9 @@ export async function GET(
       return NextResponse.json({ error: "معرف الدرس مطلوب" }, { status: 400 });
     }
 
-    const packageData = await OfflineService.generateLessonOfflinePackage(id);
+    const packageData = await OfflineService.generateLessonOfflinePackage(id, user);
     return NextResponse.json({ package: packageData });
   } catch (err) {
-    console.error("Offline package error:", err);
-    return NextResponse.json(
-      { error: err instanceof Error ? err.message : "تعذر تجهيز حزمة الدرس للعمل أوفلاين" },
-      { status: 404 }
-    );
+    return jsonError(err);
   }
 }

@@ -1,8 +1,6 @@
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
-import {
-  CurriculumScope,
-  subjectScopeWhere,
-} from "@/lib/curriculum";
+import { CurriculumScope, subjectScopeWhere } from "@/lib/curriculum";
 
 export interface SearchResultItem {
   type: "LESSON" | "SUBJECT" | "QUESTION";
@@ -14,7 +12,7 @@ export interface SearchResultItem {
 
 export class SearchService {
   /**
-   * Search across lessons, subjects, and questions with unified formatting
+   * Search across lessons, subjects, and questions with strict publish & track scoping
    */
   static async globalSearch(
     query: string,
@@ -26,15 +24,19 @@ export class SearchService {
     }
 
     const subjectFilter = subjectScopeWhere(scope);
-    const hasScope = Boolean(scope?.gradeId);
+    const publishedSubjectFilter: Prisma.SubjectWhereInput = {
+      isPublished: true,
+      ...subjectFilter,
+    };
 
     const [lessons, subjects, questions] = await Promise.all([
       prisma.lesson.findMany({
         where: {
           isPublished: true,
-          ...(hasScope
-            ? { unit: { subject: { is: subjectFilter } } }
-            : {}),
+          unit: {
+            isPublished: true,
+            subject: { is: publishedSubjectFilter },
+          },
           OR: [
             { title: { contains: q, mode: "insensitive" } },
             {
@@ -55,8 +57,7 @@ export class SearchService {
       }),
       prisma.subject.findMany({
         where: {
-          isPublished: true,
-          ...subjectFilter,
+          ...publishedSubjectFilter,
           OR: [
             { name: { contains: q, mode: "insensitive" } },
             { description: { contains: q, mode: "insensitive" } },
@@ -67,15 +68,32 @@ export class SearchService {
       prisma.question.findMany({
         where: {
           status: "PUBLISHED",
-          ...(hasScope ? { subject: { is: subjectFilter } } : {}),
+          subject: { is: publishedSubjectFilter },
           ...(scope?.schoolCategory ? { schoolCategory: scope.schoolCategory } : {}),
           OR: [
-            { statement: { contains: q, mode: "insensitive" } },
-            { translation: { contains: q, mode: "insensitive" } },
+            { lessons: { none: {} } },
             {
-              explanation: {
-                concept: { contains: q, mode: "insensitive" },
+              lessons: {
+                some: {
+                  lesson: {
+                    isPublished: true,
+                    unit: { isPublished: true },
+                  },
+                },
               },
+            },
+          ],
+          AND: [
+            {
+              OR: [
+                { statement: { contains: q, mode: "insensitive" } },
+                { translation: { contains: q, mode: "insensitive" } },
+                {
+                  explanation: {
+                    concept: { contains: q, mode: "insensitive" },
+                  },
+                },
+              ],
             },
           ],
         },
@@ -83,6 +101,12 @@ export class SearchService {
         include: {
           subject: { select: { id: true, name: true } },
           lessons: {
+            where: {
+              lesson: {
+                isPublished: true,
+                unit: { isPublished: true },
+              },
+            },
             include: {
               lesson: { select: { id: true, title: true } },
             },

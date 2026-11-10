@@ -174,22 +174,26 @@ export function LessonMcqSection({
                       }
                     }
 
-                    const isEnglishOpt = isEnglish || !/[\u0600-\u06FF]/.test(opt.text || "");
+                    const isEnglishOpt = isEnglish;
                     const arabicLetters = ["أ", "ب", "ج", "د", "هـ"];
                     const englishLetters = ["A", "B", "C", "D", "E"];
-                    const letter = isEnglish ? englishLetters[optIdx] || opt.order : arabicLetters[optIdx] || opt.order;
+                    const letter = isEnglishOpt ? englishLetters[optIdx] || opt.order : arabicLetters[optIdx] || opt.order;
 
                     return (
                       <button
                         key={opt.id}
                         type="button"
                         dir={isEnglishOpt ? "ltr" : "rtl"}
-                        disabled={isSelected}
+                        disabled={Boolean(isRevealed) || isSelected}
                         onClick={() => onSelectOption(question.id, opt.id)}
-                        className={`w-full p-3.5 sm:p-4 rounded-xl border ${isEnglishOpt ? "text-left font-sans" : "text-right font-content"} text-xs sm:text-sm font-medium flex items-center justify-between gap-3 transition-all cursor-pointer overflow-hidden ${btnStyle}`}
+                        className={`w-full p-3.5 sm:p-4 rounded-xl border ${isEnglishOpt ? "text-left font-sans" : "text-right font-content"} text-xs sm:text-sm font-medium flex items-center justify-between gap-3 transition-all ${isRevealed || isSelected ? "cursor-default" : "cursor-pointer"} overflow-hidden ${btnStyle}`}
                       >
                         <div className="flex items-center gap-3 min-w-0 flex-1">
-                          <span className="w-7 h-7 rounded-lg bg-[#F8FAFC] dark:bg-[#1E293B] text-[#64748B] dark:text-[#F8FAFC] flex items-center justify-center text-[13px] font-mono font-bold shrink-0 border border-[#E2E8F0]/80 dark:border-[#334155]/80">
+                          <span
+                            className={`w-7 h-7 rounded-lg bg-[#F8FAFC] dark:bg-[#1E293B] text-[#64748B] dark:text-[#F8FAFC] flex items-center justify-center text-[13px] ${
+                              isEnglishOpt ? "font-mono" : "font-sans"
+                            } font-bold shrink-0 border border-[#E2E8F0]/80 dark:border-[#334155]/80`}
+                          >
                             {letter}
                           </span>
                           <div className={`min-w-0 flex-1 leading-relaxed break-words ${isEnglishOpt ? "text-left" : "text-right"}`}>

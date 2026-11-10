@@ -128,6 +128,7 @@ export function LessonFlashcardsModal({
   // Tracking outcomes
   const [masteredTerms, setMasteredTerms] = useState<string[]>([]);
   const [mistakeTerms, setMistakeTerms] = useState<Definition[]>([]);
+  const [persistedMistakeTerms, setPersistedMistakeTerms] = useState<string[]>([]);
 
   // Animation & UI feedback
   const [slideState, setSlideState] = useState<
@@ -169,6 +170,7 @@ export function LessonFlashcardsModal({
       setShowHint(false);
       setMasteredTerms([]);
       setMistakeTerms([]);
+      setPersistedMistakeTerms([]);
       setSlideState("idle");
       setSavingNotice(null);
     }
@@ -202,31 +204,68 @@ export function LessonFlashcardsModal({
     }, 200);
   }, []);
 
+  const persistFlashcardAction = useCallback(
+    async (card: Definition, action: "RECORD_MISTAKE" | "RESOLVE_MISTAKE") => {
+      try {
+        const res = await fetch(`/api/lessons/${lessonId}/flashcards/mistake`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            term: card.term,
+            meaning: card.meaning,
+            action,
+          }),
+        });
+        if (!res.ok) return;
+        const data = await res.json().catch(() => null);
+        if (action === "RECORD_MISTAKE") {
+          setPersistedMistakeTerms((prev) =>
+            prev.includes(card.term) ? prev : [...prev, card.term]
+          );
+          setSavingNotice("تم حفظ المصطلح في كشكول غلطاتي");
+          setTimeout(() => setSavingNotice(null), 2000);
+        } else if (action === "RESOLVE_MISTAKE" && data?.questionId) {
+          setPersistedMistakeTerms((prev) => prev.filter((t) => t !== card.term));
+        }
+      } catch {
+        // Non-blocking background sync for flashcard review
+      }
+    },
+    [lessonId]
+  );
+
   // Mark as Mastered
   const handleMastered = useCallback(() => {
     if (!currentCard) return;
     playTone("master", soundEnabled);
 
-    setMasteredTerms((prev) => [...prev, currentCard.term]);
+    const cardToResolve = currentCard;
+    setMasteredTerms((prev) => [...prev, cardToResolve.term]);
     setSlideState("exit-left");
+
+    if (persistedMistakeTerms.includes(cardToResolve.term)) {
+      void persistFlashcardAction(cardToResolve, "RESOLVE_MISTAKE");
+    }
 
     setTimeout(() => {
       advanceCard();
     }, 180);
-  }, [currentCard, soundEnabled, advanceCard]);
+  }, [currentCard, soundEnabled, advanceCard, persistedMistakeTerms, persistFlashcardAction]);
 
   // Mark as Needs Review (Mistake)
   const handleNeedsReview = useCallback(async () => {
     if (!currentCard) return;
     playTone("review", soundEnabled);
 
-    setMistakeTerms((prev) => [...prev, currentCard]);
+    const cardToSave = currentCard;
+    setMistakeTerms((prev) => [...prev, cardToSave]);
     setSlideState("exit-right");
+    void persistFlashcardAction(cardToSave, "RECORD_MISTAKE");
 
     setTimeout(() => {
       advanceCard();
     }, 180);
-  }, [currentCard, soundEnabled, advanceCard]);
+  }, [currentCard, soundEnabled, advanceCard, persistFlashcardAction]);
 
   // Toggle Mode (Term -> Def VS Scientific Term Def -> Term)
   const handleToggleMode = useCallback(() => {

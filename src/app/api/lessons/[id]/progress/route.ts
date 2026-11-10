@@ -39,7 +39,8 @@ export async function POST(
     const progress = await StudentService.updateLessonProgress(
       user.id,
       lessonId,
-      body
+      body,
+      user
     );
 
     return NextResponse.json({ success: true, progress });

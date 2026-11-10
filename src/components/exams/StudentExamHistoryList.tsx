@@ -34,22 +34,25 @@ type TabType = "all" | "lessons" | "units" | "comprehensive";
 export function StudentExamHistoryList({ attempts }: StudentExamHistoryListProps) {
   const [activeTab, setActiveTab] = useState<TabType>("all");
 
+  const isLessonTitle = (title: string) =>
+    title.includes("درس") ||
+    title.includes("الدرس") ||
+    /lesson exam/i.test(title);
+  const isUnitTitle = (title: string) =>
+    title.includes("وحدة") ||
+    title.includes("الوحدة") ||
+    /unit exam/i.test(title);
+
   const filteredAttempts = useMemo(() => {
     if (activeTab === "all") return attempts;
     if (activeTab === "lessons") {
-      return attempts.filter((a) => a.title.includes("درس") || a.title.includes("الدرس"));
+      return attempts.filter((a) => isLessonTitle(a.title));
     }
     if (activeTab === "units") {
-      return attempts.filter((a) => a.title.includes("وحدة") || a.title.includes("الوحدة"));
+      return attempts.filter((a) => isUnitTitle(a.title));
     }
     if (activeTab === "comprehensive") {
-      return attempts.filter(
-        (a) =>
-          !a.title.includes("درس") &&
-          !a.title.includes("الدرس") &&
-          !a.title.includes("وحدة") &&
-          !a.title.includes("الوحدة")
-      );
+      return attempts.filter((a) => !isLessonTitle(a.title) && !isUnitTitle(a.title));
     }
     return attempts;
   }, [attempts, activeTab]);
@@ -57,14 +60,10 @@ export function StudentExamHistoryList({ attempts }: StudentExamHistoryListProps
   const counts = useMemo(() => {
     return {
       all: attempts.length,
-      lessons: attempts.filter((a) => a.title.includes("درس") || a.title.includes("الدرس")).length,
-      units: attempts.filter((a) => a.title.includes("وحدة") || a.title.includes("الوحدة")).length,
+      lessons: attempts.filter((a) => isLessonTitle(a.title)).length,
+      units: attempts.filter((a) => isUnitTitle(a.title)).length,
       comprehensive: attempts.filter(
-        (a) =>
-          !a.title.includes("درس") &&
-          !a.title.includes("الدرس") &&
-          !a.title.includes("وحدة") &&
-          !a.title.includes("الوحدة")
+        (a) => !isLessonTitle(a.title) && !isUnitTitle(a.title)
       ).length,
     };
   }, [attempts]);

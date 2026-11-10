@@ -12,9 +12,47 @@ const dayKeyFormatter = new Intl.DateTimeFormat("en-CA", {
   day: "2-digit",
 });
 
+const cairoPartsFormatter = new Intl.DateTimeFormat("en-US", {
+  timeZone: CAIRO_TZ,
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit",
+  hourCycle: "h23",
+});
+
+function getCairoOffsetMs(utcMs: number): number {
+  const parts = cairoPartsFormatter.formatToParts(new Date(utcMs));
+  const map: Record<string, number> = {};
+  for (const p of parts) {
+    if (p.type !== "literal") map[p.type] = Number(p.value);
+  }
+  const cairoAsUtc = Date.UTC(
+    map.year,
+    map.month - 1,
+    map.day,
+    map.hour === 24 ? 0 : map.hour,
+    map.minute,
+    map.second
+  );
+  return cairoAsUtc - utcMs;
+}
+
 /** Returns the Cairo calendar day for `date` as `YYYY-MM-DD`. */
 export function getCairoDayKey(date: Date = new Date()): string {
   return dayKeyFormatter.format(date);
+}
+
+/** Returns the UTC Date representing 00:00:00 Africa/Cairo for `date`'s Cairo day. */
+export function getCairoStartOfDay(date: Date = new Date()): Date {
+  const dayKey = getCairoDayKey(date);
+  const [year, month, day] = dayKey.split("-").map(Number);
+  const nominalUtc = Date.UTC(year, month - 1, day, 0, 0, 0, 0);
+  const initial = nominalUtc - getCairoOffsetMs(nominalUtc);
+  // Refine once in case a DST boundary sits near midnight
+  return new Date(nominalUtc - getCairoOffsetMs(initial));
 }
 
 /** Shifts a `YYYY-MM-DD` key by a number of days (negative = past). */

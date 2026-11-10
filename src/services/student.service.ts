@@ -1,7 +1,14 @@
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
-import { badRequest, conflict, notFound } from "@/lib/http";
+import { badRequest, conflict, forbidden, notFound } from "@/lib/http";
 import { getCurriculumScope, subjectScopeWhere, type SchoolCategory } from "@/lib/curriculum";
+import { getCairoDayKey, getCairoStartOfDay } from "@/lib/date";
+import {
+  canUserAccessLesson,
+  hasActiveSubscription,
+  isTrialLesson,
+  type LessonAccessUser,
+} from "@/lib/lesson-access";
 
 export class StudentService {
   /**
@@ -35,7 +42,19 @@ export class StudentService {
     const [progressRecords, recentAttempts, totalAttemptsCount, unresolvedMistakes, bookmarksCount] =
       await Promise.all([
         prisma.studentProgress.findMany({
-          where: { userId },
+          where: {
+            userId,
+            lesson: {
+              isPublished: true,
+              unit: {
+                isPublished: true,
+                subject: {
+                  isPublished: true,
+                  ...subjectScopeWhere(scope),
+                },
+              },
+            },
+          },
           include: { lesson: { select: { id: true, title: true, unitId: true } } },
         }),
         prisma.examAttempt.findMany({
@@ -56,7 +75,17 @@ export class StudentService {
           where: { userId, isCompleted: true },
         }),
         prisma.mistakeReview.count({
-          where: { userId, isResolved: false },
+          where: {
+            userId,
+            isResolved: false,
+            question: {
+              status: "PUBLISHED",
+              subject: {
+                isPublished: true,
+                ...subjectScopeWhere(scope),
+              },
+            },
+          },
         }),
         prisma.bookmark.count({
           where: { userId },
@@ -65,19 +94,25 @@ export class StudentService {
 
     const completedLessonsCount = progressRecords.filter((p) => p.isCompleted).length;
 
-    // Check if daily entrance gatekeeper exam was taken today
-    const startOfToday = new Date();
-    startOfToday.setHours(0, 0, 0, 0);
+    // Check if daily entrance gatekeeper exam was taken today (Cairo calendar day)
+    const startOfToday = getCairoStartOfDay();
+    const todayKey = getCairoDayKey();
 
-    const todayAttempt = await prisma.examAttempt.findFirst({
-      where: {
-        userId,
-        startedAt: { gte: startOfToday },
-        isCompleted: true,
-      },
-    });
+    const [todayAttempt, todayChallenge] = await Promise.all([
+      prisma.examAttempt.findFirst({
+        where: {
+          userId,
+          completedAt: { gte: startOfToday },
+          isCompleted: true,
+        },
+      }),
+      prisma.dailyChallenge.findUnique({
+        where: { userId_day: { userId, day: todayKey } },
+        select: { completedAt: true },
+      }),
+    ]);
 
-    const isDailyExamCompletedToday = !!todayAttempt;
+    const isDailyExamCompletedToday = Boolean(todayAttempt || todayChallenge?.completedAt);
 
     // Calculate recent average score
     const avgScore =
@@ -117,7 +152,8 @@ export class StudentService {
   static async updateLessonProgress(
     userId: string,
     lessonId: string,
-    payload: number | { progressPercent?: number; isCompleted?: boolean }
+    payload: number | { progressPercent?: number; isCompleted?: boolean },
+    userAccess?: LessonAccessUser | null
   ) {
     let progressPercent: number | undefined;
     let isCompleted: boolean | undefined;
@@ -151,12 +187,46 @@ export class StudentService {
     const finalIsCompleted = typeof isCompleted === "boolean" ? isCompleted : clampedProgress >= 90;
 
     const lesson = await prisma.lesson.findUnique({
-      where: { id: lessonId },
-      select: { id: true },
+      where: {
+        id: lessonId,
+        isPublished: true,
+        unit: { isPublished: true, subject: { isPublished: true } },
+      },
+      select: {
+        id: true,
+        isPublished: true,
+        isTrial: true,
+        order: true,
+        unit: {
+          select: {
+            isPublished: true,
+            order: true,
+            subject: {
+              select: {
+                id: true,
+                isPublished: true,
+                gradeId: true,
+                trackId: true,
+                schoolCategory: true,
+              },
+            },
+          },
+        },
+      },
     });
 
     if (!lesson) {
       throw notFound("الدرس المطلوب غير موجود");
+    }
+
+    if (userAccess) {
+      const access = canUserAccessLesson(userAccess, lesson);
+      if (!access.allowed) {
+        if (access.reason === "OUT_OF_SCOPE") {
+          throw notFound("الدرس غير متاح في مسارك الدراسي");
+        }
+        throw forbidden("يلزم تفعيل الاشتراك لتسجيل التقدم في هذا الدرس");
+      }
     }
 
     return prisma.studentProgress.upsert({
@@ -386,6 +456,7 @@ export class StudentService {
       select: {
         id: true,
         role: true,
+        subscriptionStatus: true,
         systemId: true,
         gradeId: true,
         schoolCategory: true,
@@ -437,9 +508,19 @@ export class StudentService {
     });
     const masteredSet = new Set(masteredAttempts.map((a) => a.questionId));
 
-    // 3. Fetch unresolved mistakes for this student
+    // 3. Fetch unresolved mistakes for this student (scoped to active published curriculum)
     const unresolvedMistakes = await prisma.mistakeReview.findMany({
-      where: { userId, isResolved: false },
+      where: {
+        userId,
+        isResolved: false,
+        question: {
+          status: "PUBLISHED",
+          subject: {
+            isPublished: true,
+            ...subjectScopeWhere(scope),
+          },
+        },
+      },
       select: { questionId: true, wrongCount: true },
     });
     const mistakeMap = new Map(unresolvedMistakes.map((m) => [m.questionId, m.wrongCount]));
@@ -486,9 +567,11 @@ export class StudentService {
       masteryPercentage: number;
       unresolvedMistakesCount: number;
       totalQuestions: number;
+      isAccessible: boolean;
     }
 
     const lessonCandidates: LessonCandidate[] = [];
+    const userHasActiveSub = hasActiveSubscription(user);
 
     const subjectAnalytics = subjects.map((subj) => {
       let subjQuestions = 0;
@@ -519,6 +602,7 @@ export class StudentService {
               masteryPercentage: masteryPct,
               unresolvedMistakesCount: mistakesCount,
               totalQuestions: totalQ,
+              isAccessible: userHasActiveSub || isTrialLesson({ isTrial: l.isTrial, order: l.order, unit: { order: u.order } }),
             });
           }
 
@@ -586,8 +670,11 @@ export class StudentService {
     } | null = null;
 
     if (lessonCandidates.length > 0) {
+      const accessibleCandidates = lessonCandidates.filter((c) => c.isAccessible);
+      const focusPool = accessibleCandidates.length > 0 ? accessibleCandidates : lessonCandidates;
+
       // Check highest mistakes first
-      const withMistakes = [...lessonCandidates].filter((c) => c.unresolvedMistakesCount > 0);
+      const withMistakes = [...focusPool].filter((c) => c.unresolvedMistakesCount > 0);
       if (withMistakes.length > 0) {
         withMistakes.sort((a, b) => b.unresolvedMistakesCount - a.unresolvedMistakesCount);
         const top = withMistakes[0];
@@ -597,7 +684,7 @@ export class StudentService {
         };
       } else {
         // Sort by lowest mastery
-        const byMastery = [...lessonCandidates].sort((a, b) => a.masteryPercentage - b.masteryPercentage);
+        const byMastery = [...focusPool].sort((a, b) => a.masteryPercentage - b.masteryPercentage);
         const lowest = byMastery[0];
         if (lowest.masteryPercentage < 100) {
           focusRecommendation = {

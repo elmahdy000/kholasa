@@ -60,6 +60,7 @@ export interface DashboardClientProps {
   recentExams?: RecentExamItem[];
   masteryData?: any;
   dailyStudyPlan?: DailyStudyPlanData | null;
+  isSubscribed?: boolean;
 }
 
 export const fadeInUp = {

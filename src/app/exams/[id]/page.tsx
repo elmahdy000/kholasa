@@ -28,6 +28,9 @@ export default async function ExamPage({ params, searchParams }: ExamPageProps) 
     include: {
       subject: true,
       questions: {
+        where: {
+          question: { status: "PUBLISHED" },
+        },
         orderBy: { order: "asc" },
         include: {
           question: {

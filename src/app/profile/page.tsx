@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { getCurriculumScope, subjectScopeWhere } from "@/lib/curriculum";
 import { StudentShell } from "@/components/layout/StudentShell";
 import { ProfileView } from "@/components/profile/ProfileView";
 
@@ -11,7 +12,10 @@ export default async function ProfilePage() {
     redirect("/login?callbackUrl=/profile");
   }
 
-  // Fetch student analytics
+  const scope = getCurriculumScope(user);
+  const scopedSubjectWhere = subjectScopeWhere(scope);
+
+  // Fetch student analytics scoped to published curriculum & track
   const [
     completedLessonsCount,
     attempts,
@@ -20,33 +24,69 @@ export default async function ProfilePage() {
     systems,
   ] = await Promise.all([
     prisma.studentProgress.count({
-      where: { userId: user.id, isCompleted: true },
+      where: {
+        userId: user.id,
+        isCompleted: true,
+        lesson: {
+          isPublished: true,
+          unit: {
+            isPublished: true,
+            subject: {
+              isPublished: true,
+              ...scopedSubjectWhere,
+            },
+          },
+        },
+      },
     }),
     prisma.examAttempt.findMany({
       where: { userId: user.id, isCompleted: true },
       select: { percentage: true },
     }),
     prisma.mistakeReview.count({
-      where: { userId: user.id, isResolved: true },
+      where: {
+        userId: user.id,
+        isResolved: true,
+        question: {
+          status: "PUBLISHED",
+          subject: {
+            isPublished: true,
+            ...scopedSubjectWhere,
+          },
+        },
+      },
     }),
     prisma.bookmark.findMany({
       where: { userId: user.id, lessonId: { not: null } },
     }),
     prisma.educationalSystem.findMany({
-      where: { isActive: true },
+      where: { isActive: true, code: "baccalaureate" },
       orderBy: { order: "asc" },
       include: {
-        grades: { orderBy: { order: "asc" } },
+        grades: {
+          where: { code: { in: ["bacc_g10", "bacc_g11"] } },
+          orderBy: { order: "asc" },
+        },
       },
     }),
   ]);
 
-  // Fetch bookmarked lessons
+  // Fetch bookmarked lessons (published and in active scope only)
   const lessonIds = rawBookmarks
     .map((b) => b.lessonId)
     .filter((id): id is string => Boolean(id));
   const lessons = await prisma.lesson.findMany({
-    where: { id: { in: lessonIds } },
+    where: {
+      id: { in: lessonIds },
+      isPublished: true,
+      unit: {
+        isPublished: true,
+        subject: {
+          isPublished: true,
+          ...scopedSubjectWhere,
+        },
+      },
+    },
     include: {
       unit: {
         include: {

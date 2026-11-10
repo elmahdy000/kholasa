@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { QuestionType } from "@prisma/client";
 import { badRequest, conflict } from "@/lib/http";
-import { getCairoDayKey } from "@/lib/date";
+import { calculateStreak, getCairoDayKey } from "@/lib/date";
 import {
   CurriculumScope,
   subjectScopeWhere,
@@ -53,7 +53,7 @@ export class DailyCheckinService {
     userId?: string
   ): Promise<string[]> {
     const subjectFilter = subjectScopeWhere(scope);
-    const hasScope = Boolean(scope?.gradeId);
+    const hasScope = Boolean(scope?.gradeId || scope?.schoolCategory);
 
     // Identify questions already answered by this student to prevent repetition
     let answeredIds = new Set<string>();
@@ -68,7 +68,25 @@ export class DailyCheckinService {
     const whereClause = {
       status: "PUBLISHED" as const,
       ...(scope?.schoolCategory ? { schoolCategory: scope.schoolCategory } : {}),
-      ...(hasScope ? { subject: { is: subjectFilter } } : {}),
+      subject: {
+        is: {
+          isPublished: true,
+          ...subjectFilter,
+        },
+      },
+      OR: [
+        { lessons: { none: {} } },
+        {
+          lessons: {
+            some: {
+              lesson: {
+                isPublished: true,
+                unit: { isPublished: true },
+              },
+            },
+          },
+        },
+      ],
     };
 
     const [mcq, trueFalse, essay] = await Promise.all([
@@ -105,7 +123,7 @@ export class DailyCheckinService {
     // fallback stays inside the student's curriculum whenever a scope exists.
     if (ids.length === 0 && !hasScope) {
       const fallback = await prisma.question.findMany({
-        where: { status: "PUBLISHED" },
+        where: { status: "PUBLISHED", subject: { is: { isPublished: true } } },
         select: { id: true },
         take: DAILY_QUESTION_COUNT.fallbackMax,
       });
@@ -326,15 +344,14 @@ export class DailyCheckinService {
             create: questions.map((q) => {
               const ans = answersByQuestion.get(q.id);
               const isEssay = q.type === QuestionType.ESSAY;
-              const isQCorrect = isEssay
-                ? null
-                : !!q.options.find(
-                    (o) => o.id === ans?.selectedOptionId && o.isCorrect
-                  );
+              const validOption = ans?.selectedOptionId
+                ? q.options.find((o) => o.id === ans.selectedOptionId)
+                : undefined;
+              const isQCorrect = isEssay ? null : Boolean(validOption?.isCorrect);
 
               return {
                 questionId: q.id,
-                selectedOptionId: ans?.selectedOptionId || null,
+                selectedOptionId: validOption?.id ?? null,
                 essayText: ans?.essayText || null,
                 isCorrect: isQCorrect,
                 score: isQCorrect === true ? 1 : isEssay ? null : 0,
@@ -348,6 +365,28 @@ export class DailyCheckinService {
         where: { id: challenge.id },
         data: { attemptId: attempt.id },
       });
+
+      for (const q of questions) {
+        const ans = answersByQuestion.get(q.id);
+        if (q.type === QuestionType.MCQ || q.type === QuestionType.TRUE_FALSE) {
+          const validOption = ans?.selectedOptionId
+            ? q.options.find((o) => o.id === ans.selectedOptionId)
+            : undefined;
+          await tx.questionAttempt.upsert({
+            where: { userId_questionId: { userId, questionId: q.id } },
+            create: {
+              userId,
+              questionId: q.id,
+              selectedOptionId: validOption?.id ?? null,
+              isCorrect: Boolean(validOption?.isCorrect),
+            },
+            update: {
+              selectedOptionId: validOption?.id ?? null,
+              isCorrect: Boolean(validOption?.isCorrect),
+            },
+          });
+        }
+      }
 
       for (const qId of mistakesToRecord) {
         await tx.mistakeReview.upsert({
@@ -368,9 +407,19 @@ export class DailyCheckinService {
       }
     });
 
+    const completedDays = await prisma.dailyChallenge.findMany({
+      where: { userId, completedAt: { not: null } },
+      select: { day: true },
+    });
+    const streakDays = calculateStreak(
+      completedDays.map((d) => d.day),
+      day
+    );
+
     return {
       dateKey: day,
       completed: true,
+      streakDays,
       score: correctCount,
       totalObjective: objectiveCount,
       totalQuestions: questions.length,

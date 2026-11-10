@@ -2,7 +2,8 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { getCurriculumScope, isSubjectInScope, subjectScopeWhere } from "@/lib/curriculum";
-import { calculateStreak, getCairoDayKey, shiftDayKey } from "@/lib/date";
+import { calculateStreak, getCairoDayKey, getCairoStartOfDay, shiftDayKey } from "@/lib/date";
+import { hasActiveSubscription } from "@/lib/lesson-access";
 import { StudentShell } from "@/components/layout/StudentShell";
 import { DashboardClient } from "@/components/dashboard/DashboardClient";
 import { StudentService } from "@/services/student.service";
@@ -40,8 +41,7 @@ export default async function DashboardPage() {
   });
 
   // 2. Calculate real progress & counts
-  const startOfToday = new Date();
-  startOfToday.setHours(0, 0, 0, 0);
+  const startOfToday = getCairoStartOfDay();
 
   const [
     completedLessonsCount,
@@ -55,12 +55,35 @@ export default async function DashboardPage() {
   ] = await Promise.all([
     userId
       ? prisma.studentProgress.count({
-          where: { userId, isCompleted: true },
+          where: {
+            userId,
+            isCompleted: true,
+            lesson: {
+              isPublished: true,
+              unit: {
+                isPublished: true,
+                subject: {
+                  isPublished: true,
+                  ...subjectScopeWhere(scope),
+                },
+              },
+            },
+          },
         })
       : 0,
     userId
       ? prisma.mistakeReview.count({
-          where: { userId, isResolved: false },
+          where: {
+            userId,
+            isResolved: false,
+            question: {
+              status: "PUBLISHED",
+              subject: {
+                isPublished: true,
+                ...subjectScopeWhere(scope),
+              },
+            },
+          },
         })
       : 0,
     userId
@@ -182,8 +205,27 @@ export default async function DashboardPage() {
       where: {
         status: "PUBLISHED",
         type: { in: ["MCQ", "TRUE_FALSE"] },
+        options: { some: {} },
         ...(scope?.schoolCategory ? { schoolCategory: scope.schoolCategory } : {}),
-        ...(scope?.gradeId ? { subject: { is: subjectScopeWhere(scope) } } : {}),
+        subject: {
+          is: {
+            isPublished: true,
+            ...subjectScopeWhere(scope),
+          },
+        },
+        OR: [
+          { lessons: { none: {} } },
+          {
+            lessons: {
+              some: {
+                lesson: {
+                  isPublished: true,
+                  unit: { isPublished: true },
+                },
+              },
+            },
+          },
+        ],
       },
       select: {
         id: true,
@@ -314,6 +356,7 @@ export default async function DashboardPage() {
         dailyQuestion={resolvedDailyQuestion as any}
         masteryData={masteryData}
         dailyStudyPlan={dailyStudyPlan}
+        isSubscribed={hasActiveSubscription(user)}
         recentExams={recentAttempts.map((a) => ({
           id: a.id,
           title: a.title,

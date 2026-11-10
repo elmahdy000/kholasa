@@ -1,6 +1,8 @@
 import webpush from "web-push";
 import { prisma } from "@/lib/prisma";
 import { NotificationType, SchoolCategory } from "@prisma/client";
+import { getCairoDayKey, getCairoStartOfDay } from "@/lib/date";
+import { getCurriculumScope, subjectScopeWhere } from "@/lib/curriculum";
 
 export interface InAppNotification {
   id: string;
@@ -60,25 +62,41 @@ export class NotificationService {
     // Fetch student's grade and track/category for targeted announcements
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { id: true, gradeId: true, schoolCategory: true },
-    });
-
-    const now = new Date();
-    const startOfToday = new Date();
-    startOfToday.setHours(0, 0, 0, 0);
-
-    // 1. Live Academic Check: Daily gatekeeper challenge
-    const todayAttempt = await prisma.examAttempt.findFirst({
-      where: {
-        userId,
-        startedAt: { gte: startOfToday },
-        isCompleted: true,
+      select: {
+        id: true,
+        role: true,
+        systemId: true,
+        gradeId: true,
+        trackId: true,
+        schoolCategory: true,
       },
     });
 
-    if (!todayAttempt) {
+    const scope = getCurriculumScope(user);
+    const scopedSubjectFilter = subjectScopeWhere(scope);
+
+    const now = new Date();
+    const startOfToday = getCairoStartOfDay(now);
+    const todayKey = getCairoDayKey(now);
+
+    // 1. Live Academic Check: Daily gatekeeper challenge / check-in
+    const [todayAttempt, todayChallenge] = await Promise.all([
+      prisma.examAttempt.findFirst({
+        where: {
+          userId,
+          completedAt: { gte: startOfToday },
+          isCompleted: true,
+        },
+      }),
+      prisma.dailyChallenge.findUnique({
+        where: { userId_day: { userId, day: todayKey } },
+        select: { completedAt: true },
+      }),
+    ]);
+
+    if (!todayAttempt && !todayChallenge?.completedAt) {
       notifications.push({
-        id: `daily_${startOfToday.toISOString().slice(0, 10)}`,
+        id: `daily_${todayKey}`,
         type: "DAILY_EXAM",
         title: "سؤال النهاردة مستنيك!",
         message: "ابدأ يومك بسؤال سريع وسجّل حضورك اليومي للحفاظ على استمرارك وصدارتك.",
@@ -90,9 +108,19 @@ export class NotificationService {
       });
     }
 
-    // 2. Live Academic Check: Unresolved mistakes
+    // 2. Live Academic Check: Unresolved mistakes (scoped to published curriculum & track)
     const unresolvedMistakesCount = await prisma.mistakeReview.count({
-      where: { userId, isResolved: false },
+      where: {
+        userId,
+        isResolved: false,
+        question: {
+          status: "PUBLISHED",
+          subject: {
+            isPublished: true,
+            ...scopedSubjectFilter,
+          },
+        },
+      },
     });
 
     if (unresolvedMistakesCount > 0) {
@@ -115,6 +143,16 @@ export class NotificationService {
         userId,
         isCompleted: false,
         progressPercent: { gt: 0, lt: 90 },
+        lesson: {
+          isPublished: true,
+          unit: {
+            isPublished: true,
+            subject: {
+              isPublished: true,
+              ...scopedSubjectFilter,
+            },
+          },
+        },
       },
       orderBy: { lastAccessedAt: "desc" },
       include: {

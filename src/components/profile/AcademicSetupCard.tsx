@@ -6,10 +6,12 @@ import type { EducationalSystem } from "./types";
 interface AcademicSetupCardProps {
   userSystemName?: string | null;
   userGradeName?: string | null;
+  userSchoolCategory?: "ARABIC" | "LANGUAGES" | null;
   isEditingAcademic: boolean;
   selectedSystemId: string;
   selectedGradeId: string;
   isSaving: boolean;
+  saveError?: string | null;
   systems: EducationalSystem[];
   onStartEditing: () => void;
   onCancelEditing: () => void;
@@ -21,10 +23,12 @@ interface AcademicSetupCardProps {
 export function AcademicSetupCard({
   userSystemName,
   userGradeName,
+  userSchoolCategory,
   isEditingAcademic,
   selectedSystemId,
   selectedGradeId,
   isSaving,
+  saveError,
   systems,
   onStartEditing,
   onCancelEditing,
@@ -33,6 +37,12 @@ export function AcademicSetupCard({
   onSaveAcademic,
 }: AcademicSetupCardProps) {
   const currentGrades = systems.find((s) => s.id === selectedSystemId)?.grades || [];
+  const schoolCategoryLabel =
+    userSchoolCategory === "LANGUAGES"
+      ? "مدارس لغات (Languages)"
+      : userSchoolCategory === "ARABIC"
+      ? "مدارس عربي"
+      : "غير محدد";
 
   return (
     <div className="p-4 sm:p-6 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] space-y-4 shadow-xs">
@@ -53,7 +63,7 @@ export function AcademicSetupCard({
       </div>
 
       {!isEditingAcademic ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
           <div className="p-3.5 sm:p-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/50 border border-[#E2E8F0] dark:border-[#334155]">
             <span className="text-xs sm:text-[13px] font-bold text-[#64748B] dark:text-[#94A3B8] block mb-1">
               النظام التعليمي
@@ -71,9 +81,23 @@ export function AcademicSetupCard({
               {userGradeName || "غير محدد"}
             </span>
           </div>
+
+          <div className="p-3.5 sm:p-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/50 border border-[#E2E8F0] dark:border-[#334155]">
+            <span className="text-xs sm:text-[13px] font-bold text-[#64748B] dark:text-[#94A3B8] block mb-1">
+              مسار المدرسة
+            </span>
+            <span className="text-sm font-bold text-[#091B40] dark:text-white">
+              {schoolCategoryLabel}
+            </span>
+          </div>
         </div>
       ) : (
         <div className="space-y-4 pt-1">
+          {saveError && (
+            <div className="p-3 rounded-xl bg-[#DC2626]/10 border border-[#DC2626]/20 text-xs font-bold text-[#DC2626] dark:text-[#F87171]">
+              {saveError}
+            </div>
+          )}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div>
               <label className="block text-xs sm:text-[13px] font-bold text-[#091B40] dark:text-[#F8FAFC] mb-1.5">

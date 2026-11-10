@@ -182,7 +182,7 @@ export function ExamQuestionCard({
           {currentQ.options.map((opt, optIdx) => {
             const isSelected = currentAnswer.selectedOptionId === opt.id;
 
-            const isEnglishOpt = isEnglish || !/[\u0600-\u06FF]/.test(opt.text || "");
+            const isEnglishOpt = isEnglish;
             const letter = isEnglishOpt
               ? englishLetters[optIdx] || opt.order
               : arabicLetters[optIdx] || opt.order;
@@ -238,7 +238,9 @@ export function ExamQuestionCard({
 
                 {/* Right: Letter Badge (A, B, C, D) */}
                 <div
-                  className={`w-7 h-7 sm:w-7.5 sm:h-7.5 rounded-lg sm:rounded-xl font-mono font-bold text-xs sm:text-sm flex items-center justify-center shrink-0 transition-transform ${rightBadgeClass}`}
+                  className={`w-7 h-7 sm:w-7.5 sm:h-7.5 rounded-lg sm:rounded-xl ${
+                    isEnglishOpt ? "font-mono" : "font-sans"
+                  } font-bold text-xs sm:text-sm flex items-center justify-center shrink-0 transition-transform ${rightBadgeClass}`}
                 >
                   {letter}
                 </div>
@@ -276,7 +278,10 @@ export function ExamQuestionCard({
       )}
 
       {/* 5. Navigation Bottom Row with Responsive Buttons */}
-      <div className="flex items-center justify-between gap-2.5 sm:gap-3 pt-3.5 sm:pt-4 border-t border-[#E8E9ED] dark:border-[#22364F]">
+      <div
+        dir={isEnglish ? "ltr" : "rtl"}
+        className="flex items-center justify-between gap-2.5 sm:gap-3 pt-3.5 sm:pt-4 border-t border-[#E8E9ED] dark:border-[#22364F]"
+      >
         {/* Previous Button */}
         <button
           type="button"
@@ -284,7 +289,11 @@ export function ExamQuestionCard({
           disabled={currentIndex === 0}
           className="flex-1 sm:flex-initial min-h-[44px] h-11 px-4 sm:px-6 rounded-xl sm:rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#10233A] hover:bg-slate-50 dark:hover:bg-slate-800 text-[#091B40] dark:text-white disabled:opacity-30 disabled:cursor-not-allowed font-bold text-xs sm:text-sm shadow-xs flex items-center justify-center gap-1.5 sm:gap-2 transition-all cursor-pointer select-none active:scale-95"
         >
-          <CaretLeft className="w-4 h-4 text-[#091B40] dark:text-white" weight="bold" />
+          {isEnglish ? (
+            <CaretLeft className="w-4 h-4 text-[#091B40] dark:text-white" weight="bold" />
+          ) : (
+            <CaretRight className="w-4 h-4 text-[#091B40] dark:text-white" weight="bold" />
+          )}
           <span>{isEnglish ? "Previous" : "السابق"}</span>
         </button>
 
@@ -326,7 +335,11 @@ export function ExamQuestionCard({
               className="flex-1 sm:flex-initial min-h-[44px] h-11 px-4 sm:px-6 rounded-xl sm:rounded-full bg-[#091B40] hover:bg-[#071737] text-white font-bold text-xs sm:text-sm shadow-sm flex items-center justify-center gap-1.5 sm:gap-2 transition-all cursor-pointer select-none active:scale-95"
             >
               <span>{isEnglish ? "Next" : "التالي"}</span>
-              <CaretRight className="w-4 h-4 text-white" weight="bold" />
+              {isEnglish ? (
+                <CaretRight className="w-4 h-4 text-white" weight="bold" />
+              ) : (
+                <CaretLeft className="w-4 h-4 text-white" weight="bold" />
+              )}
             </button>
           </div>
         ) : (

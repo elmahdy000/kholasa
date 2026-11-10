@@ -28,6 +28,7 @@ export function ProfileView({
     user.grade?.id || ""
   );
   const [isSaving, setIsSaving] = useState(false);
+  const [academicError, setAcademicError] = useState<string | null>(null);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [passwordForm, setPasswordForm] = useState({
     current: "",
@@ -50,6 +51,7 @@ export function ProfileView({
 
   const handleSaveAcademic = async () => {
     setIsSaving(true);
+    setAcademicError(null);
     try {
       const res = await fetch("/api/profile/update", {
         method: "POST",
@@ -60,12 +62,17 @@ export function ProfileView({
         }),
       });
 
-      if (res.ok) {
-        setIsEditingAcademic(false);
-        router.refresh();
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || "تعذر حفظ التعديلات، يرجى المحاولة مرة أخرى");
       }
+
+      setIsEditingAcademic(false);
+      router.refresh();
     } catch (err) {
-      console.error(err);
+      setAcademicError(
+        err instanceof Error ? err.message : "تعذر حفظ التعديلات، يرجى المحاولة مرة أخرى"
+      );
     } finally {
       setIsSaving(false);
     }
@@ -154,13 +161,21 @@ export function ProfileView({
       <AcademicSetupCard
         userSystemName={user.system?.name}
         userGradeName={user.grade?.name}
+        userSchoolCategory={user.schoolCategory}
         isEditingAcademic={isEditingAcademic}
         selectedSystemId={selectedSystemId}
         selectedGradeId={selectedGradeId}
         isSaving={isSaving}
+        saveError={academicError}
         systems={systems}
-        onStartEditing={() => setIsEditingAcademic(true)}
-        onCancelEditing={() => setIsEditingAcademic(false)}
+        onStartEditing={() => {
+          setAcademicError(null);
+          setIsEditingAcademic(true);
+        }}
+        onCancelEditing={() => {
+          setAcademicError(null);
+          setIsEditingAcademic(false);
+        }}
         onSystemChange={handleSystemChange}
         onGradeChange={setSelectedGradeId}
         onSaveAcademic={handleSaveAcademic}

@@ -32,6 +32,7 @@ export function DashboardClient({
   recentExams = [],
   masteryData,
   dailyStudyPlan,
+  isSubscribed = true,
 }: DashboardClientProps) {
   const [currentStreakDays, setCurrentStreakDays] = useState(streakDays);
   const [isTodayCompletedState, setIsTodayCompletedState] = useState(isTodayCompleted);
@@ -111,6 +112,7 @@ export function DashboardClient({
       {dailyStudyPlan && (
         <DailyGuidedStudyPlanCard
           plan={dailyStudyPlan}
+          isSubscribed={isSubscribed}
           onOpenDailyChallenge={() => {
             const el = document.getElementById("daily-challenge-card");
             if (el) {
@@ -145,6 +147,7 @@ export function DashboardClient({
           <DailyChallengeCard
             question={dailyQuestion}
             isTodayAlreadyCompleted={isTodayCompletedState}
+            isSubscribed={isSubscribed}
           />
         </section>
       )}

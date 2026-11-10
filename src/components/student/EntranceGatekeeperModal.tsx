@@ -115,14 +115,16 @@ export function EntranceGatekeeperModal({
     return () => clearTimeout(timer);
   }, [userRole, userId, pathname]);
 
-  // Listen to custom manual trigger (e.g. clicking Daily Challenge card on dashboard)
+  // Listen to custom manual trigger (e.g. clicking Daily Challenge or Streak extra challenge on dashboard)
   useEffect(() => {
     const handleOpen = () => {
       fetchQuestions(true);
     };
     window.addEventListener("kholasa:open-daily-gate", handleOpen);
+    window.addEventListener("kholasa_open_entrance_exam", handleOpen);
     return () => {
       window.removeEventListener("kholasa:open-daily-gate", handleOpen);
+      window.removeEventListener("kholasa_open_entrance_exam", handleOpen);
     };
   }, []);
 
@@ -216,6 +218,14 @@ export function EntranceGatekeeperModal({
 
       const data = await res.json();
       setExamResult(data);
+      window.dispatchEvent(
+        new CustomEvent("kholasa_streak_updated", {
+          detail: {
+            streakDays: typeof data.streakDays === "number" ? data.streakDays : undefined,
+            isTodayCompleted: true,
+          },
+        })
+      );
     } catch (err: unknown) {
       const message =
         err instanceof Error

@@ -113,15 +113,15 @@ export function LeaderboardClient({
           </div>
 
           <div className="flex items-center gap-1.5 sm:gap-3 text-xs sm:text-[13px] font-bold flex-wrap">
-            <div className="px-3 py-1.5 rounded-lg bg-[#800B34]/10 dark:bg-[#1E293B] border border-[#800B34]/20 text-[#800B34] dark:text-[#FB7185] font-mono flex items-center gap-1">
+            <div className="px-3 py-1.5 rounded-lg bg-[#800B34]/10 dark:bg-[#1E293B] border border-[#800B34]/20 text-[#800B34] dark:text-[#FB7185] font-sans tabular-nums flex items-center gap-1">
               <Award className="w-3.5 h-3.5" />
               <span>{currentUser.xp} XP</span>
             </div>
-            <div className="px-3 py-1.5 rounded-lg bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[#D97706] dark:text-[#FBBF24] flex items-center gap-1 font-mono">
+            <div className="px-3 py-1.5 rounded-lg bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[#D97706] dark:text-[#FBBF24] flex items-center gap-1 font-sans tabular-nums">
               <Flame className="w-3.5 h-3.5 fill-[#D97706]" />
               <span>{formatArabicDays(currentUser.streak)}</span>
             </div>
-            <div className="px-3 py-1.5 rounded-lg bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[#059669] dark:text-[#34D399] font-mono">
+            <div className="px-3 py-1.5 rounded-lg bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[#059669] dark:text-[#34D399] font-sans tabular-nums">
               {currentUser.completedExams} امتحان
             </div>
           </div>
@@ -130,31 +130,21 @@ export function LeaderboardClient({
 
       {/* Filters Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 p-3 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] shadow-xs">
-        {/* System tabs */}
-        <div className="grid grid-cols-3 sm:flex items-center gap-1 bg-[#F8FAFC] dark:bg-[#1E293B]/80 p-1 rounded-xl w-full sm:w-auto">
+        {/* System filter pill (Baccalaureate platform) */}
+        <div className="flex items-center gap-1 bg-[#F8FAFC] dark:bg-[#1E293B]/80 p-1 rounded-xl w-full sm:w-auto">
           <button
             onClick={() => setSystemFilter("ALL")}
-            className={`min-h-[44px] px-2 sm:px-3.5 py-2 rounded-lg text-xs sm:text-[13px] font-bold transition-all text-center truncate cursor-pointer ${
+            className={`min-h-[44px] flex-1 sm:flex-initial px-3.5 py-2 rounded-lg text-xs sm:text-[13px] font-bold transition-all text-center truncate cursor-pointer ${
               systemFilter === "ALL"
                 ? "bg-white dark:bg-[#0F172A] text-[#800B34] dark:text-[#FB7185] shadow-xs"
                 : "text-[#64748B] hover:text-[#091B40] dark:hover:text-white"
             }`}
           >
-            <span className="truncate">كل الأنظمة</span>
-          </button>
-          <button
-            onClick={() => setSystemFilter("الثانوية")}
-            className={`min-h-[44px] px-2 sm:px-3.5 py-2 rounded-lg text-xs sm:text-[13px] font-bold transition-all text-center truncate cursor-pointer ${
-              systemFilter === "الثانوية"
-                ? "bg-white dark:bg-[#0F172A] text-[#800B34] dark:text-[#FB7185] shadow-xs"
-                : "text-[#64748B] hover:text-[#091B40] dark:hover:text-white"
-            }`}
-          >
-            <span className="truncate">الثانوية العامة</span>
+            <span className="truncate">كل المتصدرين</span>
           </button>
           <button
             onClick={() => setSystemFilter("البكالوريا")}
-            className={`min-h-[44px] px-2 sm:px-3.5 py-2 rounded-lg text-xs sm:text-[13px] font-bold transition-all text-center truncate cursor-pointer ${
+            className={`min-h-[44px] flex-1 sm:flex-initial px-3.5 py-2 rounded-lg text-xs sm:text-[13px] font-bold transition-all text-center truncate cursor-pointer ${
               systemFilter === "البكالوريا"
                 ? "bg-white dark:bg-[#0F172A] text-[#800B34] dark:text-[#FB7185] shadow-xs"
                 : "text-[#64748B] hover:text-[#091B40] dark:hover:text-white"
@@ -318,15 +308,15 @@ export function LeaderboardClient({
               </div>
 
               <div className="flex items-center gap-2 sm:gap-4 text-xs sm:text-[13px] font-bold self-end sm:self-auto">
-                <span className="text-[#800B34] flex items-center gap-1 font-mono">
+                <span className="text-[#800B34] flex items-center gap-1 font-sans tabular-nums">
                   <Award className="w-3.5 h-3.5" />
                   <span>{user.xp} XP</span>
                 </span>
-                <span className="hidden sm:inline text-[#D97706] flex items-center gap-1 font-mono">
+                <span className="hidden sm:flex text-[#D97706] items-center gap-1 font-sans tabular-nums">
                   <Flame className="w-3.5 h-3.5 fill-current" />
                   <span>{formatArabicDays(user.streak)}</span>
                 </span>
-                <span className="text-[#059669] dark:text-[#34D399] font-mono">
+                <span className="text-[#059669] dark:text-[#34D399] font-sans tabular-nums">
                   {user.completedExams} امتحانات
                 </span>
               </div>

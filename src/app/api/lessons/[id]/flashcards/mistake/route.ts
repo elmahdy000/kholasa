@@ -2,13 +2,14 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { canUserAccessLesson } from "@/lib/lesson-access";
 import { MistakeService } from "@/services/mistake.service";
-import { jsonError, parseJson, unauthorized } from "@/lib/http";
+import { forbidden, jsonError, notFound, parseJson, unauthorized } from "@/lib/http";
 import { rateLimit } from "@/lib/rate-limit";
 
 const flashcardMistakeSchema = z.object({
-  term: z.string().min(1, "المصطلح مطلوب"),
-  meaning: z.string().min(1, "التعريف مطلوب"),
+  term: z.string().min(1, "المصطلح مطلوب").max(400),
+  meaning: z.string().min(1, "التعريف مطلوب").max(5000),
   action: z.enum(["RECORD_MISTAKE", "RESOLVE_MISTAKE"]).default("RECORD_MISTAKE"),
 });
 
@@ -31,10 +32,15 @@ export async function POST(
         unit: {
           select: {
             id: true,
+            order: true,
+            isPublished: true,
             subjectId: true,
             subject: {
               select: {
                 id: true,
+                isPublished: true,
+                gradeId: true,
+                trackId: true,
                 schoolCategory: true,
               },
             },
@@ -44,22 +50,28 @@ export async function POST(
     });
 
     if (!lesson) {
-      return NextResponse.json(
-        { error: "الدرس غير موجود" },
-        { status: 404 }
-      );
+      throw notFound("الدرس غير موجود");
+    }
+
+    const access = canUserAccessLesson(user, lesson);
+    if (!access.allowed) {
+      if (access.reason === "SUBSCRIPTION_REQUIRED") {
+        throw forbidden("يلزم تفعيل الاشتراك لتسجيل مراجعة هذا الدرس");
+      }
+      throw notFound("الدرس غير متاح في مسارك الدراسي");
     }
 
     const normalizedTerm = body.term.trim();
     const normalizedMeaning = body.meaning.trim();
     const isEnglishTerm = !/[\u0600-\u06FF]/.test(normalizedTerm);
+    const arStatement = `ما المقصود بمصطلح: ${normalizedTerm}؟`;
+    const enStatement = `What is meant by the term: ${normalizedTerm}?`;
 
-    let questionId: string;
-
-    // Check if an essay question already exists for this term under this lesson
+    // Look up an exact matching flashcard review question for this term in this lesson
     const existingQuestion = await prisma.question.findFirst({
       where: {
         type: "ESSAY",
+        status: "PUBLISHED",
         subjectId: lesson.unit.subjectId,
         lessons: {
           some: {
@@ -67,9 +79,8 @@ export async function POST(
           },
         },
         OR: [
-          { statement: `ما المقصود بمصطلح: ${normalizedTerm}؟` },
-          { statement: `What is meant by the term: ${normalizedTerm}?` },
-          { statement: { contains: normalizedTerm } },
+          { statement: arStatement },
+          { statement: enStatement },
         ],
       },
       select: {
@@ -77,14 +88,26 @@ export async function POST(
       },
     });
 
+    if (body.action === "RESOLVE_MISTAKE") {
+      if (existingQuestion) {
+        await MistakeService.resolveMistake(user.id, existingQuestion.id);
+      }
+      return NextResponse.json({
+        success: true,
+        action: "RESOLVED",
+        questionId: existingQuestion?.id ?? null,
+        message: isEnglishTerm
+          ? "Concept marked as mastered and removed from active mistakes"
+          : "تم تسجيل المصطلح كمتقن وإزالته من الأخطاء غير المحلولة",
+      });
+    }
+
+    let questionId: string;
     if (existingQuestion) {
       questionId = existingQuestion.id;
     } else {
-      const statement = isEnglishTerm
-        ? `What is meant by the term: ${normalizedTerm}?`
-        : `ما المقصود بمصطلح: ${normalizedTerm}؟`;
+      const statement = isEnglishTerm ? enStatement : arStatement;
 
-      // Create a clean ESSAY question representing this definition
       const created = await prisma.question.create({
         data: {
           statement,
@@ -128,28 +151,16 @@ export async function POST(
       questionId = created.id;
     }
 
-    if (body.action === "RECORD_MISTAKE") {
-      const mistake = await MistakeService.recordMistake(user.id, questionId);
-      return NextResponse.json({
-        success: true,
-        action: "RECORDED",
-        questionId,
-        wrongCount: mistake.wrongCount,
-        message: isEnglishTerm
-          ? "Concept saved to My Mistakes bank for later review"
-          : "تم حفظ المصطلح في بنك غلطاتي بنجاح للمراجعة اللاحقة",
-      });
-    } else {
-      await MistakeService.resolveMistake(user.id, questionId);
-      return NextResponse.json({
-        success: true,
-        action: "RESOLVED",
-        questionId,
-        message: isEnglishTerm
-          ? "Concept marked as mastered and removed from active mistakes"
-          : "تم تسجيل المصطلح كمتقن وإزالته من الأخطاء غير المحلولة",
-      });
-    }
+    const mistake = await MistakeService.recordMistake(user.id, questionId);
+    return NextResponse.json({
+      success: true,
+      action: "RECORDED",
+      questionId,
+      wrongCount: mistake.wrongCount,
+      message: isEnglishTerm
+        ? "Concept saved to My Mistakes bank for later review"
+        : "تم حفظ المصطلح في بنك غلطاتي بنجاح للمراجعة اللاحقة",
+    });
   } catch (error) {
     return jsonError(error);
   }

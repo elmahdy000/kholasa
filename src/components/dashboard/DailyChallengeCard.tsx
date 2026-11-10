@@ -13,6 +13,7 @@ import {
 } from "@phosphor-icons/react";
 import { BidiStatement } from "@/components/ui/BidiStatement";
 import { TranslationToggle } from "@/components/ui/TranslationToggle";
+import { formatArabicDays } from "@/lib/utils";
 
 import { QuestionImageAttachment } from "@/components/ui/QuestionImageAttachment";
 
@@ -44,11 +45,13 @@ interface RevealedAnswer {
 interface DailyChallengeCardProps {
   question: DailyQuestion | null;
   isTodayAlreadyCompleted?: boolean;
+  isSubscribed?: boolean;
 }
 
 export function DailyChallengeCard({
   question,
   isTodayAlreadyCompleted = false,
+  isSubscribed = true,
 }: DailyChallengeCardProps) {
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
   const [isAnswered, setIsAnswered] = useState(false);
@@ -109,9 +112,7 @@ export function DailyChallengeCard({
     question.options.find((o) => o.id === revealed?.correctOptionId);
 
   const isEnglishStatement = !/[\u0600-\u06FF]/.test(question.statement || "");
-  const isEnglish =
-    isEnglishStatement ||
-    Boolean(question.options?.some((o) => !/[\u0600-\u06FF]/.test(o.text || "")));
+  const isEnglish = isEnglishStatement;
 
   return (
     <div
@@ -213,7 +214,7 @@ export function DailyChallengeCard({
                 "bg-[#800B34]/10 dark:bg-[#1E293B] border-2 border-[#800B34] dark:border-[#E11D48] text-[#0F172A] dark:text-white  font-bold";
             }
 
-            const isEnglishOpt = isEnglish || !/[\u0600-\u06FF]/.test(opt.text || "");
+            const isEnglishOpt = isEnglish;
             const arabicLetters = ["أ", "ب", "ج", "د", "هـ"];
             const englishLetters = ["A", "B", "C", "D", "E"];
             const letter = isEnglishOpt
@@ -231,7 +232,9 @@ export function DailyChallengeCard({
               >
                 <div className="flex items-start gap-3 min-w-0 flex-1">
                   <span
-                    className={`w-6 h-6 rounded-lg flex items-center justify-center text-[13px] font-mono font-bold shrink-0 mt-0.5 transition-colors ${
+                    className={`w-6 h-6 rounded-lg flex items-center justify-center text-[13px] ${
+                      isEnglishOpt ? "font-mono" : "font-sans"
+                    } font-bold shrink-0 mt-0.5 transition-colors ${
                       isSelected
                         ? "bg-[#800B34] dark:bg-[#E11D48] text-white "
                         : "bg-[#E2E8F0] dark:bg-[#334155] text-[#0F172A] dark:text-[#F8FAFC]"
@@ -318,7 +321,7 @@ export function DailyChallengeCard({
                 <div className="flex items-center gap-2">
                   <Sparkle className="w-5 h-5 text-[#D97706] dark:text-[#FBBF24] shrink-0" weight="fill" />
                   <span className="text-[13px] font-bold text-[#D97706] dark:text-[#FBBF24]">
-                    عاش! كدة بقالك {streakEarned} أيام ورا بعض مستمر
+                    عاش! كدة بقالك {formatArabicDays(streakEarned)} ورا بعض مستمر
                   </span>
                 </div>
                 <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-[#D97706] text-white shrink-0">
@@ -330,15 +333,34 @@ export function DailyChallengeCard({
             {/* Lesson link or Mistake link */}
             <div className="flex flex-wrap items-center justify-between gap-2 pt-1 text-[13px]">
               <span className="text-[13px] text-[#64748B] dark:text-[#94A3B8]">
-                {isAnswered ? "إجابتك اتسجلت، وحضور النهاردة في أمان." : ""}
+                {isAnswered
+                  ? isCorrect
+                    ? "إجابتك اتسجلت، وحضور النهاردة في أمان."
+                    : "إجابتك اتسجلت والسؤال اتحفظ في كشكول غلطاتي للمراجعة."
+                  : ""}
               </span>
-              <Link
-                href="/exams/builder"
-                className="text-[13px] font-bold text-[#800B34] dark:text-[#FB7185] hover:underline flex items-center gap-1"
-              >
-                <span>كمّل حل أسئلة في بنك الاختبارات</span>
-                <ArrowLeft className="w-3.5 h-3.5" weight="bold" />
-              </Link>
+              <div className="flex flex-wrap items-center gap-3">
+                {!isCorrect && (
+                  <Link
+                    href="/mistakes"
+                    className="text-[13px] font-bold text-[#D97706] dark:text-[#FBBF24] hover:underline flex items-center gap-1"
+                  >
+                    <span>راجع السؤال في غلطاتي</span>
+                    <ArrowLeft className="w-3.5 h-3.5" weight="bold" />
+                  </Link>
+                )}
+                <Link
+                  href={isSubscribed ? "/exams/builder" : "/subjects"}
+                  className="text-[13px] font-bold text-[#800B34] dark:text-[#FB7185] hover:underline flex items-center gap-1"
+                >
+                  <span>
+                    {isSubscribed
+                      ? "كمّل حل أسئلة في بنك الاختبارات"
+                      : "تصفح الدروس والتدريبات المتاحة"}
+                  </span>
+                  <ArrowLeft className="w-3.5 h-3.5" weight="bold" />
+                </Link>
+              </div>
             </div>
           </div>
         )}

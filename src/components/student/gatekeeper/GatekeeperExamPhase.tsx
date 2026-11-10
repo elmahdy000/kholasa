@@ -59,9 +59,7 @@ export function GatekeeperExamPhase({
               answers[currentQ.id]?.selectedOptionId === opt.id;
             const letters = ["أ", "ب", "ج", "د", "هـ"];
             const englishLetters = ["A", "B", "C", "D", "E"];
-            const isEnglish =
-              !/[\u0600-\u06FF]/.test(currentQ.statement || "") ||
-              !/[\u0600-\u06FF]/.test(opt.text || "");
+            const isEnglish = !/[\u0600-\u06FF]/.test(currentQ.statement || "");
             const letter = isEnglish
               ? englishLetters[oIdx] || oIdx + 1
               : letters[oIdx] || oIdx + 1;
@@ -124,7 +122,9 @@ export function GatekeeperExamPhase({
               const isSelected =
                 answers[currentQ.id]?.selectedOptionId === opt.id;
               const isTrue =
-                opt.text.includes("صح") || opt.text.includes("صواب");
+                opt.text.includes("صح") ||
+                opt.text.includes("صواب") ||
+                opt.text.toLowerCase().includes("true");
 
               return (
                 <button
