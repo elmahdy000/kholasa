@@ -365,7 +365,7 @@ async function main() {
 
       return {
         sectionsSynced: payload.sections.length,
-        questionsSynced,
+        questionsSynced: syncedQuestions,
       };
     },
     { maxWait: 15000, timeout: 60000 }
