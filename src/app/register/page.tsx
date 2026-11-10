@@ -1,16 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import {
-  ArrowRight,
-  KeyRound,
-  MessageCircle,
-  ShieldCheck,
-  CheckCircle2,
-  LogIn,
-  Headphones,
-} from "lucide-react";
+import { ArrowRight, KeyRound, LogIn } from "lucide-react";
 import { BrandLogo } from "@/components/ui/BrandLogo";
+import { WhatsAppSupportLinks } from "@/components/ui/WhatsAppSupportLinks";
 
 export default function RegisterPage() {
   return (
@@ -28,8 +21,8 @@ export default function RegisterPage() {
             subtitleText="EL KHOLASA"
             className="mb-4"
           />
-          <h2 className="text-xl sm:text-2xl font-bold text-[#0F172A] dark:text-white tracking-tight">
-            الانضمام إلى منصة الخلاصة
+          <h2 className="text-xl sm:text-2xl font-bold text-[#0F172A] dark:text-white">
+            الانضمام إلى منصة الخلاصة للبكالوريا
           </h2>
           <p className="mt-1 text-[13px] sm:text-sm text-[#64748B] dark:text-[#94A3B8]">
             نظام الدخول المعتمد بكود الطالب الشخصي
@@ -49,7 +42,7 @@ export default function RegisterPage() {
           </div>
 
           <div className="space-y-3">
-            <h3 className="text-xs font-bold text-[#64748B] dark:text-[#94A3B8] uppercase tracking-wider">
+            <h3 className="text-xs font-bold text-[#64748B] dark:text-[#94A3B8]">
               خطوات الحصول على كود المنصة والبدء:
             </h3>
 
@@ -99,20 +92,16 @@ export default function RegisterPage() {
           </div>
 
           {/* Action CTAs */}
-          <div className="space-y-3 pt-2">
-            <a
-              href="https://wa.me/201000000000?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%D8%8C%20%D8%A3%D8%B1%D9%8A%D8%AF%20%D8%A7%D9%84%D8%AD%D8%B5%D9%88%D9%84%20%D8%B9%D9%84%D9%89%20%D9%83%D9%88%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B4%D8%AA%D8%B1%D8%A7%D9%83%20%D9%81%D9%8A%20%D9%85%D9%86%D8%B5%D8%A9%20%D8%A7%D9%84%D8%AE%D9%84%D8%A7%D8%B5%D8%A9"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full h-11 rounded-xl bg-[#25D366] hover:bg-[#20BD5A] text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-colors shadow-sm"
-            >
-              <MessageCircle className="w-4 h-4" />
-              <span>تواصل مع المساعد عبر واتساب للحصول على الكود</span>
-            </a>
+          <div className="space-y-4 pt-2">
+            <WhatsAppSupportLinks
+              variant="buttons"
+              title="تواصل مع المساعد عبر واتساب للحصول على الكود:"
+              message="مرحباً، أريد الحصول على كود الاشتراك في منصة الخلاصة للبكالوريا"
+            />
 
             <Link
               href="/login"
-              className="w-full h-11 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-colors"
+              className="w-full min-h-[44px] px-4 py-2 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-colors"
             >
               <LogIn className="w-4 h-4" />
               <span>معك كود بالفعل؟ ادخل إلى حسابك الآن</span>

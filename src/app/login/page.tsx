@@ -12,7 +12,6 @@ import {
   AlertCircle,
   Loader2,
   KeyRound,
-  MessageCircle,
   GraduationCap,
   Shield,
   CheckCircle2,
@@ -29,6 +28,7 @@ import {
 } from "lucide-react";
 
 import { BrandLogo } from "@/components/ui/BrandLogo";
+import { WhatsAppSupportLinks } from "@/components/ui/WhatsAppSupportLinks";
 import { getOrCreateDeviceId } from "@/lib/device";
 import {
   AUTHORIZED_CENTERS,
@@ -717,19 +717,12 @@ export default function LoginPage() {
                   دخول المعلمين والمشرفين (بكلمة المرور) ←
                 </button>
 
-                <div className="p-3.5 rounded-2xl bg-[#F7F9FC] dark:bg-[#071737] border border-[#E2E8F0] dark:border-[#1E3A6E] space-y-1.5">
-                  <span className="block font-bold text-[#091B40] dark:text-white text-[11px]">
-                    ليس لديك كود دخول أو واجهتك مشكلة؟
-                  </span>
-                  <a
-                    href="https://wa.me/201021482860?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%D8%8C%20%D8%A3%D8%AD%D8%AA%D8%A7%D8%AC%20%D9%85%D8%B3%D8%A7%D8%B9%D8%AF%D8%A9%20%D8%A8%D8%AE%D8%B5%D9%88%D8%B5%20%D9%83%D9%88%D8%AF%20%D8%A7%D9%84%D8%AF%D8%AE%D9%88%D9%84%20%D9%84%D9%85%D9%86%D8%B5%D8%A9%20%D8%A7%D9%84%D8%AE%D9%84%D8%A7%D8%B5%D8%A9"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 font-bold text-[#17834B] dark:text-[#34D399] hover:underline"
-                  >
-                    <MessageCircle className="w-3.5 h-3.5" />
-                    <span>تواصل مع المساعد عبر واتساب</span>
-                  </a>
+                <div className="p-3.5 rounded-2xl bg-[#F7F9FC] dark:bg-[#071737] border border-[#E2E8F0] dark:border-[#1E3A6E] space-y-2">
+                  <WhatsAppSupportLinks
+                    variant="compact"
+                    title="ليس لديك كود دخول أو واجهتك مشكلة؟ تواصل عبر واتساب:"
+                    message="مرحباً، أحتاج مساعدة بخصوص كود الدخول لمنصة الخلاصة للبكالوريا"
+                  />
                 </div>
               </>
             ) : (

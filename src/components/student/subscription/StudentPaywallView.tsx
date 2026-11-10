@@ -9,7 +9,6 @@ import {
   Loader2,
   Copy,
   Check,
-  Send,
   ArrowRight,
   Smartphone,
   CheckCheck,
@@ -21,6 +20,7 @@ import {
 } from "lucide-react";
 import { getCleanStudentName } from "@/lib/utils";
 import { fetchWithRetry } from "@/lib/network";
+import { WhatsAppSupportLinks } from "@/components/ui/WhatsAppSupportLinks";
 
 interface StudentPaywallViewProps {
   user: {
@@ -203,9 +203,9 @@ export function StudentPaywallView({
   const instapayNumber = "01025131212";
   const vodafoneNumber1 = "01025131212";
   const vodafoneNumber2 = "01066711545";
-  const whatsappNumber = "01025131212";
 
   const studentDisplayName = getCleanStudentName(user?.name);
+  const whatsappMessage = `مرحباً بك يا مستر! 🌟\nأنا الطالب: *${studentDisplayName || "طالب المنصة"}*\nكود المنصة: *${user.loginCode || "—"}*\nقمت بسداد اشتراك المنصة الشهري (200 جنيه) وأريد تفعيل حسابي للوصول لكافة دروس المنهج.`;
   const welcomeGreeting = studentDisplayName
     ? `أهلاً بك يا ${studentDisplayName} في منصة الخلاصة! 🎉`
     : "أهلاً بيك في منصة الخلاصة! 🎉";
@@ -344,11 +344,6 @@ export function StudentPaywallView({
     } finally {
       setIsUploading(false);
     }
-  };
-
-  const handleWhatsApp = () => {
-    const text = `مرحباً بك يا مستر! 🌟\nأنا الطالب: *${studentDisplayName || "طالب المنصة"}*\nكود المنصة: *${user.loginCode || "—"}*\nقمت بسداد اشتراك المنصة الشهري (200 جنيه) وأريد تفعيل حسابي للوصول لكافة دروس المنهج.`;
-    window.open(`https://wa.me/201025131212?text=${encodeURIComponent(text)}`, "_blank");
   };
 
   return (
@@ -577,16 +572,12 @@ export function StudentPaywallView({
                   <span>تم استلام إيصال التحويل بنجاح وهو قيد المراجعة الفورية! 🎉</span>
                 </div>
                 <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
-                  يقوم فريق العمل بمراجعة إيصالك وتفعيل حسابك خلال دقائق معدودة. لتسريع عملية التفعيل بشكل لحظي، يمكنك أيضاً إرسال صورة الإيصال للمساعد عبر واتساب.
+                  يقوم فريق العمل بمراجعة إيصالك وتفعيل حسابك خلال دقائق معدودة. لتسريع عملية التفعيل بشكل لحظي، يمكنك أيضاً إرسال صورة الإيصال للمساعد عبر واتساب على أي من الأرقام التالية:
                 </p>
-                <button
-                  type="button"
-                  onClick={handleWhatsApp}
-                  className="w-full min-h-[48px] sm:min-h-[50px] rounded-xl bg-[#25D366] hover:bg-[#20BD5A] text-white font-bold text-sm flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer"
-                >
-                  <Send className="w-4 h-4" />
-                  <span>تأكيد الإيصال والتفعيل اللحظي عبر واتساب</span>
-                </button>
+                <WhatsAppSupportLinks
+                  variant="buttons"
+                  message={whatsappMessage}
+                />
               </div>
             ) : (
               <form onSubmit={handleUploadReceipt} className="space-y-4 sm:space-y-5">
@@ -808,21 +799,19 @@ export function StudentPaywallView({
       {/* ========================================================================= */}
       {/* SECTION C: COMPACT FOOTER LINKS                                          */}
       {/* ========================================================================= */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-2.5 sm:gap-4 pt-1 text-[13px] font-bold">
-        {/* WhatsApp Link */}
-        <button
-          type="button"
-          onClick={handleWhatsApp}
-          className="text-[#17834B] hover:underline flex items-center gap-1.5 cursor-pointer py-1 min-h-[44px]"
-        >
-          <Send className="w-4 h-4" />
-          <span>تواصل مع الإدارة عبر واتساب للاستفسار أو السداد</span>
-        </button>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2 text-[13px] font-bold">
+        {/* WhatsApp Links */}
+        <WhatsAppSupportLinks
+          variant="compact"
+          title="تواصل مع الإدارة عبر واتساب للاستفسار أو السداد:"
+          message={whatsappMessage}
+          className="!text-right sm:!items-start"
+        />
 
         {/* Back Link */}
         <Link
           href="/dashboard"
-          className="text-[#536681] hover:text-[#091B40] flex items-center gap-1.5 transition-colors py-1 min-h-[44px]"
+          className="text-[#536681] hover:text-[#091B40] flex items-center gap-1.5 transition-colors py-1 min-h-[44px] shrink-0"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>العودة إلى لوحة التحكم والدرس التجريبي</span>

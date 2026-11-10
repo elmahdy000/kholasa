@@ -8,13 +8,11 @@ import {
   Smartphone,
   Copy,
   Check,
-  Send,
   Upload,
   X,
-  CreditCard,
-  ShieldCheck,
 } from "lucide-react";
 import { getCleanStudentName } from "@/lib/utils";
+import { WhatsAppSupportLinks } from "@/components/ui/WhatsAppSupportLinks";
 
 interface PaywallModalProps {
   isOpen: boolean;
@@ -50,11 +48,8 @@ export function PaywallModal({
     setTimeout(() => setCopiedKey(null), 2000);
   };
 
-  const handleWhatsApp = () => {
-    const studentDisplayName = getCleanStudentName(user?.name) || "طالب المنصة";
-    const text = `مرحباً بك يا مستر! 🌟\nأنا الطالب: *${studentDisplayName}*\nكود المنصة: *${user?.loginCode || "—"}*\nأريد تفعيل اشتراك المنصة الشهري (200 جنيه) لفتح جميع الدروس.`;
-    window.open(`https://wa.me/2${vodafoneCash1}?text=${encodeURIComponent(text)}`, "_blank");
-  };
+  const studentDisplayName = getCleanStudentName(user?.name) || "طالب المنصة";
+  const whatsappMessage = `مرحباً بك يا مستر! 🌟\nأنا الطالب: *${studentDisplayName}*\nكود المنصة: *${user?.loginCode || "—"}*\nأريد تفعيل اشتراك المنصة الشهري (200 جنيه) لفتح جميع الدروس.`;
 
   return (
     <div
@@ -221,15 +216,12 @@ export function PaywallModal({
             <span>التوجه لشاشة رفع الإيصال وتفعيل الحساب</span>
           </Link>
 
-          {/* Secondary Action: Direct WhatsApp */}
-          <button
-            type="button"
-            onClick={handleWhatsApp}
-            className="w-full min-h-[44px] rounded-xl bg-[#17834B] hover:bg-[#126B3D] text-white font-bold text-xs flex items-center justify-center gap-2 transition-colors active:scale-[0.98] cursor-pointer"
-          >
-            <Send className="w-4 h-4" />
-            <span>تأكيد وسداد عبر واتساب</span>
-          </button>
+          {/* Secondary Action: Direct WhatsApp across all official numbers */}
+          <WhatsAppSupportLinks
+            variant="buttons"
+            title="تأكيد وسداد أو استفسار عبر واتساب:"
+            message={whatsappMessage}
+          />
         </div>
 
         {/* Cancel footer */}

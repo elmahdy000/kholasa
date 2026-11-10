@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { BrandLogo } from "@/components/ui/BrandLogo";
+import { WhatsAppSupportLinks } from "@/components/ui/WhatsAppSupportLinks";
 
 export function SiteFooter() {
   return (
@@ -106,6 +107,13 @@ export function SiteFooter() {
                 بوابة الإدارة والمعلمين
               </Link>
             </nav>
+
+            <WhatsAppSupportLinks
+              variant="footer-dark"
+              title="تواصل واتساب للدعم والاشتراك:"
+              message="مرحباً، أرغب في الاستفسار عن منصة الخلاصة للبكالوريا"
+              className="pt-2"
+            />
           </div>
         </div>
 
