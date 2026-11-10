@@ -197,7 +197,7 @@ export function SubjectUnitsList({
 
                             {lessonQuestions.length > 0 && !isLessonLocked && (
                               <span
-                                className={`inline-flex items-center gap-1 text-[11px] font-mono font-bold px-2 py-0.5 rounded-full ${
+                                className={`inline-flex items-center gap-1 text-[11px] font-sans tabular-nums font-bold px-2 py-0.5 rounded-full ${
                                   lessonMasteryPct >= 80
                                     ? "bg-[#17834B]/10 text-[#17834B] dark:text-[#34D399]"
                                     : lessonMasteryPct >= 40
@@ -211,7 +211,7 @@ export function SubjectUnitsList({
                           </div>
 
                           <div className="flex items-center gap-3 text-[13px] text-[#536681] dark:text-[#94A3B8] font-medium flex-wrap">
-                            <span className="flex items-center gap-1 font-mono text-[13px]">
+                            <span className="flex items-center gap-1 font-sans tabular-nums text-[13px]">
                               <Clock className="w-3 h-3 text-[#536681]" />
                               <span>{lesson.durationMinutes} دقيقة</span>
                             </span>

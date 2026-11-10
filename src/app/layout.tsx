@@ -139,6 +139,7 @@ export default async function RootLayout({
         name: user.name,
         email: user.email,
         phone: user.phone,
+        loginCode: user.loginCode,
         role: user.role,
       }
     : null;
