@@ -84,7 +84,10 @@ describe("Strict Curriculum Segregation: Arabic vs Languages", () => {
 
       const filter = subjectScopeWhere(scope);
 
-      expect(filter.schoolCategory).toBe("ARABIC");
+      expect(filter.OR).toEqual([
+        { schoolCategory: "ARABIC" },
+        { isCommonCategory: true },
+      ]);
       expect(filter.gradeId).toBe("grade-g10");
       expect(filter.systemId).toBe("sys-bacc");
     });
@@ -99,7 +102,10 @@ describe("Strict Curriculum Segregation: Arabic vs Languages", () => {
 
       const filter = subjectScopeWhere(scope);
 
-      expect(filter.schoolCategory).toBe("LANGUAGES");
+      expect(filter.OR).toEqual([
+        { schoolCategory: "LANGUAGES" },
+        { isCommonCategory: true },
+      ]);
       expect(filter.gradeId).toBe("grade-g10");
       expect(filter.systemId).toBe("sys-bacc");
     });
@@ -114,7 +120,10 @@ describe("Strict Curriculum Segregation: Arabic vs Languages", () => {
 
       const qFilter = questionScopeWhere(arScope);
 
-      expect(qFilter.schoolCategory).toBe("ARABIC");
+      expect(qFilter.OR).toEqual([
+        { schoolCategory: "ARABIC" },
+        { subject: { isCommonCategory: true } },
+      ]);
       expect(qFilter.subject?.is).toEqual(subjectScopeWhere(arScope));
     });
 
@@ -130,7 +139,10 @@ describe("Strict Curriculum Segregation: Arabic vs Languages", () => {
 
       expect(examFilter.isCustom).toBe(false);
       expect(examFilter.isPublished).toBe(true);
-      expect(examFilter.schoolCategory).toBe("LANGUAGES");
+      expect(examFilter.OR).toEqual([
+        { schoolCategory: "LANGUAGES" },
+        { subject: { isCommonCategory: true } },
+      ]);
     });
   });
 
@@ -202,7 +214,7 @@ describe("Strict Curriculum Segregation: Arabic vs Languages", () => {
 
       await SearchService.globalSearch("برمجة", arScope);
 
-      // Verify that lessons query filtered by Arabic subject scope
+      // Verify that lessons query filtered by Arabic subject scope (including shared common subjects)
       expect(mockPrisma.lesson.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
           where: expect.objectContaining({
@@ -210,7 +222,7 @@ describe("Strict Curriculum Segregation: Arabic vs Languages", () => {
               isPublished: true,
               subject: {
                 is: expect.objectContaining({
-                  schoolCategory: "ARABIC",
+                  OR: [{ schoolCategory: "ARABIC" }, { isCommonCategory: true }],
                 }),
               },
             }),
@@ -218,11 +230,15 @@ describe("Strict Curriculum Segregation: Arabic vs Languages", () => {
         })
       );
 
-      // Verify that subjects query filtered by Arabic
+      // Verify that subjects query filtered by Arabic without OR key overwrite
       expect(mockPrisma.subject.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
           where: expect.objectContaining({
-            schoolCategory: "ARABIC",
+            AND: expect.arrayContaining([
+              expect.objectContaining({
+                OR: [{ schoolCategory: "ARABIC" }, { isCommonCategory: true }],
+              }),
+            ]),
           }),
         })
       );
@@ -245,7 +261,11 @@ describe("Strict Curriculum Segregation: Arabic vs Languages", () => {
       expect(mockPrisma.subject.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
           where: expect.objectContaining({
-            schoolCategory: "LANGUAGES",
+            AND: expect.arrayContaining([
+              expect.objectContaining({
+                OR: [{ schoolCategory: "LANGUAGES" }, { isCommonCategory: true }],
+              }),
+            ]),
           }),
         })
       );

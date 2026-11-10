@@ -470,9 +470,9 @@ export class StudentService {
 
     const scope = getCurriculumScope(user);
 
-    // 1. Fetch all curriculum subjects, units, and lessons with their questions in scope
+    // 1. Fetch ready curriculum subjects, units, and lessons (exclude under-construction subjects from global mastery denominator)
     const subjects = await prisma.subject.findMany({
-      where: { isPublished: true, ...subjectScopeWhere(scope) },
+      where: { isPublished: true, isUnderConstruction: false, ...subjectScopeWhere(scope) },
       orderBy: { order: "asc" },
       include: {
         units: {
@@ -517,6 +517,7 @@ export class StudentService {
           status: "PUBLISHED",
           subject: {
             isPublished: true,
+            isUnderConstruction: false,
             ...subjectScopeWhere(scope),
           },
         },

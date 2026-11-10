@@ -5,6 +5,9 @@ import { getCurrentUser } from "@/lib/auth";
 import { getCurriculumScope, isSubjectInScope } from "@/lib/curriculum";
 import { StudentShell } from "@/components/layout/StudentShell";
 import { LessonViewer } from "@/components/lessons/LessonViewer";
+import { ArabicLessonViewer } from "@/components/lessons/arabic/ArabicLessonViewer";
+import { isArabicStructuredData } from "@/components/lessons/arabic/types";
+import { sanitizeArabicPayloadForStudent } from "@/lib/arabic-curriculum";
 import { StudentPaywallView } from "@/components/student/subscription/StudentPaywallView";
 
 interface LessonPageProps {
@@ -84,6 +87,10 @@ export default async function LessonPage({ params }: LessonPageProps) {
           question: {
             select: {
               id: true,
+              externalKey: true,
+              origin: true,
+              skillCategory: true,
+              sourceReferences: true,
               statement: true,
               translation: true,
               type: true,
@@ -105,6 +112,9 @@ export default async function LessonPage({ params }: LessonPageProps) {
                 select: {
                   concept: true,
                   correctReason: true,
+                  examTrick: true,
+                  origin: true,
+                  sectionId: true,
                 },
               },
             },
@@ -235,6 +245,79 @@ export default async function LessonPage({ params }: LessonPageProps) {
       essayText: a.essayText,
       isCorrect: a.isCorrect,
     }));
+  }
+
+  const isArabicGuidedSubject = lesson.unit.subject.learningEngine === "ARABIC_GUIDED";
+
+  if (isArabicGuidedSubject && isArabicStructuredData(lesson.content?.structuredData)) {
+    const rawSectionProgress = await prisma.studentSectionProgress.findMany({
+      where: { userId: user.id, lessonId: lesson.id },
+      orderBy: { lastVisitedAt: "desc" },
+    });
+
+    const initialSectionProgress = rawSectionProgress.map((sp) => ({
+      id: sp.id,
+      sectionAnchorId: sp.sectionAnchorId,
+      stageId: sp.stageId,
+      isCompleted: sp.isCompleted,
+      lastVisitedAt: sp.lastVisitedAt.toISOString(),
+      state: (sp.state as Record<string, unknown> | null) || null,
+    }));
+
+    const attemptedOrMistakeIds = new Set<string>([
+      ...initialQuestionAttempts.map((a) => a.questionId),
+      ...initialMistakes.map((m) => m.questionId),
+    ]);
+
+    // Never expose correct reasons, exam tricks, or essay model answers before student attempt submission
+    const sanitizedLesson = {
+      ...lesson,
+      questions: lesson.questions.map((ql) => {
+        const q = ql.question;
+        if (attemptedOrMistakeIds.has(q.id)) return ql;
+        return {
+          ...ql,
+          question: {
+            ...q,
+            rubric: q.rubric
+              ? { ...q.rubric, modelAnswer: undefined, modelAnswerTranslation: undefined }
+              : null,
+            explanation: q.explanation
+              ? {
+                  ...q.explanation,
+                  correctReason: "",
+                  examTrick: null,
+                }
+              : null,
+          },
+        };
+      }),
+    };
+
+    const orderedUnitLessons = [...lesson.unit.lessons].sort((a, b) => a.order - b.order);
+    const curLessonIdx = orderedUnitLessons.findIndex((l) => l.id === lesson.id);
+    const prevLesson = curLessonIdx > 0 ? orderedUnitLessons[curLessonIdx - 1] : null;
+    const nextLesson =
+      curLessonIdx >= 0 && curLessonIdx < orderedUnitLessons.length - 1
+        ? orderedUnitLessons[curLessonIdx + 1]
+        : null;
+
+    return (
+      <StudentShell user={user}>
+        <ArabicLessonViewer
+          lesson={sanitizedLesson as any}
+          structured={sanitizeArabicPayloadForStudent(lesson.content.structuredData)}
+          initialIsBookmarked={isBookmarked}
+          initialIsCompleted={isCompleted}
+          initialMistakes={initialMistakes}
+          initialQuestionAttempts={initialQuestionAttempts}
+          initialSectionProgress={initialSectionProgress}
+          prevLesson={prevLesson}
+          nextLesson={nextLesson}
+          userId={user?.id}
+        />
+      </StudentShell>
+    );
   }
 
   return (

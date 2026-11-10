@@ -189,7 +189,7 @@ export default async function DashboardPage() {
       ? prisma.lesson.findFirst({
           where: {
             isPublished: true,
-            unit: { isPublished: true, subject: { is: subjectScopeWhere(scope) } },
+            unit: { isPublished: true, subject: { is: { isUnderConstruction: false, ...subjectScopeWhere(scope) } } },
           },
           include: {
             unit: {
@@ -210,6 +210,7 @@ export default async function DashboardPage() {
         subject: {
           is: {
             isPublished: true,
+            isUnderConstruction: false,
             ...subjectScopeWhere(scope),
           },
         },
@@ -284,6 +285,8 @@ export default async function DashboardPage() {
       name: subj.name,
       description: subj.description,
       color: subj.color,
+      isCommonCategory: subj.isCommonCategory,
+      isUnderConstruction: subj.isUnderConstruction,
       unitsCount: subj.units.length,
       totalLessons,
       completedLessons: completedCount,

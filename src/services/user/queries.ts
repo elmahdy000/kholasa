@@ -280,7 +280,11 @@ export class UserQueriesService {
           subject: {
             gradeId: user.grade.id,
             isPublished: true,
-            schoolCategory: user.schoolCategory || "ARABIC",
+            isUnderConstruction: false,
+            OR: [
+              { schoolCategory: user.schoolCategory || "ARABIC" },
+              { isCommonCategory: true },
+            ],
           },
         },
         select: {

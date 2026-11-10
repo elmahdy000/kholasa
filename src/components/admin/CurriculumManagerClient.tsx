@@ -610,6 +610,14 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
 
         {/* Action Buttons */}
         <div className="flex items-center gap-2.5 shrink-0 flex-wrap">
+          <Link
+            href="/admin/curriculum/arabic"
+            className="h-10 px-3.5 rounded-xl border border-[#1E40AF]/30 bg-[#EFF6FF] dark:bg-[#132C60] hover:bg-[#DBEAFE] text-[#1E40AF] dark:text-[#93C5FD] text-xs font-bold flex items-center justify-center gap-2 cursor-pointer transition-colors shadow-2xs"
+          >
+            <BookOpen className="w-4 h-4" />
+            <span>استوديو اللغة العربية (JSON)</span>
+          </Link>
+
           <button
             type="button"
             onClick={() => {

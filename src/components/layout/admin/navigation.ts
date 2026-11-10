@@ -48,9 +48,17 @@ export const rawNavigationGroups: AdminNavGroup[] = [
       {
         label: "المناهج والهيكل الأكاديمي",
         href: "/admin/curriculum",
+        exact: true,
         icon: BookOpen,
         badge: null,
         allowedRoles: ["TEACHER", "EDITOR", "ADMIN", "SUPER_ADMIN"],
+      },
+      {
+        label: "استوديو اللغة العربية (JSON)",
+        href: "/admin/curriculum/arabic",
+        icon: Layers,
+        badge: "جديد",
+        allowedRoles: ["ADMIN", "SUPER_ADMIN"],
       },
       {
         label: "مركز الوسائط والملفات",

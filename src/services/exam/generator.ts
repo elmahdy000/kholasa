@@ -48,6 +48,7 @@ export class ExamGeneratorService {
           systemId: true,
           trackId: true,
           schoolCategory: true,
+          isCommonCategory: true,
         },
       }),
       prisma.user.findUnique({

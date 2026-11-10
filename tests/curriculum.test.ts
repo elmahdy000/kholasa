@@ -26,50 +26,80 @@ describe("curriculum scoping", () => {
     expect(getCurriculumScope(null)).toBeNull();
   });
 
-  it("builds a subject filter for grade, schoolCategory, system and track", () => {
+  it("builds a subject filter for grade, schoolCategory, system, common subjects, and track", () => {
     expect(
       subjectScopeWhere({ systemId: "s1", gradeId: "g1", schoolCategory: "ARABIC", trackId: "t1" })
     ).toEqual({
       gradeId: "g1",
-      schoolCategory: "ARABIC",
       systemId: "s1",
-      OR: [{ trackId: null }, { trackId: "t1" }],
+      AND: [
+        { OR: [{ schoolCategory: "ARABIC" }, { isCommonCategory: true }] },
+        { OR: [{ trackId: null }, { trackId: "t1" }] },
+      ],
     });
 
     expect(
       subjectScopeWhere({ systemId: "s1", gradeId: "g1", schoolCategory: "LANGUAGES", trackId: null })
-    ).toEqual({ gradeId: "g1", schoolCategory: "LANGUAGES", systemId: "s1" });
+    ).toEqual({
+      gradeId: "g1",
+      systemId: "s1",
+      OR: [{ schoolCategory: "LANGUAGES" }, { isCommonCategory: true }],
+    });
 
     expect(subjectScopeWhere(null)).toEqual({});
   });
 
-  it("limits exams to official exams for the scoped subject", () => {
+  it("limits exams to official exams for the scoped or common-category subject", () => {
     expect(
       examScopeWhere({ systemId: "s1", gradeId: "g1", schoolCategory: "ARABIC", trackId: null })
     ).toEqual({
       isCustom: false,
       isPublished: true,
-      schoolCategory: "ARABIC",
-      subject: { is: { gradeId: "g1", schoolCategory: "ARABIC", systemId: "s1" } },
+      subject: {
+        is: {
+          gradeId: "g1",
+          systemId: "s1",
+          OR: [{ schoolCategory: "ARABIC" }, { isCommonCategory: true }],
+        },
+      },
+      OR: [{ schoolCategory: "ARABIC" }, { subject: { isCommonCategory: true } }],
     });
 
     expect(examScopeWhere(null)).toEqual({ isCustom: false, isPublished: true });
   });
 
-  it("checks subject visibility including track-neutral material", () => {
-    const scope = { systemId: "s1", gradeId: "g1", trackId: "t1" };
+  it("checks subject visibility including track-neutral and common-category material", () => {
+    const scope = { systemId: "s1", gradeId: "g1", schoolCategory: "LANGUAGES" as const, trackId: "t1" };
 
     expect(
-      isSubjectInScope(scope, { gradeId: "g1", systemId: "s1", trackId: null })
+      isSubjectInScope(scope, {
+        gradeId: "g1",
+        systemId: "s1",
+        schoolCategory: "ARABIC",
+        isCommonCategory: true,
+        trackId: null,
+      })
     ).toBe(true);
     expect(
-      isSubjectInScope(scope, { gradeId: "g1", systemId: "s1", trackId: "t1" })
-    ).toBe(true);
-    expect(
-      isSubjectInScope(scope, { gradeId: "g1", systemId: "s1", trackId: "t2" })
+      isSubjectInScope(scope, {
+        gradeId: "g1",
+        systemId: "s1",
+        schoolCategory: "ARABIC",
+        isCommonCategory: false,
+        trackId: null,
+      })
     ).toBe(false);
     expect(
-      isSubjectInScope(scope, { gradeId: "g2", systemId: "s1", trackId: "t1" })
+      isSubjectInScope(scope, { gradeId: "g1", systemId: "s1", schoolCategory: "LANGUAGES", trackId: null })
+    ).toBe(true);
+    expect(
+      isSubjectInScope(scope, { gradeId: "g1", systemId: "s1", schoolCategory: "LANGUAGES", trackId: "t1" })
+    ).toBe(true);
+    expect(
+      isSubjectInScope(scope, { gradeId: "g1", systemId: "s1", schoolCategory: "LANGUAGES", trackId: "t2" })
+    ).toBe(false);
+    expect(
+      isSubjectInScope(scope, { gradeId: "g2", systemId: "s1", schoolCategory: "LANGUAGES", trackId: "t1" })
     ).toBe(false);
     expect(isSubjectInScope(null, { gradeId: "anything" })).toBe(true);
     expect(isSubjectInScope(scope, null)).toBe(false);

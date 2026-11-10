@@ -69,6 +69,8 @@ export default async function SubjectsPage() {
     description: subj.description,
     color: subj.color,
     schoolCategory: subj.schoolCategory,
+    isCommonCategory: subj.isCommonCategory,
+    isUnderConstruction: subj.isUnderConstruction,
     systemName: subj.system?.name || null,
     gradeName: subj.grade?.name || null,
     trackName: subj.track?.name || null,

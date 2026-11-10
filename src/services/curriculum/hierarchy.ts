@@ -347,6 +347,9 @@ export class CurriculumHierarchyService {
     gradeId: string;
     trackId?: string | null;
     schoolCategory?: "ARABIC" | "LANGUAGES";
+    isCommonCategory?: boolean;
+    isUnderConstruction?: boolean;
+    learningEngine?: string;
     isElective?: boolean;
     electiveGroup?: string | null;
     isPublished?: boolean;
@@ -386,6 +389,9 @@ export class CurriculumHierarchyService {
         gradeId: data.gradeId,
         trackId: data.trackId || null,
         schoolCategory: category,
+        isCommonCategory: Boolean(data.isCommonCategory),
+        isUnderConstruction: Boolean(data.isUnderConstruction),
+        learningEngine: data.learningEngine === "ARABIC_GUIDED" ? "ARABIC_GUIDED" : "STANDARD",
         isElective: Boolean(data.isElective),
         electiveGroup: data.electiveGroup?.trim() || null,
         isPublished: data.isPublished !== undefined ? Boolean(data.isPublished) : true,
@@ -404,7 +410,7 @@ export class CurriculumHierarchyService {
       description?: string | null;
       trackId?: string | null;
       schoolCategory?: "ARABIC" | "LANGUAGES";
-      isElective?: boolean;
+      isCommonCategory?: boolean; isUnderConstruction?: boolean; learningEngine?: string; isElective?: boolean;
       electiveGroup?: string | null;
       order?: number;
       isPublished?: boolean;
@@ -420,7 +426,7 @@ export class CurriculumHierarchyService {
         ...(data.description !== undefined ? { description: data.description?.trim() || null } : {}),
         ...(data.trackId !== undefined ? { trackId: data.trackId } : {}),
         ...(data.schoolCategory !== undefined ? { schoolCategory: data.schoolCategory } : {}),
-        ...(data.isElective !== undefined ? { isElective: Boolean(data.isElective) } : {}),
+        ...(data.isCommonCategory !== undefined ? { isCommonCategory: Boolean(data.isCommonCategory) } : {}), ...(data.isUnderConstruction !== undefined ? { isUnderConstruction: Boolean(data.isUnderConstruction) } : {}), ...(data.learningEngine !== undefined ? { learningEngine: data.learningEngine === "ARABIC_GUIDED" ? "ARABIC_GUIDED" : "STANDARD" } : {}), ...(data.isElective !== undefined ? { isElective: Boolean(data.isElective) } : {}),
         ...(data.electiveGroup !== undefined ? { electiveGroup: data.electiveGroup?.trim() || null } : {}),
         ...(data.order !== undefined ? { order: Number(data.order) } : {}),
         ...(data.isPublished !== undefined ? { isPublished: Boolean(data.isPublished) } : {}),

@@ -60,7 +60,7 @@ export function SubjectsGrid({ subjects }: SubjectsGridProps) {
 
                   <div>
                     <h3 className="text-sm sm:text-base font-bold text-[#12263F] dark:text-[#F8FAFC] group-hover:text-[#800B34] dark:group-hover:text-[#FB7185] transition-colors leading-snug">
-                      {subj.name}
+                      {subj.name}{subj.isUnderConstruction && (<span className="mr-2 inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-50 dark:bg-amber-950/50 text-amber-800 dark:text-amber-200 border border-amber-300 dark:border-amber-700 align-middle">تحت الإنشاء</span>)}
                     </h3>
                     {subj.description && (
                       <p className="text-xs text-[#64748B] dark:text-[#94A3B8] line-clamp-2 mt-1 leading-relaxed">

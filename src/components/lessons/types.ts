@@ -79,14 +79,17 @@ export interface QuestionOption {
 }
 
 export interface QuestionExplanation {
-  id: string;
+  id?: string;
   concept: string;
   correctReason: string;
+  examTrick?: string | null;
+  origin?: string | null;
   sectionId?: string | null;
 }
 
 export interface RevealedOption {
   id: string;
+  text?: string;
   isCorrect?: boolean;
   explanation?: string | null;
 }
@@ -94,6 +97,10 @@ export interface RevealedOption {
 export interface RevealedQuestion {
   isCorrect?: boolean;
   correctOptionId?: string;
+  modelAnswer?: string | null;
+  modelAnswerTranslation?: string | null;
+  criteria?: RubricCriterion[] | unknown;
+  maxScore?: number;
   explanation?: QuestionExplanation | null;
   options?: RevealedOption[];
 }
@@ -104,7 +111,7 @@ export interface RubricCriterion {
 }
 
 export interface QuestionRubric {
-  modelAnswer: string;
+  modelAnswer?: string | null;
   modelAnswerTranslation?: string | null;
   criteria?: RubricCriterion[] | any;
   maxScore: number;
@@ -112,6 +119,10 @@ export interface QuestionRubric {
 
 export interface Question {
   id: string;
+  externalKey?: string | null;
+  origin?: string | null;
+  skillCategory?: string | null;
+  sourceReferences?: Array<{ sourceId: string; pages: number[] }> | null;
   statement: string;
   translation?: string | null;
   type: string;
@@ -126,6 +137,7 @@ export interface QuestionAnswerState {
   selectedOptionId: string;
   revealed: boolean;
   isCorrect: boolean;
+  isLoading?: boolean;
   reveal?: RevealedQuestion;
 }
 
@@ -156,6 +168,7 @@ export interface LessonViewerProps {
         name: string;
         color?: string | null;
         schoolCategory?: "ARABIC" | "LANGUAGES";
+        learningEngine?: string;
       };
       lessons: { id: string; title: string; order: number }[];
     };

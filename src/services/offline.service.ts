@@ -32,6 +32,7 @@ export class OfflineService {
                 gradeId: true,
                 trackId: true,
                 schoolCategory: true,
+                isCommonCategory: true,
               },
             },
           },

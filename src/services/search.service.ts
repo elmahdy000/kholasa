@@ -57,10 +57,14 @@ export class SearchService {
       }),
       prisma.subject.findMany({
         where: {
-          ...publishedSubjectFilter,
-          OR: [
-            { name: { contains: q, mode: "insensitive" } },
-            { description: { contains: q, mode: "insensitive" } },
+          AND: [
+            publishedSubjectFilter,
+            {
+              OR: [
+                { name: { contains: q, mode: "insensitive" } },
+                { description: { contains: q, mode: "insensitive" } },
+              ],
+            },
           ],
         },
         take: 3,
@@ -69,21 +73,32 @@ export class SearchService {
         where: {
           status: "PUBLISHED",
           subject: { is: publishedSubjectFilter },
-          ...(scope?.schoolCategory ? { schoolCategory: scope.schoolCategory } : {}),
-          OR: [
-            { lessons: { none: {} } },
+          AND: [
+            ...(scope?.schoolCategory
+              ? [
+                  {
+                    OR: [
+                      { schoolCategory: scope.schoolCategory },
+                      { subject: { isCommonCategory: true } },
+                    ],
+                  },
+                ]
+              : []),
             {
-              lessons: {
-                some: {
-                  lesson: {
-                    isPublished: true,
-                    unit: { isPublished: true },
+              OR: [
+                { lessons: { none: {} } },
+                {
+                  lessons: {
+                    some: {
+                      lesson: {
+                        isPublished: true,
+                        unit: { isPublished: true },
+                      },
+                    },
                   },
                 },
-              },
+              ],
             },
-          ],
-          AND: [
             {
               OR: [
                 { statement: { contains: q, mode: "insensitive" } },

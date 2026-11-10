@@ -99,6 +99,7 @@ export class QuestionQueriesService {
             systemId: true,
             trackId: true,
             schoolCategory: true,
+            isCommonCategory: true,
           },
         },
         options: { orderBy: { order: "asc" } },

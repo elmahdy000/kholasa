@@ -9,6 +9,7 @@ import { SubjectUnitsList } from "@/components/subjects/SubjectUnitsList";
 import {
   Layers,
   Target,
+  Wrench,
 } from "lucide-react";
 
 interface SubjectDetailPageProps {
@@ -143,9 +144,22 @@ export default async function SubjectDetailPage({ params }: SubjectDetailPagePro
         <section className="relative overflow-hidden rounded-3xl p-6 sm:p-8 bg-white dark:bg-[#0D214D] border border-[#E2E8F0] dark:border-[#1E3A6E] shadow-[0_8px_28px_rgba(9,27,64,0.07)]">
           <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="space-y-3">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#F7F9FC] dark:bg-[#071737] border border-[#E2E8F0] dark:border-[#1E3A6E] text-[13px] font-bold text-[#091B40] dark:text-[#F7F9FC]">
-                <Layers className="w-3.5 h-3.5 text-[#800B34]" />
-                <span>منهج معتمد • {subject.units.length} وحدات • {totalLessons} درس</span>
+              <div className="flex items-center gap-2 flex-wrap">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#F7F9FC] dark:bg-[#071737] border border-[#E2E8F0] dark:border-[#1E3A6E] text-[13px] font-bold text-[#091B40] dark:text-[#F7F9FC]">
+                  <Layers className="w-3.5 h-3.5 text-[#800B34]" />
+                  <span>
+                    {subject.isCommonCategory
+                      ? "مادة عامة لكل المسارات • "
+                      : ""}
+                    {subject.units.length} وحدات • {totalLessons} درس
+                  </span>
+                </div>
+                {subject.isUnderConstruction && (
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 dark:bg-amber-950/50 border border-amber-300 dark:border-amber-700 text-xs font-bold text-amber-800 dark:text-amber-200">
+                    <Wrench className="w-3.5 h-3.5" />
+                    <span>تحت الإنشاء — جاري بناء الدروس تباعاً</span>
+                  </div>
+                )}
               </div>
               <h1 className="text-2xl sm:text-4xl font-bold text-[#091B40] dark:text-white tracking-tight">
                 {subject.name}

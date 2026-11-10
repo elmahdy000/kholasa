@@ -43,14 +43,28 @@ export function subjectScopeWhere(
 ): Prisma.SubjectWhereInput {
   if (!scope) return {};
 
+  const andConditions: Prisma.SubjectWhereInput[] = [];
+  if (scope.schoolCategory) {
+    andConditions.push({
+      OR: [
+        { schoolCategory: scope.schoolCategory },
+        { isCommonCategory: true },
+      ],
+    });
+  }
+  if (scope.trackId) {
+    andConditions.push({
+      OR: [{ trackId: null }, { trackId: scope.trackId }],
+    });
+  }
+
   return {
     ...(scope.gradeId ? { gradeId: scope.gradeId } : {}),
-    ...(scope.schoolCategory ? { schoolCategory: scope.schoolCategory } : {}),
     ...(scope.systemId ? { systemId: scope.systemId } : {}),
-    // Track-neutral material is always visible; track-specific material only
-    // when the student picked that track.
-    ...(scope.trackId
-      ? { OR: [{ trackId: null }, { trackId: scope.trackId }] }
+    ...(andConditions.length === 1
+      ? andConditions[0]
+      : andConditions.length > 1
+      ? { AND: andConditions }
       : {}),
   };
 }
@@ -62,8 +76,15 @@ export function questionScopeWhere(
   if (!scope) return {};
 
   return {
-    ...(scope.schoolCategory ? { schoolCategory: scope.schoolCategory } : {}),
     subject: { is: subjectScopeWhere(scope) },
+    ...(scope.schoolCategory
+      ? {
+          OR: [
+            { schoolCategory: scope.schoolCategory },
+            { subject: { isCommonCategory: true } },
+          ],
+        }
+      : {}),
   };
 }
 
@@ -76,8 +97,15 @@ export function examScopeWhere(
   return {
     isCustom: false,
     isPublished: true,
-    ...(scope.schoolCategory ? { schoolCategory: scope.schoolCategory } : {}),
     subject: { is: subjectScopeWhere(scope) },
+    ...(scope.schoolCategory
+      ? {
+          OR: [
+            { schoolCategory: scope.schoolCategory },
+            { subject: { isCommonCategory: true } },
+          ],
+        }
+      : {}),
   };
 }
 
@@ -89,13 +117,15 @@ export function isSubjectInScope(
     systemId?: string | null;
     trackId?: string | null;
     schoolCategory?: SchoolCategory | string | null;
+    isCommonCategory?: boolean | null;
   } | null
 ): boolean {
   if (!subject) return false;
   if (!scope) return true;
 
-  // Strict separation: Arabic Schools vs Language Schools
+  // Strict separation: Arabic Schools vs Language Schools unless marked common across both
   if (
+    !subject.isCommonCategory &&
     scope.schoolCategory &&
     subject.schoolCategory &&
     subject.schoolCategory !== scope.schoolCategory

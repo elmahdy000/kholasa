@@ -212,7 +212,7 @@ describe("Student Journey End-to-End Logic Guards", () => {
               subject: {
                 is: expect.objectContaining({
                   isPublished: true,
-                  schoolCategory: "LANGUAGES",
+                  OR: [{ schoolCategory: "LANGUAGES" }, { isCommonCategory: true }],
                 }),
               },
             },
@@ -248,7 +248,7 @@ describe("Student Journey End-to-End Logic Guards", () => {
               status: "PUBLISHED",
               subject: expect.objectContaining({
                 isPublished: true,
-                schoolCategory: "LANGUAGES",
+                OR: [{ schoolCategory: "LANGUAGES" }, { isCommonCategory: true }],
               }),
             }),
           }),

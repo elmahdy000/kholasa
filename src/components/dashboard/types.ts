@@ -24,6 +24,8 @@ export interface SubjectItem {
   name: string;
   description?: string | null;
   color?: string | null;
+  isCommonCategory?: boolean;
+  isUnderConstruction?: boolean;
   unitsCount: number;
   totalLessons: number;
   completedLessons?: number;

@@ -114,7 +114,7 @@ export async function pickDeterministicPreviewMcq(lessonId: string) {
         isPublished: true,
         unit: {
           isPublished: true,
-          subject: { isPublished: true },
+          subject: { isPublished: true, isUnderConstruction: false },
         },
       },
       question: {
@@ -218,6 +218,7 @@ export async function getLandingCurriculumData(): Promise<LandingCurriculumPaylo
         ? await prisma.subject.findMany({
             where: {
               isPublished: true,
+              isUnderConstruction: false,
               gradeId: { in: gradeIds },
             },
             orderBy: [{ schoolCategory: "asc" }, { order: "asc" }],

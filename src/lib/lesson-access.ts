@@ -6,6 +6,7 @@ export interface LessonAccessSubject {
   gradeId?: string | null;
   trackId?: string | null;
   schoolCategory?: "ARABIC" | "LANGUAGES" | string | null;
+  isCommonCategory?: boolean | null;
 }
 
 export interface LessonAccessTarget {

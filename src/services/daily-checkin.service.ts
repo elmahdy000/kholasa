@@ -71,6 +71,7 @@ export class DailyCheckinService {
       subject: {
         is: {
           isPublished: true,
+          isUnderConstruction: false,
           ...subjectFilter,
         },
       },

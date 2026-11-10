@@ -18,6 +18,7 @@ import {
   BookmarkCheck,
   Layers,
   BookMarked,
+  Wrench,
   X,
 } from "lucide-react";
 
@@ -28,6 +29,8 @@ export interface SubjectItemData {
   description: string | null;
   color: string | null;
   schoolCategory?: SchoolCategory;
+  isCommonCategory?: boolean;
+  isUnderConstruction?: boolean;
   systemName?: string | null;
   gradeName?: string | null;
   trackName?: string | null;
@@ -203,10 +206,11 @@ export function SubjectsExplorer({ subjects, isStaff }: SubjectsExplorerProps) {
           {filteredSubjects.map((subj) => {
             const Icon = getSubjectIcon(subj.code, subj.name);
             const isLanguages = subj.schoolCategory === "LANGUAGES";
-            const badgeLabel =
-              subj.trackName ||
-              subj.gradeName ||
-              (isLanguages ? "مدارس اللغات" : "المدارس العربية");
+            const badgeLabel = subj.isCommonCategory
+              ? "مادة عامة لكل المسارات"
+              : subj.trackName ||
+                subj.gradeName ||
+                (isLanguages ? "مدارس اللغات" : "المدارس العربية");
             const isEnglishDesc = Boolean(
               subj.description && /^[A-Za-z0-9]/.test(subj.description.trim())
             );
@@ -219,7 +223,7 @@ export function SubjectsExplorer({ subjects, isStaff }: SubjectsExplorerProps) {
               >
                 <div className="space-y-4">
                   {/* Top Bar of Card */}
-                  <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center justify-between gap-2 flex-wrap">
                     <div
                       className="w-11 h-11 rounded-lg flex items-center justify-center text-white shrink-0"
                       style={{
@@ -229,9 +233,17 @@ export function SubjectsExplorer({ subjects, isStaff }: SubjectsExplorerProps) {
                     >
                       <Icon className="w-5 h-5" strokeWidth={1.8} />
                     </div>
-                    <span className="text-xs font-bold text-[#536681] dark:text-[#94A3B8] bg-[#F7F9FC] dark:bg-[#1E293B] px-3 py-1 rounded-lg border border-[#E2E8F0] dark:border-[#334155]">
-                      {badgeLabel}
-                    </span>
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      {subj.isUnderConstruction && (
+                        <span className="inline-flex items-center gap-1 text-xs font-bold text-amber-800 dark:text-amber-200 bg-amber-50 dark:bg-amber-950/50 px-2.5 py-1 rounded-lg border border-amber-300 dark:border-amber-700">
+                          <Wrench className="w-3.5 h-3.5" />
+                          <span>تحت الإنشاء</span>
+                        </span>
+                      )}
+                      <span className="text-xs font-bold text-[#536681] dark:text-[#94A3B8] bg-[#F7F9FC] dark:bg-[#1E293B] px-3 py-1 rounded-lg border border-[#E2E8F0] dark:border-[#334155]">
+                        {badgeLabel}
+                      </span>
+                    </div>
                   </div>
 
                   {/* Title & Description */}
