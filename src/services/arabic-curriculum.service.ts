@@ -5,11 +5,20 @@ import { canUserAccessLesson, type LessonAccessUser } from "@/lib/lesson-access"
 import { AnalyticsService } from "@/services/analytics.service";
 import {
   buildArabicLessonBodyAndObjectives,
+  extractRichArabicVocabularyItems,
+  inferSkillCategoryFromSection,
+  mapRawOriginToEnum,
   normalizeArabicForDuplicateCheck,
+  rebuildArabicSectionBlocks,
   sanitizeArabicPayloadForStudent,
   validateAndAdaptArabicLessonJson,
   type ArabicLessonPayloadV1,
   type ArabicNormalizedQuestion,
+  type ArabicNormalizedSection,
+  type ArabicQuestionOriginEnum,
+  type ArabicSkillCategory,
+  type ArabicVisualAsset,
+  type ArabicVocabularyItem,
 } from "@/lib/arabic-curriculum";
 
 function toJsonValue(val: unknown): Prisma.InputJsonValue {
@@ -395,6 +404,25 @@ export class ArabicCurriculumService {
 
     const { body, objectives, mindMapNodes, mindMapEdges } =
       buildArabicLessonBodyAndObjectives(payload);
+
+    // Preserve any uploaded visualAssets imageUrl bindings already present on the live lesson
+    const existingLiveStructured = lesson.content?.structuredData as Partial<ArabicLessonPayloadV1> | null;
+    if (existingLiveStructured?.visualAssets && payload.visualAssets) {
+      const existingUrlByKey = new Map(
+        existingLiveStructured.visualAssets
+          .filter((a) => a.imageUrl)
+          .map((a) => [a.assetKey, a.imageUrl])
+      );
+      payload.visualAssets = payload.visualAssets.map((va) => ({
+        ...va,
+        imageUrl: va.imageUrl || existingUrlByKey.get(va.assetKey) || null,
+      }));
+    }
+
+    const uploadedMindMapImages = (payload.visualAssets || [])
+      .map((a) => a.imageUrl)
+      .filter((u): u is string => Boolean(u && u.trim()));
+
     const studentSafePayload = sanitizeArabicPayloadForStudent(payload);
 
     const result = await prisma.$transaction(
@@ -441,12 +469,14 @@ export class ArabicCurriculumService {
             title: `خريطة ${payload.education.lesson.title}`,
             nodes: toJsonValue(mindMapNodes),
             edges: toJsonValue(mindMapEdges),
+            ...(uploadedMindMapImages.length > 0 ? { images: uploadedMindMapImages } : {}),
           },
           create: {
             lessonId,
             title: `خريطة ${payload.education.lesson.title}`,
             nodes: toJsonValue(mindMapNodes),
             edges: toJsonValue(mindMapEdges),
+            images: uploadedMindMapImages,
           },
         });
 
@@ -650,5 +680,563 @@ export class ArabicCurriculumService {
       restoredVersionNumber: version.versionNumber,
     });
     return published;
+  }
+
+  /**
+   * Dedicated 5-tab Arabic Lesson Admin Editor loader.
+   * Returns complete Arabic teaching structure (stages, sections, visualAssets, rich vocabulary,
+   * all preserved questions, and content versions) strictly for ARABIC_GUIDED subjects.
+   */
+  static async getArabicLessonEditorData(lessonId: string) {
+    const lesson = await prisma.lesson.findUnique({
+      where: { id: lessonId },
+      include: {
+        unit: {
+          include: {
+            subject: {
+              select: {
+                id: true,
+                name: true,
+                code: true,
+                schoolCategory: true,
+                isCommonCategory: true,
+                isUnderConstruction: true,
+                learningEngine: true,
+                grade: { select: { id: true, name: true, code: true } },
+              },
+            },
+          },
+        },
+        content: true,
+        summary: true,
+        mindMap: true,
+        sections: { orderBy: { order: "asc" } },
+        versions: {
+          orderBy: { versionNumber: "desc" },
+          select: {
+            id: true,
+            versionNumber: true,
+            status: true,
+            notes: true,
+            createdAt: true,
+            publishedAt: true,
+            createdBy: { select: { id: true, name: true } },
+          },
+        },
+        questions: {
+          where: { question: { status: { not: PublishStatus.ARCHIVED } } },
+          include: {
+            question: {
+              include: {
+                options: { orderBy: { order: "asc" } },
+                explanation: {
+                  include: {
+                    section: { select: { id: true, anchorId: true, title: true } },
+                  },
+                },
+                rubric: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!lesson) {
+      throw notFound("الدرس غير موجود");
+    }
+    if (lesson.unit.subject.learningEngine !== "ARABIC_GUIDED") {
+      throw badRequest("محرر اللغة العربية مخصص فقط لمواد اللغة العربية المفعّلة بـ ARABIC_GUIDED.");
+    }
+
+    // Prefer latest published version's full structuredData (with intact questionBank/meta), fallback to content.structuredData
+    const latestPublishedVersion = await prisma.lessonContentVersion.findFirst({
+      where: { lessonId, status: PublishStatus.PUBLISHED },
+      orderBy: { versionNumber: "desc" },
+      select: { structuredData: true },
+    });
+    const latestDraftVersion = await prisma.lessonContentVersion.findFirst({
+      where: { lessonId, status: PublishStatus.DRAFT },
+      orderBy: { versionNumber: "desc" },
+      select: { id: true, versionNumber: true, structuredData: true, createdAt: true },
+    });
+
+    const rawStored =
+      (latestPublishedVersion?.structuredData as unknown as ArabicLessonPayloadV1 | null) ||
+      (lesson.content?.structuredData as unknown as ArabicLessonPayloadV1 | null);
+
+    // Backfill rich vocabulary & visualAssets safely if structuredData predates their explicit extraction
+    let normalizedStructured = rawStored;
+    if (rawStored) {
+      const qLookup = new Map<
+        string,
+        { jsonId: string; statement: string; examTrick?: string }
+      >();
+      for (const ql of lesson.questions) {
+        const q = ql.question;
+        const key = q.externalKey || q.id;
+        qLookup.set(key, {
+          jsonId: key,
+          statement: q.statement,
+          examTrick: q.explanation?.examTrick || undefined,
+        });
+      }
+      for (const [k, meta] of Object.entries(rawStored.questionMetaByJsonId || {})) {
+        const existing = qLookup.get(k);
+        if (existing && !existing.examTrick && meta.examTrick) {
+          existing.examTrick = meta.examTrick;
+        }
+      }
+
+      const vocabularyItems =
+        rawStored.vocabularyItems && rawStored.vocabularyItems.length > 0
+          ? rawStored.vocabularyItems
+          : extractRichArabicVocabularyItems(rawStored.sections || [], qLookup);
+
+      const visualAssets: ArabicVisualAsset[] =
+        rawStored.visualAssets && rawStored.visualAssets.length > 0
+          ? rawStored.visualAssets
+          : [];
+
+      normalizedStructured = {
+        ...rawStored,
+        visualAssets,
+        vocabularyItems,
+      };
+    }
+
+    const questions = lesson.questions
+      .map((ql) => ql.question)
+      .sort((a, b) => {
+        const ak = a.externalKey || a.id;
+        const bk = b.externalKey || b.id;
+        return ak.localeCompare(bk, "en");
+      });
+
+    return {
+      lesson: {
+        id: lesson.id,
+        title: lesson.title,
+        order: lesson.order,
+        durationMinutes: lesson.durationMinutes,
+        isPublished: lesson.isPublished,
+        isTrial: lesson.isTrial,
+        videoUrl: lesson.content?.videoUrl || null,
+        audioUrl: lesson.content?.audioUrl || null,
+        pdfUrl: lesson.content?.pdfUrl || null,
+        unit: {
+          id: lesson.unit.id,
+          title: lesson.unit.title,
+          order: lesson.unit.order,
+          subject: lesson.unit.subject,
+        },
+        mindMapImages: lesson.mindMap?.images || [],
+        versions: lesson.versions,
+        latestDraftVersionId: latestDraftVersion?.id || null,
+      },
+      structured: normalizedStructured,
+      questions,
+    };
+  }
+
+  /**
+   * Persist edits from the 5-tab Arabic Lesson Admin Editor cleanly.
+   * Rebuilds section blocks deterministically, preserves uploaded visual asset URLs,
+   * syncs Arabic vocabulary without Programming's LessonSummary.definitions,
+   * and saves as Draft or Published Version inside a transaction.
+   */
+  static async saveArabicLessonEditorData(
+    adminUserId: string,
+    lessonId: string,
+    input: {
+      title?: string;
+      order?: number;
+      durationMinutes?: number;
+      isPublished?: boolean;
+      isTrial?: boolean;
+      videoUrl?: string | null;
+      audioUrl?: string | null;
+      pdfUrl?: string | null;
+      sections?: ArabicNormalizedSection[];
+      visualAssets?: ArabicVisualAsset[];
+      vocabularyItems?: ArabicVocabularyItem[];
+      writingModels?: ArabicLessonPayloadV1["writingModels"];
+      studentQuickReference?: ArabicLessonPayloadV1["studentQuickReference"];
+      practiceStage?: ArabicLessonPayloadV1["practiceStage"];
+      finalAssessment?: ArabicLessonPayloadV1["finalAssessment"];
+      publishMode?: "draft" | "publish";
+      notes?: string;
+    }
+  ) {
+    const current = await this.getArabicLessonEditorData(lessonId);
+    const basePayload = current.structured;
+    if (!basePayload) {
+      throw badRequest("الدرس لا يحتوي على بنية عربية صالحة. يرجى استيراد JSON أولاً.");
+    }
+
+    const qById = new Map<string, ArabicNormalizedQuestion>();
+    for (const q of current.questions) {
+      const key = q.externalKey || q.id;
+      qById.set(key, {
+        jsonId: key,
+        sectionId: q.explanation?.section?.anchorId || "u1-l1-s01",
+        skillCategory: (q.skillCategory as ArabicSkillCategory) || "general",
+        originEnum: (q.origin as ArabicQuestionOriginEnum) || "KHOLASA_ORIGINAL",
+        rawOrigin: q.explanation?.origin || undefined,
+        examTrick: q.explanation?.examTrick || undefined,
+        explanation: q.explanation?.correctReason || undefined,
+        concept: q.explanation?.concept || undefined,
+        modelAnswer: q.rubric?.modelAnswer || undefined,
+        statement: q.statement,
+        type: q.type,
+        difficulty: q.difficulty,
+        options: q.options.map((o) => ({ text: o.text, isCorrect: o.isCorrect })),
+      });
+    }
+
+    const nextVocabItems: ArabicVocabularyItem[] =
+      input.vocabularyItems ?? basePayload.vocabularyItems ?? [];
+    const nextVisualAssets: ArabicVisualAsset[] =
+      input.visualAssets ?? basePayload.visualAssets ?? [];
+
+    const incomingSections = input.sections ?? basePayload.sections;
+    const rebuiltSections: ArabicNormalizedSection[] = [...incomingSections]
+      .sort((a, b) => a.order - b.order)
+      .map((sec) => {
+        const skillCategory =
+          sec.skillCategory || inferSkillCategoryFromSection(sec.id, sec.title);
+
+        // Keep s05 word_cards visualization synced cleanly with edited Arabic vocabularyItems
+        let nextVis = sec.visualization || null;
+        if (nextVis?.type === "word_cards" && nextVocabItems.length > 0) {
+          nextVis = {
+            ...nextVis,
+            cards: nextVocabItems.map((v) => ({
+              id: v.id,
+              word: v.word,
+              meaning: v.meaning,
+              source: v.source,
+              contextSentence: v.contextSentence,
+              explanationEgyptian: v.explanationEgyptian,
+              nuanceDiff: v.nuanceDiff,
+              examTrick: v.examTrick,
+              linkedQuestionId: v.linkedQuestionId,
+            })),
+          };
+        }
+
+        const mergedSec: ArabicNormalizedSection = {
+          ...sec,
+          skillCategory,
+          visualization: nextVis,
+        };
+
+        return {
+          ...mergedSec,
+          blocks: rebuildArabicSectionBlocks(
+            mergedSec,
+            skillCategory,
+            basePayload.questionMetaByJsonId || {},
+            qById,
+            nextVis?.type === "word_cards" ? nextVocabItems : undefined
+          ),
+        };
+      });
+
+    const nextTitle = input.title?.trim() || current.lesson.title;
+    const nextPayload: ArabicLessonPayloadV1 = {
+      ...basePayload,
+      education: {
+        ...basePayload.education,
+        lesson: {
+          ...basePayload.education.lesson,
+          title: nextTitle,
+        },
+      },
+      sections: rebuiltSections,
+      visualAssets: nextVisualAssets,
+      vocabularyItems: nextVocabItems,
+      writingModels: input.writingModels ?? basePayload.writingModels,
+      studentQuickReference:
+        input.studentQuickReference ?? basePayload.studentQuickReference,
+      practiceStage: input.practiceStage ?? basePayload.practiceStage,
+      finalAssessment: input.finalAssessment ?? basePayload.finalAssessment,
+    };
+
+    const { body, objectives, mindMapNodes, mindMapEdges } =
+      buildArabicLessonBodyAndObjectives(nextPayload);
+    const studentSafePayload = sanitizeArabicPayloadForStudent(nextPayload);
+    const uploadedImageUrls = nextVisualAssets
+      .map((a) => a.imageUrl)
+      .filter((u): u is string => Boolean(u && u.trim()));
+
+    const mode = input.publishMode || "publish";
+
+    const result = await prisma.$transaction(async (tx) => {
+      const agg = await tx.lessonContentVersion.aggregate({
+        where: { lessonId },
+        _max: { versionNumber: true },
+      });
+      const nextVer = (agg._max.versionNumber || 0) + 1;
+
+      if (mode === "publish") {
+        await tx.lessonContentVersion.updateMany({
+          where: { lessonId, status: PublishStatus.PUBLISHED },
+          data: { status: PublishStatus.ARCHIVED },
+        });
+      }
+
+      const version = await tx.lessonContentVersion.create({
+        data: {
+          lessonId,
+          versionNumber: nextVer,
+          status: mode === "publish" ? PublishStatus.PUBLISHED : PublishStatus.DRAFT,
+          body,
+          objectives,
+          structuredData: toJsonValue(nextPayload),
+          notes:
+            input.notes?.trim() ||
+            (mode === "publish" ? "تحديث ونشر من محرر اللغة العربية" : "مسودة محرر اللغة العربية"),
+          createdById: adminUserId,
+          publishedAt: mode === "publish" ? new Date() : null,
+        },
+      });
+
+      if (mode === "publish") {
+        await tx.lesson.update({
+          where: { id: lessonId },
+          data: {
+            title: nextTitle,
+            ...(input.order !== undefined ? { order: Number(input.order) } : {}),
+            ...(input.durationMinutes !== undefined
+              ? { durationMinutes: Number(input.durationMinutes) }
+              : {}),
+            ...(input.isPublished !== undefined
+              ? { isPublished: Boolean(input.isPublished) }
+              : {}),
+            ...(input.isTrial !== undefined ? { isTrial: Boolean(input.isTrial) } : {}),
+          },
+        });
+
+        await tx.lessonContent.upsert({
+          where: { lessonId },
+          update: {
+            body,
+            objectives,
+            structuredData: toJsonValue(studentSafePayload),
+            ...(input.videoUrl !== undefined ? { videoUrl: input.videoUrl || null } : {}),
+            ...(input.audioUrl !== undefined ? { audioUrl: input.audioUrl || null } : {}),
+            ...(input.pdfUrl !== undefined ? { pdfUrl: input.pdfUrl || null } : {}),
+          },
+          create: {
+            lessonId,
+            body,
+            objectives,
+            structuredData: toJsonValue(studentSafePayload),
+            videoUrl: input.videoUrl || null,
+            audioUrl: input.audioUrl || null,
+            pdfUrl: input.pdfUrl || null,
+          },
+        });
+
+        await tx.mindMap.upsert({
+          where: { lessonId },
+          update: {
+            title: `خريطة ${nextTitle}`,
+            images: uploadedImageUrls,
+            nodes: toJsonValue(mindMapNodes),
+            edges: toJsonValue(mindMapEdges),
+          },
+          create: {
+            lessonId,
+            title: `خريطة ${nextTitle}`,
+            images: uploadedImageUrls,
+            nodes: toJsonValue(mindMapNodes),
+            edges: toJsonValue(mindMapEdges),
+          },
+        });
+
+        for (const sec of rebuiltSections) {
+          await tx.lessonSection.upsert({
+            where: { lessonId_anchorId: { lessonId, anchorId: sec.id } },
+            update: { title: sec.title, order: sec.order },
+            create: {
+              lessonId,
+              anchorId: sec.id,
+              title: sec.title,
+              order: sec.order,
+            },
+          });
+        }
+      }
+
+      return { version, published: mode === "publish" };
+    });
+
+    await AnalyticsService.logAuditAction(
+      adminUserId,
+      mode === "publish" ? "ARABIC_EDITOR_PUBLISH" : "ARABIC_EDITOR_DRAFT",
+      "Lesson",
+      lessonId,
+      {
+        versionNumber: result.version.versionNumber,
+        sectionsCount: rebuiltSections.length,
+        vocabularyCount: nextVocabItems.length,
+        visualAssetsCount: nextVisualAssets.length,
+      }
+    );
+
+    return result;
+  }
+
+  /**
+   * Update or create a single Arabic lesson question while strictly preserving
+   * existing Question IDs, externalKeys, and structured metadata references.
+   */
+  static async upsertArabicLessonQuestion(
+    adminUserId: string,
+    lessonId: string,
+    input: {
+      questionId?: string;
+      externalKey?: string;
+      statement: string;
+      type: "MCQ" | "TRUE_FALSE" | "ESSAY";
+      difficulty: "EASY" | "MEDIUM" | "HARD";
+      sectionAnchorId: string;
+      skillCategory?: ArabicSkillCategory;
+      origin?: ArabicQuestionOriginEnum | string;
+      concept?: string;
+      correctReason?: string;
+      examTrick?: string | null;
+      modelAnswer?: string | null;
+      points?: number;
+      sourceReferences?: Array<{ sourceId: string; pages: number[] }>;
+      options?: Array<{ text: string; isCorrect: boolean }>;
+    }
+  ) {
+    const lesson = await assertArabicLessonTarget(lessonId);
+
+    if ((input.type === "MCQ" || input.type === "TRUE_FALSE") && (!input.options || !input.options.some((o) => o.isCorrect))) {
+      throw badRequest("الأسئلة الموضوعية يجب أن تحتوي على خيار صحيح واحد على الأقل.");
+    }
+
+    const dbSection = await prisma.lessonSection.findUnique({
+      where: {
+        lessonId_anchorId: {
+          lessonId,
+          anchorId: input.sectionAnchorId,
+        },
+      },
+      select: { id: true, title: true },
+    });
+
+    const resolvedSkill =
+      input.skillCategory ||
+      inferSkillCategoryFromSection(input.sectionAnchorId, dbSection?.title);
+
+    const resolvedOriginEnum =
+      typeof input.origin === "string" &&
+      input.origin.toUpperCase() === input.origin
+        ? (input.origin as QuestionOrigin)
+        : (mapRawOriginToEnum(input.origin) as QuestionOrigin);
+
+    const saved = await prisma.$transaction(async (tx) => {
+      let questionId = input.questionId;
+
+      if (questionId) {
+        await tx.question.update({
+          where: { id: questionId },
+          data: {
+            statement: input.statement.trim(),
+            type: input.type,
+            difficulty: input.difficulty,
+            origin: resolvedOriginEnum,
+            skillCategory: resolvedSkill,
+            sourceReferences: input.sourceReferences
+              ? toJsonValue(input.sourceReferences)
+              : Prisma.DbNull,
+          },
+        });
+      } else {
+        const created = await tx.question.create({
+          data: {
+            statement: input.statement.trim(),
+            type: input.type,
+            difficulty: input.difficulty,
+            status: PublishStatus.PUBLISHED,
+            subjectId: lesson.unit.subjectId,
+            unitId: lesson.unitId,
+            schoolCategory: lesson.unit.subject.schoolCategory,
+            externalKey: input.externalKey?.trim() || null,
+            origin: resolvedOriginEnum,
+            skillCategory: resolvedSkill,
+            sourceReferences: input.sourceReferences
+              ? toJsonValue(input.sourceReferences)
+              : undefined,
+          },
+        });
+        questionId = created.id;
+      }
+
+      await tx.questionLesson.upsert({
+        where: { questionId_lessonId: { questionId, lessonId } },
+        update: {},
+        create: { questionId, lessonId },
+      });
+
+      if ((input.type === "MCQ" || input.type === "TRUE_FALSE") && input.options) {
+        await syncQuestionOptionsInTx(tx, questionId, input.options);
+      }
+
+      await tx.questionExplanation.upsert({
+        where: { questionId },
+        update: {
+          concept: input.concept?.trim() || dbSection?.title || "تحليل السؤال",
+          correctReason: input.correctReason?.trim() || "",
+          examTrick: input.examTrick?.trim() || null,
+          sectionId: dbSection?.id || null,
+        },
+        create: {
+          questionId,
+          concept: input.concept?.trim() || dbSection?.title || "تحليل السؤال",
+          correctReason: input.correctReason?.trim() || "",
+          examTrick: input.examTrick?.trim() || null,
+          sectionId: dbSection?.id || null,
+        },
+      });
+
+      if (input.type === "ESSAY" && input.modelAnswer !== undefined) {
+        await tx.essayRubric.upsert({
+          where: { questionId },
+          update: {
+            modelAnswer: input.modelAnswer?.trim() || "",
+            maxScore: input.points || 10,
+          },
+          create: {
+            questionId,
+            modelAnswer: input.modelAnswer?.trim() || "",
+            maxScore: input.points || 10,
+          },
+        });
+      }
+
+      return tx.question.findUnique({
+        where: { id: questionId },
+        include: {
+          options: { orderBy: { order: "asc" } },
+          explanation: {
+            include: { section: { select: { id: true, anchorId: true, title: true } } },
+          },
+          rubric: true,
+        },
+      });
+    });
+
+    await AnalyticsService.logAuditAction(adminUserId, "ARABIC_UPSERT_QUESTION", "Question", saved?.id || null, {
+      lessonId,
+      sectionAnchorId: input.sectionAnchorId,
+    });
+
+    return saved;
   }
 }

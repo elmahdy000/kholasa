@@ -39,6 +39,9 @@ export interface Subject {
   gradeId: string;
   trackId?: string | null;
   schoolCategory: "ARABIC" | "LANGUAGES";
+  learningEngine?: string;
+  isCommonCategory?: boolean;
+  isUnderConstruction?: boolean;
   isElective?: boolean;
   electiveGroup?: string | null;
   order: number;

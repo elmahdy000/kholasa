@@ -45,6 +45,8 @@ interface ArabicQuestionCardProps {
   ) => Promise<void> | void;
 }
 
+const ARABIC_CHOICE_LABELS = ["أ", "ب", "ج", "د", "هـ", "و"];
+
 const RAW_ORIGIN_LABELS: Record<string, string> = {
   official_textbook: "كتاب الوزارة",
   official_textbook_transcribed: "كتاب الوزارة",
@@ -214,7 +216,7 @@ export function ArabicQuestionCard({
               >
                 <div className="flex items-start gap-2.5 min-w-0">
                   <span className="w-6 h-6 rounded-full bg-white dark:bg-[#0D214D] border border-[#CBD5E1] dark:border-[#1E3A6E] text-xs font-black flex items-center justify-center shrink-0 mt-0.5 tabular-nums text-[#091B40] dark:text-white">
-                    {String.fromCharCode(1571 + oIdx)}
+                    {ARABIC_CHOICE_LABELS[oIdx] || String(oIdx + 1)}
                   </span>
                   <span className="text-xs sm:text-sm font-bold leading-relaxed break-words text-right">
                     {opt.text}
@@ -284,11 +286,10 @@ export function ArabicQuestionCard({
                   setIsTogglingReview(false);
                 }
               }}
-              className={`px-3.5 py-2.5 rounded-xl border text-xs font-extrabold flex items-center gap-1.5 min-h-[42px] transition-colors ${
-                isMarkedForReview
+              className={`px-3.5 py-2.5 rounded-xl border text-xs font-extrabold flex items-center gap-1.5 min-h-[42px] transition-colors ${isMarkedForReview
                   ? "border-emerald-300 bg-emerald-50 text-emerald-800 dark:border-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-300"
                   : "border-amber-300 bg-amber-50 text-amber-900 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-200"
-              }`}
+                }`}
             >
               {isMarkedForReview ? (
                 <>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Link from "next/link";
 import {
   GraduationCap,
@@ -138,6 +138,21 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
 
   // Lesson Modals state
   const [editingLessonId, setEditingLessonId] = useState<string | null>(null);
+  const editingLessonIsArabic = useMemo(() => {
+    if (!editingLessonId) return false;
+    for (const sys of systems) {
+      for (const g of sys.grades) {
+        for (const s of g.subjects) {
+          for (const u of s.units) {
+            if (u.lessons.some((l) => l.id === editingLessonId)) {
+              return s.learningEngine === "ARABIC_GUIDED";
+            }
+          }
+        }
+      }
+    }
+    return false;
+  }, [editingLessonId, systems]);
   const [createLessonContext, setCreateLessonContext] = useState<{
     unitId: string;
     unitTitle: string;
@@ -1128,6 +1143,7 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
       {editingLessonId && (
         <LessonEditorModal
           lessonId={editingLessonId}
+          isArabicGuided={editingLessonIsArabic}
           isOpen={!!editingLessonId}
           onClose={() => setEditingLessonId(null)}
           onLessonUpdated={handleLessonUpdated}

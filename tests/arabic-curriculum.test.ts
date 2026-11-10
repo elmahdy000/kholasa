@@ -35,8 +35,41 @@ describe("Arabic Curriculum JSON Adapter & Validation", () => {
     expect(payload).not.toBeNull();
     expect(report.summary.stagesCount).toBe(4);
     expect(report.summary.sectionsCount).toBe(17);
+    expect(report.summary.understandSectionsCount).toBe(10);
+    expect(report.summary.skillsSectionsCount).toBe(6);
+    expect(report.summary.assessmentSectionsCount).toBe(1);
+    expect(report.summary.practiceStageCount).toBe(56);
+    expect(report.summary.finalAssessmentCount).toBe(21);
     expect(report.summary.questionsCount).toBe(58);
+    expect(report.summary.visualAssetsCount).toBe(4);
+    expect(report.summary.vocabularyCount).toBe(15);
     expect(report.summary.blocksCount).toBeGreaterThan(40);
+
+    // Ensure 4 visual asset metadata records are preserved cleanly without fabricated image URLs
+    const assets = payload!.visualAssets ?? [];
+    expect(assets).toHaveLength(4);
+    expect(assets.map((a) => [a.assetKey, a.sectionId])).toEqual([
+      ["u1-l1-map-1", "u1-l1-s01"],
+      ["u1-l1-map-2", "u1-l1-s02"],
+      ["u1-l1-map-3", "u1-l1-s03"],
+      ["u1-l1-map-4", "u1-l1-s04"],
+    ]);
+    for (const asset of assets) {
+      expect(asset.imageUrl).toBeNull();
+      expect(asset.status).toBe("previously_designed_upload_to_platform_required");
+    }
+
+    // Ensure full 7-field Arabic curriculum vocabulary is imported faithfully
+    const vocab = payload!.vocabularyItems ?? [];
+    expect(vocab).toHaveLength(15);
+    expect(vocab[0].word).toBe("يضاهي");
+    const richVocab = vocab.find((v) => v.word === "مستعصية");
+    expect(richVocab).toBeDefined();
+    expect(richVocab!.contextSentence).toBeTruthy();
+    expect(richVocab!.meaning).toBeTruthy();
+    expect(richVocab!.explanationEgyptian).toBeTruthy();
+    expect(richVocab!.nuanceDiff).toBeTruthy();
+    expect(richVocab!.linkedQuestionId).toBeTruthy();
 
     // Ensure key specialized content block types are produced
     const counts = report.summary.blockTypeCounts;

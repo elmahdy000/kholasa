@@ -137,7 +137,7 @@ export function ArabicContentBlockRenderer({
                 key={idx}
                 className="p-3 rounded-xl bg-white dark:bg-[#0D214D] border border-[#E2E8F0] dark:border-[#1E3A6E] text-xs sm:text-[13px] font-bold text-[#091B40] dark:text-white flex items-center gap-2.5 min-w-0"
               >
-                <span className="w-6 h-6 rounded-lg bg-[#800B34] text-white text-[11px] font-black flex items-center justify-center shrink-0 tabular-nums">
+                <span className="w-6 h-6 rounded-lg bg-[#0F5132] text-white text-[11px] font-black flex items-center justify-center shrink-0 tabular-nums">
                   {idx + 1}
                 </span>
                 <span className="break-words">{branch}</span>

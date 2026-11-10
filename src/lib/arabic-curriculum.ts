@@ -93,13 +93,37 @@ export interface ArabicTeacherStep {
 }
 
 export interface ArabicWordCard {
+  id?: string;
   word: string;
   meaning: string;
   source?: string;
   contextSentence?: string;
   explanationEgyptian?: string;
+  nuanceDiff?: string;
   examTrick?: string;
   linkedQuestionId?: string;
+}
+
+export interface ArabicVisualAsset {
+  assetKey: string;
+  sectionId: string;
+  title: string;
+  caption?: string;
+  order: number;
+  status: string;
+  imageUrl?: string | null;
+}
+
+export interface ArabicVocabularyItem {
+  id: string;
+  word: string;
+  meaning: string;
+  contextSentence?: string;
+  explanationEgyptian?: string;
+  nuanceDiff?: string;
+  examTrick?: string;
+  linkedQuestionId?: string;
+  source?: string;
 }
 
 export interface ArabicWorkedQuestionItem {
@@ -173,6 +197,7 @@ export interface ArabicVisualization {
   cases?: ArabicGrammarCaseRow[];
   conditions?: string[];
   cards?: Array<{
+    id?: string;
     title?: string;
     items?: string[];
     word?: string;
@@ -182,6 +207,7 @@ export interface ArabicVisualization {
     answer?: string;
     contextSentence?: string;
     explanationEgyptian?: string;
+    nuanceDiff?: string;
     examTrick?: string;
     linkedQuestionId?: string;
   }>;
@@ -300,6 +326,8 @@ export interface ArabicLessonPayloadV1 {
   sources: ArabicSource[];
   stages: ArabicStage[];
   sections: ArabicNormalizedSection[];
+  visualAssets?: ArabicVisualAsset[];
+  vocabularyItems?: ArabicVocabularyItem[];
   writingModels: ArabicWritingModel[];
   studentQuickReference?: {
     fiveRules?: string[];
@@ -348,6 +376,13 @@ export interface ArabicImportValidationReport {
     lessonTitle: string;
     stagesCount: number;
     sectionsCount: number;
+    understandSectionsCount: number;
+    skillsSectionsCount: number;
+    assessmentSectionsCount: number;
+    practiceStageCount: number;
+    finalAssessmentCount: number;
+    visualAssetsCount: number;
+    vocabularyCount: number;
     blocksCount: number;
     blockTypeCounts: Partial<Record<ArabicContentBlockType, number>>;
     questionsCount: number;
@@ -424,6 +459,27 @@ const rawQuestionSchema = z.object({
   displayAfterAnswer: z.array(z.string()).optional(),
 });
 
+const rawVisualAssetSchema = z.object({
+  sectionId: z.string().trim().min(1),
+  assetKey: z.string().trim().min(1),
+  title: z.string().trim().min(1),
+  order: z.coerce.number().int().optional().default(0),
+  status: z.string().optional().default("previously_designed_upload_to_platform_required"),
+  imageUrl: z.string().nullable().optional(),
+});
+
+const rawVocabularyItemSchema = z.object({
+  id: z.string().trim().min(1).optional(),
+  word: z.string().trim().min(1),
+  meaning: z.string().trim().min(1),
+  contextSentence: z.string().optional(),
+  explanationEgyptian: z.string().optional(),
+  nuanceDiff: z.string().optional(),
+  examTrick: z.string().optional(),
+  linkedQuestionId: z.string().optional(),
+  source: z.string().optional(),
+});
+
 const rawArabicLessonInputSchema = z.object({
   schemaVersion: z.string().default("1.0"),
   contentType: z.string().default("arabic_lesson_curriculum"),
@@ -457,6 +513,8 @@ const rawArabicLessonInputSchema = z.object({
   questionBank: z.array(rawQuestionSchema).optional(),
   questions: z.array(rawQuestionSchema).optional(),
   writingModels: z.array(z.record(z.string(), z.unknown())).optional().default([]),
+  visualAssets: z.array(rawVisualAssetSchema).optional().default([]),
+  vocabularyItems: z.array(rawVocabularyItemSchema).optional().default([]),
   studentQuickReference: z.record(z.string(), z.unknown()).optional(),
   sourceLimits: z.array(z.record(z.string(), z.unknown())).optional().default([]),
   officialWeeklyAssessmentCoverage: z
@@ -561,11 +619,85 @@ export function inferSkillCategoryFromSection(
   return "comprehension";
 }
 
-function buildSectionBlocks(
-  section: z.infer<typeof rawSectionSchema>,
+function extractQuotedPhrase(text: string): string | undefined {
+  const m = text.match(/«([^»]+)»/);
+  return m?.[1]?.trim() || undefined;
+}
+
+export function extractRichArabicVocabularyItems(
+  sections: Array<z.infer<typeof rawSectionSchema> | ArabicNormalizedSection>,
+  questionsById: Map<
+    string,
+    Pick<ArabicNormalizedQuestion, "jsonId" | "statement" | "examTrick">
+  >,
+  explicitItems?: ArabicVocabularyItem[]
+): ArabicVocabularyItem[] {
+  if (explicitItems && explicitItems.length > 0) {
+    return explicitItems.map((it, idx) => ({
+      ...it,
+      id: it.id || `vocab-${idx + 1}`,
+    }));
+  }
+
+  const results: ArabicVocabularyItem[] = [];
+  for (const sec of sections) {
+    const vis = (sec.visualization || null) as ArabicVisualization | null;
+    if (vis?.type !== "word_cards" || !Array.isArray(vis.cards)) continue;
+
+    const sectionQIds = sec.practiceQuestionIds || [];
+    for (let i = 0; i < vis.cards.length; i++) {
+      const card = vis.cards[i];
+      const word = (card.word || "").trim();
+      if (!word) continue;
+
+      const matchedStep = (sec.teacherExplanation || []).find(
+        (st) => st.title.includes(word) || st.explanationEgyptian.includes(word)
+      );
+
+      const matchedQId =
+        card.linkedQuestionId ||
+        sectionQIds.find((qid) => {
+          const q = questionsById.get(qid);
+          return q?.statement?.includes(word);
+        });
+      const matchedQ = matchedQId ? questionsById.get(matchedQId) : undefined;
+
+      const nuanceFromStep = matchedStep?.explanationEgyptian?.includes("مش ")
+        ? matchedStep.explanationEgyptian
+            .slice(matchedStep.explanationEgyptian.indexOf("مش "))
+            .replace(/\.$/, "")
+            .trim()
+        : undefined;
+
+      const contextFromStep = matchedStep
+        ? extractQuotedPhrase(matchedStep.explanationEgyptian)
+        : undefined;
+      const contextFromQuestion = matchedQ?.statement
+        ? extractQuotedPhrase(matchedQ.statement)
+        : undefined;
+
+      results.push({
+        id: card.id || `${sec.id}-v-${i + 1}`,
+        word,
+        meaning: card.meaning || "",
+        contextSentence: card.contextSentence || contextFromStep || contextFromQuestion,
+        explanationEgyptian: card.explanationEgyptian || matchedStep?.explanationEgyptian,
+        nuanceDiff: card.nuanceDiff || nuanceFromStep,
+        examTrick: card.examTrick || matchedQ?.examTrick,
+        linkedQuestionId: matchedQId,
+        source: card.source,
+      });
+    }
+  }
+  return results;
+}
+
+export function rebuildArabicSectionBlocks(
+  section: z.infer<typeof rawSectionSchema> | ArabicNormalizedSection,
   skillCategory: ArabicSkillCategory,
   questionMetaByJsonId: Record<string, ArabicQuestionMeta>,
-  questionsById: Map<string, ArabicNormalizedQuestion>
+  questionsById: Map<string, ArabicNormalizedQuestion>,
+  vocabularyOverride?: ArabicVocabularyItem[]
 ): ArabicContentBlock[] {
   const blocks: ArabicContentBlock[] = [];
   let order = 1;
@@ -604,23 +736,21 @@ function buildSectionBlocks(
         visible: true,
       });
     } else if (vis.type === "word_cards" && Array.isArray(vis.cards)) {
-      const sectionQuestionIds = section.practiceQuestionIds || [];
-      const cards: ArabicWordCard[] = vis.cards.map((c) => {
-        const wordText = c.word || "";
-        const linked = sectionQuestionIds.find((qid) => {
-          const q = questionsById.get(qid);
-          return wordText ? Boolean(q?.statement?.includes(wordText)) : false;
-        });
-        return {
-          word: wordText,
-          meaning: c.meaning || "",
-          source: c.source,
-          contextSentence: c.contextSentence,
-          explanationEgyptian: c.explanationEgyptian,
-          examTrick: c.examTrick,
-          linkedQuestionId: c.linkedQuestionId || linked,
-        };
-      });
+      const enriched =
+        vocabularyOverride && vocabularyOverride.length > 0
+          ? vocabularyOverride
+          : extractRichArabicVocabularyItems([section], questionsById);
+      const cards: ArabicWordCard[] = enriched.map((v) => ({
+        id: v.id,
+        word: v.word,
+        meaning: v.meaning,
+        source: v.source,
+        contextSentence: v.contextSentence,
+        explanationEgyptian: v.explanationEgyptian,
+        nuanceDiff: v.nuanceDiff,
+        examTrick: v.examTrick,
+        linkedQuestionId: v.linkedQuestionId,
+      }));
       blocks.push({
         id: `${section.id}-b-${order}`,
         sectionId: section.id,
@@ -870,6 +1000,13 @@ export function validateAndAdaptArabicLessonJson(rawInput: unknown): {
       lessonTitle: "",
       stagesCount: 0,
       sectionsCount: 0,
+      understandSectionsCount: 0,
+      skillsSectionsCount: 0,
+      assessmentSectionsCount: 0,
+      practiceStageCount: 0,
+      finalAssessmentCount: 0,
+      visualAssetsCount: 0,
+      vocabularyCount: 0,
       blocksCount: 0,
       blockTypeCounts: {},
       questionsCount: 0,
@@ -1063,16 +1200,28 @@ export function validateAndAdaptArabicLessonJson(rawInput: unknown): {
       (s.id === "practice" ? normalizedQuestions.length : undefined),
   }));
 
+  const vocabularyItems = extractRichArabicVocabularyItems(
+    sortedSections,
+    questionsById,
+    data.vocabularyItems.length > 0
+      ? data.vocabularyItems.map((v, i) => ({
+          ...v,
+          id: v.id || `vocab-${i + 1}`,
+        }))
+      : undefined
+  );
+
   const blockTypeCounts: Partial<Record<ArabicContentBlockType, number>> = {};
   let totalBlocksCount = 0;
 
   const normalizedSections: ArabicNormalizedSection[] = sortedSections.map((sec) => {
     const skillCategory = inferSkillCategoryFromSection(sec.id, sec.title);
-    const blocks = buildSectionBlocks(
+    const blocks = rebuildArabicSectionBlocks(
       sec,
       skillCategory,
       questionMetaByJsonId,
-      questionsById
+      questionsById,
+      (sec.visualization as { type?: string } | null)?.type === "word_cards" ? vocabularyItems : undefined
     );
     for (const b of blocks) {
       blockTypeCounts[b.type] = (blockTypeCounts[b.type] || 0) + 1;
@@ -1123,6 +1272,17 @@ export function validateAndAdaptArabicLessonJson(rawInput: unknown): {
     sources: data.sources,
     stages: normalizedStages,
     sections: normalizedSections,
+    visualAssets: [...data.visualAssets]
+      .sort((a, b) => (a.order || 0) - (b.order || 0))
+      .map((va, idx) => ({
+        assetKey: va.assetKey,
+        sectionId: va.sectionId,
+        title: va.title,
+        order: va.order || idx + 1,
+        status: va.status,
+        imageUrl: va.imageUrl || null,
+      })),
+    vocabularyItems,
     writingModels: data.writingModels as unknown as ArabicWritingModel[],
     studentQuickReference: data.studentQuickReference as ArabicLessonPayloadV1["studentQuickReference"],
     sourceLimits,
@@ -1152,6 +1312,17 @@ export function validateAndAdaptArabicLessonJson(rawInput: unknown): {
       lessonTitle: data.education.lesson.title,
       stagesCount: normalizedStages.length,
       sectionsCount: normalizedSections.length,
+      understandSectionsCount: normalizedSections.filter((s) => s.stageId === "understand").length,
+      skillsSectionsCount: normalizedSections.filter((s) => s.stageId === "skills").length,
+      assessmentSectionsCount: normalizedSections.filter((s) => s.stageId === "assessment").length,
+      practiceStageCount: Array.isArray((data.practiceStage as { questionIds?: unknown })?.questionIds)
+        ? (data.practiceStage as { questionIds: unknown[] }).questionIds.length
+        : normalizedQuestions.length,
+      finalAssessmentCount: Array.isArray((data.finalAssessment as { questionIds?: unknown })?.questionIds)
+        ? (data.finalAssessment as { questionIds: unknown[] }).questionIds.length
+        : 0,
+      visualAssetsCount: data.visualAssets.length,
+      vocabularyCount: vocabularyItems.length,
       blocksCount: totalBlocksCount,
       blockTypeCounts,
       questionsCount: normalizedQuestions.length,
