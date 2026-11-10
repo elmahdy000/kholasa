@@ -113,30 +113,6 @@ export function MistakeCard({
 
       <QuestionImageAttachment imageUrl={q.imageUrl} />
 
-      {/* Immediate Celebratory Feedback ("برافو كمل!") */}
-      {isChecked && (
-        <div
-          className={`p-3.5 sm:p-4 rounded-xl text-xs sm:text-[13px] font-bold flex items-center gap-2.5 animate-in zoom-in-95 duration-200 border shadow-2xs ${
-            answerState?.result?.isCorrect
-              ? "bg-emerald-50 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-700/60 text-emerald-900 dark:text-emerald-200"
-              : "bg-red-50 dark:bg-red-950/40 border-red-300 dark:border-red-700/60 text-red-900 dark:text-red-200"
-          }`}
-        >
-          <span className="text-xl">
-            {answerState?.result?.isCorrect ? "🎉" : "💡"}
-          </span>
-          <span className="leading-relaxed">
-            {answerState?.result?.isCorrect
-              ? isEnglish
-                ? "Bravo champion! Correct answer — question mastered and removed from mistakes!"
-                : "برافو عليك يا بطل! إجابة صحيحة ومتقنة.. كمل يا وحش، تم حفظ الإتقان بنجاح!"
-              : isEnglish
-              ? "Not quite right — check the official explanation below to understand the correct concept."
-              : "إجابة غير دقيقة.. راجع التفسير التعليمي المعتمد بالأسفل عشان تفهم الفكرة كويس ومتغلطش فيها تاني."}
-          </span>
-        </div>
-      )}
-
       {/* 1. Objective Questions (MCQ / TRUE_FALSE): Inline Options to Retake */}
       {!isEssay && q.options && q.options.length > 0 && (
         <div className="space-y-2.5 sm:space-y-3">

@@ -156,7 +156,11 @@ export class ExamAttemptService {
           } else {
             isCorrect = false;
             score = 0;
-            mistakesToRecord.push(q.id);
+            // Only actual incorrect attempts by the student are recorded as mistakes to review.
+            // Unanswered / skipped questions are not student mistakes.
+            if (selectedOptionId) {
+              mistakesToRecord.push(q.id);
+            }
           }
         } else if (q.type === QuestionType.ESSAY) {
           isCorrect = null;
@@ -205,13 +209,14 @@ export class ExamAttemptService {
           await tx.studentAnswer.create({ data: sa });
 
           // Sync answer to QuestionAttempt for permanent cross-session history & smart repetition prevention
-          if (sa.isCorrect !== null) {
+          // Only sync if the student actually answered the question (not skipped/unanswered)
+          if (sa.selectedOptionId !== null || sa.essayText !== null) {
             await tx.questionAttempt.upsert({
               where: { userId_questionId: { userId, questionId: sa.questionId } },
               update: {
                 selectedOptionId: sa.selectedOptionId,
                 essayText: sa.essayText,
-                isCorrect: sa.isCorrect,
+                isCorrect: sa.isCorrect ?? false,
                 updatedAt: new Date(),
               },
               create: {
@@ -219,7 +224,7 @@ export class ExamAttemptService {
                 questionId: sa.questionId,
                 selectedOptionId: sa.selectedOptionId,
                 essayText: sa.essayText,
-                isCorrect: sa.isCorrect,
+                isCorrect: sa.isCorrect ?? false,
               },
             });
           }
@@ -304,7 +309,11 @@ export class ExamAttemptService {
           } else {
             isCorrect = false;
             score = 0;
-            mistakesToRecord.push(q.id);
+            // Only actual incorrect attempts by the student are recorded as mistakes to review.
+            // Unanswered / skipped questions are not student mistakes.
+            if (selectedOptionId) {
+              mistakesToRecord.push(q.id);
+            }
           }
         }
 
@@ -367,13 +376,14 @@ export class ExamAttemptService {
           }
 
           // Sync answer to QuestionAttempt for permanent cross-session history & smart repetition prevention
-          if (sa.isCorrect !== null) {
+          // Only sync if the student actually answered the question (not skipped/unanswered)
+          if (sa.selectedOptionId !== null || sa.essayText !== null) {
             await tx.questionAttempt.upsert({
               where: { userId_questionId: { userId, questionId: sa.questionId } },
               update: {
                 selectedOptionId: sa.selectedOptionId,
                 essayText: sa.essayText,
-                isCorrect: sa.isCorrect,
+                isCorrect: sa.isCorrect ?? false,
                 updatedAt: new Date(),
               },
               create: {
@@ -381,7 +391,7 @@ export class ExamAttemptService {
                 questionId: sa.questionId,
                 selectedOptionId: sa.selectedOptionId,
                 essayText: sa.essayText,
-                isCorrect: sa.isCorrect,
+                isCorrect: sa.isCorrect ?? false,
               },
             });
           }

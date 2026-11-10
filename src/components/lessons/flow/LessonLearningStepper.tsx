@@ -170,7 +170,7 @@ export function LessonLearningStepper({
                 title={isLanguages ? "Go to recommended next activity" : "الانتقال للنشاط المقترح التالي"}
               >
                 <span>{isLanguages ? "Next:" : "يلا بينا:"}</span>
-                <span className="font-black underline decoration-dotted">{nextStepTitle}</span>
+                <span className="font-black">{nextStepTitle}</span>
                 <ArrowNext className="w-3.5 h-3.5 group-hover:scale-110 transition-transform shrink-0" weight="bold" />
               </button>
             ) : (

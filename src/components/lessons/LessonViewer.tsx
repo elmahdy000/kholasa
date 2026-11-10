@@ -691,11 +691,11 @@ export function LessonViewer({
                 className={`w-4 h-4 sm:w-4.5 sm:h-4.5 shrink-0 ${isSelected ? "text-[#E9AD32]" : "text-[#64748B] dark:text-[#94A3B8]"}`}
               />
               <span className="hidden sm:inline whitespace-nowrap text-xs sm:text-[13px]">{tab.label}</span>
-              <div className="sm:hidden flex items-center justify-center gap-1 max-w-full">
-                <span className="text-xs font-black leading-tight truncate">{tab.mobileLabel}</span>
+              <div className="sm:hidden flex items-center justify-center gap-1.5 max-w-full">
+                <span className="text-xs font-black leading-tight whitespace-nowrap">{tab.mobileLabel}</span>
                 {"badge" in tab && tab.badge && (
                   <span
-                    className={`text-[10px] px-1.5 py-0.2 rounded-md font-mono font-bold leading-none shrink-0 ${
+                    className={`text-[10px] px-1.5 py-0.5 rounded-md font-mono font-bold leading-none shrink-0 ${
                       isSelected
                         ? "bg-white/25 text-white"
                         : "bg-[#091B40]/10 dark:bg-white/10 text-[#091B40] dark:text-slate-200"

@@ -49,7 +49,6 @@ export function LessonMistakesCapsuleModal({
   const [showEssayModel, setShowEssayModel] = useState(false);
   const [showTranslation, setShowTranslation] = useState(false);
   const [resolvedIds, setResolvedIds] = useState<Set<string>>(new Set());
-  const [feedbackNotice, setFeedbackNotice] = useState<string | null>(null);
   const [wasJustResolved, setWasJustResolved] = useState(false);
 
   // Synchronize ONLY when modal transitions from closed to open
@@ -66,7 +65,6 @@ export function LessonMistakesCapsuleModal({
       setShowEssayModel(false);
       setShowTranslation(false);
       setResolvedIds(new Set());
-      setFeedbackNotice(null);
       setWasJustResolved(false);
     }
   }, [isOpen]);
@@ -94,7 +92,6 @@ export function LessonMistakesCapsuleModal({
     setShowExplanation(false);
     setShowEssayModel(false);
     setShowTranslation(false);
-    setFeedbackNotice(null);
     setWasJustResolved(false);
   };
 
@@ -116,7 +113,6 @@ export function LessonMistakesCapsuleModal({
 
     setSelectedOptionId(optionId);
     setIsSubmitting(true);
-    setFeedbackNotice(null);
 
     try {
       const res = await fetchWithRetry(`/api/questions/${currentQ.id}/answer`, {
@@ -146,7 +142,6 @@ export function LessonMistakesCapsuleModal({
       }
 
       if (answerCorrect) {
-        setFeedbackNotice("🎉 برافو عليك يا بطل! إجابة صحيحة وممتازة.. كمل يا وحش!");
         setWasJustResolved(true);
         setResolvedIds((prev) => new Set([...prev, currentQ.id]));
         onMistakeResolved(currentQ.id);
@@ -154,10 +149,9 @@ export function LessonMistakesCapsuleModal({
         if (currentIndex < totalCount - 1) {
           setTimeout(() => {
             goToQuestion(currentIndex + 1);
-          }, 1800);
+          }, 900);
         }
       } else {
-        setFeedbackNotice("💡 إجابة غير دقيقة.. راجع التفسير التعليمي المعتمد أدناه عشان تفهم الفكرة كويس ومتغلطش فيها تاني.");
         setWasJustResolved(false);
         setShowExplanation(true);
       }
@@ -170,7 +164,6 @@ export function LessonMistakesCapsuleModal({
         setIsCorrect(isRight);
         if (isRight) {
           setCorrectOptionId(optionId);
-          setFeedbackNotice("🎉 برافو عليك يا بطل! إجابة صحيحة وممتازة.. كمل يا وحش!");
           setWasJustResolved(true);
           setResolvedIds((prev) => new Set([...prev, currentQ.id]));
           onMistakeResolved(currentQ.id);
@@ -178,17 +171,15 @@ export function LessonMistakesCapsuleModal({
           if (currentIndex < totalCount - 1) {
             setTimeout(() => {
               goToQuestion(currentIndex + 1);
-            }, 1800);
+            }, 900);
           }
         } else {
-          setFeedbackNotice("💡 إجابة غير دقيقة.. راجع التفسير التعليمي المعتمد أدناه عشان تفهم الفكرة كويس ومتغلطش فيها تاني.");
           setWasJustResolved(false);
           setShowExplanation(true);
         }
       } else {
         // Network or server glitch: do NOT mark student's answer as wrong
         setSelectedOptionId(null);
-        setFeedbackNotice("تعذر التحقق من الإجابة بسبب انقطاع الاتصال، يرجى النقر مرة أخرى");
         setWasJustResolved(false);
       }
     } finally {
@@ -208,7 +199,6 @@ export function LessonMistakesCapsuleModal({
         body: JSON.stringify({ resolve: true }),
       });
 
-      setFeedbackNotice("🎉 برافو عليك يا بطل! تم تأكيد الاستيعاب وحذف السؤال من قائمة الأخطاء بنجاح.. كمل!");
       setWasJustResolved(true);
       setResolvedIds((prev) => new Set([...prev, currentQ.id]));
       onMistakeResolved(currentQ.id);
@@ -216,10 +206,9 @@ export function LessonMistakesCapsuleModal({
       if (currentIndex < totalCount - 1) {
         setTimeout(() => {
           goToQuestion(currentIndex + 1);
-        }, 1600);
+        }, 900);
       }
     } catch {
-      setFeedbackNotice("🎉 برافو عليك يا بطل! تم تأكيد الاستيعاب وحذف السؤال من قائمة الأخطاء بنجاح.. كمل!");
       setWasJustResolved(true);
       setResolvedIds((prev) => new Set([...prev, currentQ.id]));
       onMistakeResolved(currentQ.id);
@@ -539,32 +528,17 @@ export function LessonMistakesCapsuleModal({
                   </div>
                 )}
 
-                {/* Celebratory Feedback Banner ("برافو كمل!") */}
-                {feedbackNotice && (
-                  <div
-                    className={`p-3.5 sm:p-4 rounded-2xl text-xs sm:text-[13px] font-bold flex flex-col sm:flex-row items-center justify-between gap-3 animate-in zoom-in-95 duration-200 shadow-xs ${
-                      isCorrect || wasJustResolved || resolvedIds.has(currentQ.id)
-                        ? "bg-emerald-50 dark:bg-emerald-950/40 border-2 border-emerald-500/40 text-emerald-900 dark:text-emerald-200"
-                        : "bg-red-50 dark:bg-red-950/40 border-2 border-red-500/40 text-red-900 dark:text-red-200"
-                    }`}
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <span className="text-xl">
-                        {isCorrect || wasJustResolved || resolvedIds.has(currentQ.id) ? "🎉" : "💡"}
-                      </span>
-                      <span className="leading-relaxed">{feedbackNotice}</span>
-                    </div>
-
-                    {(isCorrect || wasJustResolved || resolvedIds.has(currentQ.id)) && currentIndex < totalCount - 1 && (
-                      <button
-                        type="button"
-                        onClick={() => goToQuestion(currentIndex + 1)}
-                        className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black shrink-0 transition-transform active:scale-95 cursor-pointer shadow-xs flex items-center gap-1.5"
-                      >
-                        <span>السؤال التالي</span>
-                        <ArrowLeft className="w-3.5 h-3.5" />
-                      </button>
-                    )}
+                {/* Subtle Next Action when resolved */}
+                {(isCorrect || wasJustResolved || resolvedIds.has(currentQ.id)) && currentIndex < totalCount - 1 && (
+                  <div className="flex justify-end pt-1">
+                    <button
+                      type="button"
+                      onClick={() => goToQuestion(currentIndex + 1)}
+                      className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shrink-0 transition-transform active:scale-95 cursor-pointer shadow-xs flex items-center gap-1.5"
+                    >
+                      <span>السؤال التالي</span>
+                      <ArrowLeft className="w-3.5 h-3.5" />
+                    </button>
                   </div>
                 )}
 
