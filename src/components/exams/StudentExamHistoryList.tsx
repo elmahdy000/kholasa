@@ -177,7 +177,7 @@ export function StudentExamHistoryList({ attempts }: StudentExamHistoryListProps
                 key={attempt.id}
                 className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-[#F8FAFC] dark:hover:bg-[#1E293B]/40 transition-colors"
               >
-                <div className="flex items-start sm:items-center gap-4 min-w-0 flex-1">
+                <div className="flex items-center gap-4 min-w-0 flex-1">
                   <div
                     className={`w-12 h-12 rounded-xl flex flex-col items-center justify-center font-mono font-bold text-xs sm:text-sm shrink-0 border ${scoreColor}`}
                   >

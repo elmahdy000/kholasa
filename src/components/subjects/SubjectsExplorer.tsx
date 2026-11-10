@@ -228,13 +228,15 @@ export function SubjectsExplorer({ subjects, isStaff }: SubjectsExplorerProps) {
 
                   {/* Metadata Chips */}
                   <div className="flex flex-wrap items-center gap-2 pt-1 text-[11px] font-medium text-[#536681] dark:text-[#94A3B8]">
-                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#F7F9FC] dark:bg-[#071737] border border-[#E2E8F0] dark:border-[#1E3A6E]">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#F7F9FC] dark:bg-[#071737] border border-[#E2E8F0] dark:border-[#1E3A6E]">
                       <Layers className="w-3.5 h-3.5 text-[#800B34] dark:text-[#E9AD32]" />
-                      <span>{subj.unitsCount} وحدات</span>
+                      <strong className="font-mono font-bold text-[#091B40] dark:text-white">{subj.unitsCount}</strong>
+                      <span>وحدات</span>
                     </span>
-                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#F7F9FC] dark:bg-[#071737] border border-[#E2E8F0] dark:border-[#1E3A6E]">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#F7F9FC] dark:bg-[#071737] border border-[#E2E8F0] dark:border-[#1E3A6E]">
                       <BookmarkCheck className="w-3.5 h-3.5 text-[#E9AD32]" />
-                      <span>{subj.lessonsCount} درس</span>
+                      <strong className="font-mono font-bold text-[#091B40] dark:text-white">{subj.lessonsCount}</strong>
+                      <span>درس</span>
                     </span>
                   </div>
                 </div>

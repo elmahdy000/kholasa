@@ -159,9 +159,9 @@ export function SubjectUnitsList({
                           : "hover:bg-[#F7F9FC]/80 dark:hover:bg-[#11244E]/40"
                       }`}
                     >
-                      <div className="flex items-start gap-4">
+                      <div className="flex items-center gap-4">
                         <div
-                          className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 mt-0.5 ${
+                          className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${
                             isLessonLocked
                               ? "bg-amber-500/10 text-[#800B34] dark:text-[#E9AD32] border border-amber-500/20"
                               : isLessonCompleted

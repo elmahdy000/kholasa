@@ -29,7 +29,7 @@ export function RecentExamsList({ recentExams }: RecentExamsListProps) {
           <Link
             key={exam.id}
             href={`/exams/${exam.id}/results`}
-            className="p-4 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E5E7EB] dark:border-[#334155] hover:border-[#800B34]/40 dark:hover:border-[#E11D48]/60 transition-colors flex items-center justify-between"
+            className="p-4 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E5E7EB] dark:border-[#334155] hover:border-[#800B34]/40 dark:hover:border-[#E11D48]/60 transition-colors flex items-center justify-between shadow-2xs"
           >
             <div>
               <h3 className="text-xs sm:text-[13px] font-bold text-[#12263F] dark:text-[#F8FAFC] line-clamp-1">
@@ -39,14 +39,14 @@ export function RecentExamsList({ recentExams }: RecentExamsListProps) {
                 {exam.totalQuestions} أسئلة
               </span>
             </div>
-            <div className="text-left">
+            <div className="text-left shrink-0">
               <span
-                className={`text-sm font-bold font-mono ${
+                className={`inline-flex items-center justify-center px-2.5 py-1 rounded-xl text-xs font-bold font-mono ${
                   exam.percentage >= 80
-                    ? "text-[#059669] dark:text-[#34D399]"
+                    ? "bg-[#059669]/10 text-[#059669] dark:text-[#34D399]"
                     : exam.percentage >= 50
-                    ? "text-[#D97706] dark:text-[#FBBF24]"
-                    : "text-[#DC2626] dark:text-[#F87171]"
+                    ? "bg-[#D97706]/10 text-[#D97706] dark:text-[#FBBF24]"
+                    : "bg-[#DC2626]/10 text-[#DC2626] dark:text-[#F87171]"
                 }`}
               >
                 {exam.percentage}%
