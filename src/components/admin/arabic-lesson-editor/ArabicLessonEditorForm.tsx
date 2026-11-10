@@ -348,7 +348,7 @@ export function ArabicLessonEditorForm({
         </div>
 
         {/* 5 Arabic Navigation Tabs */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5">
+        <div className="flex flex-wrap items-center gap-1.5">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             const active = activeTab === tab.id;

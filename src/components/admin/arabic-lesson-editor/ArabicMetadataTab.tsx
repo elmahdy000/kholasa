@@ -313,14 +313,14 @@ export function ArabicMetadataTab({
               <FileAudio className="w-4 h-4 text-[#B45309]" />
               <span>ملف صوتي اختياري (نشاط الاستماع الرسمي أو شرح صوتي)</span>
             </span>
-            <div className="flex flex-col sm:flex-row gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <input
                 type="text"
                 value={audioUrl}
                 onChange={(e) => setAudioUrl(e.target.value)}
                 placeholder="/uploads/... أو رابط صوتي"
                 dir="ltr"
-                className="flex-1 px-3 py-2 rounded-xl border border-slate-200 dark:border-[#1E3A6E] bg-white dark:bg-[#071737]"
+                className="flex-1 min-w-[200px] px-3 py-2 rounded-md border border-slate-200 dark:border-[#1E3A6E] bg-white dark:bg-[#071737]"
               />
               <input
                 ref={audioInputRef}
@@ -336,7 +336,7 @@ export function ArabicMetadataTab({
                 type="button"
                 disabled={uploadingField === "audio"}
                 onClick={() => audioInputRef.current?.click()}
-                className="px-3.5 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-extrabold inline-flex items-center justify-center gap-1.5 shrink-0"
+                className="px-3.5 py-2 rounded-md bg-[#B45309] hover:bg-[#92400E] text-white font-extrabold inline-flex items-center justify-center gap-1.5 shrink-0"
               >
                 {uploadingField === "audio" ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
@@ -354,14 +354,14 @@ export function ArabicMetadataTab({
               <FileText className="w-4 h-4 text-blue-700" />
               <span>ملف PDF مرفق (اختياري)</span>
             </span>
-            <div className="flex flex-col sm:flex-row gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <input
                 type="text"
                 value={pdfUrl}
                 onChange={(e) => setPdfUrl(e.target.value)}
                 placeholder="/uploads/... أو رابط PDF"
                 dir="ltr"
-                className="flex-1 px-3 py-2 rounded-xl border border-slate-200 dark:border-[#1E3A6E] bg-white dark:bg-[#071737]"
+                className="flex-1 min-w-[200px] px-3 py-2 rounded-md border border-slate-200 dark:border-[#1E3A6E] bg-white dark:bg-[#071737]"
               />
               <input
                 ref={pdfInputRef}
@@ -377,7 +377,7 @@ export function ArabicMetadataTab({
                 type="button"
                 disabled={uploadingField === "pdf"}
                 onClick={() => pdfInputRef.current?.click()}
-                className="px-3.5 py-2 rounded-xl bg-slate-700 hover:bg-slate-800 text-white font-extrabold inline-flex items-center justify-center gap-1.5 shrink-0"
+                className="px-3.5 py-2 rounded-md bg-[#0F2744] hover:bg-[#1E3A5F] text-white font-extrabold inline-flex items-center justify-center gap-1.5 shrink-0"
               >
                 {uploadingField === "pdf" ? (
                   <Loader2 className="w-4 h-4 animate-spin" />

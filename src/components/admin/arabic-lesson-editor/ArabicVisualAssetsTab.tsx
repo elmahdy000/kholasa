@@ -82,7 +82,7 @@ export function ArabicVisualAssetsTab({
             <span>الخرائط الذهنية والوسائط البصرية ({assets.length})</span>
           </h3>
           <p className="text-xs text-[#64748B] dark:text-[#94A3B8]">
-            المراجع المستخرجة من ملف JSON هي بيانات وصفية (`assetKey` + `sectionId`) بانتظار رفع ملفات الصور الفعلية وربطها بالأقسام — لن نظهر صوراً وهمية قبل الرفع.
+            المراجع المستخرجة من ملف الدرس مرتبطة بالأقسام برموز تعريف ثابتة بانتظار رفع ملفات الصور الفعلية — لن نظهر صوراً وهمية قبل الرفع.
           </p>
         </div>
 
@@ -236,7 +236,7 @@ export function ArabicVisualAssetsTab({
                   </div>
                 </div>
 
-                <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                <div className="space-y-2 pt-1">
                   <select
                     value={asset.sectionId}
                     onChange={(e) =>
@@ -248,7 +248,7 @@ export function ArabicVisualAssetsTab({
                         )
                       )
                     }
-                    className="flex-1 px-2.5 py-2 rounded-lg bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#CBD5E1] dark:border-[#334155] text-xs font-bold"
+                    className="w-full min-w-0 px-3 py-2 rounded-md bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#CBD5E1] dark:border-[#334155] text-xs font-bold"
                   >
                     {sections.map((sec) => (
                       <option key={sec.id} value={sec.id}>
@@ -257,7 +257,7 @@ export function ArabicVisualAssetsTab({
                     ))}
                   </select>
 
-                  <label className="px-3 py-2 rounded-lg bg-[#0F2744] hover:bg-[#1E3A5F] text-white text-xs font-extrabold inline-flex items-center justify-center gap-1.5 cursor-pointer shrink-0">
+                  <label className="w-full px-3 py-2 rounded-md bg-[#0F2744] hover:bg-[#1E3A5F] text-white text-xs font-extrabold inline-flex items-center justify-center gap-1.5 cursor-pointer">
                     {isUploading ? (
                       <Loader2 className="w-3.5 h-3.5 animate-spin" />
                     ) : (
