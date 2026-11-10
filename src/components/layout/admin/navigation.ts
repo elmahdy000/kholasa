@@ -54,7 +54,7 @@ export const rawNavigationGroups: AdminNavGroup[] = [
         allowedRoles: ["TEACHER", "EDITOR", "ADMIN", "SUPER_ADMIN"],
       },
       {
-        label: "استوديو اللغة العربية (JSON)",
+        label: "استوديو العربية",
         href: "/admin/curriculum/arabic",
         icon: Layers,
         badge: "جديد",

@@ -1172,9 +1172,12 @@ export function isArabicLessonPayload(val: unknown): val is ArabicLessonPayloadV
   if (!val || typeof val !== "object") return false;
   const obj = val as Record<string, unknown>;
   return (
-    obj.contentType === "arabic_lesson_curriculum" &&
     Array.isArray(obj.stages) &&
-    Array.isArray(obj.sections)
+    obj.stages.length > 0 &&
+    Array.isArray(obj.sections) &&
+    obj.sections.length > 0 &&
+    typeof obj.education === "object" &&
+    obj.education !== null
   );
 }
 

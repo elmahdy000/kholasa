@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import {
+  isArabicLessonPayload,
   sanitizeArabicPayloadForStudent,
   validateAndAdaptArabicLessonJson,
 } from "../src/lib/arabic-curriculum";
@@ -61,6 +62,8 @@ describe("Arabic Curriculum JSON Adapter & Validation", () => {
     expect(payload).not.toBeNull();
 
     const safe = sanitizeArabicPayloadForStudent(payload!);
+    expect(isArabicLessonPayload(payload)).toBe(true);
+    expect(isArabicLessonPayload(safe)).toBe(true);
     expect(safe.questions).toBeUndefined();
     const firstMeta = safe.questionMetaByJsonId["L1Q001"];
     expect(firstMeta).toBeDefined();
@@ -169,3 +172,4 @@ describe("Arabic Common Subject Scope & Programming Non-Regression", () => {
     expect(Array.isArray(where.AND)).toBe(true);
   });
 });
+
