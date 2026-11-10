@@ -1,104 +1,150 @@
 "use client";
 
 import Link from "next/link";
-import {
-  Cpu,
-  Code2,
-  Brain,
-  Calculator,
-  BookMarked,
-  ArrowLeft,
-  ShieldCheck,
-  BookOpen,
-} from "lucide-react";
-
-export interface DynamicLandingSubject {
-  id: string;
-  name: string;
-  description?: string | null;
-  color?: string | null;
-  track?: { name: string } | null;
-  _count?: {
-    units: number;
-    questions: number;
-  };
-}
+import { BookOpen, Code2, Cpu, ArrowLeft, Layers, CheckSquare } from "lucide-react";
+import type { LandingSubjectItem } from "@/components/landing/types";
 
 interface SubjectsShowcaseProps {
-  subjects?: DynamicLandingSubject[];
+  subjects?: LandingSubjectItem[];
 }
 
-const defaultIcons = [Cpu, Code2, Brain, Calculator, BookMarked, ShieldCheck];
-
 export function SubjectsShowcase({ subjects = [] }: SubjectsShowcaseProps) {
+  if (subjects.length === 0) {
+    return null;
+  }
+
+  // Balanced grid with zero empty orphan columns
+  const gridColsClass =
+    subjects.length === 1
+      ? "grid-cols-1 max-w-xl"
+      : subjects.length === 2
+      ? "grid-cols-1 md:grid-cols-2"
+      : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3";
+
   return (
-    <section className="py-16 sm:py-20 bg-white dark:bg-[#0F172A] border-b border-[#E8E9ED] dark:border-[#334155]">
-      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 space-y-12 sm:space-y-14 text-right">
+    <section className="py-12 sm:py-16 bg-white dark:bg-[#0F172A] border-b border-[#E8E9ED] dark:border-[#334155]">
+      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 space-y-8 text-right">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-[#E8E9ED] dark:border-[#334155] pb-6">
-          <div className="space-y-2 max-w-xl">
-            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#800B34]/10 border border-[#800B34]/20 text-[#800B34] dark:text-[#FB7185] text-xs font-bold mb-1">
-              🏗️ مسار الهندسة وعلوم الحاسب
-            </span>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-[#12263F] dark:text-white leading-tight tracking-tight">
-              مواد البكالوريا مشروحة ومترتبة صح
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-5 border-b border-[#E8E9ED] dark:border-[#334155]">
+          <div className="space-y-1.5 max-w-xl">
+            <h2 className="text-xl sm:text-2xl font-bold text-[#091B40] dark:text-white leading-snug">
+              المناهج المتاحة حالياً على المنصة
             </h2>
-            <p className="text-base text-[#64748B] dark:text-[#94A3B8] font-normal leading-relaxed">
-              كل مادة متقسمة لوحدات ودروس واضحة، مع كبسولة زتونة سريعة لكل
-              درس وبنك أسئلة متفصل على مواصفات الوزارة.
+            <p className="text-sm sm:text-[15px] text-[#536681] dark:text-[#94A3B8] leading-relaxed">
+              فصل كامل بين مدارس العربي ومدارس اللغات — كل منهج بوحداته ودروسه وبنك أسئلته المعتمد.
             </p>
           </div>
 
           <Link
             href="/subjects"
-            className="h-11 px-5 rounded-xl border border-[#E8E9ED] dark:border-[#334155] text-xs font-semibold text-[#12263F] dark:text-white flex items-center gap-2 hover:border-[#800B34] hover:text-[#800B34] dark:hover:border-[#FB7185] dark:hover:text-[#FB7185] transition-colors shrink-0 self-start md:self-auto shadow-xs"
+            className="min-h-[44px] px-4 py-2 rounded-lg border border-[#E2E8F0] dark:border-[#334155] text-xs sm:text-sm font-bold text-[#091B40] dark:text-white inline-flex items-center gap-2 hover:border-[#800B34] hover:text-[#800B34] dark:hover:border-[#FB7185] dark:hover:text-[#FB7185] transition-colors shrink-0 self-start sm:self-auto"
           >
-            <span>تصفح كل المواد والوحدات</span>
-            <ArrowLeft className="w-3.5 h-3.5" />
+            <span>عرض فهرس المواد الكامل</span>
+            <ArrowLeft className="w-4 h-4" />
           </Link>
         </div>
 
-        {/* Subjects Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {subjects.map((sub, index) => {
-            const Icon = defaultIcons[index % defaultIcons.length] || BookOpen;
-            const unitsCount = sub._count?.units ?? 0;
-            const questionsCount = sub._count?.questions ?? 0;
-            const trackName = sub.track?.name || "المسار العام";
+        {/* Dynamic Balanced Subjects Grid */}
+        <div className={`grid gap-4 sm:gap-6 ${gridColsClass}`}>
+          {subjects.map((sub) => {
+            const isLanguages = sub.schoolCategory === "LANGUAGES";
+            const Icon = isLanguages ? Code2 : Cpu;
+            const categoryLabel = isLanguages ? "مدارس اللغات" : "المدارس العربية";
 
             return (
               <div
                 key={sub.id}
-                className="p-6 rounded-2xl bg-[#F7F8FA] dark:bg-[#1E293B] border border-[#E8E9ED] dark:border-[#334155] hover:border-[#800B34]/30 dark:hover:border-[#FB7185]/30 transition-colors flex flex-col justify-between space-y-5 shadow-xs"
+                className="p-6 rounded-xl bg-[#F7F9FC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] flex flex-col justify-between gap-5"
               >
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div
-                      className="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold"
-                      style={{ backgroundColor: sub.color || "#800B34" }}
-                    >
-                      <Icon className="w-5 h-5 text-white" strokeWidth={1.8} />
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div
+                        className="w-11 h-11 rounded-lg flex items-center justify-center text-white shrink-0"
+                        style={{ backgroundColor: sub.color || "#800B34" }}
+                      >
+                        <Icon className="w-5 h-5" />
+                      </div>
+                      <div className="min-w-0">
+                        <h3 className="text-lg font-bold text-[#091B40] dark:text-white leading-tight">
+                          {sub.name}
+                        </h3>
+                        <span className="text-xs font-medium text-[#64748B] dark:text-[#94A3B8] block mt-0.5">
+                          {sub.gradeName}
+                        </span>
+                      </div>
                     </div>
-                    <span className="text-[11px] font-semibold text-[#64748B] dark:text-[#94A3B8] px-2.5 py-1 rounded-lg bg-white dark:bg-[#0F172A] border border-[#E8E9ED] dark:border-[#334155]">
-                      {trackName}
+
+                    <span className="text-[11px] font-bold text-[#091B40] dark:text-slate-200 px-2.5 py-1 rounded-md bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] shrink-0">
+                      {categoryLabel}
                     </span>
                   </div>
 
-                  <div className="space-y-1.5">
-                    <h3 className="text-xl font-bold text-[#12263F] dark:text-white">
-                      {sub.name}
-                    </h3>
-                    <p className="text-sm text-[#64748B] dark:text-[#94A3B8] leading-relaxed font-normal line-clamp-2">
-                      {sub.description || "شرح مبسط ومفاهيم واضحة وتدريبات متدرجة تغطي كافة نواتج التعلم."}
+                  {sub.description && (
+                    <p className="text-sm text-[#536681] dark:text-[#94A3B8] leading-relaxed">
+                      {sub.description}
                     </p>
-                  </div>
+                  )}
+
+                  {/* Actual Published Units Preview */}
+                  {sub.units.length > 0 && (
+                    <div className="space-y-1.5 pt-1">
+                      <span className="text-xs font-bold text-[#091B40] dark:text-white block">
+                        الوحدات المنشورة:
+                      </span>
+                      <ul
+                        dir={isLanguages ? "ltr" : "rtl"}
+                        className={`space-y-1 ${isLanguages ? "text-left" : "text-right"}`}
+                      >
+                        {sub.units.map((u) => (
+                          <li
+                            key={u.id}
+                            className="text-xs text-[#536681] dark:text-[#94A3B8] flex items-center justify-between gap-2 px-3 py-1.5 rounded-lg bg-white dark:bg-[#0F172A] border border-[#E2E8F0]/80 dark:border-[#334155]/80"
+                          >
+                            <span className="truncate font-medium text-[#091B40] dark:text-slate-200">
+                              {u.title}
+                            </span>
+                            <span className="text-[11px] font-mono text-[#64748B] dark:text-[#94A3B8] shrink-0">
+                              {u.lessons.length} دروس
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </div>
 
-                <div className="pt-4 border-t border-[#E8E9ED] dark:border-[#334155] flex items-center justify-between text-xs text-[#64748B] dark:text-[#94A3B8] font-mono">
-                  <span>{unitsCount > 0 ? `${unitsCount} وحدات وفصول` : "قيد الإعداد"}</span>
-                  <span className="font-semibold text-[#800B34] dark:text-[#FB7185]">
-                    {questionsCount > 0 ? `${questionsCount} أسئلة تدريبية` : "بنك الأسئلة قيد التحديث"}
-                  </span>
+                {/* Verified Counts & Direct Entry */}
+                <div className="pt-4 border-t border-[#E2E8F0] dark:border-[#334155] space-y-3">
+                  <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-medium text-[#536681] dark:text-[#94A3B8]">
+                    <span className="inline-flex items-center gap-1.5">
+                      <Layers className="w-3.5 h-3.5 text-[#800B34] dark:text-[#FB7185]" />
+                      <span>
+                        {sub.publishedUnitsCount} وحدات • {sub.publishedLessonsCount} درساً منشوراً
+                      </span>
+                    </span>
+                    <span className="inline-flex items-center gap-1.5 font-bold text-[#091B40] dark:text-white font-mono">
+                      <CheckSquare className="w-3.5 h-3.5 text-[#059669]" />
+                      <span>{sub.publishedQuestionsCount} سؤال منشور</span>
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <Link
+                      href={`/subjects/${sub.id}`}
+                      className="min-h-[44px] px-3.5 py-2 rounded-lg bg-[#091B40] hover:bg-[#12263F] text-white text-xs font-bold flex items-center justify-center gap-1.5 transition-colors"
+                    >
+                      <BookOpen className="w-3.5 h-3.5" />
+                      <span>تصفح الوحدات والدروس</span>
+                    </Link>
+                    <Link
+                      href={`/exams/builder?subjectId=${sub.id}`}
+                      className="min-h-[44px] px-3.5 py-2 rounded-lg bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] hover:border-[#800B34] text-[#091B40] dark:text-white text-xs font-bold flex items-center justify-center gap-1.5 transition-colors"
+                    >
+                      <span>اختبر نفسك في المادة</span>
+                      <ArrowLeft className="w-3.5 h-3.5" />
+                    </Link>
+                  </div>
                 </div>
               </div>
             );

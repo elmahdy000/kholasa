@@ -3,80 +3,114 @@ import { BrandLogo } from "@/components/ui/BrandLogo";
 
 export function SiteFooter() {
   return (
-    <footer className="bg-[#12263F] text-white pt-12 pb-28 sm:py-20 border-t border-[#1E3A5F]">
-      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-12 text-right">
+    <footer className="bg-[#091B40] text-white pt-12 pb-24 sm:py-14 border-t border-[#1E3A5F]">
+      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 text-right">
           {/* Brand Column */}
-          <div className="space-y-4">
+          <div className="space-y-3">
             <BrandLogo
               href="/"
               variant="combined"
               size="md"
               surfaceTheme="dark"
+              glow={false}
               subtitleText="EL KHOLASA"
             />
-            <p className="text-sm text-[#94A3B8] leading-relaxed max-w-xs font-normal">
-              منصتك الذكية للثانوية العامة والبكالوريا.. افهمها صح هتفضل معاك، بشروحات مفككة وزتونة سريعة وبنك أسئلة ذكي.
+            <p className="text-sm text-[#CBD5E1] leading-relaxed max-w-xs font-normal">
+              منصتك التعليمية لطلاب البكالوريا المصرية (عربي ولغات): شرح مفاهيم، خرائط ذهنية، وتدريبات متدرجة بتفسير معتمد لكل سؤال.
             </p>
           </div>
 
-          {/* Product Links */}
-          <div className="space-y-4">
-            <h4 className="text-sm font-bold text-white">المنصة والمنهجية</h4>
-            <nav className="flex flex-col gap-2.5">
-              <a href="#features" className="text-sm text-[#94A3B8] hover:text-white transition-colors">
-                أدوات المذاكرة
+          {/* Explore Links */}
+          <div className="space-y-3">
+            <h4 className="text-sm font-bold text-white">تجربة المنهج</h4>
+            <nav className="flex flex-col gap-2">
+              <a
+                href="#curriculum-explorer"
+                className="text-sm text-[#94A3B8] hover:text-white transition-colors"
+              >
+                استكشف الدروس والأسئلة
               </a>
-              <a href="#how-it-works" className="text-sm text-[#94A3B8] hover:text-white transition-colors">
-                إزاي تذاكر؟
+              <a
+                href="#features"
+                className="text-sm text-[#94A3B8] hover:text-white transition-colors"
+              >
+                إزاي بتتعلم بالمنصة؟
               </a>
-              <a href="#demo" className="text-sm text-[#94A3B8] hover:text-white transition-colors">
-                الزتونة المركزة
+              <a
+                href="#how-it-works"
+                className="text-sm text-[#94A3B8] hover:text-white transition-colors"
+              >
+                خطوات المذاكرة
               </a>
-              <Link href="/exams/builder" className="text-sm text-[#94A3B8] hover:text-white transition-colors">
-                بنك الأسئلة الذكي
+              <Link
+                href="/exams/builder"
+                className="text-sm text-[#94A3B8] hover:text-white transition-colors"
+              >
+                منشئ الامتحانات
               </Link>
             </nav>
           </div>
 
           {/* Academic Modules */}
-          <div className="space-y-4">
-            <h4 className="text-sm font-bold text-white">المناهج والمسارات</h4>
-            <nav className="flex flex-col gap-2.5">
-              <Link href="/subjects" className="text-sm text-[#94A3B8] hover:text-white transition-colors">
+          <div className="space-y-3">
+            <h4 className="text-sm font-bold text-white">الأقسام الدراسية</h4>
+            <nav className="flex flex-col gap-2">
+              <Link
+                href="/subjects"
+                className="text-sm text-[#94A3B8] hover:text-white transition-colors"
+              >
                 تصفح المواد والوحدات
               </Link>
-              <Link href="/mistakes" className="text-sm text-[#94A3B8] hover:text-white transition-colors">
+              <Link
+                href="/mistakes"
+                className="text-sm text-[#94A3B8] hover:text-white transition-colors"
+              >
                 ركن غلطاتي
               </Link>
-              <Link href="/leaderboard" className="text-sm text-[#94A3B8] hover:text-white transition-colors">
-                لوحة الأوائل
+              <Link
+                href="/leaderboard"
+                className="text-sm text-[#94A3B8] hover:text-white transition-colors"
+              >
+                لوحة المتصدرين
               </Link>
-              <Link href="/profile" className="text-sm text-[#94A3B8] hover:text-white transition-colors">
-                حسابك ومتابعة مستواك
+              <Link
+                href="/profile"
+                className="text-sm text-[#94A3B8] hover:text-white transition-colors"
+              >
+                الملف الشخصي
               </Link>
             </nav>
           </div>
 
-          {/* Account & Administration */}
-          <div className="space-y-4">
+          {/* Account & Portal */}
+          <div className="space-y-3">
             <h4 className="text-sm font-bold text-white">الحساب والدخول</h4>
-            <nav className="flex flex-col gap-2.5">
-              <Link href="/login" className="text-sm text-[#94A3B8] hover:text-white transition-colors">
-                تسجيل الدخول (كود الطالب)
+            <nav className="flex flex-col gap-2">
+              <Link
+                href="/login"
+                className="text-sm text-[#94A3B8] hover:text-white transition-colors"
+              >
+                دخول بكود الطالب أو التجربة
               </Link>
-              <Link href="/register" className="text-sm text-[#94A3B8] hover:text-white transition-colors">
-                الحصول على كود المنصة
+              <Link
+                href="/register"
+                className="text-sm text-[#94A3B8] hover:text-white transition-colors"
+              >
+                إنشاء حساب جديد
               </Link>
-              <Link href="/admin" className="text-sm text-[#94A3B8] hover:text-white transition-colors">
-                بوابة الإدارة
+              <Link
+                href="/admin"
+                className="text-sm text-[#94A3B8] hover:text-white transition-colors"
+              >
+                بوابة الإدارة والمعلمين
               </Link>
             </nav>
           </div>
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-12 pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#94A3B8]">
+        <div className="mt-10 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#94A3B8]">
           <p>
             © {new Date().getFullYear()} الخلاصة للبكالوريا | EL KHOLASA — جميع الحقوق محفوظة لـ Dr/Elmahdy.
           </p>

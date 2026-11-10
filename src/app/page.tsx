@@ -1,8 +1,8 @@
-import { prisma } from "@/lib/prisma";
+import { getLandingCurriculumData } from "@/lib/landing-curriculum";
 import { SiteHeader } from "@/components/landing/SiteHeader";
 import { HeroSection } from "@/components/landing/HeroSection";
-import { FeaturesBento } from "@/components/landing/FeaturesBento";
 import { InteractiveDemo } from "@/components/landing/InteractiveDemo";
+import { FeaturesBento } from "@/components/landing/FeaturesBento";
 import { HowItWorks } from "@/components/landing/HowItWorks";
 import { SubjectsShowcase } from "@/components/landing/SubjectsShowcase";
 import { FinalCTA } from "@/components/landing/FinalCTA";
@@ -11,32 +11,17 @@ import { SiteFooter } from "@/components/landing/SiteFooter";
 export const dynamic = "force-dynamic";
 
 export default async function LandingPage() {
-  const subjectsData = await prisma.subject
-    .findMany({
-      where: { isPublished: true },
-      orderBy: { order: "asc" },
-      take: 6,
-      include: {
-        track: { select: { name: true } },
-        _count: {
-          select: {
-            units: true,
-            questions: true,
-          },
-        },
-      },
-    })
-    .catch(() => []);
+  const curriculum = await getLandingCurriculumData();
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[#0F172A] text-[#12263F] dark:text-[#F8FAFC]">
+    <div className="min-h-screen bg-white dark:bg-[#0F172A] text-[#091B40] dark:text-[#F8FAFC]">
       <SiteHeader />
       <main>
-        <HeroSection />
-        <FeaturesBento />
-        <InteractiveDemo />
+        <HeroSection heroQuestions={curriculum.heroQuestions} />
+        <InteractiveDemo grades={curriculum.grades} subjects={curriculum.subjects} />
+        <FeaturesBento sampleProofs={curriculum.sampleProofs} />
         <HowItWorks />
-        <SubjectsShowcase subjects={subjectsData} />
+        <SubjectsShowcase subjects={curriculum.subjects} />
         <FinalCTA />
       </main>
       <SiteFooter />

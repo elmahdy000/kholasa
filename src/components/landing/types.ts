@@ -1,3 +1,5 @@
+import type { SchoolCategory } from "@prisma/client";
+
 export type LandingTabType = "zatona" | "questions" | "mistakes" | "mindmap";
 
 export interface FaqItem {
@@ -10,4 +12,131 @@ export interface DemoMcqOption {
   text: string;
   isCorrect: boolean;
   reason: string;
+}
+
+export interface LandingDefinitionItem {
+  term: string;
+  meaning: string;
+  translation?: string;
+}
+
+export interface LandingMindMapData {
+  title: string;
+  description?: string | null;
+  images: string[];
+  nodes: Array<{ id: string; label: string; level: number; description?: string }>;
+  edges: Array<{ id: string; source: string; target: string }>;
+}
+
+export interface LandingPreviewQuestionPublic {
+  id: string;
+  lessonId: string;
+  statement: string;
+  translation: string | null;
+  difficulty: string;
+  options: Array<{
+    id: string;
+    text: string;
+    translation: string | null;
+    order: number;
+  }>;
+}
+
+export interface LandingLessonItem {
+  id: string;
+  title: string;
+  order: number;
+  durationMinutes: number;
+  publishedQuestionsCount: number;
+  definitions: LandingDefinitionItem[];
+  mindMap: LandingMindMapData | null;
+  previewMcq: LandingPreviewQuestionPublic | null;
+}
+
+export interface LandingUnitItem {
+  id: string;
+  title: string;
+  description: string | null;
+  order: number;
+  lessons: LandingLessonItem[];
+}
+
+export interface LandingSubjectItem {
+  id: string;
+  name: string;
+  code: string;
+  description: string | null;
+  color: string | null;
+  schoolCategory: SchoolCategory;
+  gradeId: string;
+  gradeName: string;
+  gradeCode: string;
+  trackName: string | null;
+  publishedUnitsCount: number;
+  publishedLessonsCount: number;
+  publishedQuestionsCount: number;
+  units: LandingUnitItem[];
+}
+
+export interface LandingGradeItem {
+  id: string;
+  name: string;
+  code: string;
+  order: number;
+}
+
+export interface LandingHeroHighlight {
+  schoolCategory: SchoolCategory;
+  subjectName: string;
+  unitTitle: string;
+  lessonId: string;
+  lessonTitle: string;
+  question: LandingPreviewQuestionPublic;
+}
+
+export interface LandingAnswerCheckResult {
+  ok: boolean;
+  error?: string;
+  isCorrect?: boolean;
+  selectedOptionId?: string;
+  correctOptionId?: string;
+  correctOptionText?: string;
+  explanation?: {
+    concept: string | null;
+    correctReason: string;
+  } | null;
+}
+
+export interface LandingCurriculumPayload {
+  grades: LandingGradeItem[];
+  subjects: LandingSubjectItem[];
+  heroQuestions: {
+    arabic: LandingHeroHighlight | null;
+    languages: LandingHeroHighlight | null;
+  };
+  sampleProofs: {
+    questionExample: {
+      subjectName: string;
+      lessonTitle: string;
+      statement: string;
+      correctAnswerText: string;
+      concept: string | null;
+      correctReason: string;
+    } | null;
+    definitionExample: {
+      subjectName: string;
+      lessonTitle: string;
+      term: string;
+      meaning: string;
+      translation: string | null;
+      isLanguages: boolean;
+    } | null;
+    mindMapExample: {
+      subjectName: string;
+      lessonTitle: string;
+      title: string;
+      imageUrl: string;
+      boardsCount: number;
+    } | null;
+  };
 }

@@ -4,39 +4,37 @@ import { useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Menu, X } from "lucide-react";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
-
 import { BrandLogo } from "@/components/ui/BrandLogo";
 
 export function SiteHeader() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const navLinks = [
-    { label: "المميزات", href: "/#features" },
-    { label: "كبسولة الزتونة", href: "/#demo" },
-    { label: "إزاي تذاكر؟", href: "/#how-it-works" },
+    { label: "جرّب المنهج", href: "/#curriculum-explorer" },
+    { label: "إزاي بتتعلم؟", href: "/#features" },
     { label: "المواد الدراسية", href: "/subjects" },
     { label: "بنك الأسئلة", href: "/exams/builder" },
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-white/95 dark:bg-[#081426]/95 backdrop-blur-md border-b border-[#E8E9ED] dark:border-[#22364F] transition-colors">
-      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 h-[76px] flex items-center justify-between gap-4">
-        {/* Brand Logo (Right-aligned in RTL) */}
+    <header className="sticky top-0 z-50 w-full bg-white dark:bg-[#081426] border-b border-[#E8E9ED] dark:border-[#22364F] transition-colors">
+      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
         <BrandLogo
           href="/"
           variant="combined"
           size="md"
           priority
-          subtitleText="افهمها صح.. هتفضل معاك"
+          glow={false}
+          subtitleText="المنصة الذكية للبكالوريا المصرية"
         />
 
         {/* Desktop Navigation Links */}
-        <nav className="hidden lg:flex items-center gap-1.5">
+        <nav className="hidden lg:flex items-center gap-1">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className="px-3.5 py-2 rounded-lg text-sm font-semibold text-[#64748B] dark:text-[#C8D2E0] hover:text-[#12263F] dark:hover:text-[#F5F7FB] hover:bg-[#F7F8FA] dark:hover:bg-[#132945] transition-colors whitespace-nowrap"
+              className="px-3.5 py-2 rounded-lg text-sm font-semibold text-[#536681] dark:text-[#C8D2E0] hover:text-[#091B40] dark:hover:text-[#F5F7FB] hover:bg-[#F7F9FC] dark:hover:bg-[#132945] transition-colors whitespace-nowrap"
             >
               {link.label}
             </Link>
@@ -48,15 +46,8 @@ export function SiteHeader() {
           <ThemeToggle />
 
           <Link
-            href="/admin"
-            className="px-3 py-2 text-xs font-semibold text-[#64748B] dark:text-[#94A3B8] hover:text-[#12263F] dark:hover:text-[#F5F7FB] transition-colors"
-          >
-            الإدارة
-          </Link>
-
-          <Link
             href="/login"
-            className="h-10 px-5 rounded-xl bg-[#800B34] hover:bg-[#680829] dark:bg-[#A30D36] dark:hover:bg-[#BD123F] text-white text-sm font-bold flex items-center gap-2 transition-all shadow-xs active:scale-[0.99]"
+            className="min-h-[44px] px-4 rounded-lg bg-[#800B34] hover:bg-[#680829] dark:bg-[#A30D36] dark:hover:bg-[#8E0B2F] text-white text-sm font-bold inline-flex items-center gap-2 transition-colors whitespace-nowrap"
           >
             <span>دخول بكود الطالب</span>
             <ArrowLeft className="w-3.5 h-3.5" />
@@ -72,44 +63,38 @@ export function SiteHeader() {
           <button
             type="button"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="w-10 h-10 rounded-xl border border-[#E8E9ED] dark:border-[#22364F] flex items-center justify-center text-[#12263F] dark:text-[#F5F7FB] hover:bg-[#F7F8FA] dark:hover:bg-[#132945] transition-colors cursor-pointer"
+            className="w-11 h-11 rounded-lg border border-[#E8E9ED] dark:border-[#22364F] flex items-center justify-center text-[#12263F] dark:text-[#F5F7FB] hover:bg-[#F7F8FA] dark:hover:bg-[#132945] transition-colors cursor-pointer"
             aria-label="قائمة التصفح"
+            aria-expanded={isMobileMenuOpen}
           >
             {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
         </div>
       </div>
 
-      {/* Mobile Navigation Menu Drawer */}
+      {/* Mobile Navigation Drawer */}
       {isMobileMenuOpen && (
-        <div className="lg:hidden border-t border-[#E8E9ED] dark:border-[#22364F] bg-white dark:bg-[#081426] px-4 py-5 space-y-4 shadow-md animate-in fade-in slide-in-from-top-2">
+        <div className="lg:hidden border-t border-[#E8E9ED] dark:border-[#22364F] bg-white dark:bg-[#081426] px-4 py-4 space-y-3 shadow-sm">
           <nav className="space-y-1">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="block px-3.5 py-2.5 rounded-lg text-sm font-semibold text-[#12263F] dark:text-[#F5F7FB] hover:bg-[#F7F8FA] dark:hover:bg-[#132945] transition-colors"
+                className="flex items-center min-h-[44px] px-3.5 rounded-lg text-sm font-semibold text-[#12263F] dark:text-[#F5F7FB] hover:bg-[#F7F8FA] dark:hover:bg-[#132945] transition-colors"
               >
                 {link.label}
               </Link>
             ))}
-            <Link
-              href="/admin"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="block px-3.5 py-2.5 rounded-lg text-sm font-semibold text-[#64748B] dark:text-[#94A3B8] hover:bg-[#F7F8FA] dark:hover:bg-[#132945] transition-colors"
-            >
-              بوابة الإدارة
-            </Link>
           </nav>
 
           <div className="pt-3 border-t border-[#E8E9ED] dark:border-[#22364F]">
             <Link
               href="/login"
               onClick={() => setIsMobileMenuOpen(false)}
-              className="w-full h-11 rounded-xl bg-[#800B34] hover:bg-[#680829] dark:bg-[#A30D36] dark:hover:bg-[#BD123F] text-white text-sm font-bold text-center flex items-center justify-center gap-1.5 shadow-xs"
+              className="w-full min-h-[44px] rounded-lg bg-[#800B34] hover:bg-[#680829] text-white text-sm font-bold flex items-center justify-center gap-2"
             >
-              <span>تسجيل دخول الطالب (بالكود)</span>
+              <span>دخول بكود الطالب أو جلسة تجريبية</span>
               <ArrowLeft className="w-3.5 h-3.5" />
             </Link>
           </div>

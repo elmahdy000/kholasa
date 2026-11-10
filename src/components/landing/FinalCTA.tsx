@@ -1,43 +1,38 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft, Target } from "lucide-react";
+import { ArrowLeft, BookOpen } from "lucide-react";
 
 export function FinalCTA() {
   return (
-    <section className="py-16 sm:py-20 bg-white dark:bg-[#0F172A] border-b border-[#E8E9ED] dark:border-[#334155]">
-      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="rounded-2xl bg-[#F7F8FA] dark:bg-[#1E293B] border border-[#E8E9ED] dark:border-[#334155] p-8 sm:p-12 lg:p-14 text-center shadow-xs">
-          <div className="max-w-2xl mx-auto space-y-5">
-            <span className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#800B34]/10 border border-[#800B34]/20 text-[#800B34] dark:text-[#FB7185] text-xs font-bold">
-              الخلاصة للبكالوريا • بإشراف Dr/Elmahdy
-            </span>
-
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-[#12263F] dark:text-white leading-tight tracking-tight">
-              جاهز تقفّل مسار الهندسة وعلوم الحاسب بثقة؟
+    <section className="py-12 sm:py-16 bg-[#F7F9FC] dark:bg-[#081426] border-b border-[#E8E9ED] dark:border-[#22364F]">
+      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] p-6 sm:p-10 text-right flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="space-y-2 max-w-xl">
+            <h2 className="text-xl sm:text-2xl font-bold text-[#091B40] dark:text-white leading-snug">
+              جاهز تبدأ مذاكرة فعلية على درسك الجاي؟
             </h2>
-
-            <p className="text-base text-[#64748B] dark:text-[#94A3B8] leading-relaxed font-normal">
-              افهم معمارية النظم والـ CPU، أتقن الأمن السيبراني والتشفير، وبرمج بلغة C++ والذكاء الاصطناعي من غير حفظ عشوائي.. راجع الزتونة في ٣ دقايق وحل آلاف الأسئلة المتدرجة بالتفسير الكامل.
+            <p className="text-sm sm:text-[15px] text-[#536681] dark:text-[#94A3B8] leading-relaxed">
+              ادخل بكود الطالب أو جرب بحساب تجريبي مستقل خاص بك لحفظ تقدمك ومراجعة أخطائك.
             </p>
+          </div>
 
-            <div className="pt-2 flex flex-wrap items-center justify-center gap-3.5">
-              <Link
-                href="/login"
-                className="h-12 px-8 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white text-sm font-bold flex items-center gap-2 transition-all shadow-xs active:scale-[0.99]"
-              >
-                <span>دخول بكود الطالب</span>
-                <ArrowLeft className="w-4 h-4" />
-              </Link>
+          <div className="flex flex-wrap items-center gap-3 shrink-0">
+            <Link
+              href="/login"
+              className="min-h-[44px] px-5 py-2.5 rounded-lg bg-[#800B34] hover:bg-[#680829] text-white text-sm font-bold inline-flex items-center gap-2 transition-colors"
+            >
+              <span>دخول بكود الطالب أو التجربة</span>
+              <ArrowLeft className="w-4 h-4" />
+            </Link>
 
-              <Link
-                href="/subjects"
-                className="h-12 px-6 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E8E9ED] dark:border-[#334155] text-[#12263F] dark:text-white text-sm font-bold flex items-center gap-2 hover:border-[#800B34] hover:text-[#800B34] transition-colors shadow-xs"
-              >
-                <Target className="w-4 h-4 text-[#800B34] dark:text-[#FB7185]" />
-                <span>تصفح الوحدات والدروس</span>
-              </Link>
-            </div>
+            <Link
+              href="/subjects"
+              className="min-h-[44px] px-4 py-2.5 rounded-lg bg-[#F7F9FC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[#091B40] dark:text-white text-sm font-bold inline-flex items-center gap-2 hover:border-[#800B34] hover:text-[#800B34] transition-colors"
+            >
+              <BookOpen className="w-4 h-4 text-[#800B34] dark:text-[#FB7185]" />
+              <span>تصفّح المواد</span>
+            </Link>
           </div>
         </div>
       </div>

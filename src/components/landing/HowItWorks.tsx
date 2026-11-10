@@ -1,28 +1,28 @@
 "use client";
 
 import Link from "next/link";
-import { BookOpen, BookmarkCheck, CheckSquare, ArrowLeft } from "lucide-react";
+import { Compass, BookOpen, CheckSquare, ArrowLeft } from "lucide-react";
 
 const steps = [
   {
-    number: "01",
-    title: "اختار مسارك ودرسك (عربي أو لغات)",
+    number: "1",
+    title: "اختار منهجك ودرسك",
     description:
-      "ادخل على منهج البكالوريا ومسار الهندسة وعلوم الحاسب، واختار الوحدة والدرس اللي عايز تتقنه النهاردة.",
+      "حدد الصف الدراسي ونوع المدرسة (عربي أو لغات) للوصول المباشر لوحدات ودروس مسارك دون تداخل.",
+    icon: Compass,
+  },
+  {
+    number: "2",
+    title: "افهم المفاهيم والخريطة الذهنية",
+    description:
+      "استعرض تعريفات الدرس الأساسية وترجمتها واللوحات البصرية قبل أن تبدأ في حل التدريبات.",
     icon: BookOpen,
   },
   {
-    number: "02",
-    title: "افهم المفاهيم وراجع كبسولة الزتونة",
+    number: "3",
+    title: "اختبر نفسك وعالج غلطاتك",
     description:
-      "ذاكر المصطلحات ببطاقات الـ Flashcards، وراجع قوانين الدرس وتكات الامتحانات والخريطة الذهنية في ٣ دقايق.",
-    icon: BookmarkCheck,
-  },
-  {
-    number: "03",
-    title: "حل تدريبات متدرجة وعالج غلطاتك فوراً",
-    description:
-      "حل أسئلة اختيار من متعدد وصواب وخطأ ومقالي مع تفسير فوري لكل اختيار، وأي غلطة بتتحفظ في كشكولك لحد ما تتقنها ١٠٠٪.",
+      "جاوب على أسئلة الدرس، اقرأ التفسير العلمي لإجابتك، وارجع لأخطائك المسجلة من ركن غلطاتي.",
     icon: CheckSquare,
   },
 ];
@@ -31,68 +31,54 @@ export function HowItWorks() {
   return (
     <section
       id="how-it-works"
-      className="py-16 sm:py-20 bg-[#F7F8FA] dark:bg-[#0F172A] border-b border-[#E8E9ED] dark:border-[#334155]"
+      className="py-12 sm:py-16 bg-[#F7F9FC] dark:bg-[#081426] border-b border-[#E8E9ED] dark:border-[#22364F]"
     >
-      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 space-y-10 sm:space-y-12 text-right">
-        {/* Section Header */}
-        <div className="text-center max-w-2xl mx-auto space-y-2.5">
-          <span className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#800B34]/10 border border-[#800B34]/20 text-[#800B34] dark:text-[#FB7185] text-xs font-bold">
-            خطة الإنجاز الذكية في كل درس
-          </span>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-[#12263F] dark:text-white leading-tight tracking-tight">
-            إزاي تقفّل أي درس في ٣ خطوات؟
-          </h2>
-          <p className="text-base text-[#64748B] dark:text-[#94A3B8] font-normal leading-relaxed">
-            سيستم مرتب بيوفر وقتك ومجهودك، ويحول مذاكرة البرمجة وعلوم الحاسب والذكاء الاصطناعي لمتعة وتفوق مضمون.
-          </p>
-        </div>
-
-        {/* 3 Step Cards Connected by Subtle Directional Line */}
-        <div className="relative">
-          <div className="hidden md:block absolute top-1/2 -translate-y-6 right-[15%] left-[15%] h-[1px] bg-[#E8E9ED] dark:bg-[#334155] z-0" />
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
-            {steps.map((step) => {
-              const Icon = step.icon;
-              return (
-                <div
-                  key={step.number}
-                  className="p-6 sm:p-7 rounded-2xl bg-white dark:bg-[#1E293B] border border-[#E8E9ED] dark:border-[#334155] hover:border-[#800B34]/30 dark:hover:border-[#FB7185]/30 transition-colors shadow-xs flex flex-col justify-between space-y-4 text-right"
-                >
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div className="w-12 h-12 rounded-xl bg-[#800B34]/8 dark:bg-[#FB7185]/10 border border-[#800B34]/15 dark:border-[#FB7185]/20 text-[#800B34] dark:text-[#FB7185] flex items-center justify-center">
-                        <Icon className="w-5 h-5" strokeWidth={1.8} />
-                      </div>
-                      <span className="font-mono text-sm font-bold text-[#800B34] dark:text-[#FB7185] px-2.5 py-1 rounded-lg bg-[#800B34]/5 dark:bg-[#FB7185]/10 border border-[#800B34]/15 dark:border-[#FB7185]/20">
-                        {step.number}
-                      </span>
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <h3 className="text-lg font-bold text-[#12263F] dark:text-white">
-                        {step.title}
-                      </h3>
-                      <p className="text-sm text-[#64748B] dark:text-[#94A3B8] leading-relaxed font-normal">
-                        {step.description}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 space-y-8 text-right">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div className="space-y-1.5 max-w-xl">
+            <h2 className="text-xl sm:text-2xl font-bold text-[#091B40] dark:text-white leading-snug">
+              إزاي تستخدم الخلاصة في مذاكرتك؟
+            </h2>
+            <p className="text-sm sm:text-[15px] text-[#536681] dark:text-[#94A3B8] leading-relaxed">
+              ثلاث خطوات عملية تمشي عليها في كل درس.
+            </p>
           </div>
-        </div>
 
-        {/* Compact CTA */}
-        <div className="text-center pt-2">
           <Link
             href="/login"
-            className="inline-flex items-center gap-2 h-11 px-7 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white text-sm font-bold transition-all shadow-xs active:scale-[0.99]"
+            className="min-h-[44px] px-5 py-2 rounded-lg bg-[#800B34] hover:bg-[#680829] text-white text-sm font-bold inline-flex items-center gap-2 transition-colors self-start sm:self-auto shrink-0"
           >
-            <span>ابدأ رحلة التفوق بكود الطالب</span>
-            <ArrowLeft className="w-3.5 h-3.5" />
+            <span>ابدأ جلسة مذاكرة</span>
+            <ArrowLeft className="w-4 h-4" />
           </Link>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+          {steps.map((step) => {
+            const Icon = step.icon;
+            return (
+              <div
+                key={step.number}
+                className="p-5 sm:p-6 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] space-y-3 text-right"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <div className="w-9 h-9 rounded-lg bg-[#800B34]/10 text-[#800B34] dark:text-[#FB7185] flex items-center justify-center shrink-0">
+                    <Icon className="w-4 h-4" />
+                  </div>
+                  <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-md bg-[#F7F9FC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[#091B40] dark:text-white">
+                    خطوة {step.number}
+                  </span>
+                </div>
+
+                <h3 className="text-base font-bold text-[#091B40] dark:text-white">
+                  {step.title}
+                </h3>
+                <p className="text-sm text-[#536681] dark:text-[#94A3B8] leading-relaxed">
+                  {step.description}
+                </p>
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>

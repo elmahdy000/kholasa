@@ -2,207 +2,245 @@
 
 import Link from "next/link";
 import {
+  CheckCircle2,
   BookOpen,
-  BookmarkCheck,
-  Target,
   RotateCcw,
   Network,
-  Smartphone,
   ArrowLeft,
-  Cpu,
-  Code2,
-  ShieldCheck,
+  Lightbulb,
+  Languages,
 } from "lucide-react";
+import type { LandingCurriculumPayload } from "@/components/landing/types";
+import { BidiStatement } from "@/components/ui/BidiStatement";
 
-export function FeaturesBento() {
+interface FeaturesBentoProps {
+  sampleProofs: LandingCurriculumPayload["sampleProofs"];
+}
+
+export function FeaturesBento({ sampleProofs }: FeaturesBentoProps) {
+  const { questionExample, definitionExample, mindMapExample } = sampleProofs;
+
   return (
     <section
       id="features"
-      className="py-20 sm:py-24 bg-[#F7F8FA] dark:bg-[#0F172A] border-b border-[#E8E9ED] dark:border-[#334155]"
+      className="py-12 sm:py-16 bg-[#F7F9FC] dark:bg-[#081426] border-b border-[#E8E9ED] dark:border-[#22364F]"
     >
-      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 space-y-12 sm:space-y-14 text-right">
+      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 space-y-8 text-right">
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto space-y-3">
-          <span className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#800B34]/10 border border-[#800B34]/20 text-[#800B34] dark:text-[#FB7185] text-xs font-bold">
-            إزاي الخلاصة للبكالوريا هتفيدك فعلاً؟
-          </span>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-[#12263F] dark:text-white leading-tight tracking-tight">
-            تذاكر في ربع الوقت.. وتفهم كل تفصيلة في مسار الهندسة
+        <div className="max-w-2xl space-y-2">
+          <h2 className="text-xl sm:text-2xl font-bold text-[#091B40] dark:text-white leading-snug">
+            ماذا تقدّم لك المنصة داخل كل درس؟
           </h2>
-          <p className="text-base text-[#64748B] dark:text-[#94A3B8] font-normal leading-relaxed">
-            بدل التوهان بين مصادر كتير، بنينالك سيستم مذاكرة ذكي بياخدك من أول فهم المصطلح البرمجي والهندسي لحد ما تقفّل أصعب أسئلة الامتحانات بدون ولا غلطة.
+          <p className="text-sm sm:text-[15px] text-[#536681] dark:text-[#94A3B8] leading-relaxed font-normal">
+            أربع أدوات فعلية مبنية على دروسك ومفاهيمك وأسئلتك الحقيقية — مش وعود دعائية.
           </p>
         </div>
 
-        {/* Structured Responsive Bento Grid (6 Features) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* Feature 1: الشرح المفكك خطوة بخطوة */}
-          <div className="lg:col-span-2 p-7 sm:p-8 rounded-2xl bg-white dark:bg-[#1E293B] border border-[#E8E9ED] dark:border-[#334155] hover:border-[#800B34]/30 dark:hover:border-[#FB7185]/30 transition-colors flex flex-col justify-between space-y-6 shadow-xs">
-            <div className="space-y-4">
-              <div className="flex items-center justify-between gap-2">
-                <div className="w-12 h-12 rounded-xl bg-[#800B34]/8 dark:bg-[#FB7185]/10 border border-[#800B34]/15 dark:border-[#FB7185]/20 text-[#800B34] dark:text-[#FB7185] flex items-center justify-center">
-                  <BookOpen className="w-5 h-5" strokeWidth={1.8} />
+        {/* Balanced 2x2 Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+          {/* 1. افهم السؤال مش تحفظ إجابته */}
+          <div className="p-6 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] flex flex-col justify-between gap-4">
+            <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-[#800B34]/10 text-[#800B34] dark:text-[#FB7185] flex items-center justify-center shrink-0">
+                  <Lightbulb className="w-5 h-5" />
                 </div>
-                <span className="text-xs font-bold px-3 py-1 rounded-full bg-[#F7F8FA] dark:bg-[#0F172A] border border-[#E8E9ED] dark:border-[#334155] text-[#12263F] dark:text-white">
-                  بكالوريا عربي + بكالوريا لغات
-                </span>
-              </div>
-
-              <div className="space-y-2">
-                <h3 className="text-2xl font-bold text-[#12263F] dark:text-white">
-                  شرح مفكك ومصطلحات مترجمة بدقة هندسية
+                <h3 className="text-base sm:text-lg font-bold text-[#091B40] dark:text-white">
+                  1. افهم السؤال مش تحفظ إجابته
                 </h3>
-                <p className="text-base text-[#64748B] dark:text-[#94A3B8] leading-relaxed font-normal max-w-2xl">
-                  سواء بتدرس بالعربي أو باللغات، كل مفهوم مشروح من جذوره: إزاي المعالج بينفذ دورة <span className="font-mono font-bold text-[#12263F] dark:text-white">Fetch-Decode-Execute</span>، وإزاي يشتغل التشفير غير المتماثل <span className="font-mono font-bold text-[#12263F] dark:text-white">Public/Private Key</span>، وإزاي المؤشرات <span className="font-mono font-bold text-[#12263F] dark:text-white">Pointers</span> بتتعامل مع الذاكرة في <span className="font-mono font-bold text-[#12263F] dark:text-white">C++</span>.
-                </p>
               </div>
 
-              {/* Mini curriculum preview tags */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1">
-                <div className="p-3 rounded-xl bg-[#F7F8FA] dark:bg-[#0F172A] border border-[#E8E9ED] dark:border-[#334155] flex items-center gap-2">
-                  <Cpu className="w-4 h-4 text-[#800B34] dark:text-[#FB7185] shrink-0" />
-                  <span className="text-xs font-bold text-[#12263F] dark:text-white">
-                    معمارية النظم والـ CPU
-                  </span>
+              <p className="text-sm text-[#536681] dark:text-[#94A3B8] leading-relaxed">
+                بعد اختيار إجابتك في أي سؤال، بيظهر لك السبب العلمي المعتمد وربطه بمفهوم الدرس.
+              </p>
+
+              {questionExample && (
+                <div className="p-3.5 rounded-lg bg-[#F7F9FC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] space-y-2">
+                  <div className="text-xs font-bold text-[#800B34] dark:text-[#FB7185]">
+                    مثال من درس: {questionExample.lessonTitle}
+                  </div>
+                  <div className="text-xs sm:text-[13px] font-bold text-[#091B40] dark:text-white leading-snug">
+                    <BidiStatement text={questionExample.statement} />
+                  </div>
+                  <div className="pt-2 border-t border-[#E2E8F0] dark:border-[#334155] text-xs text-[#059669] dark:text-[#34D399] font-medium leading-relaxed flex items-start gap-1.5">
+                    <CheckCircle2 className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                    <span>
+                      <strong className="font-bold">{questionExample.correctAnswerText}: </strong>
+                      {questionExample.correctReason}
+                    </span>
+                  </div>
                 </div>
-                <div className="p-3 rounded-xl bg-[#F7F8FA] dark:bg-[#0F172A] border border-[#E8E9ED] dark:border-[#334155] flex items-center gap-2">
-                  <ShieldCheck className="w-4 h-4 text-[#800B34] dark:text-[#FB7185] shrink-0" />
-                  <span className="text-xs font-bold text-[#12263F] dark:text-white">
-                    الأمن السيبراني و CIA
-                  </span>
-                </div>
-                <div className="p-3 rounded-xl bg-[#F7F8FA] dark:bg-[#0F172A] border border-[#E8E9ED] dark:border-[#334155] flex items-center gap-2">
-                  <Code2 className="w-4 h-4 text-[#800B34] dark:text-[#FB7185] shrink-0" />
-                  <span className="text-xs font-bold text-[#12263F] dark:text-white">
-                    برمجة C++ و Big-O
-                  </span>
-                </div>
-              </div>
+              )}
             </div>
 
-            <div className="pt-4 border-t border-[#E8E9ED] dark:border-[#334155] flex items-center justify-between text-xs font-semibold text-[#800B34] dark:text-[#FB7185]">
-              <span>بطاقات مفاهيم تفاعلية (Flashcards) وبودكاست صوتي لكل درس</span>
-              <Link href="/subjects" className="flex items-center gap-1 hover:underline">
-                <span>استعرض وحدات المنهج</span>
-                <ArrowLeft className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-          </div>
-
-          {/* Feature 2: كبسولة الزتونة */}
-          <div className="p-7 rounded-2xl bg-white dark:bg-[#1E293B] border border-[#E8E9ED] dark:border-[#334155] hover:border-[#D97706]/40 transition-colors flex flex-col justify-between space-y-6 shadow-xs">
-            <div className="space-y-4">
-              <div className="w-12 h-12 rounded-xl bg-[#D97706]/10 dark:bg-[#D97706]/15 border border-[#D97706]/20 text-[#D97706] dark:text-[#FBBF24] flex items-center justify-center">
-                <BookmarkCheck className="w-5 h-5" strokeWidth={1.8} />
-              </div>
-              <div className="space-y-2">
-                <h3 className="text-xl font-bold text-[#12263F] dark:text-white">
-                  كبسولة الزتونة في ٣ دقايق
-                </h3>
-                <p className="text-sm text-[#64748B] dark:text-[#94A3B8] leading-relaxed font-normal">
-                  بتلمّلك أهم المقارنات الحاسمة (زي <span className="font-mono font-semibold">MAR vs MDR</span>، و<span className="font-mono font-semibold">Stack vs Heap</span>، و<span className="font-mono font-semibold">Linear vs Binary Search</span>) مع قوانين حساب الـ <span className="font-mono font-semibold">CVR</span> والـ <span className="font-mono font-semibold">CSS Box Model</span> في صفحة واحدة مركزة.
-                </p>
-              </div>
-            </div>
-
-            <div className="pt-3 border-t border-[#E8E9ED] dark:border-[#334155] text-xs font-semibold text-[#D97706] dark:text-[#FBBF24]">
-              تشيك ليست إتقان قبل الامتحان لكل درس
-            </div>
-          </div>
-
-          {/* Feature 3: بنك تدريب متدرج */}
-          <div className="p-7 rounded-2xl bg-white dark:bg-[#1E293B] border border-[#E8E9ED] dark:border-[#334155] hover:border-[#800B34]/30 dark:hover:border-[#FB7185]/30 transition-colors flex flex-col justify-between space-y-4 shadow-xs">
-            <div className="space-y-4">
-              <div className="w-12 h-12 rounded-xl bg-[#800B34]/8 dark:bg-[#FB7185]/10 border border-[#800B34]/15 dark:border-[#FB7185]/20 text-[#800B34] dark:text-[#FB7185] flex items-center justify-center">
-                <Target className="w-5 h-5" strokeWidth={1.8} />
-              </div>
-              <div className="space-y-2">
-                <h3 className="text-xl font-bold text-[#12263F] dark:text-white">
-                  تفسير فوري لكل اختيار
-                </h3>
-                <p className="text-sm text-[#64748B] dark:text-[#94A3B8] leading-relaxed font-normal">
-                  مش مجرد صح وغلط! في أسئلة الاختيار من متعدد والصواب والخطأ والمقالي، بنوضحلك السبب العلمي وراء الاختيار الصح وليه الاختيارات التانية فخ امتحاني.
-                </p>
-              </div>
-            </div>
-
-            <div className="pt-3 border-t border-[#E8E9ED] dark:border-[#334155]">
-              <Link
-                href="/exams/builder"
-                className="text-xs font-semibold text-[#800B34] dark:text-[#FB7185] flex items-center gap-1 hover:underline"
+            <div className="pt-3 border-t border-[#E8E9ED] dark:border-[#22364F]">
+              <a
+                href="#curriculum-explorer"
+                className="text-xs font-bold text-[#800B34] dark:text-[#FB7185] hover:underline inline-flex items-center gap-1"
               >
-                <span>ابني امتحانك المخصص دلوقتي</span>
+                <span>جرّب حل سؤال حقيقي دلوقتي</span>
                 <ArrowLeft className="w-3.5 h-3.5" />
-              </Link>
+              </a>
             </div>
           </div>
 
-          {/* Feature 4: ركن غلطاتي */}
-          <div className="p-7 rounded-2xl bg-white dark:bg-[#1E293B] border border-[#E8E9ED] dark:border-[#334155] hover:border-[#800B34]/30 dark:hover:border-[#FB7185]/30 transition-colors flex flex-col justify-between space-y-4 shadow-xs">
-            <div className="space-y-4">
-              <div className="w-12 h-12 rounded-xl bg-[#800B34]/8 dark:bg-[#FB7185]/10 border border-[#800B34]/15 dark:border-[#FB7185]/20 text-[#800B34] dark:text-[#FB7185] flex items-center justify-center">
-                <RotateCcw className="w-5 h-5" strokeWidth={1.8} />
-              </div>
-              <div className="space-y-2">
-                <h3 className="text-xl font-bold text-[#12263F] dark:text-white">
-                  كشكول «غلطاتي» الذكي
+          {/* 2. راجع المفاهيم بطريقة أسرع */}
+          <div className="p-6 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] flex flex-col justify-between gap-4">
+            <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-[#091B40]/10 dark:bg-white/10 text-[#091B40] dark:text-white flex items-center justify-center shrink-0">
+                  <BookOpen className="w-5 h-5" />
+                </div>
+                <h3 className="text-base sm:text-lg font-bold text-[#091B40] dark:text-white">
+                  2. راجع المفاهيم بطريقة أسرع
                 </h3>
-                <p className="text-sm text-[#64748B] dark:text-[#94A3B8] leading-relaxed font-normal">
-                  أكتر ميزة بتفرق في مجموعك: أي سؤال تغلط فيه بيتسجل تلقائياً في كشكولك، وتقدر تفتح جلسة معالجة مركزة لحد ما تقضي على نقط ضعفك نهائياً.
-                </p>
+              </div>
+
+              <p className="text-sm text-[#536681] dark:text-[#94A3B8] leading-relaxed">
+                كل درس معاه مصطلحاته الأساسية منظمة في بطاقات مراجعة وبحث فوري، ومعاها ترجمة عربية لمدارس اللغات.
+              </p>
+
+              {definitionExample && (
+                <div
+                  dir={definitionExample.isLanguages ? "ltr" : "rtl"}
+                  className={`p-3.5 rounded-lg bg-[#F7F9FC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] space-y-2 ${
+                    definitionExample.isLanguages ? "text-left" : "text-right"
+                  }`}
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-xs sm:text-[13px] font-bold text-[#059669] dark:text-[#34D399]">
+                      <BidiStatement text={definitionExample.term} />
+                    </span>
+                    {definitionExample.translation && (
+                      <span
+                        dir="rtl"
+                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-[#091B40]/8 dark:bg-white/10 text-[#091B40] dark:text-slate-200 text-[11px] font-semibold shrink-0"
+                      >
+                        <Languages className="w-3 h-3" />
+                        <span>مترجم بالعربي</span>
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs text-[#091B40] dark:text-slate-200 leading-relaxed">
+                    <BidiStatement text={definitionExample.meaning} />
+                  </p>
+                  {definitionExample.translation && (
+                    <p
+                      dir="rtl"
+                      className="text-xs text-[#536681] dark:text-[#94A3B8] pt-1.5 border-t border-[#E2E8F0] dark:border-[#334155] text-right leading-relaxed"
+                    >
+                      {definitionExample.translation}
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <div className="pt-3 border-t border-[#E8E9ED] dark:border-[#22364F]">
+              <a
+                href="#curriculum-explorer"
+                className="text-xs font-bold text-[#800B34] dark:text-[#FB7185] hover:underline inline-flex items-center gap-1"
+              >
+                <span>تصفّح مصطلحات الدروس</span>
+                <ArrowLeft className="w-3.5 h-3.5" />
+              </a>
+            </div>
+          </div>
+
+          {/* 3. اتعامل مع أخطائك بذكاء */}
+          <div className="p-6 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] flex flex-col justify-between gap-4">
+            <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-[#800B34]/10 text-[#800B34] dark:text-[#FB7185] flex items-center justify-center shrink-0">
+                  <RotateCcw className="w-5 h-5" />
+                </div>
+                <h3 className="text-base sm:text-lg font-bold text-[#091B40] dark:text-white">
+                  3. اتعامل مع أخطائك بذكاء
+                </h3>
+              </div>
+
+              <p className="text-sm text-[#536681] dark:text-[#94A3B8] leading-relaxed">
+                أي سؤال بتجاوبه غلط أثناء التدريب أو الامتحان بيتسجل تلقائياً في حسابك تحت قسم «غلطاتي» عشان ترجع تحله مع تفسيره الكامل.
+              </p>
+
+              <div className="p-3.5 rounded-lg bg-[#F7F9FC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] space-y-2.5">
+                <div className="flex items-center justify-between gap-2 text-xs">
+                  <span className="font-bold text-[#091B40] dark:text-white">
+                    آلية العمل الفعلية داخل حسابك:
+                  </span>
+                  <span className="px-2 py-0.5 rounded bg-[#DC2626]/10 text-[#DC2626] dark:text-[#F87171] font-bold text-[11px]">
+                    قيد المراجعة
+                  </span>
+                </div>
+                <ol className="space-y-1.5 text-xs text-[#536681] dark:text-[#94A3B8] list-decimal list-inside">
+                  <li>تسجيل السؤال في «غلطاتي» تلقائياً مع عدد مرات الخطأ.</li>
+                  <li>إمكانية إنشاء امتحان مراجعة مخصص من أسئلة غلطاتك فقط.</li>
+                  <li>يتحول إلى «تم الإتقان» فور حله بشكل صحيح في المراجعة.</li>
+                </ol>
               </div>
             </div>
 
-            <div className="pt-3 border-t border-[#E8E9ED] dark:border-[#334155]">
+            <div className="pt-3 border-t border-[#E8E9ED] dark:border-[#22364F]">
               <Link
                 href="/mistakes"
-                className="text-xs font-semibold text-[#800B34] dark:text-[#FB7185] flex items-center gap-1 hover:underline"
+                className="text-xs font-bold text-[#800B34] dark:text-[#FB7185] hover:underline inline-flex items-center gap-1"
               >
-                <span>افتح كشكول غلطاتك</span>
+                <span>افتح قسم غلطاتي</span>
                 <ArrowLeft className="w-3.5 h-3.5" />
               </Link>
             </div>
           </div>
 
-          {/* Feature 5: الخرائط الذهنية */}
-          <div className="p-7 rounded-2xl bg-white dark:bg-[#1E293B] border border-[#E8E9ED] dark:border-[#334155] hover:border-[#800B34]/30 dark:hover:border-[#FB7185]/30 transition-colors flex flex-col justify-between space-y-4 shadow-xs">
-            <div className="space-y-4">
-              <div className="w-12 h-12 rounded-xl bg-[#800B34]/8 dark:bg-[#FB7185]/10 border border-[#800B34]/15 dark:border-[#FB7185]/20 text-[#800B34] dark:text-[#FB7185] flex items-center justify-center">
-                <Network className="w-5 h-5" strokeWidth={1.8} />
-              </div>
-              <div className="space-y-2">
-                <h3 className="text-xl font-bold text-[#12263F] dark:text-white">
-                  خرائط ذهنية هندسية
+          {/* 4. اربط أفكار الدرس ببعض */}
+          <div className="p-6 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] flex flex-col justify-between gap-4">
+            <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-[#091B40]/10 dark:bg-white/10 text-[#091B40] dark:text-white flex items-center justify-center shrink-0">
+                  <Network className="w-5 h-5" />
+                </div>
+                <h3 className="text-base sm:text-lg font-bold text-[#091B40] dark:text-white">
+                  4. اربط أفكار الدرس ببعض
                 </h3>
-                <p className="text-sm text-[#64748B] dark:text-[#94A3B8] leading-relaxed font-normal">
-                  شوف هيكل الدرس كله في خريطة بصرية واحدة: من طبقات الويب التلاتة ورموز استجابة <span className="font-mono font-semibold">HTTP</span> لحد هياكل التحكم والخوارزميات.
-                </p>
               </div>
+
+              <p className="text-sm text-[#536681] dark:text-[#94A3B8] leading-relaxed">
+                لوحات خرائط ذهنية بصرية مرفقة بالدروس بتلخصلك العلاقات والأجزاء الأساسية قبل المذاكرة أو المراجعة.
+              </p>
+
+              {mindMapExample ? (
+                <div className="p-3 rounded-lg bg-[#F7F9FC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] flex items-center gap-3">
+                  <div className="w-24 h-16 rounded-md overflow-hidden border border-[#E2E8F0] dark:border-[#334155] bg-white shrink-0">
+                    <img
+                      src={mindMapExample.imageUrl}
+                      alt={mindMapExample.title}
+                      loading="lazy"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="min-w-0 flex-1 space-y-1">
+                    <span className="text-xs font-bold text-[#091B40] dark:text-white block truncate">
+                      {mindMapExample.title}
+                    </span>
+                    <span className="text-[11px] text-[#64748B] dark:text-[#94A3B8] block">
+                      {mindMapExample.boardsCount} لوحات بصرية تفاعلية في هذا الدرس
+                    </span>
+                  </div>
+                </div>
+              ) : (
+                <div className="p-3.5 rounded-lg bg-[#F7F9FC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-xs text-[#536681] dark:text-[#94A3B8]">
+                  معرض خرائط ذهنية تفاعلي يدعم التكبير والسحب باللمس على كل الأجهزة.
+                </div>
+              )}
             </div>
 
-            <div className="pt-3 border-t border-[#E8E9ED] dark:border-[#334155] text-xs font-semibold text-[#64748B] dark:text-[#94A3B8]">
-              مراجعة بصرية شاملة ليلة الامتحان
-            </div>
-          </div>
-
-          {/* Feature 6: وضع أوفلاين */}
-          <div className="p-7 rounded-2xl bg-white dark:bg-[#1E293B] border border-[#E8E9ED] dark:border-[#334155] hover:border-[#800B34]/30 dark:hover:border-[#FB7185]/30 transition-colors flex flex-col justify-between space-y-4 shadow-xs">
-            <div className="space-y-4">
-              <div className="w-12 h-12 rounded-xl bg-[#059669]/10 dark:bg-[#059669]/15 border border-[#059669]/20 text-[#059669] dark:text-[#34D399] flex items-center justify-center">
-                <Smartphone className="w-5 h-5" strokeWidth={1.8} />
-              </div>
-              <div className="space-y-2">
-                <h3 className="text-xl font-bold text-[#12263F] dark:text-white">
-                  احفظ دروسك وذاكر بدون إنترنت
-                </h3>
-                <p className="text-sm text-[#64748B] dark:text-[#94A3B8] leading-relaxed font-normal">
-                  بضغطة زر واحدة جوة أي درس، احفظ الملخص والمفاهيم والأسئلة على موبايلك وذاكر في أي مكان بتركيز كامل.
-                </p>
-              </div>
-            </div>
-
-            <div className="pt-3 border-t border-[#E8E9ED] dark:border-[#334155] text-xs font-semibold text-[#059669]">
-              يدعم الموبايل والتابلت والكمبيوتر
+            <div className="pt-3 border-t border-[#E8E9ED] dark:border-[#22364F]">
+              <a
+                href="#curriculum-explorer"
+                className="text-xs font-bold text-[#800B34] dark:text-[#FB7185] hover:underline inline-flex items-center gap-1"
+              >
+                <span>عاين الخرائط الذهنية للدروس</span>
+                <ArrowLeft className="w-3.5 h-3.5" />
+              </a>
             </div>
           </div>
         </div>
