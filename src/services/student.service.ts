@@ -91,6 +91,7 @@ export class StudentService {
         name: user.name,
         email: user.email,
         phone: user.phone,
+        loginCode: user.loginCode,
         role: user.role,
         schoolCategory: user.schoolCategory,
         trackId: user.trackId,

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { isAnyDemoCode } from "@/lib/demo-shared";
 import type { ProfileViewProps } from "./types";
 import { ProfileHeaderCard } from "./ProfileHeaderCard";
 import { AcademicSetupCard } from "./AcademicSetupCard";
@@ -130,6 +131,8 @@ export function ProfileView({
     }
   };
 
+  const isDemoSession = isAnyDemoCode(user.loginCode);
+
   return (
     <div className="max-w-4xl mx-auto space-y-6 text-right font-sans pb-28">
       {/* 1. Profile Header */}
@@ -139,8 +142,8 @@ export function ProfileView({
         onLogout={handleLogout}
       />
 
-      {/* 2. Device Security Status (Students) */}
-      {user.role === "STUDENT" && (
+      {/* 2. Device Security Status (Real Students only) */}
+      {user.role === "STUDENT" && !isDemoSession && (
         <DeviceSecurityCard
           maxDevices={user.maxDevices || 2}
           boundDevicesCount={user.boundDevices?.length || 0}
@@ -163,14 +166,16 @@ export function ProfileView({
         onSaveAcademic={handleSaveAcademic}
       />
 
-      {/* 3. Password Change */}
-      <PasswordChangeCard
-        passwordForm={passwordForm}
-        setPasswordForm={setPasswordForm}
-        isChangingPassword={isChangingPassword}
-        passwordStatus={passwordStatus}
-        onSubmit={handleChangePassword}
-      />
+      {/* 4. Password Change (Hidden for passwordless demo sandboxes) */}
+      {!isDemoSession && (
+        <PasswordChangeCard
+          passwordForm={passwordForm}
+          setPasswordForm={setPasswordForm}
+          isChangingPassword={isChangingPassword}
+          passwordStatus={passwordStatus}
+          onSubmit={handleChangePassword}
+        />
+      )}
 
       {/* 4. Statistics Cards */}
       <ProfileStatsGrid stats={stats} />

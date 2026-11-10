@@ -97,7 +97,7 @@ export default function LoginPage() {
       } else if (savedCenter) {
         try {
           localStorage.removeItem("kholasa_selected_center");
-        } catch {}
+        } catch { }
         setSelectedCenter(ALL_CENTER_NAMES[0] || "سنتر رافال عربي");
         setCustomCenter("");
       }
@@ -354,11 +354,10 @@ export default function LoginPage() {
                     </span>
                   ) : detectedStudent?.found ? (
                     <span
-                      className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${
-                        detectedStudent.schoolCategory === "LANGUAGES"
+                      className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${detectedStudent.schoolCategory === "LANGUAGES"
                           ? "bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-950/50 dark:text-indigo-300 dark:border-indigo-800"
                           : "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-800"
-                      }`}
+                        }`}
                     >
                       <Sparkles className="w-3 h-3" />
                       <span>
@@ -418,11 +417,10 @@ export default function LoginPage() {
                   <button
                     type="button"
                     onClick={() => setStudyMode("ONLINE")}
-                    className={`flex flex-col items-center justify-center p-3 rounded-xl transition-all duration-200 border ${
-                      studyMode === "ONLINE"
+                    className={`flex flex-col items-center justify-center p-3 rounded-xl transition-all duration-200 border ${studyMode === "ONLINE"
                         ? "bg-white dark:bg-[#0D214D] text-[#800B34] dark:text-[#E9AD32] border-[#800B34]/30 dark:border-[#E9AD32]/40 shadow-sm"
                         : "border-transparent text-[#536681] dark:text-[#94A3B8] hover:text-[#091B40] dark:hover:text-white"
-                    }`}
+                      }`}
                   >
                     <div className="flex items-center gap-1.5 font-bold text-xs">
                       <Globe className="w-4 h-4" />
@@ -435,11 +433,10 @@ export default function LoginPage() {
                   <button
                     type="button"
                     onClick={() => setStudyMode("OFFLINE")}
-                    className={`flex flex-col items-center justify-center p-3 rounded-xl transition-all duration-200 border ${
-                      studyMode === "OFFLINE"
+                    className={`flex flex-col items-center justify-center p-3 rounded-xl transition-all duration-200 border ${studyMode === "OFFLINE"
                         ? "bg-white dark:bg-[#0D214D] text-[#800B34] dark:text-[#E9AD32] border-[#800B34]/30 dark:border-[#E9AD32]/40 shadow-sm"
                         : "border-transparent text-[#536681] dark:text-[#94A3B8] hover:text-[#091B40] dark:hover:text-white"
-                    }`}
+                      }`}
                   >
                     <div className="flex items-center gap-1.5 font-bold text-xs">
                       <Building2 className="w-4 h-4" />
@@ -465,11 +462,10 @@ export default function LoginPage() {
 
                     {detectedStudent?.schoolCategory ? (
                       <span
-                        className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${
-                          detectedStudent.schoolCategory === "LANGUAGES"
+                        className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${detectedStudent.schoolCategory === "LANGUAGES"
                             ? "bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-950/60 dark:text-indigo-300 dark:border-indigo-800"
                             : "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800"
-                        }`}
+                          }`}
                       >
                         {detectedStudent.schoolCategory === "LANGUAGES"
                           ? "سناتر اللغات 🇬🇧"
@@ -585,7 +581,7 @@ export default function LoginPage() {
                   <div className="flex items-center justify-between text-xs font-bold text-[#536681] dark:text-[#94A3B8]">
                     <span className="flex items-center gap-1.5">
                       <Sparkles className="w-3.5 h-3.5 text-[#E9AD32]" />
-                      <span>حسابات تجريبية للمعاينة السريعة:</span>
+                      <span>تجربة سريعة (جلسة مستقلة ومعزولة لك):</span>
                     </span>
                     <span className="text-[10px] text-[#17834B] dark:text-[#34D399] font-normal">
                       ضغطة واحدة للتجربة
@@ -596,25 +592,25 @@ export default function LoginPage() {
                     <button
                       type="button"
                       onClick={() => handleApplyDemoAccount("DEMO-EN")}
-                      className="py-2 px-2 rounded-xl bg-white dark:bg-[#0D214D] hover:bg-indigo-50 dark:hover:bg-indigo-950/40 border border-[#E2E8F0] dark:border-[#1E3A6E] text-[11px] font-bold text-indigo-700 dark:text-indigo-300 text-center transition-all flex flex-col items-center gap-0.5"
+                      className="py-2 px-2 rounded-xl bg-white dark:bg-[#0D214D] hover:bg-indigo-50 dark:hover:bg-indigo-950/40 border border-[#E2E8F0] dark:border-[#1E3A6E] text-[11px] font-bold text-indigo-700 dark:text-indigo-300 text-center transition-all flex flex-col items-center gap-0.5 cursor-pointer"
                     >
-                      <span>طالب لغات 🇬🇧</span>
+                      <span>بكالوريا لغات 🇬🇧</span>
                       <span className="text-[9px] font-mono text-[#536681] dark:text-[#94A3B8]">DEMO-EN</span>
                     </button>
 
                     <button
                       type="button"
                       onClick={() => handleApplyDemoAccount("DEMO-AR")}
-                      className="py-2 px-2 rounded-xl bg-white dark:bg-[#0D214D] hover:bg-emerald-50 dark:hover:bg-emerald-950/40 border border-[#E2E8F0] dark:border-[#1E3A6E] text-[11px] font-bold text-emerald-700 dark:text-emerald-300 text-center transition-all flex flex-col items-center gap-0.5"
+                      className="py-2 px-2 rounded-xl bg-white dark:bg-[#0D214D] hover:bg-emerald-50 dark:hover:bg-emerald-950/40 border border-[#E2E8F0] dark:border-[#1E3A6E] text-[11px] font-bold text-emerald-700 dark:text-emerald-300 text-center transition-all flex flex-col items-center gap-0.5 cursor-pointer"
                     >
-                      <span>طالب عربي 🇪🇬</span>
+                      <span>بكالوريا عربي 🇪🇬</span>
                       <span className="text-[9px] font-mono text-[#536681] dark:text-[#94A3B8]">DEMO-AR</span>
                     </button>
 
                     <button
                       type="button"
                       onClick={() => handleApplyDemoAccount("DEMO-PRO")}
-                      className="py-2 px-2 rounded-xl bg-white dark:bg-[#0D214D] hover:bg-amber-50 dark:hover:bg-amber-950/40 border border-[#E2E8F0] dark:border-[#1E3A6E] text-[11px] font-bold text-amber-700 dark:text-amber-300 text-center transition-all flex flex-col items-center gap-0.5"
+                      className="py-2 px-2 rounded-xl bg-white dark:bg-[#0D214D] hover:bg-amber-50 dark:hover:bg-amber-950/40 border border-[#E2E8F0] dark:border-[#1E3A6E] text-[11px] font-bold text-amber-700 dark:text-amber-300 text-center transition-all flex flex-col items-center gap-0.5 cursor-pointer"
                     >
                       <span>حساب مفعل ⭐</span>
                       <span className="text-[9px] font-mono text-[#536681] dark:text-[#94A3B8]">DEMO-PRO</span>

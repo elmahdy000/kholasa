@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser, canViewAnalytics } from "@/lib/auth";
+import { EXCLUDE_DEMO_SANDBOX_CONDITION } from "@/lib/demo";
 import { AdminShell } from "@/components/layout/AdminShell";
 import { AnalyticsManagerClient } from "@/components/admin/AnalyticsManagerClient";
 import { RealtimeAnalyticsService } from "@/services/realtime-analytics.service";
@@ -51,8 +52,8 @@ export default async function AdminAnalyticsPage() {
     grades,
     realtimeData,
   ] = await Promise.all([
-    prisma.user.count(),
-    prisma.user.count({ where: { role: "STUDENT" } }),
+    prisma.user.count({ where: EXCLUDE_DEMO_SANDBOX_CONDITION }),
+    prisma.user.count({ where: { role: "STUDENT", ...EXCLUDE_DEMO_SANDBOX_CONDITION } }),
     prisma.user.count({
       where: { role: { in: ["TEACHER", "EDITOR", "ADMIN", "SUPER_ADMIN"] } },
     }),
@@ -60,9 +61,9 @@ export default async function AdminAnalyticsPage() {
     prisma.lesson.count(),
     prisma.question.count(),
     prisma.exam.count(),
-    prisma.examAttempt.count(),
+    prisma.examAttempt.count({ where: { user: EXCLUDE_DEMO_SANDBOX_CONDITION } }),
     prisma.examAttempt.findMany({
-      where: { isCompleted: true },
+      where: { isCompleted: true, user: EXCLUDE_DEMO_SANDBOX_CONDITION },
       select: { percentage: true, timeSpentSeconds: true, mode: true },
     }),
     prisma.question.count({ where: { difficulty: "EASY" } }),
@@ -85,17 +86,17 @@ export default async function AdminAnalyticsPage() {
         exam: { select: { title: true } },
       },
     }),
-    prisma.user.count({ where: { role: "STUDENT", boundDevices: { isEmpty: false } } }),
-    prisma.user.count({ where: { role: "STUDENT", boundDevices: { isEmpty: true } } }),
-    prisma.user.count({ where: { role: "STUDENT", schoolCategory: "ARABIC" } }),
-    prisma.user.count({ where: { role: "STUDENT", schoolCategory: "LANGUAGES" } }),
-    prisma.user.count({ where: { role: "STUDENT", maxDevices: 1 } }),
-    prisma.user.count({ where: { role: "STUDENT", maxDevices: { gte: 2 } } }),
-    prisma.studentProgress.count({ where: { isCompleted: true } }),
-    prisma.mistakeReview.count(),
-    prisma.mistakeReview.count({ where: { isResolved: true } }),
+    prisma.user.count({ where: { role: "STUDENT", boundDevices: { isEmpty: false }, ...EXCLUDE_DEMO_SANDBOX_CONDITION } }),
+    prisma.user.count({ where: { role: "STUDENT", boundDevices: { isEmpty: true }, ...EXCLUDE_DEMO_SANDBOX_CONDITION } }),
+    prisma.user.count({ where: { role: "STUDENT", schoolCategory: "ARABIC", ...EXCLUDE_DEMO_SANDBOX_CONDITION } }),
+    prisma.user.count({ where: { role: "STUDENT", schoolCategory: "LANGUAGES", ...EXCLUDE_DEMO_SANDBOX_CONDITION } }),
+    prisma.user.count({ where: { role: "STUDENT", maxDevices: 1, ...EXCLUDE_DEMO_SANDBOX_CONDITION } }),
+    prisma.user.count({ where: { role: "STUDENT", maxDevices: { gte: 2 }, ...EXCLUDE_DEMO_SANDBOX_CONDITION } }),
+    prisma.studentProgress.count({ where: { isCompleted: true, user: EXCLUDE_DEMO_SANDBOX_CONDITION } }),
+    prisma.mistakeReview.count({ where: { user: EXCLUDE_DEMO_SANDBOX_CONDITION } }),
+    prisma.mistakeReview.count({ where: { isResolved: true, user: EXCLUDE_DEMO_SANDBOX_CONDITION } }),
     prisma.user.findMany({
-      where: { role: "STUDENT", attempts: { some: {} } },
+      where: { role: "STUDENT", attempts: { some: {} }, ...EXCLUDE_DEMO_SANDBOX_CONDITION },
       take: 6,
       orderBy: { attempts: { _count: "desc" } },
       select: {
@@ -113,7 +114,7 @@ export default async function AdminAnalyticsPage() {
       },
     }),
     prisma.user.findMany({
-      where: { role: "STUDENT", boundDevices: { isEmpty: true } },
+      where: { role: "STUDENT", boundDevices: { isEmpty: true }, ...EXCLUDE_DEMO_SANDBOX_CONDITION },
       take: 6,
       orderBy: { createdAt: "desc" },
       select: {
@@ -128,7 +129,7 @@ export default async function AdminAnalyticsPage() {
     prisma.session.findMany({
       where: {
         createdAt: { gte: fourteenDaysAgo },
-        user: { role: "STUDENT" },
+        user: { role: "STUDENT", ...EXCLUDE_DEMO_SANDBOX_CONDITION },
       },
       select: {
         id: true,
@@ -149,7 +150,7 @@ export default async function AdminAnalyticsPage() {
     prisma.examAttempt.findMany({
       where: {
         startedAt: { gte: fourteenDaysAgo },
-        user: { role: "STUDENT" },
+        user: { role: "STUDENT", ...EXCLUDE_DEMO_SANDBOX_CONDITION },
       },
       select: {
         id: true,
@@ -171,7 +172,7 @@ export default async function AdminAnalyticsPage() {
     prisma.studentProgress.findMany({
       where: {
         lastAccessedAt: { gte: fourteenDaysAgo },
-        user: { role: "STUDENT" },
+        user: { role: "STUDENT", ...EXCLUDE_DEMO_SANDBOX_CONDITION },
       },
       select: {
         id: true,

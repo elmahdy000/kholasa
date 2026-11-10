@@ -5,6 +5,7 @@ export interface StudentShellUser {
   name?: string | null;
   email?: string | null;
   phone?: string | null;
+  loginCode?: string | null;
   role?: string;
 }
 

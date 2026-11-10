@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { EXCLUDE_DEMO_SANDBOX_CONDITION } from "@/lib/demo";
 import { AdminShell } from "@/components/layout/AdminShell";
 import { UserManagerClient } from "@/components/admin/UserManagerClient";
 
@@ -13,6 +14,7 @@ export default async function AdminUsersPage() {
 
   const [users, systems, grades, gradeUnits] = await Promise.all([
     prisma.user.findMany({
+      where: EXCLUDE_DEMO_SANDBOX_CONDITION,
       orderBy: { createdAt: "desc" },
       select: {
         id: true,

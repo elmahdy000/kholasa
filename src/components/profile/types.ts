@@ -29,6 +29,7 @@ export interface ProfileViewProps {
     name: string;
     email?: string | null;
     phone?: string | null;
+    loginCode?: string | null;
     role: string;
     maxDevices?: number;
     boundDevices?: string[];

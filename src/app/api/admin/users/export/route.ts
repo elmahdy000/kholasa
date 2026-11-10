@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { EXCLUDE_DEMO_SANDBOX_CONDITION } from "@/lib/demo";
 
 export async function GET(req: Request) {
   try {
@@ -13,6 +14,7 @@ export async function GET(req: Request) {
     const format = searchParams.get("format") || "csv";
 
     const students = await prisma.user.findMany({
+      where: EXCLUDE_DEMO_SANDBOX_CONDITION,
       orderBy: { createdAt: "desc" },
       select: {
         id: true,

@@ -4,7 +4,15 @@ import { z } from "zod";
 import { Role, SchoolCategory } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { UserService } from "@/services";
-import { verifyPassword, createSession } from "@/lib/auth";
+import { verifyPassword, createSession, destroySession } from "@/lib/auth";
+import {
+  DEMO_SESSION_TTL_MS,
+  cleanupExpiredDemoSandboxes,
+  generateDemoSandboxLoginCode,
+  getDemoTemplateDefaults,
+  isDemoSandboxCode,
+  isDemoTemplateCode,
+} from "@/lib/demo";
 import { forbidden, jsonError, parseJson, unauthorized } from "@/lib/http";
 import { getClientIp, rateLimit, withRetryAfter } from "@/lib/rate-limit";
 import { AUTHORIZED_CENTERS } from "@/lib/centers";
@@ -32,10 +40,104 @@ export async function POST(req: Request) {
     rateLimit(`login:ip:${ip}`, 10, 60 * 1000);
     const body = await parseJson(req, loginSchema);
     const deviceId = body.deviceId;
+    const cookieStore = await cookies();
+    let resolvedDeviceId = deviceId || cookieStore.get("kholasa_device_id")?.value || null;
+
+    // 1A. Ephemeral Isolated Demo Sandbox Login (DEMO-AR / DEMO-EN / DEMO-PRO)
+    if (body.code?.trim()) {
+      const cleanCode = body.code.trim().toUpperCase();
+
+      // Reject direct reuse of someone else's ephemeral sandbox code
+      if (isDemoSandboxCode(cleanCode)) {
+        throw unauthorized(INVALID_CODE);
+      }
+
+      if (isDemoTemplateCode(cleanCode)) {
+        // Rate limit per visitor IP (never globally on shared DEMO code)
+        rateLimit(`login:demo:ip:${ip}`, 20, 15 * 60 * 1000);
+
+        // Terminate any prior session on this browser so the student starts a fresh isolated session
+        await destroySession();
+
+        const defaults = getDemoTemplateDefaults(cleanCode);
+        const templateUser = await UserService.findByLoginCode(cleanCode);
+
+        const targetSchoolCategory =
+          defaults.schoolCategory === "LANGUAGES"
+            ? SchoolCategory.LANGUAGES
+            : SchoolCategory.ARABIC;
+
+        const updatedStudyMode = body.studyMode || templateUser?.studyMode || "ONLINE";
+        const updatedCenterName =
+          updatedStudyMode === "OFFLINE"
+            ? body.centerName?.trim() || templateUser?.centerName || defaults.defaultCenter
+            : null;
+
+        // Match the active published curriculum grade/system for the chosen track
+        const publishedCurriculum =
+          (await prisma.subject?.findFirst({
+            where: { isPublished: true, schoolCategory: targetSchoolCategory },
+            select: { gradeId: true, systemId: true, trackId: true },
+          })) ||
+          (await prisma.subject?.findFirst({
+            where: { isPublished: true },
+            select: { gradeId: true, systemId: true, trackId: true },
+          }));
+
+        const targetGradeId = publishedCurriculum?.gradeId || templateUser?.gradeId || null;
+        const targetSystemId = publishedCurriculum?.systemId || templateUser?.systemId || null;
+        const targetTrackId = templateUser?.trackId ?? publishedCurriculum?.trackId ?? null;
+
+        const sandboxCode = generateDemoSandboxLoginCode(cleanCode);
+        const sandboxUser = await prisma.user.create({
+          data: {
+            name: defaults.name,
+            loginCode: sandboxCode,
+            role: Role.STUDENT,
+            schoolCategory: targetSchoolCategory,
+            gradeId: targetGradeId,
+            systemId: targetSystemId,
+            trackId: targetTrackId,
+            studyMode: updatedStudyMode,
+            centerName: updatedCenterName,
+            subscriptionStatus: defaults.subscriptionStatus,
+            isActive: true,
+            maxDevices: 5,
+            boundDevices: resolvedDeviceId ? [resolvedDeviceId] : [],
+          },
+        });
+
+        // Opportunistically purge expired sandbox accounts without blocking the response
+        void cleanupExpiredDemoSandboxes();
+
+        await createSession(sandboxUser.id, resolvedDeviceId || undefined, {
+          ttlMs: DEMO_SESSION_TTL_MS,
+        });
+
+        return NextResponse.json({
+          success: true,
+          isDemoSandbox: true,
+          user: {
+            id: sandboxUser.id,
+            name: sandboxUser.name,
+            email: sandboxUser.email,
+            phone: sandboxUser.phone,
+            loginCode: sandboxUser.loginCode,
+            role: sandboxUser.role,
+            systemId: sandboxUser.systemId,
+            gradeId: sandboxUser.gradeId,
+            schoolCategory: sandboxUser.schoolCategory,
+            studyMode: sandboxUser.studyMode,
+            centerName: sandboxUser.centerName,
+            subscriptionStatus: sandboxUser.subscriptionStatus,
+          },
+        });
+      }
+    }
 
     let user = null;
 
-    // 1. Direct Student Code Login
+    // 1B. Direct Real Student Code Login
     if (body.code?.trim()) {
       const cleanCode = body.code.trim().toUpperCase();
       rateLimit(`login:code:${cleanCode}`, 8, 15 * 60 * 1000);
@@ -65,9 +167,6 @@ export async function POST(req: Request) {
         "عذراً، هذا الحساب معلق أو بانتظار التفعيل حالياً. يرجى مراجعة المساعد أو إدارة المنصة لتفعيل حسابك."
       );
     }
-
-    const cookieStore = await cookies();
-    let resolvedDeviceId = deviceId || cookieStore.get("kholasa_device_id")?.value || null;
 
     // Strict Device Binding for Students
     if (user.role === Role.STUDENT) {
@@ -112,12 +211,7 @@ export async function POST(req: Request) {
       }
 
       // 1. Strict Category Scoping: Respect student's registered curriculum
-      if (user.loginCode === "DEMO-EN" || user.loginCode === "DEMO-PRO") {
-        targetSchoolCategory = SchoolCategory.LANGUAGES;
-      } else if (user.loginCode === "DEMO-AR") {
-        targetSchoolCategory = SchoolCategory.ARABIC;
-      } else if (user.schoolCategory) {
-        // PRESERVE the student's assigned school category! Never let center selection overwrite it.
+      if (user.schoolCategory) {
         targetSchoolCategory = user.schoolCategory;
       } else if (updatedCenterName) {
         const matchedCenter = AUTHORIZED_CENTERS.find(
@@ -130,42 +224,45 @@ export async function POST(req: Request) {
 
       // 2. Safeguard for missing or orphaned grade/system (matched to student's school category)
       const publishedCurriculum =
-        (await prisma.subject.findFirst({
+        (await prisma.subject?.findFirst({
           where: { isPublished: true, schoolCategory: targetSchoolCategory },
           select: { gradeId: true, systemId: true },
         })) ||
-        (await prisma.subject.findFirst({
+        (await prisma.subject?.findFirst({
           where: { isPublished: true },
           select: { gradeId: true, systemId: true },
         }));
 
       if (publishedCurriculum) {
-        if (user.loginCode?.startsWith("DEMO-")) {
-          // Demo accounts always mirror the active published curriculum grade
-          targetGradeId = publishedCurriculum.gradeId;
-          targetSystemId = publishedCurriculum.systemId;
-        } else {
-          targetGradeId = targetGradeId || publishedCurriculum.gradeId;
-          targetSystemId = targetSystemId || publishedCurriculum.systemId;
-        }
+        targetGradeId = targetGradeId || publishedCurriculum.gradeId;
+        targetSystemId = targetSystemId || publishedCurriculum.systemId;
       }
 
-      await prisma.user.update({
-        where: { id: user.id },
-        data: {
-          studyMode: updatedStudyMode,
-          centerName: updatedCenterName,
-          schoolCategory: targetSchoolCategory,
-          gradeId: targetGradeId,
-          systemId: targetSystemId,
-          ...(user.loginCode?.startsWith("DEMO-") &&
-          (user.name?.toLowerCase().includes("demo") || user.name?.toLowerCase().includes("languages"))
-            ? { name: "طالب تجريبي" }
-            : {}),
-        },
-      });
+      const studentUpdateData: Record<string, unknown> = {};
+      if (body.studyMode) {
+        studentUpdateData.studyMode = updatedStudyMode;
+        studentUpdateData.centerName = updatedCenterName;
+      }
+      if (targetSchoolCategory !== (user.schoolCategory || SchoolCategory.ARABIC)) {
+        studentUpdateData.schoolCategory = targetSchoolCategory;
+      }
+      if ((targetGradeId ?? null) !== (user.gradeId ?? null)) {
+        studentUpdateData.gradeId = targetGradeId;
+      }
+      if ((targetSystemId ?? null) !== (user.systemId ?? null)) {
+        studentUpdateData.systemId = targetSystemId;
+      }
+
+      if (Object.keys(studentUpdateData).length > 0) {
+        await prisma.user.update({
+          where: { id: user.id },
+          data: studentUpdateData,
+        });
+      }
     }
 
+    // Clear any prior session (including ephemeral demo session) before signing in as real account
+    await destroySession();
     await createSession(user.id, resolvedDeviceId || undefined);
 
     return NextResponse.json({

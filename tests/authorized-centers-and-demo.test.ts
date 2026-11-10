@@ -13,12 +13,22 @@ const mockPrisma = vi.hoisted(() => ({
   user: {
     findUnique: vi.fn(),
     findFirst: vi.fn(),
+    findMany: vi.fn(),
     create: vi.fn(),
     update: vi.fn(),
+    delete: vi.fn(),
+    deleteMany: vi.fn(),
+  },
+  subject: {
+    findFirst: vi.fn(),
+  },
+  exam: {
+    deleteMany: vi.fn(),
   },
   session: {
     create: vi.fn(),
     deleteMany: vi.fn(),
+    findUnique: vi.fn(),
   },
 }));
 
@@ -35,21 +45,25 @@ vi.mock("next/headers", () => ({
 
 import { GET as lookupCodeRoute } from "@/app/api/auth/lookup-code/route";
 import { POST as loginRoute } from "@/app/api/auth/login/route";
+import { POST as logoutRoute } from "@/app/api/auth/logout/route";
 
-describe("Authorized Centers & Demo Accounts Specification", () => {
+describe("Authorized Centers & Per-Visitor Isolated Demo Sandbox Specification", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockCookiesStore.get.mockReturnValue(undefined);
+    mockPrisma.user.findMany.mockResolvedValue([]);
   });
 
   describe("1. Authorized Centers Registry (centers.ts)", () => {
-    it("contains exactly the 6 requested centers plus custom fallback option", () => {
-      expect(AUTHORIZED_CENTERS).toHaveLength(6);
+    it("contains the 7 authorized centers plus custom fallback option", () => {
+      expect(AUTHORIZED_CENTERS).toHaveLength(7);
       expect(ALL_CENTER_NAMES).toContain("سنتر إديوفيرس لغات");
       expect(ALL_CENTER_NAMES).toContain("سنتر المجد لغات");
       expect(ALL_CENTER_NAMES).toContain("سنتر الحناوي لغات");
       expect(ALL_CENTER_NAMES).toContain("سنتر رافال عربي");
       expect(ALL_CENTER_NAMES).toContain("سنتر زاج عربي");
       expect(ALL_CENTER_NAMES).toContain("سنتر فيوتشر عربي");
+      expect(ALL_CENTER_NAMES).toContain("سنتر القنايات عربي");
       expect(ALL_CENTER_NAMES).toContain(OTHER_CENTER_NAME);
     });
 
@@ -65,11 +79,12 @@ describe("Authorized Centers & Demo Accounts Specification", () => {
         expect(c.badge).toContain("لغات");
       });
 
-      expect(ARABIC_CENTERS).toHaveLength(3);
+      expect(ARABIC_CENTERS).toHaveLength(4);
       expect(ARABIC_CENTERS.map((c) => c.name)).toEqual([
         "سنتر رافال عربي",
         "سنتر زاج عربي",
         "سنتر فيوتشر عربي",
+        "سنتر القنايات عربي",
       ]);
       ARABIC_CENTERS.forEach((c) => {
         expect(c.category).toBe(SchoolCategory.ARABIC);
@@ -83,11 +98,11 @@ describe("Authorized Centers & Demo Accounts Specification", () => {
       expect(langCenters.every((c) => c.category === SchoolCategory.LANGUAGES)).toBe(true);
 
       const arabCenters = getCentersForCategory(SchoolCategory.ARABIC);
-      expect(arabCenters).toHaveLength(3);
+      expect(arabCenters).toHaveLength(4);
       expect(arabCenters.every((c) => c.category === SchoolCategory.ARABIC)).toBe(true);
 
       const allCenters = getCentersForCategory(null);
-      expect(allCenters).toHaveLength(6);
+      expect(allCenters).toHaveLength(7);
     });
   });
 
@@ -100,28 +115,45 @@ describe("Authorized Centers & Demo Accounts Specification", () => {
       expect(mockPrisma.user.findFirst).not.toHaveBeenCalled();
     });
 
-    it("returns student details and detected curriculum for a valid code", async () => {
+    it("returns template preview metadata for official demo entry codes (DEMO-EN)", async () => {
+      const req = new Request("http://localhost/api/auth/lookup-code?code=DEMO-EN");
+      const res = await lookupCodeRoute(req);
+      const data = await res.json();
+
+      expect(data.found).toBe(true);
+      expect(data.user.name).toBe("طالب تجريبي (لغات)");
+      expect(data.user.schoolCategory).toBe("LANGUAGES");
+    });
+
+    it("never exposes ephemeral sandbox user codes (DEMO-EN-XXXXXXXX)", async () => {
+      const req = new Request("http://localhost/api/auth/lookup-code?code=DEMO-EN-A1B2C3D4");
+      const res = await lookupCodeRoute(req);
+      const data = await res.json();
+
+      expect(data.found).toBe(false);
+      expect(mockPrisma.user.findFirst).not.toHaveBeenCalled();
+    });
+
+    it("returns real student details for a valid personal student code", async () => {
       mockPrisma.user.findFirst.mockResolvedValue({
         id: "student-123",
         name: "يوسف أحمد",
         schoolCategory: SchoolCategory.LANGUAGES,
         studyMode: StudyMode.OFFLINE,
         centerName: "سنتر إديوفيرس لغات",
-        subscriptionStatus: SubscriptionStatus.TRIAL,
+        subscriptionStatus: SubscriptionStatus.ACTIVE,
         role: Role.STUDENT,
-        grade: { name: "الصف الأول الثانوي" },
+        grade: { name: "تانية بكالوريا" },
       });
 
-      const req = new Request("http://localhost/api/auth/lookup-code?code=DEMO-EN");
+      const req = new Request("http://localhost/api/auth/lookup-code?code=REAL8821");
       const res = await lookupCodeRoute(req);
       const data = await res.json();
 
       expect(data.found).toBe(true);
       expect(data.user.name).toBe("يوسف أحمد");
       expect(data.user.schoolCategory).toBe("LANGUAGES");
-      expect(data.user.studyMode).toBe("OFFLINE");
-      expect(data.user.centerName).toBe("سنتر إديوفيرس لغات");
-      expect(data.user.gradeName).toBe("الصف الأول الثانوي");
+      expect(data.user.gradeName).toBe("تانية بكالوريا");
     });
 
     it("returns found: false if code does not match any student", async () => {
@@ -135,90 +167,163 @@ describe("Authorized Centers & Demo Accounts Specification", () => {
     });
   });
 
-  describe("3. Student Login with Authorized Centers & Device Binding", () => {
-    it("successfully logs in with DEMO-EN and records 'سنتر إديوفيرس لغات'", async () => {
+  describe("3. Strict Per-Visitor Demo Sandbox Isolation", () => {
+    it("creates two completely separate sandbox users with distinct IDs for two visitors logging in with DEMO-EN", async () => {
       mockPrisma.user.findFirst.mockResolvedValue({
-        id: "demo-en-id",
-        name: "Demo Student (Languages)",
+        id: "template-demo-en",
+        name: "Demo Student",
         loginCode: "DEMO-EN",
         role: Role.STUDENT,
         schoolCategory: SchoolCategory.LANGUAGES,
-        studyMode: StudyMode.ONLINE,
-        centerName: null,
-        maxDevices: 10,
-        boundDevices: ["device-1"],
-        subscriptionStatus: SubscriptionStatus.TRIAL,
+        gradeId: "grade-g11",
+        systemId: "sys-bacc",
+        trackId: "track-eng",
       });
-      mockPrisma.user.update.mockResolvedValue({});
-      mockPrisma.session.create.mockResolvedValue({ id: "sess-1" });
+      mockPrisma.subject.findFirst.mockResolvedValue({
+        gradeId: "grade-g11",
+        systemId: "sys-bacc",
+        trackId: "track-eng",
+      });
 
-      const req = new Request("http://localhost/api/auth/login", {
+      let createCounter = 0;
+      mockPrisma.user.create.mockImplementation(async ({ data }) => {
+        createCounter++;
+        return {
+          id: `sandbox-en-${createCounter}`,
+          ...data,
+        };
+      });
+      mockPrisma.session.create.mockResolvedValue({ id: "sess-sandbox" });
+
+      const req1 = new Request("http://localhost/api/auth/login", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "x-forwarded-for": "10.0.0.1" },
         body: JSON.stringify({
           code: "DEMO-EN",
-          deviceId: "device-1",
+          deviceId: "visitor-device-1",
           studyMode: "OFFLINE",
           centerName: "سنتر إديوفيرس لغات",
         }),
       });
+      const res1 = await loginRoute(req1);
+      const data1 = await res1.json();
 
-      const res = await loginRoute(req);
-      const data = await res.json();
-
-      expect(res.status).toBe(200);
-      expect(data.success).toBe(true);
-      expect(data.user.loginCode).toBe("DEMO-EN");
-      expect(data.user.schoolCategory).toBe("LANGUAGES");
-      expect(data.user.studyMode).toBe("OFFLINE");
-      expect(data.user.centerName).toBe("سنتر إديوفيرس لغات");
-
-      expect(mockPrisma.user.update).toHaveBeenCalledWith({
-        where: { id: "demo-en-id" },
-        data: {
-          studyMode: "OFFLINE",
-          centerName: "سنتر إديوفيرس لغات",
-        },
+      const req2 = new Request("http://localhost/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-forwarded-for": "10.0.0.2" },
+        body: JSON.stringify({
+          code: "DEMO-EN",
+          deviceId: "visitor-device-2",
+          studyMode: "ONLINE",
+        }),
       });
+      const res2 = await loginRoute(req2);
+      const data2 = await res2.json();
+
+      expect(res1.status).toBe(200);
+      expect(res2.status).toBe(200);
+      expect(data1.isDemoSandbox).toBe(true);
+      expect(data2.isDemoSandbox).toBe(true);
+
+      // Must NOT share the template ID or each other's ID/loginCode
+      expect(data1.user.id).not.toBe("template-demo-en");
+      expect(data2.user.id).not.toBe("template-demo-en");
+      expect(data1.user.id).not.toBe(data2.user.id);
+      expect(data1.user.loginCode).toMatch(/^DEMO-EN-[0-9A-F]{8}$/);
+      expect(data2.user.loginCode).toMatch(/^DEMO-EN-[0-9A-F]{8}$/);
+      expect(data1.user.loginCode).not.toBe(data2.user.loginCode);
+      expect(data1.user.schoolCategory).toBe("LANGUAGES");
+      expect(data1.user.centerName).toBe("سنتر إديوفيرس لغات");
+      expect(data2.user.studyMode).toBe("ONLINE");
     });
 
-    it("successfully logs in with DEMO-AR and records 'سنتر رافال عربي'", async () => {
-      mockPrisma.user.findFirst.mockResolvedValue({
-        id: "demo-ar-id",
-        name: "طالب تجريبي (عربي)",
-        loginCode: "DEMO-AR",
-        role: Role.STUDENT,
-        schoolCategory: SchoolCategory.ARABIC,
-        studyMode: StudyMode.ONLINE,
-        centerName: null,
-        maxDevices: 10,
-        boundDevices: ["device-1"],
-        subscriptionStatus: SubscriptionStatus.TRIAL,
+    it("successfully creates isolated sandbox with Arabic curriculum & ACTIVE subscription for DEMO-AR / DEMO-PRO", async () => {
+      mockPrisma.user.findFirst.mockResolvedValue(null);
+      mockPrisma.subject.findFirst.mockResolvedValue({
+        gradeId: "grade-g11",
+        systemId: "sys-bacc",
+        trackId: "track-eng",
       });
-      mockPrisma.user.update.mockResolvedValue({});
-      mockPrisma.session.create.mockResolvedValue({ id: "sess-2" });
+      mockPrisma.user.create.mockImplementation(async ({ data }) => ({
+        id: `sandbox-${data.loginCode}`,
+        ...data,
+      }));
+      mockPrisma.session.create.mockResolvedValue({ id: "sess-ar" });
 
-      const req = new Request("http://localhost/api/auth/login", {
+      const reqAr = new Request("http://localhost/api/auth/login", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "x-forwarded-for": "10.0.0.3" },
         body: JSON.stringify({
           code: "DEMO-AR",
-          deviceId: "device-1",
+          deviceId: "device-ar",
           studyMode: "OFFLINE",
           centerName: "سنتر رافال عربي",
         }),
       });
+      const resAr = await loginRoute(reqAr);
+      const dataAr = await resAr.json();
+
+      expect(resAr.status).toBe(200);
+      expect(dataAr.user.loginCode).toMatch(/^DEMO-AR-[0-9A-F]{8}$/);
+      expect(dataAr.user.schoolCategory).toBe("ARABIC");
+      expect(dataAr.user.subscriptionStatus).toBe("TRIAL");
+      expect(dataAr.user.centerName).toBe("سنتر رافال عربي");
+
+      const reqPro = new Request("http://localhost/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-forwarded-for": "10.0.0.4" },
+        body: JSON.stringify({
+          code: "DEMO-PRO",
+          deviceId: "device-pro",
+          studyMode: "ONLINE",
+        }),
+      });
+      const resPro = await loginRoute(reqPro);
+      const dataPro = await resPro.json();
+
+      expect(resPro.status).toBe(200);
+      expect(dataPro.user.loginCode).toMatch(/^DEMO-PRO-[0-9A-F]{8}$/);
+      expect(dataPro.user.subscriptionStatus).toBe("ACTIVE");
+    });
+
+    it("rejects direct login attempts using another visitor's sandbox code (DEMO-AR-XXXXXXXX)", async () => {
+      const req = new Request("http://localhost/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-forwarded-for": "10.0.0.5" },
+        body: JSON.stringify({
+          code: "DEMO-AR-A1B2C3D4",
+          deviceId: "attacker-device",
+        }),
+      });
 
       const res = await loginRoute(req);
-      const data = await res.json();
+      expect(res.status).toBe(401);
+      expect(mockPrisma.user.create).not.toHaveBeenCalled();
+    });
 
+    it("purges ephemeral sandbox user and custom exams upon explicit logout", async () => {
+      mockCookiesStore.get.mockReturnValue({ value: "sandbox-sess-token" });
+      mockPrisma.session.findUnique.mockResolvedValue({
+        userId: "sandbox-user-99",
+        user: { loginCode: "DEMO-AR-99AABBCC" },
+      });
+      mockPrisma.user.findUnique.mockResolvedValue({
+        id: "sandbox-user-99",
+        role: Role.STUDENT,
+        loginCode: "DEMO-AR-99AABBCC",
+      });
+      mockPrisma.exam.deleteMany.mockResolvedValue({ count: 1 });
+      mockPrisma.user.delete.mockResolvedValue({ id: "sandbox-user-99" });
+      mockPrisma.session.deleteMany.mockResolvedValue({ count: 1 });
+
+      const res = await logoutRoute();
       expect(res.status).toBe(200);
-      expect(data.success).toBe(true);
-      expect(data.user.loginCode).toBe("DEMO-AR");
-      expect(data.user.schoolCategory).toBe("ARABIC");
-      expect(data.user.studyMode).toBe("OFFLINE");
-      expect(data.user.centerName).toBe("سنتر رافال عربي");
+      expect(mockPrisma.exam.deleteMany).toHaveBeenCalledWith({
+        where: { isCustom: true, createdById: "sandbox-user-99" },
+      });
+      expect(mockPrisma.user.delete).toHaveBeenCalledWith({
+        where: { id: "sandbox-user-99" },
+      });
     });
   });
 });
-

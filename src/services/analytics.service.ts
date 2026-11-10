@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { EXCLUDE_DEMO_SANDBOX_CONDITION } from "@/lib/demo";
 import { Role, QuestionType, Difficulty, Prisma } from "@prisma/client";
 
 export class AnalyticsService {
@@ -26,17 +27,17 @@ export class AnalyticsService {
       auditLogs,
       recentAttempts,
     ] = await Promise.all([
-      prisma.user.count(),
-      prisma.user.count({ where: { role: Role.STUDENT } }),
+      prisma.user.count({ where: EXCLUDE_DEMO_SANDBOX_CONDITION }),
+      prisma.user.count({ where: { role: Role.STUDENT, ...EXCLUDE_DEMO_SANDBOX_CONDITION } }),
       prisma.user.count({ where: { role: { in: [Role.TEACHER, Role.EDITOR, Role.ADMIN, Role.SUPER_ADMIN] } } }),
       prisma.subject.count(),
       prisma.unit.count(),
       prisma.lesson.count(),
       prisma.question.count(),
       prisma.exam.count(),
-      prisma.examAttempt.count(),
+      prisma.examAttempt.count({ where: { user: EXCLUDE_DEMO_SANDBOX_CONDITION } }),
       prisma.examAttempt.findMany({
-        where: { isCompleted: true },
+        where: { isCompleted: true, user: EXCLUDE_DEMO_SANDBOX_CONDITION },
         select: { percentage: true, timeSpentSeconds: true, mode: true },
       }),
       prisma.question.count({ where: { type: QuestionType.MCQ } }),

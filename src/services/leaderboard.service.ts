@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { calculateStreak } from "@/lib/date";
 import { CurriculumScope } from "@/lib/curriculum";
+import { EXCLUDE_DEMO_SANDBOX_CONDITION } from "@/lib/demo";
 import { Role } from "@prisma/client";
 
 export interface LeaderboardEntry {
@@ -33,9 +34,13 @@ export class LeaderboardService {
           }
         : {};
 
-    // Fetch up to 100 students to properly compute and rank by XP
+    // Fetch up to 100 real students (excluding ephemeral demo sandbox sessions)
     const realUsers = await prisma.user.findMany({
-      where: { role: Role.STUDENT, ...scopeWhere },
+      where: {
+        role: Role.STUDENT,
+        ...scopeWhere,
+        AND: [EXCLUDE_DEMO_SANDBOX_CONDITION],
+      },
       take: Math.max(limit * 3, 100),
       include: {
         system: true,

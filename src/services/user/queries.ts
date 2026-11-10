@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import type { Prisma } from "@prisma/client";
+import { EXCLUDE_DEMO_SANDBOX_CONDITION } from "@/lib/demo";
 import type { UserFilterParams } from "./types";
 
 export class UserQueriesService {
@@ -9,7 +10,9 @@ export class UserQueriesService {
   static async getUsers(params: UserFilterParams = {}) {
     const { role, search, systemId, gradeId, page = 1, limit = 20 } = params;
 
-    const where: Prisma.UserWhereInput = {};
+    const where: Prisma.UserWhereInput = {
+      AND: [EXCLUDE_DEMO_SANDBOX_CONDITION],
+    };
     if (role && role !== "ALL") where.role = role;
     if (systemId && systemId !== "all") where.systemId = systemId;
     if (gradeId && gradeId !== "all") where.gradeId = gradeId;

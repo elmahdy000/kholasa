@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { getDemoTemplateDefaults, isDemoSandboxCode, isDemoTemplateCode } from "@/lib/demo";
 import { getClientIp, rateLimit, withRetryAfter } from "@/lib/rate-limit";
 import { jsonError } from "@/lib/http";
 
@@ -17,6 +18,27 @@ export async function GET(req: Request) {
     }
 
     const cleanCode = rawCode.trim().toUpperCase();
+
+    // Ephemeral demo sandbox codes must never be looked up or shared
+    if (isDemoSandboxCode(cleanCode)) {
+      return NextResponse.json({ found: false });
+    }
+
+    if (isDemoTemplateCode(cleanCode)) {
+      const defaults = getDemoTemplateDefaults(cleanCode);
+      return NextResponse.json({
+        found: true,
+        user: {
+          name: defaults.name,
+          schoolCategory: defaults.schoolCategory,
+          studyMode: "ONLINE",
+          centerName: defaults.defaultCenter,
+          subscriptionStatus: defaults.subscriptionStatus,
+          role: "STUDENT",
+          gradeName: "تانية بكالوريا",
+        },
+      });
+    }
 
     const user = await prisma.user.findFirst({
       where: {
@@ -56,4 +78,3 @@ export async function GET(req: Request) {
     return withRetryAfter(jsonError(error), error);
   }
 }
-

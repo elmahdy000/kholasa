@@ -4,6 +4,12 @@ import { prisma } from "@/lib/prisma";
 import { Role } from "@prisma/client";
 import { cookies } from "next/headers";
 import { AppError } from "@/lib/http";
+import {
+  DEMO_SESSION_TTL_MS,
+  isAnyDemoCode,
+  isDemoSandboxCode,
+  purgeDemoSandboxUser,
+} from "@/lib/demo";
 
 export { passwordSchema } from "@/lib/validation/auth";
 
@@ -33,9 +39,14 @@ export async function verifyPassword(password: string, hash: string): Promise<bo
   return bcrypt.compare(password, hash);
 }
 
-export async function createSession(userId: string, deviceId?: string) {
+export async function createSession(
+  userId: string,
+  deviceId?: string,
+  options?: { ttlMs?: number }
+) {
   const token = randomBytes(32).toString("base64url");
-  const expires = new Date(Date.now() + SESSION_TTL_MS);
+  const ttlMs = options?.ttlMs ?? SESSION_TTL_MS;
+  const expires = new Date(Date.now() + ttlMs);
 
   // Opportunistically purge this user's expired sessions
   await prisma.session.deleteMany({ where: { userId, expires: { lt: new Date() } } });
@@ -58,12 +69,29 @@ export async function destroyAllSessions(userId: string) {
 
 export async function destroySession() {
   const cookieStore = await cookies();
+  const demoUserIdsToPurge = new Set<string>();
+
   for (const name of new Set([SESSION_COOKIE_NAME, LEGACY_COOKIE_NAME])) {
     const token = cookieStore.get(name)?.value;
     if (token) {
+      const existing = await prisma.session.findUnique({
+        where: { sessionToken: token },
+        select: {
+          userId: true,
+          user: { select: { loginCode: true } },
+        },
+      });
+      if (existing?.userId && isDemoSandboxCode(existing.user?.loginCode)) {
+        demoUserIdsToPurge.add(existing.userId);
+      }
+
       await prisma.session.deleteMany({ where: { sessionToken: token } });
       cookieStore.delete(name);
     }
+  }
+
+  for (const demoUserId of demoUserIdsToPurge) {
+    await purgeDemoSandboxUser(demoUserId);
   }
 }
 
@@ -121,7 +149,7 @@ export async function getCurrentUser() {
 
     // Device binding check: ensure student's device is still authorized
     const boundDevices = session.user.boundDevices || [];
-    const isDemoStudent = Boolean(session.user.loginCode?.startsWith("DEMO-"));
+    const isDemoStudent = isAnyDemoCode(session.user.loginCode);
 
     if (
       session.user.role === Role.STUDENT &&
@@ -148,8 +176,10 @@ export async function getCurrentUser() {
     }
 
     // Sliding renewal
-    if (session.expires.getTime() - Date.now() < SESSION_RENEW_THRESHOLD_MS) {
-      const expires = new Date(Date.now() + SESSION_TTL_MS);
+    const activeTtlMs = isDemoStudent ? DEMO_SESSION_TTL_MS : SESSION_TTL_MS;
+    const renewThresholdMs = isDemoStudent ? DEMO_SESSION_TTL_MS / 2 : SESSION_RENEW_THRESHOLD_MS;
+    if (session.expires.getTime() - Date.now() < renewThresholdMs) {
+      const expires = new Date(Date.now() + activeTtlMs);
       await prisma.session.update({ where: { id: session.id }, data: { expires } });
       try {
         // Cookies are only writable in route handlers / server actions

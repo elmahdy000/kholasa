@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { EXCLUDE_DEMO_SANDBOX_CONDITION } from "@/lib/demo";
 import { SchoolCategory, Role, ExamMode } from "@prisma/client";
 
 export interface RealtimeFilterParams {
@@ -175,6 +176,7 @@ export class RealtimeAnalyticsService {
       prisma.user.findMany({
         where: {
           role: Role.STUDENT,
+          ...EXCLUDE_DEMO_SANDBOX_CONDITION,
         },
         select: {
           id: true,
@@ -230,7 +232,7 @@ export class RealtimeAnalyticsService {
       prisma.session.findMany({
         where: {
           createdAt: { gte: todayStart },
-          user: { role: Role.STUDENT },
+          user: { role: Role.STUDENT, ...EXCLUDE_DEMO_SANDBOX_CONDITION },
         },
         select: {
           id: true,
@@ -244,7 +246,7 @@ export class RealtimeAnalyticsService {
       prisma.examAttempt.findMany({
         where: {
           startedAt: { gte: todayStart },
-          user: { role: Role.STUDENT },
+          user: { role: Role.STUDENT, ...EXCLUDE_DEMO_SANDBOX_CONDITION },
         },
         select: {
           id: true,
@@ -259,7 +261,7 @@ export class RealtimeAnalyticsService {
       prisma.studentProgress.findMany({
         where: {
           lastAccessedAt: { gte: todayStart },
-          user: { role: Role.STUDENT },
+          user: { role: Role.STUDENT, ...EXCLUDE_DEMO_SANDBOX_CONDITION },
         },
         select: {
           id: true,
@@ -271,7 +273,7 @@ export class RealtimeAnalyticsService {
 
       // Live activity feed (last 20 actions across exams, progress, sessions)
       prisma.examAttempt.findMany({
-        where: { user: { role: Role.STUDENT } },
+        where: { user: { role: Role.STUDENT, ...EXCLUDE_DEMO_SANDBOX_CONDITION } },
         take: 10,
         orderBy: { startedAt: "desc" },
         include: {
