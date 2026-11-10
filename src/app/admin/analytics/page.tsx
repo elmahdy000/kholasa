@@ -5,6 +5,7 @@ import { EXCLUDE_DEMO_SANDBOX_CONDITION } from "@/lib/demo";
 import { AdminShell } from "@/components/layout/AdminShell";
 import { AnalyticsManagerClient } from "@/components/admin/AnalyticsManagerClient";
 import { RealtimeAnalyticsService } from "@/services/realtime-analytics.service";
+import { getCairoDayKey, getCairoStartOfDayFromKey, shiftDayKey } from "@/lib/date";
 
 export default async function AdminAnalyticsPage() {
   const user = await getCurrentUser();
@@ -13,9 +14,8 @@ export default async function AdminAnalyticsPage() {
     redirect("/login?callbackUrl=/admin/analytics");
   }
 
-  const fourteenDaysAgo = new Date();
-  fourteenDaysAgo.setDate(fourteenDaysAgo.getDate() - 14);
-  fourteenDaysAgo.setHours(0, 0, 0, 0);
+  const todayCairoKey = getCairoDayKey();
+  const fourteenDaysAgo = getCairoStartOfDayFromKey(shiftDayKey(todayCairoKey, -13));
 
   const [
     usersCount,
@@ -271,11 +271,9 @@ export default async function AdminAnalyticsPage() {
     }>;
   }> = [];
 
-  const now = new Date();
   for (let i = 0; i < 14; i++) {
-    const d = new Date(now);
-    d.setDate(d.getDate() - i);
-    const dateStr = d.toISOString().slice(0, 10);
+    const dateStr = shiftDayKey(todayCairoKey, -i);
+    const d = new Date(getCairoStartOfDayFromKey(dateStr).getTime() + 12 * 3600_000);
 
     const dayName =
       i === 0
@@ -285,13 +283,13 @@ export default async function AdminAnalyticsPage() {
         : d.toLocaleDateString("ar-EG", { weekday: "short", day: "numeric", month: "short" });
 
     const daySessions = dailySessions.filter(
-      (s) => s.createdAt.toISOString().slice(0, 10) === dateStr
+      (s) => getCairoDayKey(s.createdAt) === dateStr
     );
     const dayAttempts = dailyAttempts.filter(
-      (a) => a.startedAt.toISOString().slice(0, 10) === dateStr
+      (a) => getCairoDayKey(a.startedAt) === dateStr
     );
     const dayProgress = dailyProgress.filter(
-      (p) => p.lastAccessedAt.toISOString().slice(0, 10) === dateStr
+      (p) => getCairoDayKey(p.lastAccessedAt) === dateStr
     );
 
     type DayStudent = {

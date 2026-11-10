@@ -10,6 +10,7 @@ interface AcademicSetupCardProps {
   isEditingAcademic: boolean;
   selectedSystemId: string;
   selectedGradeId: string;
+  selectedSchoolCategory: "ARABIC" | "LANGUAGES";
   isSaving: boolean;
   saveError?: string | null;
   systems: EducationalSystem[];
@@ -17,6 +18,7 @@ interface AcademicSetupCardProps {
   onCancelEditing: () => void;
   onSystemChange: (id: string) => void;
   onGradeChange: (id: string) => void;
+  onSchoolCategoryChange: (category: "ARABIC" | "LANGUAGES") => void;
   onSaveAcademic: () => void;
 }
 
@@ -27,6 +29,7 @@ export function AcademicSetupCard({
   isEditingAcademic,
   selectedSystemId,
   selectedGradeId,
+  selectedSchoolCategory,
   isSaving,
   saveError,
   systems,
@@ -34,6 +37,7 @@ export function AcademicSetupCard({
   onCancelEditing,
   onSystemChange,
   onGradeChange,
+  onSchoolCategoryChange,
   onSaveAcademic,
 }: AcademicSetupCardProps) {
   const currentGrades = systems.find((s) => s.id === selectedSystemId)?.grades || [];
@@ -98,7 +102,7 @@ export function AcademicSetupCard({
               {saveError}
             </div>
           )}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
             <div>
               <label className="block text-xs sm:text-[13px] font-bold text-[#091B40] dark:text-[#F8FAFC] mb-1.5">
                 النظام التعليمي
@@ -132,7 +136,28 @@ export function AcademicSetupCard({
                 ))}
               </select>
             </div>
+
+            <div>
+              <label className="block text-xs sm:text-[13px] font-bold text-[#091B40] dark:text-[#F8FAFC] mb-1.5">
+                مسار المدرسة
+              </label>
+              <select
+                value={selectedSchoolCategory}
+                onChange={(e) =>
+                  onSchoolCategoryChange(e.target.value === "LANGUAGES" ? "LANGUAGES" : "ARABIC")
+                }
+                aria-label="مسار المدرسة"
+                className="w-full min-h-[44px] h-11 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] text-xs sm:text-[13px] font-bold text-[#091B40] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#800B34]"
+              >
+                <option value="ARABIC">مدارس عربي</option>
+                <option value="LANGUAGES">مدارس لغات (Languages)</option>
+              </select>
+            </div>
           </div>
+
+          <p className="text-[11px] sm:text-xs text-[#64748B] dark:text-[#94A3B8]">
+            تغيير مسار المدرسة يحدث قائمة المواد والدروس وبنوك الأسئلة فوراً لتطابق شعبتك.
+          </p>
 
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3">
             <button

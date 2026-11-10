@@ -14,7 +14,12 @@ import {
   FolderOpen,
 } from "@phosphor-icons/react";
 import { BrandLogo } from "@/components/ui/BrandLogo";
-import { offlineStorage, type OfflineLessonData } from "@/lib/offline-db";
+import {
+  offlineStorage,
+  collectOfflineLessonAssetUrls,
+  cacheOfflineLessonAssets,
+  type OfflineLessonData,
+} from "@/lib/offline-db";
 import { OfflineLessonViewerModal } from "@/components/offline/OfflineLessonViewerModal";
 
 export default function OfflinePage() {
@@ -23,6 +28,38 @@ export default function OfflinePage() {
   const [selectedLesson, setSelectedLesson] = useState<OfflineLessonData | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isOnline, setIsOnline] = useState(false);
+  const [syncingLessonId, setSyncingLessonId] = useState<string | null>(null);
+
+  const handleRefreshLessonAssets = async (item: OfflineLessonData) => {
+    if (!isOnline) return;
+    setSyncingLessonId(item.id);
+    try {
+      const res = await fetch(`/api/lessons/${item.id}/offline`);
+      let targetPackage = item;
+      if (res.ok) {
+        const data = await res.json();
+        if (data?.package) {
+          targetPackage = data.package;
+        }
+      }
+      const cacheSummary = await cacheOfflineLessonAssets(targetPackage);
+      const updated: OfflineLessonData = {
+        ...targetPackage,
+        mediaCacheSummary: cacheSummary,
+      };
+      await offlineStorage.saveLesson(updated);
+      setSavedLessons((prev) =>
+        prev.map((l) => (l.id === item.id ? updated : l))
+      );
+      if (selectedLesson?.id === item.id) {
+        setSelectedLesson(updated);
+      }
+    } catch (err) {
+      console.error("Failed to refresh offline lesson media:", err);
+    } finally {
+      setSyncingLessonId(null);
+    }
+  };
 
   const loadSavedLessons = async () => {
     setIsLoading(true);
@@ -176,7 +213,12 @@ export default function OfflinePage() {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {savedLessons.map((item) => (
+              {savedLessons.map((item) => {
+                const assetUrls = collectOfflineLessonAssetUrls(item);
+                const cachedCount = item.mediaCacheSummary?.cachedUrls?.length ?? 0;
+                const hasMedia = assetUrls.length > 0;
+                const allMediaCached = !hasMedia || cachedCount >= assetUrls.length;
+                return (
                 <div
                   key={item.id}
                   className="p-5 rounded-2xl bg-white dark:bg-[#1E293B]/70 border border-[#E2E8F0] dark:border-[#334155] flex flex-col justify-between gap-4 hover:border-[#800B34]/40 transition-colors shadow-2xs"
@@ -186,7 +228,7 @@ export default function OfflinePage() {
                       <span className="text-[12px] font-bold text-[#800B34] dark:text-[#FB7185]">
                         {item.subjectName}
                       </span>
-                      <span className="text-[11px] font-mono text-[#64748B] dark:text-[#94A3B8]">
+                      <span className="text-[11px] font-sans text-[#64748B] dark:text-[#94A3B8]">
                         {item.unitTitle}
                       </span>
                     </div>
@@ -195,15 +237,23 @@ export default function OfflinePage() {
                       {item.title}
                     </h3>
 
-                    <div className="flex items-center gap-3 text-[12px] text-[#64748B] dark:text-[#94A3B8] font-medium pt-1">
-                      <span className="flex items-center gap-1 font-mono">
+                    <div className="flex flex-wrap items-center gap-2 text-[12px] text-[#64748B] dark:text-[#94A3B8] font-medium pt-1">
+                      <span className="flex items-center gap-1 font-sans tabular-nums">
                         <Clock className="w-3.5 h-3.5 text-[#64748B]" />
                         <span>{item.durationMinutes} دقيقة</span>
                       </span>
                       <span>•</span>
-                      <span className="text-[#059669] dark:text-[#34D399] font-bold">
-                        متاح أوفلاين 100%
-                      </span>
+                      {allMediaCached ? (
+                        <span className="text-[#059669] dark:text-[#34D399] font-bold">
+                          {hasMedia
+                            ? `متاح أوفلاين (نص + ${cachedCount} ملفات)`
+                            : "متاح أوفلاين 100%"}
+                        </span>
+                      ) : (
+                        <span className="text-amber-600 dark:text-amber-400 font-bold">
+                          النص محفوظ ({cachedCount}/{assetUrls.length} ملفات مرفقة)
+                        </span>
+                      )}
                     </div>
                   </div>
 
@@ -211,23 +261,39 @@ export default function OfflinePage() {
                     <button
                       type="button"
                       onClick={() => handleOpenLesson(item)}
-                      className="flex-1 h-10 px-4 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white text-[13px] font-bold flex items-center justify-center gap-2 transition-colors cursor-pointer"
+                      className="flex-1 min-h-[44px] h-10 px-4 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white text-[13px] font-bold flex items-center justify-center gap-2 transition-colors cursor-pointer"
                     >
                       <BookOpen className="w-4 h-4" weight="bold" />
                       <span>مذاكرة الدرس الآن</span>
                     </button>
 
+                    {isOnline && (!allMediaCached || !item.mediaCacheSummary) && hasMedia && (
+                      <button
+                        type="button"
+                        onClick={() => handleRefreshLessonAssets(item)}
+                        disabled={syncingLessonId === item.id}
+                        className="min-h-[44px] h-10 px-3 rounded-xl border border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-950/30 text-amber-800 dark:text-amber-200 text-xs font-bold flex items-center justify-center gap-1.5 hover:bg-amber-100 transition-colors cursor-pointer disabled:opacity-50"
+                        title="تحميل المرفقات (PDF / صوت / خريطة ذهنية) لتعمل أوفلاين"
+                      >
+                        <ArrowsClockwise
+                          className={`w-4 h-4 ${syncingLessonId === item.id ? "animate-spin" : ""}`}
+                        />
+                        <span className="hidden sm:inline">تحميل المرفقات</span>
+                      </button>
+                    )}
+
                     <button
                       type="button"
                       onClick={() => handleDeleteLesson(item.id)}
-                      className="w-10 h-10 rounded-xl border border-red-200 dark:border-red-900/40 hover:bg-red-50 dark:hover:bg-red-950/30 text-red-600 dark:text-red-400 flex items-center justify-center transition-colors cursor-pointer"
+                      className="min-h-[44px] w-10 h-10 rounded-xl border border-red-200 dark:border-red-900/40 hover:bg-red-50 dark:hover:bg-red-950/30 text-red-600 dark:text-red-400 flex items-center justify-center transition-colors cursor-pointer"
                       title="حذف من ذاكرة الجهاز"
                     >
                       <Trash className="w-4 h-4" />
                     </button>
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </section>

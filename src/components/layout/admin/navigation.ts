@@ -10,6 +10,7 @@ import {
   CheckCircle2,
   Users,
   Bell,
+  CalendarDays,
 } from "lucide-react";
 import type { AdminNavGroup } from "./types";
 
@@ -29,6 +30,13 @@ export const rawNavigationGroups: AdminNavGroup[] = [
         label: "التحليلات وسجل التدقيق",
         href: "/admin/analytics",
         icon: Activity,
+        badge: null,
+        allowedRoles: ["TEACHER", "ADMIN", "SUPER_ADMIN"],
+      },
+      {
+        label: "التقارير اليومية",
+        href: "/admin/reports",
+        icon: CalendarDays,
         badge: null,
         allowedRoles: ["TEACHER", "ADMIN", "SUPER_ADMIN"],
       },

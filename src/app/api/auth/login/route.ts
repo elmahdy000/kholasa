@@ -14,7 +14,14 @@ import {
   isDemoTemplateCode,
 } from "@/lib/demo";
 import { forbidden, jsonError, parseJson, unauthorized } from "@/lib/http";
-import { getClientIp, rateLimit, withRetryAfter } from "@/lib/rate-limit";
+import {
+  assertRateLimitAvailable,
+  getClientIp,
+  rateLimit,
+  recordRateLimitAttempt,
+  resetRateLimit,
+  withRetryAfter,
+} from "@/lib/rate-limit";
 import { AUTHORIZED_CENTERS } from "@/lib/centers";
 
 const loginSchema = z
@@ -32,12 +39,13 @@ const loginSchema = z
   );
 
 const INVALID = "بيانات الدخول غير صحيحة، يرجى التأكد من الرقم أو كلمة المرور";
-const INVALID_CODE = "كود الدخول غير صحيح أو أن حسابك غير مفعّل. يرجى التواصل مع الإدارة أو المساعد.";
+const INVALID_CODE =
+  "كود الدخول غير صحيح. تأكد من كتابة الأحرف والأرقام بدقة بدون مسافات، أو تواصل معنا إذا نسيت الكود.";
 
 export async function POST(req: Request) {
   try {
     const ip = getClientIp(req);
-    rateLimit(`login:ip:${ip}`, 10, 60 * 1000);
+    rateLimit(`login:burst:ip:${ip}`, 40, 60 * 1000);
     const body = await parseJson(req, loginSchema);
     const deviceId = body.deviceId;
     const cookieStore = await cookies();
@@ -137,12 +145,16 @@ export async function POST(req: Request) {
 
     let user = null;
 
+    assertRateLimitAvailable(`login:ip:${ip}`, 10, 60 * 1000);
+
     // 1B. Direct Real Student Code Login
     if (body.code?.trim()) {
       const cleanCode = body.code.trim().toUpperCase();
-      rateLimit(`login:code:${cleanCode}`, 8, 15 * 60 * 1000);
+      assertRateLimitAvailable(`login:code:${cleanCode}`, 8, 15 * 60 * 1000);
       user = await UserService.findByLoginCode(cleanCode);
       if (!user) {
+        recordRateLimitAttempt(`login:code:${cleanCode}`, 15 * 60 * 1000);
+        recordRateLimitAttempt(`login:ip:${ip}`, 60 * 1000);
         throw unauthorized(INVALID_CODE);
       }
     }
@@ -150,19 +162,32 @@ export async function POST(req: Request) {
     else if (body.identifier?.trim() && body.password?.trim()) {
       const identifier = body.identifier.trim();
       const password = body.password.trim();
-      rateLimit(`login:id:${identifier.toLowerCase()}`, 10, 15 * 60 * 1000);
+      const idKey = `login:id:${identifier.toLowerCase()}`;
+      assertRateLimitAvailable(idKey, 10, 15 * 60 * 1000);
 
       user = await UserService.findByIdentifier(identifier);
-      if (!user || !user.password) throw unauthorized(INVALID);
+      if (!user || !user.password) {
+        recordRateLimitAttempt(idKey, 15 * 60 * 1000);
+        recordRateLimitAttempt(`login:ip:${ip}`, 60 * 1000);
+        throw unauthorized(INVALID);
+      }
 
       const isValid = await verifyPassword(password, user.password);
-      if (!isValid) throw unauthorized(INVALID);
+      if (!isValid) {
+        recordRateLimitAttempt(idKey, 15 * 60 * 1000);
+        recordRateLimitAttempt(`login:ip:${ip}`, 60 * 1000);
+        throw unauthorized(INVALID);
+      }
     } else {
       throw unauthorized("بيانات تسجيل الدخول غير مكتملة");
     }
 
     // Account Activation / Suspension Check for Students
     if (user.role === Role.STUDENT && user.isActive === false) {
+      if (body.code?.trim()) {
+        recordRateLimitAttempt(`login:code:${body.code.trim().toUpperCase()}`, 15 * 60 * 1000);
+      }
+      recordRateLimitAttempt(`login:ip:${ip}`, 60 * 1000);
       throw forbidden(
         "عذراً، هذا الحساب معلق أو بانتظار التفعيل حالياً. يرجى مراجعة المساعد أو إدارة المنصة لتفعيل حسابك."
       );
@@ -259,6 +284,15 @@ export async function POST(req: Request) {
           data: studentUpdateData,
         });
       }
+    }
+
+    // Clear failed rate-limit counters on successful authentication
+    resetRateLimit(`login:ip:${ip}`);
+    if (body.code?.trim()) {
+      resetRateLimit(`login:code:${body.code.trim().toUpperCase()}`);
+    }
+    if (body.identifier?.trim()) {
+      resetRateLimit(`login:id:${body.identifier.trim().toLowerCase()}`);
     }
 
     // Clear any prior session (including ephemeral demo session) before signing in as real account

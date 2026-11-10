@@ -3,6 +3,7 @@
 const DB_NAME = "kholasa_offline_db";
 const DB_VERSION = 1;
 const LESSONS_STORE = "offline_lessons";
+export const OFFLINE_MEDIA_CACHE = "el-kholasa-media-v1";
 
 function openDatabase(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
@@ -24,6 +25,12 @@ function openDatabase(): Promise<IDBDatabase> {
   });
 }
 
+export interface OfflineMediaCacheSummary {
+  cachedUrls: string[];
+  failedUrls: string[];
+  cachedAt: string;
+}
+
 export interface OfflineLessonData {
   id: string;
   title: string;
@@ -34,26 +41,179 @@ export interface OfflineLessonData {
   body: string;
   videoUrl?: string | null;
   audioUrl?: string | null;
+  pdfUrl?: string | null;
   objectives: string[];
   summary: Record<string, unknown> | null;
   mindMap: Record<string, unknown> | null;
   downloadedAt: string;
+  mediaCacheSummary?: OfflineMediaCacheSummary | null;
+}
+
+export function normalizeOfflineAssetUrl(
+  rawUrl: unknown,
+  origin?: string
+): string | null {
+  if (typeof rawUrl !== "string") return null;
+  const trimmed = rawUrl.trim();
+  if (!trimmed) return null;
+
+  if (trimmed.startsWith("/")) {
+    return trimmed.startsWith("//") ? null : trimmed;
+  }
+
+  try {
+    const baseOrigin =
+      origin || (typeof window !== "undefined" ? window.location.origin : "");
+    if (!baseOrigin) return null;
+    const parsed = new URL(trimmed, baseOrigin);
+    if (parsed.origin !== baseOrigin) return null;
+    return `${parsed.pathname}${parsed.search}`;
+  } catch {
+    return null;
+  }
+}
+
+function extractImageUrl(entry: unknown): unknown {
+  if (typeof entry === "string") return entry;
+  if (entry && typeof entry === "object" && "url" in entry) {
+    return (entry as { url?: unknown }).url;
+  }
+  return null;
+}
+
+export function collectOfflineLessonAssetUrls(
+  lesson: Pick<OfflineLessonData, "pdfUrl" | "audioUrl" | "summary" | "mindMap">,
+  origin?: string
+): string[] {
+  const urls = new Set<string>();
+  const add = (candidate: unknown) => {
+    const normalized = normalizeOfflineAssetUrl(candidate, origin);
+    if (normalized) urls.add(normalized);
+  };
+
+  add(lesson.pdfUrl);
+  add(lesson.audioUrl);
+
+  const summary = lesson.summary as { pdfUrl?: unknown; images?: unknown[] } | null;
+  if (summary) {
+    add(summary.pdfUrl);
+    if (Array.isArray(summary.images)) {
+      for (const img of summary.images) {
+        add(extractImageUrl(img));
+      }
+    }
+  }
+
+  const mindMap = lesson.mindMap as { images?: unknown[] } | null;
+  if (mindMap && Array.isArray(mindMap.images)) {
+    for (const img of mindMap.images) {
+      add(extractImageUrl(img));
+    }
+  }
+
+  return Array.from(urls);
+}
+
+export async function cacheOfflineLessonAssets(
+  lesson: OfflineLessonData
+): Promise<OfflineMediaCacheSummary> {
+  const assetUrls = collectOfflineLessonAssetUrls(lesson);
+  const cachedUrls: string[] = [];
+  const failedUrls: string[] = [];
+
+  if (
+    assetUrls.length === 0 ||
+    typeof window === "undefined" ||
+    !("caches" in window)
+  ) {
+    return {
+      cachedUrls,
+      failedUrls,
+      cachedAt: new Date().toISOString(),
+    };
+  }
+
+  const cache = await window.caches.open(OFFLINE_MEDIA_CACHE);
+  for (const assetUrl of assetUrls) {
+    try {
+      const response = await fetch(assetUrl, { credentials: "same-origin" });
+      if (response.ok && response.status === 200) {
+        await cache.put(assetUrl, response.clone());
+        cachedUrls.push(assetUrl);
+      } else {
+        failedUrls.push(assetUrl);
+      }
+    } catch {
+      failedUrls.push(assetUrl);
+    }
+  }
+
+  return {
+    cachedUrls,
+    failedUrls,
+    cachedAt: new Date().toISOString(),
+  };
+}
+
+export async function isOfflineAssetCached(assetUrl: string): Promise<boolean> {
+  if (typeof window === "undefined" || !("caches" in window)) return false;
+  const normalized = normalizeOfflineAssetUrl(assetUrl);
+  if (!normalized) return false;
+  try {
+    const cache = await window.caches.open(OFFLINE_MEDIA_CACHE);
+    const match = await cache.match(normalized);
+    return Boolean(match);
+  } catch {
+    return false;
+  }
+}
+
+async function pruneUnusedOfflineMedia(
+  deletedLesson: OfflineLessonData,
+  remainingLessons: OfflineLessonData[]
+): Promise<void> {
+  if (typeof window === "undefined" || !("caches" in window)) return;
+  const deletedUrls = collectOfflineLessonAssetUrls(deletedLesson);
+  if (deletedUrls.length === 0) return;
+
+  const stillReferenced = new Set<string>();
+  for (const item of remainingLessons) {
+    for (const url of collectOfflineLessonAssetUrls(item)) {
+      stillReferenced.add(url);
+    }
+  }
+
+  const cache = await window.caches.open(OFFLINE_MEDIA_CACHE);
+  for (const url of deletedUrls) {
+    if (!stillReferenced.has(url)) {
+      await cache.delete(url).catch(() => false);
+    }
+  }
 }
 
 export const offlineStorage = {
   /**
-   * Save a lesson package to local IndexedDB
+   * Save a lesson package to local IndexedDB and pre-cache same-origin PDFs, audio, and images.
    */
-  async saveLesson(lesson: OfflineLessonData): Promise<void> {
+  async saveLesson(lesson: OfflineLessonData): Promise<OfflineMediaCacheSummary> {
+    const mediaCacheSummary =
+      lesson.mediaCacheSummary ?? (await cacheOfflineLessonAssets(lesson));
+    const payload: OfflineLessonData = {
+      ...lesson,
+      mediaCacheSummary,
+    };
+
     const db = await openDatabase();
-    return new Promise((resolve, reject) => {
+    await new Promise<void>((resolve, reject) => {
       const tx = db.transaction(LESSONS_STORE, "readwrite");
       const store = tx.objectStore(LESSONS_STORE);
-      const req = store.put(lesson);
+      const req = store.put(payload);
 
       req.onsuccess = () => resolve();
       req.onerror = () => reject(req.error);
     });
+
+    return mediaCacheSummary;
   },
 
   /**
@@ -95,11 +255,12 @@ export const offlineStorage = {
   },
 
   /**
-   * Remove a saved lesson from offline storage
+   * Remove a saved lesson from offline storage and clean unreferenced cached media.
    */
   async deleteLesson(lessonId: string): Promise<void> {
+    const existing = await this.getLesson(lessonId).catch(() => null);
     const db = await openDatabase();
-    return new Promise((resolve, reject) => {
+    await new Promise<void>((resolve, reject) => {
       const tx = db.transaction(LESSONS_STORE, "readwrite");
       const store = tx.objectStore(LESSONS_STORE);
       const req = store.delete(lessonId);
@@ -107,5 +268,9 @@ export const offlineStorage = {
       req.onsuccess = () => resolve();
       req.onerror = () => reject(req.error);
     });
+    if (existing) {
+      const remaining = await this.listLessons().catch(() => []);
+      await pruneUnusedOfflineMedia(existing, remaining);
+    }
   },
 };

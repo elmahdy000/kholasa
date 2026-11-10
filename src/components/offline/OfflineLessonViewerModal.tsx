@@ -13,7 +13,11 @@ import {
   WarningCircle,
   BookmarkSimple,
 } from "@phosphor-icons/react";
-import type { OfflineLessonData } from "@/lib/offline-db";
+import { Headphones, FileText, ExternalLink, WifiOff } from "lucide-react";
+import {
+  normalizeOfflineAssetUrl,
+  type OfflineLessonData,
+} from "@/lib/offline-db";
 import { FormattedDefinitionView } from "@/components/ui/FormattedDefinitionView";
 
 interface OfflineLessonViewerModalProps {
@@ -40,6 +44,21 @@ export function OfflineLessonViewerModal({
   const commonMistakes = (summary?.commonMistakes as any[]) || [];
   const examTips = (summary?.examTips as any[]) || [];
   const mindMap = lesson.mindMap as any;
+  const cachedSet = new Set(lesson.mediaCacheSummary?.cachedUrls || []);
+  const lessonPdfNorm = normalizeOfflineAssetUrl(lesson.pdfUrl);
+  const summaryPdfNorm = normalizeOfflineAssetUrl(summary?.pdfUrl);
+  const lessonAudioNorm = normalizeOfflineAssetUrl(lesson.audioUrl);
+  const summaryImages: string[] = Array.isArray(summary?.images)
+    ? summary.images
+        .map((entry: unknown) =>
+          typeof entry === "string"
+            ? entry
+            : entry && typeof entry === "object" && "url" in entry
+            ? String((entry as { url?: unknown }).url || "")
+            : ""
+        )
+        .filter(Boolean)
+    : [];
 
   return (
     <div
@@ -140,6 +159,72 @@ export function OfflineLessonViewerModal({
           {/* TAB 1: Content */}
           {activeTab === "content" && (
             <div className="space-y-6">
+              {/* Offline Audio & PDF Attachments */}
+              {(lesson.audioUrl || lesson.pdfUrl || summary?.pdfUrl) && (
+                <div className="p-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/60 border border-[#E2E8F0] dark:border-[#334155] space-y-3">
+                  {lesson.audioUrl && (
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-xs sm:text-[13px] font-bold text-[#0F172A] dark:text-[#F8FAFC] flex items-center gap-1.5">
+                          <Headphones className="w-4 h-4 text-[#800B34]" />
+                          <span>ملف الشرح الصوتي</span>
+                        </span>
+                        <span className="text-[11px] font-bold text-[#059669] dark:text-[#34D399]">
+                          {lessonAudioNorm && cachedSet.has(lessonAudioNorm)
+                            ? "✓ محفوظ أوفلاين"
+                            : "يتطلب شبكة إذا لم يُحمّل"}
+                        </span>
+                      </div>
+                      <audio
+                        controls
+                        preload="metadata"
+                        src={lesson.audioUrl}
+                        className="w-full h-10"
+                      />
+                    </div>
+                  )}
+
+                  {(lesson.pdfUrl || summary?.pdfUrl) && (
+                    <div className="flex flex-wrap items-center gap-2 pt-1">
+                      {lesson.pdfUrl && (
+                        <a
+                          href={lesson.pdfUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="min-h-[40px] px-3.5 py-2 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] hover:border-[#800B34] text-xs font-bold text-[#0F172A] dark:text-white inline-flex items-center gap-2 transition-colors"
+                        >
+                          <FileText className="w-4 h-4 text-[#800B34]" />
+                          <span>فتح ملف شرح الدرس (PDF)</span>
+                          {lessonPdfNorm && cachedSet.has(lessonPdfNorm) ? (
+                            <span className="text-[10px] text-[#059669] dark:text-[#34D399]">✓ أوفلاين</span>
+                          ) : (
+                            <WifiOff className="w-3 h-3 text-amber-500" />
+                          )}
+                          <ExternalLink className="w-3.5 h-3.5 text-[#64748B]" />
+                        </a>
+                      )}
+                      {typeof summary?.pdfUrl === "string" && summary.pdfUrl && (
+                        <a
+                          href={summary.pdfUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="min-h-[40px] px-3.5 py-2 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] hover:border-[#800B34] text-xs font-bold text-[#0F172A] dark:text-white inline-flex items-center gap-2 transition-colors"
+                        >
+                          <FileText className="w-4 h-4 text-[#4F46E5]" />
+                          <span>فتح ملف الزتونة (PDF)</span>
+                          {summaryPdfNorm && cachedSet.has(summaryPdfNorm) ? (
+                            <span className="text-[10px] text-[#059669] dark:text-[#34D399]">✓ أوفلاين</span>
+                          ) : (
+                            <WifiOff className="w-3 h-3 text-amber-500" />
+                          )}
+                          <ExternalLink className="w-3.5 h-3.5 text-[#64748B]" />
+                        </a>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* Objectives */}
               {lesson.objectives && lesson.objectives.length > 0 && (
                 <div className="p-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/60 border border-[#E2E8F0] dark:border-[#334155] space-y-2.5">
@@ -165,6 +250,29 @@ export function OfflineLessonViewerModal({
           {/* TAB 2: Golden Summary & Definitions */}
           {activeTab === "summary" && (
             <div className="space-y-6">
+              {/* Summary Images if available */}
+              {summaryImages.length > 0 && (
+                <div className="space-y-3">
+                  <h3 className="text-sm font-bold text-[#0F172A] dark:text-[#F8FAFC]">
+                    صور وملخصات الزتونة ({summaryImages.length})
+                  </h3>
+                  <div className="grid grid-cols-1 gap-3">
+                    {summaryImages.map((imgUrl, idx) => (
+                      <div
+                        key={idx}
+                        className="rounded-xl overflow-hidden border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B]"
+                      >
+                        <img
+                          src={imgUrl}
+                          alt={`ملخص ${idx + 1}`}
+                          className="w-full h-auto object-contain max-h-[65vh] mx-auto"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Definitions */}
               {definitions.length > 0 && (
                 <div className="space-y-3">

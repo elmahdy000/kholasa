@@ -9,7 +9,6 @@ import {
   Eye,
   EyeOff,
   ArrowRight,
-  AlertCircle,
   Loader2,
   KeyRound,
   GraduationCap,
@@ -29,6 +28,7 @@ import {
 
 import { BrandLogo } from "@/components/ui/BrandLogo";
 import { WhatsAppSupportLinks } from "@/components/ui/WhatsAppSupportLinks";
+import { LoginErrorBanner } from "@/components/auth/LoginErrorBanner";
 import { getOrCreateDeviceId } from "@/lib/device";
 import {
   AUTHORIZED_CENTERS,
@@ -318,12 +318,7 @@ export default function LoginPage() {
         {/* Card */}
         <div className="bg-white dark:bg-[#0D214D] py-7 px-5 sm:px-8 border border-[#E2E8F0] dark:border-[#1E3A6E] rounded-3xl shadow-[0_8px_28px_rgba(9,27,64,0.07)]">
           {error && (
-            <div className="mb-5 p-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-start gap-3 text-right animate-in fade-in">
-              <AlertCircle className="w-5 h-5 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
-              <p className="text-[13px] sm:text-sm font-bold text-rose-700 dark:text-rose-300 leading-relaxed">
-                {error}
-              </p>
-            </div>
+            <LoginErrorBanner key={error} error={error} studentCode={studentCode} />
           )}
 
           {/* MODE 1: STUDENT CODE LOGIN (DEFAULT) */}

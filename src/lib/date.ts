@@ -45,14 +45,33 @@ export function getCairoDayKey(date: Date = new Date()): string {
   return dayKeyFormatter.format(date);
 }
 
-/** Returns the UTC Date representing 00:00:00 Africa/Cairo for `date`'s Cairo day. */
-export function getCairoStartOfDay(date: Date = new Date()): Date {
-  const dayKey = getCairoDayKey(date);
+/** Returns the UTC Date representing 00:00:00 Africa/Cairo for a `YYYY-MM-DD` Cairo day key. */
+export function getCairoStartOfDayFromKey(dayKey: string): Date {
   const [year, month, day] = dayKey.split("-").map(Number);
   const nominalUtc = Date.UTC(year, month - 1, day, 0, 0, 0, 0);
   const initial = nominalUtc - getCairoOffsetMs(nominalUtc);
   // Refine once in case a DST boundary sits near midnight
   return new Date(nominalUtc - getCairoOffsetMs(initial));
+}
+
+/** Returns the UTC Date representing 00:00:00 Africa/Cairo for `date`'s Cairo day. */
+export function getCairoStartOfDay(date: Date = new Date()): Date {
+  return getCairoStartOfDayFromKey(getCairoDayKey(date));
+}
+
+/** Returns half-open `[start, end)` UTC bounds for a Cairo `YYYY-MM-DD` day key. */
+export function getCairoDayRange(dayKey: string): {
+  dayKey: string;
+  start: Date;
+  end: Date;
+} {
+  const validKey = /^\d{4}-\d{2}-\d{2}$/.test(dayKey) ? dayKey : getCairoDayKey();
+  const nextKey = shiftDayKey(validKey, 1);
+  return {
+    dayKey: validKey,
+    start: getCairoStartOfDayFromKey(validKey),
+    end: getCairoStartOfDayFromKey(nextKey),
+  };
 }
 
 /** Shifts a `YYYY-MM-DD` key by a number of days (negative = past). */

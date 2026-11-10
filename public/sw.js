@@ -4,9 +4,10 @@
 //  - cache-first for /_next/static/** (content-hashed), fonts and icons
 //  - network-first for navigations; only public pages are cached, otherwise fall back to /offline
 //  - never touch /api/** or non-GET requests (lessons for offline use live in IndexedDB)
-const VERSION = "v5";
+const VERSION = "v6";
 const STATIC_CACHE = `kholasa-static-${VERSION}`;
 const PAGE_CACHE = `kholasa-pages-${VERSION}`;
+const OFFLINE_MEDIA_CACHE = "el-kholasa-media-v1";
 const CACHE_PREFIX = "kholasa-";
 
 const OFFLINE_URL = "/offline";
@@ -144,12 +145,86 @@ async function handleNavigation(request) {
   }
 }
 
+async function buildRangeResponseFromFull(cachedResponse, rangeHeader) {
+  const fullBuffer = await cachedResponse.arrayBuffer();
+  const size = fullBuffer.byteLength;
+  const match = /^bytes=(\d*)-(\d*)$/.exec(rangeHeader.trim());
+  if (!match || (match[1] === "" && match[2] === "")) {
+    return cachedResponse;
+  }
+
+  let start;
+  let end;
+  if (match[1] === "") {
+    const suffix = Number(match[2]);
+    start = Math.max(size - suffix, 0);
+    end = size - 1;
+  } else {
+    start = Number(match[1]);
+    end = match[2] === "" ? size - 1 : Math.min(Number(match[2]), size - 1);
+  }
+
+  if (!Number.isFinite(start) || !Number.isFinite(end) || start > end || start >= size) {
+    return new Response(null, {
+      status: 416,
+      headers: { "Content-Range": `bytes */${size}` },
+    });
+  }
+
+  const sliced = fullBuffer.slice(start, end + 1);
+  const headers = new Headers(cachedResponse.headers);
+  headers.set("Content-Range", `bytes ${start}-${end}/${size}`);
+  headers.set("Content-Length", String(sliced.byteLength));
+  headers.set("Accept-Ranges", "bytes");
+
+  return new Response(sliced, {
+    status: 206,
+    statusText: "Partial Content",
+    headers,
+  });
+}
+
+async function handleOfflineMediaRequest(request) {
+  try {
+    const networkResponse = await fetch(request);
+    if (networkResponse && (networkResponse.ok || networkResponse.status === 206)) {
+      return networkResponse;
+    }
+  } catch {
+    // Fall back to cached offline media when network is unavailable.
+  }
+
+  const mediaCache = await caches.open(OFFLINE_MEDIA_CACHE);
+  const cached = await mediaCache.match(request.url);
+  if (cached) {
+    const rangeHeader = request.headers.get("range");
+    if (rangeHeader) {
+      return buildRangeResponseFromFull(cached, rangeHeader);
+    }
+    return cached;
+  }
+
+  return new Response(
+    JSON.stringify({
+      error: "الملف غير محفوظ أوفلاين — افتح الدرس مع وجود إنترنت واضغط حفظ أوفلاين أولاً.",
+    }),
+    {
+      status: 503,
+      headers: { "Content-Type": "application/json; charset=utf-8" },
+    }
+  );
+}
+
 self.addEventListener("fetch", (event) => {
   const { request } = event;
   if (request.method !== "GET") return;
 
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
+  if (url.pathname.startsWith("/api/media/")) {
+    event.respondWith(handleOfflineMediaRequest(request));
+    return;
+  }
   if (url.pathname.startsWith("/api/")) return;
 
   if (request.mode === "navigate") {

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import {
   Activity,
   Database,
@@ -249,10 +250,21 @@ export function AnalyticsManagerClient({
           </p>
         </div>
 
-        {/* Live Pulse Indicator */}
-        <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-mono text-[#64748B] dark:text-[#94A3B8]">
-          <span className="w-2 h-2 rounded-full bg-[#059669] animate-pulse" />
-          <span>Realtime Telemetry Active</span>
+        <div className="flex flex-wrap items-center gap-2.5">
+          <Link
+            href="/admin/reports"
+            className="min-h-[42px] px-4 py-2 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white text-xs font-bold inline-flex items-center justify-center gap-2 transition-colors shrink-0 shadow-xs"
+          >
+            <Calendar className="w-4 h-4" />
+            <span>التقارير اليومية المنفصلة</span>
+            <ExternalLink className="w-3.5 h-3.5" />
+          </Link>
+
+          {/* Live Pulse Indicator */}
+          <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[13px] font-mono text-[#64748B] dark:text-[#94A3B8]">
+            <span className="w-2 h-2 rounded-full bg-[#059669] animate-pulse" />
+            <span>Realtime Telemetry Active</span>
+          </div>
         </div>
       </div>
 

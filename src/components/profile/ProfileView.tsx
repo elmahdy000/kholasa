@@ -27,6 +27,9 @@ export function ProfileView({
   const [selectedGradeId, setSelectedGradeId] = useState(
     user.grade?.id || ""
   );
+  const [selectedSchoolCategory, setSelectedSchoolCategory] = useState<
+    "ARABIC" | "LANGUAGES"
+  >(user.schoolCategory || "ARABIC");
   const [isSaving, setIsSaving] = useState(false);
   const [academicError, setAcademicError] = useState<string | null>(null);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -59,6 +62,7 @@ export function ProfileView({
         body: JSON.stringify({
           systemId: selectedSystemId,
           gradeId: selectedGradeId,
+          schoolCategory: selectedSchoolCategory,
         }),
       });
 
@@ -165,10 +169,14 @@ export function ProfileView({
         isEditingAcademic={isEditingAcademic}
         selectedSystemId={selectedSystemId}
         selectedGradeId={selectedGradeId}
+        selectedSchoolCategory={selectedSchoolCategory}
         isSaving={isSaving}
         saveError={academicError}
         systems={systems}
         onStartEditing={() => {
+          setSelectedSystemId(user.system?.id || (systems[0]?.id ?? ""));
+          setSelectedGradeId(user.grade?.id || "");
+          setSelectedSchoolCategory(user.schoolCategory || "ARABIC");
           setAcademicError(null);
           setIsEditingAcademic(true);
         }}
@@ -178,6 +186,7 @@ export function ProfileView({
         }}
         onSystemChange={handleSystemChange}
         onGradeChange={setSelectedGradeId}
+        onSchoolCategoryChange={setSelectedSchoolCategory}
         onSaveAcademic={handleSaveAcademic}
       />
 
