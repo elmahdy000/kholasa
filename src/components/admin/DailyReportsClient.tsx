@@ -231,7 +231,9 @@ export function DailyReportsClient({
             </div>
             <h1 className="text-lg sm:text-xl font-black text-[#091B40] dark:text-white">
               التقرير اليومي الشامل —{" "}
-              <span className="tabular-nums">{report.dateKey}</span>
+              <span dir="ltr" className="tabular-nums inline-block">
+                {report.dateKey}
+              </span>
             </h1>
             <p className="text-xs text-[#64748B] dark:text-[#94A3B8]">
               رصد الحضور الفعلي، المذاكرة والاختبارات، أداء السناتر، ورادار المشاكل التشغيلية (بدون حسابات التجربة المؤقتة).
@@ -473,7 +475,7 @@ export function DailyReportsClient({
             {totalIssuesCount}
           </p>
           <p className="text-[11px] text-rose-600/80 dark:text-rose-400 tabular-nums">
-            إيصالات {radar.pendingPaymentsCount} • أجهزة {radar.deviceLimitCount}
+            إيصالات {radar.pendingPaymentsCount} • أجهزة {radar.deviceLimitCount} • متوقف {radar.suspendedCount} • متعثر {radar.strugglingCount}
           </p>
         </div>
       </div>
@@ -509,6 +511,9 @@ export function DailyReportsClient({
                 8,
                 Math.round((day.activeStudents / maxTrendActive) * 100)
               );
+              const total = Math.max(1, day.activeStudents);
+              const arabicShare = Math.round((day.arabicActive / total) * 100);
+              const languagesShare = Math.max(0, 100 - arabicShare);
               const isSelected = day.dateKey === report.dateKey;
               return (
                 <button
@@ -516,7 +521,7 @@ export function DailyReportsClient({
                   type="button"
                   onClick={() => fetchReport({ dateKey: day.dateKey })}
                   title={`${day.dateKey}: ${day.activeStudents} طالب نشط (${day.arabicActive} عربي / ${day.languagesActive} لغات) — ${day.examsCompleted} اختبار`}
-                  className={`flex flex-col items-center gap-1.5 p-1.5 rounded-xl transition-all cursor-pointer ${
+                  className={`flex flex-col items-center gap-1.5 p-1 rounded-xl transition-all cursor-pointer ${
                     isSelected
                       ? "bg-[#800B34]/10 ring-2 ring-[#800B34]"
                       : "hover:bg-[#F8FAFC] dark:hover:bg-[#1E293B]"
@@ -528,12 +533,36 @@ export function DailyReportsClient({
                   <div className="w-full h-24 bg-[#F1F5F9] dark:bg-[#1E293B] rounded-lg flex flex-col justify-end overflow-hidden">
                     <div
                       style={{ height: `${heightPercent}%` }}
-                      className={`w-full transition-all flex flex-col justify-end ${
-                        isSelected ? "bg-[#800B34]" : "bg-[#091B40] dark:bg-sky-500"
-                      }`}
-                    />
+                      className="w-full transition-all flex flex-col justify-end overflow-hidden"
+                    >
+                      {day.activeStudents > 0 ? (
+                        <>
+                          {day.languagesActive > 0 && (
+                            <div
+                              style={{ height: `${languagesShare}%` }}
+                              className="w-full bg-indigo-500"
+                            />
+                          )}
+                          {day.arabicActive > 0 && (
+                            <div
+                              style={{ height: `${arabicShare}%` }}
+                              className="w-full bg-emerald-500"
+                            />
+                          )}
+                        </>
+                      ) : (
+                        <div className="w-full h-full bg-[#CBD5E1] dark:bg-[#334155]" />
+                      )}
+                    </div>
                   </div>
-                  <span className="text-[10px] font-bold text-[#64748B] dark:text-[#94A3B8] tabular-nums">
+                  <span
+                    dir="ltr"
+                    className={`text-[9px] font-bold whitespace-nowrap tabular-nums ${
+                      isSelected
+                        ? "text-[#800B34] dark:text-[#FB7185]"
+                        : "text-[#64748B] dark:text-[#94A3B8]"
+                    }`}
+                  >
                     {day.dateKey.slice(5)}
                   </span>
                 </button>
@@ -583,10 +612,16 @@ export function DailyReportsClient({
                     }`}
                   >
                     <div className="flex items-center justify-between gap-2 text-xs font-bold">
-                      <span className="text-[#091B40] dark:text-white truncate">
+                      <span
+                        dir="auto"
+                        className="text-[#091B40] dark:text-white min-w-0 flex-1 text-right leading-snug"
+                      >
                         {c.centerName}
                       </span>
-                      <span className="text-[#800B34] dark:text-[#FB7185] tabular-nums shrink-0">
+                      <span
+                        dir="ltr"
+                        className="text-[#800B34] dark:text-[#FB7185] tabular-nums shrink-0"
+                      >
                         {c.activeToday} / {c.totalStudents} ({rate}%)
                       </span>
                     </div>

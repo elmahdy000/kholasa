@@ -17,7 +17,12 @@ describe("curriculum scoping", () => {
     ).toEqual({ systemId: "s", gradeId: "g", schoolCategory: "LANGUAGES", trackId: "t" });
 
     expect(getCurriculumScope({ role: "TEACHER", gradeId: "g" })).toBeNull();
-    expect(getCurriculumScope({ role: "STUDENT", gradeId: null })).toBeNull();
+    expect(getCurriculumScope({ role: "STUDENT", gradeId: null })).toEqual({
+      systemId: null,
+      gradeId: null,
+      schoolCategory: "ARABIC",
+      trackId: null,
+    });
     expect(getCurriculumScope(null)).toBeNull();
   });
 

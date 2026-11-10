@@ -19,6 +19,25 @@ export function ExamEditModal({
 }: ExamEditModalProps) {
   if (!isOpen || !exam) return null;
 
+  return (
+    <ExamEditModalForm
+      key={exam.id}
+      exam={exam}
+      onClose={onClose}
+      onSaved={onSaved}
+    />
+  );
+}
+
+function ExamEditModalForm({
+  exam,
+  onClose,
+  onSaved,
+}: {
+  exam: ExamItem;
+  onClose: () => void;
+  onSaved: (updated: ExamItem) => void;
+}) {
   const [title, setTitle] = useState(exam.title);
   const [description, setDescription] = useState(exam.description || "");
   const [durationMinutes, setDurationMinutes] = useState(exam.durationMinutes || 30);

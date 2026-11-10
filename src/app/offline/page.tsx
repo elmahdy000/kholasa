@@ -1,12 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useSyncExternalStore } from "react";
 import Link from "next/link";
 import {
   WifiSlash,
   ArrowsClockwise,
   BookOpen,
-  BookmarkSimple,
   ArrowRight,
   Clock,
   Trash,
@@ -22,12 +21,25 @@ import {
 } from "@/lib/offline-db";
 import { OfflineLessonViewerModal } from "@/components/offline/OfflineLessonViewerModal";
 
+function subscribeOnlineStatus(callback: () => void) {
+  window.addEventListener("online", callback);
+  window.addEventListener("offline", callback);
+  return () => {
+    window.removeEventListener("online", callback);
+    window.removeEventListener("offline", callback);
+  };
+}
+
 export default function OfflinePage() {
   const [savedLessons, setSavedLessons] = useState<OfflineLessonData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedLesson, setSelectedLesson] = useState<OfflineLessonData | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isOnline, setIsOnline] = useState(false);
+  const isOnline = useSyncExternalStore(
+    subscribeOnlineStatus,
+    () => navigator.onLine,
+    () => false
+  );
   const [syncingLessonId, setSyncingLessonId] = useState<string | null>(null);
 
   const handleRefreshLessonAssets = async (item: OfflineLessonData) => {
@@ -61,35 +73,22 @@ export default function OfflinePage() {
     }
   };
 
-  const loadSavedLessons = async () => {
-    setIsLoading(true);
-    try {
-      const lessons = await offlineStorage.listLessons();
-      setSavedLessons(lessons);
-    } catch (err) {
-      console.error("Failed to list offline lessons:", err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   useEffect(() => {
-    loadSavedLessons();
+    let cancelled = false;
+    (async () => {
+      try {
+        const lessons = await offlineStorage.listLessons();
+        if (!cancelled) setSavedLessons(lessons);
+      } catch (err) {
+        console.error("Failed to list offline lessons:", err);
+      } finally {
+        if (!cancelled) setIsLoading(false);
+      }
+    })();
 
-    if (typeof window !== "undefined") {
-      setIsOnline(navigator.onLine);
-
-      const handleOnline = () => setIsOnline(true);
-      const handleOffline = () => setIsOnline(false);
-
-      window.addEventListener("online", handleOnline);
-      window.addEventListener("offline", handleOffline);
-
-      return () => {
-        window.removeEventListener("online", handleOnline);
-        window.removeEventListener("offline", handleOffline);
-      };
-    }
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const handleDeleteLesson = async (lessonId: string) => {
