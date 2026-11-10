@@ -10,16 +10,20 @@ import { BidiStatement } from "@/components/ui/BidiStatement";
 import { FormattedAnswerView } from "@/components/ui/FormattedAnswerView";
 import { QuestionImageAttachment } from "@/components/ui/QuestionImageAttachment";
 import { TranslationToggle } from "@/components/ui/TranslationToggle";
-import { Question, RubricCriterion } from "../types";
+import { EssayReviewToggleButton } from "@/components/questions/EssayReviewToggleButton";
+import { normalizeRubricCriteria } from "@/lib/rubric";
+import { Question } from "../types";
 
 interface LessonEssaySectionProps {
   questions: { question: Question }[];
   essayDrafts: Record<string, string>;
   revealedEssays: Record<string, boolean>;
   essaySelfScores: Record<string, number>;
+  markedForReviewIds?: Set<string>;
   onDraftChange: (questionId: string, draft: string) => void;
   onToggleReveal: (questionId: string) => void;
   onSelectScore: (questionId: string, score: number) => void;
+  onReviewToggle?: (questionId: string, marked: boolean) => void;
   isLanguages?: boolean;
 }
 
@@ -28,9 +32,11 @@ export function LessonEssaySection({
   essayDrafts,
   revealedEssays,
   essaySelfScores,
+  markedForReviewIds,
   onDraftChange,
   onToggleReveal,
   onSelectScore,
+  onReviewToggle,
   isLanguages = false,
 }: LessonEssaySectionProps) {
   // Independent translation states for questions and model answers
@@ -116,6 +122,8 @@ export function LessonEssaySection({
               question.rubric?.modelAnswerTranslation &&
               question.rubric.modelAnswerTranslation.trim().length > 0
             );
+            const normalizedCriteria = normalizeRubricCriteria(question.rubric?.criteria);
+            const isMarkedForReview = Boolean(markedForReviewIds?.has(question.id));
 
             return (
               <div
@@ -125,10 +133,10 @@ export function LessonEssaySection({
                 {/* Question Header & Controls */}
                 <div
                   dir={isEnglishStatement ? "ltr" : "rtl"}
-                  className="flex items-center justify-between gap-2 border-b border-[#E2E8F0] dark:border-[#334155] pb-3"
+                  className="flex flex-wrap items-center justify-between gap-2 border-b border-[#E2E8F0] dark:border-[#334155] pb-3"
                 >
                   <span className="text-[13px] font-bold text-[#7C3AED] flex items-center gap-2">
-                    <span className="w-6 h-6 rounded-lg bg-[#7C3AED]/10 text-[#7C3AED] flex items-center justify-center font-mono font-bold text-[12px]">
+                    <span className="w-6 h-6 rounded-lg bg-[#7C3AED]/10 text-[#7C3AED] flex items-center justify-center font-sans tabular-nums font-bold text-[12px]">
                       {qIndex + 1}
                     </span>
                     <span>
@@ -138,7 +146,7 @@ export function LessonEssaySection({
                     </span>
                   </span>
 
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     {hasQuestionTranslation && (
                       <TranslationToggle
                         size="xs"
@@ -146,6 +154,14 @@ export function LessonEssaySection({
                         onToggle={() => toggleQuestionTranslation(question.id)}
                       />
                     )}
+                    <EssayReviewToggleButton
+                      questionId={question.id}
+                      marked={markedForReviewIds ? isMarkedForReview : undefined}
+                      essayText={draft}
+                      isEnglish={isEnglish}
+                      size="sm"
+                      onChange={(marked) => onReviewToggle?.(question.id, marked)}
+                    />
                     <span className="px-3 py-1 rounded-lg text-[12px] font-bold bg-[#7C3AED]/10 text-[#7C3AED]">
                       {isEnglishStatement
                         ? `Score: ${maxScore} pts`
@@ -279,66 +295,78 @@ export function LessonEssaySection({
                     </div>
 
                     {/* Rubric Criteria */}
-                    {question.rubric?.criteria &&
-                      Array.isArray(question.rubric.criteria) &&
-                      question.rubric.criteria.length > 0 && (
+                    {normalizedCriteria.length > 0 && (
                         <div className="p-4 rounded-xl bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] space-y-2.5">
                           <span className="text-[12px] font-bold text-[#64748B] dark:text-[#94A3B8] block">
-                            معايير توزيع الدرجات:
+                            {isEnglish ? "Grading Criteria:" : "معايير توزيع الدرجات:"}
                           </span>
                           <div className="space-y-1.5">
-                            {question.rubric.criteria.map((c: any, cIdx: number) => {
-                              const pointText = typeof c === "string" ? c : c.point;
-                              const markVal = typeof c === "object" ? c.marks : undefined;
-                              return (
-                                <div
-                                  key={cIdx}
-                                  className="flex items-center justify-between text-[13px] py-1 border-b border-[#E2E8F0]/40 dark:border-[#334155]/40 last:border-0"
-                                >
-                                  <span className="text-[#0F172A] dark:text-white flex items-center gap-1.5">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-[#7C3AED]" />
-                                    <span>{pointText}</span>
+                            {normalizedCriteria.map((c, cIdx) => (
+                              <div
+                                key={cIdx}
+                                className="flex items-center justify-between gap-2 text-[13px] py-1 border-b border-[#E2E8F0]/40 dark:border-[#334155]/40 last:border-0"
+                              >
+                                <span className="text-[#0F172A] dark:text-white flex items-center gap-1.5">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-[#7C3AED] shrink-0" />
+                                  <span>{c.text}</span>
+                                </span>
+                                {c.marks !== undefined && (
+                                  <span className="font-sans tabular-nums font-bold text-[#7C3AED] bg-[#7C3AED]/10 px-2 py-0.5 rounded-md text-[11px] shrink-0">
+                                    {isEnglish ? `${c.marks} pts` : `${c.marks} درجات`}
                                   </span>
-                                  {markVal !== undefined && (
-                                    <span className="font-mono font-bold text-[#7C3AED] bg-[#7C3AED]/10 px-2 py-0.5 rounded-md text-[11px]">
-                                      {markVal} درجات
-                                    </span>
-                                  )}
-                                </div>
-                              );
-                            })}
+                                )}
+                              </div>
+                            ))}
                           </div>
                         </div>
                       )}
 
-                    {/* Self-Scoring Bar */}
-                    <div className="p-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                      <div>
-                        <span className="text-[13px] font-bold text-[#0F172A] dark:text-white block">
-                          قيّم إجابتك بنفسك:
-                        </span>
-                        <span className="text-[12px] text-[#64748B] dark:text-[#94A3B8]">
-                          بناءً على معايير النموذج، كم تعطي نفسك من {maxScore}؟
-                        </span>
+                    {/* Self-Scoring & Mark-for-Review Bar */}
+                    <div className="p-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] space-y-3">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div>
+                          <span className="text-[13px] font-bold text-[#0F172A] dark:text-white block">
+                            قيّم إجابتك بنفسك:
+                          </span>
+                          <span className="text-[12px] text-[#64748B] dark:text-[#94A3B8]">
+                            بناءً على معايير النموذج، كم تعطي نفسك من {maxScore}؟
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          {Array.from({ length: maxScore + 1 }, (_, i) => i).map((score) => {
+                            const isSelected = selfScore === score;
+                            return (
+                              <button
+                                key={score}
+                                type="button"
+                                onClick={() => onSelectScore(question.id, score)}
+                                className={`w-8 h-8 rounded-lg font-sans tabular-nums font-bold text-[13px] transition-all cursor-pointer ${
+                                  isSelected
+                                    ? "bg-[#7C3AED] text-white shadow-sm"
+                                    : "bg-white dark:bg-[#0F172A] text-[#64748B] hover:border-[#7C3AED]/50 border border-[#E2E8F0] dark:border-[#334155]"
+                                }`}
+                              >
+                                {score}
+                              </button>
+                            );
+                          })}
+                        </div>
                       </div>
-                      <div className="flex items-center gap-1.5">
-                        {Array.from({ length: maxScore + 1 }, (_, i) => i).map((score) => {
-                          const isSelected = selfScore === score;
-                          return (
-                            <button
-                              key={score}
-                              type="button"
-                              onClick={() => onSelectScore(question.id, score)}
-                              className={`w-8 h-8 rounded-lg font-mono font-bold text-[13px] transition-all cursor-pointer ${
-                                isSelected
-                                  ? "bg-[#7C3AED] text-white shadow-sm"
-                                  : "bg-white dark:bg-[#0F172A] text-[#64748B] hover:border-[#7C3AED]/50 border border-[#E2E8F0] dark:border-[#334155]"
-                              }`}
-                            >
-                              {score}
-                            </button>
-                          );
-                        })}
+
+                      <div className="pt-3 border-t border-[#E2E8F0] dark:border-[#334155] flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                        <span className="text-xs font-semibold text-[#536681] dark:text-[#94A3B8]">
+                          {selfScore !== undefined && selfScore < maxScore
+                            ? "حسّيت إن إجابتك محتاجة تثبيت أكتر؟ احفظ السؤال في غلطاتي عشان تراجعه تاني."
+                            : "لو حابب تراجع السؤال ده تاني لاحقاً، تقدر تضيفه لركن غلطاتي مباشرة:"}
+                        </span>
+                        <EssayReviewToggleButton
+                          questionId={question.id}
+                          marked={markedForReviewIds ? isMarkedForReview : undefined}
+                          essayText={draft}
+                          isEnglish={isEnglish}
+                          size="sm"
+                          onChange={(marked) => onReviewToggle?.(question.id, marked)}
+                        />
                       </div>
                     </div>
                   </div>

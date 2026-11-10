@@ -1,9 +1,12 @@
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { getCurriculumScope, questionScopeWhere, subjectScopeWhere } from "@/lib/curriculum";
 import { StudentShell } from "@/components/layout/StudentShell";
 import { MistakeHubClient } from "@/components/mistakes/MistakeHubClient";
 import { AlertTriangle } from "lucide-react";
+
+export const dynamic = "force-dynamic";
 
 export default async function MistakesPage() {
   const user = await getCurrentUser();
@@ -12,12 +15,16 @@ export default async function MistakesPage() {
     redirect("/login?callbackUrl=/mistakes");
   }
 
-  // Fetch student's mistake records (all active non-archived mistakes for this user)
+  const scope = getCurriculumScope(user);
+
+  // Fetch student's published, track-scoped mistake records (including essay questions flagged for review)
   const mistakes = await prisma.mistakeReview.findMany({
     where: {
       userId: user.id,
       question: {
-        status: { not: "ARCHIVED" },
+        status: "PUBLISHED",
+        subject: { isPublished: true },
+        ...questionScopeWhere(scope),
       },
     },
     orderBy: { lastAttemptAt: "desc" },
@@ -39,15 +46,11 @@ export default async function MistakesPage() {
     },
   });
 
-  // Fetch student's enrolled subjects matching their grade & category, plus any subjects with mistakes
-  const subjectWhere: any = { isPublished: true };
-  if (user.role === "STUDENT") {
-    if (user.gradeId) subjectWhere.gradeId = user.gradeId;
-    if (user.schoolCategory) subjectWhere.schoolCategory = user.schoolCategory;
-  }
-
   const subjects = await prisma.subject.findMany({
-    where: subjectWhere,
+    where: {
+      isPublished: true,
+      ...subjectScopeWhere(scope),
+    },
     select: { id: true, name: true },
     orderBy: { order: "asc" },
   });
@@ -68,15 +71,15 @@ export default async function MistakesPage() {
     <StudentShell user={user}>
       <div className="max-w-4xl mx-auto space-y-6 text-right font-sans pb-28">
         <div className="border-b border-[#E2E8F0] dark:border-[#334155] pb-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#DC2626]/10 dark:bg-[#1E293B] text-[#DC2626] border border-[#E2E8F0]/60 dark:border-[#F87171]/40 text-[13px] font-bold mb-2">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-[#DC2626]/10 dark:bg-[#1E293B] text-[#DC2626] dark:text-[#F87171] border border-[#E2E8F0]/60 dark:border-[#F87171]/40 text-xs font-bold mb-2">
             <AlertTriangle className="w-3.5 h-3.5" />
             <span>مركز المراجعة والتصحيح</span>
           </div>
-          <h1 className="text-xl sm:text-2xl font-bold text-[#0F172A] dark:text-white">
+          <h1 className="text-xl sm:text-2xl font-bold text-[#0F172A] dark:text-white leading-[1.35]">
             غلطاتي — اتعلم من كل خطأ
           </h1>
-          <p className="text-[13px] sm:text-sm text-[#64748B] dark:text-[#94A3B8] mt-1">
-            هنا تتجمع كل الأسئلة التي تعثرت بها في التدريبات والامتحانات السابقة لتتمكن من إعادة حلها وفهم سبب الخطأ حتى تتقنها تماماً
+          <p className="text-xs sm:text-sm text-[#64748B] dark:text-[#94A3B8] mt-1 leading-relaxed">
+            هنا تتجمع كل الأسئلة التي تعثرت بها في التدريبات والامتحانات — والأسئلة المقالية التي حددتها للمراجعة — لتتمكن من إعادة حلها وفهم سبب الإجابة حتى تتقنها تماماً.
           </p>
         </div>
 

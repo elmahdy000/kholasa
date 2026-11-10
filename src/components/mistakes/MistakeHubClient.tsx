@@ -1,11 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { MistakeItem, MistakeHubClientProps, ActiveAnswerState } from "./types";
 import { MistakeAnalyticsBar } from "./MistakeAnalyticsBar";
 import { MistakeExamBanner } from "./MistakeExamBanner";
-import { MistakeFilterBar } from "./MistakeFilterBar";
+import {
+  MistakeFilterBar,
+  type MistakeQuestionTypeFilter,
+} from "./MistakeFilterBar";
 import { MistakeCard } from "./MistakeCard";
 import { MistakesEmptyState } from "./MistakesEmptyState";
 
@@ -16,30 +19,47 @@ export function MistakeHubClient({
   const router = useRouter();
   const [mistakes, setMistakes] = useState<MistakeItem[]>(initialMistakes);
   const [selectedSubjectId, setSelectedSubjectId] = useState<string>("all");
-  const [filterStatus, setFilterStatus] = useState<"all" | "unresolved" | "resolved">("unresolved");
+  const [filterStatus, setFilterStatus] = useState<"all" | "unresolved" | "resolved">(
+    "unresolved"
+  );
+  const [typeFilter, setTypeFilter] = useState<MistakeQuestionTypeFilter>("ALL");
   const [isGeneratingExam, setIsGeneratingExam] = useState(false);
-  const [generationError, setGenerationError] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
 
-  // Inline answering state for questions in mistake hub
+  // Inline answering & recently updated cards keep visible confirmation briefly during session
   const [activeAnswers, setActiveAnswers] = useState<Record<string, ActiveAnswerState>>({});
+  const [recentlyChangedIds, setRecentlyChangedIds] = useState<Set<string>>(new Set());
 
-  const filteredMistakes = mistakes.filter((m) => {
-    if (selectedSubjectId !== "all" && m.question.subject.id !== selectedSubjectId) {
-      return false;
-    }
-    const hasJustAnswered = !!activeAnswers[m.questionId];
-    if (filterStatus === "unresolved" && m.isResolved && !hasJustAnswered) return false;
-    if (filterStatus === "resolved" && !m.isResolved && !hasJustAnswered) return false;
-    return true;
-  });
+  const subjectScopedMistakes = useMemo(
+    () =>
+      selectedSubjectId === "all"
+        ? mistakes
+        : mistakes.filter((m) => m.question.subject.id === selectedSubjectId),
+    [mistakes, selectedSubjectId]
+  );
 
-  const totalCount = mistakes.length;
-  const resolvedCount = mistakes.filter((m) => m.isResolved).length;
+  const totalCount = subjectScopedMistakes.length;
+  const resolvedCount = subjectScopedMistakes.filter((m) => m.isResolved).length;
   const unresolvedCount = totalCount - resolvedCount;
+  const essayCount = subjectScopedMistakes.filter((m) => m.question.type === "ESSAY").length;
+  const objectiveCount = totalCount - essayCount;
   const masteryPercentage =
     totalCount > 0 ? Math.round((resolvedCount / totalCount) * 100) : null;
 
+  const filteredMistakes = subjectScopedMistakes.filter((m) => {
+    const isEssay = m.question.type === "ESSAY" || !m.question.options?.length;
+    if (typeFilter === "ESSAY" && !isEssay) return false;
+    if (typeFilter === "OBJECTIVE" && isEssay) return false;
+
+    const keepVisible =
+      Boolean(activeAnswers[m.questionId]) || recentlyChangedIds.has(m.questionId);
+    if (filterStatus === "unresolved" && m.isResolved && !keepVisible) return false;
+    if (filterStatus === "resolved" && !m.isResolved && !keepVisible) return false;
+    return true;
+  });
+
   const handleRetakeAnswer = async (questionId: string, optionId: string) => {
+    setActionError(null);
     setActiveAnswers((prev) => ({
       ...prev,
       [questionId]: {
@@ -55,8 +75,12 @@ export function MistakeHubClient({
         body: JSON.stringify({ selectedOptionId: optionId }),
       });
 
-      const data = await res.json();
-      const isCorrect = !!data.isCorrect;
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data.error || "تعذر التحقق من الإجابة، حاول مرة أخرى.");
+      }
+
+      const isCorrect = Boolean(data.isCorrect);
 
       setActiveAnswers((prev) => ({
         ...prev,
@@ -83,31 +107,85 @@ export function MistakeHubClient({
         );
       }
     } catch (err) {
-      console.error(err);
+      setActiveAnswers((prev) => {
+        const next = { ...prev };
+        delete next[questionId];
+        return next;
+      });
+      setActionError(
+        err instanceof Error ? err.message : "حدث خطأ في الاتصال، حاول مرة أخرى."
+      );
     }
   };
 
   const handleResolveMistake = async (questionId: string) => {
+    setActionError(null);
     try {
       const res = await fetch(`/api/questions/${questionId}/answer`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ resolve: true }),
       });
-      if (res.ok) {
-        setMistakes((prev) =>
-          prev.map((m) =>
-            m.questionId === questionId ? { ...m, isResolved: true } : m
-          )
-        );
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data.error || "تعذر حفظ الحالة، حاول مرة أخرى.");
       }
+
+      setRecentlyChangedIds((prev) => new Set(prev).add(questionId));
+      setMistakes((prev) =>
+        prev.map((m) =>
+          m.questionId === questionId ? { ...m, isResolved: true } : m
+        )
+      );
     } catch (err) {
-      console.error("Failed to resolve mistake:", err);
+      setActionError(
+        err instanceof Error ? err.message : "تعذر تحديث حالة السؤال."
+      );
+    }
+  };
+
+  const handleReopenMistake = async (questionId: string) => {
+    setActionError(null);
+    try {
+      const res = await fetch(`/api/questions/${questionId}/answer`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ markForReview: true }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data.error || "تعذر إعادة السؤال لقائمة المراجعة.");
+      }
+
+      setRecentlyChangedIds((prev) => new Set(prev).add(questionId));
+      setActiveAnswers((prev) => {
+        const next = { ...prev };
+        delete next[questionId];
+        return next;
+      });
+      setMistakes((prev) =>
+        prev.map((m) =>
+          m.questionId === questionId ? { ...m, isResolved: false } : m
+        )
+      );
+    } catch (err) {
+      setActionError(
+        err instanceof Error ? err.message : "تعذر تحديث حالة السؤال."
+      );
     }
   };
 
   const handleGenerateExamFromMistakes = async () => {
-    const targetMistakes = filteredMistakes.filter((m) => !m.isResolved);
+    const targetMistakes = subjectScopedMistakes
+      .filter((m) => {
+        if (m.isResolved) return false;
+        const isEssay = m.question.type === "ESSAY" || !m.question.options?.length;
+        if (typeFilter === "ESSAY" && !isEssay) return false;
+        if (typeFilter === "OBJECTIVE" && isEssay) return false;
+        return true;
+      })
+      .slice(0, 50);
+
     if (targetMistakes.length === 0) return;
 
     const distinctSubjectIds = Array.from(
@@ -115,22 +193,23 @@ export function MistakeHubClient({
     );
 
     if (selectedSubjectId === "all" && distinctSubjectIds.length > 1) {
-      setGenerationError(
+      setActionError(
         "أخطاؤك موزعة على أكثر من مادة. حدد المادة من الفلتر فوق عشان نجهّز لك امتحان مركز عليها."
       );
       return;
     }
 
-    const examSubjectId = selectedSubjectId !== "all" ? selectedSubjectId : distinctSubjectIds[0];
+    const examSubjectId =
+      selectedSubjectId !== "all" ? selectedSubjectId : distinctSubjectIds[0];
 
     setIsGeneratingExam(true);
-    setGenerationError(null);
+    setActionError(null);
     try {
       const res = await fetch("/api/exams/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          title: "امتحان معالجة الأخطاء: مراجعة وتثبيت نقاط الضعف",
+          title: `امتحان مراجعة الأخطاء (${targetMistakes.length} أسئلة)`,
           mode: "PRACTICE",
           durationMinutes: Math.max(10, Math.min(60, targetMistakes.length * 2)),
           questionIds: targetMistakes.map((m) => m.questionId),
@@ -138,21 +217,26 @@ export function MistakeHubClient({
         }),
       });
 
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (res.ok && data.examId && data.attemptId) {
         router.push(`/exams/${data.examId}?attemptId=${data.attemptId}`);
       } else {
-        setGenerationError(data.error || "تعذر تجهيز الامتحان، حاول مرة أخرى.");
+        setActionError(data.error || "تعذر تجهيز الامتحان، حاول مرة أخرى.");
         setIsGeneratingExam(false);
       }
-    } catch (err) {
-      console.error(err);
-      setGenerationError("حدث خطأ في الاتصال، يرجى المحاولة لاحقاً.");
+    } catch {
+      setActionError("حدث خطأ في الاتصال، يرجى المحاولة لاحقاً.");
       setIsGeneratingExam(false);
     }
   };
 
-  const actionableUnresolvedCount = filteredMistakes.filter((m) => !m.isResolved).length;
+  const actionableUnresolvedCount = subjectScopedMistakes.filter((m) => {
+    if (m.isResolved) return false;
+    const isEssay = m.question.type === "ESSAY" || !m.question.options?.length;
+    if (typeFilter === "ESSAY" && !isEssay) return false;
+    if (typeFilter === "OBJECTIVE" && isEssay) return false;
+    return true;
+  }).length;
 
   return (
     <div className="space-y-6">
@@ -163,23 +247,23 @@ export function MistakeHubClient({
         masteryPercentage={masteryPercentage}
       />
 
-      {/* Generation Error Alert */}
-      {generationError && (
-        <div className="p-3.5 rounded-xl bg-[#DC2626]/10 border border-[#DC2626]/20 text-[#DC2626] dark:text-[#F87171] text-xs font-bold flex items-center justify-between gap-3">
-          <span>{generationError}</span>
+      {/* Error Alert */}
+      {actionError && (
+        <div className="p-3.5 rounded-xl bg-[#DC2626]/10 border border-[#DC2626]/25 text-[#DC2626] dark:text-[#F87171] text-xs font-bold flex items-center justify-between gap-3">
+          <span>{actionError}</span>
           <button
             type="button"
-            onClick={() => setGenerationError(null)}
-            className="text-[11px] underline hover:no-underline"
+            onClick={() => setActionError(null)}
+            className="text-[11px] underline hover:no-underline cursor-pointer shrink-0"
           >
             إغلاق
           </button>
         </div>
       )}
 
-      {/* Quick Exam Banner when there are unresolved mistakes */}
+      {/* Quick Exam Banner */}
       <MistakeExamBanner
-        actionableUnresolvedCount={actionableUnresolvedCount}
+        actionableUnresolvedCount={Math.min(50, actionableUnresolvedCount)}
         isGeneratingExam={isGeneratingExam}
         onGenerateExam={handleGenerateExamFromMistakes}
       />
@@ -187,12 +271,22 @@ export function MistakeHubClient({
       {/* Filters Bar */}
       <MistakeFilterBar
         filterStatus={filterStatus}
-        setFilterStatus={setFilterStatus}
+        setFilterStatus={(s) => {
+          setFilterStatus(s);
+          setRecentlyChangedIds(new Set());
+        }}
+        typeFilter={typeFilter}
+        setTypeFilter={setTypeFilter}
         unresolvedCount={unresolvedCount}
         resolvedCount={resolvedCount}
         totalCount={totalCount}
+        essayCount={essayCount}
+        objectiveCount={objectiveCount}
         selectedSubjectId={selectedSubjectId}
-        setSelectedSubjectId={setSelectedSubjectId}
+        setSelectedSubjectId={(id) => {
+          setSelectedSubjectId(id);
+          setRecentlyChangedIds(new Set());
+        }}
         subjects={subjects}
       />
 
@@ -206,6 +300,7 @@ export function MistakeHubClient({
               answerState={activeAnswers[mistake.question.id]}
               onRetakeAnswer={handleRetakeAnswer}
               onResolveMistake={handleResolveMistake}
+              onReopenMistake={handleReopenMistake}
             />
           ))}
         </div>

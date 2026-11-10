@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { BidiStatement } from "@/components/ui/BidiStatement";
 import { QuestionExplanationBox } from "@/components/ui/QuestionExplanationBox";
+import { EssayReviewToggleButton } from "@/components/questions/EssayReviewToggleButton";
 import { ExamResult } from "./types";
 
 interface GatekeeperResultPhaseProps {
@@ -160,6 +161,21 @@ export function GatekeeperResultPhase({
                 concept={q.concept}
                 correctReason={q.correctReason}
               />
+            )}
+
+            {q.type === "ESSAY" && (
+              <div className="pt-2 border-t border-[#E2E8F0] dark:border-[#334155] flex flex-wrap items-center justify-between gap-2">
+                <span className="text-xs font-medium text-[#64748B] dark:text-[#94A3B8]">
+                  حابب تراجع السؤال المقالي ده تاني في غلطاتي؟
+                </span>
+                <EssayReviewToggleButton
+                  questionId={q.id}
+                  initialMarked={false}
+                  essayText={q.selectedAnswer !== "لم تتم الإجابة" ? q.selectedAnswer : undefined}
+                  isEnglish={!/[\u0600-\u06FF]/.test(q.statement || "")}
+                  size="sm"
+                />
+              </div>
             )}
           </div>
         ))}

@@ -20,6 +20,8 @@ import { BidiStatement } from "@/components/ui/BidiStatement";
 import { ExamResultActions } from "@/components/exams/ExamResultActions";
 import { QuestionExplanationBox } from "@/components/ui/QuestionExplanationBox";
 import { QuestionImageAttachment } from "@/components/ui/QuestionImageAttachment";
+import { EssayReviewToggleButton } from "@/components/questions/EssayReviewToggleButton";
+import { normalizeRubricCriteria } from "@/lib/rubric";
 
 const ARABIC_LETTERS = ["أ", "ب", "ج", "د", "هـ", "و"];
 const ENGLISH_LETTERS = ["A", "B", "C", "D", "E", "F"];
@@ -109,6 +111,20 @@ export default async function ExamResultsPage({
   const wrongAnswers = objectiveAnswers.filter((a) => a.isCorrect === false);
   const unansweredCount =
     attempt.totalQuestions - (correctAnswers.length + wrongAnswers.length + essayAnswers.length);
+
+  const essayQuestionIds = essayAnswers.map((a) => a.questionId);
+  const activeEssayMistakes =
+    essayQuestionIds.length > 0
+      ? await prisma.mistakeReview.findMany({
+          where: {
+            userId: user.id,
+            isResolved: false,
+            questionId: { in: essayQuestionIds },
+          },
+          select: { questionId: true },
+        })
+      : [];
+  const activeEssayReviewSet = new Set(activeEssayMistakes.map((m) => m.questionId));
 
   const percentage = attempt.percentage;
   const minutesSpent = Math.floor(attempt.timeSpentSeconds / 60);
@@ -368,7 +384,7 @@ export default async function ExamResultsPage({
 
                       {q.rubric && (
                         <div className="p-4 rounded-xl border border-[#E2E8F0] dark:border-[#34D399]/40 bg-[#059669]/10 dark:bg-[#1E293B] space-y-3">
-                          <span className="text-[13px] font-bold text-[#059669] dark:text-[#34D399] block flex items-center gap-2">
+                          <span className="text-[13px] font-bold text-[#059669] dark:text-[#34D399] flex items-center gap-2">
                             <CheckCircle2 className="w-4 h-4 shrink-0" />
                             <span>نموذج الإجابة المثالي من بنك الأسئلة:</span>
                           </span>
@@ -385,8 +401,49 @@ export default async function ExamResultsPage({
                               </p>
                             </div>
                           )}
+
+                          {(() => {
+                            const criteria = normalizeRubricCriteria(q.rubric?.criteria);
+                            if (criteria.length === 0) return null;
+                            return (
+                              <div className="pt-2.5 border-t border-[#059669]/20 space-y-1.5">
+                                <span className="text-[12px] font-bold text-[#059669] dark:text-[#34D399] block">
+                                  معايير توزيع الدرجات:
+                                </span>
+                                {criteria.map((c, cIdx) => (
+                                  <div
+                                    key={cIdx}
+                                    className="flex items-center justify-between gap-2 text-xs text-slate-700 dark:text-slate-200"
+                                  >
+                                    <span>• {c.text}</span>
+                                    {c.marks !== undefined && (
+                                      <span className="font-sans tabular-nums font-bold shrink-0">
+                                        {c.marks} درجات
+                                      </span>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            );
+                          })()}
                         </div>
                       )}
+
+                      <div className="p-3.5 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                        <span className="text-xs font-semibold text-[#536681] dark:text-[#94A3B8]">
+                          لو شايف إنك محتاج تراجع السؤال المقالي ده تاني بعد ما شفت الإجابة، ضيفه في «غلطاتي»:
+                        </span>
+                        <EssayReviewToggleButton
+                          questionId={q.id}
+                          initialMarked={activeEssayReviewSet.has(q.id)}
+                          essayText={ans.essayText || undefined}
+                          isEnglish={
+                            attempt.exam?.subject?.schoolCategory === "LANGUAGES" &&
+                            !/[\u0600-\u06FF]/.test(q.statement || "")
+                          }
+                          size="sm"
+                        />
+                      </div>
                     </div>
                   ) : (
                     <div className="space-y-3">

@@ -91,6 +91,16 @@ export class QuestionQueriesService {
     return prisma.question.findUnique({
       where: { id },
       include: {
+        subject: {
+          select: {
+            id: true,
+            isPublished: true,
+            gradeId: true,
+            systemId: true,
+            trackId: true,
+            schoolCategory: true,
+          },
+        },
         options: { orderBy: { order: "asc" } },
         explanation: true,
         rubric: true,

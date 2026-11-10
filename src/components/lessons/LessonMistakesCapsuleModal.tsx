@@ -18,6 +18,7 @@ import { QuestionExplanationBox } from "@/components/ui/QuestionExplanationBox";
 import { FormattedAnswerView } from "@/components/ui/FormattedAnswerView";
 import { QuestionImageAttachment } from "@/components/ui/QuestionImageAttachment";
 import { TranslationToggle } from "@/components/ui/TranslationToggle";
+import { normalizeRubricCriteria } from "@/lib/rubric";
 import type { LessonMistakeItem } from "./types";
 
 interface LessonMistakesCapsuleModalProps {
@@ -193,11 +194,15 @@ export function LessonMistakesCapsuleModal({
 
     setIsSubmitting(true);
     try {
-      await fetchWithRetry(`/api/questions/${currentQ.id}/answer`, {
+      const res = await fetchWithRetry(`/api/questions/${currentQ.id}/answer`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ resolve: true }),
       });
+
+      if (!res.ok) {
+        return;
+      }
 
       setWasJustResolved(true);
       setResolvedIds((prev) => new Set([...prev, currentQ.id]));
@@ -209,9 +214,7 @@ export function LessonMistakesCapsuleModal({
         }, 900);
       }
     } catch {
-      setWasJustResolved(true);
-      setResolvedIds((prev) => new Set([...prev, currentQ.id]));
-      onMistakeResolved(currentQ.id);
+      // Do not mark resolved if persistence failed
     } finally {
       setIsSubmitting(false);
     }
@@ -496,7 +499,7 @@ export function LessonMistakesCapsuleModal({
                     {showEssayModel && (
                       <div
                         dir={isEnglishQ ? "ltr" : "rtl"}
-                        className={`p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-2 ${isEnglishQ ? "text-left font-sans" : "text-right font-content"} animate-in fade-in duration-200`}
+                        className={`p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-3 ${isEnglishQ ? "text-left font-sans" : "text-right font-content"} animate-in fade-in duration-200`}
                       >
                         <span className="text-xs font-bold text-amber-800 dark:text-amber-300 block">
                           {isEnglishQ ? "Approved Model Answer:" : "النموذج المعتمد للإجابة:"}
@@ -511,6 +514,40 @@ export function LessonMistakesCapsuleModal({
                           }
                           colorScheme="emerald"
                         />
+
+                        {showTranslation && currentQ.rubric?.modelAnswerTranslation && (
+                          <div
+                            dir="rtl"
+                            className="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-right text-xs text-slate-700 dark:text-slate-200 leading-relaxed"
+                          >
+                            {currentQ.rubric.modelAnswerTranslation}
+                          </div>
+                        )}
+
+                        {(() => {
+                          const criteria = normalizeRubricCriteria(currentQ.rubric?.criteria);
+                          if (criteria.length === 0) return null;
+                          return (
+                            <div className="pt-2 border-t border-slate-200 dark:border-slate-700 space-y-1">
+                              <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 block">
+                                {isEnglishQ ? "Grading Criteria:" : "معايير توزيع الدرجات:"}
+                              </span>
+                              {criteria.map((c, cIdx) => (
+                                <div
+                                  key={cIdx}
+                                  className="flex items-center justify-between gap-2 text-xs text-slate-700 dark:text-slate-200"
+                                >
+                                  <span>• {c.text}</span>
+                                  {c.marks !== undefined && (
+                                    <span className="font-sans tabular-nums font-bold shrink-0">
+                                      {isEnglishQ ? `${c.marks} pts` : `${c.marks} درجات`}
+                                    </span>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          );
+                        })()}
                       </div>
                     )}
 

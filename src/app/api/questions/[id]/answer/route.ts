@@ -4,6 +4,7 @@ import { jsonError } from "@/lib/http";
 import { rateLimit, withRetryAfter } from "@/lib/rate-limit";
 import { QuestionService } from "@/services/question.service";
 import { MistakeService } from "@/services/mistake.service";
+import { getCurriculumScope, isSubjectInScope } from "@/lib/curriculum";
 
 import { prisma } from "@/lib/prisma";
 import { getCairoDayKey, calculateStreak } from "@/lib/date";
@@ -22,29 +23,95 @@ export async function POST(
 
     const { id: questionId } = await params;
     const body = await req.json().catch(() => ({}));
-    const { selectedOptionId, isDailyChallenge, resolve, essayText } = body;
+    const {
+      selectedOptionId,
+      isDailyChallenge,
+      resolve,
+      markForReview,
+      essayText,
+    } = body as {
+      selectedOptionId?: string;
+      isDailyChallenge?: boolean;
+      resolve?: boolean;
+      markForReview?: boolean;
+      essayText?: string | null;
+    };
 
     const question = await QuestionService.getQuestionForAnswer(questionId);
 
-    if (!question) {
+    if (!question || (question.status && question.status !== "PUBLISHED")) {
       return NextResponse.json(
         { error: "السؤال غير موجود" },
         { status: 404 }
       );
     }
 
-    // Student self-resolved mistake or confirmed understanding
+    if (
+      "subject" in question &&
+      question.subject &&
+      (!question.subject.isPublished ||
+        !isSubjectInScope(getCurriculumScope(user), question.subject))
+    ) {
+      return NextResponse.json(
+        { error: "هذا السؤال لا ينتمي لمسارك الدراسي المصرح به" },
+        { status: 403 }
+      );
+    }
+
+    const hasEssayDraft = essayText !== undefined && essayText !== null;
+
+    // Student explicitly marks an essay question (or reopens a resolved question) for review in "غلطاتي"
+    if (markForReview) {
+      await Promise.all([
+        MistakeService.markForReview(user.id, questionId),
+        prisma.questionAttempt.upsert({
+          where: { userId_questionId: { userId: user.id, questionId } },
+          update: {
+            ...(hasEssayDraft ? { essayText: String(essayText) } : {}),
+            isCorrect: false,
+            updatedAt: new Date(),
+          },
+          create: {
+            userId: user.id,
+            questionId,
+            ...(hasEssayDraft ? { essayText: String(essayText) } : {}),
+            isCorrect: false,
+          },
+        }),
+      ]);
+
+      return NextResponse.json({
+        success: true,
+        markedForReview: true,
+        isResolved: false,
+        explanation: question.explanation,
+        modelAnswer: question.rubric?.modelAnswer,
+        modelAnswerTranslation: question.rubric?.modelAnswerTranslation,
+      });
+    }
+
+    // Student explicitly confirms mastery / removes from active mistakes
     if (resolve) {
       await Promise.all([
         MistakeService.resolveMistake(user.id, questionId),
         prisma.questionAttempt.upsert({
           where: { userId_questionId: { userId: user.id, questionId } },
-          update: { isCorrect: true, updatedAt: new Date() },
-          create: { userId: user.id, questionId, isCorrect: true },
+          update: {
+            ...(hasEssayDraft ? { essayText: String(essayText) } : {}),
+            isCorrect: true,
+            updatedAt: new Date(),
+          },
+          create: {
+            userId: user.id,
+            questionId,
+            ...(hasEssayDraft ? { essayText: String(essayText) } : {}),
+            isCorrect: true,
+          },
         }),
       ]);
       return NextResponse.json({
         success: true,
+        markedForReview: false,
         isResolved: true,
         explanation: question.explanation,
         modelAnswer: question.rubric?.modelAnswer,
@@ -54,25 +121,33 @@ export async function POST(
 
     // Check MCQ or TRUE_FALSE
     if (question.type === "MCQ" || question.type === "TRUE_FALSE") {
-      const selectedOption = question.options.find(
-        (o) => o.id === selectedOptionId
-      );
-      const isCorrect = selectedOption?.isCorrect ?? false;
+      const selectedOption = selectedOptionId
+        ? question.options.find((o) => o.id === selectedOptionId)
+        : undefined;
+
+      if (!selectedOption) {
+        return NextResponse.json(
+          { error: "الاختيار المحدد غير تابع لهذا السؤال" },
+          { status: 400 }
+        );
+      }
+
+      const isCorrect = selectedOption.isCorrect;
       const correctOption = question.options.find((o) => o.isCorrect);
 
-      // Persist the student's answer in QuestionAttempt
+      // Persist the student's answer in QuestionAttempt & sync MistakeReview
       await Promise.all([
         prisma.questionAttempt.upsert({
           where: { userId_questionId: { userId: user.id, questionId } },
           update: {
-            selectedOptionId: selectedOptionId || null,
+            selectedOptionId: selectedOption.id,
             isCorrect,
             updatedAt: new Date(),
           },
           create: {
             userId: user.id,
             questionId,
-            selectedOptionId: selectedOptionId || null,
+            selectedOptionId: selectedOption.id,
             isCorrect,
           },
         }),
@@ -121,13 +196,12 @@ export async function POST(
       });
     }
 
-    // Essay question
-    if (essayText !== undefined && essayText !== null) {
+    // Essay question: simply save student's draft & return model answer without forcing resolution
+    if (hasEssayDraft) {
       await prisma.questionAttempt.upsert({
         where: { userId_questionId: { userId: user.id, questionId } },
         update: {
           essayText: String(essayText),
-          isCorrect: true,
           updatedAt: new Date(),
         },
         create: {

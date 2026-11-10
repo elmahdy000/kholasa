@@ -11,24 +11,25 @@ export interface QuestionExplanation {
   correctReason: string;
 }
 
-export interface RubricCriterion {
-  criterion: string;
-  points: number;
-}
-
 export interface QuestionRubric {
   modelAnswer?: string | null;
-  criteria?: RubricCriterion[] | any;
+  modelAnswerTranslation?: string | null;
+  criteria?: unknown;
   maxScore?: number | null;
 }
 
 export interface Question {
   id: string;
   statement: string;
+  translation?: string | null;
   type: string;
   difficulty: string;
   imageUrl?: string | null;
-  subject: { id: string; name: string };
+  subject: {
+    id: string;
+    name: string;
+    schoolCategory?: string | null;
+  };
   unit?: { id: string; title: string } | null;
   options: QuestionOption[];
   explanation?: QuestionExplanation | null;

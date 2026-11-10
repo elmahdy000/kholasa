@@ -86,7 +86,7 @@ export function LessonViewer({
   const [revealedEssays, setRevealedEssays] = useState<Record<string, boolean>>(() => {
     const init: Record<string, boolean> = {};
     for (const a of initialQuestionAttempts) {
-      if (a.essayText || a.isCorrect) init[a.questionId] = true;
+      if (a.essayText?.trim()) init[a.questionId] = true;
     }
     return init;
   });
@@ -140,6 +140,36 @@ export function LessonViewer({
   useEffect(() => {
     setMistakes(initialMistakes);
   }, [initialMistakes]);
+
+  const markedEssayIds = useMemo(
+    () => new Set(mistakes.map((m) => m.questionId)),
+    [mistakes]
+  );
+
+  const handleToggleEssayReview = useCallback(
+    (questionId: string, marked: boolean) => {
+      if (!marked) {
+        setMistakes((prev) => prev.filter((m) => m.questionId !== questionId));
+        return;
+      }
+
+      setMistakes((prev) => {
+        if (prev.some((m) => m.questionId === questionId)) return prev;
+        const qObj = lesson.questions.find((lq) => lq.question.id === questionId)?.question;
+        if (!qObj) return prev;
+        return [
+          {
+            id: `temp-${questionId}`,
+            questionId,
+            wrongCount: 1,
+            question: qObj as any,
+          },
+          ...prev,
+        ];
+      });
+    },
+    [lesson.questions]
+  );
 
   const handleMistakeResolved = useCallback((questionId: string) => {
     setMistakes((prev) => prev.filter((m) => m.questionId !== questionId));
@@ -942,6 +972,7 @@ export function LessonViewer({
                   essayDrafts={essayDrafts}
                   revealedEssays={revealedEssays}
                   essaySelfScores={essaySelfScores}
+                  markedForReviewIds={markedEssayIds}
                   isLanguages={isLanguagesSubject}
                   onDraftChange={(qId, draft) =>
                     setEssayDrafts((prev) => ({ ...prev, [qId]: draft }))
@@ -950,14 +981,16 @@ export function LessonViewer({
                     setRevealedEssays((prev) => {
                       const next = !prev[qId];
                       if (next) {
-                        fetchWithRetry(`/api/questions/${qId}/answer`, {
-                          method: "POST",
-                          headers: { "Content-Type": "application/json" },
-                          body: JSON.stringify({
-                            essayText: essayDrafts[qId] || "",
-                            resolve: true,
-                          }),
-                        }).catch(() => { });
+                        const draft = essayDrafts[qId];
+                        if (draft !== undefined) {
+                          fetchWithRetry(`/api/questions/${qId}/answer`, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                              essayText: draft,
+                            }),
+                          }).catch(() => {});
+                        }
                       }
                       return { ...prev, [qId]: next };
                     });
@@ -965,6 +998,7 @@ export function LessonViewer({
                   onSelectScore={(qId, score) =>
                     setEssaySelfScores((prev) => ({ ...prev, [qId]: score }))
                   }
+                  onReviewToggle={handleToggleEssayReview}
                 />
               )}
             </div>

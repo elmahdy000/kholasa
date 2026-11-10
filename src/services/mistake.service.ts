@@ -1,16 +1,25 @@
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
+import { subjectScopeWhere, type CurriculumScope } from "@/lib/curriculum";
 
 export class MistakeService {
   /**
-   * Fetch unresolved mistakes for a student with subject/unit filtering
+   * Fetch unresolved mistakes for a student with published & scope enforcement
    */
-  static async getStudentMistakes(userId: string, subjectId?: string) {
+  static async getStudentMistakes(
+    userId: string,
+    subjectId?: string,
+    scope: CurriculumScope | null = null
+  ) {
     const where: Prisma.MistakeReviewWhereInput = {
       userId,
       isResolved: false,
       question: {
-        status: { not: "ARCHIVED" },
+        status: "PUBLISHED",
+        subject: {
+          isPublished: true,
+          ...(scope ? subjectScopeWhere(scope) : {}),
+        },
         ...(subjectId ? { subjectId } : {}),
       },
     };
@@ -25,7 +34,14 @@ export class MistakeService {
             unit: { select: { id: true, title: true } },
             options: { orderBy: { order: "asc" } },
             explanation: true,
-            rubric: { select: { modelAnswer: true } },
+            rubric: {
+              select: {
+                modelAnswer: true,
+                modelAnswerTranslation: true,
+                criteria: true,
+                maxScore: true,
+              },
+            },
           },
         },
       },
@@ -56,6 +72,30 @@ export class MistakeService {
   }
 
   /**
+   * Explicitly mark a question (such as an Essay question after inspecting the model answer,
+   * or a resolved question reopened by the student) for active review in "غلطاتي".
+   * Preserves existing wrongCount when un-resolving or toggling.
+   */
+  static async markForReview(userId: string, questionId: string) {
+    return prisma.mistakeReview.upsert({
+      where: {
+        userId_questionId: { userId, questionId },
+      },
+      create: {
+        userId,
+        questionId,
+        wrongCount: 1,
+        isResolved: false,
+        lastAttemptAt: new Date(),
+      },
+      update: {
+        isResolved: false,
+        lastAttemptAt: new Date(),
+      },
+    });
+  }
+
+  /**
    * Mark a mistake as mastered / resolved
    */
   static async resolveMistake(userId: string, questionId: string) {
@@ -74,8 +114,14 @@ export class MistakeService {
   /**
    * Generate an automated custom revision exam from all unresolved mistakes
    */
-  static async generateMistakesExam(userId: string, subjectId?: string, questionCount = 10) {
-    const mistakes = await this.getStudentMistakes(userId, subjectId);
+  static async generateMistakesExam(
+    userId: string,
+    subjectId?: string,
+    questionCount = 10,
+    scope: CurriculumScope | null = null
+  ) {
+    const cappedCount = Math.min(50, Math.max(1, questionCount));
+    const mistakes = await this.getStudentMistakes(userId, subjectId, scope);
 
     if (mistakes.length === 0) {
       throw new Error("رائع! لا توجد أخطاء حالية تحتاج للمراجعة في هذه المادة");
@@ -84,7 +130,7 @@ export class MistakeService {
     // Coherently scope exam to a single subject & schoolCategory
     const primarySubjectId = subjectId || mistakes[0].question.subjectId;
     const subjectMistakes = mistakes.filter((m) => m.question.subjectId === primarySubjectId);
-    const selectedMistakes = subjectMistakes.slice(0, questionCount);
+    const selectedMistakes = subjectMistakes.slice(0, cappedCount);
     const schoolCategory = selectedMistakes[0]?.question?.subject?.schoolCategory || "ARABIC";
 
     const exam = await prisma.exam.create({
@@ -92,7 +138,7 @@ export class MistakeService {
         title: `امتحان مراجعة الأخطاء (${selectedMistakes.length} أسئلة غير متقنة)`,
         subjectId: primarySubjectId,
         schoolCategory,
-        durationMinutes: Math.max(10, selectedMistakes.length * 2),
+        durationMinutes: Math.max(10, Math.min(60, selectedMistakes.length * 2)),
         isPractice: true,
         isCustom: true,
         createdById: userId,

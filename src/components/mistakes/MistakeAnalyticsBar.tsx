@@ -17,7 +17,7 @@ export function MistakeAnalyticsBar({
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
       <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] flex items-center justify-between shadow-xs">
         <div>
-          <span className="text-2xl sm:text-3xl font-bold text-[#DC2626] block tracking-tight">
+          <span className="text-2xl sm:text-3xl font-bold font-sans tabular-nums text-[#DC2626] block">
             {unresolvedCount}
           </span>
           <span className="text-xs sm:text-[13px] font-bold text-[#64748B] dark:text-[#94A3B8]">
@@ -31,7 +31,7 @@ export function MistakeAnalyticsBar({
 
       <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] flex items-center justify-between shadow-xs">
         <div>
-          <span className="text-2xl sm:text-3xl font-bold text-[#059669] block tracking-tight">
+          <span className="text-2xl sm:text-3xl font-bold font-sans tabular-nums text-[#059669] block">
             {resolvedCount}
           </span>
           <span className="text-xs sm:text-[13px] font-bold text-[#64748B] dark:text-[#94A3B8]">
@@ -45,7 +45,7 @@ export function MistakeAnalyticsBar({
 
       <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] flex items-center justify-between shadow-xs">
         <div>
-          <span className="text-2xl sm:text-3xl font-bold text-[#800B34] dark:text-[#FB7185] block tracking-tight">
+          <span className="text-2xl sm:text-3xl font-bold font-sans tabular-nums text-[#800B34] dark:text-[#FB7185] block">
             {masteryPercentage !== null ? `${masteryPercentage}%` : "—"}
           </span>
           <span className="text-xs sm:text-[13px] font-bold text-[#64748B] dark:text-[#94A3B8]">
