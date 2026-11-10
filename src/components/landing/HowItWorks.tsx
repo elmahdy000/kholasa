@@ -6,44 +6,49 @@ import { BookOpen, BookmarkCheck, CheckSquare, ArrowLeft } from "lucide-react";
 const steps = [
   {
     number: "01",
-    title: "اختار مادتك ودرسك",
+    title: "اختار مسارك ودرسك (عربي أو لغات)",
     description:
-      "ادخل على المادة اللي عايز تذاكرها، واختار الدرس اللي محتاج تفهمه أو تراجع عليه بسرعة.",
+      "ادخل على منهج البكالوريا ومسار الهندسة وعلوم الحاسب، واختار الوحدة والدرس اللي عايز تتقنه النهاردة.",
     icon: BookOpen,
   },
   {
     number: "02",
-    title: "افهم الشرح وراجع الزتونة",
+    title: "افهم المفاهيم وراجع كبسولة الزتونة",
     description:
-      "اقرا الشرح خطوة بخطوة، أو ادخل ع الزتونة واعرف تكات الامتحان والقوانين في ٣ دقايق.",
+      "ذاكر المصطلحات ببطاقات الـ Flashcards، وراجع قوانين الدرس وتكات الامتحانات والخريطة الذهنية في ٣ دقايق.",
     icon: BookmarkCheck,
   },
   {
     number: "03",
-    title: "حل أسئلة وافهم غلطاتك",
+    title: "حل تدريبات متدرجة وعالج غلطاتك فوراً",
     description:
-      "حل كويز على الدرس، واعرف سبب كل اختيار، وأي سؤال تغلط فيه بيتسجل عشان تراجعه تاني.",
+      "حل أسئلة اختيار من متعدد وصواب وخطأ ومقالي مع تفسير فوري لكل اختيار، وأي غلطة بتتحفظ في كشكولك لحد ما تتقنها ١٠٠٪.",
     icon: CheckSquare,
   },
 ];
 
 export function HowItWorks() {
   return (
-    <section id="how-it-works" className="py-16 sm:py-20 bg-[#F7F8FA] dark:bg-[#0F172A] border-b border-[#E8E9ED] dark:border-[#334155]">
+    <section
+      id="how-it-works"
+      className="py-16 sm:py-20 bg-[#F7F8FA] dark:bg-[#0F172A] border-b border-[#E8E9ED] dark:border-[#334155]"
+    >
       <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 space-y-10 sm:space-y-12 text-right">
         {/* Section Header */}
         <div className="text-center max-w-2xl mx-auto space-y-2.5">
+          <span className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#800B34]/10 border border-[#800B34]/20 text-[#800B34] dark:text-[#FB7185] text-xs font-bold">
+            خطة الإنجاز الذكية في كل درس
+          </span>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-[#12263F] dark:text-white leading-tight tracking-tight">
-            إزاي تذاكر بالخلاصة؟
+            إزاي تقفّل أي درس في ٣ خطوات؟
           </h2>
           <p className="text-base text-[#64748B] dark:text-[#94A3B8] font-normal leading-relaxed">
-            ٣ خطوات سهلة تحول مذاكرتك من حفظ وتسميع لفهم يثبت في دماغك ويدخلك الامتحان مرتاح.
+            سيستم مرتب بيوفر وقتك ومجهودك، ويحول مذاكرة البرمجة وعلوم الحاسب والذكاء الاصطناعي لمتعة وتفوق مضمون.
           </p>
         </div>
 
         {/* 3 Step Cards Connected by Subtle Directional Line */}
         <div className="relative">
-          {/* Subtle Directional Line on Desktop (Respecting RTL from step 1 to 3) */}
           <div className="hidden md:block absolute top-1/2 -translate-y-6 right-[15%] left-[15%] h-[1px] bg-[#E8E9ED] dark:bg-[#334155] z-0" />
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
@@ -85,7 +90,7 @@ export function HowItWorks() {
             href="/login"
             className="inline-flex items-center gap-2 h-11 px-7 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white text-sm font-bold transition-all shadow-xs active:scale-[0.99]"
           >
-            <span>ابدأ المذاكرة بكود الطالب</span>
+            <span>ابدأ رحلة التفوق بكود الطالب</span>
             <ArrowLeft className="w-3.5 h-3.5" />
           </Link>
         </div>

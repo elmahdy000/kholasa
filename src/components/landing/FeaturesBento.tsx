@@ -9,19 +9,28 @@ import {
   Network,
   Smartphone,
   ArrowLeft,
+  Cpu,
+  Code2,
+  ShieldCheck,
 } from "lucide-react";
 
 export function FeaturesBento() {
   return (
-    <section id="features" className="py-20 sm:py-24 bg-[#F7F8FA] dark:bg-[#0F172A] border-b border-[#E8E9ED] dark:border-[#334155]">
+    <section
+      id="features"
+      className="py-20 sm:py-24 bg-[#F7F8FA] dark:bg-[#0F172A] border-b border-[#E8E9ED] dark:border-[#334155]"
+    >
       <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 space-y-12 sm:space-y-14 text-right">
         {/* Section Header */}
-        <div className="text-center max-w-2xl mx-auto space-y-3">
+        <div className="text-center max-w-3xl mx-auto space-y-3">
+          <span className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#800B34]/10 border border-[#800B34]/20 text-[#800B34] dark:text-[#FB7185] text-xs font-bold">
+            إزاي الخلاصة للبكالوريا هتفيدك فعلاً؟
+          </span>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-[#12263F] dark:text-white leading-tight tracking-tight">
-            كل أدوات مذاكرتك في مكان واحد
+            تذاكر في ربع الوقت.. وتفهم كل تفصيلة في مسار الهندسة
           </h2>
           <p className="text-base text-[#64748B] dark:text-[#94A3B8] font-normal leading-relaxed">
-            بدل ما تتشتت بين ملازم وفيديوهات طويلة ع الفاضي.. هنا هتلاقي كل حاجة تساعدك تفهم وتثبت المعلومة.
+            بدل التوهان بين مصادر كتير، بنينالك سيستم مذاكرة ذكي بياخدك من أول فهم المصطلح البرمجي والهندسي لحد ما تقفّل أصعب أسئلة الامتحانات بدون ولا غلطة.
           </p>
         </div>
 
@@ -30,23 +39,51 @@ export function FeaturesBento() {
           {/* Feature 1: الشرح المفكك خطوة بخطوة */}
           <div className="lg:col-span-2 p-7 sm:p-8 rounded-2xl bg-white dark:bg-[#1E293B] border border-[#E8E9ED] dark:border-[#334155] hover:border-[#800B34]/30 dark:hover:border-[#FB7185]/30 transition-colors flex flex-col justify-between space-y-6 shadow-xs">
             <div className="space-y-4">
-              <div className="w-12 h-12 rounded-xl bg-[#800B34]/8 dark:bg-[#FB7185]/10 border border-[#800B34]/15 dark:border-[#FB7185]/20 text-[#800B34] dark:text-[#FB7185] flex items-center justify-center">
-                <BookOpen className="w-5 h-5" strokeWidth={1.8} />
+              <div className="flex items-center justify-between gap-2">
+                <div className="w-12 h-12 rounded-xl bg-[#800B34]/8 dark:bg-[#FB7185]/10 border border-[#800B34]/15 dark:border-[#FB7185]/20 text-[#800B34] dark:text-[#FB7185] flex items-center justify-center">
+                  <BookOpen className="w-5 h-5" strokeWidth={1.8} />
+                </div>
+                <span className="text-xs font-bold px-3 py-1 rounded-full bg-[#F7F8FA] dark:bg-[#0F172A] border border-[#E8E9ED] dark:border-[#334155] text-[#12263F] dark:text-white">
+                  بكالوريا عربي + بكالوريا لغات
+                </span>
               </div>
+
               <div className="space-y-2">
                 <h3 className="text-2xl font-bold text-[#12263F] dark:text-white">
-                  الشرح المفكك خطوة بخطوة
+                  شرح مفكك ومصطلحات مترجمة بدقة هندسية
                 </h3>
                 <p className="text-base text-[#64748B] dark:text-[#94A3B8] leading-relaxed font-normal max-w-2xl">
-                  بندخل في عمق الدرس ونفكك القوانين والمسائل خطوة بخطوة، مع مقارنات وتطبيقات عملية عشان تفهم منين جت المعلومة بدل ما تحفظ وتنسى.
+                  سواء بتدرس بالعربي أو باللغات، كل مفهوم مشروح من جذوره: إزاي المعالج بينفذ دورة <span className="font-mono font-bold text-[#12263F] dark:text-white">Fetch-Decode-Execute</span>، وإزاي يشتغل التشفير غير المتماثل <span className="font-mono font-bold text-[#12263F] dark:text-white">Public/Private Key</span>، وإزاي المؤشرات <span className="font-mono font-bold text-[#12263F] dark:text-white">Pointers</span> بتتعامل مع الذاكرة في <span className="font-mono font-bold text-[#12263F] dark:text-white">C++</span>.
                 </p>
+              </div>
+
+              {/* Mini curriculum preview tags */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1">
+                <div className="p-3 rounded-xl bg-[#F7F8FA] dark:bg-[#0F172A] border border-[#E8E9ED] dark:border-[#334155] flex items-center gap-2">
+                  <Cpu className="w-4 h-4 text-[#800B34] dark:text-[#FB7185] shrink-0" />
+                  <span className="text-xs font-bold text-[#12263F] dark:text-white">
+                    معمارية النظم والـ CPU
+                  </span>
+                </div>
+                <div className="p-3 rounded-xl bg-[#F7F8FA] dark:bg-[#0F172A] border border-[#E8E9ED] dark:border-[#334155] flex items-center gap-2">
+                  <ShieldCheck className="w-4 h-4 text-[#800B34] dark:text-[#FB7185] shrink-0" />
+                  <span className="text-xs font-bold text-[#12263F] dark:text-white">
+                    الأمن السيبراني و CIA
+                  </span>
+                </div>
+                <div className="p-3 rounded-xl bg-[#F7F8FA] dark:bg-[#0F172A] border border-[#E8E9ED] dark:border-[#334155] flex items-center gap-2">
+                  <Code2 className="w-4 h-4 text-[#800B34] dark:text-[#FB7185] shrink-0" />
+                  <span className="text-xs font-bold text-[#12263F] dark:text-white">
+                    برمجة C++ و Big-O
+                  </span>
+                </div>
               </div>
             </div>
 
             <div className="pt-4 border-t border-[#E8E9ED] dark:border-[#334155] flex items-center justify-between text-xs font-semibold text-[#800B34] dark:text-[#FB7185]">
-              <span>ومع كل درس بودكاست صوتي سريع تسمعه في طريقك</span>
+              <span>بطاقات مفاهيم تفاعلية (Flashcards) وبودكاست صوتي لكل درس</span>
               <Link href="/subjects" className="flex items-center gap-1 hover:underline">
-                <span>تصفح المواد</span>
+                <span>استعرض وحدات المنهج</span>
                 <ArrowLeft className="w-3.5 h-3.5" />
               </Link>
             </div>
@@ -60,16 +97,16 @@ export function FeaturesBento() {
               </div>
               <div className="space-y-2">
                 <h3 className="text-xl font-bold text-[#12263F] dark:text-white">
-                  كبسولة الزتونة
+                  كبسولة الزتونة في ٣ دقايق
                 </h3>
                 <p className="text-sm text-[#64748B] dark:text-[#94A3B8] leading-relaxed font-normal">
-                  ملخص مركز في صفحة واحدة للمراجعة السريعة.. فيه تكات واضعي الامتحانات، والقوانين كلها متجمعة بشكل يثبت في دماغك.
+                  بتلمّلك أهم المقارنات الحاسمة (زي <span className="font-mono font-semibold">MAR vs MDR</span>، و<span className="font-mono font-semibold">Stack vs Heap</span>، و<span className="font-mono font-semibold">Linear vs Binary Search</span>) مع قوانين حساب الـ <span className="font-mono font-semibold">CVR</span> والـ <span className="font-mono font-semibold">CSS Box Model</span> في صفحة واحدة مركزة.
                 </p>
               </div>
             </div>
 
             <div className="pt-3 border-t border-[#E8E9ED] dark:border-[#334155] text-xs font-semibold text-[#D97706] dark:text-[#FBBF24]">
-              جاهزة للطباعة وحفظ الـ PDF بضغطة واحدة
+              تشيك ليست إتقان قبل الامتحان لكل درس
             </div>
           </div>
 
@@ -81,17 +118,20 @@ export function FeaturesBento() {
               </div>
               <div className="space-y-2">
                 <h3 className="text-xl font-bold text-[#12263F] dark:text-white">
-                  بنك تدريب متدرج
+                  تفسير فوري لكل اختيار
                 </h3>
                 <p className="text-sm text-[#64748B] dark:text-[#94A3B8] leading-relaxed font-normal">
-                  حل امتحانات وتدريبات متدرجة من السهل للأصعب على كل درس، ومع كل اختيار بنقولك ليه ده صح وليه الباقي غلط بالتفصيل.
+                  مش مجرد صح وغلط! في أسئلة الاختيار من متعدد والصواب والخطأ والمقالي، بنوضحلك السبب العلمي وراء الاختيار الصح وليه الاختيارات التانية فخ امتحاني.
                 </p>
               </div>
             </div>
 
             <div className="pt-3 border-t border-[#E8E9ED] dark:border-[#334155]">
-              <Link href="/exams/builder" className="text-xs font-semibold text-[#800B34] dark:text-[#FB7185] flex items-center gap-1 hover:underline">
-                <span>جرّب تعمل امتحان دلوقتي</span>
+              <Link
+                href="/exams/builder"
+                className="text-xs font-semibold text-[#800B34] dark:text-[#FB7185] flex items-center gap-1 hover:underline"
+              >
+                <span>ابني امتحانك المخصص دلوقتي</span>
                 <ArrowLeft className="w-3.5 h-3.5" />
               </Link>
             </div>
@@ -105,17 +145,20 @@ export function FeaturesBento() {
               </div>
               <div className="space-y-2">
                 <h3 className="text-xl font-bold text-[#12263F] dark:text-white">
-                  ركن غلطاتي
+                  كشكول «غلطاتي» الذكي
                 </h3>
                 <p className="text-sm text-[#64748B] dark:text-[#94A3B8] leading-relaxed font-normal">
-                  أي سؤال تغلط فيه بيتحفظ في كشكولك الخاص، والنظام يرجع يختبرك فيه تاني لحد ما تتأكد إنك فهمته وماتغلطش فيه في الامتحان.
+                  أكتر ميزة بتفرق في مجموعك: أي سؤال تغلط فيه بيتسجل تلقائياً في كشكولك، وتقدر تفتح جلسة معالجة مركزة لحد ما تقضي على نقط ضعفك نهائياً.
                 </p>
               </div>
             </div>
 
             <div className="pt-3 border-t border-[#E8E9ED] dark:border-[#334155]">
-              <Link href="/mistakes" className="text-xs font-semibold text-[#800B34] dark:text-[#FB7185] flex items-center gap-1 hover:underline">
-                <span>شوف ركن غلطاتك</span>
+              <Link
+                href="/mistakes"
+                className="text-xs font-semibold text-[#800B34] dark:text-[#FB7185] flex items-center gap-1 hover:underline"
+              >
+                <span>افتح كشكول غلطاتك</span>
                 <ArrowLeft className="w-3.5 h-3.5" />
               </Link>
             </div>
@@ -129,16 +172,16 @@ export function FeaturesBento() {
               </div>
               <div className="space-y-2">
                 <h3 className="text-xl font-bold text-[#12263F] dark:text-white">
-                  الخرائط الذهنية
+                  خرائط ذهنية هندسية
                 </h3>
                 <p className="text-sm text-[#64748B] dark:text-[#94A3B8] leading-relaxed font-normal">
-                  اربط فصول المادة ببعض بصرياً، عشان تفتكر علاقات القوانين في عينيك في ثواني قبل ما تدخل اللجنة.
+                  شوف هيكل الدرس كله في خريطة بصرية واحدة: من طبقات الويب التلاتة ورموز استجابة <span className="font-mono font-semibold">HTTP</span> لحد هياكل التحكم والخوارزميات.
                 </p>
               </div>
             </div>
 
             <div className="pt-3 border-t border-[#E8E9ED] dark:border-[#334155] text-xs font-semibold text-[#64748B] dark:text-[#94A3B8]">
-              مراجعة بصرية سريعة قبل الامتحان
+              مراجعة بصرية شاملة ليلة الامتحان
             </div>
           </div>
 
@@ -150,16 +193,16 @@ export function FeaturesBento() {
               </div>
               <div className="space-y-2">
                 <h3 className="text-xl font-bold text-[#12263F] dark:text-white">
-                  شغال من غير نت
+                  احفظ دروسك وذاكر بدون إنترنت
                 </h3>
                 <p className="text-sm text-[#64748B] dark:text-[#94A3B8] leading-relaxed font-normal">
-                  نزّل المنصة على موبايلك في ثواني، وذاكر ملخصاتك والزتونة في أي وقت ومن غير ما تشتتك إشعارات السوشيال ميديا.
+                  بضغطة زر واحدة جوة أي درس، احفظ الملخص والمفاهيم والأسئلة على موبايلك وذاكر في أي مكان بتركيز كامل.
                 </p>
               </div>
             </div>
 
             <div className="pt-3 border-t border-[#E8E9ED] dark:border-[#334155] text-xs font-semibold text-[#059669]">
-              تطبيق خفيف وسريع على كل الأجهزة
+              يدعم الموبايل والتابلت والكمبيوتر
             </div>
           </div>
         </div>
