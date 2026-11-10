@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
@@ -6,6 +7,15 @@ import { getCurriculumScope, subjectScopeWhere } from "@/lib/curriculum";
 import { StudentShell } from "@/components/layout/StudentShell";
 import { ExamBuilderForm } from "@/components/exams/ExamBuilderForm";
 import { StudentPaywallView } from "@/components/student/subscription/StudentPaywallView";
+
+export const metadata: Metadata = {
+  title: "بنك الأسئلة الذكي والامتحانات التفاعلية | الخلاصة للبكالوريا",
+  description:
+    "كوّن تدريبك المخصص وامتحاناتك التفاعلية من بنك أسئلة البكالوريا المصرية (بكالوريا عربي وبكالوريا لغات) مع نماذج إجابة معتمدة وتصحيح ذكي بإشراف Dr/Elmahdy.",
+  alternates: {
+    canonical: "/exams/builder",
+  },
+};
 
 interface ExamBuilderPageProps {
   searchParams: Promise<{

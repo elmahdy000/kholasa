@@ -384,9 +384,9 @@ export function QuestionBankManagerClient({
             توزيع المدارس
           </span>
           <div className="flex items-center gap-2 mt-0.5 text-[13px] font-bold">
-            <span className="text-[#0F172A] dark:text-white">{metrics.arabic} عربي</span>
+            <span className="text-[#0F172A] dark:text-white">{metrics.arabic} بكالوريا عربي</span>
             <span className="text-[#CBD5E1] dark:text-[#475569]">/</span>
-            <span className="text-blue-600 dark:text-blue-400">{metrics.languages} لغات</span>
+            <span className="text-blue-600 dark:text-blue-400">{metrics.languages} بكالوريا لغات</span>
           </div>
         </div>
       </div>

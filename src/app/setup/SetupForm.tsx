@@ -420,7 +420,7 @@ export function SetupForm({ systems, initialSchoolCategory }: SetupFormProps) {
                 </div>
                 <div className="flex items-center gap-2 pt-1">
                   <span className="px-3.5 py-1 rounded-full text-xs font-bold bg-emerald-600 text-white shadow-xs">
-                    {schoolCategory === "LANGUAGES" ? "🇬🇧 مدارس لغات وتجريبي (Languages)" : "🇪🇬 مدارس عربي (Arabic Curriculum)"}
+                    {schoolCategory === "LANGUAGES" ? "🇬🇧 بكالوريا لغات (Languages)" : "🇪🇬 بكالوريا عربي"}
                   </span>
                 </div>
                 <p className="text-[11px] sm:text-xs text-emerald-700 dark:text-emerald-300/90 leading-relaxed">
@@ -441,7 +441,7 @@ export function SetupForm({ systems, initialSchoolCategory }: SetupFormProps) {
               >
                 <div className="flex items-center justify-between">
                   <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#059669]/10 text-[#059669] dark:text-[#34D399]">
-                    عربي
+                    بكالوريا عربي
                   </span>
                   <div
                     className={`w-5 h-5 rounded-full border flex items-center justify-center ${
@@ -456,7 +456,7 @@ export function SetupForm({ systems, initialSchoolCategory }: SetupFormProps) {
 
                 <div className="space-y-1">
                   <h3 className="text-xs sm:text-sm font-bold text-[#0F172A] dark:text-white">
-                    مدارس عربي
+                    بكالوريا عربي
                   </h3>
                   <p className="text-[11px] sm:text-xs text-[#64748B] dark:text-[#94A3B8] leading-relaxed">
                     الشرح وبنك الأسئلة والمصطلحات كلها باللغة العربية.
@@ -476,7 +476,7 @@ export function SetupForm({ systems, initialSchoolCategory }: SetupFormProps) {
               >
                 <div className="flex items-center justify-between">
                   <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#2563EB]/10 text-[#2563EB] dark:text-[#60A5FA]">
-                    Languages
+                    بكالوريا لغات
                   </span>
                   <div
                     className={`w-5 h-5 rounded-full border flex items-center justify-center ${
@@ -491,7 +491,7 @@ export function SetupForm({ systems, initialSchoolCategory }: SetupFormProps) {
 
                 <div className="space-y-1">
                   <h3 className="text-xs sm:text-sm font-bold text-[#0F172A] dark:text-white">
-                    مدارس لغات ورسمية
+                    بكالوريا لغات
                   </h3>
                   <p className="text-[11px] sm:text-xs text-[#64748B] dark:text-[#94A3B8] leading-relaxed">
                     المناهج والأسئلة ونماذج الإجابة مجهزة بالإنجليزي.

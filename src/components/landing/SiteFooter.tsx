@@ -78,7 +78,7 @@ export function SiteFooter() {
         {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#94A3B8]">
           <p>
-            © {new Date().getFullYear()} الخلاصة | EL KHOLASA — معمولة لطلاب الثانوية العامة بكل حب عشان تذاكر بذكاء.
+            © {new Date().getFullYear()} الخلاصة للبكالوريا | EL KHOLASA — جميع الحقوق محفوظة لـ Dr/Elmahdy.
           </p>
           <div className="flex items-center gap-6">
             <Link href="/privacy" className="hover:text-white transition-colors">

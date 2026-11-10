@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { getCurriculumScope, subjectScopeWhere, questionScopeWhere } from "@/lib/curriculum";
@@ -14,6 +15,21 @@ import {
 } from "lucide-react";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "مناهج ومقررات الخلاصة للبكالوريا (عربي ولغات)",
+  description:
+    "استكشف كافة مناهج ومقررات البكالوريا المصرية المعتمدة على منصة الخلاصة للبكالوريا: بكالوريا عربي وبكالوريا لغات. شروحات تفاعلية، خرائط ذهنية، وبنوك تدريبات بإشراف Dr/Elmahdy.",
+  alternates: {
+    canonical: "/subjects",
+  },
+  openGraph: {
+    title: "مناهج ومقررات الخلاصة للبكالوريا (عربي ولغات)",
+    description:
+      "تصفح مناهج البكالوريا المصرية (بكالوريا عربي ولغات) على منصة الخلاصة للبكالوريا مع ملخصات وخرائط ذهنية بإشراف Dr/Elmahdy.",
+    url: "https://el-kholasa.online/subjects",
+  },
+};
 
 export default async function SubjectsPage() {
   const user = await getCurrentUser();
@@ -80,17 +96,17 @@ export default async function SubjectsPage() {
             {/* Top Badge */}
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#800B34]/10 dark:bg-[#E9AD32]/15 border border-[#800B34]/20 dark:border-[#E9AD32]/30 text-xs font-bold text-[#800B34] dark:text-[#E9AD32] self-start">
               <GraduationCap className="w-3.5 h-3.5" />
-              <span>مناهج 2026 المعتمدة</span>
+              <span>الخلاصة للبكالوريا — مناهج 2026 المعتمدة</span>
             </div>
 
             {/* Main Headline & Description */}
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
               <div className="space-y-1.5 max-w-xl">
                 <h1 className="text-2xl sm:text-3xl font-extrabold text-[#091B40] dark:text-white tracking-tight">
-                  المواد الدراسية
+                  مناهج ومقررات الخلاصة للبكالوريا
                 </h1>
                 <p className="text-xs sm:text-sm text-[#536681] dark:text-[#94A3B8] leading-relaxed">
-                  كل موادك ومناهجك في مكان واحد — شرح بسيط، ملخص مركز، وتدريبات على كل درس.
+                  مناهج البكالوريا المصرية المعتمدة (بكالوريا عربي وبكالوريا لغات) — شرح مبسط، ملخصات الزتونة، وخرائط ذهنية وتدريبات ذكية بإشراف Dr/Elmahdy.
                 </p>
               </div>
 

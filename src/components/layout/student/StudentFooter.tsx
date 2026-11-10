@@ -33,7 +33,7 @@ export function StudentFooter() {
         </div>
 
         <p className="text-[11px] text-center sm:text-right">
-          © {new Date().getFullYear()} الخلاصة — جميع الحقوق محفوظة لطلابنا
+          © {new Date().getFullYear()} منصة الخلاصة للبكالوريا — جميع الحقوق محفوظة لـ Dr/Elmahdy
         </p>
       </div>
     </footer>

@@ -92,7 +92,7 @@ export function BrandLogo({
   size = "md",
   surfaceTheme = "auto",
   showSubtitle = true,
-  subtitleText = "افهمها صح.. هتفضل معاك",
+  subtitleText = "المنصة الذكية للبكالوريا المصرية",
   href,
   className,
   priority = true,
@@ -173,7 +173,7 @@ export function BrandLogo({
               cfg.titleClass
             )}
           >
-            الخلاصة
+            الخلاصة <span className="text-[#800B34] dark:text-[#E9AD32] text-[0.82em] font-black">للبكالوريا</span>
           </span>
           {showSubtitle && (
             <span

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
@@ -12,6 +13,37 @@ import {
 
 interface SubjectDetailPageProps {
   params: Promise<{ id: string }>;
+}
+
+export async function generateMetadata({ params }: SubjectDetailPageProps): Promise<Metadata> {
+  const { id } = await params;
+  const subject = await prisma.subject.findUnique({
+    where: { id },
+    select: { name: true, description: true, schoolCategory: true },
+  });
+
+  if (!subject) {
+    return { title: "المادة غير موجودة | الخلاصة للبكالوريا" };
+  }
+
+  const catLabel = subject.schoolCategory === "LANGUAGES" ? "بكالوريا لغات" : "بكالوريا عربي";
+  const title = `${subject.name} (${catLabel})`;
+  const description =
+    subject.description ||
+    `منهج ${subject.name} لطلاب البكالوريا المصرية (${catLabel}): وحدات المنهج، ملخصات الزتونة، وخرائط ذهنية وبنك أسئلة بإشراف Dr/Elmahdy.`;
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title: `${title} | الخلاصة للبكالوريا`,
+      description,
+      url: `https://el-kholasa.online/subjects/${id}`,
+    },
+    alternates: {
+      canonical: `/subjects/${id}`,
+    },
+  };
 }
 
 export default async function SubjectDetailPage({ params }: SubjectDetailPageProps) {

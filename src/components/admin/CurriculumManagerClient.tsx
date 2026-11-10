@@ -705,7 +705,7 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
                     : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#091B40] dark:hover:text-white hover:bg-white dark:hover:bg-[#1E293B]"
                 }`}
               >
-                <span>مدارس عربي (Arabic)</span>
+                <span>بكالوريا عربي</span>
               </button>
 
               <button
@@ -717,7 +717,7 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
                     : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#091B40] dark:hover:text-white hover:bg-white dark:hover:bg-[#1E293B]"
                 }`}
               >
-                <span>مدارس لغات (Languages)</span>
+                <span>بكالوريا لغات</span>
               </button>
             </div>
           </div>
@@ -865,7 +865,7 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
             <span className="font-bold text-[#0F172A] dark:text-white">المعروض حالياً:</span>
             <span>{selectedGrade?.name}</span>
             <span>•</span>
-            <span>{selectedCategory === "LANGUAGES" ? "مدارس لغات" : "مدارس عربي"}</span>
+            <span>{selectedCategory === "LANGUAGES" ? "بكالوريا لغات" : "بكالوريا عربي"}</span>
             {isG11 && selectedTrackId !== "ALL" && (
               <>
                 <span>•</span>

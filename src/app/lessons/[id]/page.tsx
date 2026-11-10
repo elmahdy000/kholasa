@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
@@ -8,6 +9,43 @@ import { StudentPaywallView } from "@/components/student/subscription/StudentPay
 
 interface LessonPageProps {
   params: Promise<{ id: string }>;
+}
+
+export async function generateMetadata({ params }: LessonPageProps): Promise<Metadata> {
+  const { id } = await params;
+  const lesson = await prisma.lesson.findUnique({
+    where: { id },
+    select: {
+      title: true,
+      unit: {
+        select: {
+          title: true,
+          subject: { select: { name: true, schoolCategory: true } },
+        },
+      },
+    },
+  });
+
+  if (!lesson) {
+    return { title: "الدرس غير موجود | الخلاصة للبكالوريا" };
+  }
+
+  const catLabel = lesson.unit.subject.schoolCategory === "LANGUAGES" ? "بكالوريا لغات" : "بكالوريا عربي";
+  const title = `${lesson.title} — ${lesson.unit.subject.name}`;
+  const description = `درس ${lesson.title} من ${lesson.unit.title} في ${lesson.unit.subject.name} (${catLabel}). ملخص الزتونة، خرائط ذهنية، وبنك تدريبات تفاعلي على منصة الخلاصة للبكالوريا بإشراف Dr/Elmahdy.`;
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title: `${title} | الخلاصة للبكالوريا`,
+      description,
+      url: `https://el-kholasa.online/lessons/${id}`,
+    },
+    alternates: {
+      canonical: `/lessons/${id}`,
+    },
+  };
 }
 
 export default async function LessonPage({ params }: LessonPageProps) {

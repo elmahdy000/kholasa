@@ -164,13 +164,13 @@ export function QuestionFilterBar({
                     setSelectedCategory("ARABIC");
                     setSelectedSubjectId("all");
                   }}
-                  className={`py-1.5 text-center rounded-lg text-[12px] font-bold transition-all cursor-pointer ${
+                  className={`py-1.5 px-2 text-center rounded-lg text-[11px] sm:text-[12px] font-bold transition-all cursor-pointer whitespace-nowrap ${
                     selectedCategory === "ARABIC"
                       ? "bg-[#091B40] text-white shadow-xs"
                       : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#091B40]"
                   }`}
                 >
-                  عربي
+                  بكالوريا عربي
                 </button>
                 <button
                   type="button"
@@ -178,13 +178,13 @@ export function QuestionFilterBar({
                     setSelectedCategory("LANGUAGES");
                     setSelectedSubjectId("all");
                   }}
-                  className={`py-1.5 text-center rounded-lg text-[12px] font-bold transition-all cursor-pointer ${
+                  className={`py-1.5 px-2 text-center rounded-lg text-[11px] sm:text-[12px] font-bold transition-all cursor-pointer whitespace-nowrap ${
                     selectedCategory === "LANGUAGES"
                       ? "bg-blue-600 text-white shadow-xs"
                       : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#091B40]"
                   }`}
                 >
-                  لغات
+                  بكالوريا لغات
                 </button>
               </div>
             </div>
@@ -326,7 +326,7 @@ export function QuestionFilterBar({
               <option value="all">كل المواد ({availableSubjects.length})</option>
               {availableSubjects.map((s) => (
                 <option key={s.id} value={s.id}>
-                  {s.name} ({s.schoolCategory === "LANGUAGES" ? "لغات" : "عربي"})
+                  {s.name} ({s.schoolCategory === "LANGUAGES" ? "بكالوريا لغات" : "بكالوريا عربي"})
                 </option>
               ))}
             </select>

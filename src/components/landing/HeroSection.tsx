@@ -15,7 +15,7 @@ export function HeroSection() {
             {/* 1) Small top badge */}
             <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-[#F7F8FA] dark:bg-[#1E293B] border border-[#E8E9ED] dark:border-[#334155] text-xs font-semibold text-[#800B34] dark:text-[#FB7185] shadow-xs">
               <BrandLogo variant="icon" size="xs" glow={false} />
-              <span>المنصة التعليمية الشاملة لطلاب الثانوية العامة 2026</span>
+              <span>الخلاصة للبكالوريا — المنصة التعليمية الذكية لطلاب البكالوريا المصرية (عربي ولغات)</span>
             </div>
 
             {/* 2) Main headline */}
@@ -57,7 +57,7 @@ export function HeroSection() {
 
             {/* Reassurance line below buttons */}
             <p className="text-xs text-[#64748B] dark:text-[#94A3B8] pt-1 font-medium">
-              تغطية كاملة لمنهج الثانوية العامة الجديد • شغال بدون إنترنت • على موبايلك في أي وقت
+              تغطية شاملة لمناهج البكالوريا المصرية (بكالوريا عربي وبكالوريا لغات) • بإشراف Dr/Elmahdy • شغال بدون إنترنت على موبايلك
             </p>
           </div>
 
