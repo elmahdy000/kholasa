@@ -18,8 +18,8 @@ export function SubjectsShowcase({ subjects = [] }: SubjectsShowcaseProps) {
     subjects.length === 1
       ? "grid-cols-1 max-w-xl"
       : subjects.length === 2
-      ? "grid-cols-1 md:grid-cols-2"
-      : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3";
+        ? "grid-cols-1 md:grid-cols-2"
+        : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3";
 
   return (
     <section className="py-12 sm:py-16 bg-white dark:bg-[#0F172A] border-b border-[#E8E9ED] dark:border-[#334155]">
@@ -129,7 +129,7 @@ export function SubjectsShowcase({ subjects = [] }: SubjectsShowcaseProps) {
                     </span>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-2">
                     <Link
                       href={`/subjects/${sub.id}`}
                       className="min-h-[44px] px-3.5 py-2 rounded-lg bg-[#091B40] hover:bg-[#12263F] text-white text-xs font-bold flex items-center justify-center gap-1.5 transition-colors"

@@ -63,7 +63,7 @@ export function HeroSection({ heroQuestions }: HeroSectionProps) {
             <div className="pt-1 flex flex-wrap items-center gap-4 text-xs text-[#64748B] dark:text-[#94A3B8] font-medium">
               <Link
                 href="/login"
-                className="inline-flex items-center gap-1.5 font-bold text-[#091B40] dark:text-[#E2E8F0] hover:text-[#800B34] dark:hover:text-[#FB7185] transition-colors"
+                className="min-h-[44px] py-2 inline-flex items-center gap-1.5 font-bold text-[#091B40] dark:text-[#E2E8F0] hover:text-[#800B34] dark:hover:text-[#FB7185] transition-colors"
               >
                 <span>عندك كود طالب أو عايز جلسة تجريبية مستقلة؟ ادخل هنا</span>
                 <ArrowLeft className="w-3.5 h-3.5" />
@@ -72,7 +72,7 @@ export function HeroSection({ heroQuestions }: HeroSectionProps) {
           </div>
 
           {/* Left Column: Live Verified Question Preview from Approved Question Bank */}
-          <div className="lg:col-span-6">
+          <div className="lg:col-span-6" data-hero-preview-card="true">
             <div className="rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F7F9FC] dark:bg-[#1E293B] p-4 sm:p-5 space-y-4">
               {/* Top Track Selector inside Widget */}
               <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-[#E2E8F0] dark:border-[#334155]">
@@ -90,7 +90,7 @@ export function HeroSection({ heroQuestions }: HeroSectionProps) {
                     role="tab"
                     aria-selected={selectedTrack === "ARABIC"}
                     onClick={() => setSelectedTrack("ARABIC")}
-                    className={`min-h-[34px] px-3 py-1 rounded-md text-xs font-bold transition-colors cursor-pointer ${
+                    className={`min-h-[44px] px-3 py-1.5 rounded-md text-xs font-bold transition-colors cursor-pointer ${
                       selectedTrack === "ARABIC"
                         ? "bg-[#091B40] text-white"
                         : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#091B40] dark:hover:text-white"
@@ -103,7 +103,7 @@ export function HeroSection({ heroQuestions }: HeroSectionProps) {
                     role="tab"
                     aria-selected={selectedTrack === "LANGUAGES"}
                     onClick={() => setSelectedTrack("LANGUAGES")}
-                    className={`min-h-[34px] px-3 py-1 rounded-md text-xs font-bold transition-colors cursor-pointer ${
+                    className={`min-h-[44px] px-3 py-1.5 rounded-md text-xs font-bold transition-colors cursor-pointer ${
                       selectedTrack === "LANGUAGES"
                         ? "bg-[#091B40] text-white"
                         : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#091B40] dark:hover:text-white"

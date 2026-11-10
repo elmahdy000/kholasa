@@ -421,7 +421,7 @@ export function InteractiveDemo({ grades, subjects }: InteractiveDemoProps) {
           <div className="rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] overflow-hidden">
             {/* Tool Switcher Bar */}
             <div className="p-3 sm:p-4 bg-[#F7F9FC] dark:bg-[#1E293B] border-b border-[#E2E8F0] dark:border-[#334155] flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-              <div className="flex items-center gap-2 overflow-x-auto pb-1 lg:pb-0 scrollbar-none">
+              <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-stretch sm:items-center gap-2">
                 {TOOL_TABS.map(({ id, label, icon: Icon }) => {
                   const isActive = activeTool === id;
                   return (
@@ -429,7 +429,7 @@ export function InteractiveDemo({ grades, subjects }: InteractiveDemoProps) {
                       key={id}
                       type="button"
                       onClick={() => setActiveTool(id)}
-                      className={`min-h-[44px] px-3.5 py-2 rounded-lg text-xs sm:text-sm font-bold inline-flex items-center gap-2 transition-colors cursor-pointer whitespace-nowrap shrink-0 ${
+                      className={`min-h-[44px] px-2.5 sm:px-3.5 py-2 rounded-lg text-[11px] sm:text-sm font-bold inline-flex items-center justify-center gap-1.5 sm:gap-2 transition-colors cursor-pointer text-center ${
                         isActive
                           ? "bg-[#800B34] text-white"
                           : "bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] text-[#536681] dark:text-[#94A3B8] hover:text-[#091B40] dark:hover:text-white"
@@ -444,7 +444,7 @@ export function InteractiveDemo({ grades, subjects }: InteractiveDemoProps) {
 
               <Link
                 href={`/login?callbackUrl=${encodeURIComponent(`/lessons/${activeLesson.id}`)}`}
-                className="min-h-[40px] px-3.5 py-2 rounded-lg bg-[#091B40] hover:bg-[#12263F] text-white text-xs font-bold inline-flex items-center justify-center gap-1.5 transition-colors shrink-0 self-start lg:self-auto"
+                className="min-h-[44px] px-3.5 py-2 rounded-lg bg-[#091B40] hover:bg-[#12263F] text-white text-xs font-bold inline-flex items-center justify-center gap-1.5 transition-colors shrink-0 self-stretch sm:self-start lg:self-auto"
               >
                 <span>دخول لفتح الدرس بالكامل</span>
                 <ArrowLeft className="w-3.5 h-3.5" />

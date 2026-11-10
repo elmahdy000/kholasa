@@ -73,10 +73,10 @@ export function FeaturesBento({ sampleProofs }: FeaturesBentoProps) {
               )}
             </div>
 
-            <div className="pt-3 border-t border-[#E8E9ED] dark:border-[#22364F]">
+            <div className="pt-2 border-t border-[#E8E9ED] dark:border-[#22364F]">
               <a
                 href="#curriculum-explorer"
-                className="text-xs font-bold text-[#800B34] dark:text-[#FB7185] hover:underline inline-flex items-center gap-1"
+                className="min-h-[44px] text-xs font-bold text-[#800B34] dark:text-[#FB7185] hover:underline inline-flex items-center gap-1"
               >
                 <span>جرّب حل سؤال حقيقي دلوقتي</span>
                 <ArrowLeft className="w-3.5 h-3.5" />
@@ -103,9 +103,8 @@ export function FeaturesBento({ sampleProofs }: FeaturesBentoProps) {
               {definitionExample && (
                 <div
                   dir={definitionExample.isLanguages ? "ltr" : "rtl"}
-                  className={`p-3.5 rounded-lg bg-[#F7F9FC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] space-y-2 ${
-                    definitionExample.isLanguages ? "text-left" : "text-right"
-                  }`}
+                  className={`p-3.5 rounded-lg bg-[#F7F9FC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] space-y-2 ${definitionExample.isLanguages ? "text-left" : "text-right"
+                    }`}
                 >
                   <div className="flex items-center justify-between gap-2">
                     <span className="text-xs sm:text-[13px] font-bold text-[#059669] dark:text-[#34D399]">
@@ -136,10 +135,10 @@ export function FeaturesBento({ sampleProofs }: FeaturesBentoProps) {
               )}
             </div>
 
-            <div className="pt-3 border-t border-[#E8E9ED] dark:border-[#22364F]">
+            <div className="pt-2 border-t border-[#E8E9ED] dark:border-[#22364F]">
               <a
                 href="#curriculum-explorer"
-                className="text-xs font-bold text-[#800B34] dark:text-[#FB7185] hover:underline inline-flex items-center gap-1"
+                className="min-h-[44px] text-xs font-bold text-[#800B34] dark:text-[#FB7185] hover:underline inline-flex items-center gap-1"
               >
                 <span>تصفّح مصطلحات الدروس</span>
                 <ArrowLeft className="w-3.5 h-3.5" />
@@ -180,10 +179,10 @@ export function FeaturesBento({ sampleProofs }: FeaturesBentoProps) {
               </div>
             </div>
 
-            <div className="pt-3 border-t border-[#E8E9ED] dark:border-[#22364F]">
+            <div className="pt-2 border-t border-[#E8E9ED] dark:border-[#22364F]">
               <Link
                 href="/mistakes"
-                className="text-xs font-bold text-[#800B34] dark:text-[#FB7185] hover:underline inline-flex items-center gap-1"
+                className="min-h-[44px] text-xs font-bold text-[#800B34] dark:text-[#FB7185] hover:underline inline-flex items-center gap-1"
               >
                 <span>افتح قسم غلطاتي</span>
                 <ArrowLeft className="w-3.5 h-3.5" />
@@ -213,7 +212,6 @@ export function FeaturesBento({ sampleProofs }: FeaturesBentoProps) {
                     <img
                       src={mindMapExample.imageUrl}
                       alt={mindMapExample.title}
-                      loading="lazy"
                       className="w-full h-full object-cover"
                     />
                   </div>
@@ -233,10 +231,10 @@ export function FeaturesBento({ sampleProofs }: FeaturesBentoProps) {
               )}
             </div>
 
-            <div className="pt-3 border-t border-[#E8E9ED] dark:border-[#22364F]">
+            <div className="pt-2 border-t border-[#E8E9ED] dark:border-[#22364F]">
               <a
                 href="#curriculum-explorer"
-                className="text-xs font-bold text-[#800B34] dark:text-[#FB7185] hover:underline inline-flex items-center gap-1"
+                className="min-h-[44px] text-xs font-bold text-[#800B34] dark:text-[#FB7185] hover:underline inline-flex items-center gap-1"
               >
                 <span>عاين الخرائط الذهنية للدروس</span>
                 <ArrowLeft className="w-3.5 h-3.5" />
