@@ -2,13 +2,13 @@
 
 import Link from "next/link";
 import {
-  Atom,
-  FlaskConical,
-  Dna,
+  Cpu,
+  Code2,
+  Brain,
   Calculator,
   BookMarked,
   ArrowLeft,
-  Mountain,
+  ShieldCheck,
   BookOpen,
 } from "lucide-react";
 
@@ -28,7 +28,7 @@ interface SubjectsShowcaseProps {
   subjects?: DynamicLandingSubject[];
 }
 
-const defaultIcons = [Atom, FlaskConical, Dna, Calculator, BookMarked, Mountain];
+const defaultIcons = [Cpu, Code2, Brain, Calculator, BookMarked, ShieldCheck];
 
 export function SubjectsShowcase({ subjects = [] }: SubjectsShowcaseProps) {
   return (
@@ -37,11 +37,15 @@ export function SubjectsShowcase({ subjects = [] }: SubjectsShowcaseProps) {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-[#E8E9ED] dark:border-[#334155] pb-6">
           <div className="space-y-2 max-w-xl">
+            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#800B34]/10 border border-[#800B34]/20 text-[#800B34] dark:text-[#FB7185] text-xs font-bold mb-1">
+              🏗️ مسار الهندسة وعلوم الحاسب
+            </span>
             <h2 className="text-3xl sm:text-4xl font-extrabold text-[#12263F] dark:text-white leading-tight tracking-tight">
-              مواد الثانوية العامة مشروحة ومترتبة صح
+              مواد البكالوريا مشروحة ومترتبة صح
             </h2>
             <p className="text-base text-[#64748B] dark:text-[#94A3B8] font-normal leading-relaxed">
-              كل مادة متقسمة لوحدات ودروس واضحة، مع زتونة سريعة لكل درس وبنك أسئلة متفصل على مواصفات الوزارة.
+              كل مادة متقسمة لوحدات ودروس واضحة، مع كبسولة زتونة سريعة لكل
+              درس وبنك أسئلة متفصل على مواصفات الوزارة.
             </p>
           </div>
 

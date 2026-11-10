@@ -15,25 +15,29 @@ export function HeroSection() {
             {/* 1) Small top badge */}
             <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-[#F7F8FA] dark:bg-[#1E293B] border border-[#E8E9ED] dark:border-[#334155] text-xs font-semibold text-[#800B34] dark:text-[#FB7185] shadow-xs">
               <BrandLogo variant="icon" size="xs" glow={false} />
-              <span>الخلاصة للبكالوريا — المنصة التعليمية الذكية لطلاب البكالوريا المصرية (عربي ولغات)</span>
+              <span>الخلاصة للبكالوريا — مسار الهندسة وعلوم الحاسب (عربي ولغات)</span>
             </div>
 
             {/* 2) Main headline */}
             <div className="space-y-1">
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[50px] font-extrabold text-[#12263F] dark:text-white leading-[1.2] tracking-tight">
-                افهم المنهج بسهولة...
+                مسار الهندسة؟
                 <br />
                 <span className="text-[#800B34] dark:text-[#FB7185] inline-block mt-1 sm:mt-2">
-                  وحوّل مذاكرتك لتفوّق حقيقي
+                  الخلاصة بتذاكر معاك بذكاء
                 </span>
               </h1>
             </div>
 
             {/* 3) Supporting subheadline */}
             <p className="text-base sm:text-lg text-[#64748B] dark:text-[#94A3B8] leading-relaxed max-w-xl font-normal">
-              شرح مبسّط خطوة بخطوة، كبسولة زتونة سريعة للمراجعة، تدريب متدرج بيفهم مستواك، وتفسير ذكي لكل غلطة...
+              برمجة وذكاء اصطناعي، رياضيات، وكل مواد مسار الهندسة —
+              شرح مبسّط خطوة بخطوة، كبسولة زتونة سريعة للمراجعة، تدريب متدرج
+              بيفهم مستواك، وتفسير ذكي لكل غلطة.
               <br className="hidden sm:inline" />
-              كل اللي تحتاجه علشان تذاكر بفهم، تراجع بسرعة، وتدخل الامتحان وأنت واثق.
+              <strong className="text-[#12263F] dark:text-white font-semibold">
+                {" "}ذاكر بفهم، راجع بسرعة، ادخل الامتحان واثق.
+              </strong>
             </p>
 
             {/* 4) CTA buttons */}
@@ -57,7 +61,7 @@ export function HeroSection() {
 
             {/* Reassurance line below buttons */}
             <p className="text-xs text-[#64748B] dark:text-[#94A3B8] pt-1 font-medium">
-              تغطية شاملة لمناهج البكالوريا المصرية (بكالوريا عربي وبكالوريا لغات) • بإشراف Dr/Elmahdy • شغال بدون إنترنت على موبايلك
+              مسار الهندسة وعلوم الحاسب • بكالوريا عربي وبكالوريا لغات • بإشراف Dr/Elmahdy • يشتغل بدون إنترنت
             </p>
           </div>
 
