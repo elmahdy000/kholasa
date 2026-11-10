@@ -30,7 +30,7 @@ export function HeroSection({ heroQuestions }: HeroSectionProps) {
               <span>منصة الخلاصة للبكالوريا المصرية • عربي ولغات</span>
             </div>
 
-            <h1 className="text-2xl sm:text-3xl lg:text-[36px] font-bold text-[#091B40] dark:text-white leading-[1.35] tracking-tight">
+            <h1 className="text-2xl sm:text-3xl lg:text-[36px] font-bold text-[#091B40] dark:text-white leading-[1.35]">
               ذاكر درسك، اختبر فهمك،{" "}
               <span className="text-[#800B34] dark:text-[#FB7185]">
                 واعرف سبب كل إجابة.

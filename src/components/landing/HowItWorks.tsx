@@ -65,7 +65,7 @@ export function HowItWorks() {
                   <div className="w-9 h-9 rounded-lg bg-[#800B34]/10 text-[#800B34] dark:text-[#FB7185] flex items-center justify-center shrink-0">
                     <Icon className="w-4 h-4" />
                   </div>
-                  <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-md bg-[#F7F9FC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[#091B40] dark:text-white">
+                  <span className="text-xs font-sans tabular-nums font-bold px-2.5 py-1 rounded-md bg-[#F7F9FC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[#091B40] dark:text-white">
                     خطوة {step.number}
                   </span>
                 </div>

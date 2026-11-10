@@ -324,9 +324,9 @@ export function InteractiveDemo({ grades, subjects }: InteractiveDemoProps) {
                     <Layers className="w-4 h-4 text-[#800B34] dark:text-[#FB7185] shrink-0" />
                     <span>المادة المختارة: {activeSubject.name}</span>
                   </div>
-                  <span className="text-xs font-mono text-[#536681] dark:text-[#94A3B8]">
+                  <span className="text-xs font-sans tabular-nums text-[#536681] dark:text-[#94A3B8]">
                     {activeSubject.publishedUnitsCount} وحدات • {activeSubject.publishedLessonsCount} درساً •{" "}
-                    {activeSubject.publishedQuestionsCount} سؤال منشور
+                    {new Intl.NumberFormat("en-US").format(activeSubject.publishedQuestionsCount)} سؤال منشور
                   </span>
                 </div>
               ) : null}
@@ -358,7 +358,7 @@ export function InteractiveDemo({ grades, subjects }: InteractiveDemoProps) {
                         >
                           <span className="leading-snug">{u.title}</span>
                           <span
-                            className={`text-[11px] font-mono ${
+                            className={`text-[11px] font-sans tabular-nums ${
                               isActive ? "text-white/80" : "text-[#64748B] dark:text-[#94A3B8]"
                             }`}
                           >
@@ -400,7 +400,7 @@ export function InteractiveDemo({ grades, subjects }: InteractiveDemoProps) {
                             <BidiStatement text={l.title} />
                           </span>
                           <span
-                            className={`text-[11px] font-mono ${
+                            className={`text-[11px] font-sans tabular-nums ${
                               isActive ? "text-white/85" : "text-[#64748B] dark:text-[#94A3B8]"
                             }`}
                           >

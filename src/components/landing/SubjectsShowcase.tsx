@@ -104,7 +104,7 @@ export function SubjectsShowcase({ subjects = [] }: SubjectsShowcaseProps) {
                             <span className="truncate font-medium text-[#091B40] dark:text-slate-200">
                               {u.title}
                             </span>
-                            <span className="text-[11px] font-mono text-[#64748B] dark:text-[#94A3B8] shrink-0">
+                            <span className="text-[11px] font-sans tabular-nums text-[#64748B] dark:text-[#94A3B8] shrink-0">
                               {u.lessons.length} دروس
                             </span>
                           </li>
@@ -123,9 +123,9 @@ export function SubjectsShowcase({ subjects = [] }: SubjectsShowcaseProps) {
                         {sub.publishedUnitsCount} وحدات • {sub.publishedLessonsCount} درساً منشوراً
                       </span>
                     </span>
-                    <span className="inline-flex items-center gap-1.5 font-bold text-[#091B40] dark:text-white font-mono">
+                    <span className="inline-flex items-center gap-1.5 font-bold text-[#091B40] dark:text-white font-sans tabular-nums">
                       <CheckSquare className="w-3.5 h-3.5 text-[#059669]" />
-                      <span>{sub.publishedQuestionsCount} سؤال منشور</span>
+                      <span>{new Intl.NumberFormat("en-US").format(sub.publishedQuestionsCount)} سؤال منشور</span>
                     </span>
                   </div>
 
