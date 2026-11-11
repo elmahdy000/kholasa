@@ -12,6 +12,7 @@ import {
   X,
 } from "lucide-react";
 import { getCleanStudentName } from "@/lib/utils";
+import { isAnyDemoCode } from "@/lib/demo-shared";
 import { WhatsAppSupportLinks } from "@/components/ui/WhatsAppSupportLinks";
 
 interface PaywallModalProps {
@@ -49,6 +50,7 @@ export function PaywallModal({
   };
 
   const studentDisplayName = getCleanStudentName(user?.name) || "طالب المنصة";
+  const needsStudentRegistration = !user || isAnyDemoCode(user.loginCode);
   const whatsappMessage = `مرحباً بك يا مستر! 🌟\nأنا الطالب: *${studentDisplayName}*\nكود المنصة: *${user?.loginCode || "—"}*\nأريد تفعيل اشتراك المنصة الشهري (200 جنيه) لفتح جميع الدروس.`;
 
   return (
@@ -105,115 +107,132 @@ export function PaywallModal({
 
         {/* Notice Description */}
         <p className="text-xs sm:text-[13px] text-[#536681] dark:text-[#CBD5E1] leading-relaxed text-center px-1">
-          لقد استمتعت بالدرس الأول مجاناً للتجربة. للوصول إلى كافة دروس ووحدات المنهج وبنك الأسئلة والامتحانات، حوّل قيمة الاشتراك عبر أي من الطرق المعتمدة أدناه وارفع صورة الإيصال.
+          {needsStudentRegistration
+            ? "لفتح كافة الدروس وبنك الأسئلة، سجّل حسابك الأول كطالب جديد قبل تحويل المبلغ عشان يطلعلك كودك وتظهرلك أرقام التحويل ورفع الإيصال."
+            : "لقد استمتعت بالدرس الأول مجاناً للتجربة. للوصول إلى كافة دروس ووحدات المنهج وبنك الأسئلة والامتحانات، حوّل قيمة الاشتراك عبر أي من الطرق المعتمدة أدناه وارفع صورة الإيصال."}
         </p>
 
-        {/* Payment Methods Section (Updated Phone Numbers) */}
-        <div className="space-y-2.5">
-          <span className="text-xs font-black text-[#091B40] dark:text-white block">
-            طرق التحويل المعتمدة:
-          </span>
+        {/* Payment Methods Section (Visible after student registration) */}
+        {!needsStudentRegistration ? (
+          <div className="space-y-2.5">
+            <span className="text-xs font-black text-[#091B40] dark:text-white block">
+              طرق التحويل المعتمدة:
+            </span>
 
-          {/* 1. InstaPay Box */}
-          <div className="p-3 rounded-2xl bg-[#F7F9FC] dark:bg-[#071737] border border-[#E2E8F0] dark:border-[#1E3A6E] flex items-center justify-between gap-2 shadow-2xs">
-            <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-8 h-8 rounded-xl bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 flex items-center justify-center shrink-0 border border-purple-200/60 font-bold text-xs">
-                IP
+            {/* 1. InstaPay Box */}
+            <div className="p-3 rounded-2xl bg-[#F7F9FC] dark:bg-[#071737] border border-[#E2E8F0] dark:border-[#1E3A6E] flex items-center justify-between gap-2 shadow-2xs">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-8 h-8 rounded-xl bg-[#EAF2FF] dark:bg-[#142747] text-[#1D4ED8] dark:text-[#93C5FD] flex items-center justify-center shrink-0 border border-[#BFDBFE] dark:border-[#1E3A6E] font-bold text-xs">
+                  IP
+                </div>
+                <div className="min-w-0">
+                  <span className="text-[11px] font-bold text-[#536681] dark:text-[#94A3B8] block truncate">
+                    إنستاباي (InstaPay):
+                  </span>
+                  <span className="text-sm sm:text-base font-black font-mono text-[#091B40] dark:text-white tracking-wider block" dir="ltr">
+                    {instapayNumber}
+                  </span>
+                </div>
               </div>
-              <div className="min-w-0">
-                <span className="text-[11px] font-bold text-[#536681] dark:text-[#94A3B8] block truncate">
-                  إنستاباي (InstaPay):
-                </span>
-                <span className="text-sm sm:text-base font-black font-mono text-[#091B40] dark:text-white tracking-wider block" dir="ltr">
-                  {instapayNumber}
-                </span>
-              </div>
-            </div>
 
-            <button
-              type="button"
-              onClick={() => handleCopy(instapayNumber, "instapay")}
-              className="h-9 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#1E3A6E] bg-white dark:bg-[#0D214D] hover:bg-[#FAF6F7] text-xs font-bold flex items-center gap-1.5 transition-colors text-[#091B40] dark:text-white shrink-0 active:scale-95 cursor-pointer"
-            >
-              {copiedKey === "instapay" ? (
-                <>
-                  <Check className="w-3.5 h-3.5 text-[#17834B]" />
-                  <span className="text-[#17834B]">تم النسخ</span>
-                </>
-              ) : (
-                <>
-                  <Copy className="w-3.5 h-3.5 text-[#536681]" />
-                  <span>نسخ الرقم</span>
-                </>
-              )}
-            </button>
-          </div>
-
-          {/* 2. Vodafone Cash Box (2 Numbers) */}
-          <div className="p-3 rounded-2xl bg-[#F7F9FC] dark:bg-[#071737] border border-[#E2E8F0] dark:border-[#1E3A6E] space-y-2 shadow-2xs">
-            <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#536681] dark:text-[#94A3B8]">
-              <Smartphone className="w-3.5 h-3.5 text-[#800B34]" />
-              <span>فودافون كاش (Vodafone Cash) — رقمين معتمدين:</span>
-            </div>
-
-            {/* VF 1 */}
-            <div className="flex items-center justify-between p-2 rounded-xl bg-white dark:bg-[#0D214D] border border-[#E2E8F0] dark:border-[#1E3A6E]">
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-red-50 text-red-700 dark:bg-red-950/50 dark:text-red-300">
-                  رقم 1
-                </span>
-                <span className="text-xs sm:text-sm font-black font-mono text-[#091B40] dark:text-white tracking-wider" dir="ltr">
-                  {vodafoneCash1}
-                </span>
-              </div>
               <button
                 type="button"
-                onClick={() => handleCopy(vodafoneCash1, "vf1")}
-                className="h-8 px-2.5 rounded-lg border border-[#E2E8F0] dark:border-[#1E3A6E] hover:bg-slate-50 text-[11px] font-bold flex items-center gap-1 transition-colors text-[#091B40] dark:text-white cursor-pointer active:scale-95"
+                onClick={() => handleCopy(instapayNumber, "instapay")}
+                className="h-9 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#1E3A6E] bg-white dark:bg-[#0D214D] hover:bg-[#FAF6F7] text-xs font-bold flex items-center gap-1.5 transition-colors text-[#091B40] dark:text-white shrink-0 active:scale-95 cursor-pointer"
               >
-                {copiedKey === "vf1" ? (
-                  <span className="text-[#17834B]">تم النسخ</span>
+                {copiedKey === "instapay" ? (
+                  <>
+                    <Check className="w-3.5 h-3.5 text-[#17834B]" />
+                    <span className="text-[#17834B]">تم النسخ</span>
+                  </>
                 ) : (
-                  <span>نسخ</span>
+                  <>
+                    <Copy className="w-3.5 h-3.5 text-[#536681]" />
+                    <span>نسخ الرقم</span>
+                  </>
                 )}
               </button>
             </div>
 
-            {/* VF 2 */}
-            <div className="flex items-center justify-between p-2 rounded-xl bg-white dark:bg-[#0D214D] border border-[#E2E8F0] dark:border-[#1E3A6E]">
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-red-50 text-red-700 dark:bg-red-950/50 dark:text-red-300">
-                  رقم 2
-                </span>
-                <span className="text-xs sm:text-sm font-black font-mono text-[#091B40] dark:text-white tracking-wider" dir="ltr">
-                  {vodafoneCash2}
-                </span>
+            {/* 2. Vodafone Cash Box (2 Numbers) */}
+            <div className="p-3 rounded-2xl bg-[#F7F9FC] dark:bg-[#071737] border border-[#E2E8F0] dark:border-[#1E3A6E] space-y-2 shadow-2xs">
+              <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#536681] dark:text-[#94A3B8]">
+                <Smartphone className="w-3.5 h-3.5 text-[#800B34]" />
+                <span>فودافون كاش (Vodafone Cash) — رقمين معتمدين:</span>
               </div>
-              <button
-                type="button"
-                onClick={() => handleCopy(vodafoneCash2, "vf2")}
-                className="h-8 px-2.5 rounded-lg border border-[#E2E8F0] dark:border-[#1E3A6E] hover:bg-slate-50 text-[11px] font-bold flex items-center gap-1 transition-colors text-[#091B40] dark:text-white cursor-pointer active:scale-95"
-              >
-                {copiedKey === "vf2" ? (
-                  <span className="text-[#17834B]">تم النسخ</span>
-                ) : (
-                  <span>نسخ</span>
-                )}
-              </button>
+
+              {/* VF 1 */}
+              <div className="flex items-center justify-between p-2 rounded-xl bg-white dark:bg-[#0D214D] border border-[#E2E8F0] dark:border-[#1E3A6E]">
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-red-50 text-red-700 dark:bg-red-950/50 dark:text-red-300">
+                    رقم 1
+                  </span>
+                  <span className="text-xs sm:text-sm font-black font-mono text-[#091B40] dark:text-white tracking-wider" dir="ltr">
+                    {vodafoneCash1}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleCopy(vodafoneCash1, "vf1")}
+                  className="h-8 px-2.5 rounded-lg border border-[#E2E8F0] dark:border-[#1E3A6E] hover:bg-slate-50 text-[11px] font-bold flex items-center gap-1 transition-colors text-[#091B40] dark:text-white cursor-pointer active:scale-95"
+                >
+                  {copiedKey === "vf1" ? (
+                    <span className="text-[#17834B]">تم النسخ</span>
+                  ) : (
+                    <span>نسخ</span>
+                  )}
+                </button>
+              </div>
+
+              {/* VF 2 */}
+              <div className="flex items-center justify-between p-2 rounded-xl bg-white dark:bg-[#0D214D] border border-[#E2E8F0] dark:border-[#1E3A6E]">
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-red-50 text-red-700 dark:bg-red-950/50 dark:text-red-300">
+                    رقم 2
+                  </span>
+                  <span className="text-xs sm:text-sm font-black font-mono text-[#091B40] dark:text-white tracking-wider" dir="ltr">
+                    {vodafoneCash2}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleCopy(vodafoneCash2, "vf2")}
+                  className="h-8 px-2.5 rounded-lg border border-[#E2E8F0] dark:border-[#1E3A6E] hover:bg-slate-50 text-[11px] font-bold flex items-center gap-1 transition-colors text-[#091B40] dark:text-white cursor-pointer active:scale-95"
+                >
+                  {copiedKey === "vf2" ? (
+                    <span className="text-[#17834B]">تم النسخ</span>
+                  ) : (
+                    <span>نسخ</span>
+                  )}
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+        ) : (
+          <div className="p-3.5 rounded-2xl bg-[#EFF6FF] dark:bg-[#142747] border border-[#BFDBFE] dark:border-[#1E3A6E] text-center space-y-1">
+            <p className="text-xs sm:text-[13px] font-extrabold text-[#091B40] dark:text-[#F5F7FB]">
+              خطوة 1: تسجيل طالب جديد • خطوة 2: التحويل ورفع الإيصال
+            </p>
+            <p className="text-[11px] sm:text-xs text-[#475569] dark:text-[#CBD5E1]">
+              بالضغط تحت هتفتحلك نافذة التسجيل عشان تطلع كود حسابك الأول قبل ما تحوّل المبلغ.
+            </p>
+          </div>
+        )}
 
         {/* Action Buttons */}
         <div className="space-y-2.5 pt-1">
-          {/* Main Action: Go to Receipt Upload Screen */}
+          {/* Main Action: Go to Subscription / Registration & Receipt Screen */}
           <Link
-            href="/subscription?renew=true"
+            href={needsStudentRegistration ? "/subscription" : "/subscription?renew=true"}
             onClick={onClose}
             className="w-full min-h-[48px] sm:min-h-[52px] rounded-xl bg-[#800B34] hover:bg-[#680829] text-white font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-md shadow-[#800B34]/20 active:scale-[0.98] cursor-pointer"
           >
             <Upload className="w-4 h-4" />
-            <span>التوجه لشاشة رفع الإيصال وتفعيل الحساب</span>
+            <span>
+              {needsStudentRegistration
+                ? "تسجيل طالب جديد وإكمال الاشتراك"
+                : "التوجه لشاشة رفع الإيصال وتفعيل الحساب"}
+            </span>
           </Link>
 
           {/* Secondary Action: Direct WhatsApp across all official numbers */}

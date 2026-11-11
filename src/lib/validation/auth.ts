@@ -10,3 +10,12 @@ export const passwordSchema = z
 export const OTP_TYPES = ["PASSWORD_RESET", "VERIFICATION"] as const;
 export const otpTypeSchema = z.enum(OTP_TYPES);
 export type OtpType = z.infer<typeof otpTypeSchema>;
+
+/** Convert Arabic-Indic and Eastern Arabic numerals into standard ASCII digits and strip separators. */
+export function normalizeDigits(raw: string): string {
+  return raw
+    .replace(/[٠-٩]/g, (d) => String(d.charCodeAt(0) - 0x0660))
+    .replace(/[۰-۹]/g, (d) => String(d.charCodeAt(0) - 0x06f0))
+    .replace(/[\s\-().]/g, "")
+    .trim();
+}

@@ -93,6 +93,13 @@ export default function RegisterPage() {
 
           {/* Action CTAs */}
           <div className="space-y-4 pt-2">
+            <Link
+              href="/subscription"
+              className="w-full min-h-[48px] px-4 py-2.5 rounded-xl bg-[#091B40] hover:bg-[#1D4ED8] text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-colors"
+            >
+              <span>طالب جديد؟ سجّل بياناتك واشترك أونلاين الآن</span>
+            </Link>
+
             <WhatsAppSupportLinks
               variant="buttons"
               title="تواصل مع المساعد عبر واتساب للحصول على الكود:"

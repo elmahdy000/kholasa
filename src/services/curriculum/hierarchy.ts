@@ -27,7 +27,10 @@ export class CurriculumHierarchyService {
    */
   static async getPublicSystems() {
     return prisma.educationalSystem.findMany({
-      where: { isActive: true },
+      where: {
+        isActive: true,
+        NOT: { code: { startsWith: "test_" } },
+      },
       orderBy: { order: "asc" },
       select: {
         id: true,
@@ -35,11 +38,13 @@ export class CurriculumHierarchyService {
         code: true,
         description: true,
         grades: {
+          where: { NOT: { code: { startsWith: "test_" } } },
           orderBy: { order: "asc" },
           select: {
             id: true,
             name: true,
             code: true,
+            _count: { select: { subjects: { where: { isPublished: true } } } },
             tracks: {
               select: {
                 id: true,

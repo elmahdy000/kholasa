@@ -1,3 +1,6 @@
+import { normalizeDigits } from "@/lib/validation/auth";
+export { normalizeDigits };
+
 export type PaymentMethodId = "instapay" | "vodafone_cash";
 
 export interface PaymentAccountOption {
@@ -71,15 +74,6 @@ export const SUBSCRIPTION_BENEFITS: readonly string[] = [
   "الكبسولات الصوتية وملخصات المراجعة",
   "الامتحانات التفاعلية وتقارير الأخطاء",
 ];
-
-/** Convert Arabic-Indic and Eastern Arabic numerals into standard ASCII digits. */
-export function normalizeDigits(raw: string): string {
-  return raw
-    .replace(/[٠-٩]/g, (d) => String(d.charCodeAt(0) - 0x0660))
-    .replace(/[۰-۹]/g, (d) => String(d.charCodeAt(0) - 0x06f0))
-    .replace(/[\s\-().]/g, "")
-    .trim();
-}
 
 /** Validate Egyptian mobile number required by backend receipt confirmation. */
 export function validateSenderPhone(rawPhone: string): string | null {

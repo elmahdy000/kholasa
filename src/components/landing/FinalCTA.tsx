@@ -19,6 +19,14 @@ export function FinalCTA() {
 
           <div className="flex flex-wrap items-center gap-3 shrink-0">
             <Link
+              href="/subscription"
+              className="min-h-[44px] px-5 py-2.5 rounded-lg bg-[#091B40] hover:bg-[#1D4ED8] text-white text-sm font-bold inline-flex items-center gap-2 transition-colors"
+            >
+              <span>اشترك الآن (طالب جديد)</span>
+              <ArrowLeft className="w-4 h-4" />
+            </Link>
+
+            <Link
               href="/login"
               className="min-h-[44px] px-5 py-2.5 rounded-lg bg-[#800B34] hover:bg-[#680829] text-white text-sm font-bold inline-flex items-center gap-2 transition-colors"
             >

@@ -1,6 +1,6 @@
-import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getCurrentUser } from "@/lib/auth";
+import { CurriculumService } from "@/services/curriculum.service";
 import { StudentShell } from "@/components/layout/StudentShell";
 import { StudentPaywallView } from "@/components/student/subscription/StudentPaywallView";
 import { CheckCircle2, BookOpen, LayoutDashboard, Upload } from "lucide-react";
@@ -16,11 +16,10 @@ interface SubscriptionPageProps {
 }
 
 export default async function SubscriptionPage({ searchParams }: SubscriptionPageProps) {
-  const user = await getCurrentUser();
-
-  if (!user) {
-    redirect("/login?callbackUrl=/subscription");
-  }
+  const [user, systems] = await Promise.all([
+    getCurrentUser(),
+    CurriculumService.getPublicSystems(),
+  ]);
 
   const resolvedParams = searchParams ? await searchParams : {};
   const isForceView =
@@ -28,8 +27,8 @@ export default async function SubscriptionPage({ searchParams }: SubscriptionPag
     resolvedParams?.manage === "true" ||
     resolvedParams?.renew === "true";
 
-  const isStaff = user.role === "ADMIN" || user.role === "SUPER_ADMIN";
-  const isActive = isStaff || user.subscriptionStatus === "ACTIVE";
+  const isStaff = user ? user.role === "ADMIN" || user.role === "SUPER_ADMIN" : false;
+  const isActive = Boolean(user && (isStaff || user.subscriptionStatus === "ACTIVE"));
 
   return (
     <StudentShell user={user}>
@@ -40,10 +39,10 @@ export default async function SubscriptionPage({ searchParams }: SubscriptionPag
           className="flex items-center gap-2 text-[13px] font-semibold text-[#64748B]"
         >
           <Link
-            href="/dashboard"
+            href={user ? "/dashboard" : "/"}
             className="inline-flex items-center min-h-[44px] px-1 hover:text-[#1D4ED8] transition-colors"
           >
-            الرئيسية
+            {user ? "الرئيسية" : "الصفحة الرئيسية"}
           </Link>
           <span>/</span>
           <span className="text-[#091B40] font-bold">تأكيد دفع الاشتراك</span>
@@ -87,7 +86,7 @@ export default async function SubscriptionPage({ searchParams }: SubscriptionPag
             </div>
           </div>
         ) : (
-          <StudentPaywallView user={user} />
+          <StudentPaywallView user={user} initialSystems={systems} />
         )}
       </div>
     </StudentShell>

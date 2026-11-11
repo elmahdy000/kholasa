@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   AlertCircle,
   ArrowLeft,
@@ -12,13 +13,20 @@ import {
   FileText,
   Info,
   Loader2,
+  LogIn,
   RefreshCw,
   ShieldCheck,
   Smartphone,
   Upload,
+  UserPlus,
   Wallet,
   X,
 } from "lucide-react";
+import {
+  NewStudentRegistrationModal,
+  type PublicSystemOption,
+  type RegisteredSubscriptionStudent,
+} from "./NewStudentRegistrationModal";
 import { getCleanStudentName } from "@/lib/utils";
 import { isAnyDemoCode } from "@/lib/demo-shared";
 import { fetchWithRetry } from "@/lib/network";
@@ -40,14 +48,15 @@ import {
 import { SubscriptionOrderSummary } from "./SubscriptionOrderSummary";
 
 interface StudentPaywallViewProps {
-  user: {
+  user?: {
     id: string;
     name?: string | null;
     loginCode?: string | null;
     phone?: string | null;
     schoolCategory?: string | null;
     subscriptionStatus?: string | null;
-  };
+  } | null;
+  initialSystems?: PublicSystemOption[];
   lessonTitle?: string;
   unitTitle?: string;
   examTitle?: string;
@@ -55,18 +64,32 @@ interface StudentPaywallViewProps {
 }
 
 export function StudentPaywallView({
-  user,
+  user = null,
+  initialSystems,
   lessonTitle,
   unitTitle,
   examTitle,
   isExam = false,
 }: StudentPaywallViewProps) {
+  const router = useRouter();
+  const [registeredUser, setRegisteredUser] =
+    useState<RegisteredSubscriptionStudent | null>(null);
+  const activeUser = registeredUser ?? user ?? null;
+  const isDemoAccount = Boolean(activeUser && isAnyDemoCode(activeUser.loginCode));
+  const needsStudentRegistration = !activeUser || isDemoAccount;
+
+  const [showRegisterModal, setShowRegisterModal] = useState<boolean>(
+    () => needsStudentRegistration
+  );
+  const [justRegisteredCode, setJustRegisteredCode] = useState<string | null>(null);
+  const [copiedCode, setCopiedCode] = useState(false);
+
   const [selectedMethod, setSelectedMethod] = useState<PaymentMethodId>("instapay");
   const [hasInteractedWithTransfer, setHasInteractedWithTransfer] = useState(false);
 
   const [file, setFile] = useState<File | null>(null);
   const [filePreviewUrl, setFilePreviewUrl] = useState<string | null>(null);
-  const [senderPhone, setSenderPhone] = useState(user.phone || "");
+  const [senderPhone, setSenderPhone] = useState(user?.phone || "");
   const [phoneTouched, setPhoneTouched] = useState(false);
   const [reference, setReference] = useState("");
 
@@ -88,32 +111,36 @@ export function StudentPaywallView({
     };
   }, [filePreviewUrl]);
 
-  const studentDisplayName = getCleanStudentName(user?.name);
-  const isDemoAccount = isAnyDemoCode(user.loginCode);
+  const studentDisplayName = getCleanStudentName(activeUser?.name);
   const isAlreadyPending =
-    user.subscriptionStatus === "PENDING_VERIFICATION" && !uploadSuccess;
+    activeUser?.subscriptionStatus === "PENDING_VERIFICATION" && !uploadSuccess;
 
   const activeMethodConfig =
     PAYMENT_METHODS.find((m) => m.id === selectedMethod) ?? PAYMENT_METHODS[0];
 
   const phoneValidationError = validateSenderPhone(senderPhone);
   const isPhoneValid = phoneValidationError === null;
-  const isSubmitDisabled = isUploading || !file || !isPhoneValid;
+  const isSubmitDisabled =
+    needsStudentRegistration || isUploading || !file || !isPhoneValid;
 
   const currentStep: PaymentFlowStep =
     uploadSuccess || isAlreadyPending
       ? 3
-      : hasInteractedWithTransfer || Boolean(file) || Boolean(senderPhone.trim())
+      : !needsStudentRegistration &&
+          (hasInteractedWithTransfer || Boolean(file) || Boolean(senderPhone.trim()))
       ? 2
       : 1;
 
   const whatsappMessage = `مرحباً فريق الدعم!\nأنا الطالب: *${
     studentDisplayName || "طالب المنصة"
   }*\nكود المنصة: *${
-    user.loginCode || "—"
+    activeUser?.loginCode || "—"
   }*\nقمت بتحويل اشتراك المنصة الشهري (${SUBSCRIPTION_PRICE_EGP} جنيه مصري) وأرغب في متابعة مراجعة إيصال الدفع.`;
 
   const disabledReasonText = (() => {
+    if (needsStudentRegistration) {
+      return "سجّل بياناتك كطالب جديد الأول عشان يطلعلك كود الطالب الخاص بيك قبل رفع الإيصال.";
+    }
     if (isUploading) return "جاري رفع الإيصال وإرساله للمراجعة، يرجى الانتظار...";
     if (!file && !senderPhone.trim()) {
       return "لإتمام التأكيد: ارفع صورة إيصال التحويل وأدخل رقم الموبايل المحوّل منه.";
@@ -130,7 +157,33 @@ export function StudentPaywallView({
     return null;
   })();
 
+  const handleRegistrationSuccess = (student: RegisteredSubscriptionStudent) => {
+    setRegisteredUser(student);
+    if (student.phone) {
+      setSenderPhone(student.phone);
+    }
+    setJustRegisteredCode(student.loginCode);
+    setShowRegisterModal(false);
+    setError(null);
+    router.refresh();
+  };
+
+  const handleCopyLoginCode = async () => {
+    if (!justRegisteredCode) return;
+    try {
+      await navigator.clipboard.writeText(justRegisteredCode);
+      setCopiedCode(true);
+      setTimeout(() => setCopiedCode(false), 2500);
+    } catch {
+      // ignore
+    }
+  };
+
   const handleCopyAccount = async (num: string, key: string) => {
+    if (needsStudentRegistration) {
+      setShowRegisterModal(true);
+      return;
+    }
     try {
       await navigator.clipboard.writeText(num);
       setCopiedKey(key);
@@ -194,6 +247,10 @@ export function StudentPaywallView({
 
   const handleSubmitReceipt = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (needsStudentRegistration) {
+      setShowRegisterModal(true);
+      return;
+    }
     if (submittingRef.current || isUploading) return;
 
     setPhoneTouched(true);
@@ -291,11 +348,11 @@ export function StudentPaywallView({
         </div>
 
         <Link
-          href="/dashboard"
+          href={activeUser ? "/dashboard" : "/"}
           className="inline-flex items-center justify-center gap-2 min-h-[44px] px-4 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] hover:bg-[#F1F5F9] text-[14px] font-bold text-[#091B40] transition-colors shrink-0 self-start sm:self-center"
         >
           <ArrowLeft className="w-4 h-4 text-[#475569]" />
-          <span>العودة للوحة التحكم</span>
+          <span>{activeUser ? "العودة للوحة التحكم" : "العودة للصفحة الرئيسية"}</span>
         </Link>
       </header>
 
@@ -305,23 +362,94 @@ export function StudentPaywallView({
       {/* Mobile & Tablet Compact Amount Card (Single Column Experience) */}
       <SubscriptionOrderSummary
         studentName={studentDisplayName}
-        loginCode={user.loginCode}
+        loginCode={activeUser?.loginCode}
         whatsappMessage={whatsappMessage}
         compactMobileOnly
       />
 
-      {/* Demo Session Notice if Applicable */}
-      {isDemoAccount && (
+      {/* Registration Gate Banner when Unauthenticated / Demo Account */}
+      {needsStudentRegistration && (
         <div
           role="note"
-          className="rounded-2xl bg-[#FEF8EC] border border-[#E9AD32]/50 p-4 flex items-start gap-3 text-[14px] text-[#091B40]"
+          className="rounded-2xl bg-[#EFF6FF] border border-[#BFDBFE] p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-[14px] text-[#091B40]"
         >
-          <Info className="w-5 h-5 text-[#B45309] shrink-0 mt-0.5" />
-          <div className="space-y-1">
-            <p className="font-bold">أنت تتصفح الآن بحساب تجريبي مؤقت</p>
-            <p className="text-[#475569] leading-relaxed">
-              لإتمام رفع الإيصال وتفعيل اشتراك دائم، سجّل الدخول بكود الطالب الدائم الخاص بك أو تواصل معنا عبر واتساب لإصدار كودك.
-            </p>
+          <div className="flex items-start gap-3">
+            <UserPlus className="w-5 h-5 text-[#1D4ED8] shrink-0 mt-0.5" />
+            <div className="space-y-1">
+              <p className="font-black text-[#091B40]">
+                {isDemoAccount
+                  ? "سجّل حسابك الدائم قبل تحويل المبلغ ورفع الإيصال"
+                  : "سجّل بياناتك كطالب جديد قبل تحويل المبلغ"}
+              </p>
+              <p className="text-[#475569] leading-relaxed">
+                قبل ما تحوّل المبلغ أو ترفع إيصال التحويل، لازم تسجل اسمك ورقمك عشان يطلعلك كود الطالب الخاص بيك ونربط الإيصال بحسابك مباشرة.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={() => setShowRegisterModal(true)}
+              className="min-h-[44px] px-4 rounded-xl bg-[#091B40] hover:bg-[#1D4ED8] text-white text-[14px] font-bold inline-flex items-center justify-center gap-2 transition-colors cursor-pointer"
+            >
+              <UserPlus className="w-4 h-4 text-[#E9AD32]" />
+              <span>تسجيل طالب جديد</span>
+            </button>
+            <Link
+              href="/login?callbackUrl=/subscription"
+              className="min-h-[44px] px-3.5 rounded-xl border border-[#BFDBFE] bg-white hover:bg-[#F8FAFC] text-[#091B40] text-[13px] font-bold inline-flex items-center justify-center gap-1.5 transition-colors"
+            >
+              <LogIn className="w-4 h-4 text-[#1D4ED8]" />
+              <span>معاك كود؟ ادخل</span>
+            </Link>
+          </div>
+        </div>
+      )}
+
+      {/* Newly Registered Student Confirmation + Login Code Card */}
+      {justRegisteredCode && !needsStudentRegistration && (
+        <div
+          role="status"
+          className="rounded-2xl bg-[#ECFDF5] border border-[#A7F3D0] p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-[#091B40]"
+        >
+          <div className="flex items-start gap-3">
+            <CheckCircle2 className="w-5 h-5 text-[#059669] shrink-0 mt-0.5" />
+            <div className="space-y-1">
+              <p className="text-[15px] font-black text-[#065F46]">
+                تم تسجيل حسابك بنجاح! كود الدخول الخاص بيك جاهز
+              </p>
+              <p className="text-[13px] sm:text-[14px] text-[#047857] leading-relaxed">
+                احفظ الكود ده عشان تدخل بيه على المنصة في أي وقت، ودلوقتي حوّل مبلغ الاشتراك (200 جنيه) وارفع إيصال الدفع في الخطوتين تحت.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0 bg-white border border-[#A7F3D0] rounded-xl px-3.5 py-2">
+            <span className="text-[12px] font-bold text-[#475569]">كودك:</span>
+            <span
+              className="text-[18px] font-black font-mono tracking-wider text-[#091B40]"
+              dir="ltr"
+            >
+              {justRegisteredCode}
+            </span>
+            <button
+              type="button"
+              onClick={handleCopyLoginCode}
+              className="min-h-[38px] px-2.5 rounded-lg bg-[#ECFDF5] hover:bg-[#D1FAE5] text-[#059669] text-[12px] font-bold inline-flex items-center gap-1 transition-colors cursor-pointer"
+            >
+              {copiedCode ? (
+                <>
+                  <Check className="w-3.5 h-3.5" />
+                  <span>اتنسخ</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="w-3.5 h-3.5" />
+                  <span>نسخ</span>
+                </>
+              )}
+            </button>
           </div>
         </div>
       )}
@@ -466,57 +594,73 @@ export function StudentPaywallView({
                   })}
                 </div>
 
-                {/* Selected Payment Method Details ONLY */}
+                {/* Selected Payment Method Details (Gated Behind Student Registration First) */}
                 <div className="rounded-xl bg-[#F8FAFC] border border-[#E2E8F0] p-4 sm:p-5 space-y-4">
                   <p className="text-[14px] text-[#334155] leading-relaxed">
                     {activeMethodConfig.instructions}
                   </p>
 
-                  <div className="space-y-3">
-                    {activeMethodConfig.accounts.map((acc) => {
-                      const isCopied = copiedKey === acc.key;
-                      return (
-                        <div
-                          key={acc.key}
-                          className="rounded-xl bg-white border border-[#E2E8F0] p-3.5 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
-                        >
-                          <div className="space-y-1 min-w-0">
-                            <span className="text-[13px] font-bold text-[#475569] block">
-                              {acc.label}
-                            </span>
-                            <span
-                              className="text-[20px] sm:text-[22px] font-black font-mono tabular-nums text-[#091B40] tracking-wider block"
-                              dir="ltr"
-                            >
-                              {acc.number}
-                            </span>
-                          </div>
-
-                          <button
-                            type="button"
-                            onClick={() => handleCopyAccount(acc.number, acc.key)}
-                            className={`min-h-[44px] px-4 rounded-xl border text-[14px] font-bold inline-flex items-center justify-center gap-2 transition-colors cursor-pointer shrink-0 w-full sm:w-auto ${
-                              isCopied
-                                ? "border-[#059669] bg-[#ECFDF5] text-[#059669]"
-                                : "border-[#CBD5E1] bg-[#F8FAFC] hover:bg-[#EFF6FF] hover:border-[#1D4ED8] text-[#091B40]"
-                            }`}
+                  {needsStudentRegistration ? (
+                    <div className="rounded-xl bg-white border border-dashed border-[#CBD5E1] p-5 text-center space-y-3">
+                      <p className="text-[14px] font-bold text-[#091B40]">
+                        سجّل بياناتك كطالب جديد الأول عشان تظهر أرقام التحويل وتبدأ الدفع
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => setShowRegisterModal(true)}
+                        className="min-h-[44px] px-5 rounded-xl bg-[#091B40] hover:bg-[#1D4ED8] text-white text-[14px] font-bold inline-flex items-center justify-center gap-2 transition-colors cursor-pointer"
+                      >
+                        <UserPlus className="w-4 h-4 text-[#E9AD32]" />
+                        <span>تسجيل طالب جديد الآن</span>
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {activeMethodConfig.accounts.map((acc) => {
+                        const isCopied = copiedKey === acc.key;
+                        return (
+                          <div
+                            key={acc.key}
+                            className="rounded-xl bg-white border border-[#E2E8F0] p-3.5 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
                           >
-                            {isCopied ? (
-                              <>
-                                <Check className="w-4 h-4 shrink-0" />
-                                <span>تم النسخ بنجاح</span>
-                              </>
-                            ) : (
-                              <>
-                                <Copy className="w-4 h-4 shrink-0 text-[#1D4ED8]" />
-                                <span>نسخ الرقم</span>
-                              </>
-                            )}
-                          </button>
-                        </div>
-                      );
-                    })}
-                  </div>
+                            <div className="space-y-1 min-w-0">
+                              <span className="text-[13px] font-bold text-[#475569] block">
+                                {acc.label}
+                              </span>
+                              <span
+                                className="text-[20px] sm:text-[22px] font-black font-mono tabular-nums text-[#091B40] tracking-wider block"
+                                dir="ltr"
+                              >
+                                {acc.number}
+                              </span>
+                            </div>
+
+                            <button
+                              type="button"
+                              onClick={() => handleCopyAccount(acc.number, acc.key)}
+                              className={`min-h-[44px] px-4 rounded-xl border text-[14px] font-bold inline-flex items-center justify-center gap-2 transition-colors cursor-pointer shrink-0 w-full sm:w-auto ${
+                                isCopied
+                                  ? "border-[#059669] bg-[#ECFDF5] text-[#059669]"
+                                  : "border-[#CBD5E1] bg-[#F8FAFC] hover:bg-[#EFF6FF] hover:border-[#1D4ED8] text-[#091B40]"
+                              }`}
+                            >
+                              {isCopied ? (
+                                <>
+                                  <Check className="w-4 h-4 shrink-0" />
+                                  <span>تم النسخ بنجاح</span>
+                                </>
+                              ) : (
+                                <>
+                                  <Copy className="w-4 h-4 shrink-0 text-[#1D4ED8]" />
+                                  <span>نسخ الرقم</span>
+                                </>
+                              )}
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               </section>
 
@@ -612,21 +756,35 @@ export function StudentPaywallView({
                     onKeyDown={(e) => {
                       if (e.key === "Enter" || e.key === " ") {
                         e.preventDefault();
+                        if (needsStudentRegistration) {
+                          setShowRegisterModal(true);
+                          return;
+                        }
                         fileInputRef.current?.click();
                       }
                     }}
                     onDragOver={(e) => {
                       e.preventDefault();
-                      setIsDragging(true);
+                      if (!needsStudentRegistration) setIsDragging(true);
                     }}
                     onDragLeave={() => setIsDragging(false)}
                     onDrop={(e) => {
                       e.preventDefault();
                       setIsDragging(false);
+                      if (needsStudentRegistration) {
+                        setShowRegisterModal(true);
+                        return;
+                      }
                       const dropped = e.dataTransfer.files?.[0];
                       if (dropped) validateAndSetFile(dropped);
                     }}
-                    onClick={() => fileInputRef.current?.click()}
+                    onClick={() => {
+                      if (needsStudentRegistration) {
+                        setShowRegisterModal(true);
+                        return;
+                      }
+                      fileInputRef.current?.click();
+                    }}
                     className={`rounded-2xl border-2 border-dashed p-6 sm:p-8 text-center transition-all cursor-pointer select-none min-h-[168px] flex flex-col items-center justify-center gap-3 ${
                       isDragging
                         ? "border-[#1D4ED8] bg-[#EFF6FF]"
@@ -756,11 +914,22 @@ export function StudentPaywallView({
         <div className="lg:col-span-4">
           <SubscriptionOrderSummary
             studentName={studentDisplayName}
-            loginCode={user.loginCode}
+            loginCode={activeUser?.loginCode}
             whatsappMessage={whatsappMessage}
           />
         </div>
       </div>
+
+      {/* New Student Registration Modal (Opens automatically before transfer/upload for new/demo students) */}
+      <NewStudentRegistrationModal
+        isOpen={showRegisterModal}
+        onClose={() => setShowRegisterModal(false)}
+        initialSystems={initialSystems}
+        initialSchoolCategory={
+          activeUser?.schoolCategory === "LANGUAGES" ? "LANGUAGES" : "ARABIC"
+        }
+        onRegistered={handleRegistrationSuccess}
+      />
     </div>
   );
 }

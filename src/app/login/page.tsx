@@ -688,6 +688,13 @@ export default function LoginPage() {
           <div className="mt-6 pt-5 border-t border-[#E2E8F0] dark:border-[#1E3A6E] flex flex-col gap-3 text-center text-xs">
             {loginMode === "code" ? (
               <>
+                <Link
+                  href="/subscription"
+                  className="w-full min-h-[44px] px-4 py-2 rounded-xl bg-[#EFF6FF] hover:bg-[#DBEAFE] dark:bg-[#142747] dark:hover:bg-[#1E3A6E] border border-[#BFDBFE] dark:border-[#2C70BF]/40 text-[#091B40] dark:text-[#F5F7FB] font-extrabold text-[13px] flex items-center justify-center gap-2 transition-colors"
+                >
+                  <span>طالب جديد وعاوز تشترك؟ سجّل بياناتك واشترك الآن</span>
+                </Link>
+
                 <button
                   type="button"
                   onClick={() => {
