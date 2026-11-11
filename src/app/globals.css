@@ -393,7 +393,32 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
-/* Print Optimization for Golden Summary (الزتونة) and Exam Reports */
+/* Disable Printing of Protected Student Educational Content */
+@media print {
+  .study-no-print,
+  .print-content,
+  body:has(.study-no-print) main,
+  body:has(.study-no-print) header,
+  body:has(.study-no-print) nav,
+  body:has(.study-no-print) footer,
+  body:has(.study-no-print) aside {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  body:has(.study-no-print)::before {
+    content: "عذراً، المحتوى التعليمي على منصة الخلاصة للبكالوريا محمي وغير متاح للطباعة.";
+    display: block !important;
+    padding: 64px 24px;
+    text-align: center;
+    font-size: 16pt;
+    font-weight: 800;
+    color: #800b34;
+    direction: rtl;
+  }
+}
+
+/* Admin Report Print Optimization */
 @media print {
   body {
     background: #FFFFFF !important;

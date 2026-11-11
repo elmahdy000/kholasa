@@ -11,8 +11,6 @@ import {
   Images,
   Eye,
   EyeSlash,
-  DownloadSimple,
-  ArrowSquareOut,
   ArrowsOut,
   ArrowsIn,
   X,
@@ -98,7 +96,6 @@ export function LessonSummarySection({
       if (e.key === "Escape") {
         handleCloseLightbox();
       } else if (e.key === "ArrowLeft") {
-        // In Arabic RTL, left arrow goes next or previous depending on direction
         handleNextImage();
       } else if (e.key === "ArrowRight") {
         handlePrevImage();
@@ -106,7 +103,6 @@ export function LessonSummarySection({
     };
 
     window.addEventListener("keydown", handleKeyDown);
-    // Lock body scrolling when modal is active
     const originalOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
 
@@ -119,7 +115,7 @@ export function LessonSummarySection({
   if (!hasAnyContent) return null;
 
   return (
-    <div id="section-summary" className="space-y-6">
+    <div id="section-summary" className="space-y-6 study-no-print select-none">
       {/* Section Header */}
       <div className="p-6 rounded-2xl bg-[#D97706]/10 border border-[#D97706]/25 relative overflow-hidden flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
@@ -146,7 +142,7 @@ export function LessonSummarySection({
           {hasPdf && (
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[#800B34]/10 text-[#800B34] dark:bg-[#800B34]/30 dark:text-[#FB7185] border border-[#800B34]/20">
               <FilePdf className="w-4 h-4" weight="fill" />
-              <span>ملخص PDF متاح</span>
+              <span>ملخص تفاعلي متاح</span>
             </span>
           )}
           {hasImages && (
@@ -160,7 +156,7 @@ export function LessonSummarySection({
 
       {hasAnyContent ? (
         <>
-          {/* 1. PDF Summary Document Capsule */}
+          {/* 1. In-Page Protected PDF Summary Document Capsule */}
           {hasPdf && summary?.pdfUrl && (
             <div className="rounded-2xl border border-[#800B34]/25 bg-gradient-to-br from-[#800B34]/5 via-white dark:via-[#0F172A] to-amber-500/5 dark:bg-[#0F172A] p-5 sm:p-6 shadow-sm space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -171,24 +167,24 @@ export function LessonSummarySection({
                   <div>
                     <div className="flex items-center gap-2">
                       <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-[#800B34]/15 text-[#800B34] dark:text-[#FB7185]">
-                        وثيقة PDF الرسمية
+                        وثيقة الملخص الرسمية
                       </span>
                       <h3 className="text-base font-bold text-[#0F172A] dark:text-white">
                         ملف ملخص الزتونة للدرس
                       </h3>
                     </div>
                     <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8] mt-1">
-                      ملف شامل معد للطباعة والمراجعة السريعة قبل الامتحانات والاختبارات الدورية
+                      ملف شامل للمراجعة السريعة وتثبيت أهم نقاط الدرس قبل الامتحانات داخل المنصة
                     </p>
                   </div>
                 </div>
 
-                {/* PDF Actions */}
+                {/* Protected In-Page Reader Action */}
                 <div className="flex items-center flex-wrap gap-2 pt-2 sm:pt-0">
                   <button
                     type="button"
                     onClick={() => setIsPdfEmbeddedOpen((prev) => !prev)}
-                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold bg-[#800B34] hover:bg-[#680829] text-white transition-all shadow-sm active:scale-95"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold bg-[#800B34] hover:bg-[#680829] text-white transition-all shadow-sm active:scale-95 cursor-pointer"
                   >
                     {isPdfEmbeddedOpen ? (
                       <>
@@ -202,25 +198,6 @@ export function LessonSummarySection({
                       </>
                     )}
                   </button>
-
-                  <a
-                    href={summary.pdfUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-white dark:bg-[#1E293B] hover:bg-slate-50 dark:hover:bg-[#334155] text-[#0F172A] dark:text-white border border-[#E2E8F0] dark:border-[#334155] transition-all"
-                  >
-                    <ArrowSquareOut className="w-4 h-4" />
-                    <span>نافذة جديدة</span>
-                  </a>
-
-                  <a
-                    href={summary.pdfUrl}
-                    download
-                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-white dark:bg-[#1E293B] hover:bg-slate-50 dark:hover:bg-[#334155] text-[#0F172A] dark:text-white border border-[#E2E8F0] dark:border-[#334155] transition-all"
-                  >
-                    <DownloadSimple className="w-4 h-4" weight="bold" />
-                    <span>تحميل</span>
-                  </a>
                 </div>
               </div>
 
@@ -233,7 +210,7 @@ export function LessonSummarySection({
                       <button
                         type="button"
                         onClick={() => setIsPdfExpanded((prev) => !prev)}
-                        className="inline-flex items-center gap-1 hover:text-[#800B34] dark:hover:text-[#FB7185] transition-colors"
+                        className="inline-flex items-center gap-1 hover:text-[#800B34] dark:hover:text-[#FB7185] transition-colors cursor-pointer"
                       >
                         {isPdfExpanded ? (
                           <>
@@ -256,14 +233,14 @@ export function LessonSummarySection({
                     }`}
                   >
                     <iframe
-                      src={`${summary.pdfUrl}#toolbar=1&navpanes=0`}
-                      title="ملخص الزتونة PDF"
+                      src={`${summary.pdfUrl}#toolbar=0&navpanes=0`}
+                      title="ملخص الزتونة"
                       className="w-full h-full border-0"
                     />
                   </div>
 
                   <p className="text-[11px] text-[#64748B] dark:text-[#94A3B8] text-center">
-                    إذا كان جهازك أو متصفحك لا يدعم معاينة PDF التفاعلية، يمكنك الضغط على زر &quot;نافذة جديدة&quot; أو &quot;تحميل&quot; بالشهادة الكاملة.
+                    يُعرض المستند محمياً للقراءة والمراجعة داخل المنصة فقط ولا يتاح للطباعة أو التحميل الخارجي.
                   </p>
                 </div>
               )}
@@ -295,6 +272,8 @@ export function LessonSummarySection({
                       alt={`بطاقة الزتونة رقم ${idx + 1}`}
                       className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                       loading="lazy"
+                      onContextMenu={(e) => e.preventDefault()}
+                      draggable={false}
                     />
 
                     {/* Card Index Badge */}
@@ -476,12 +455,12 @@ export function LessonSummarySection({
         </div>
       )}
 
-      {/* Lightbox Modal for Summary Images */}
+      {/* Lightbox Modal for Summary Images (Protected No-Print / No-Download) */}
       {lightboxIndex !== null && images[lightboxIndex] && (
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 flex flex-col items-center justify-between bg-black/90 backdrop-blur-md p-4 sm:p-6"
+          className="fixed inset-0 z-50 flex flex-col items-center justify-between bg-black/90 backdrop-blur-md p-4 sm:p-6 study-no-print select-none"
           onClick={handleCloseLightbox}
         >
           {/* Lightbox Header Bar */}
@@ -496,29 +475,10 @@ export function LessonSummarySection({
             </div>
 
             <div className="flex items-center gap-2">
-              <a
-                href={images[lightboxIndex]}
-                download={`al-zaytouna-card-${lightboxIndex + 1}`}
-                className="p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors"
-                title="تحميل الصورة"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <DownloadSimple className="w-5 h-5" weight="bold" />
-              </a>
-              <a
-                href={images[lightboxIndex]}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors"
-                title="فتح في نافذة كاملة"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <ArrowSquareOut className="w-5 h-5" />
-              </a>
               <button
                 type="button"
                 onClick={handleCloseLightbox}
-                className="p-2 rounded-lg bg-white/10 hover:bg-red-500/80 text-white transition-colors"
+                className="p-2 rounded-lg bg-white/10 hover:bg-red-500/80 text-white transition-colors cursor-pointer"
                 title="إغلاق (Esc)"
               >
                 <X className="w-5 h-5" weight="bold" />
@@ -535,7 +495,7 @@ export function LessonSummarySection({
               <button
                 type="button"
                 onClick={handlePrevImage}
-                className="absolute right-2 sm:right-4 z-10 p-3 rounded-full bg-black/60 hover:bg-black/90 text-white border border-white/20 shadow-lg transition-transform active:scale-90"
+                className="absolute right-2 sm:right-4 z-10 p-3 rounded-full bg-black/60 hover:bg-black/90 text-white border border-white/20 shadow-lg transition-transform active:scale-90 cursor-pointer"
                 aria-label="البطاقة السابقة"
               >
                 <CaretRight className="w-6 h-6" weight="bold" />
@@ -546,13 +506,15 @@ export function LessonSummarySection({
               src={images[lightboxIndex]}
               alt={`بطاقة الزتونة ${lightboxIndex + 1}`}
               className="max-h-[75vh] max-w-full object-contain rounded-xl shadow-2xl border border-white/10 select-none"
+              onContextMenu={(e) => e.preventDefault()}
+              draggable={false}
             />
 
             {images.length > 1 && (
               <button
                 type="button"
                 onClick={handleNextImage}
-                className="absolute left-2 sm:left-4 z-10 p-3 rounded-full bg-black/60 hover:bg-black/90 text-white border border-white/20 shadow-lg transition-transform active:scale-90"
+                className="absolute left-2 sm:left-4 z-10 p-3 rounded-full bg-black/60 hover:bg-black/90 text-white border border-white/20 shadow-lg transition-transform active:scale-90 cursor-pointer"
                 aria-label="البطاقة التالية"
               >
                 <CaretLeft className="w-6 h-6" weight="bold" />
@@ -571,7 +533,7 @@ export function LessonSummarySection({
                   key={idx}
                   type="button"
                   onClick={() => setLightboxIndex(idx)}
-                  className={`w-14 h-10 rounded-lg overflow-hidden border-2 transition-all shrink-0 ${
+                  className={`w-14 h-10 rounded-lg overflow-hidden border-2 transition-all shrink-0 cursor-pointer ${
                     idx === lightboxIndex
                       ? "border-[#D97706] scale-105 shadow-md"
                       : "border-white/20 opacity-50 hover:opacity-100"
@@ -581,6 +543,8 @@ export function LessonSummarySection({
                     src={thumbUrl}
                     alt={`مصغرة ${idx + 1}`}
                     className="w-full h-full object-cover"
+                    onContextMenu={(e) => e.preventDefault()}
+                    draggable={false}
                   />
                 </button>
               ))}

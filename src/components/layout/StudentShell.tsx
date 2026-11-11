@@ -54,6 +54,9 @@ export function StudentShell({ children, user: propUser }: StudentShellProps) {
       if (e.key === "Escape") {
         setIsSearchOpen(false);
       }
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "p") {
+        e.preventDefault();
+      }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
@@ -73,7 +76,7 @@ export function StudentShell({ children, user: propUser }: StudentShellProps) {
       <StudentShellContext.Provider value={{ isInsideShell: true, user: null }}>
         <div className="min-h-screen flex flex-col bg-[#F7F9FC] dark:bg-[#081426] text-[#091B40] dark:text-[#F5F7FB]">
           <SiteHeader />
-          <main className="flex-1 w-full max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 pb-28 lg:pb-12">
+          <main className="flex-1 w-full max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 pb-28 lg:pb-12 study-no-print">
             {children}
           </main>
           <SiteFooter />
@@ -137,7 +140,7 @@ export function StudentShell({ children, user: propUser }: StudentShellProps) {
         )}
 
         {/* Main Content Area */}
-        <main className="flex-1 max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 pb-28 sm:pb-32 lg:pb-12 w-full">
+        <main className="flex-1 max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 pb-28 sm:pb-32 lg:pb-12 w-full study-no-print">
           {children}
         </main>
 

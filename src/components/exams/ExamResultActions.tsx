@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Share2, Printer, Check, Copy } from "lucide-react";
+import { Share2, Check } from "lucide-react";
 
 interface ExamResultActionsProps {
   examTitle: string;
@@ -31,7 +31,7 @@ export function ExamResultActions({
           url: shareUrl,
         });
         return;
-      } catch (err) {
+      } catch {
         // User cancelled or share failed, fallback to clipboard
       }
     }
@@ -45,16 +45,12 @@ export function ExamResultActions({
     }
   };
 
-  const handlePrint = () => {
-    window.print();
-  };
-
   return (
     <div className="flex items-center gap-2">
       <button
         type="button"
         onClick={handleShare}
-        className="h-11 px-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B] hover:bg-[#F8FAFC] dark:hover:bg-[#334155] text-[13px] font-bold text-[#0F172A] dark:text-white flex items-center gap-2 transition-colors interactive-tap "
+        className="h-11 px-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B] hover:bg-[#F8FAFC] dark:hover:bg-[#334155] text-[13px] font-bold text-[#0F172A] dark:text-white flex items-center gap-2 transition-colors interactive-tap cursor-pointer"
         title="مشاركة النتيجة أو نسخ الرابط"
       >
         {copied ? (
@@ -68,16 +64,6 @@ export function ExamResultActions({
             <span>مشاركة النتيجة</span>
           </>
         )}
-      </button>
-
-      <button
-        type="button"
-        onClick={handlePrint}
-        className="h-11 px-4 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B] hover:bg-[#F8FAFC] dark:hover:bg-[#334155] text-[13px] font-bold text-[#0F172A] dark:text-white flex items-center gap-2 transition-colors interactive-tap "
-        title="طباعة التقرير أو حفظ كـ PDF"
-      >
-        <Printer className="w-3.5 h-3.5 text-[#64748B]" />
-        <span className="hidden sm:inline">طباعة / حفظ PDF</span>
       </button>
     </div>
   );

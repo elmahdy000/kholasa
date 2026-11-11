@@ -760,7 +760,7 @@ export function LessonViewer({
 
       {/* TAB 3: DEFINITIONS & SUMMARY CAPSULE (التعريفات والمفاهيم المهمة) */}
       {activeTab === "definitions" && (
-        <div className="space-y-8 print-content">
+        <div className="space-y-8 study-no-print">
           <LessonDefinitionsSection
             definitions={definitions}
             filteredDefinitions={filteredDefinitions}
@@ -787,7 +787,7 @@ export function LessonViewer({
 
       {/* TAB 4: PRACTICE QUESTIONS WITH DIFFICULTY FILTER (تدريبات وبنك أسئلة الدرس) */}
       {activeTab === "questions" && (
-        <div className="space-y-6 print-content">
+        <div className="space-y-6 study-no-print">
           {/* Difficulty & Type Filter Dock (Redesigned UI/UX - Compact, Balanced 2x2/4x1 Grids, Unified Burgundy) */}
           <div className="p-3.5 sm:p-4.5 rounded-2xl bg-white dark:bg-[#0D214D] border border-[#E2E8F0] dark:border-[#1E3A6E] shadow-2xs space-y-3.5">
             {/* Header: Action Title + Single Primary Counter */}

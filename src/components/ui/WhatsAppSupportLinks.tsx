@@ -68,7 +68,7 @@ export function WhatsAppSupportLinks({
               target="_blank"
               rel="noopener noreferrer"
               dir="ltr"
-              className="min-h-[40px] px-3 py-1.5 rounded-lg bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#1E3A6E] hover:border-[#17834B] text-[#17834B] dark:text-[#34D399] font-bold font-sans tabular-nums text-xs inline-flex items-center gap-1.5 transition-colors"
+              className="min-h-[44px] px-3 py-1.5 rounded-lg bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#1E3A6E] hover:border-[#17834B] text-[#17834B] dark:text-[#34D399] font-bold font-sans tabular-nums text-xs inline-flex items-center gap-1.5 transition-colors"
             >
               <MessageCircle className="w-3.5 h-3.5 shrink-0" />
               <span>{num.local}</span>

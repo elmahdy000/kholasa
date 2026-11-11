@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Target, FileText, Eye, EyeOff, Download, ExternalLink } from "lucide-react";
+import { Target, FileText, Eye, EyeOff } from "lucide-react";
 import { LessonContent } from "./types";
 
 interface LessonContentTabProps {
@@ -17,7 +17,7 @@ export function LessonContentTab({
 }: LessonContentTabProps) {
   const [isPdfOpen, setIsPdfOpen] = useState(false);
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 study-no-print select-none">
       {/* Video Embed */}
       {content?.videoUrl && embedUrl && (
         <div className="rounded-xl overflow-hidden border border-[#E2E8F0] dark:border-[#334155] bg-black aspect-video">
@@ -59,7 +59,7 @@ export function LessonContentTab({
         </div>
       )}
 
-      {/* Lesson Material PDF File */}
+      {/* Lesson Material PDF File (In-Page Protected Reader Only) */}
       {content?.pdfUrl && (
         <div className="p-5 sm:p-6 rounded-xl bg-white dark:bg-[#0F172A] border border-[#800B34]/25 shadow-sm space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -72,10 +72,10 @@ export function LessonContentTab({
                   مذكرة الشرح الرسمية
                 </span>
                 <h3 className="text-base font-bold text-[#0F172A] dark:text-white mt-1">
-                  مذكرة وملزمة الدرس (PDF)
+                  مذكرة وملزمة الدرس
                 </h3>
                 <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8] mt-0.5">
-                  شرح مبسط ومرتب مع أهم الأمثلة التوضيحية لدرس اليوم، تقدر تقرأها مباشرة أو تنزلها
+                  شرح مبسط ومرتب مع أهم الأمثلة التوضيحية لدرس اليوم — للمراجعة والقراءة داخل المنصة
                 </p>
               </div>
             </div>
@@ -84,7 +84,7 @@ export function LessonContentTab({
               <button
                 type="button"
                 onClick={() => setIsPdfOpen((prev) => !prev)}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold bg-[#800B34] hover:bg-[#680829] text-white transition-all shadow-sm"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold bg-[#800B34] hover:bg-[#680829] text-white transition-all shadow-sm cursor-pointer"
               >
                 {isPdfOpen ? (
                   <>
@@ -94,29 +94,10 @@ export function LessonContentTab({
                 ) : (
                   <>
                     <Eye className="w-4 h-4" />
-                    <span>معاينة وقراءة</span>
+                    <span>معاينة وقراءة داخل المنصة</span>
                   </>
                 )}
               </button>
-
-              <a
-                href={content.pdfUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-white dark:bg-[#1E293B] hover:bg-slate-50 dark:hover:bg-[#334155] text-[#0F172A] dark:text-white border border-[#E2E8F0] dark:border-[#334155] transition-all"
-              >
-                <ExternalLink className="w-4 h-4" />
-                <span>نافذة كاملة</span>
-              </a>
-
-              <a
-                href={content.pdfUrl}
-                download
-                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-white dark:bg-[#1E293B] hover:bg-slate-50 dark:hover:bg-[#334155] text-[#0F172A] dark:text-white border border-[#E2E8F0] dark:border-[#334155] transition-all"
-              >
-                <Download className="w-4 h-4" />
-                <span>تحميل</span>
-              </a>
             </div>
           </div>
 
@@ -124,8 +105,8 @@ export function LessonContentTab({
             <div className="pt-4 border-t border-[#800B34]/20 space-y-2">
               <div className="w-full h-[600px] rounded-xl overflow-hidden border border-[#E2E8F0] dark:border-[#334155] bg-slate-900">
                 <iframe
-                  src={`${content.pdfUrl}#toolbar=1&navpanes=0`}
-                  title="مذكرة الدرس PDF"
+                  src={`${content.pdfUrl}#toolbar=0&navpanes=0`}
+                  title="مذكرة الدرس"
                   className="w-full h-full border-0"
                 />
               </div>
