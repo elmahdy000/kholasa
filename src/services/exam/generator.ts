@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { QuestionType, Difficulty, Prisma } from "@prisma/client";
 import { getCurriculumScope, isSubjectInScope } from "@/lib/curriculum";
+import { isAdminOrAssistant } from "@/lib/roles";
 import { CustomExamCreateInput } from "./types";
 
 export class ExamGeneratorService {
@@ -62,7 +63,7 @@ export class ExamGeneratorService {
       throw new Error("المادة غير متاحة لإنشاء امتحان");
     }
 
-    const isStaff = student?.role === "ADMIN" || student?.role === "SUPER_ADMIN";
+    const isStaff = isAdminOrAssistant(student?.role);
     if (subject.isUnderConstruction && !isStaff) {
       throw new Error("هذه المادة تحت الإنشاء ومغلقة حالياً");
     }

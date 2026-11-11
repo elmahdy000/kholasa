@@ -2,6 +2,7 @@
 
 import { Plus, RefreshCw, KeyRound } from "lucide-react";
 import type { EducationalSystem, Grade, UserSubscriptionStatus } from "./types";
+import { isFullAdmin } from "@/lib/roles";
 
 interface CreateUserModalProps {
   isOpen: boolean;
@@ -153,10 +154,10 @@ export function CreateUserModal({
               onChange={(e) => setCreateRole(e.target.value)}
               className="w-full h-11 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold text-[#0F172A] dark:text-white"
             >
-              <option value="STUDENT">طالب (STUDENT) - حساب طالب اعتيادي (دخول بالكود)</option>
+              <option value="STUDENT">طالب (STUDENT) - حساب طالب اعتيادي (دخول بالكود)</option>{isFullAdmin(currentUserRole) && (<option value="ASSISTANT">مساعد إداري (ASSISTANT) - كل الصلاحيات ماعدا حذف الطلاب</option>)}
               <option value="TEACHER">معلم (TEACHER) - Subadmin لمتابعة وتصحيح الامتحانات</option>
               <option value="EDITOR">محرر محتوى (EDITOR) - Subadmin لإدارة المناهج والأسئلة والوسائط</option>
-              <option value="ADMIN">مسؤول (ADMIN) - مشرف كامل الصلاحيات</option>
+              {isFullAdmin(currentUserRole) && (<option value="ADMIN">مسؤول (ADMIN) - مشرف كامل الصلاحيات</option>)}
               {currentUserRole === "SUPER_ADMIN" && (
                 <option value="SUPER_ADMIN">مشرف عام أعلى (SUPER_ADMIN)</option>
               )}
@@ -241,12 +242,12 @@ export function CreateUserModal({
             <label className="block text-[13px] font-bold text-[#64748B] mb-1">
               {createRole === "STUDENT"
                 ? "كلمة المرور (اختيارية للطالب - يمكنه الدخول بالكود فقط)"
-                : "كلمة المرور * (6 أحرف على الأقل)"}
+                : "كلمة المرور * (8 أحرف على الأقل)"}
             </label>
             <input
               type="password"
               required={createRole !== "STUDENT"}
-              value={createPassword}
+              value={createPassword} minLength={createRole !== "STUDENT" ? 8 : undefined}
               onChange={(e) => setCreatePassword(e.target.value)}
               placeholder={createRole === "STUDENT" ? "اتركها فارغة لاستخدام الكود" : "••••••••"}
               className="w-full h-11 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold text-[#0F172A] dark:text-white"

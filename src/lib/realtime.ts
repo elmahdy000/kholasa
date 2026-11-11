@@ -76,7 +76,7 @@ export function subscribeRealtimeEvents(
 }
 
 export function isStaffRole(role: string): boolean {
-  return role === "ADMIN" || role === "SUPER_ADMIN" || role === "TEACHER";
+  return role === "ADMIN" || role === "SUPER_ADMIN" || role === "ASSISTANT" || role === "TEACHER";
 }
 
 function matchesStudentTarget(

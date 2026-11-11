@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser, canViewAnalytics } from "@/lib/auth";
+import { canManageUsersRole } from "@/lib/roles";
 import { AdminShell } from "@/components/layout/AdminShell";
 import { DailyReportsService } from "@/services/daily-reports.service";
 import { DailyReportsClient } from "@/components/admin/DailyReportsClient";
@@ -45,8 +46,7 @@ export default async function AdminDailyReportsPage({
     }),
   ]);
 
-  const canManageStudents =
-    user.role === "ADMIN" || user.role === "SUPER_ADMIN";
+  const canManageStudents = canManageUsersRole(user.role);
 
   return (
     <AdminShell user={user}>

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
+import { canDeleteUsersRole, canManageUsersRole } from "@/lib/roles";
 import { UserService } from "@/services/user.service";
 import { emitRealtimeEvent, revalidatePlatformPaths } from "@/lib/realtime";
 
@@ -12,8 +13,16 @@ interface RouteParams {
 export async function GET(req: Request, { params }: RouteParams) {
   try {
     const currentUser = await getCurrentUser();
-    if (!currentUser || (currentUser.role !== "ADMIN" && currentUser.role !== "SUPER_ADMIN")) {
-      return NextResponse.json({ error: "غير مصرح لك بالوصول" }, { status: 403 });
+    if (!currentUser || !canManageUsersRole(currentUser.role)) {
+      return NextResponse.json(
+        {
+          error:
+            currentUser?.role === "ASSISTANT"
+              ? "غير مصرح للمساعد بحذف الطلاب أو المستخدمين — هذه الصلاحية للإدارة فقط"
+              : "غير مصرح لك بالوصول",
+        },
+        { status: 403 }
+      );
     }
 
     const { id } = await params;
@@ -33,8 +42,16 @@ export async function GET(req: Request, { params }: RouteParams) {
 export async function PATCH(req: Request, { params }: RouteParams) {
   try {
     const currentUser = await getCurrentUser();
-    if (!currentUser || (currentUser.role !== "ADMIN" && currentUser.role !== "SUPER_ADMIN")) {
-      return NextResponse.json({ error: "غير مصرح لك بالوصول" }, { status: 403 });
+    if (!currentUser || !canManageUsersRole(currentUser.role)) {
+      return NextResponse.json(
+        {
+          error:
+            currentUser?.role === "ASSISTANT"
+              ? "غير مصرح للمساعد بحذف الطلاب أو المستخدمين — هذه الصلاحية للإدارة فقط"
+              : "غير مصرح لك بالوصول",
+        },
+        { status: 403 }
+      );
     }
 
     const { id } = await params;
@@ -55,7 +72,7 @@ export async function PATCH(req: Request, { params }: RouteParams) {
     console.error("Failed to update user:", error);
     const msg = error instanceof Error ? error.message : "";
     const isConflict = msg.includes("مسجل بالفعل");
-    const isForbidden = msg.includes("غير مصرح");
+    const isForbidden = msg.includes("غير مصرح") || msg.includes("المشرف العام") || msg.includes("لا يمكن تعديل") || msg.includes("للمساعد");
     const isNotFound = msg.includes("غير موجود");
     return NextResponse.json(
       { error: msg || "تعذر تحديث بيانات المستخدم" },
@@ -67,8 +84,16 @@ export async function PATCH(req: Request, { params }: RouteParams) {
 export async function DELETE(req: Request, { params }: RouteParams) {
   try {
     const currentUser = await getCurrentUser();
-    if (!currentUser || (currentUser.role !== "ADMIN" && currentUser.role !== "SUPER_ADMIN")) {
-      return NextResponse.json({ error: "غير مصرح لك بالوصول" }, { status: 403 });
+    if (!currentUser || !canDeleteUsersRole(currentUser.role)) {
+      return NextResponse.json(
+        {
+          error:
+            currentUser?.role === "ASSISTANT"
+              ? "غير مصرح للمساعد بحذف الطلاب أو المستخدمين — هذه الصلاحية للإدارة فقط"
+              : "غير مصرح لك بالوصول",
+        },
+        { status: 403 }
+      );
     }
 
     const { id } = await params;
@@ -81,7 +106,7 @@ export async function DELETE(req: Request, { params }: RouteParams) {
   } catch (error) {
     console.error("Failed to delete user:", error);
     const msg = error instanceof Error ? error.message : "";
-    const isForbidden = msg.includes("غير مصرح") || msg.includes("المشرف العام");
+    const isForbidden = msg.includes("غير مصرح") || msg.includes("المشرف العام") || msg.includes("للمساعد");
     const isBadRequest = msg.includes("حسابك الشخصي") || msg.includes("غير موجود");
     return NextResponse.json(
       { error: msg || "تعذر حذف المستخدم" },

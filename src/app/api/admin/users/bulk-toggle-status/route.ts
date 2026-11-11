@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
+import { canManageUsersRole, isFullAdmin } from "@/lib/roles";
 import { prisma } from "@/lib/prisma";
 import type { Prisma } from "@prisma/client";
 import { emitRealtimeEvent, revalidatePlatformPaths } from "@/lib/realtime";
@@ -9,7 +10,7 @@ export const dynamic = "force-dynamic";
 export async function POST(req: Request) {
   try {
     const currentUser = await getCurrentUser();
-    if (!currentUser || (currentUser.role !== "ADMIN" && currentUser.role !== "SUPER_ADMIN")) {
+    if (!currentUser || !canManageUsersRole(currentUser.role)) {
       return NextResponse.json({ error: "غير مصرح لك بالوصول" }, { status: 403 });
     }
 
@@ -21,14 +22,21 @@ export async function POST(req: Request) {
     }
 
     const where: Prisma.UserWhereInput = {};
+    const actorIsFullAdmin = isFullAdmin(currentUser.role);
 
     // Specific IDs provided
     if (Array.isArray(userIds) && userIds.length > 0) {
       where.id = { in: userIds };
-      where.role = { not: "SUPER_ADMIN" };
+      where.role = actorIsFullAdmin
+        ? { not: "SUPER_ADMIN" }
+        : { notIn: ["SUPER_ADMIN", "ADMIN", "ASSISTANT"] };
     } else {
-      // Filter by role (default only students for safety; never include SUPER_ADMIN)
-      const requestedRole = role === "STUDENT" ? "STUDENT" : role;
+      // Filter by role (default only students for safety; Assistants can only bulk-toggle students)
+      const requestedRole = !actorIsFullAdmin
+        ? "STUDENT"
+        : role === "STUDENT"
+        ? "STUDENT"
+        : role;
       where.role =
         requestedRole && requestedRole !== "SUPER_ADMIN"
           ? requestedRole

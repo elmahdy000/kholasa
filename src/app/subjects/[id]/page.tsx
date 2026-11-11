@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { isAdminOrAssistant } from "@/lib/roles";
 import { getCurriculumScope, isSubjectInScope } from "@/lib/curriculum";
 import { StudentShell } from "@/components/layout/StudentShell";
 import { SubjectUnitsList } from "@/components/subjects/SubjectUnitsList";
@@ -58,7 +59,7 @@ export default async function SubjectDetailPage({ params }: SubjectDetailPagePro
     redirect(`/login?callbackUrl=/subjects/${id}`);
   }
 
-  const isStaff = user.role === "ADMIN" || user.role === "SUPER_ADMIN";
+  const isStaff = isAdminOrAssistant(user.role);
   const isSubscriptionActive = isStaff || user.subscriptionStatus === "ACTIVE";
 
   const [subject, userProgress, masteredAttempts] = await Promise.all([

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { getRoleArabicLabel } from "@/lib/roles";
 import {
   X,
   User,
@@ -512,7 +513,7 @@ _منصة الخلاصة التعليمية - رفيقكم نحو التفوق_ 
                   {student?.name || "تفاصيل الطالب"}
                 </h2>
                 <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#800020]/10 text-[#800020] dark:text-[#FB7185] border border-[#800020]/20">
-                  {student?.role === "STUDENT" ? "طالب" : student?.role}
+                  {student?.role ? getRoleArabicLabel(student.role) : "طالب"}
                 </span>
                 <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
                   {student?.schoolCategory === "LANGUAGES" ? "لغات" : "عربي"}

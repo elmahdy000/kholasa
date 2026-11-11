@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import type { UserItem, UserSubscriptionStatus } from "./types";
 import { useToast } from "@/components/ui/Toast";
+import { isFullAdmin } from "@/lib/roles";
 
 interface EditRoleModalProps {
   user: UserItem | null;
@@ -286,6 +287,8 @@ export function EditRoleModal({
                   ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900"
                   : user.role === "ADMIN"
                   ? "bg-[#800020]/10 text-[#800020] dark:text-[#FB7185] border-[#800020]/30"
+                  : user.role === "ASSISTANT"
+                  ? "bg-amber-50 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300 border-amber-300"
                   : user.role === "EDITOR"
                   ? "bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400 border-blue-200"
                   : user.role === "TEACHER"
@@ -296,7 +299,9 @@ export function EditRoleModal({
               {user.role === "SUPER_ADMIN"
                 ? "مشرف أعلى"
                 : user.role === "ADMIN"
-                ? "مسؤول / مساعد"
+                ? "مسؤول"
+                : user.role === "ASSISTANT"
+                ? "مساعد إداري"
                 : user.role === "EDITOR"
                 ? "محرر محتوى"
                 : user.role === "TEACHER"
@@ -331,9 +336,16 @@ export function EditRoleModal({
               onChange={(e) => setRole(e.target.value)}
               className="w-full h-11 px-3.5 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-xs font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#800020]"
             >
-              <option value="ADMIN">
-                مسؤول / مساعد (ADMIN) — صلاحيات كاملة: مناهج، أسئلة، امتحانات، وتفعيل حسابات الطلاب
-              </option>
+              {isFullAdmin(currentUserRole) && (
+                <>
+                  <option value="ASSISTANT">
+                    مساعد إداري (ASSISTANT) — كل الصلاحيات: مناهج، أسئلة، امتحانات، وتفعيل الطلاب (بدون حذف الطلاب)
+                  </option>
+                  <option value="ADMIN">
+                    مسؤول (ADMIN) — صلاحيات كاملة شاملة إدارة وحذف المستخدمين
+                  </option>
+                </>
+              )}
               <option value="EDITOR">
                 محرر محتوى (EDITOR) — إضافة وتعديل المناهج والأسئلة والوسائط (بدون إدارة المستخدمين)
               </option>

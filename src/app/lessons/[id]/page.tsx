@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { isAdminOrAssistant } from "@/lib/roles";
 import { getCurriculumScope, isSubjectInScope } from "@/lib/curriculum";
 import { StudentShell } from "@/components/layout/StudentShell";
 import { LessonViewer } from "@/components/lessons/LessonViewer";
@@ -144,10 +145,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
   // Subscription check:
   // If user is not ACTIVE, only the first trial lesson is open (order === 1, isTrial === true, or first in unit)
   // Staff/Admins are always exempt from subscription check
-  const isStaffUser =
-    user &&
-    (user.role === "ADMIN" ||
-      user.role === "SUPER_ADMIN");
+  const isStaffUser = Boolean(user && isAdminOrAssistant(user.role));
 
   if (lesson.unit.subject.isUnderConstruction && !isStaffUser) {
     return (

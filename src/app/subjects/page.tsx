@@ -224,6 +224,7 @@ export default async function SubjectsPage() {
             isStaff={
               user?.role === "ADMIN" ||
               user?.role === "SUPER_ADMIN" ||
+              user?.role === "ASSISTANT" ||
               user?.role === "TEACHER"
             }
           />

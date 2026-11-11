@@ -10,8 +10,28 @@ import {
   isDemoSandboxCode,
   purgeDemoSandboxUser,
 } from "@/lib/demo";
+import {
+  canDeleteUsersRole,
+  canGradeAttemptsRole,
+  canManageAnnouncementsRole,
+  canManageCurriculumRole,
+  canManageExamsRole,
+  canManageMediaRole,
+  canManageQuestionsRole,
+  canManageStructureRole,
+  canManageUsersRole,
+  canViewAnalyticsRole,
+  isAdminOrAssistant as isAdminOrAssistantRole,
+  isFullAdmin,
+  isStaffRoleValue,
+} from "@/lib/roles";
 
 export { passwordSchema } from "@/lib/validation/auth";
+export {
+  canActorAssignUserRole,
+  canActorManageTargetUser,
+  getRoleArabicLabel,
+} from "@/lib/roles";
 
 const IS_PROD = process.env.NODE_ENV === "production";
 // __Host- prefix requires Secure + Path=/ + no Domain; used in production (HTTPS) only.
@@ -141,8 +161,8 @@ export async function getCurrentUser() {
       return null;
     }
 
-    // Account suspension check: kick out inactive/suspended students immediately
-    if (session.user.role === Role.STUDENT && session.user.isActive === false) {
+    // Account suspension check: kick out any inactive/suspended account immediately
+    if (session.user.isActive === false) {
       await prisma.session.delete({ where: { id: session.id } }).catch(() => {});
       return null;
     }
@@ -213,60 +233,63 @@ export async function requireRole(...roles: (Role | Role[])[]) {
 
 // Role groups
 export const ADMIN_ROLES: Role[] = [Role.ADMIN, Role.SUPER_ADMIN];
-export const STAFF_ROLES: Role[] = [Role.TEACHER, Role.EDITOR, Role.ADMIN, Role.SUPER_ADMIN];
-export const CONTENT_ROLES: Role[] = [Role.EDITOR, Role.ADMIN, Role.SUPER_ADMIN];
-export const GRADING_ROLES: Role[] = [Role.TEACHER, Role.ADMIN, Role.SUPER_ADMIN];
-export const EXAM_ROLES: Role[] = [Role.TEACHER, Role.EDITOR, Role.ADMIN, Role.SUPER_ADMIN];
+export const ADMIN_OR_ASSISTANT_ROLES: Role[] = [Role.ASSISTANT, Role.ADMIN, Role.SUPER_ADMIN];
+export const STAFF_ROLES: Role[] = [Role.TEACHER, Role.EDITOR, Role.ASSISTANT, Role.ADMIN, Role.SUPER_ADMIN];
+export const CONTENT_ROLES: Role[] = [Role.EDITOR, Role.ASSISTANT, Role.ADMIN, Role.SUPER_ADMIN];
+export const GRADING_ROLES: Role[] = [Role.TEACHER, Role.ASSISTANT, Role.ADMIN, Role.SUPER_ADMIN];
+export const EXAM_ROLES: Role[] = [Role.TEACHER, Role.EDITOR, Role.ASSISTANT, Role.ADMIN, Role.SUPER_ADMIN];
 
-// Permission checks for admin & subadmin roles
+// Permission checks for admin, assistant & subadmin roles
+export function isAdmin(role?: string | null): boolean {
+  return isFullAdmin(role);
+}
+
+export function isAdminOrAssistant(role?: string | null): boolean {
+  return isAdminOrAssistantRole(role);
+}
+
 export function isStaff(role?: string | null): boolean {
-  if (!role) return false;
-  return ["TEACHER", "EDITOR", "ADMIN", "SUPER_ADMIN"].includes(role);
+  return isStaffRoleValue(role);
 }
 
 export function canManageCurriculum(role?: string | null): boolean {
-  if (!role) return false;
-  return ["EDITOR", "ADMIN", "SUPER_ADMIN"].includes(role);
+  return canManageCurriculumRole(role);
 }
 
 export function canManageQuestions(role?: string | null): boolean {
-  if (!role) return false;
-  return ["TEACHER", "EDITOR", "ADMIN", "SUPER_ADMIN"].includes(role);
+  return canManageQuestionsRole(role);
 }
 
 export function canManageExams(role?: string | null): boolean {
-  if (!role) return false;
-  return ["TEACHER", "EDITOR", "ADMIN", "SUPER_ADMIN"].includes(role);
+  return canManageExamsRole(role);
 }
 
 export function canGradeAttempts(role?: string | null): boolean {
-  if (!role) return false;
-  return ["TEACHER", "ADMIN", "SUPER_ADMIN"].includes(role);
+  return canGradeAttemptsRole(role);
 }
 
 export function canManageMedia(role?: string | null): boolean {
-  if (!role) return false;
-  return ["TEACHER", "EDITOR", "ADMIN", "SUPER_ADMIN"].includes(role);
+  return canManageMediaRole(role);
 }
 
 export function canManageUsers(role?: string | null): boolean {
-  if (!role) return false;
-  return ["ADMIN", "SUPER_ADMIN"].includes(role);
+  return canManageUsersRole(role);
+}
+
+export function canDeleteUsers(role?: string | null): boolean {
+  return canDeleteUsersRole(role);
 }
 
 export function canManageStructure(role?: string | null): boolean {
-  if (!role) return false;
-  return ["ADMIN", "SUPER_ADMIN"].includes(role);
+  return canManageStructureRole(role);
 }
 
 export function canManageAnnouncements(role?: string | null): boolean {
-  if (!role) return false;
-  return ["ADMIN", "SUPER_ADMIN", "EDITOR"].includes(role);
+  return canManageAnnouncementsRole(role);
 }
 
 export function canViewAnalytics(role?: string | null): boolean {
-  if (!role) return false;
-  return ["TEACHER", "ADMIN", "SUPER_ADMIN"].includes(role);
+  return canViewAnalyticsRole(role);
 }
 
 export async function requireAdmin() {

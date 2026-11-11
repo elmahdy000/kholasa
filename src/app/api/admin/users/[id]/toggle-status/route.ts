@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
+import { canActorManageTargetUser, canManageUsersRole } from "@/lib/roles";
 import { prisma } from "@/lib/prisma";
 import { emitRealtimeEvent, revalidatePlatformPaths } from "@/lib/realtime";
 
@@ -12,7 +13,7 @@ interface RouteParams {
 export async function POST(req: Request, { params }: RouteParams) {
   try {
     const currentUser = await getCurrentUser();
-    if (!currentUser || (currentUser.role !== "ADMIN" && currentUser.role !== "SUPER_ADMIN")) {
+    if (!currentUser || !canManageUsersRole(currentUser.role)) {
       return NextResponse.json({ error: "غير مصرح لك بالوصول" }, { status: 403 });
     }
 
@@ -34,9 +35,9 @@ export async function POST(req: Request, { params }: RouteParams) {
       return NextResponse.json({ error: "لا يمكنك تعطيل حسابك الشخصي" }, { status: 400 });
     }
 
-    // Admins cannot deactivate Super Admins
-    if (currentUser.role !== "SUPER_ADMIN" && target.role === "SUPER_ADMIN") {
-      return NextResponse.json({ error: "لا تملك صلاحية لتعديل حساب المشرف العام" }, { status: 403 });
+    // Hierarchy check: Admins cannot toggle Super Admins; Assistants cannot toggle Admins/Assistants
+    if (!canActorManageTargetUser(currentUser.role, target.role)) {
+      return NextResponse.json({ error: "لا تملك صلاحية لتعديل هذا الحساب الإداري" }, { status: 403 });
     }
 
     // Determine new status: explicit isActive or invert current

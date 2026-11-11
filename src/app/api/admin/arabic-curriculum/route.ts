@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getCurrentUser } from "@/lib/auth";
+import { isAdminOrAssistant } from "@/lib/roles";
 import { forbidden, jsonError, parseJson } from "@/lib/http";
 import { ArabicCurriculumService } from "@/services/arabic-curriculum.service";
 import { emitRealtimeEvent, revalidatePlatformPaths } from "@/lib/realtime";
@@ -9,7 +10,7 @@ export const dynamic = "force-dynamic";
 
 async function requireArabicAdmin() {
   const user = await getCurrentUser();
-  if (!user || (user.role !== "ADMIN" && user.role !== "SUPER_ADMIN")) {
+  if (!user || !isAdminOrAssistant(user.role)) {
     throw forbidden("صلاحيات الإدارة مطلوبة لإدارة منهج اللغة العربية");
   }
   return user;

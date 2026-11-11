@@ -155,7 +155,8 @@ export function UserFilterBar({
           >
             <option value="all">كل الرتب والصلاحيات</option>
             <option value="STAFF">المساعدون والإداريون (Staff) 🛡️</option>
-            <option value="ADMIN">مسؤول / مساعد (ADMIN)</option>
+            <option value="ASSISTANT">مساعد إداري (ASSISTANT)</option>
+            <option value="ADMIN">مسؤول (ADMIN)</option>
             <option value="EDITOR">محرر محتوى (EDITOR)</option>
             <option value="TEACHER">معلم (TEACHER)</option>
             <option value="STUDENT">طالب (STUDENT)</option>

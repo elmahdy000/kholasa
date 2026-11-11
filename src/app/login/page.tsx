@@ -234,7 +234,7 @@ export default function LoginPage() {
         }
       }
 
-      if (["TEACHER", "EDITOR", "ADMIN", "SUPER_ADMIN"].includes(data.user?.role)) {
+      if (["TEACHER", "EDITOR", "ASSISTANT", "ADMIN", "SUPER_ADMIN"].includes(data.user?.role)) {
         router.push("/admin");
       } else {
         router.push("/dashboard");
@@ -273,7 +273,7 @@ export default function LoginPage() {
         throw new Error(data.error || "فشل تسجيل الدخول");
       }
 
-      if (["TEACHER", "EDITOR", "ADMIN", "SUPER_ADMIN"].includes(data.user?.role)) {
+      if (["TEACHER", "EDITOR", "ASSISTANT", "ADMIN", "SUPER_ADMIN"].includes(data.user?.role)) {
         router.push("/admin");
       } else {
         router.push("/dashboard");

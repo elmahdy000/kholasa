@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
+import { isAdminOrAssistant } from "@/lib/roles";
 import { AppError, jsonError } from "@/lib/http";
 import { rateLimit, withRetryAfter } from "@/lib/rate-limit";
 import { ExamService } from "@/services";
@@ -11,7 +12,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "يرجى تسجيل الدخول لبدء الامتحان" }, { status: 401 });
     }
 
-    const isStaff = user.role === "ADMIN" || user.role === "SUPER_ADMIN";
+    const isStaff = isAdminOrAssistant(user.role);
     if (!isStaff && user.subscriptionStatus !== "ACTIVE") {
       return NextResponse.json(
         { error: "هذه الخاصية متاحة فقط للمشتركين. يرجى تفعيل اشتراكك (200 ج شهرياً) للاستفادة من الامتحانات المخصصة." },

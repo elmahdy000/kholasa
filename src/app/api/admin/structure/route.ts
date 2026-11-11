@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { getCurrentUser, isStaff } from "@/lib/auth";
+import { getCurrentUser, canManageStructure, isStaff } from "@/lib/auth";
 import { badRequest, forbidden, jsonError, parseJson } from "@/lib/http";
 import { CurriculumService } from "@/services/curriculum.service";
 import { AnalyticsService } from "@/services/analytics.service";
@@ -104,7 +104,7 @@ const updateSchema = z.discriminatedUnion("type", [
 
 async function requireAdminUser() {
   const user = await getCurrentUser();
-  if (!user || (user.role !== "ADMIN" && user.role !== "SUPER_ADMIN")) throw forbidden("غير مصرح");
+  if (!user || !canManageStructure(user.role)) throw forbidden("غير مصرح");
   return user;
 }
 

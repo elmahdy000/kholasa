@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { isAdminOrAssistant } from "@/lib/roles";
 import { getCurriculumScope, subjectScopeWhere } from "@/lib/curriculum";
 import { StudentShell } from "@/components/layout/StudentShell";
 import { ExamBuilderForm } from "@/components/exams/ExamBuilderForm";
@@ -37,7 +38,7 @@ export default async function ExamBuilderPage({
     redirect("/login?callbackUrl=/exams/builder");
   }
 
-  const isStaff = user.role === "ADMIN" || user.role === "SUPER_ADMIN";
+  const isStaff = isAdminOrAssistant(user.role);
   if (!isStaff && user.subscriptionStatus !== "ACTIVE") {
     return (
       <StudentShell user={user}>

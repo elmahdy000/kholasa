@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { isAdminOrAssistant } from "@/lib/roles";
 import { getCurriculumScope, subjectScopeWhere } from "@/lib/curriculum";
 import { ExamService } from "@/services";
 
@@ -18,7 +19,7 @@ export async function GET(req: Request) {
       return NextResponse.json({ count: 0, unmasteredCount: 0, masteredCount: 0 });
     }
 
-    const isStaff = user?.role === "ADMIN" || user?.role === "SUPER_ADMIN";
+    const isStaff = isAdminOrAssistant(user?.role);
     // Never count questions from another grade/track for scoped students.
     const scope = user ? getCurriculumScope(user) : null;
     if (scope) {

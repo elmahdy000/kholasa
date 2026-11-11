@@ -2,6 +2,12 @@ import { prisma } from "@/lib/prisma";
 import { Role, SubscriptionStatus } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { generateUniqueLoginCode } from "@/lib/auth";
+import {
+  canActorAssignUserRole,
+  canActorManageTargetUser,
+  canDeleteUsersRole,
+  canManageUsersRole,
+} from "@/lib/roles";
 import type {
   CreateUserInput,
   UpdateUserInput,
@@ -14,7 +20,7 @@ export class UserMutationsService {
    * Create a new user or administrative staff
    */
   static async createUser(data: CreateUserInput, actorRole: string) {
-    if (actorRole !== Role.SUPER_ADMIN && actorRole !== Role.ADMIN) {
+    if (!canManageUsersRole(actorRole)) {
       throw new Error("غير مصرح لك بإنشاء مستخدمين");
     }
 
@@ -22,9 +28,12 @@ export class UserMutationsService {
 
     if (!name?.trim()) throw new Error("اسم المستخدم مطلوب");
 
-    // Only a SUPER_ADMIN may create another SUPER_ADMIN.
-    if (role === Role.SUPER_ADMIN && actorRole !== Role.SUPER_ADMIN) {
-      throw new Error("فقط المشرف العام الأعلى يمكنه إنشاء حساب مشرف عام");
+    if (!canActorAssignUserRole(actorRole, role)) {
+      throw new Error(
+        role === Role.SUPER_ADMIN
+          ? "فقط المشرف العام الأعلى يمكنه إنشاء حساب مشرف عام"
+          : "غير مصرح لك بإنشاء حساب بهذه الصلاحية"
+      );
     }
 
     let cleanPhone: string | undefined = undefined;
@@ -100,23 +109,31 @@ export class UserMutationsService {
     actorRole: string,
     actorUserId?: string
   ) {
-    if (actorRole !== Role.SUPER_ADMIN && actorRole !== Role.ADMIN) {
+    if (!canManageUsersRole(actorRole)) {
       throw new Error("غير مصرح لك بالوصول");
     }
 
     const targetUser = await prisma.user.findUnique({ where: { id } });
     if (!targetUser) throw new Error("المستخدم غير موجود");
 
-    if (targetUser.role === Role.SUPER_ADMIN && actorRole !== Role.SUPER_ADMIN) {
-      throw new Error("لا يمكن تعديل صلاحيات المشرف العام الأعلى");
+    if (!canActorManageTargetUser(actorRole, targetUser.role)) {
+      throw new Error(
+        targetUser.role === Role.SUPER_ADMIN
+          ? "لا يمكن تعديل صلاحيات المشرف العام الأعلى"
+          : "غير مصرح لك بتعديل حسابات الإدارة أو المساعدين"
+      );
     }
 
     if (data.role !== undefined) {
       if (id === actorUserId) {
         throw new Error("لا يمكنك تغيير رتبتك بنفسك");
       }
-      if (data.role === Role.SUPER_ADMIN && actorRole !== Role.SUPER_ADMIN) {
-        throw new Error("فقط المشرف العام الأعلى يمكنه منح رتبة مشرف عام");
+      if (!canActorAssignUserRole(actorRole, data.role)) {
+        throw new Error(
+          data.role === Role.SUPER_ADMIN
+            ? "فقط المشرف العام الأعلى يمكنه منح رتبة مشرف عام"
+            : "غير مصرح لك بمنح هذه الرتبة"
+        );
       }
     }
 
@@ -154,12 +171,15 @@ export class UserMutationsService {
       hashedPassword = await bcrypt.hash(data.password, 12);
     }
 
+    const nextEmail = data.email !== undefined ? data.email.trim().toLowerCase() : undefined;
+    const nextPhone = data.phone !== undefined ? data.phone.trim() : undefined;
+
     const updated = await prisma.user.update({
       where: { id },
       data: {
         ...(data.name !== undefined ? { name: data.name.trim() } : {}),
-        ...(data.phone !== undefined ? { phone: data.phone.trim() } : {}),
-        ...(data.email !== undefined ? { email: data.email.trim().toLowerCase() } : {}),
+        ...(nextPhone !== undefined ? { phone: nextPhone || null } : {}),
+        ...(nextEmail !== undefined ? { email: nextEmail || null } : {}),
         ...(data.loginCode !== undefined ? { loginCode: data.loginCode.trim().toUpperCase() || null } : {}),
         ...(hashedPassword ? { password: hashedPassword } : {}),
         ...(data.role !== undefined ? { role: data.role } : {}),
@@ -190,11 +210,17 @@ export class UserMutationsService {
       },
     });
 
-    // A role, password, or account deactivation must purge existing sessions.
+    // A role, password, staff email change, or account deactivation must purge existing sessions.
+    const staffEmailChanged =
+      targetUser.role !== Role.STUDENT &&
+      nextEmail !== undefined &&
+      nextEmail !== (targetUser.email || "").toLowerCase();
+
     if (
       (data.role !== undefined && data.role !== targetUser.role) ||
       hashedPassword ||
-      data.isActive === false
+      data.isActive === false ||
+      staffEmailChanged
     ) {
       await prisma.session.deleteMany({ where: { userId: id } });
     }
@@ -211,7 +237,7 @@ export class UserMutationsService {
     actorRole: string,
     actorUserId?: string
   ) {
-    if (actorRole !== Role.SUPER_ADMIN && actorRole !== Role.ADMIN) {
+    if (!canManageUsersRole(actorRole)) {
       throw new Error("غير مصرح لك بتعديل الرتب");
     }
 
@@ -225,12 +251,20 @@ export class UserMutationsService {
     });
     if (!target) throw new Error("المستخدم غير موجود");
 
-    if (newRole === Role.SUPER_ADMIN && actorRole !== Role.SUPER_ADMIN) {
-      throw new Error("فقط المشرف العام الأعلى يمكنه منح رتبة مشرف عام");
+    if (!canActorAssignUserRole(actorRole, newRole)) {
+      throw new Error(
+        newRole === Role.SUPER_ADMIN
+          ? "فقط المشرف العام الأعلى يمكنه منح رتبة مشرف عام"
+          : "غير مصرح لك بمنح هذه الرتبة"
+      );
     }
 
-    if (target.role === Role.SUPER_ADMIN && actorRole !== Role.SUPER_ADMIN) {
-      throw new Error("لا يمكن تعديل صلاحيات المشرف العام الأعلى");
+    if (!canActorManageTargetUser(actorRole, target.role)) {
+      throw new Error(
+        target.role === Role.SUPER_ADMIN
+          ? "لا يمكن تعديل صلاحيات المشرف العام الأعلى"
+          : "غير مصرح لك بتعديل صلاحيات الإدارة أو المساعدين"
+      );
     }
 
     const updated = await prisma.user.update({
@@ -283,8 +317,8 @@ export class UserMutationsService {
    * Delete user account with permission check
    */
   static async deleteUser(targetUserId: string, actorRole: string, actorUserId?: string) {
-    if (actorRole !== Role.SUPER_ADMIN && actorRole !== Role.ADMIN) {
-      throw new Error("غير مصرح لك بحذف المستخدمين");
+    if (!canDeleteUsersRole(actorRole)) {
+      throw new Error("غير مصرح للمساعد بحذف الطلاب أو المستخدمين — هذه الصلاحية للإدارة فقط");
     }
 
     if (actorUserId && targetUserId === actorUserId) {
@@ -316,12 +350,16 @@ export class UserMutationsService {
    * Reset bound devices for a student and purge active sessions
    */
   static async resetUserDevices(targetUserId: string, actorRole: string) {
-    if (actorRole !== Role.SUPER_ADMIN && actorRole !== Role.ADMIN) {
+    if (!canManageUsersRole(actorRole)) {
       throw new Error("غير مصرح لك بالوصول");
     }
 
     const targetUser = await prisma.user.findUnique({ where: { id: targetUserId } });
     if (!targetUser) throw new Error("المستخدم غير موجود");
+
+    if (!canActorManageTargetUser(actorRole, targetUser.role)) {
+      throw new Error("غير مصرح لك بتعديل حسابات الإدارة أو المساعدين");
+    }
 
     const updated = await prisma.user.update({
       where: { id: targetUserId },

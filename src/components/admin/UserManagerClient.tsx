@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
+import { useState, useMemo, useEffect } from "react";
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, ShieldCheck, KeyRound, Plus, CheckCircle2, Ban } from "lucide-react";
+import { canDeleteUsersRole, isFullAdmin } from "@/lib/roles";
 import type {
   UserManagerClientProps,
   UserItem,
@@ -28,11 +29,9 @@ export function UserManagerClient({
 }: UserManagerClientProps) {
   const { toast } = useToast();
   const [users, setUsers] = useState<UserItem[]>(initialUsers);
-  const [prevInitialUsers, setPrevInitialUsers] = useState<UserItem[]>(initialUsers);
-  if (prevInitialUsers !== initialUsers) {
-    setPrevInitialUsers(initialUsers);
+  useEffect(() => {
     setUsers(initialUsers);
-  }
+  }, [initialUsers]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedRole, setSelectedRole] = useState("all");
   const [selectedStatus, setSelectedStatus] = useState<UserActivationFilter>("all");
@@ -85,7 +84,7 @@ export function UserManagerClient({
     description: "",
     confirmText: "تأكيد",
     variant: "danger",
-    onConfirm: async () => {},
+    onConfirm: async () => { },
   });
 
   // Edit Role & Password Modal State
@@ -117,7 +116,15 @@ export function UserManagerClient({
     return res;
   };
 
-  const handleOpenCreateModal = () => {
+  const assistantUsers = useMemo(
+    () => users.filter((u) => u.role === "ASSISTANT"),
+    [users]
+  );
+  const canAdminManageAssistants = isFullAdmin(currentUserRole);
+  const canDeleteStudents = canDeleteUsersRole(currentUserRole);
+
+  const handleOpenCreateModal = (presetRole = "STUDENT") => {
+    setCreateRole(presetRole);
     setCreateLoginCode(generateRandomCode());
     setIsCreateOpen(true);
   };
@@ -171,6 +178,10 @@ export function UserManagerClient({
   };
 
   const handleDeleteUser = (userId: string, userName: string) => {
+    if (!canDeleteStudents) {
+      toast.error("غير مصرح للمساعد بحذف الطلاب أو المستخدمين — هذه الصلاحية للإدارة فقط.");
+      return;
+    }
     if (userId === currentUserId) {
       toast.warning("لا يمكنك حذف حسابك الحالي المسجل به الآن.");
       return;
@@ -393,6 +404,136 @@ export function UserManagerClient({
       {/* 1. Metrics Strip */}
       <UserMetricsStrip users={users} />
 
+      {/* Dedicated Assistant Account Panel (Admins) / Permission Notice (Assistant) */}
+      {canAdminManageAssistants ? (
+        <section className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] shadow-2xs space-y-3">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="space-y-0.5">
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="w-4.5 h-4.5 text-[#D97706] dark:text-[#FBBF24]" />
+                <h2 className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-white">
+                  حساب المساعد الإداري
+                </h2>
+                <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+                  كل الصلاحيات ماعدا حذف الطلاب
+                </span>
+              </div>
+              <p className="text-xs text-[#64748B] dark:text-[#94A3B8]">
+                يمكنك كأدمن تغيير بيانات الدخول، كلمة المرور، البريد، أو إيقاف وتفعيل حساب المساعد في أي وقت.
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                setCreateError(null);
+                handleOpenCreateModal("ASSISTANT");
+              }}
+              className="h-9 px-3.5 rounded-xl bg-[#091B40] hover:bg-[#1E3A8A] text-white text-xs font-bold inline-flex items-center gap-1.5 transition-colors cursor-pointer"
+            >
+              <Plus className="w-3.5 h-3.5 text-[#E9AD32]" />
+              <span>إضافة حساب مساعد</span>
+            </button>
+          </div>
+
+          {assistantUsers.length === 0 ? (
+            <div className="p-3.5 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/60 border border-dashed border-[#CBD5E1] dark:border-[#334155] flex flex-wrap items-center justify-between gap-3 text-xs">
+              <span className="font-bold text-[#475569] dark:text-[#94A3B8]">
+                لا يوجد حساب مساعد مسجل حالياً.
+              </span>
+              <button
+                type="button"
+                onClick={() => {
+                  setCreateError(null);
+                  handleOpenCreateModal("ASSISTANT");
+                }}
+                className="h-8 px-3 rounded-lg bg-[#800020] hover:bg-[#66001A] text-white font-bold cursor-pointer"
+              >
+                إنشاء حساب المساعد الآن
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {assistantUsers.map((assistant) => (
+                <div
+                  key={assistant.id}
+                  className="p-3.5 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/60 border border-[#E2E8F0] dark:border-[#334155] flex flex-wrap items-center justify-between gap-3"
+                >
+                  <div className="min-w-0 space-y-0.5">
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-sm text-[#0F172A] dark:text-white truncate">
+                        {assistant.name || "المساعد الإداري"}
+                      </span>
+                      <span
+                        className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${
+                          assistant.isActive !== false
+                            ? "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800"
+                            : "bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800"
+                        }`}
+                      >
+                        {assistant.isActive !== false ? "مفعّل" : "موقوف"}
+                      </span>
+                    </div>
+                    <div className="text-[11px] font-mono text-[#64748B] dark:text-[#94A3B8] truncate" dir="ltr">
+                      {[assistant.email, assistant.phone].filter(Boolean).join(" • ") || "بدون بريد أو هاتف"}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedUser(assistant)}
+                      className="h-8 px-3 rounded-lg bg-[#800020] hover:bg-[#66001A] text-white text-xs font-bold inline-flex items-center gap-1.5 cursor-pointer transition-colors"
+                    >
+                      <KeyRound className="w-3.5 h-3.5" />
+                      <span>تغيير البيانات / الباسورد</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleToggleStatus(
+                          assistant.id,
+                          assistant.isActive !== false,
+                          assistant.name || "المساعد الإداري"
+                        )
+                      }
+                      className={`h-8 px-2.5 rounded-lg text-xs font-bold inline-flex items-center gap-1 cursor-pointer transition-colors ${
+                        assistant.isActive === false
+                          ? "bg-emerald-600 hover:bg-emerald-700 text-white"
+                          : "bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] text-[#475569] dark:text-[#94A3B8] hover:text-rose-600"
+                      }`}
+                    >
+                      {assistant.isActive === false ? (
+                        <>
+                          <CheckCircle2 className="w-3.5 h-3.5" />
+                          <span>تفعيل</span>
+                        </>
+                      ) : (
+                        <>
+                          <Ban className="w-3.5 h-3.5 text-rose-500" />
+                          <span>إيقاف</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+      ) : (
+        <div
+          role="status"
+          className="p-3.5 rounded-2xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/70 flex items-center gap-2.5 text-xs font-bold text-amber-900 dark:text-amber-200"
+        >
+          <ShieldCheck className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
+          <span>
+            أنت مسجل بحساب المساعد الإداري — متاح لك كافة الصلاحيات وتعديل وتفعيل حسابات الطلاب، باستثناء حذف حسابات الطلاب أو تعديل حسابات الإدارة.
+          </span>
+        </div>
+      )}
+
       {/* 2. Filter and Search Bar */}
       <UserFilterBar
         searchQuery={searchQuery}
@@ -434,6 +575,7 @@ export function UserManagerClient({
       <UserTable
         users={paginatedUsers}
         currentUserId={currentUserId}
+        currentUserRole={currentUserRole}
         onSelectUserToEdit={(u) => {
           setSelectedUser(u);
         }}
@@ -604,7 +746,7 @@ export function UserManagerClient({
                   prev.map((u) => (u.id === inspectUserId ? { ...u, ...data.user } : u))
                 );
               }
-            } catch {}
+            } catch { }
           }
         }}
       />

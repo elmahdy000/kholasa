@@ -185,14 +185,16 @@ export async function POST(req: Request) {
       throw unauthorized("بيانات تسجيل الدخول غير مكتملة");
     }
 
-    // Account Activation / Suspension Check for Students
-    if (user.role === Role.STUDENT && user.isActive === false) {
+    // Account Activation / Suspension Check for Students & Staff
+    if (user.isActive === false) {
       if (body.code?.trim()) {
         recordRateLimitAttempt(`login:code:${body.code.trim().toUpperCase()}`, 15 * 60 * 1000);
       }
       recordRateLimitAttempt(`login:ip:${ip}`, 60 * 1000);
       throw forbidden(
-        "عذراً، هذا الحساب معلق أو بانتظار التفعيل حالياً. يرجى مراجعة المساعد أو إدارة المنصة لتفعيل حسابك."
+        user.role === Role.STUDENT
+          ? "عذراً، هذا الحساب معلق أو بانتظار التفعيل حالياً. يرجى مراجعة المساعد أو إدارة المنصة لتفعيل حسابك."
+          : "عذراً، هذا الحساب موقوف حالياً. يرجى التواصل مع إدارة المنصة لإعادة تفعيله."
       );
     }
 

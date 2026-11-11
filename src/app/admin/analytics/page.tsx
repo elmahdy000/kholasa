@@ -57,7 +57,7 @@ export default async function AdminAnalyticsPage() {
     prisma.user.count({ where: EXCLUDE_DEMO_SANDBOX_CONDITION }),
     prisma.user.count({ where: { role: "STUDENT", ...EXCLUDE_DEMO_SANDBOX_CONDITION } }),
     prisma.user.count({
-      where: { role: { in: ["TEACHER", "EDITOR", "ADMIN", "SUPER_ADMIN"] } },
+      where: { role: { in: ["TEACHER", "EDITOR", "ASSISTANT", "ADMIN", "SUPER_ADMIN"] } },
     }),
     prisma.subject.count(),
     prisma.lesson.count(),

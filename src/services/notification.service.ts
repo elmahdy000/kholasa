@@ -74,7 +74,10 @@ export class NotificationService {
 
     const now = new Date();
     const isStaff =
-      user?.role === "ADMIN" || user?.role === "SUPER_ADMIN" || user?.role === "TEACHER";
+      user?.role === "ADMIN" ||
+      user?.role === "SUPER_ADMIN" ||
+      user?.role === "ASSISTANT" ||
+      user?.role === "TEACHER";
 
     if (isStaff) {
       const pendingReceiptsCount =
@@ -364,7 +367,10 @@ export class NotificationService {
     });
 
     const isStaff =
-      user?.role === "ADMIN" || user?.role === "SUPER_ADMIN" || user?.role === "TEACHER";
+      user?.role === "ADMIN" ||
+      user?.role === "SUPER_ADMIN" ||
+      user?.role === "ASSISTANT" ||
+      user?.role === "TEACHER";
     const now = new Date();
     const activeAnnouncements = await prisma.announcement.findMany({
       where: isStaff

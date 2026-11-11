@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
+import { canManageUsersRole } from "@/lib/roles";
 import { UserService } from "@/services/user.service";
 import { emitRealtimeEvent, revalidatePlatformPaths } from "@/lib/realtime";
 
@@ -12,7 +13,7 @@ interface RouteParams {
 export async function POST(req: Request, { params }: RouteParams) {
   try {
     const currentUser = await getCurrentUser();
-    if (!currentUser || (currentUser.role !== "ADMIN" && currentUser.role !== "SUPER_ADMIN")) {
+    if (!currentUser || !canManageUsersRole(currentUser.role)) {
       return NextResponse.json({ error: "غير مصرح لك بالوصول" }, { status: 403 });
     }
 

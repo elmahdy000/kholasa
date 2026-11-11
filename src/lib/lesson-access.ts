@@ -1,4 +1,5 @@
 import { getCurriculumScope, isSubjectInScope, type ScopedUser } from "@/lib/curriculum";
+import { isAdminOrAssistant } from "@/lib/roles";
 
 export interface LessonAccessSubject {
   id: string;
@@ -27,7 +28,7 @@ export interface LessonAccessUser extends ScopedUser {
 }
 
 export function isSubscriptionExemptStaff(role?: string | null): boolean {
-  return role === "ADMIN" || role === "SUPER_ADMIN";
+  return isAdminOrAssistant(role);
 }
 
 export function hasActiveSubscription(user: LessonAccessUser | null | undefined): boolean {

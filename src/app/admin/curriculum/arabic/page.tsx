@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
+import { isAdminOrAssistant } from "@/lib/roles";
 import { AdminShell } from "@/components/layout/AdminShell";
 import { ArabicCurriculumService } from "@/services/arabic-curriculum.service";
 import {
@@ -11,7 +12,7 @@ export const dynamic = "force-dynamic";
 
 export default async function AdminArabicCurriculumPage() {
   const user = await getCurrentUser();
-  if (!user || (user.role !== "ADMIN" && user.role !== "SUPER_ADMIN")) {
+  if (!user || !isAdminOrAssistant(user.role)) {
     redirect("/login?callbackUrl=/admin/curriculum/arabic");
   }
 

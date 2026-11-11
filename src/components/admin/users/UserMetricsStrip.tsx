@@ -20,7 +20,7 @@ export function UserMetricsStrip({ users }: UserMetricsStripProps) {
   const pendingStudents = studentsCount - activeStudents;
   const arabicStudents = students.filter((u) => u.schoolCategory !== "LANGUAGES").length;
   const languagesStudents = students.filter((u) => u.schoolCategory === "LANGUAGES").length;
-  const adminsCount = users.filter((u) => u.role === "ADMIN" || u.role === "SUPER_ADMIN").length;
+  const adminsCount = users.filter((u) => u.role === "ADMIN" || u.role === "SUPER_ADMIN" || u.role === "ASSISTANT").length;
   const totalAttempts = users.reduce((sum, u) => sum + u.attempts.length, 0);
 
   const studentProgressList = students.map((s) => s.progressPercent || 0);

@@ -1,12 +1,12 @@
 import { redirect } from "next/navigation";
-import { getCurrentUser } from "@/lib/auth";
+import { getCurrentUser, canManageStructure } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminStructurePage() {
   const user = await getCurrentUser();
 
-  if (!user || (user.role !== "ADMIN" && user.role !== "SUPER_ADMIN")) {
+  if (!user || !canManageStructure(user.role)) {
     redirect("/login?callbackUrl=/admin/curriculum");
   }
 

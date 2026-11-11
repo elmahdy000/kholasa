@@ -29,7 +29,7 @@ export class AnalyticsService {
     ] = await Promise.all([
       prisma.user.count({ where: EXCLUDE_DEMO_SANDBOX_CONDITION }),
       prisma.user.count({ where: { role: Role.STUDENT, ...EXCLUDE_DEMO_SANDBOX_CONDITION } }),
-      prisma.user.count({ where: { role: { in: [Role.TEACHER, Role.EDITOR, Role.ADMIN, Role.SUPER_ADMIN] } } }),
+      prisma.user.count({ where: { role: { in: [Role.TEACHER, Role.EDITOR, Role.ASSISTANT, Role.ADMIN, Role.SUPER_ADMIN] } } }),
       prisma.subject.count(),
       prisma.unit.count(),
       prisma.lesson.count(),

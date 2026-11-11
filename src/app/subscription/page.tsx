@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getCurrentUser } from "@/lib/auth";
+import { isAdminOrAssistant } from "@/lib/roles";
 import { CurriculumService } from "@/services/curriculum.service";
 import { StudentShell } from "@/components/layout/StudentShell";
 import { StudentPaywallView } from "@/components/student/subscription/StudentPaywallView";
@@ -27,7 +28,7 @@ export default async function SubscriptionPage({ searchParams }: SubscriptionPag
     resolvedParams?.manage === "true" ||
     resolvedParams?.renew === "true";
 
-  const isStaff = user ? user.role === "ADMIN" || user.role === "SUPER_ADMIN" : false;
+  const isStaff = user ? isAdminOrAssistant(user.role) : false;
   const isActive = Boolean(user && (isStaff || user.subscriptionStatus === "ACTIVE"));
 
   return (

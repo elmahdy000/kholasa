@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { canManageUsersRole } from "@/lib/roles";
 import { EXCLUDE_DEMO_SANDBOX_CONDITION } from "@/lib/demo";
 
 export async function GET(req: Request) {
   try {
     const user = await getCurrentUser();
-    if (!user || (user.role !== "ADMIN" && user.role !== "SUPER_ADMIN")) {
+    if (!user || !canManageUsersRole(user.role)) {
       return NextResponse.json({ error: "غير مصرح لك بالوصول" }, { status: 403 });
     }
 

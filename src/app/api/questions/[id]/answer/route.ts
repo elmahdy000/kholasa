@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
+import { isAdminOrAssistant } from "@/lib/roles";
 import { jsonError } from "@/lib/http";
 import { rateLimit, withRetryAfter } from "@/lib/rate-limit";
 import { QuestionService } from "@/services/question.service";
@@ -52,8 +53,7 @@ export async function POST(
       (!question.subject.isPublished ||
         ("isUnderConstruction" in question.subject &&
           question.subject.isUnderConstruction &&
-          user.role !== "ADMIN" &&
-          user.role !== "SUPER_ADMIN") ||
+          !isAdminOrAssistant(user.role)) ||
         !isSubjectInScope(getCurriculumScope(user), question.subject))
     ) {
       return NextResponse.json(

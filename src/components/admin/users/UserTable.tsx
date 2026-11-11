@@ -3,10 +3,12 @@
 import { useState } from "react";
 import { Shield, Trash2, Smartphone, RotateCcw, Eye, Copy, KeyRound, Check, Clock, CheckCircle2, Ban, RefreshCw, Send } from "lucide-react";
 import type { UserItem } from "./types";
+import { canActorManageTargetUser, canDeleteUsersRole } from "@/lib/roles";
 
 interface UserTableProps {
   users: UserItem[];
   currentUserId: string;
+  currentUserRole: string;
   onSelectUserToEdit: (user: UserItem) => void;
   onDeleteUser: (userId: string, userName: string) => void;
   onResetDevices: (userId: string, userName: string) => void;
@@ -34,6 +36,7 @@ function formatLastActive(dateStr?: string | Date | null) {
 export function UserTable({
   users,
   currentUserId,
+  currentUserRole,
   onSelectUserToEdit,
   onDeleteUser,
   onResetDevices,
@@ -283,9 +286,13 @@ export function UserTable({
                         u.role === "SUPER_ADMIN"
                           ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900 border-transparent"
                           : u.role === "ADMIN"
-                          ? "bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200 border-slate-300 dark:border-slate-600"
+                          ? "bg-[#800020]/10 text-[#800020] dark:bg-[#800020]/20 dark:text-[#FB7185] border-[#800020]/30"
+                          : u.role === "ASSISTANT"
+                          ? "bg-amber-50 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300 border-amber-300 dark:border-amber-700"
+                          : u.role === "EDITOR"
+                          ? "bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300 border-blue-200 dark:border-blue-800"
                           : u.role === "TEACHER"
-                          ? "bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200 border-slate-300 dark:border-slate-600"
+                          ? "bg-purple-50 text-purple-700 dark:bg-purple-950/40 dark:text-purple-300 border-purple-200 dark:border-purple-800"
                           : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300 border-slate-200 dark:border-slate-700"
                       }`}
                     >
@@ -293,6 +300,10 @@ export function UserTable({
                         ? "مشرف أعلى"
                         : u.role === "ADMIN"
                         ? "مسؤول"
+                        : u.role === "ASSISTANT"
+                        ? "مساعد إداري"
+                        : u.role === "EDITOR"
+                        ? "محرر محتوى"
                         : u.role === "TEACHER"
                         ? "معلم"
                         : "طالب"}
@@ -379,6 +390,7 @@ export function UserTable({
                   <td className="sticky left-0 bg-white group-hover:bg-[#F8FAFC] dark:bg-[#0F172A] dark:group-hover:bg-[#1E293B] shadow-[-6px_0_12px_rgba(0,0,0,0.06)] dark:shadow-[-6px_0_12px_rgba(0,0,0,0.3)] border-r border-[#E2E8F0] dark:border-[#334155] py-3.5 px-4 whitespace-nowrap text-center min-w-[340px] z-10 transition-colors">
                     <div className="inline-flex items-center justify-center gap-1.5">
                       {u.role !== "STUDENT" ? (
+                        canActorManageTargetUser(currentUserRole, u.role) ? (
                         <>
                           <button
                             type="button"
@@ -415,6 +427,12 @@ export function UserTable({
                             )
                           )}
                         </>
+                        ) : (
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-[#1E293B] text-[11px] font-bold text-[#64748B] dark:text-[#94A3B8]">
+                            <Shield className="w-3.5 h-3.5 opacity-75" />
+                            <span>حساب محمي للإدارة</span>
+                          </span>
+                        )
                       ) : (
                         <>
                           <button
@@ -487,15 +505,18 @@ export function UserTable({
                         </>
                       )}
 
-                      <button
-                        type="button"
-                        onClick={() => onDeleteUser(u.id, u.name || "")}
-                        disabled={u.id === currentUserId}
-                        className="h-8 w-8 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 inline-flex items-center justify-center transition-colors disabled:opacity-20 disabled:cursor-not-allowed cursor-pointer"
-                        title="حذف المستخدم"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
+                      {canDeleteUsersRole(currentUserRole) &&
+                        canActorManageTargetUser(currentUserRole, u.role) && (
+                          <button
+                            type="button"
+                            onClick={() => onDeleteUser(u.id, u.name || "")}
+                            disabled={u.id === currentUserId}
+                            className="h-8 w-8 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 inline-flex items-center justify-center transition-colors disabled:opacity-20 disabled:cursor-not-allowed cursor-pointer"
+                            title="حذف المستخدم"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        )}
                     </div>
                   </td>
                 </tr>

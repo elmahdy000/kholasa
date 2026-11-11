@@ -12,6 +12,7 @@ enum Role {
   STUDENT
   TEACHER
   EDITOR
+  ASSISTANT
   ADMIN
   SUPER_ADMIN
 }

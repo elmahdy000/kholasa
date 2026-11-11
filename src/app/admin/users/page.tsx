@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { canManageUsersRole } from "@/lib/roles";
 import { EXCLUDE_DEMO_SANDBOX_CONDITION } from "@/lib/demo";
 import { AdminShell } from "@/components/layout/AdminShell";
 import { UserManagerClient } from "@/components/admin/UserManagerClient";
@@ -10,7 +11,7 @@ export const dynamic = "force-dynamic";
 export default async function AdminUsersPage() {
   const user = await getCurrentUser();
 
-  if (!user || (user.role !== "ADMIN" && user.role !== "SUPER_ADMIN")) {
+  if (!user || !canManageUsersRole(user.role)) {
     redirect("/login?callbackUrl=/admin/users");
   }
 
