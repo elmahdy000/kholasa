@@ -24,7 +24,7 @@ export function SubjectsGrid({ subjects }: SubjectsGridProps) {
         </div>
         <Link
           href="/subjects"
-          className="text-xs sm:text-[13px] font-bold text-[#800B34] dark:text-[#FB7185] hover:underline flex items-center gap-1"
+          className="text-xs sm:text-[13px] font-bold text-[#800B34] dark:text-[#FDA4AF] hover:underline flex items-center gap-1"
         >
           <span>عرض كل المواد</span>
           <ArrowLeft className="w-3.5 h-3.5" weight="bold" />
@@ -47,7 +47,7 @@ export function SubjectsGrid({ subjects }: SubjectsGridProps) {
               <motion.div key={subj.id} variants={fadeInUp}>
                 <Link
                   href={`/subjects/${subj.id}`}
-                  className="group p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E5E7EB] dark:border-[#334155] hover:border-[#800B34]/40 dark:hover:border-[#E11D48]/60 transition-all flex flex-col justify-between space-y-4 h-full"
+                  className="group p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#0F1E36] border border-[#E5E7EB] dark:border-[#1E3352] hover:border-[#800B34]/40 dark:hover:border-[#9E1043]/60 transition-all flex flex-col justify-between space-y-4 h-full"
                 >
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
@@ -64,7 +64,7 @@ export function SubjectsGrid({ subjects }: SubjectsGridProps) {
                     </div>
 
                     <div>
-                      <h3 className="text-sm sm:text-base font-bold text-[#12263F] dark:text-[#F8FAFC] group-hover:text-[#800B34] dark:group-hover:text-[#FB7185] transition-colors leading-snug">
+                      <h3 className="text-sm sm:text-base font-bold text-[#12263F] dark:text-[#F8FAFC] group-hover:text-[#800B34] dark:group-hover:text-[#FDA4AF] transition-colors leading-snug">
                         {subj.name}
                       </h3>
                       <p className="text-xs text-[#64748B] dark:text-[#94A3B8] mt-1 leading-relaxed">
@@ -90,7 +90,7 @@ export function SubjectsGrid({ subjects }: SubjectsGridProps) {
 
           return (
             <motion.div key={subj.id} variants={fadeInUp}>
-              <div className="group p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E5E7EB] dark:border-[#334155] hover:border-[#800B34]/40 dark:hover:border-[#E11D48]/60 transition-all flex flex-col justify-between space-y-4 h-full">
+              <div className="group p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#0F1E36] border border-[#E5E7EB] dark:border-[#1E3352] hover:border-[#800B34]/40 dark:hover:border-[#9E1043]/60 transition-all flex flex-col justify-between space-y-4 h-full">
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <div
@@ -105,7 +105,7 @@ export function SubjectsGrid({ subjects }: SubjectsGridProps) {
                   </div>
 
                   <div>
-                    <h3 className="text-sm sm:text-base font-bold text-[#12263F] dark:text-[#F8FAFC] group-hover:text-[#800B34] dark:group-hover:text-[#FB7185] transition-colors leading-snug">
+                    <h3 className="text-sm sm:text-base font-bold text-[#12263F] dark:text-[#F8FAFC] group-hover:text-[#800B34] dark:group-hover:text-[#FDA4AF] transition-colors leading-snug">
                       {subj.name}
                     </h3>
                     {subj.description && (
@@ -140,13 +140,13 @@ export function SubjectsGrid({ subjects }: SubjectsGridProps) {
                     href={`/exams/builder?subjectId=${subj.id}`}
                     className="text-[#64748B] dark:text-[#94A3B8] hover:text-[#12263F] dark:hover:text-[#F8FAFC] flex items-center gap-1 font-medium"
                   >
-                    <Target className="w-3.5 h-3.5 text-[#D97706]" weight="fill" />
+                    <Target className="w-3.5 h-3.5 text-[#B45309] dark:text-[#F0B843]" weight="fill" />
                     <span>اختبار سريع</span>
                   </Link>
 
                   <Link
                     href={`/subjects/${subj.id}`}
-                    className="text-[#800B34] dark:text-[#FB7185] font-bold flex items-center gap-1"
+                    className="text-[#800B34] dark:text-[#FDA4AF] font-bold flex items-center gap-1"
                   >
                     <span>فتح المادة</span>
                     <ArrowLeft className="w-3.5 h-3.5" weight="bold" />

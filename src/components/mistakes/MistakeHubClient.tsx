@@ -364,18 +364,18 @@ export function MistakeHubClient({
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
-          className="rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] p-4 sm:p-5 space-y-3.5 shadow-xs"
+          className="rounded-2xl bg-white dark:bg-[#0F1E36] border border-[#E2E8F0] dark:border-[#1E3352] p-4 sm:p-5 space-y-3.5 shadow-xs"
         >
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div className="space-y-0.5 min-w-0">
               <div className="flex items-center gap-2 text-xs sm:text-sm font-black text-[#091B40] dark:text-[#F8FAFC]">
-                <Crosshair className="w-4 h-4 text-[#800B34] dark:text-[#E9AD32] shrink-0" />
+                <Crosshair className="w-4 h-4 text-[#800B34] dark:text-[#F0B843] shrink-0" />
                 <span>أخطاءك متركزة فين؟</span>
               </div>
               {topWeakness && (
                 <p className="text-xs text-[#64748B] dark:text-[#94A3B8]">
                   أكتر درس محتاج مراجعة دلوقتي:{" "}
-                  <strong className="text-[#800B34] dark:text-[#FB7185]">
+                  <strong className="text-[#800B34] dark:text-[#FDA4AF]">
                     {topWeakness.subjectName}
                     {topWeakness.lessonTitle
                       ? ` — ${topWeakness.lessonTitle}`

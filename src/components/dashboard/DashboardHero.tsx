@@ -29,14 +29,14 @@ export function DashboardHero({ userName, studentMeta, continueLesson, onStartTo
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.22 }}
-      className="rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E8E9ED] dark:border-[#22364F] p-4 sm:p-6 lg:p-7 relative overflow-hidden shadow-xs"
+      className="rounded-2xl bg-white dark:bg-[#0F1E36] border border-[#E8E9ED] dark:border-[#1E3352] p-4 sm:p-6 lg:p-7 relative overflow-hidden shadow-xs"
     >
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 sm:gap-5 lg:gap-6">
         {/* Welcome Text & Clean Metadata */}
         <div className="space-y-1.5 sm:space-y-2 max-w-2xl">
           {academicScope ? (
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#F8FAFC] dark:bg-[#1E293B] text-[#475569] dark:text-[#CBD5E1] border border-[#E2E8F0] dark:border-[#334155]">
-              <GraduationCap className="w-3.5 h-3.5 text-[#800B34] dark:text-[#FB7185] shrink-0" weight="fill" />
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#F8FAFC] dark:bg-[#142747] text-[#475569] dark:text-[#CBD5E1] border border-[#E2E8F0] dark:border-[#1E3352]">
+              <GraduationCap className="w-3.5 h-3.5 text-[#800B34] dark:text-[#F0B843] shrink-0" weight="fill" />
               <BidiStatement as="span" text={academicScope} />
             </div>
           ) : null}

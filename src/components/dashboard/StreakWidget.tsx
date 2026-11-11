@@ -138,18 +138,18 @@ export function StreakWidget({
   const todayKey = todayDay?.dayKey || "";
 
   return (
-    <div className="relative rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E8E9ED] dark:border-[#22364F] p-5 sm:p-6 shadow-xs overflow-hidden text-right">
+    <div className="relative rounded-2xl bg-white dark:bg-[#0F1E36] border border-[#E8E9ED] dark:border-[#1E3352] p-5 sm:p-6 shadow-xs overflow-hidden text-right">
       {/* Main Content Layout */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5 sm:gap-6">
         {/* Right Side: Flame Counter & Clean Status */}
         <div className="flex items-center gap-4 sm:gap-5 min-w-0">
           {/* Flame Icon Container */}
           <div className="relative shrink-0">
-            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-[#FEF3C7] to-[#FDE68A] dark:from-[#78350F]/40 dark:to-[#451A03]/30 border border-[#FDE68A] dark:border-[#78350F]/50 flex items-center justify-center text-[#D97706] dark:text-[#FBBF24] shadow-xs">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-[#FEF3C7] to-[#FDE68A] dark:from-[#78350F]/40 dark:to-[#451A03]/30 border border-[#FDE68A] dark:border-[#78350F]/50 flex items-center justify-center text-[#B45309] dark:text-[#F0B843] shadow-xs">
               <Fire className="w-7 h-7 sm:w-8 sm:h-8 shrink-0" weight="fill" />
             </div>
             {isTodayCompleted && (
-              <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-[#059669] text-white flex items-center justify-center shadow-xs border-2 border-white dark:border-[#0F172A]">
+              <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-[#059669] text-white flex items-center justify-center shadow-xs border-2 border-white dark:border-[#0F1E36]">
                 <CheckCircle className="w-3.5 h-3.5 shrink-0" weight="fill" />
               </div>
             )}
@@ -169,7 +169,7 @@ export function StreakWidget({
                 <span className="text-2xl sm:text-3xl font-black text-[#12263F] dark:text-white font-mono tracking-tight">
                   {streakGrammar.numberText}
                 </span>
-                <span className="text-sm sm:text-base font-bold text-[#D97706] dark:text-[#FBBF24]">
+                <span className="text-sm sm:text-base font-bold text-[#B45309] dark:text-[#F0B843]">
                   {streakGrammar.labelText}
                 </span>
               </div>
@@ -180,7 +180,7 @@ export function StreakWidget({
                   <span>حضور النهاردة اتسجل</span>
                 </span>
               ) : (
-                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold text-[#D97706] dark:text-[#FBBF24] bg-[#D97706]/10 border border-[#D97706]/20">
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold text-[#92400E] dark:text-[#F0B843] bg-[#FFFBEB] dark:bg-[#F0B843]/15 border border-[#FDE68A] dark:border-[#F0B843]/30">
                   <Lightning className="w-3.5 h-3.5 shrink-0" weight="fill" />
                   <span>سجّل حضور النهاردة</span>
                 </span>
@@ -263,7 +263,7 @@ export function StreakWidget({
                       }
                     }
                   }}
-                  className="flex-1 sm:flex-initial min-h-[44px] h-11 px-4 rounded-xl bg-[#D97706] hover:bg-[#B45309] text-white text-xs sm:text-[13px] font-bold flex items-center justify-center gap-1.5 shadow-xs transition-all active:scale-[0.98] cursor-pointer"
+                  className="flex-1 sm:flex-initial min-h-[44px] h-11 px-4 rounded-xl bg-[#B45309] hover:bg-[#92400E] text-white text-xs sm:text-[13px] font-bold flex items-center justify-center gap-1.5 shadow-xs transition-all active:scale-[0.98] cursor-pointer"
                 >
                   <Lightning className="w-4 h-4 shrink-0" weight="fill" />
                   <span>حل سؤال النهاردة</span>
@@ -272,7 +272,7 @@ export function StreakWidget({
                   type="button"
                   disabled={isCheckingIn}
                   onClick={handleQuickCheckin}
-                  className="min-h-[44px] h-11 px-3 rounded-xl border border-[#D97706]/30 dark:border-[#FBBF24]/30 bg-white dark:bg-[#1E293B] hover:bg-[#D97706]/10 text-[#D97706] dark:text-[#FBBF24] text-xs font-semibold flex items-center justify-center gap-1.5 transition-all active:scale-[0.98] disabled:opacity-50 cursor-pointer"
+                  className="min-h-[44px] h-11 px-3 rounded-xl border border-[#FDE68A] dark:border-[#F0B843]/30 bg-[#FFFBEB] dark:bg-[#142747] hover:bg-[#FEF3C7] text-[#92400E] dark:text-[#F0B843] text-xs font-semibold flex items-center justify-center gap-1.5 transition-all active:scale-[0.98] disabled:opacity-50 cursor-pointer"
                   title="تسجيل سريع لحضور النهاردة"
                 >
                   <CalendarCheck className="w-3.5 h-3.5 shrink-0" weight="bold" />

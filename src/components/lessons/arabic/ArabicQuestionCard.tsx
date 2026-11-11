@@ -159,7 +159,7 @@ export function ArabicQuestionCard({
             </span>
           )}
           {originLabel && (
-            <span className="px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-800 border border-indigo-200 dark:bg-indigo-950/40 dark:text-indigo-200 dark:border-indigo-800 text-[11px] font-bold">
+            <span className="px-2 py-0.5 rounded-md bg-[#EAF2FF] text-[#091B40] border border-[#BFDBFE] dark:bg-[#142747] dark:text-[#93C5FD] dark:border-[#1E3A6E] text-[11px] font-bold">
               {originLabel}
             </span>
           )}

@@ -34,16 +34,16 @@ export function MistakeFilterBar({
   subjects,
 }: MistakeFilterBarProps) {
   return (
-    <div className="p-3.5 sm:p-4 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] space-y-3">
+    <div className="p-3.5 sm:p-4 rounded-xl bg-white dark:bg-[#0F1E36] border border-[#E2E8F0] dark:border-[#1E3352] space-y-3">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         {/* Status Filter Tabs - Responsive 3-col on mobile, flex on desktop */}
-        <div className="grid grid-cols-3 sm:flex items-center gap-1 p-1 rounded-lg bg-[#F7F9FC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] w-full sm:w-auto">
+        <div className="grid grid-cols-3 sm:flex items-center gap-1 p-1 rounded-lg bg-[#F7F9FC] dark:bg-[#142747] border border-[#E2E8F0] dark:border-[#1E3352] w-full sm:w-auto">
           <button
             type="button"
             onClick={() => setFilterStatus("unresolved")}
             className={`min-h-[44px] px-2 sm:px-3.5 py-2 rounded-md text-xs sm:text-[13px] font-bold font-sans tabular-nums transition-colors flex items-center justify-center text-center truncate cursor-pointer ${
               filterStatus === "unresolved"
-                ? "bg-[#DC2626] text-white"
+                ? "bg-[#800B34] dark:bg-[#9E1043] text-white"
                 : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
             }`}
           >

@@ -28,10 +28,10 @@ export function MistakeAnalyticsBar({
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
         whileHover={{ y: -3 }}
-        className={`relative overflow-hidden p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#0F172A] border flex items-center justify-between shadow-xs transition-colors ${
+        className={`relative overflow-hidden p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#0F1E36] border flex items-center justify-between shadow-xs transition-colors ${
           unresolvedCount > 0
-            ? "border-[#FECACA] dark:border-[#7F1D1D]/60"
-            : "border-[#E2E8F0] dark:border-[#334155]"
+            ? "border-[#FECACA] dark:border-[#9E1043]/50"
+            : "border-[#E2E8F0] dark:border-[#1E3352]"
         }`}
       >
         <div>
@@ -57,7 +57,7 @@ export function MistakeAnalyticsBar({
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.35, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
         whileHover={{ y: -3 }}
-        className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] flex items-center justify-between shadow-xs"
+        className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#0F1E36] border border-[#E2E8F0] dark:border-[#1E3352] flex items-center justify-between shadow-xs"
       >
         <div>
           <span className="text-2xl sm:text-3xl font-bold font-sans tabular-nums text-[#059669] block">
@@ -77,11 +77,11 @@ export function MistakeAnalyticsBar({
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.35, delay: 0.16, ease: [0.22, 1, 0.36, 1] }}
         whileHover={{ y: -3 }}
-        className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] flex flex-col justify-between gap-2 shadow-xs"
+        className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#0F1E36] border border-[#E2E8F0] dark:border-[#1E3352] flex flex-col justify-between gap-2 shadow-xs"
       >
         <div className="flex items-center justify-between">
           <div>
-            <span className="text-2xl sm:text-3xl font-bold font-sans tabular-nums text-[#800B34] dark:text-[#FB7185] block">
+            <span className="text-2xl sm:text-3xl font-bold font-sans tabular-nums text-[#800B34] dark:text-[#FDA4AF] block">
               {masteryPercentage !== null ? (
                 <AnimatedCount value={masteryPercentage} suffix="%" startFromZero />
               ) : (
@@ -92,7 +92,7 @@ export function MistakeAnalyticsBar({
               نسبة اللي خلصته
             </span>
           </div>
-          <div className="relative w-11 h-11 rounded-xl bg-[#800B34]/10 dark:bg-[#1E293B] text-[#800B34] dark:text-[#FB7185] flex items-center justify-center shrink-0">
+          <div className="relative w-11 h-11 rounded-xl bg-[#800B34]/10 dark:bg-[#142747] text-[#800B34] dark:text-[#FDA4AF] flex items-center justify-center shrink-0">
             <svg
               aria-hidden="true"
               className="absolute inset-0 w-full h-full -rotate-90"

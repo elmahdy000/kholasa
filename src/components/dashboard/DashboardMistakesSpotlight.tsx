@@ -59,8 +59,8 @@ export function DashboardMistakesSpotlight({
       transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
       className={`rounded-2xl border p-4 sm:p-6 transition-colors relative overflow-hidden ${
         hasUnresolved
-          ? "bg-linear-to-bl from-white via-[#FFFDFD] to-[#FEF2F2]/80 dark:from-[#0F172A] dark:via-[#111C33] dark:to-[#291322]/75 border-[#FECACA] dark:border-[#7F1D1D]/60 shadow-sm"
-          : "bg-linear-to-bl from-white via-[#FAFFFD] to-[#ECFDF5]/85 dark:from-[#0F172A] dark:via-[#111C33] dark:to-[#0C2920]/75 border-[#A7F3D0] dark:border-[#065F46]/60 shadow-sm"
+          ? "bg-linear-to-bl from-white via-[#FFFDFD] to-[#FAF6F7] dark:from-[#0F1E36] dark:via-[#0F1E36] dark:to-[#1F1228] border-[#800B34]/20 dark:border-[#9E1043]/45 shadow-sm"
+          : "bg-linear-to-bl from-white via-[#FAFFFD] to-[#ECFDF5]/85 dark:from-[#0F1E36] dark:via-[#0F1E36] dark:to-[#0C2920]/75 border-[#A7F3D0] dark:border-[#065F46]/60 shadow-sm"
       }`}
     >
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 sm:gap-5 relative z-10">
@@ -237,7 +237,7 @@ export function DashboardMistakesSpotlight({
           <div className="flex items-center justify-between gap-2">
             <span className="inline-flex items-center gap-1.5 text-xs font-black text-[#091B40] dark:text-[#F8FAFC]">
               <WarningCircle
-                className="w-4 h-4 text-[#DC2626] dark:text-[#F87171] shrink-0"
+                className="w-4 h-4 text-[#800B34] dark:text-[#FDA4AF] shrink-0"
                 weight="bold"
               />
               أخطاءك متركزة فين؟
@@ -264,17 +264,17 @@ export function DashboardMistakesSpotlight({
                   viewport={{ once: true, amount: 0.2 }}
                   transition={{ delay: 0.08 * idx, duration: 0.32 }}
                   whileHover={{ y: -3 }}
-                  className="p-3 rounded-xl bg-white/95 dark:bg-[#0F172A]/95 border border-[#E5E7EB] dark:border-[#334155] hover:border-[#800B34]/45 dark:hover:border-[#E9AD32]/55 transition-all min-w-0 flex flex-col justify-between gap-2 shadow-2xs"
+                  className="p-3 rounded-xl bg-white/95 dark:bg-[#142747]/90 border border-[#E5E7EB] dark:border-[#1E3352] hover:border-[#800B34]/45 dark:hover:border-[#F0B843]/55 transition-all min-w-0 flex flex-col justify-between gap-2 shadow-2xs"
                 >
                   <div>
                     <div className="flex items-center justify-between gap-2 mb-1.5">
                       <span className="inline-flex items-center gap-1 text-[11px] font-bold text-[#64748B] dark:text-[#94A3B8] truncate">
-                        <span className="w-4 h-4 rounded-md bg-[#800B34]/10 dark:bg-[#E11D48]/20 text-[#800B34] dark:text-[#FB7185] text-[10px] font-black inline-flex items-center justify-center shrink-0">
+                        <span className="w-4 h-4 rounded-md bg-[#800B34]/10 dark:bg-[#9E1043]/25 text-[#800B34] dark:text-[#FDA4AF] text-[10px] font-black inline-flex items-center justify-center shrink-0">
                           {idx + 1}
                         </span>
                         <span className="truncate">{bucket.subjectName}</span>
                       </span>
-                      <span className="px-2 py-0.5 rounded-full text-[11px] font-black tabular-nums bg-[#DC2626]/10 dark:bg-[#DC2626]/20 text-[#B91C1C] dark:text-[#FCA5A5] shrink-0">
+                      <span className="px-2 py-0.5 rounded-full text-[11px] font-black tabular-nums bg-[#800B34]/10 dark:bg-[#9E1043]/25 text-[#800B34] dark:text-[#FDA4AF] shrink-0">
                         {bucket.count} سؤال
                       </span>
                     </div>

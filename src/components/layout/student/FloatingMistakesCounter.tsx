@@ -206,17 +206,17 @@ export function FloatingMistakesCounter({
               shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 6, scale: 0.98 }
             }
             transition={{ duration: 0.18, ease: "easeOut" }}
-            className="mb-2.5 w-[min(320px,calc(100vw-24px))] rounded-2xl border border-border/90 bg-white/95 dark:bg-slate-900/95 dark:border-slate-700/90 backdrop-blur-md shadow-[0_14px_40px_-10px_rgba(9,27,64,0.22)] dark:shadow-[0_14px_40px_-10px_rgba(0,0,0,0.65)] overflow-hidden"
+            className="mb-2.5 w-[min(320px,calc(100vw-24px))] rounded-2xl border border-[#E2E8F0] bg-white/95 dark:bg-[#0F1E36]/95 dark:border-[#1E3352] backdrop-blur-md shadow-[0_14px_40px_-10px_rgba(9,27,64,0.22)] dark:shadow-[0_14px_40px_-10px_rgba(0,0,0,0.65)] overflow-hidden"
           >
             {/* Header */}
-            <div className="flex items-start justify-between gap-2 px-4 pt-3.5 pb-3 border-b border-border/60 dark:border-slate-800">
+            <div className="flex items-start justify-between gap-2 px-4 pt-3.5 pb-3 border-b border-[#E2E8F0]/80 dark:border-[#1E3352]">
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
                   <span
                     className={`inline-flex h-6 w-6 items-center justify-center rounded-lg ${
                       hasUnresolved
-                        ? "bg-[#800B34]/10 text-[#800B34] dark:bg-red-500/15 dark:text-red-400"
-                        : "bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-400"
+                        ? "bg-[#800B34]/10 text-[#800B34] dark:bg-[#9E1043]/25 dark:text-[#FDA4AF]"
+                        : "bg-emerald-500/10 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300"
                     }`}
                   >
                     {hasUnresolved ? (
@@ -225,15 +225,15 @@ export function FloatingMistakesCounter({
                       <CheckCircle size={14} weight="bold" />
                     )}
                   </span>
-                  <h3 className="text-sm font-black text-navy dark:text-slate-100">
+                  <h3 className="text-sm font-black text-navy dark:text-[#F5F7FB]">
                     مراجعة لأخطائي
                   </h3>
                 </div>
-                <p className="mt-1 text-xs font-medium text-muted-foreground dark:text-slate-400">
+                <p className="mt-1 text-xs font-medium text-[#536681] dark:text-[#CBD5E1]">
                   {hasUnresolved ? (
                     <>
                       عندك{" "}
-                      <span className="font-bold text-[#800B34] dark:text-red-400">
+                      <span className="font-bold text-[#800B34] dark:text-[#FDA4AF]">
                         {unresolvedCount === 1
                           ? "سؤال واحد"
                           : unresolvedCount === 2
@@ -287,24 +287,24 @@ export function FloatingMistakesCounter({
                       return (
                         <div
                           key={bucket.key}
-                          className="flex items-center gap-1.5 rounded-xl border border-border/70 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/50 p-1.5"
+                          className="flex items-center gap-1.5 rounded-xl border border-[#E2E8F0] dark:border-[#1E3352] bg-[#F7F9FC] dark:bg-[#142747]/70 p-1.5"
                         >
                           <Link
                             href={filterHref}
                             onClick={() => setOpen(false)}
-                            className="flex-1 min-w-0 min-h-[44px] flex items-center justify-between gap-2 rounded-lg px-2 py-1.5 hover:bg-white dark:hover:bg-slate-800 transition-colors"
+                            className="flex-1 min-w-0 min-h-[44px] flex items-center justify-between gap-2 rounded-lg px-2 py-1.5 hover:bg-white dark:hover:bg-[#142747] transition-colors"
                           >
                             <div className="min-w-0">
-                              <p className="text-xs font-bold text-navy dark:text-slate-100 truncate">
+                              <p className="text-xs font-bold text-navy dark:text-[#F5F7FB] truncate">
                                 {itemTitle}
                               </p>
                               {showSubjectSub && (
-                                <p className="text-[11px] text-muted-foreground dark:text-slate-400 truncate">
+                                <p className="text-[11px] text-[#536681] dark:text-[#94A3B8] truncate">
                                   {bucket.subjectName}
                                 </p>
                               )}
                             </div>
-                            <span className="shrink-0 inline-flex items-center justify-center min-w-[26px] h-6 px-2 rounded-full text-[11px] font-black bg-[#800B34]/10 text-[#800B34] dark:bg-red-500/20 dark:text-red-300">
+                            <span className="shrink-0 inline-flex items-center justify-center min-w-[26px] h-6 px-2 rounded-full text-[11px] font-black bg-[#800B34]/10 text-[#800B34] dark:bg-[#9E1043]/25 dark:text-[#FDA4AF]">
                               {bucket.count}
                             </span>
                           </Link>
@@ -339,11 +339,11 @@ export function FloatingMistakesCounter({
             </div>
 
             {/* Footer Action */}
-            <div className="flex items-center gap-2 px-3 pb-3 pt-1 border-t border-border/50 dark:border-slate-800/80">
+            <div className="flex items-center gap-2 px-3 pb-3 pt-2 border-t border-[#E2E8F0]/70 dark:border-[#1E3352]">
               <Link
                 href="/mistakes"
                 onClick={() => setOpen(false)}
-                className="flex-1 min-h-[44px] inline-flex items-center justify-center gap-1.5 rounded-xl bg-navy hover:bg-navy-light dark:bg-slate-100 dark:hover:bg-white text-white dark:text-navy text-xs font-extrabold px-3 transition-colors"
+                className="flex-1 min-h-[44px] inline-flex items-center justify-center gap-1.5 rounded-xl bg-navy hover:bg-navy-light dark:bg-[#2C70BF] dark:hover:bg-[#1D4ED8] text-white text-xs font-extrabold px-3 transition-colors"
               >
                 <span>
                   {hasUnresolved ? "افتح مراجعة لأخطائي" : "شوف سجل الأخطاء"}
@@ -354,7 +354,7 @@ export function FloatingMistakesCounter({
                 <button
                   type="button"
                   onClick={() => setCollapsePreference(false)}
-                  className="min-h-[44px] px-3 rounded-xl border border-border/80 dark:border-slate-700 text-xs font-bold text-muted-foreground hover:text-navy dark:hover:text-slate-100 transition-colors cursor-pointer"
+                  className="min-h-[44px] px-3 rounded-xl border border-[#E2E8F0] dark:border-[#1E3352] text-xs font-bold text-[#536681] hover:text-navy dark:text-[#CBD5E1] dark:hover:text-white transition-colors cursor-pointer"
                 >
                   توسيع
                 </button>
@@ -378,8 +378,8 @@ export function FloatingMistakesCounter({
         }}
         className={`inline-flex items-center rounded-2xl border backdrop-blur-md transition-colors ${
           hasUnresolved
-            ? "border-[#800B34]/20 bg-white/95 dark:bg-slate-900/95 dark:border-red-500/30 shadow-[0_8px_28px_-8px_rgba(9,27,64,0.2)] dark:shadow-[0_8px_28px_-8px_rgba(0,0,0,0.6)]"
-            : "border-emerald-500/25 bg-white/95 dark:bg-slate-900/95 dark:border-emerald-500/25 shadow-[0_8px_24px_-8px_rgba(9,27,64,0.14)] dark:shadow-[0_8px_24px_-8px_rgba(0,0,0,0.55)]"
+            ? "border-[#800B34]/20 bg-white/95 dark:bg-[#0F1E36]/95 dark:border-[#9E1043]/40 shadow-[0_8px_28px_-8px_rgba(9,27,64,0.2)] dark:shadow-[0_8px_28px_-8px_rgba(0,0,0,0.6)]"
+            : "border-emerald-500/25 bg-white/95 dark:bg-[#0F1E36]/95 dark:border-emerald-500/30 shadow-[0_8px_24px_-8px_rgba(9,27,64,0.14)] dark:shadow-[0_8px_24px_-8px_rgba(0,0,0,0.55)]"
         }`}
       >
         <button
@@ -413,7 +413,7 @@ export function FloatingMistakesCounter({
             <span
               className={`inline-flex items-center justify-center min-w-[24px] h-6 px-1.5 rounded-full text-xs font-black tabular-nums ${
                 hasUnresolved
-                  ? "bg-[#800B34]/10 text-[#800B34] dark:bg-red-500/20 dark:text-red-300"
+                  ? "bg-[#800B34]/10 text-[#800B34] dark:bg-[#9E1043]/25 dark:text-[#FDA4AF]"
                   : "bg-emerald-500/12 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300"
               }`}
             >

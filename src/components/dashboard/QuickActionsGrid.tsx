@@ -17,8 +17,8 @@ export function QuickActionsGrid({ subjectsCount, unresolvedMistakesCount }: Qui
       href: "/subjects",
       icon: BookOpen,
       badge: `${subjectsCount} مواد`,
-      badgeColor: "bg-[#800B34]/10 text-[#800B34] dark:bg-[#800B34]/30 dark:text-[#FB7185]",
-      iconBg: "bg-[#800B34]/10 text-[#800B34] dark:bg-[#1E293B] dark:text-[#FB7185]",
+      badgeColor: "bg-[#800B34]/10 text-[#800B34] dark:bg-[#9E1043]/25 dark:text-[#FDA4AF]",
+      iconBg: "bg-[#800B34]/10 text-[#800B34] dark:bg-[#142747] dark:text-[#FDA4AF]",
       layoutClass: "col-span-2 sm:col-span-3 lg:col-span-1",
       isFeaturedOnMobile: true,
     },
@@ -40,8 +40,8 @@ export function QuickActionsGrid({ subjectsCount, unresolvedMistakesCount }: Qui
       href: "/subjects",
       icon: BookmarkSimple,
       badge: "شامل",
-      badgeColor: "bg-[#D97706]/10 text-[#D97706] dark:bg-[#D97706]/30 dark:text-[#FBBF24]",
-      iconBg: "bg-[#D97706]/10 text-[#D97706] dark:bg-[#1E293B] dark:text-[#FBBF24]",
+      badgeColor: "bg-[#FFFBEB] text-[#92400E] border border-[#FDE68A]/80 dark:bg-[#F0B843]/15 dark:text-[#F0B843] dark:border-transparent",
+      iconBg: "bg-[#FFFBEB] text-[#B45309] dark:bg-[#142747] dark:text-[#F0B843]",
       layoutClass: "col-span-1 sm:col-span-2 lg:col-span-1",
     },
     {
@@ -53,8 +53,8 @@ export function QuickActionsGrid({ subjectsCount, unresolvedMistakesCount }: Qui
       badge: unresolvedMistakesCount > 0 ? `${unresolvedMistakesCount} في المراجعة` : "0 — كله تمام ✓",
       badgeColor:
         unresolvedMistakesCount > 0
-          ? "bg-[#DC2626] text-white"
-          : "bg-[#F3F4F6] text-[#6B7280] dark:bg-[#334155] dark:text-[#94A3B8]",
+          ? "bg-[#800B34] dark:bg-[#9E1043] text-white"
+          : "bg-[#F3F4F6] text-[#6B7280] dark:bg-[#142747] dark:text-[#94A3B8]",
       iconBg: "bg-[#DC2626]/10 text-[#DC2626] dark:bg-[#1E293B] dark:text-[#F87171]",
       layoutClass: "col-span-1 sm:col-span-2 lg:col-span-1",
     },
@@ -65,8 +65,8 @@ export function QuickActionsGrid({ subjectsCount, unresolvedMistakesCount }: Qui
       href: "/leaderboard",
       icon: Trophy,
       badge: "تنافسي",
-      badgeColor: "bg-[#800B34]/10 text-[#800B34] dark:bg-[#800B34]/30 dark:text-[#FB7185]",
-      iconBg: "bg-[#800B34]/10 text-[#800B34] dark:bg-[#1E293B] dark:text-[#FB7185]",
+      badgeColor: "bg-[#800B34]/10 text-[#800B34] dark:bg-[#9E1043]/25 dark:text-[#FDA4AF]",
+      iconBg: "bg-[#800B34]/10 text-[#800B34] dark:bg-[#142747] dark:text-[#FDA4AF]",
       layoutClass: "col-span-1 sm:col-span-2 lg:col-span-1",
     },
   ];
@@ -89,7 +89,7 @@ export function QuickActionsGrid({ subjectsCount, unresolvedMistakesCount }: Qui
             <Link
               key={action.id}
               href={action.href}
-              className={`group p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E5E7EB] dark:border-[#334155] hover:border-[#800B34]/40 dark:hover:border-[#E11D48]/60 transition-all flex flex-col justify-between text-right ${action.layoutClass}`}
+              className={`group p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#0F1E36] border border-[#E5E7EB] dark:border-[#1E3352] hover:border-[#800B34]/40 dark:hover:border-[#9E1043]/60 transition-all flex flex-col justify-between text-right ${action.layoutClass}`}
             >
               <div className="flex items-center justify-between gap-2 mb-3">
                 <div

@@ -50,7 +50,7 @@ export function StudentMobileBottomNav({
                   isActive
                     ? "bg-[#800B34] text-white shadow-xs"
                     : item.isCenter
-                    ? "bg-[#E9AD32]/15 text-[#E9AD32] dark:text-[#F0B843] hover:bg-[#E9AD32]/25"
+                    ? "bg-[#FFFBEB] text-[#92400E] border border-[#FDE68A]/70 dark:bg-[#F0B843]/15 dark:text-[#F0B843] dark:border-transparent hover:bg-[#FEF3C7]"
                     : "text-[#64748B] dark:text-[#94A3B8] group-hover:text-[#091B40] dark:group-hover:text-white"
                 )}
               >
@@ -65,7 +65,7 @@ export function StudentMobileBottomNav({
                       className={cn(
                         "absolute -top-1.5 -left-1.5 z-10 min-w-[18px] h-[18px] px-1 rounded-full text-[9px] font-black tabular-nums flex items-center justify-center shadow-xs border border-white dark:border-[#091B40]",
                         mistakesCount > 0
-                          ? "bg-[#DC2626] text-white"
+                          ? "bg-[#800B34] text-white"
                           : "bg-[#059669] text-white"
                       )}
                     >

@@ -141,7 +141,7 @@
   --primary-foreground: #FFFFFF;
   --accent: var(--brand-gold);
   --accent-hover: #D49B24;
-  --accent-foreground: #FFFFFF;
+  --accent-foreground: #091B40;
   --navy: var(--brand-navy);
   --navy-light: #1A315E;
   --gold: var(--brand-gold);
@@ -169,8 +169,8 @@
   --brand-blue: #4088DC;
 
   --text-primary: #F5F7FB;
-  --text-secondary: #94A3B8;
-  --text-muted: #64748B;
+  --text-secondary: #CBD5E1;
+  --text-muted: #94A3B8;
 
   --success: #1FB366;
   --success-foreground: #081426;

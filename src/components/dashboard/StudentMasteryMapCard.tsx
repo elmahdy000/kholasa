@@ -137,12 +137,12 @@ export function StudentMasteryMapCard({ data }: StudentMasteryMapProps) {
         </div>
 
         <div className="w-full overflow-x-auto pb-1 scrollbar-none">
-          <div className="min-w-[420px] p-3 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/60 border border-[#E2E8F0] dark:border-[#334155]">
+          <div className="min-w-[420px] p-3 rounded-xl bg-[#F8FAFC] dark:bg-[#142747]/70 border border-[#E2E8F0] dark:border-[#1E3352]">
             <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-28 overflow-visible">
               <defs>
                 <linearGradient id="scoreAreaGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#4F46E5" stopOpacity="0.25" />
-                  <stop offset="100%" stopColor="#4F46E5" stopOpacity="0.0" />
+                  <stop offset="0%" stopColor="#2C70BF" stopOpacity="0.22" />
+                  <stop offset="100%" stopColor="#2C70BF" stopOpacity="0.0" />
                 </linearGradient>
               </defs>
 
@@ -153,7 +153,7 @@ export function StudentMasteryMapCard({ data }: StudentMasteryMapProps) {
                 x2={width - padding}
                 y2={padding}
                 stroke="currentColor"
-                className="text-[#E2E8F0] dark:text-[#334155]"
+                className="text-[#E2E8F0] dark:text-[#1E3352]"
                 strokeDasharray="4 4"
                 strokeWidth="1"
               />
@@ -163,7 +163,7 @@ export function StudentMasteryMapCard({ data }: StudentMasteryMapProps) {
                 x2={width - padding}
                 y2={height - padding}
                 stroke="currentColor"
-                className="text-[#E2E8F0] dark:text-[#334155]"
+                className="text-[#E2E8F0] dark:text-[#1E3352]"
                 strokeWidth="1"
               />
 
@@ -174,7 +174,7 @@ export function StudentMasteryMapCard({ data }: StudentMasteryMapProps) {
               <path
                 d={pathD}
                 fill="none"
-                stroke="#4F46E5"
+                stroke="#2C70BF"
                 strokeWidth="3"
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -187,7 +187,7 @@ export function StudentMasteryMapCard({ data }: StudentMasteryMapProps) {
                     cx={pt.x}
                     cy={pt.y}
                     r="4.5"
-                    className="fill-white dark:fill-[#0F172A] stroke-[#4F46E5] stroke-[2.5]"
+                    className="fill-white dark:fill-[#0F1E36] stroke-[#2C70BF] stroke-[2.5]"
                   />
                   <text
                     x={pt.x}
@@ -215,12 +215,12 @@ export function StudentMasteryMapCard({ data }: StudentMasteryMapProps) {
   };
 
   return (
-    <section className="rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] p-5 sm:p-6 space-y-6 text-right">
+    <section className="rounded-xl bg-white dark:bg-[#0F1E36] border border-[#E2E8F0] dark:border-[#1E3352] p-5 sm:p-6 space-y-6 text-right">
       {/* 1. Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#E2E8F0] dark:border-[#334155] pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#E2E8F0] dark:border-[#1E3352] pb-4">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-[#4F46E5]/10 dark:bg-[#6366F1]/20 flex items-center justify-center text-[#4F46E5] dark:text-[#6366F1]">
+            <div className="w-8 h-8 rounded-lg bg-[#2C70BF]/10 dark:bg-[#2C70BF]/20 flex items-center justify-center text-[#1D4ED8] dark:text-[#60A5FA]">
               <ChartLineUp className="w-4 h-4" weight="bold" />
             </div>
             <h2 className="text-base sm:text-lg font-bold text-[#0F172A] dark:text-[#F8FAFC]">
@@ -233,11 +233,11 @@ export function StudentMasteryMapCard({ data }: StudentMasteryMapProps) {
         </div>
 
         {/* Overall Mastery Pill */}
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] self-start sm:self-center">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#F8FAFC] dark:bg-[#142747] border border-[#E2E8F0] dark:border-[#1E3352] self-start sm:self-center">
           <span className="text-[12px] text-[#64748B] dark:text-[#94A3B8] font-medium">
             مستواك العام في المنهج:
           </span>
-          <span className="text-[13px] font-mono font-bold text-[#4F46E5] dark:text-[#6366F1]">
+          <span className="text-[13px] font-mono font-bold text-[#1D4ED8] dark:text-[#60A5FA]">
             {overallMasteryPercentage}%
           </span>
           <span className="text-[11px] text-[#64748B] font-mono">
@@ -270,7 +270,7 @@ export function StudentMasteryMapCard({ data }: StudentMasteryMapProps) {
           <div className="flex items-center gap-2 shrink-0">
             <Link
               href={`/exams/builder?subjectId=${focusRecommendation.subjectId}&lessonId=${focusRecommendation.lessonId}`}
-              className="h-10 px-4 rounded-lg bg-[#4F46E5] hover:bg-[#4338CA] text-white text-[13px] font-bold flex items-center justify-center gap-2 transition-colors cursor-pointer"
+              className="h-10 px-4 rounded-lg bg-[#091B40] hover:bg-[#12263F] dark:bg-[#2C70BF] dark:hover:bg-[#1D4ED8] text-white text-[13px] font-bold flex items-center justify-center gap-2 transition-colors cursor-pointer"
             >
               <Target className="w-4 h-4" weight="bold" />
               <span>ابدأ امتحان الدرس</span>
@@ -315,13 +315,13 @@ export function StudentMasteryMapCard({ data }: StudentMasteryMapProps) {
             return (
               <div
                 key={subj.id}
-                className="p-4 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B]/50 border border-[#E2E8F0] dark:border-[#334155] flex flex-col justify-between gap-3 hover:border-[#4F46E5]/40 transition-colors"
+                className="p-4 rounded-xl bg-[#F8FAFC] dark:bg-[#142747]/70 border border-[#E2E8F0] dark:border-[#1E3352] flex flex-col justify-between gap-3 hover:border-[#2C70BF]/45 transition-colors"
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="space-y-0.5">
                     <Link
                       href={`/subjects/${subj.id}`}
-                      className="text-sm font-bold text-[#0F172A] dark:text-white hover:text-[#4F46E5] dark:hover:text-[#6366F1] flex items-center gap-1.5 transition-colors"
+                      className="text-sm font-bold text-[#0F172A] dark:text-white hover:text-[#2C70BF] dark:hover:text-[#60A5FA] flex items-center gap-1.5 transition-colors"
                     >
                       <span>{subj.name}</span>
                       <ArrowSquareOut className="w-3.5 h-3.5 text-[#64748B]" />
@@ -358,8 +358,8 @@ export function StudentMasteryMapCard({ data }: StudentMasteryMapProps) {
                         isHigh
                           ? "bg-[#059669] dark:bg-[#34D399]"
                           : isMedium
-                          ? "bg-amber-500 dark:bg-amber-400"
-                          : "bg-[#4F46E5] dark:bg-[#6366F1]"
+                          ? "bg-[#B45309] dark:bg-[#F0B843]"
+                          : "bg-[#2C70BF] dark:bg-[#60A5FA]"
                       }`}
                       style={{ width: `${Math.max(4, subj.masteryPercentage)}%` }}
                     />

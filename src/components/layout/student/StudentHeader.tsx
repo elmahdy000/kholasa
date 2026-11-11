@@ -98,9 +98,8 @@ export function StudentHeader({
                         exit={{ scale: 0.72, opacity: 0 }}
                         transition={{ type: "spring", stiffness: 460, damping: 24 }}
                         title={mistakesTooltip}
-                        className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-black tabular-nums bg-[#DC2626] text-white shadow-xs"
+                        className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-black tabular-nums bg-[#800B34] dark:bg-[#9E1043] text-white shadow-xs"
                       >
-                        <span className="inline-flex h-2 w-2 shrink-0 rounded-full bg-white" />
                         <AnimatedCount value={unresolvedMistakesCount} />
                       </motion.span>
                     ) : (
@@ -147,21 +146,17 @@ export function StudentHeader({
               className={cn(
                 "lg:hidden inline-flex items-center gap-1.5 h-8 px-2 sm:px-2.5 rounded-lg border text-[11px] font-black transition-all shrink-0",
                 unresolvedMistakesCount > 0
-                  ? "bg-[#FEF2F2] dark:bg-[#DC2626]/15 border-[#FECACA] dark:border-[#DC2626]/35 text-[#B91C1C] dark:text-[#FCA5A5] hover:border-[#DC2626]"
+                  ? "bg-[#FAF6F7] dark:bg-[#142747] border-[#800B34]/25 dark:border-[#9E1043]/45 text-[#800B34] dark:text-[#F5F7FB] hover:border-[#800B34]"
                   : "bg-[#ECFDF5] dark:bg-[#059669]/15 border-[#A7F3D0] dark:border-[#059669]/35 text-[#047857] dark:text-[#34D399]"
               )}
             >
-              {unresolvedMistakesCount > 0 ? (
-                <span className="inline-flex h-2 w-2 shrink-0 rounded-full bg-[#DC2626]" />
-              ) : (
-                MistakesNavIcon && <MistakesNavIcon className="w-3.5 h-3.5 shrink-0" weight="bold" />
-              )}
+              {MistakesNavIcon && <MistakesNavIcon className="w-3.5 h-3.5 shrink-0" weight="bold" />}
               <span className="hidden sm:inline">مراجعة لأخطائي</span>
               <span
                 className={cn(
                   "px-1.5 py-0.5 rounded-full text-[10px] tabular-nums font-black leading-none",
                   unresolvedMistakesCount > 0
-                    ? "bg-[#DC2626] text-white"
+                    ? "bg-[#800B34] dark:bg-[#9E1043] text-white"
                     : "bg-[#059669] text-white"
                 )}
               >

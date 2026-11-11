@@ -13,9 +13,9 @@ interface ContinueLearningCardProps {
 export function ContinueLearningCard({ continueLesson }: ContinueLearningCardProps) {
   if (!continueLesson) {
     return (
-      <div className="rounded-2xl p-5 sm:p-6 bg-white dark:bg-[#0F172A] border border-[#E5E7EB] dark:border-[#334155] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="rounded-2xl p-5 sm:p-6 bg-white dark:bg-[#0F1E36] border border-[#E5E7EB] dark:border-[#1E3352] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-start gap-3.5">
-          <div className="w-11 h-11 rounded-xl bg-[#800B34]/10 text-[#800B34] dark:bg-[#1E293B] dark:text-[#FB7185] flex items-center justify-center shrink-0">
+          <div className="w-11 h-11 rounded-xl bg-[#800B34]/10 text-[#800B34] dark:bg-[#142747] dark:text-[#FDA4AF] flex items-center justify-center shrink-0">
             <Compass className="w-5 h-5" weight="bold" />
           </div>
           <div className="space-y-1">
@@ -47,7 +47,7 @@ export function ContinueLearningCard({ continueLesson }: ContinueLearningCardPro
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.22, delay: 0.04 }}
-      className="group relative rounded-2xl p-5 sm:p-6 bg-white dark:bg-[#0F172A] border border-[#E8E9ED] dark:border-[#22364F] hover:border-[#800B34]/30 dark:hover:border-[#FB7185]/40 shadow-xs transition-all overflow-hidden"
+      className="group relative rounded-2xl p-5 sm:p-6 bg-white dark:bg-[#0F1E36] border border-[#E8E9ED] dark:border-[#1E3352] hover:border-[#800B34]/30 dark:hover:border-[#9E1043]/60 shadow-xs transition-all overflow-hidden"
     >
       {/* Subtle warm ambient background accent */}
       <div className="absolute top-0 right-0 w-36 h-36 bg-gradient-to-bl from-[#800B34]/5 dark:from-[#FB7185]/10 to-transparent rounded-bl-full pointer-events-none" />
@@ -63,7 +63,7 @@ export function ContinueLearningCard({ continueLesson }: ContinueLearningCardPro
           <div className="space-y-2 min-w-0 flex-1">
             {/* Top Row */}
             <div className="flex items-center gap-2.5 flex-wrap">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold text-[#800B34] dark:text-[#FB7185] bg-[#800B34]/10 dark:bg-[#800B34]/25 border border-[#800B34]/20 dark:border-[#FB7185]/30">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold text-[#800B34] dark:text-[#FDA4AF] bg-[#800B34]/10 dark:bg-[#9E1043]/25 border border-[#800B34]/20 dark:border-[#9E1043]/40">
                 <Play className="w-3 h-3 fill-current" />
                 <span>كمّل من مكان ما وقفت</span>
               </span>
@@ -88,7 +88,7 @@ export function ContinueLearningCard({ continueLesson }: ContinueLearningCardPro
                 <span>{continueLesson.durationMinutes} دقيقة مذاكرة</span>
               </span>
 
-              <span className="inline-flex items-center gap-1.5 font-bold text-xs text-[#D97706] dark:text-[#FBBF24] bg-[#D97706]/10 px-2.5 py-1 rounded-lg border border-[#D97706]/20">
+              <span className="inline-flex items-center gap-1.5 font-bold text-xs text-[#92400E] dark:text-[#F0B843] bg-[#FFFBEB] dark:bg-[#F0B843]/15 px-2.5 py-1 rounded-lg border border-[#FDE68A]/80 dark:border-[#F0B843]/30">
                 <BookmarkSimple className="w-3.5 h-3.5" weight="fill" />
                 <span>ملخص الزتونة جاهز</span>
               </span>

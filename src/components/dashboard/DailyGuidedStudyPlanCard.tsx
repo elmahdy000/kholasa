@@ -287,7 +287,7 @@ export function DailyGuidedStudyPlanCard({
                 className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold ${
                   task2Done
                     ? "bg-[#059669]/15 text-[#059669] dark:text-[#34D399]"
-                    : "bg-[#D97706]/15 text-[#D97706] dark:text-[#FBBF24]"
+                    : "bg-[#FEF3C7] text-[#92400E] dark:bg-[#D97706]/15 dark:text-[#FBBF24]"
                 }`}
               >
                 {task2Done ? (
@@ -306,7 +306,7 @@ export function DailyGuidedStudyPlanCard({
                 className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${
                   task2Done
                     ? "bg-[#059669] text-white"
-                    : "bg-[#D97706]/15 text-[#D97706] dark:text-[#FBBF24]"
+                    : "bg-[#FFFBEB] text-[#B45309] border border-[#FDE68A] dark:bg-[#D97706]/15 dark:border-transparent dark:text-[#FBBF24]"
                 }`}
               >
                 <BookBookmark className="w-5 h-5" weight={task2Done ? "fill" : "bold"} />
@@ -331,7 +331,7 @@ export function DailyGuidedStudyPlanCard({
                 onClick={handleMarkSummaryRead}
                 className="h-9 px-3 rounded-lg bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] hover:border-[#D97706] text-[#0F172A] dark:text-white text-xs font-bold flex-1 flex items-center justify-center gap-1.5 transition-colors cursor-pointer shadow-xs"
               >
-                <BookOpen className="w-3.5 h-3.5 text-[#D97706]" weight="bold" />
+                <BookOpen className="w-3.5 h-3.5 text-[#B45309] dark:text-[#FBBF24]" weight="bold" />
                 <span>افتح الزتونة</span>
               </Link>
             ) : (
@@ -348,7 +348,7 @@ export function DailyGuidedStudyPlanCard({
                 type="button"
                 onClick={handleMarkSummaryRead}
                 title="علم عليه إنه خلص"
-                className="h-9 px-2.5 rounded-lg bg-[#D97706]/10 hover:bg-[#D97706]/20 text-[#D97706] dark:text-[#FBBF24] text-xs font-bold transition-colors cursor-pointer shrink-0"
+                className="h-9 px-2.5 rounded-lg bg-[#FFFBEB] hover:bg-[#FEF3C7] text-[#92400E] border border-[#FDE68A] dark:border-transparent dark:bg-[#D97706]/15 dark:hover:bg-[#D97706]/25 dark:text-[#FBBF24] text-xs font-bold transition-colors cursor-pointer shrink-0"
               >
                 <Check className="w-4 h-4" weight="bold" />
               </button>
@@ -361,7 +361,7 @@ export function DailyGuidedStudyPlanCard({
           className={`p-4 rounded-xl border flex flex-col justify-between gap-4 transition-all ${
             task3Done
               ? "bg-[#059669]/5 dark:bg-[#059669]/10 border-[#059669]/30"
-              : "bg-[#F8FAFC] dark:bg-[#1E293B]/60 border-[#E2E8F0] dark:border-[#334155] hover:border-[#4F46E5]/40"
+              : "bg-[#F8FAFC] dark:bg-[#142747]/70 border-[#E2E8F0] dark:border-[#1E3352] hover:border-[#2C70BF]/40"
           }`}
         >
           <div className="space-y-3">
@@ -373,7 +373,7 @@ export function DailyGuidedStudyPlanCard({
                 className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold ${
                   task3Done
                     ? "bg-[#059669]/15 text-[#059669] dark:text-[#34D399]"
-                    : "bg-[#4F46E5]/10 text-[#4F46E5] dark:text-[#818CF8]"
+                    : "bg-[#2C70BF]/10 text-[#1D4ED8] dark:bg-[#2C70BF]/20 dark:text-[#60A5FA]"
                 }`}
               >
                 {task3Done ? (
@@ -392,7 +392,7 @@ export function DailyGuidedStudyPlanCard({
                 className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${
                   task3Done
                     ? "bg-[#059669] text-white"
-                    : "bg-[#4F46E5]/10 text-[#4F46E5] dark:text-[#818CF8]"
+                    : "bg-[#2C70BF]/10 text-[#1D4ED8] dark:bg-[#2C70BF]/20 dark:text-[#60A5FA]"
                 }`}
               >
                 <Target className="w-5 h-5" weight={task3Done ? "fill" : "bold"} />
@@ -424,7 +424,7 @@ export function DailyGuidedStudyPlanCard({
               focus ? (
                 <Link
                   href={`/lessons/${focus.lessonId}#section-assessment`}
-                  className="h-9 px-4 rounded-lg bg-[#4F46E5] hover:bg-[#4338CA] text-white text-xs font-bold flex items-center justify-center gap-1.5 w-full transition-colors cursor-pointer shadow-xs active:scale-[0.99]"
+                  className="h-9 px-4 rounded-lg bg-[#091B40] hover:bg-[#12263F] dark:bg-[#2C70BF] dark:hover:bg-[#1D4ED8] text-white text-xs font-bold flex items-center justify-center gap-1.5 w-full transition-colors cursor-pointer shadow-xs active:scale-[0.99]"
                 >
                   <Target className="w-3.5 h-3.5" weight="bold" />
                   <span>اختبر نفسك في الدرس المجاني</span>
@@ -432,7 +432,7 @@ export function DailyGuidedStudyPlanCard({
               ) : (
                 <Link
                   href="/subjects"
-                  className="h-9 px-4 rounded-lg bg-[#4F46E5] hover:bg-[#4338CA] text-white text-xs font-bold flex items-center justify-center gap-1.5 w-full transition-colors cursor-pointer shadow-xs active:scale-[0.99]"
+                  className="h-9 px-4 rounded-lg bg-[#091B40] hover:bg-[#12263F] dark:bg-[#2C70BF] dark:hover:bg-[#1D4ED8] text-white text-xs font-bold flex items-center justify-center gap-1.5 w-full transition-colors cursor-pointer shadow-xs active:scale-[0.99]"
                 >
                   <Target className="w-3.5 h-3.5" weight="bold" />
                   <span>تصفح الدروس والتدريبات</span>
@@ -441,7 +441,7 @@ export function DailyGuidedStudyPlanCard({
             ) : focus ? (
               <Link
                 href={`/exams/builder?subjectId=${focus.subjectId}&lessonId=${focus.lessonId}&questionCount=30`}
-                className="h-9 px-4 rounded-lg bg-[#4F46E5] hover:bg-[#4338CA] text-white text-xs font-bold flex items-center justify-center gap-1.5 w-full transition-colors cursor-pointer shadow-xs active:scale-[0.99]"
+                className="h-9 px-4 rounded-lg bg-[#091B40] hover:bg-[#12263F] dark:bg-[#2C70BF] dark:hover:bg-[#1D4ED8] text-white text-xs font-bold flex items-center justify-center gap-1.5 w-full transition-colors cursor-pointer shadow-xs active:scale-[0.99]"
               >
                 <Target className="w-3.5 h-3.5" weight="bold" />
                 <span>ابدأ اختبار الـ 30 سؤال</span>
@@ -449,7 +449,7 @@ export function DailyGuidedStudyPlanCard({
             ) : (
               <Link
                 href="/exams/builder"
-                className="h-9 px-4 rounded-lg bg-[#4F46E5] hover:bg-[#4338CA] text-white text-xs font-bold flex items-center justify-center gap-1.5 w-full transition-colors cursor-pointer shadow-xs active:scale-[0.99]"
+                className="h-9 px-4 rounded-lg bg-[#091B40] hover:bg-[#12263F] dark:bg-[#2C70BF] dark:hover:bg-[#1D4ED8] text-white text-xs font-bold flex items-center justify-center gap-1.5 w-full transition-colors cursor-pointer shadow-xs active:scale-[0.99]"
               >
                 <Target className="w-3.5 h-3.5" weight="bold" />
                 <span>فصّل امتحانك (30 سؤال)</span>

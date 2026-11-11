@@ -21,7 +21,7 @@ export function MistakeExamBanner({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.25 }}
-      className="p-4 sm:p-5 rounded-2xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xs"
+      className="p-4 sm:p-5 rounded-2xl bg-[#F8FAFC] dark:bg-[#0F1E36] border border-[#E2E8F0] dark:border-[#1E3352] flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xs"
     >
       <div className="space-y-1">
         <div className="flex items-center gap-2">

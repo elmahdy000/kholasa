@@ -67,7 +67,7 @@ export function ArabicReadingPassageViewer({
               <span>{title}</span>
             </h4>
             {origin && (
-              <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-800 border border-indigo-200 dark:bg-indigo-950/50 dark:text-indigo-200 dark:border-indigo-800">
+              <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-[#EAF2FF] text-[#091B40] border border-[#BFDBFE] dark:bg-[#142747] dark:text-[#93C5FD] dark:border-[#1E3A6E]">
                 {origin.includes("assessments") ? "الأداءات الرسمية" : "كتاب الوزارة"}
               </span>
             )}

@@ -96,18 +96,18 @@ export function MistakeCard({
     <div
       className={`p-4 sm:p-6 rounded-xl border space-y-4 transition-colors ${
         mistake.isResolved
-          ? "bg-[#059669]/5 dark:bg-[#0F172A] border-[#059669]/30 dark:border-[#34D399]/40"
-          : "bg-white dark:bg-[#0F172A] border-[#E2E8F0] dark:border-[#334155]"
+          ? "bg-[#059669]/5 dark:bg-[#0F1E36] border-[#059669]/30 dark:border-[#34D399]/40"
+          : "bg-white dark:bg-[#0F1E36] border-[#E2E8F0] dark:border-[#1E3352]"
       }`}
     >
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#E2E8F0] dark:border-[#334155] pb-3.5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#E2E8F0] dark:border-[#1E3352] pb-3.5">
         <div className="flex flex-wrap items-center gap-2">
-          <span className="px-3 py-1 rounded-lg bg-[#800B34]/10 dark:bg-[#1E293B] text-[#800B34] dark:text-[#FB7185] text-xs font-bold border border-[#800B34]/20 dark:border-[#FB7185]/40">
+          <span className="px-3 py-1 rounded-lg bg-[#800B34]/10 dark:bg-[#142747] text-[#800B34] dark:text-[#FDA4AF] text-xs font-bold border border-[#800B34]/20 dark:border-[#9E1043]/40">
             <BidiStatement as="span" text={q.subject?.name || ""} />
           </span>
           {isEssay && (
-            <span className="px-2.5 py-1 rounded-lg bg-[#7C3AED]/10 text-[#7C3AED] dark:text-purple-300 text-xs font-bold border border-[#7C3AED]/20 inline-flex items-center gap-1.5">
+            <span className="px-2.5 py-1 rounded-lg bg-[#EAF2FF] text-[#091B40] dark:bg-[#142747] dark:text-[#93C5FD] text-xs font-bold border border-[#BFDBFE] dark:border-[#1E3A6E] inline-flex items-center gap-1.5">
               <PencilLine className="w-3.5 h-3.5" />
               <span>{isEnglish ? "Essay Question" : "سؤال مقالي للمراجعة"}</span>
             </span>
@@ -272,8 +272,8 @@ export function MistakeCard({
               onClick={() => setShowEssayModel((prev) => !prev)}
               className={`min-h-[44px] px-4 py-2 rounded-lg text-xs sm:text-[13px] font-bold inline-flex items-center justify-center gap-2 transition-colors cursor-pointer ${
                 showEssayModel
-                  ? "bg-[#7C3AED]/15 text-[#7C3AED] dark:text-purple-300 border border-[#7C3AED]/30"
-                  : "bg-[#7C3AED] hover:bg-[#6D28D9] text-white"
+                  ? "bg-[#EAF2FF] text-[#091B40] border border-[#BFDBFE] dark:bg-[#142747] dark:text-[#93C5FD] dark:border-[#2C70BF]/40"
+                  : "bg-[#091B40] hover:bg-[#12263F] dark:bg-[#2C70BF] dark:hover:bg-[#1D4ED8] text-white"
               }`}
             >
               <Sparkle className="w-4 h-4" />
@@ -313,12 +313,12 @@ export function MistakeCard({
             <div className="space-y-3 pt-3 border-t border-[#E2E8F0] dark:border-[#334155]">
               <div
                 dir={isEnglish ? "ltr" : "rtl"}
-                className={`p-4 sm:p-5 rounded-xl bg-[#7C3AED]/5 border border-[#7C3AED]/20 space-y-3 ${
+                className={`p-4 sm:p-5 rounded-xl bg-[#EAF2FF]/50 dark:bg-[#142747]/50 border border-[#BFDBFE] dark:border-[#1E3A6E] space-y-3 ${
                   isEnglish ? "text-left font-sans" : "text-right font-content"
                 }`}
               >
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <span className="text-xs font-bold text-[#7C3AED] dark:text-purple-300 flex items-center gap-1.5">
+                  <span className="text-xs font-bold text-[#1D4ED8] dark:text-[#93C5FD] flex items-center gap-1.5">
                     <Sparkle className="w-3.5 h-3.5" />
                     <span>
                       {isEnglish ? "Approved Model Answer:" : "النموذج المعتمد للإجابة:"}
@@ -342,7 +342,7 @@ export function MistakeCard({
                       ? "Review the core lesson concepts and structured explanation."
                       : "راجع عناصر ومفاهيم الدرس الأساسية لتأكيد الحل.")
                   }
-                  colorScheme="purple"
+                  colorScheme="blue"
                 />
 
                 {showModelTranslation && q.rubric?.modelAnswerTranslation && (
@@ -373,7 +373,7 @@ export function MistakeCard({
                           • {c.text}
                         </span>
                         {c.marks !== undefined && (
-                          <span className="font-sans tabular-nums text-[#7C3AED] dark:text-purple-300 font-bold shrink-0">
+                          <span className="font-sans tabular-nums text-[#1D4ED8] dark:text-[#93C5FD] font-bold shrink-0">
                             {isEnglish ? `${c.marks} pts` : `${c.marks} درجات`}
                           </span>
                         )}

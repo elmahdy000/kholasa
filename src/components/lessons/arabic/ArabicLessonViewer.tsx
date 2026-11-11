@@ -1117,7 +1117,7 @@ export function ArabicLessonViewer({
                   onClick={() => setPracticeOriginFilter(o.key)}
                   className={`px-3 py-1 rounded-xl border text-[11px] font-bold min-h-[34px] ${
                     practiceOriginFilter === o.key
-                      ? "border-indigo-500 bg-indigo-50 text-indigo-800"
+                      ? "border-[#2C70BF] bg-[#EAF2FF] text-[#091B40] dark:bg-[#142747] dark:text-[#93C5FD] dark:border-[#2C70BF]"
                       : "border-[#E2E8F0] dark:border-[#1E3A6E] text-[#64748B]"
                   }`}
                 >

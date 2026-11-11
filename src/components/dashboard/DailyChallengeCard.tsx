@@ -319,14 +319,14 @@ export function DailyChallengeCard({
             )}
 
             {streakEarned !== null && (
-              <div className="p-3.5 rounded-xl bg-[#D97706]/10 dark:bg-[#1E293B] border border-[#D97706]/30 flex items-center justify-between gap-3 text-right">
+              <div className="p-3.5 rounded-xl bg-[#FFFBEB] dark:bg-[#142747] border border-[#FDE68A] dark:border-[#F0B843]/30 flex items-center justify-between gap-3 text-right">
                 <div className="flex items-center gap-2">
-                  <Sparkle className="w-5 h-5 text-[#D97706] dark:text-[#FBBF24] shrink-0" weight="fill" />
-                  <span className="text-[13px] font-bold text-[#D97706] dark:text-[#FBBF24]">
+                  <Sparkle className="w-5 h-5 text-[#B45309] dark:text-[#F0B843] shrink-0" weight="fill" />
+                  <span className="text-[13px] font-bold text-[#92400E] dark:text-[#F0B843]">
                     بقالك دلوقتي {formatArabicDays(streakEarned)} ورا بعض بتسجل حضور
                   </span>
                 </div>
-                <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-[#D97706] text-white shrink-0">
+                <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-[#B45309] text-white shrink-0">
                   +1 يوم
                 </span>
               </div>
@@ -345,7 +345,7 @@ export function DailyChallengeCard({
                 {!isCorrect && (
                   <Link
                     href="/mistakes"
-                    className="text-[13px] font-bold text-[#D97706] dark:text-[#FBBF24] hover:underline flex items-center gap-1"
+                    className="text-[13px] font-bold text-[#92400E] dark:text-[#F0B843] hover:underline flex items-center gap-1"
                   >
                     <span>راجع السؤال في لأخطائي</span>
                     <ArrowLeft className="w-3.5 h-3.5" weight="bold" />
@@ -353,7 +353,7 @@ export function DailyChallengeCard({
                 )}
                 <Link
                   href={isSubscribed ? "/exams/builder" : "/subjects"}
-                  className="text-[13px] font-bold text-[#800B34] dark:text-[#FB7185] hover:underline flex items-center gap-1"
+                  className="text-[13px] font-bold text-[#800B34] dark:text-[#FDA4AF] hover:underline flex items-center gap-1"
                 >
                   <span>
                     {isSubscribed

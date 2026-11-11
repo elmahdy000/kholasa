@@ -24,7 +24,7 @@ export function DashboardStatsGrid({
       icon: BookOpen,
       color: "#800B34",
       bgColor: "bg-[#800B34]/10 dark:bg-[#800B34]/20",
-      textColor: "text-[#800B34] dark:text-[#FB7185]",
+      textColor: "text-[#800B34] dark:text-[#FDA4AF]",
       value: completedLessonsCount,
       label: "دروس ذاكرتها",
       subtext: "فهمتها ومستعد ليها",
@@ -64,9 +64,9 @@ export function DashboardStatsGrid({
     },
     {
       icon: Trophy,
-      color: "#D97706",
-      bgColor: "bg-[#D97706]/10 dark:bg-[#D97706]/20",
-      textColor: "text-[#D97706] dark:text-[#FBBF24]",
+      color: "#B45309",
+      bgColor: "bg-[#FFFBEB] dark:bg-[#F0B843]/15",
+      textColor: "text-[#B45309] dark:text-[#F0B843]",
       value: averageScore !== null ? `${averageScore}%` : "—",
       label: "مستوى درجاتك",
       subtext: "متوسط حلك في الاختبارات",
@@ -116,10 +116,10 @@ export function DashboardStatsGrid({
           </>
         );
 
-        const cardClasses = `p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#0F172A] border ${
+        const cardClasses = `p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#0F1E36] border ${
           stat.isMistakes && unresolvedMistakesCount > 0
-            ? "border-[#FECACA] dark:border-[#7F1D1D]/70 hover:border-[#DC2626] dark:hover:border-[#EF4444]"
-            : "border-[#E5E7EB] dark:border-[#334155] hover:border-[#800B34]/40 dark:hover:border-[#E11D48]/60"
+            ? "border-[#FECACA] dark:border-[#9E1043]/60 hover:border-[#DC2626] dark:hover:border-[#E05360]"
+            : "border-[#E5E7EB] dark:border-[#1E3352] hover:border-[#800B34]/40 dark:hover:border-[#9E1043]/60"
         } transition-colors flex flex-col justify-between min-h-[118px] sm:min-h-[126px]`;
 
         return (
