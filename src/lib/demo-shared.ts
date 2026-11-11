@@ -1,4 +1,4 @@
-export const DEMO_TEMPLATE_CODES = ["DEMO-AR", "DEMO-EN", "DEMO-PRO"] as const;
+export const DEMO_TEMPLATE_CODES = ["DEMO-AR", "DEMO-EN"] as const;
 export type DemoTemplateCode = (typeof DEMO_TEMPLATE_CODES)[number];
 
 export const DEMO_SANDBOX_PREFIXES = ["DEMO-AR-", "DEMO-EN-", "DEMO-PRO-"] as const;
@@ -19,4 +19,3 @@ export function isAnyDemoCode(code?: string | null): boolean {
   if (!code) return false;
   return code.trim().toUpperCase().startsWith("DEMO-");
 }
-

@@ -167,7 +167,7 @@ export default function LoginPage() {
     };
   }, [studentCode]);
 
-  const handleApplyDemoAccount = (code: "DEMO-EN" | "DEMO-AR" | "DEMO-PRO") => {
+  const handleApplyDemoAccount = (code: "DEMO-EN" | "DEMO-AR") => {
     setError(null);
     setStudentCode(code);
     setLoginMode("code");
@@ -176,14 +176,10 @@ export default function LoginPage() {
       setStudyMode("OFFLINE");
       setSelectedCenter("سنتر إديوفيرس لغات");
       setAutoFilledNotice("تم تجهيز الحساب التجريبي (طالب لغات - تجريبي) بنجاح!");
-    } else if (code === "DEMO-AR") {
+    } else {
       setStudyMode("OFFLINE");
       setSelectedCenter("سنتر رافال عربي");
       setAutoFilledNotice("تم تجهيز الحساب التجريبي (طالب عربي - تجريبي) بنجاح!");
-    } else {
-      setStudyMode("ONLINE");
-      setSelectedCenter("سنتر إديوفيرس لغات");
-      setAutoFilledNotice("تم تجهيز الحساب التجريبي (اشتراك كامل مفعل) بنجاح!");
     }
   };
 
@@ -583,7 +579,7 @@ export default function LoginPage() {
                     </span>
                   </div>
 
-                  <div className="grid grid-cols-3 gap-1.5">
+                  <div className="grid grid-cols-2 gap-2">
                     <button
                       type="button"
                       onClick={() => handleApplyDemoAccount("DEMO-EN")}
@@ -600,15 +596,6 @@ export default function LoginPage() {
                     >
                       <span>بكالوريا عربي 🇪🇬</span>
                       <span className="text-[9px] font-mono text-[#536681] dark:text-[#94A3B8]">DEMO-AR</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => handleApplyDemoAccount("DEMO-PRO")}
-                      className="py-2 px-2 rounded-xl bg-white dark:bg-[#0D214D] hover:bg-amber-50 dark:hover:bg-amber-950/40 border border-[#E2E8F0] dark:border-[#1E3A6E] text-[11px] font-bold text-amber-700 dark:text-amber-300 text-center transition-all flex flex-col items-center gap-0.5 cursor-pointer"
-                    >
-                      <span>حساب مفعل ⭐</span>
-                      <span className="text-[9px] font-mono text-[#536681] dark:text-[#94A3B8]">DEMO-PRO</span>
                     </button>
                   </div>
                 </div>

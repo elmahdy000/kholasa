@@ -69,6 +69,9 @@ export async function POST(req: Request) {
 
         const defaults = getDemoTemplateDefaults(cleanCode);
         const templateUser = await UserService.findByLoginCode(cleanCode);
+        if (templateUser && templateUser.isActive === false) {
+          throw unauthorized("تم تعطيل هذا الحساب التجريبي");
+        }
 
         const targetSchoolCategory =
           defaults.schoolCategory === "LANGUAGES"

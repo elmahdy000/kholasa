@@ -43,14 +43,6 @@ export function getDemoTemplateDefaults(code: DemoTemplateCode) {
       defaultCenter: "سنتر رافال عربي",
     };
   }
-  if (code === "DEMO-PRO") {
-    return {
-      name: "طالب تجريبي (اشتراك مفعل)",
-      schoolCategory: "LANGUAGES" as const,
-      subscriptionStatus: "ACTIVE" as const,
-      defaultCenter: "سنتر إديوفيرس لغات",
-    };
-  }
   return {
     name: "طالب تجريبي (لغات)",
     schoolCategory: "LANGUAGES" as const,

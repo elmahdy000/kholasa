@@ -237,7 +237,7 @@ describe("Authorized Centers & Per-Visitor Isolated Demo Sandbox Specification",
       expect(data2.user.studyMode).toBe("ONLINE");
     });
 
-    it("successfully creates isolated sandbox with Arabic curriculum & ACTIVE subscription for DEMO-AR / DEMO-PRO", async () => {
+    it("successfully creates isolated TRIAL sandbox with Arabic curriculum for DEMO-AR and rejects removed DEMO-PRO", async () => {
       mockPrisma.user.findFirst.mockResolvedValue(null);
       mockPrisma.subject.findFirst.mockResolvedValue({
         gradeId: "grade-g11",
@@ -279,11 +279,7 @@ describe("Authorized Centers & Per-Visitor Isolated Demo Sandbox Specification",
         }),
       });
       const resPro = await loginRoute(reqPro);
-      const dataPro = await resPro.json();
-
-      expect(resPro.status).toBe(200);
-      expect(dataPro.user.loginCode).toMatch(/^DEMO-PRO-[0-9A-F]{8}$/);
-      expect(dataPro.user.subscriptionStatus).toBe("ACTIVE");
+      expect(resPro.status).toBe(401);
     });
 
     it("rejects direct login attempts using another visitor's sandbox code (DEMO-AR-XXXXXXXX)", async () => {

@@ -25,6 +25,13 @@ export async function GET(req: Request) {
     }
 
     if (isDemoTemplateCode(cleanCode)) {
+      const templateUser = await prisma.user.findFirst({
+        where: { loginCode: { equals: cleanCode, mode: "insensitive" } },
+        select: { isActive: true },
+      });
+      if (templateUser && templateUser.isActive === false) {
+        return NextResponse.json({ found: false });
+      }
       const defaults = getDemoTemplateDefaults(cleanCode);
       return NextResponse.json({
         found: true,
