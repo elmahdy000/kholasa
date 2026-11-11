@@ -82,7 +82,7 @@ export function PwaInstallBanner() {
   return (
     <aside
       aria-label="تثبيت تطبيق الخلاصة"
-      className="fixed bottom-24 lg:bottom-5 start-4 end-4 md:start-6 md:end-auto md:w-88 z-30 animate-in fade-in slide-in-from-bottom-4 duration-300"
+      className="fixed bottom-[152px] md:bottom-24 lg:bottom-5 start-4 end-4 md:start-6 md:end-auto md:w-88 z-30 animate-in fade-in slide-in-from-bottom-4 duration-300"
     >
       <div className="p-4 rounded-2xl bg-white dark:bg-[#10233A] border-2 border-[#800B34]/20 dark:border-[#A30D36]/40 shadow-xl flex items-start gap-3.5 text-right font-sans">
         <BrandLogo variant="icon" size="sm" className="mt-0.5 shrink-0" />

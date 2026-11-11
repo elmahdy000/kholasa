@@ -58,7 +58,7 @@ export function MistakeFilterBar({
                 : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
             }`}
           >
-            <span className="truncate">تم إتقانها ({resolvedCount})</span>
+            <span className="truncate">خلصتها ({resolvedCount})</span>
           </button>
           <button
             type="button"

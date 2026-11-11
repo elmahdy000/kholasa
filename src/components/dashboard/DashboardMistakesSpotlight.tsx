@@ -214,8 +214,8 @@ export function DashboardMistakesSpotlight({
           {totalCount > 0 && (
             <div className="w-full sm:w-52 space-y-1">
               <div className="flex items-center justify-between text-[11px] font-bold text-[#64748B] dark:text-[#94A3B8]">
-                <span>أُتقن: {resolvedCount}</span>
-                <span>الإجمالي: {totalCount}</span>
+                <span>خلصت: {resolvedCount}</span>
+                <span>من أصل: {totalCount}</span>
               </div>
               <div className="h-2 w-full rounded-full bg-[#E2E8F0] dark:bg-[#1E293B] overflow-hidden">
                 <motion.div

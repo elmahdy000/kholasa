@@ -228,14 +228,14 @@ export function StudentMasteryMapCard({ data }: StudentMasteryMapProps) {
             </h2>
           </div>
           <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8] font-medium">
-            متابعة دقيقة لمستوى إتقانك للأسئلة في كل مادة وتطور درجاتك عبر الوقت
+            متابعة واضحة لمستواك في الأسئلة في كل مادة ودرجاتك أول بأول
           </p>
         </div>
 
         {/* Overall Mastery Pill */}
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] self-start sm:self-center">
           <span className="text-[12px] text-[#64748B] dark:text-[#94A3B8] font-medium">
-            الإتقان العام للمنهج:
+            مستواك العام في المنهج:
           </span>
           <span className="text-[13px] font-mono font-bold text-[#4F46E5] dark:text-[#6366F1]">
             {overallMasteryPercentage}%
@@ -253,7 +253,7 @@ export function StudentMasteryMapCard({ data }: StudentMasteryMapProps) {
             <div className="flex items-center gap-2">
               <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-800 dark:text-amber-300 text-[11px] font-bold">
                 <Target className="w-3.5 h-3.5" weight="bold" />
-                <span>درس يُنصح بمراجعته اليوم</span>
+                <span>درس يفضل تراجعه النهاردة</span>
               </span>
               <span className="text-[12px] font-bold text-amber-900 dark:text-amber-200">
                 {focusRecommendation.subjectName} • {focusRecommendation.unitTitle}
@@ -292,7 +292,7 @@ export function StudentMasteryMapCard({ data }: StudentMasteryMapProps) {
       {/* 4. Subject Mastery Breakdown */}
       <div className="space-y-3">
         <h3 className="text-sm font-bold text-[#0F172A] dark:text-[#F8FAFC]">
-          نسبة إتقانك لكل مادة دراسية:
+          مستواك في كل مادة:
         </h3>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -307,10 +307,10 @@ export function StudentMasteryMapCard({ data }: StudentMasteryMapProps) {
               : "bg-[#64748B]/10 text-[#64748B] dark:text-[#94A3B8]";
 
             const badgeText = isHigh
-              ? "متقن بامتياز"
+              ? "ممتاز"
               : isMedium
-              ? "مستوى جيد"
-              : "بحاجة لتركيز";
+              ? "كويس"
+              : "محتاج تركيز";
 
             return (
               <div
@@ -327,7 +327,7 @@ export function StudentMasteryMapCard({ data }: StudentMasteryMapProps) {
                       <ArrowSquareOut className="w-3.5 h-3.5 text-[#64748B]" />
                     </Link>
                     <p className="text-[12px] text-[#64748B] dark:text-[#94A3B8] font-mono">
-                      {subj.masteredCount} من {subj.totalQuestions} أسئلة متقنة
+                      {subj.masteredCount} من {subj.totalQuestions} سؤال خلصتهم
                     </p>
                   </div>
 
@@ -338,7 +338,7 @@ export function StudentMasteryMapCard({ data }: StudentMasteryMapProps) {
 
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between text-[11px] font-mono font-bold">
-                    <span className="text-[#64748B] dark:text-[#94A3B8]">مستوى الإتقان</span>
+                    <span className="text-[#64748B] dark:text-[#94A3B8]">نسبة الحل الصح</span>
                     <span
                       className={
                         isHigh

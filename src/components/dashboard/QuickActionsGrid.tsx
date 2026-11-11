@@ -50,7 +50,7 @@ export function QuickActionsGrid({ subjectsCount, unresolvedMistakesCount }: Qui
       desc: "راجع الأسئلة اللي وقفت معاك قبل كدة",
       href: "/mistakes",
       icon: ArrowCounterClockwise,
-      badge: unresolvedMistakesCount > 0 ? `${unresolvedMistakesCount} في المراجعة` : "0 — متقن ✓",
+      badge: unresolvedMistakesCount > 0 ? `${unresolvedMistakesCount} في المراجعة` : "0 — كله تمام ✓",
       badgeColor:
         unresolvedMistakesCount > 0
           ? "bg-[#DC2626] text-white"

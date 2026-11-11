@@ -8,6 +8,7 @@ import {
   ArrowUpLeft,
   BookOpen,
   CaretDown,
+  CaretLeft,
   CaretUp,
   CheckCircle,
   X,
@@ -187,7 +188,7 @@ export function FloatingMistakesCounter({
     <div
       ref={containerRef}
       data-testid="floating-mistakes-counter"
-      className="fixed bottom-[calc(82px+env(safe-area-inset-bottom,0px))] left-3 lg:bottom-5 lg:left-5 z-[35] max-w-[calc(100vw-24px)]"
+      className="fixed bottom-[calc(94px+env(safe-area-inset-bottom,0px))] left-3 lg:bottom-5 lg:left-5 z-[35] max-w-[calc(100vw-24px)]"
     >
       {/* Popover Breakdown Card */}
       <AnimatePresence>
@@ -233,11 +234,14 @@ export function FloatingMistakesCounter({
                     <>
                       عندك{" "}
                       <span className="font-bold text-[#800B34] dark:text-red-400">
-                        {unresolvedCount}
-                      </span>{" "}
-                      {unresolvedCount === 1
-                        ? "سؤال محتاج مراجعة"
-                        : "أسئلة محتاجين مراجعة"}
+                        {unresolvedCount === 1
+                          ? "سؤال واحد"
+                          : unresolvedCount === 2
+                            ? "سؤالين"
+                            : unresolvedCount}
+                      </span>
+                      {unresolvedCount > 2 ? " أسئلة" : ""} محتاج
+                      {unresolvedCount === 1 ? "" : "ين"} مراجعة
                       {resolvedCount > 0 ? ` • خلصت ${resolvedCount}` : ""}
                     </>
                   ) : resolvedCount > 0 ? (
@@ -454,7 +458,7 @@ export function FloatingMistakesCounter({
             title="تصغير العداد"
             className="min-h-[44px] min-w-[44px] inline-flex items-center justify-center border-s border-border/60 dark:border-slate-800 text-muted-foreground hover:text-navy dark:hover:text-slate-200 transition-colors cursor-pointer rounded-e-2xl"
           >
-            <CaretDown size={14} weight="bold" className="-rotate-90" />
+            <CaretLeft size={14} weight="bold" />
           </button>
         )}
       </motion.div>
