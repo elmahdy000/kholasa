@@ -215,10 +215,10 @@ export function ArabicLessonEditorForm({
     return (
       <div
         dir="rtl"
-        className="p-12 rounded-2xl bg-[#FBF8F1] dark:bg-[#0D214D] border border-emerald-200 dark:border-[#1E3A6E] flex flex-col items-center justify-center gap-3 text-center"
+        className="p-12 rounded-2xl bg-white dark:bg-[#0D214D] border border-[#E2E8F0] dark:border-[#1E3A6E] flex flex-col items-center justify-center gap-3 text-center"
       >
-        <Loader2 className="w-8 h-8 animate-spin text-[#0F5132] dark:text-[#E9AD32]" />
-        <p className="text-xs sm:text-sm font-black text-[#0F5132] dark:text-white">
+        <Loader2 className="w-8 h-8 animate-spin text-[#800B34] dark:text-[#E9AD32]" />
+        <p className="text-xs sm:text-sm font-black text-[#800B34] dark:text-white">
           جاري تحميل محرر اللغة العربية المتخصص...
         </p>
       </div>
@@ -288,15 +288,15 @@ export function ArabicLessonEditorForm({
   return (
     <div
       dir="rtl"
-      className={`bg-[#FDFBF7] dark:bg-[#09152E] rounded-2xl border border-emerald-200 dark:border-[#1E3A6E] shadow-xl overflow-hidden flex flex-col ${
+      className={`bg-[#F7F9FC] dark:bg-[#081426] rounded-2xl border border-[#E2E8F0] dark:border-[#1E3A6E] shadow-xl overflow-hidden flex flex-col ${
         isStandaloneRoute ? "min-h-[75vh]" : "max-h-[90vh]"
       }`}
     >
       {/* Dedicated Arabic Identity Header */}
-      <div className="p-4 sm:p-5 bg-gradient-to-l from-[#0F5132] to-[#0B3D26] text-white space-y-3 shrink-0">
+      <div className="p-4 sm:p-5 bg-gradient-to-l from-[#800B34] to-[#091B40] text-white space-y-3 shrink-0">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="space-y-1 min-w-0">
-            <div className="flex flex-wrap items-center gap-2 text-[11px] font-bold text-emerald-100">
+            <div className="flex flex-wrap items-center gap-2 text-[11px] font-bold text-white/80">
               {isStandaloneRoute && (
                 <Link
                   href="/admin/curriculum"
@@ -306,7 +306,7 @@ export function ArabicLessonEditorForm({
                   <span>الهيكل الدراسي</span>
                 </Link>
               )}
-              <span className="px-2 py-0.5 rounded-full bg-white/15 text-[#FDE68A]">
+              <span className="px-2 py-0.5 rounded-full bg-white/15 text-[#E9AD32]">
                 محرر اللغة العربية المتخصص
               </span>
               <span>
@@ -328,7 +328,7 @@ export function ArabicLessonEditorForm({
 
             <Link
               href="/admin/curriculum/arabic"
-              className="px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-300/30 text-[#FDE68A] text-xs font-extrabold inline-flex items-center gap-1.5"
+              className="px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-300/30 text-[#E9AD32] text-xs font-extrabold inline-flex items-center gap-1.5"
             >
               <UploadCloud className="w-3.5 h-3.5" />
               <span>استوديو JSON</span>
@@ -359,8 +359,8 @@ export function ArabicLessonEditorForm({
                 onClick={() => setActiveTab(tab.id)}
                 className={`px-3 py-2 rounded-xl text-xs font-extrabold inline-flex items-center gap-1.5 whitespace-nowrap transition-colors ${
                   active
-                    ? "bg-[#FBF8F1] text-[#0F5132] shadow-xs"
-                    : "bg-white/10 text-emerald-50 hover:bg-white/20"
+                    ? "bg-white text-[#800B34] shadow-xs"
+                    : "bg-white/10 text-white/90 hover:bg-white/20"
                 }`}
               >
                 <Icon className="w-3.5 h-3.5 shrink-0" />
@@ -368,7 +368,7 @@ export function ArabicLessonEditorForm({
                 {tab.countLabel && (
                   <span
                     className={`px-1.5 py-0.5 rounded-full text-[10px] tabular-nums ${
-                      active ? "bg-emerald-100 text-[#0F5132]" : "bg-black/20 text-white"
+                      active ? "bg-[#800B34]/10 text-[#800B34]" : "bg-black/20 text-white"
                     }`}
                   >
                     {tab.countLabel}
@@ -386,7 +386,7 @@ export function ArabicLessonEditorForm({
           <div
             className={`p-3 rounded-xl border text-xs font-bold flex items-center gap-2 ${
               statusMessage.type === "success"
-                ? "bg-emerald-50 border-emerald-200 text-[#0F5132]"
+                ? "bg-emerald-50 border-emerald-200 text-emerald-800"
                 : "bg-rose-50 border-rose-200 text-rose-800"
             }`}
           >
@@ -500,7 +500,7 @@ export function ArabicLessonEditorForm({
       </div>
 
       {/* Footer Action Bar */}
-      <div className="p-3.5 sm:px-5 bg-white dark:bg-[#0D214D] border-t border-emerald-200 dark:border-[#1E3A6E] flex flex-wrap items-center justify-between gap-2 shrink-0">
+      <div className="p-3.5 sm:px-5 bg-white dark:bg-[#0D214D] border-t border-[#E2E8F0] dark:border-[#1E3A6E] flex flex-wrap items-center justify-between gap-2 shrink-0">
         <div className="text-[11px] font-bold text-[#64748B] dark:text-[#94A3B8]">
           <span>المسار: بكالوريا تانية • اللغة العربية (مشترك لجميع المسارات)</span>
         </div>
@@ -509,7 +509,7 @@ export function ArabicLessonEditorForm({
             type="button"
             disabled={isSaving}
             onClick={() => void handleSaveMode("draft")}
-            className="px-3.5 py-2 rounded-xl border border-emerald-300 dark:border-emerald-800 text-[#0F5132] dark:text-emerald-200 text-xs font-extrabold inline-flex items-center gap-1.5 hover:bg-emerald-50"
+            className="px-3.5 py-2 rounded-xl border border-[#800B34]/30 dark:border-[#1E3A6E] text-[#800B34] dark:text-[#E9AD32] text-xs font-extrabold inline-flex items-center gap-1.5 hover:bg-[#800B34]/5"
           >
             {isSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
             <span>حفظ مسودة</span>
@@ -519,7 +519,7 @@ export function ArabicLessonEditorForm({
             type="button"
             disabled={isSaving}
             onClick={() => void handleSaveMode("publish")}
-            className="px-4 py-2 rounded-xl bg-[#0F5132] hover:bg-[#0B3D26] text-white text-xs font-extrabold inline-flex items-center gap-1.5"
+            className="px-4 py-2 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white text-xs font-extrabold inline-flex items-center gap-1.5"
           >
             {isSaving ? (
               <Loader2 className="w-3.5 h-3.5 animate-spin" />

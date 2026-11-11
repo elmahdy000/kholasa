@@ -70,7 +70,7 @@ export function LessonEditorModal({
       <div className={`relative w-full ${resolvedArabic ? "max-w-5xl" : "max-w-4xl"} max-h-[92vh] my-auto`}>
         {resolvedArabic === null ? (
           <div className="p-10 rounded-2xl bg-white dark:bg-[#0D214D] flex items-center justify-center gap-2 text-xs font-bold">
-            <Loader2 className="w-5 h-5 animate-spin text-[#0F5132]" />
+            <Loader2 className="w-5 h-5 animate-spin text-[#800B34]" />
             <span>جاري تحديد محرر المادة...</span>
           </div>
         ) : resolvedArabic ? (

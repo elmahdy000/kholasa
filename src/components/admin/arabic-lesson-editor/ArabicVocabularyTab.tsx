@@ -49,10 +49,10 @@ export function ArabicVocabularyTab({
 
   return (
     <div className="space-y-4">
-      <div className="p-4 rounded-2xl bg-[#FBF8F1] dark:bg-[#1E293B] border border-[#E5DEC9] dark:border-[#334155] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="p-4 rounded-2xl bg-white dark:bg-[#0D214D] border border-[#E2E8F0] dark:border-[#334155] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h3 className="text-sm font-black text-[#0F2744] dark:text-white flex items-center gap-2">
-            <BookOpenCheck className="w-4 h-4 text-[#0F5132]" />
+          <h3 className="text-sm font-black text-[#091B40] dark:text-white flex items-center gap-2">
+            <BookOpenCheck className="w-4 h-4 text-[#800B34]" />
             <span>المفردات والدلالة السياقية المستخلصة من المنهج ({items.length})</span>
           </h3>
           <p className="text-xs text-[#64748B] dark:text-[#94A3B8] mt-0.5">
@@ -63,7 +63,7 @@ export function ArabicVocabularyTab({
         <button
           type="button"
           onClick={addWord}
-          className="px-3.5 py-2 rounded-xl bg-[#0F5132] hover:bg-[#0B3D26] text-white text-xs font-extrabold flex items-center gap-1.5 self-start sm:self-center shrink-0 cursor-pointer"
+          className="px-3.5 py-2 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white text-xs font-extrabold flex items-center gap-1.5 self-start sm:self-center shrink-0 cursor-pointer"
         >
           <Plus className="w-3.5 h-3.5" />
           <span>إضافة مفردة</span>
@@ -88,7 +88,7 @@ export function ArabicVocabularyTab({
             className="p-4 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] space-y-3"
           >
             <div className="flex items-center justify-between gap-2">
-              <span className="text-xs font-black text-[#0F5132] dark:text-emerald-300 tabular-nums">
+              <span className="text-xs font-black text-[#800B34] dark:text-[#E9AD32] tabular-nums">
                 المفردة #{idx + 1}
               </span>
               <button

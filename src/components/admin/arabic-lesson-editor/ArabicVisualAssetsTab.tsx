@@ -75,10 +75,10 @@ export function ArabicVisualAssetsTab({
 
   return (
     <div className="space-y-5">
-      <div className="p-4 rounded-2xl bg-[#FBF8F1] dark:bg-[#1E293B] border border-[#E5DEC9] dark:border-[#334155] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="p-4 rounded-2xl bg-white dark:bg-[#0D214D] border border-[#E2E8F0] dark:border-[#334155] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="space-y-1">
-          <h3 className="text-sm font-black text-[#0F2744] dark:text-white flex items-center gap-2">
-            <ImageIcon className="w-4 h-4 text-[#0F5132] dark:text-emerald-400" />
+          <h3 className="text-sm font-black text-[#091B40] dark:text-white flex items-center gap-2">
+            <ImageIcon className="w-4 h-4 text-[#800B34] dark:text-emerald-400" />
             <span>الخرائط الذهنية والوسائط البصرية ({assets.length})</span>
           </h3>
           <p className="text-xs text-[#64748B] dark:text-[#94A3B8]">
@@ -89,7 +89,7 @@ export function ArabicVisualAssetsTab({
         <button
           type="button"
           onClick={addAsset}
-          className="px-3.5 py-2 rounded-xl bg-[#0F5132] hover:bg-[#0B3D26] text-white text-xs font-extrabold flex items-center gap-1.5 self-start sm:self-center shrink-0 cursor-pointer"
+          className="px-3.5 py-2 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white text-xs font-extrabold flex items-center gap-1.5 self-start sm:self-center shrink-0 cursor-pointer"
         >
           <Plus className="w-3.5 h-3.5" />
           <span>إضافة أصل بصري</span>
@@ -117,7 +117,7 @@ export function ArabicVisualAssetsTab({
                 <div className="flex items-start justify-between gap-2">
                   <div className="space-y-1 min-w-0 flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <code className="text-[11px] font-bold px-2 py-0.5 rounded bg-[#F1F5F9] dark:bg-[#1E293B] text-[#0F2744] dark:text-slate-200">
+                      <code className="text-[11px] font-bold px-2 py-0.5 rounded bg-[#F1F5F9] dark:bg-[#1E293B] text-[#091B40] dark:text-slate-200">
                         {asset.assetKey}
                       </code>
                       {hasUploadedImage ? (
@@ -145,7 +145,7 @@ export function ArabicVisualAssetsTab({
                 </div>
 
                 {/* Preview box */}
-                <div className="rounded-xl border border-dashed border-[#CBD5E1] dark:border-[#334155] bg-[#F8FAF9] dark:bg-[#1E293B] overflow-hidden">
+                <div className="rounded-xl border border-dashed border-[#CBD5E1] dark:border-[#334155] bg-[#F7F9FC] dark:bg-[#1E293B] overflow-hidden">
                   {hasUploadedImage ? (
                     <div className="relative group">
                       <img
@@ -257,7 +257,7 @@ export function ArabicVisualAssetsTab({
                     ))}
                   </select>
 
-                  <label className="w-full px-3 py-2 rounded-md bg-[#0F2744] hover:bg-[#1E3A5F] text-white text-xs font-extrabold inline-flex items-center justify-center gap-1.5 cursor-pointer">
+                  <label className="w-full px-3 py-2 rounded-md bg-[#091B40] hover:bg-[#132C60] text-white text-xs font-extrabold inline-flex items-center justify-center gap-1.5 cursor-pointer">
                     {isUploading ? (
                       <Loader2 className="w-3.5 h-3.5 animate-spin" />
                     ) : (

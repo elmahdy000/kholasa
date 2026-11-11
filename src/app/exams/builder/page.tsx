@@ -55,7 +55,11 @@ export default async function ExamBuilderPage({
 
   // Fetch published subjects for the student's curriculum
   const subjects = await prisma.subject.findMany({
-    where: { isPublished: true, ...subjectScopeWhere(scope) },
+    where: {
+      isPublished: true,
+      ...(isStaff ? {} : { isUnderConstruction: false }),
+      ...subjectScopeWhere(scope),
+    },
     orderBy: { order: "asc" },
     include: {
       units: {

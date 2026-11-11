@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowLeft, Target } from "@phosphor-icons/react";
+import { ArrowLeft, Lock, Target, Wrench } from "@phosphor-icons/react";
 import type { SubjectItem } from "./types";
 import { fadeInUp, staggerContainer } from "./types";
 
@@ -42,6 +42,52 @@ export function SubjectsGrid({ subjects }: SubjectsGridProps) {
           const progress = subj.progressPercent ?? 0;
           const completed = subj.completedLessons ?? 0;
 
+          if (subj.isUnderConstruction) {
+            return (
+              <motion.div key={subj.id} variants={fadeInUp}>
+                <Link
+                  href={`/subjects/${subj.id}`}
+                  className="group p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E5E7EB] dark:border-[#334155] hover:border-[#800B34]/40 dark:hover:border-[#E11D48]/60 transition-all flex flex-col justify-between space-y-4 h-full"
+                >
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div
+                        className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-base shadow-sm"
+                        style={{ backgroundColor: "#800B34" }}
+                      >
+                        {subj.name[0]}
+                      </div>
+                      <span className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-800 dark:text-amber-200 bg-amber-50 dark:bg-amber-950/50 px-2.5 py-0.5 rounded-md border border-amber-300 dark:border-amber-700">
+                        <Wrench className="w-3 h-3" weight="bold" />
+                        <span>تحت الإنشاء</span>
+                      </span>
+                    </div>
+
+                    <div>
+                      <h3 className="text-sm sm:text-base font-bold text-[#12263F] dark:text-[#F8FAFC] group-hover:text-[#800B34] dark:group-hover:text-[#FB7185] transition-colors leading-snug">
+                        {subj.name}
+                      </h3>
+                      <p className="text-xs text-[#64748B] dark:text-[#94A3B8] mt-1 leading-relaxed">
+                        المادة مغلقة مؤقتاً وجارٍ استكمال التجهيز — ستتوفر قريباً للطلاب.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="pt-3 border-t border-[#E5E7EB] dark:border-[#334155] flex items-center justify-between text-xs">
+                    <span className="text-amber-700 dark:text-amber-300 font-bold flex items-center gap-1">
+                      <Lock className="w-3.5 h-3.5" weight="bold" />
+                      <span>تحت الإنشاء</span>
+                    </span>
+                    <span className="text-[#800B34] dark:text-[#FB7185] font-bold flex items-center gap-1">
+                      <span>عرض التفاصيل</span>
+                      <ArrowLeft className="w-3.5 h-3.5" weight="bold" />
+                    </span>
+                  </div>
+                </Link>
+              </motion.div>
+            );
+          }
+
           return (
             <motion.div key={subj.id} variants={fadeInUp}>
               <div className="group p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E5E7EB] dark:border-[#334155] hover:border-[#800B34]/40 dark:hover:border-[#E11D48]/60 transition-all flex flex-col justify-between space-y-4 h-full">
@@ -60,7 +106,7 @@ export function SubjectsGrid({ subjects }: SubjectsGridProps) {
 
                   <div>
                     <h3 className="text-sm sm:text-base font-bold text-[#12263F] dark:text-[#F8FAFC] group-hover:text-[#800B34] dark:group-hover:text-[#FB7185] transition-colors leading-snug">
-                      {subj.name}{subj.isUnderConstruction && (<span className="mr-2 inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-50 dark:bg-amber-950/50 text-amber-800 dark:text-amber-200 border border-amber-300 dark:border-amber-700 align-middle">تحت الإنشاء</span>)}
+                      {subj.name}
                     </h3>
                     {subj.description && (
                       <p className="text-xs text-[#64748B] dark:text-[#94A3B8] line-clamp-2 mt-1 leading-relaxed">

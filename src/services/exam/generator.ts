@@ -44,6 +44,7 @@ export class ExamGeneratorService {
           id: true,
           name: true,
           isPublished: true,
+          isUnderConstruction: true,
           gradeId: true,
           systemId: true,
           trackId: true,
@@ -59,6 +60,11 @@ export class ExamGeneratorService {
 
     if (!subject || !subject.isPublished) {
       throw new Error("المادة غير متاحة لإنشاء امتحان");
+    }
+
+    const isStaff = student?.role === "ADMIN" || student?.role === "SUPER_ADMIN";
+    if (subject.isUnderConstruction && !isStaff) {
+      throw new Error("هذه المادة تحت الإنشاء ومغلقة حالياً");
     }
 
     if (!isSubjectInScope(getCurriculumScope(student), subject)) {

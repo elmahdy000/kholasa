@@ -18,6 +18,7 @@ import {
   BookmarkCheck,
   Layers,
   BookMarked,
+  Lock,
   Wrench,
   X,
 } from "lucide-react";
@@ -263,29 +264,43 @@ export function SubjectsExplorer({ subjects, isStaff }: SubjectsExplorerProps) {
                   </div>
 
                   {/* Metadata Chips */}
-                  <div className="flex flex-wrap items-center gap-2 pt-1 text-xs font-medium text-[#536681] dark:text-[#94A3B8]">
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#F7F9FC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155]">
-                      <Layers className="w-3.5 h-3.5 text-[#800B34] dark:text-[#FB7185]" />
-                      <strong className="font-sans tabular-nums font-bold text-[#091B40] dark:text-white">
-                        {formatCount(subj.unitsCount)}
-                      </strong>
-                      <span>وحدات</span>
-                    </span>
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#F7F9FC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155]">
-                      <BookmarkCheck className="w-3.5 h-3.5 text-[#091B40] dark:text-white" />
-                      <strong className="font-sans tabular-nums font-bold text-[#091B40] dark:text-white">
-                        {formatCount(subj.lessonsCount)}
-                      </strong>
-                      <span>درساً</span>
-                    </span>
-                  </div>
+                  {subj.isUnderConstruction ? (
+                    <div className="p-3 rounded-lg bg-[#F7F9FC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-xs font-bold text-[#536681] dark:text-[#94A3B8]">
+                      جاري العمل على تجهيز الوحدات والدروس لتكون متاحة قريباً.
+                    </div>
+                  ) : (
+                    <div className="flex flex-wrap items-center gap-2 pt-1 text-xs font-medium text-[#536681] dark:text-[#94A3B8]">
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#F7F9FC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155]">
+                        <Layers className="w-3.5 h-3.5 text-[#800B34] dark:text-[#FB7185]" />
+                        <strong className="font-sans tabular-nums font-bold text-[#091B40] dark:text-white">
+                          {formatCount(subj.unitsCount)}
+                        </strong>
+                        <span>وحدات</span>
+                      </span>
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#F7F9FC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155]">
+                        <BookmarkCheck className="w-3.5 h-3.5 text-[#091B40] dark:text-white" />
+                        <strong className="font-sans tabular-nums font-bold text-[#091B40] dark:text-white">
+                          {formatCount(subj.lessonsCount)}
+                        </strong>
+                        <span>درساً</span>
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 {/* Card Action Footer */}
                 <div className="pt-4 border-t border-[#E2E8F0] dark:border-[#334155] flex items-center justify-between text-xs sm:text-sm font-bold text-[#800B34] dark:text-[#FB7185]">
-                  <span>تصفح الوحدات والدروس</span>
+                  <span>
+                    {subj.isUnderConstruction
+                      ? "تحت الإنشاء — مغلقة حالياً"
+                      : "تصفح الوحدات والدروس"}
+                  </span>
                   <div className="w-9 h-9 rounded-lg bg-[#800B34]/10 dark:bg-[#800B34]/20 flex items-center justify-center group-hover:bg-[#800B34] group-hover:text-white transition-colors">
-                    <ArrowLeft className="w-4 h-4" />
+                    {subj.isUnderConstruction ? (
+                      <Lock className="w-4 h-4" />
+                    ) : (
+                      <ArrowLeft className="w-4 h-4" />
+                    )}
                   </div>
                 </div>
               </Link>

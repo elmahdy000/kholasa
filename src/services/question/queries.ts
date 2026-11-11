@@ -95,6 +95,7 @@ export class QuestionQueriesService {
           select: {
             id: true,
             isPublished: true,
+            isUnderConstruction: true,
             gradeId: true,
             systemId: true,
             trackId: true,

@@ -65,26 +65,26 @@ const STAGE_META: Record<
 > = {
   understand: {
     icon: BookOpen,
-    color: "text-[#0F5132] dark:text-emerald-300",
-    activeBg: "bg-[#0F5132] text-white border-[#0F5132]",
+    color: "text-[#1E40AF]",
+    activeBg: "bg-[#1E40AF] text-white border-[#1E40AF]",
     subtitle: "الفهم القرائي والأفكار",
   },
   skills: {
     icon: PenTool,
-    color: "text-[#0F2744] dark:text-sky-300",
-    activeBg: "bg-[#0F2744] text-white border-[#0F2744]",
+    color: "text-[#800B34]",
+    activeBg: "bg-[#800B34] text-white border-[#800B34]",
     subtitle: "النحو والأساليب والكتابة",
   },
   practice: {
     icon: Sparkles,
-    color: "text-[#B45309] dark:text-amber-300",
-    activeBg: "bg-[#B45309] text-white border-[#B45309]",
+    color: "text-[#091B40] dark:text-[#E9AD32]",
+    activeBg: "bg-[#091B40] text-white border-[#091B40]",
     subtitle: "تدريب موجه بتركة الحل",
   },
   assessment: {
     icon: ClipboardCheck,
-    color: "text-teal-700 dark:text-teal-300",
-    activeBg: "bg-teal-700 text-white border-teal-700",
+    color: "text-amber-700",
+    activeBg: "bg-amber-600 text-white border-amber-600",
     subtitle: "اختبارات شاملة ومهارية",
   },
 };
@@ -612,7 +612,7 @@ export function ArabicLessonViewer({
       )}
 
       {/* Academic Identity & Progress Strip */}
-      <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#0D214D] border border-emerald-200/80 dark:border-[#1E3A6E] space-y-3">
+      <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#0D214D] border border-[#E2E8F0] dark:border-[#1E3A6E] space-y-3">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex flex-wrap items-center gap-2 text-xs font-bold">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 dark:bg-amber-950/50 border border-amber-300 dark:border-amber-700 text-amber-800 dark:text-amber-200">
@@ -620,12 +620,12 @@ export function ArabicLessonViewer({
               <span>مادة اللغة العربية (تحت الإنشاء — محتوى الدرس الأول مفعّل)</span>
             </span>
             {structured.education?.lesson?.textClassification && (
-              <span className="px-2.5 py-1 rounded-full bg-[#FBF8F1] dark:bg-[#071737] border border-emerald-200 dark:border-[#1E3A6E] text-[#0F2744] dark:text-white">
+              <span className="px-2.5 py-1 rounded-full bg-[#F7F9FC] dark:bg-[#071737] border border-[#E2E8F0] dark:border-[#1E3A6E] text-[#091B40] dark:text-white">
                 {structured.education.lesson.textClassification}
               </span>
             )}
             {structured.education?.lesson?.predominantDiscourse && (
-              <span className="px-2.5 py-1 rounded-full bg-[#FBF8F1] dark:bg-[#071737] border border-emerald-200 dark:border-[#1E3A6E] text-[#0F5132] dark:text-[#E9AD32]">
+              <span className="px-2.5 py-1 rounded-full bg-[#F7F9FC] dark:bg-[#071737] border border-[#E2E8F0] dark:border-[#1E3A6E] text-[#800B34] dark:text-[#E9AD32]">
                 خطاب {structured.education.lesson.predominantDiscourse}
               </span>
             )}
@@ -635,7 +635,7 @@ export function ArabicLessonViewer({
             <button
               type="button"
               onClick={() => setShowQuickReference((v) => !v)}
-              className="px-3 py-1.5 rounded-xl bg-[#0F2744] text-white text-xs font-extrabold inline-flex items-center gap-1.5 self-start sm:self-auto min-h-[36px]"
+              className="px-3 py-1.5 rounded-xl bg-[#091B40] text-white text-xs font-extrabold inline-flex items-center gap-1.5 self-start sm:self-auto min-h-[36px]"
             >
               <ListChecks className="w-3.5 h-3.5 text-[#E9AD32]" />
               <span>{showQuickReference ? "إخفاء الملخص السريع" : "القواعد الـ 5 الحاسمة"}</span>
@@ -649,13 +649,13 @@ export function ArabicLessonViewer({
             <span>
               تقدّمك في أقسام الدرس: {completedCount} من {totalCurriculumSections} قسم
             </span>
-            <span className="tabular-nums text-[#0F5132] dark:text-[#E9AD32]">
+            <span className="tabular-nums text-[#800B34] dark:text-[#E9AD32]">
               {lessonSectionPercent}%
             </span>
           </div>
           <div className="w-full h-2 rounded-full bg-[#E2E8F0] dark:bg-[#132C60] overflow-hidden">
             <div
-              className="h-full bg-[#0F5132] dark:bg-[#E9AD32] rounded-full transition-all duration-300"
+              className="h-full bg-[#800B34] dark:bg-[#E9AD32] rounded-full transition-all duration-300"
               style={{ width: `${lessonSectionPercent}%` }}
             />
           </div>
@@ -746,7 +746,7 @@ export function ArabicLessonViewer({
               className={`text-right p-3.5 sm:p-4 rounded-2xl border-2 transition-all flex flex-col justify-between gap-2 min-h-[96px] ${
                 isActive
                   ? meta.activeBg
-                  : "bg-white dark:bg-[#0D214D] border-[#E2E8F0] dark:border-[#1E3A6E] text-[#0F2744] dark:text-white hover:border-[#0F5132]/60"
+                  : "bg-white dark:bg-[#0D214D] border-[#E2E8F0] dark:border-[#1E3A6E] text-[#091B40] dark:text-white hover:border-[#800B34]/60"
               }`}
             >
               <div className="flex items-center justify-between gap-2">
@@ -784,8 +784,8 @@ export function ArabicLessonViewer({
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
             {/* Desktop Topic Sidebar (Hidden on < lg so mobile stays clean!) */}
             <aside className="hidden lg:block lg:col-span-4 p-4 rounded-2xl bg-white dark:bg-[#0D214D] border border-[#E2E8F0] dark:border-[#1E3A6E] space-y-2 sticky top-4">
-              <p className="text-xs font-black text-[#0F2744] dark:text-white pb-2 border-b border-[#E2E8F0] dark:border-[#1E3A6E] flex items-center gap-1.5">
-                <Layers className="w-4 h-4 text-[#0F5132] dark:text-[#E9AD32]" />
+              <p className="text-xs font-black text-[#091B40] dark:text-white pb-2 border-b border-[#E2E8F0] dark:border-[#1E3A6E] flex items-center gap-1.5">
+                <Layers className="w-4 h-4 text-[#800B34] dark:text-[#E9AD32]" />
                 <span>أقسام هذه المرحلة ({currentStageSections.length})</span>
               </p>
               <div className="space-y-1.5 max-h-[65vh] overflow-y-auto pl-1">
@@ -874,10 +874,10 @@ export function ArabicLessonViewer({
               <div className="p-4 sm:p-6 rounded-2xl bg-white dark:bg-[#0D214D] border border-[#E2E8F0] dark:border-[#1E3A6E] space-y-2">
                 <div className="flex items-start justify-between gap-2 flex-wrap">
                   <div className="space-y-1 min-w-0">
-                    <span className="text-[11px] font-extrabold text-[#0F5132] dark:text-[#E9AD32]">
+                    <span className="text-[11px] font-extrabold text-[#800B34] dark:text-[#E9AD32]">
                       {ARABIC_SKILL_LABELS[currentSection.skillCategory]}
                     </span>
-                    <h2 className="text-base sm:text-xl font-black text-[#0F2744] dark:text-white break-words leading-snug">
+                    <h2 className="text-base sm:text-xl font-black text-[#091B40] dark:text-white break-words leading-snug">
                       {currentSection.title}
                     </h2>
                   </div>
@@ -901,21 +901,21 @@ export function ArabicLessonViewer({
                     asset.imageUrl ? (
                       <div
                         key={asset.assetKey}
-                        className="p-3.5 rounded-2xl bg-[#FBF8F1] dark:bg-[#081A2E] border border-emerald-200 dark:border-emerald-900/50 space-y-2"
+                        className="p-3.5 rounded-2xl bg-[#F7F9FC] dark:bg-[#071737] border border-[#E2E8F0] dark:border-[#1E3A6E] space-y-2"
                       >
-                        <div className="flex items-center justify-between gap-2 text-xs font-black text-[#0F5132] dark:text-emerald-300">
+                        <div className="flex items-center justify-between gap-2 text-xs font-black text-[#800B34] dark:text-[#E9AD32]">
                           <span className="inline-flex items-center gap-1.5">
                             <ImageIcon className="w-4 h-4 shrink-0" />
                             <span>{asset.title}</span>
                           </span>
-                          <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-white dark:bg-[#0D214D] border border-emerald-200 dark:border-[#1E3A6E]">
+                          <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-white dark:bg-[#0D214D] border border-[#E2E8F0] dark:border-[#1E3A6E]">
                             {asset.assetKey}
                           </span>
                         </div>
                         <button
                           type="button"
                           onClick={() => setZoomedAssetUrl(asset.imageUrl!)}
-                          className="block w-full rounded-xl overflow-hidden border border-emerald-200/80 dark:border-[#1E3A6E] bg-white cursor-zoom-in"
+                          className="block w-full rounded-xl overflow-hidden border border-[#E2E8F0] dark:border-[#1E3A6E] bg-white cursor-zoom-in"
                         >
                           <img
                             src={asset.imageUrl}
@@ -932,10 +932,10 @@ export function ArabicLessonViewer({
                     ) : (
                       <div
                         key={asset.assetKey}
-                        className="p-3 rounded-xl bg-[#FBF8F1] dark:bg-[#081A2E] border border-dashed border-amber-300 dark:border-amber-800/60 flex items-center justify-between gap-2 text-xs"
+                        className="p-3 rounded-xl bg-[#F7F9FC] dark:bg-[#071737] border border-dashed border-amber-300 dark:border-amber-800/60 flex items-center justify-between gap-2 text-xs"
                       >
                         <div className="flex items-center gap-2 text-amber-900 dark:text-amber-200">
-                          <ImageIcon className="w-4 h-4 text-[#B45309] shrink-0" />
+                          <ImageIcon className="w-4 h-4 text-[#800B34] shrink-0" />
                           <span>
                             <strong className="font-black">{asset.title}</strong>
                             {asset.caption ? ` — ${asset.caption}` : ""}
@@ -1023,7 +1023,7 @@ export function ArabicLessonViewer({
                       setActiveStageId(nextStage);
                       stageTopRef.current?.scrollIntoView({ behavior: "smooth" });
                     }}
-                    className="px-5 py-2.5 rounded-xl bg-[#0F5132] hover:bg-[#0B3D26] text-white text-xs font-extrabold flex items-center justify-center gap-1.5 min-h-[44px]"
+                    className="px-5 py-2.5 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white text-xs font-extrabold flex items-center justify-center gap-1.5 min-h-[44px]"
                   >
                     <span>
                       {activeStageId === "understand"
@@ -1073,7 +1073,7 @@ export function ArabicLessonViewer({
                   onClick={() => setPracticeSkillFilter(sk)}
                   className={`px-3 py-1.5 rounded-full text-xs font-extrabold min-h-[36px] ${
                     practiceSkillFilter === sk
-                      ? "bg-[#0F5132] text-white"
+                      ? "bg-[#800B34] text-white"
                       : "bg-[#F1F5F9] dark:bg-[#132C60] text-[#091B40] dark:text-white"
                   }`}
                 >
@@ -1138,7 +1138,7 @@ export function ArabicLessonViewer({
                   key={q.id}
                   className={
                     focusedQuestionId === q.id
-                      ? "ring-2 ring-[#0F5132] rounded-2xl"
+                      ? "ring-2 ring-[#800B34] rounded-2xl"
                       : undefined
                   }
                 >

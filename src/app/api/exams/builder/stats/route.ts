@@ -18,11 +18,17 @@ export async function GET(req: Request) {
       return NextResponse.json({ count: 0, unmasteredCount: 0, masteredCount: 0 });
     }
 
+    const isStaff = user?.role === "ADMIN" || user?.role === "SUPER_ADMIN";
     // Never count questions from another grade/track for scoped students.
     const scope = user ? getCurriculumScope(user) : null;
     if (scope) {
       const subject = await prisma.subject.findFirst({
-        where: { id: subjectId, isPublished: true, ...subjectScopeWhere(scope) },
+        where: {
+          id: subjectId,
+          isPublished: true,
+          ...(isStaff ? {} : { isUnderConstruction: false }),
+          ...subjectScopeWhere(scope),
+        },
         select: { id: true },
       });
       if (!subject) {

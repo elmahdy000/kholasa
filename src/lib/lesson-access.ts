@@ -7,6 +7,7 @@ export interface LessonAccessSubject {
   trackId?: string | null;
   schoolCategory?: "ARABIC" | "LANGUAGES" | string | null;
   isCommonCategory?: boolean | null;
+  isUnderConstruction?: boolean | null;
 }
 
 export interface LessonAccessTarget {
@@ -47,7 +48,7 @@ export function canUserAccessLesson(
   lesson: LessonAccessTarget
 ): {
   allowed: boolean;
-  reason?: "UNPUBLISHED" | "OUT_OF_SCOPE" | "SUBSCRIPTION_REQUIRED";
+  reason?: "UNPUBLISHED" | "UNDER_CONSTRUCTION" | "OUT_OF_SCOPE" | "SUBSCRIPTION_REQUIRED";
 } {
   if (
     lesson.isPublished === false ||
@@ -55,6 +56,13 @@ export function canUserAccessLesson(
     lesson.unit.subject.isPublished === false
   ) {
     return { allowed: false, reason: "UNPUBLISHED" };
+  }
+
+  if (
+    lesson.unit.subject.isUnderConstruction &&
+    !isSubscriptionExemptStaff(user?.role)
+  ) {
+    return { allowed: false, reason: "UNDER_CONSTRUCTION" };
   }
 
   const scope = getCurriculumScope(user ?? null);

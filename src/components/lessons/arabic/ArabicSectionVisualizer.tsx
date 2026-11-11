@@ -40,7 +40,7 @@ export function ArabicSectionVisualizer({
   if (type === "timeline" && Array.isArray(visualization.nodes)) {
     return (
       <div className="p-4 sm:p-5 rounded-2xl bg-[#F7F9FC] dark:bg-[#071737] border border-[#E2E8F0] dark:border-[#1E3A6E] space-y-3">
-        <p className="text-xs font-extrabold text-[#0F5132] dark:text-[#E9AD32] flex items-center gap-1.5">
+        <p className="text-xs font-extrabold text-[#800B34] dark:text-[#E9AD32] flex items-center gap-1.5">
           <Workflow className="w-4 h-4" />
           <span>تسلسل الأفكار الرئيسية</span>
         </p>
@@ -48,7 +48,7 @@ export function ArabicSectionVisualizer({
           {visualization.nodes.map((node, i) => (
             <div key={i} className="flex items-center gap-2.5">
               <div className="px-3.5 py-2.5 rounded-xl bg-white dark:bg-[#0D214D] border border-[#E2E8F0] dark:border-[#1E3A6E] text-xs sm:text-[13px] font-bold text-[#091B40] dark:text-white flex items-center gap-2 shadow-2xs">
-                <span className="w-6 h-6 rounded-full bg-[#0F5132] text-white text-[11px] font-black flex items-center justify-center shrink-0 tabular-nums">
+                <span className="w-6 h-6 rounded-full bg-[#800B34] text-white text-[11px] font-black flex items-center justify-center shrink-0 tabular-nums">
                   {i + 1}
                 </span>
                 <span>{node}</span>
@@ -67,11 +67,11 @@ export function ArabicSectionVisualizer({
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {visualization.left && (
-          <div className="p-4 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/25 border border-emerald-200 dark:border-emerald-900/50 space-y-2.5">
+          <div className="p-4 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/25 border border-[#E2E8F0] dark:border-[#1E3A6E] space-y-2.5">
             <h4 className="text-sm font-black text-emerald-900 dark:text-emerald-200">
               {visualization.left.title}
             </h4>
-            <ul className="space-y-1.5 text-xs sm:text-[13px] font-medium text-emerald-950 dark:text-emerald-100 list-disc pr-4 leading-relaxed">
+            <ul className="space-y-1.5 text-xs sm:text-[13px] font-medium text-emerald-950 dark:text-white/80 list-disc pr-4 leading-relaxed">
               {visualization.left.items.map((item, idx) => (
                 <li key={idx}>{item}</li>
               ))}

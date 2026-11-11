@@ -160,16 +160,16 @@ export function ArabicMetadataTab({
   return (
     <div className="space-y-5">
       {/* Validation Summary Box */}
-      <div className="p-4 rounded-2xl bg-[#FBF8F1] dark:bg-[#071737] border border-emerald-200 dark:border-emerald-900/50 space-y-3">
+      <div className="p-4 rounded-2xl bg-[#F7F9FC] dark:bg-[#071737] border border-[#E2E8F0] dark:border-[#1E3A6E] space-y-3">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          <h3 className="text-sm font-black text-[#0F5132] dark:text-emerald-300 flex items-center gap-2">
+          <h3 className="text-sm font-black text-[#800B34] dark:text-[#E9AD32] flex items-center gap-2">
             <CheckCircle2 className="w-4 h-4 shrink-0" />
             <span>فحص الجاهزية الأكاديمية للدرس قبل النشر</span>
           </h3>
           <button
             type="button"
             onClick={() => setShowPreviewModal(true)}
-            className="px-3.5 py-2 rounded-xl bg-[#0F2744] hover:bg-[#132C60] text-white text-xs font-extrabold inline-flex items-center justify-center gap-1.5 min-h-[38px]"
+            className="px-3.5 py-2 rounded-xl bg-[#091B40] hover:bg-[#132C60] text-white text-xs font-extrabold inline-flex items-center justify-center gap-1.5 min-h-[38px]"
           >
             <Eye className="w-4 h-4 text-[#E9AD32]" />
             <span>معاينة الدرس كما يراه الطالب</span>
@@ -179,7 +179,7 @@ export function ArabicMetadataTab({
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
           <div className="p-2.5 rounded-xl bg-white dark:bg-[#0D214D] border border-slate-200 dark:border-[#1E3A6E]">
             <p className="text-[11px] text-[#64748B]">أقسام الشرح والمهارات</p>
-            <p className="font-black text-[#0F5132] dark:text-emerald-300 mt-0.5">
+            <p className="font-black text-[#800B34] dark:text-[#E9AD32] mt-0.5">
               {understandCount} فهم • {skillsCount} مهارات • {assessmentCount} تقييم
             </p>
           </div>
@@ -200,7 +200,7 @@ export function ArabicMetadataTab({
             <p
               className={`font-black mt-0.5 ${
                 uploadedAssetsCount === visualAssets.length && visualAssets.length > 0
-                  ? "text-[#0F5132] dark:text-emerald-300"
+                  ? "text-[#800B34] dark:text-[#E9AD32]"
                   : "text-amber-700 dark:text-amber-300"
               }`}
             >
@@ -264,7 +264,7 @@ export function ArabicMetadataTab({
               type="checkbox"
               checked={isPublished}
               onChange={(e) => setIsPublished(e.target.checked)}
-              className="w-4 h-4 accent-[#0F5132]"
+              className="w-4 h-4 accent-[#800B34]"
             />
             <span>الدرس منشور ومتاح للطلاب عند النشر</span>
           </label>
@@ -273,7 +273,7 @@ export function ArabicMetadataTab({
               type="checkbox"
               checked={isTrial}
               onChange={(e) => setIsTrial(e.target.checked)}
-              className="w-4 h-4 accent-[#B45309]"
+              className="w-4 h-4 accent-[#800B34]"
             />
             <span>درس مجاني مفتوح (معاينة للجميع)</span>
           </label>
@@ -295,7 +295,7 @@ export function ArabicMetadataTab({
         <div className="space-y-3 text-xs">
           <label className="block space-y-1">
             <span className="font-bold text-[#475569] dark:text-[#CBD5E1] flex items-center gap-1.5">
-              <Video className="w-4 h-4 text-[#0F5132]" />
+              <Video className="w-4 h-4 text-[#800B34]" />
               <span>رابط الفيديو الاختياري (YouTube أو MP4)</span>
             </span>
             <input
@@ -310,7 +310,7 @@ export function ArabicMetadataTab({
 
           <div className="space-y-1">
             <span className="font-bold text-[#475569] dark:text-[#CBD5E1] flex items-center gap-1.5">
-              <FileAudio className="w-4 h-4 text-[#B45309]" />
+              <FileAudio className="w-4 h-4 text-[#800B34]" />
               <span>ملف صوتي اختياري (نشاط الاستماع الرسمي أو شرح صوتي)</span>
             </span>
             <div className="flex flex-wrap items-center gap-2">
@@ -336,7 +336,7 @@ export function ArabicMetadataTab({
                 type="button"
                 disabled={uploadingField === "audio"}
                 onClick={() => audioInputRef.current?.click()}
-                className="px-3.5 py-2 rounded-md bg-[#B45309] hover:bg-[#92400E] text-white font-extrabold inline-flex items-center justify-center gap-1.5 shrink-0"
+                className="px-3.5 py-2 rounded-md bg-[#800B34] hover:bg-[#680829] text-white font-extrabold inline-flex items-center justify-center gap-1.5 shrink-0"
               >
                 {uploadingField === "audio" ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
@@ -377,7 +377,7 @@ export function ArabicMetadataTab({
                 type="button"
                 disabled={uploadingField === "pdf"}
                 onClick={() => pdfInputRef.current?.click()}
-                className="px-3.5 py-2 rounded-md bg-[#0F2744] hover:bg-[#1E3A5F] text-white font-extrabold inline-flex items-center justify-center gap-1.5 shrink-0"
+                className="px-3.5 py-2 rounded-md bg-[#091B40] hover:bg-[#132C60] text-white font-extrabold inline-flex items-center justify-center gap-1.5 shrink-0"
               >
                 {uploadingField === "pdf" ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
@@ -392,9 +392,9 @@ export function ArabicMetadataTab({
       </div>
 
       {/* Draft & Publish Action Strip */}
-      <div className="p-4 sm:p-5 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-900/50 space-y-3">
+      <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#0D214D] border border-[#E2E8F0] dark:border-[#1E3A6E] space-y-3">
         <label className="block space-y-1 text-xs">
-          <span className="font-black text-[#0F5132] dark:text-emerald-200">
+          <span className="font-black text-[#800B34] dark:text-[#E9AD32]">
             ملاحظة التعديل / الإصدار
           </span>
           <input
@@ -402,7 +402,7 @@ export function ArabicMetadataTab({
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             placeholder="مثال: تحديث المفردات ورفع خرائط الفقرات..."
-            className="w-full px-3 py-2 rounded-xl border border-emerald-200 dark:border-emerald-800 bg-white dark:bg-[#071737]"
+            className="w-full px-3 py-2 rounded-xl border border-[#E2E8F0] dark:border-[#1E3A6E] bg-white dark:bg-[#071737]"
           />
         </label>
 
@@ -411,7 +411,7 @@ export function ArabicMetadataTab({
             type="button"
             disabled={isSaving}
             onClick={() => void onSaveMode("draft")}
-            className="px-4 py-2.5 rounded-xl bg-white dark:bg-[#0D214D] border border-emerald-300 dark:border-emerald-800 text-[#0F5132] dark:text-emerald-200 text-xs font-extrabold inline-flex items-center gap-1.5 hover:bg-emerald-50"
+            className="px-4 py-2.5 rounded-xl bg-white dark:bg-[#0D214D] border border-[#800B34]/30 dark:border-[#1E3A6E] text-[#800B34] dark:text-[#E9AD32] text-xs font-extrabold inline-flex items-center gap-1.5 hover:bg-[#800B34]/5"
           >
             {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
             <span>حفظ كمسودة (Draft)</span>
@@ -421,7 +421,7 @@ export function ArabicMetadataTab({
             type="button"
             disabled={isSaving}
             onClick={() => void onSaveMode("publish")}
-            className="px-5 py-2.5 rounded-xl bg-[#0F5132] hover:bg-[#0B3D26] text-white text-xs font-extrabold inline-flex items-center gap-1.5"
+            className="px-5 py-2.5 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white text-xs font-extrabold inline-flex items-center gap-1.5"
           >
             {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Rocket className="w-4 h-4 text-[#E9AD32]" />}
             <span>حفظ ونشر التعديلات للطلاب (Publish)</span>
@@ -433,7 +433,7 @@ export function ArabicMetadataTab({
       {lessonMeta.versions.length > 0 && (
         <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#0D214D] border border-[#E2E8F0] dark:border-[#1E3A6E] space-y-3">
           <h4 className="text-sm font-black text-[#091B40] dark:text-white flex items-center gap-2">
-            <History className="w-4 h-4 text-[#B45309]" />
+            <History className="w-4 h-4 text-[#800B34]" />
             <span>سجل إصدارات الدرس ({lessonMeta.versions.length})</span>
           </h4>
           <div className="overflow-x-auto">
@@ -455,7 +455,7 @@ export function ArabicMetadataTab({
                       <span
                         className={`px-2 py-0.5 rounded-md text-[10px] font-black ${
                           ver.status === "PUBLISHED"
-                            ? "bg-emerald-100 text-[#0F5132]"
+                            ? "bg-[#800B34]/10 text-[#800B34]"
                             : ver.status === "DRAFT"
                             ? "bg-amber-100 text-amber-800"
                             : "bg-slate-100 text-slate-600"
@@ -491,8 +491,8 @@ export function ArabicMetadataTab({
           className="fixed inset-0 z-[80] bg-black/70 flex items-center justify-center p-2 sm:p-4 overflow-y-auto"
           dir="rtl"
         >
-          <div className="w-full max-w-5xl bg-[#FBF8F1] dark:bg-[#051025] rounded-2xl border border-emerald-300 dark:border-[#1E3A6E] shadow-2xl overflow-hidden max-h-[92vh] flex flex-col">
-            <div className="p-3.5 bg-[#0F5132] text-white flex items-center justify-between shrink-0">
+          <div className="w-full max-w-5xl bg-[#F7F9FC] dark:bg-[#081426] rounded-2xl border border-[#E2E8F0] dark:border-[#1E3A6E] shadow-2xl overflow-hidden max-h-[92vh] flex flex-col">
+            <div className="p-3.5 bg-[#800B34] text-white flex items-center justify-between shrink-0">
               <div className="flex items-center gap-2 text-xs sm:text-sm font-black">
                 <Eye className="w-4 h-4 text-[#E9AD32]" />
                 <span>معاينة حية لواجهة الطالب — {title}</span>

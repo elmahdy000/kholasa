@@ -143,6 +143,20 @@ describe("Student Journey End-to-End Logic Guards", () => {
         allowed: false,
         reason: "UNPUBLISHED",
       });
+      const underConstructionLesson = {
+        ...arTrialLesson,
+        unit: {
+          ...arTrialLesson.unit,
+          subject: { ...arTrialLesson.unit.subject, isUnderConstruction: true },
+        },
+      };
+      expect(canUserAccessLesson(arPaidStudent, underConstructionLesson)).toEqual({
+        allowed: false,
+        reason: "UNDER_CONSTRUCTION",
+      });
+      expect(
+        canUserAccessLesson({ ...arPaidStudent, role: "ADMIN" }, underConstructionLesson)
+      ).toEqual({ allowed: true });
     });
 
     it("blocks locked lesson progress & offline package fetches for trial students", async () => {

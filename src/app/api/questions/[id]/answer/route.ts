@@ -50,6 +50,10 @@ export async function POST(
       "subject" in question &&
       question.subject &&
       (!question.subject.isPublished ||
+        ("isUnderConstruction" in question.subject &&
+          question.subject.isUnderConstruction &&
+          user.role !== "ADMIN" &&
+          user.role !== "SUPER_ADMIN") ||
         !isSubjectInScope(getCurriculumScope(user), question.subject))
     ) {
       return NextResponse.json(

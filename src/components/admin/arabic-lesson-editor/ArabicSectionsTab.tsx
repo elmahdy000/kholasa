@@ -96,8 +96,8 @@ export function ArabicSectionsTab({
               }}
               className={`p-3 rounded-xl border text-right transition-all flex items-center justify-between gap-2 cursor-pointer ${
                 active
-                  ? "bg-[#0F5132] text-white border-[#0F5132] shadow-xs"
-                  : "bg-[#F8FAF9] dark:bg-[#1E293B] border-[#E2E8F0] dark:border-[#334155] text-[#0F172A] dark:text-white hover:border-[#0F5132]"
+                  ? "bg-[#800B34] text-white border-[#800B34] shadow-xs"
+                  : "bg-[#F7F9FC] dark:bg-[#1E293B] border-[#E2E8F0] dark:border-[#334155] text-[#0F172A] dark:text-white hover:border-[#800B34]"
               }`}
             >
               <div className="flex items-center gap-2 min-w-0">
@@ -108,7 +108,7 @@ export function ArabicSectionsTab({
                 className={`text-[10px] font-black px-2 py-0.5 rounded-full shrink-0 tabular-nums ${
                   active
                     ? "bg-white/20 text-white"
-                    : "bg-[#E6F4EA] text-[#0F5132] dark:bg-[#0F5132]/40 dark:text-emerald-200"
+                    : "bg-[#800B34]/10 text-[#800B34] dark:bg-[#800B34]/40 dark:text-[#FB7185]"
                 }`}
               >
                 {cnt} {suffix}
@@ -119,7 +119,7 @@ export function ArabicSectionsTab({
       </div>
 
       {stageFilter === "practice" ? (
-        <div className="p-5 rounded-2xl bg-[#F8FAF9] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] space-y-3">
+        <div className="p-5 rounded-2xl bg-[#F7F9FC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] space-y-3">
           <h3 className="text-sm font-black text-[#0F172A] dark:text-white">
             مرحلة «حل واتعلم» — خريطة ربط أسئلة التدريب بالدرس ({practiceQuestionIds.length} سؤال من أصل {questions.length})
           </h3>
@@ -130,7 +130,7 @@ export function ArabicSectionsTab({
             {practiceQuestionIds.map((qid) => (
               <span
                 key={qid}
-                className="px-2.5 py-1 rounded-lg bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] text-[11px] font-bold text-[#0F5132] dark:text-emerald-300 tabular-nums"
+                className="px-2.5 py-1 rounded-lg bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] text-[11px] font-bold text-[#800B34] dark:text-[#E9AD32] tabular-nums"
               >
                 {qid}
               </span>
@@ -138,7 +138,7 @@ export function ArabicSectionsTab({
           </div>
           {finalAssessmentQuestionIds.length > 0 && (
             <div className="pt-3 border-t border-[#E2E8F0] dark:border-[#334155] space-y-2">
-              <p className="text-xs font-black text-[#B45309] dark:text-amber-300">
+              <p className="text-xs font-black text-[#800B34] dark:text-amber-300">
                 الاختبار الختامي الشامل للدرس ({finalAssessmentQuestionIds.length} سؤالاً منتقاة دون تكرار):
               </p>
               <div className="flex flex-wrap gap-1.5">
@@ -157,8 +157,8 @@ export function ArabicSectionsTab({
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
           {/* Ordered Sections List */}
-          <div className="lg:col-span-4 space-y-1.5 p-3 rounded-2xl bg-[#F8FAF9] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155]">
-            <p className="text-xs font-black text-[#0F5132] dark:text-emerald-300 px-1 pb-1.5 border-b border-[#E2E8F0] dark:border-[#334155]">
+          <div className="lg:col-span-4 space-y-1.5 p-3 rounded-2xl bg-[#F7F9FC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155]">
+            <p className="text-xs font-black text-[#800B34] dark:text-[#E9AD32] px-1 pb-1.5 border-b border-[#E2E8F0] dark:border-[#334155]">
               أقسام المرحلة ({visibleSections.length})
             </p>
             {visibleSections.map((sec) => {
@@ -170,8 +170,8 @@ export function ArabicSectionsTab({
                   onClick={() => setSelectedSectionId(sec.id)}
                   className={`w-full text-right p-2.5 rounded-xl text-xs font-bold transition-colors flex items-center justify-between gap-2 cursor-pointer ${
                     isSelected
-                      ? "bg-[#0F5132] text-white"
-                      : "bg-white dark:bg-[#0F172A] text-[#0F172A] dark:text-white border border-[#E2E8F0] dark:border-[#334155] hover:border-[#0F5132]"
+                      ? "bg-[#800B34] text-white"
+                      : "bg-white dark:bg-[#0F172A] text-[#0F172A] dark:text-white border border-[#E2E8F0] dark:border-[#334155] hover:border-[#800B34]"
                   }`}
                 >
                   <span className="flex items-center gap-2 min-w-0">
@@ -193,14 +193,14 @@ export function ArabicSectionsTab({
             <div className="lg:col-span-8 p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] space-y-5">
               <div className="flex items-center justify-between gap-2 flex-wrap border-b border-[#E2E8F0] dark:border-[#334155] pb-3">
                 <div>
-                  <span className="text-[11px] font-bold text-[#0F5132] dark:text-emerald-300">
+                  <span className="text-[11px] font-bold text-[#800B34] dark:text-[#E9AD32]">
                     معرف القسم: <code>{activeSection.id}</code>
                   </span>
                   <h4 className="text-sm font-black text-[#0F172A] dark:text-white mt-0.5">
                     تعديل القسم {activeSection.order}: {activeSection.title}
                   </h4>
                 </div>
-                <span className="px-2.5 py-1 rounded-full bg-[#E6F4EA] text-[#0F5132] text-[11px] font-extrabold">
+                <span className="px-2.5 py-1 rounded-full bg-[#800B34]/10 text-[#800B34] text-[11px] font-extrabold">
                   {activeSection.blocks.length} كتل تعليمية
                 </span>
               </div>
@@ -239,7 +239,7 @@ export function ArabicSectionsTab({
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <h5 className="text-xs font-black text-[#0F172A] dark:text-white flex items-center gap-1.5">
-                    <BookOpen className="w-4 h-4 text-[#0F5132]" />
+                    <BookOpen className="w-4 h-4 text-[#800B34]" />
                     <span>شرح المعلم بالمصري ونقاط التركيز ({activeSection.teacherExplanation.length})</span>
                   </h5>
                   <button
@@ -253,7 +253,7 @@ export function ArabicSectionsTab({
                         ],
                       })
                     }
-                    className="px-2.5 py-1 rounded-lg bg-[#0F5132] text-white text-[11px] font-bold flex items-center gap-1 cursor-pointer"
+                    className="px-2.5 py-1 rounded-lg bg-[#800B34] text-white text-[11px] font-bold flex items-center gap-1 cursor-pointer"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     <span>إضافة خطوة شرح</span>
@@ -263,7 +263,7 @@ export function ArabicSectionsTab({
                 {activeSection.teacherExplanation.map((step, idx) => (
                   <div
                     key={idx}
-                    className="p-3.5 rounded-xl bg-[#F8FAF9] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] space-y-2.5"
+                    className="p-3.5 rounded-xl bg-[#F7F9FC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] space-y-2.5"
                   >
                     <div className="flex items-center justify-between gap-2">
                       <input
@@ -313,7 +313,7 @@ export function ArabicSectionsTab({
                         updateSection({ ...activeSection, teacherExplanation: next });
                       }}
                       placeholder="الخلاصة / النقطة الجوهرية..."
-                      className="w-full px-2.5 py-1.5 rounded-lg bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900 text-xs font-bold text-emerald-900 dark:text-emerald-200"
+                      className="w-full px-2.5 py-1.5 rounded-lg bg-emerald-50/70 dark:bg-emerald-950/30 border border-[#E2E8F0] dark:border-emerald-900 text-xs font-bold text-emerald-900 dark:text-emerald-200"
                     />
                   </div>
                 ))}
@@ -410,8 +410,8 @@ export function ArabicSectionsTab({
               {/* Worked examples editor when section has worked_examples visualization */}
               {activeSection.visualization?.type === "worked_examples" &&
                 Array.isArray(activeSection.visualization.examples) && (
-                  <div className="p-3.5 rounded-xl bg-[#F8FAF9] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] space-y-2.5">
-                    <p className="text-xs font-black text-[#0F5132] dark:text-emerald-300 flex items-center gap-1.5">
+                  <div className="p-3.5 rounded-xl bg-[#F7F9FC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] space-y-2.5">
+                    <p className="text-xs font-black text-[#800B34] dark:text-[#E9AD32] flex items-center gap-1.5">
                       <CheckCircle2 className="w-4 h-4" />
                       <span>النماذج التطبيقية المحلولة ({activeSection.visualization.examples.length})</span>
                     </p>

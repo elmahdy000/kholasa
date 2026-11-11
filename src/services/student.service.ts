@@ -208,6 +208,8 @@ export class StudentService {
                 gradeId: true,
                 trackId: true,
                 schoolCategory: true,
+                isCommonCategory: true,
+                isUnderConstruction: true,
               },
             },
           },
@@ -224,6 +226,9 @@ export class StudentService {
       if (!access.allowed) {
         if (access.reason === "OUT_OF_SCOPE") {
           throw notFound("الدرس غير متاح في مسارك الدراسي");
+        }
+        if (access.reason === "UNDER_CONSTRUCTION") {
+          throw forbidden("هذه المادة تحت الإنشاء ومغلقة حالياً");
         }
         throw forbidden("يلزم تفعيل الاشتراك لتسجيل التقدم في هذا الدرس");
       }

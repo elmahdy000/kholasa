@@ -129,6 +129,7 @@ export class ArabicCurriculumService {
                 isCommonCategory: true,
                 learningEngine: true,
                 isPublished: true,
+                isUnderConstruction: true,
               },
             },
           },
@@ -145,6 +146,9 @@ export class ArabicCurriculumService {
     if (!access.allowed) {
       if (access.reason === "OUT_OF_SCOPE") {
         throw notFound("الدرس غير متاح في مسارك الدراسي");
+      }
+      if (access.reason === "UNDER_CONSTRUCTION") {
+        throw forbidden("هذه المادة تحت الإنشاء ومغلقة حالياً");
       }
       throw forbidden("يلزم تفعيل الاشتراك للوصول إلى هذا الدرس");
     }

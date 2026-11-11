@@ -335,9 +335,9 @@ export function ArabicQuestionsTab({
   return (
     <div className="space-y-4">
       {/* Header & Summary */}
-      <div className="p-4 rounded-2xl bg-[#FBF8F1] dark:bg-[#071737] border border-emerald-200 dark:border-emerald-900/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="p-4 rounded-2xl bg-[#F7F9FC] dark:bg-[#071737] border border-[#E2E8F0] dark:border-[#1E3A6E] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="space-y-1">
-          <h3 className="text-sm font-black text-[#0F5132] dark:text-emerald-300 flex items-center gap-2">
+          <h3 className="text-sm font-black text-[#800B34] dark:text-[#E9AD32] flex items-center gap-2">
             <HelpCircle className="w-4 h-4 shrink-0" />
             <span>بنك أسئلة وتدريبات الدرس ({stats.total} سؤال محفوظ المعرّف)</span>
           </h3>
@@ -351,7 +351,7 @@ export function ArabicQuestionsTab({
             <span className="px-2 py-0.5 rounded-md bg-white dark:bg-[#0D214D] border border-slate-200 dark:border-[#1E3A6E]">
               مقالي / قراءة / تعبير: {stats.essay}
             </span>
-            <span className="px-2 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-950/60 text-[#0F5132] dark:text-emerald-200">
+            <span className="px-2 py-0.5 rounded-md bg-[#800B34]/10 dark:bg-[#800B34]/30 text-[#800B34] dark:text-[#FB7185]">
               حل واتعلم: {practiceQuestionIds.length}
             </span>
             <span className="px-2 py-0.5 rounded-md bg-amber-100 dark:bg-amber-950/60 text-amber-900 dark:text-amber-200">
@@ -363,7 +363,7 @@ export function ArabicQuestionsTab({
         <button
           type="button"
           onClick={openCreateModal}
-          className="px-4 py-2.5 rounded-xl bg-[#0F5132] hover:bg-[#0B3D26] text-white text-xs font-extrabold inline-flex items-center justify-center gap-1.5 min-h-[40px] shrink-0"
+          className="px-4 py-2.5 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white text-xs font-extrabold inline-flex items-center justify-center gap-1.5 min-h-[40px] shrink-0"
         >
           <Plus className="w-4 h-4" />
           <span>إضافة سؤال جديد للدرس</span>
@@ -434,13 +434,13 @@ export function ArabicQuestionsTab({
             >
               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
                 <div className="flex flex-wrap items-center gap-1.5 text-[10px] font-black">
-                  <span className="px-2 py-0.5 rounded-md bg-[#0F2744] text-white tabular-nums">
+                  <span className="px-2 py-0.5 rounded-md bg-[#091B40] text-white tabular-nums">
                     #{idx + 1} • {q.externalKey || "بدون رمز"}
                   </span>
                   <span className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-[#132C60] text-slate-600 dark:text-slate-300 font-mono">
                     ID: {q.id}
                   </span>
-                  <span className="px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-950/50 text-[#0F5132] dark:text-emerald-200 border border-emerald-200 dark:border-emerald-900">
+                  <span className="px-2 py-0.5 rounded-md bg-[#800B34]/10 dark:bg-[#800B34]/25 text-[#800B34] dark:text-[#FB7185] border border-[#800B34]/20">
                     {TYPE_LABELS[q.type]}
                   </span>
                   <span className="px-2 py-0.5 rounded-md bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-200">
@@ -467,7 +467,7 @@ export function ArabicQuestionsTab({
                   <button
                     type="button"
                     onClick={() => openEditModal(q)}
-                    className="px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-[#0F5132] dark:text-emerald-200 border border-emerald-200 dark:border-emerald-800 text-xs font-extrabold inline-flex items-center gap-1 hover:bg-emerald-100"
+                    className="px-3 py-1.5 rounded-xl bg-[#800B34]/10 dark:bg-[#800B34]/25 text-[#800B34] dark:text-[#FB7185] border border-[#800B34]/20 text-xs font-extrabold inline-flex items-center gap-1 hover:bg-[#800B34]/15"
                   >
                     <Edit3 className="w-3.5 h-3.5" />
                     <span>تعديل</span>
@@ -515,7 +515,7 @@ export function ArabicQuestionsTab({
                       key={opt.id}
                       className={`px-2.5 py-1.5 rounded-lg text-xs font-medium flex items-center gap-2 border ${
                         opt.isCorrect
-                          ? "bg-emerald-50/90 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-800 text-[#0F5132] dark:text-emerald-200 font-bold"
+                          ? "bg-emerald-50/90 dark:bg-emerald-950/40 border-[#800B34]/30 dark:border-[#1E3A6E] text-[#800B34] dark:text-[#E9AD32] font-bold"
                           : "bg-slate-50 dark:bg-[#081633] border-slate-200 dark:border-[#1E3A6E] text-[#334155] dark:text-[#CBD5E1]"
                       }`}
                     >
@@ -532,7 +532,7 @@ export function ArabicQuestionsTab({
               )}
 
               {q.type === "ESSAY" && q.rubric?.modelAnswer && (
-                <div className="p-2.5 rounded-xl bg-emerald-50/60 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-900/40 text-xs text-emerald-950 dark:text-emerald-100">
+                <div className="p-2.5 rounded-xl bg-emerald-50/60 dark:bg-emerald-950/20 border border-[#E2E8F0] dark:border-emerald-900/40 text-xs text-emerald-950 dark:text-white/80">
                   <strong className="font-black">الإجابة النموذجية: </strong>
                   {q.rubric.modelAnswer}
                 </div>
@@ -576,7 +576,7 @@ export function ArabicQuestionsTab({
             onSubmit={handleSaveDraft}
             className="w-full max-w-2xl bg-white dark:bg-[#0D214D] rounded-2xl border border-[#E2E8F0] dark:border-[#1E3A6E] shadow-2xl overflow-hidden my-auto max-h-[92vh] flex flex-col"
           >
-            <div className="p-4 bg-[#0F5132] text-white flex items-center justify-between gap-2 shrink-0">
+            <div className="p-4 bg-[#800B34] text-white flex items-center justify-between gap-2 shrink-0">
               <div>
                 <h4 className="text-sm font-black">
                   {editingDraft.questionId
@@ -584,7 +584,7 @@ export function ArabicQuestionsTab({
                     : "إضافة سؤال جديد للغة العربية"}
                 </h4>
                 {editingDraft.questionId && (
-                  <p className="text-[11px] text-emerald-100 font-mono">
+                  <p className="text-[11px] text-white/80 font-mono">
                     يتم الحفاظ على معرّف قاعدة البيانات: {editingDraft.questionId}
                   </p>
                 )}
@@ -752,7 +752,7 @@ export function ArabicQuestionsTab({
               ) : (
                 <div className="space-y-2 p-3 rounded-xl bg-slate-50 dark:bg-[#071737] border border-slate-200 dark:border-[#1E3A6E]">
                   <div className="flex items-center justify-between">
-                    <span className="font-black text-[#0F5132] dark:text-emerald-300">
+                    <span className="font-black text-[#800B34] dark:text-[#E9AD32]">
                       الاختيارات (حدّد الإجابة الصحيحة)
                     </span>
                     {editingDraft.type === "MCQ" && editingDraft.options.length < 6 && (
@@ -764,7 +764,7 @@ export function ArabicQuestionsTab({
                             options: [...editingDraft.options, { text: "", isCorrect: false }],
                           })
                         }
-                        className="text-[11px] font-bold text-[#0F5132] hover:underline"
+                        className="text-[11px] font-bold text-[#800B34] hover:underline"
                       >
                         + إضافة اختيار
                       </button>
@@ -786,7 +786,7 @@ export function ArabicQuestionsTab({
                           })
                         }
                       />
-                      <span className="w-6 h-6 rounded-lg bg-[#0F5132] text-white font-black flex items-center justify-center shrink-0">
+                      <span className="w-6 h-6 rounded-lg bg-[#800B34] text-white font-black flex items-center justify-center shrink-0">
                         {CHOICE_LETTERS[idx] || idx + 1}
                       </span>
                       <input
@@ -898,7 +898,7 @@ export function ArabicQuestionsTab({
               <button
                 type="submit"
                 disabled={isSavingQuestion}
-                className="px-5 py-2 rounded-xl bg-[#0F5132] hover:bg-[#0B3D26] text-white text-xs font-extrabold inline-flex items-center gap-1.5"
+                className="px-5 py-2 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white text-xs font-extrabold inline-flex items-center gap-1.5"
               >
                 {isSavingQuestion && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                 <span>{editingDraft.questionId ? "حفظ تعديل السؤال" : "إضافة السؤال"}</span>

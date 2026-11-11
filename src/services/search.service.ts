@@ -28,6 +28,10 @@ export class SearchService {
       isPublished: true,
       ...subjectFilter,
     };
+    const openSubjectFilter: Prisma.SubjectWhereInput = {
+      ...publishedSubjectFilter,
+      isUnderConstruction: false,
+    };
 
     const [lessons, subjects, questions] = await Promise.all([
       prisma.lesson.findMany({
@@ -35,7 +39,7 @@ export class SearchService {
           isPublished: true,
           unit: {
             isPublished: true,
-            subject: { is: publishedSubjectFilter },
+            subject: { is: openSubjectFilter },
           },
           OR: [
             { title: { contains: q, mode: "insensitive" } },
@@ -72,7 +76,7 @@ export class SearchService {
       prisma.question.findMany({
         where: {
           status: "PUBLISHED",
-          subject: { is: publishedSubjectFilter },
+          subject: { is: openSubjectFilter },
           AND: [
             ...(scope?.schoolCategory
               ? [

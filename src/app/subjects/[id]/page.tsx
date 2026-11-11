@@ -6,6 +6,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { getCurriculumScope, isSubjectInScope } from "@/lib/curriculum";
 import { StudentShell } from "@/components/layout/StudentShell";
 import { SubjectUnitsList } from "@/components/subjects/SubjectUnitsList";
+import { SubjectUnderConstructionView } from "@/components/subjects/SubjectUnderConstructionView";
 import {
   Layers,
   Target,
@@ -107,6 +108,17 @@ export default async function SubjectDetailPage({ params }: SubjectDetailPagePro
   // Students may only open subjects from their own curriculum.
   if (!isSubjectInScope(getCurriculumScope(user), subject)) {
     notFound();
+  }
+
+  if (subject.isUnderConstruction && !isStaff) {
+    return (
+      <StudentShell user={user}>
+        <SubjectUnderConstructionView
+          subjectName={subject.name}
+          description={subject.description}
+        />
+      </StudentShell>
+    );
   }
 
   const completedLessonIds = new Set(userProgress.map((p) => p.lessonId));

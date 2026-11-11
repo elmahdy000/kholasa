@@ -9,6 +9,7 @@ import { ArabicLessonViewer } from "@/components/lessons/arabic/ArabicLessonView
 import { isArabicStructuredData } from "@/components/lessons/arabic/types";
 import { sanitizeArabicPayloadForStudent } from "@/lib/arabic-curriculum";
 import { StudentPaywallView } from "@/components/student/subscription/StudentPaywallView";
+import { SubjectUnderConstructionView } from "@/components/subjects/SubjectUnderConstructionView";
 
 interface LessonPageProps {
   params: Promise<{ id: string }>;
@@ -145,6 +146,17 @@ export default async function LessonPage({ params }: LessonPageProps) {
     user &&
     (user.role === "ADMIN" ||
       user.role === "SUPER_ADMIN");
+
+  if (lesson.unit.subject.isUnderConstruction && !isStaffUser) {
+    return (
+      <StudentShell user={user}>
+        <SubjectUnderConstructionView
+          subjectName={lesson.unit.subject.name}
+          description="المادة والدرس مغلقان حالياً للطلاب لحين استكمال التجهيز."
+        />
+      </StudentShell>
+    );
+  }
 
   // Single trial lesson: ONLY the first lesson of Unit 1 (or explicitly marked isTrial)
   // All other lessons require an ACTIVE subscription
