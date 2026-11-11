@@ -96,10 +96,10 @@ export function LessonHeader({
             type="button"
             onClick={onOpenMistakesCapsule}
             className="min-h-[44px] px-3.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800/70 hover:bg-amber-100 text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-2xs active:scale-95"
-            title="مراجعة وتصحيح الأسئلة غير المتقنة في هذا الدرس"
+            title="مراجعة وتصحيح الأسئلة في مراجعة لأخطائي لهذا الدرس"
           >
             <ArrowClockwise className="w-3.5 h-3.5 text-[#D97706]" weight="bold" />
-            <span>أخطاء ({unresolvedMistakesCount})</span>
+            <span>مراجعة لأخطائي ({unresolvedMistakesCount})</span>
           </button>
         )}
 

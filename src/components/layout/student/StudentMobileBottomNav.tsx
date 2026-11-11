@@ -70,6 +70,14 @@ export function StudentMobileBottomNav({
                       )}
                     >
                       <AnimatedCount value={mistakesCount} />
+                      {mistakesCount > 0 && (
+                        <motion.span
+                          aria-hidden="true"
+                          animate={{ scale: [1, 1.65], opacity: [0.55, 0] }}
+                          transition={{ duration: 1.6, repeat: Infinity, ease: "easeOut" }}
+                          className="absolute inset-0 rounded-full bg-[#DC2626] -z-10"
+                        />
+                      )}
                     </motion.span>
                   </AnimatePresence>
                 )}
@@ -80,7 +88,7 @@ export function StudentMobileBottomNav({
               </div>
               <span
                 className={cn(
-                  "text-[10px] sm:text-[11px] leading-normal tracking-tight text-center truncate max-w-full px-0.5 mt-0.5 block transition-colors",
+                  "text-[9.5px] sm:text-[11px] leading-[1.15] tracking-tight text-center line-clamp-2 max-w-full px-0.5 mt-0.5 block transition-colors",
                   isActive
                     ? "font-black text-[#800B34] dark:text-[#E9AD32]"
                     : "font-bold text-[#64748B] dark:text-[#94A3B8] group-hover:text-[#091B40] dark:group-hover:text-white"

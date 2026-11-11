@@ -54,25 +54,16 @@ export function DashboardClient({
       };
   const liveUnresolvedMistakesCount = effectiveMistakesSummary.unresolvedCount;
 
-  // Check if tour should auto-launch (e.g. redirected from onboarding with ?tour=true or first time)
+  // Launch guided tour ONLY when explicitly requested via ?tour=true or "جولة المنصة" CTA
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const params = new URLSearchParams(window.location.search);
-      const forceTour = params.get("tour") === "true";
-      const tourDone = localStorage.getItem("kholasa_tour_completed");
-
-      if (forceTour) {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("tour") === "true") {
+      const timer = setTimeout(() => {
         setIsTourOpen(true);
-        // Clean URL parameter without reloading page
-        const newUrl = window.location.pathname;
-        window.history.replaceState({}, document.title, newUrl);
-      } else if (!tourDone) {
-        // First time entering the dashboard: gentle 600ms delay for nice entrance
-        const timer = setTimeout(() => {
-          setIsTourOpen(true);
-        }, 600);
-        return () => clearTimeout(timer);
-      }
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }, 150);
+      return () => clearTimeout(timer);
     }
   }, []);
 
@@ -92,9 +83,18 @@ export function DashboardClient({
     return () => window.removeEventListener("kholasa_streak_updated", handleStreakUpdate);
   }, []);
 
+  const handleOpenDailyChallenge = () => {
+    const el = document.getElementById("daily-challenge-card");
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+    } else {
+      window.dispatchEvent(new CustomEvent("kholasa_open_entrance_exam"));
+    }
+  };
+
   return (
     <div className="space-y-6 sm:space-y-7 text-right">
-      {/* 1. Hero */}
+      {/* 1. Welcome Hero */}
       <DashboardHero
         userName={userName}
         studentMeta={studentMeta}
@@ -102,51 +102,39 @@ export function DashboardClient({
         onStartTour={() => setIsTourOpen(true)}
       />
 
-      {/* Product Tour Modal */}
+      {/* Product Tour Modal (On Demand) */}
       <ProductTourModal
         isOpen={isTourOpen}
         onClose={() => setIsTourOpen(false)}
         userName={userName}
       />
 
-      {/* 2. Streak Timeline */}
+      {/* 2. Immediate Resume Anchor */}
+      <ContinueLearningCard continueLesson={continueLesson} />
+
+      {/* 3. Live Animated Mistakes Counter & Weakness Diagnosis Spotlight */}
+      <DashboardMistakesSpotlight summary={effectiveMistakesSummary} />
+
+      {/* 4. Curriculum Subjects (Directly Reachable) */}
+      <SubjectsGrid subjects={subjects} />
+
+      {/* 5. Daily Streak & Quick Guided Study Plan */}
       <StreakWidget
         initialStreakDays={currentStreakDays}
         initialIsTodayCompleted={isTodayCompletedState}
         initialWeekDays={weekDays}
-        onOpenDailyChallenge={() => {
-          const el = document.getElementById("daily-challenge-card");
-          if (el) {
-            el.scrollIntoView({ behavior: "smooth", block: "center" });
-          } else {
-            window.dispatchEvent(new CustomEvent("kholasa_open_entrance_exam"));
-          }
-        }}
+        onOpenDailyChallenge={handleOpenDailyChallenge}
       />
 
-      {/* 2b. Live Mistakes Counter & Weakness Diagnosis Spotlight */}
-      <DashboardMistakesSpotlight summary={effectiveMistakesSummary} />
-
-      {/* 3. Daily Guided Study Plan */}
       {dailyStudyPlan && (
         <DailyGuidedStudyPlanCard
           plan={dailyStudyPlan}
           isSubscribed={isSubscribed}
-          onOpenDailyChallenge={() => {
-            const el = document.getElementById("daily-challenge-card");
-            if (el) {
-              el.scrollIntoView({ behavior: "smooth", block: "center" });
-            } else {
-              window.dispatchEvent(new CustomEvent("kholasa_open_entrance_exam"));
-            }
-          }}
+          onOpenDailyChallenge={handleOpenDailyChallenge}
         />
       )}
 
-      {/* 3. Continue Learning */}
-      <ContinueLearningCard continueLesson={continueLesson} />
-
-      {/* 4. Stats Grid */}
+      {/* 6. Stats Grid & Quick Shortcuts */}
       <DashboardStatsGrid
         completedLessonsCount={completedLessonsCount}
         recentAttemptsCount={recentAttemptsCount}
@@ -154,13 +142,12 @@ export function DashboardClient({
         averageScore={averageScore}
       />
 
-      {/* 5. Quick Actions Bento Grid */}
       <QuickActionsGrid
         subjectsCount={subjects.length}
         unresolvedMistakesCount={liveUnresolvedMistakesCount}
       />
 
-      {/* 6. Daily Challenge */}
+      {/* 7. Daily Challenge & Mastery Map & Recent Activity */}
       {dailyQuestion && (
         <section>
           <DailyChallengeCard
@@ -171,13 +158,8 @@ export function DashboardClient({
         </section>
       )}
 
-      {/* 7. Student Mastery & Progression Map */}
       {masteryData && <StudentMasteryMapCard data={masteryData} />}
 
-      {/* 8. Curriculum Subjects */}
-      <SubjectsGrid subjects={subjects} />
-
-      {/* 8. Recent Exam Results */}
       <RecentExamsList recentExams={recentExams} />
     </div>
   );

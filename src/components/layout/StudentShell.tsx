@@ -120,7 +120,7 @@ export function StudentShell({ children, user: propUser }: StudentShellProps) {
               <div className="flex items-center gap-2 text-[#091B40] dark:text-[#EAF2FF] font-semibold">
                 <ShieldCheck className="w-4 h-4 text-[#059669] dark:text-[#34D399] shrink-0" />
                 <span>
-                  أنت تتصفح داخل <strong className="font-black">جلسة تجريبية مستقلة خاصة بك</strong> — نتائجك وكشكول غلطاتك معزولان تماماً عن باقي الزوار.
+                  أنت تتصفح داخل <strong className="font-black">جلسة تجريبية مستقلة خاصة بك</strong> — نتائجك وسجل «مراجعة لأخطائي» معزولان تماماً عن باقي الزوار.
                 </span>
               </div>
               <button

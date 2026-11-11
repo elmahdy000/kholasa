@@ -100,9 +100,13 @@ export function StudentHeader({
                         title={mistakesTooltip}
                         className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-black tabular-nums bg-[#DC2626] text-white shadow-xs"
                       >
-                        <span className="relative flex h-1.5 w-1.5 shrink-0">
-                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-80" />
-                          <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-white" />
+                        <span className="relative flex h-2 w-2 shrink-0">
+                          <motion.span
+                            animate={{ scale: [1, 1.9], opacity: [0.8, 0] }}
+                            transition={{ duration: 1.5, repeat: Infinity, ease: "easeOut" }}
+                            className="absolute inline-flex h-full w-full rounded-full bg-white"
+                          />
+                          <span className="relative inline-flex rounded-full h-2 w-2 bg-white" />
                         </span>
                         <AnimatedCount value={unresolvedMistakesCount} />
                       </motion.span>
@@ -155,9 +159,13 @@ export function StudentHeader({
               )}
             >
               {unresolvedMistakesCount > 0 ? (
-                <span className="relative flex h-2 w-2 shrink-0">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#DC2626] opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[#DC2626]" />
+                <span className="relative flex h-2.5 w-2.5 shrink-0">
+                  <motion.span
+                    animate={{ scale: [1, 1.95], opacity: [0.75, 0] }}
+                    transition={{ duration: 1.5, repeat: Infinity, ease: "easeOut" }}
+                    className="absolute inline-flex h-full w-full rounded-full bg-[#DC2626]"
+                  />
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#DC2626]" />
                 </span>
               ) : (
                 MistakesNavIcon && <MistakesNavIcon className="w-3.5 h-3.5 shrink-0" weight="bold" />

@@ -74,7 +74,7 @@ export function LessonLearningStepper({
   if (nextStepId === "definitions") nextStepTitle = isLanguages ? "Concepts & Notes" : "المفاهيم والشرح";
   else if (nextStepId === "tf") nextStepTitle = isLanguages ? "Quick Challenges" : "التحديات السريعة";
   else if (nextStepId === "exam") nextStepTitle = isLanguages ? "Exam Practice" : "أسئلة الامتحانات";
-  else if (nextStepId === "mistakes") nextStepTitle = isLanguages ? "Review Mistakes" : "تظبيط الغلطات";
+  else if (nextStepId === "mistakes") nextStepTitle = isLanguages ? "Review Mistakes" : "مراجعة لأخطائي";
 
   // 4. Construct step items
   const steps = [
@@ -93,7 +93,7 @@ export function LessonLearningStepper({
       id: "tf" as const,
       stepNumber: 2,
       title: isLanguages ? "Quick Challenges" : "التحديات السريعة",
-      metric: tfQuestionsCount > 0 ? `${tfAnsweredCount}/${tfQuestionsCount} ${isLanguages ? "answered" : "مُجاب"}` : (isLanguages ? "No challenges" : "غير متوفر"),
+      metric: tfQuestionsCount > 0 ? `${tfAnsweredCount}/${tfQuestionsCount} ${isLanguages ? "answered" : "محلول"}` : (isLanguages ? "No challenges" : "غير متوفر"),
       isCompleted: isTfDone,
       isInProgress: tfQuestionsCount > 0 && tfAnsweredCount > 0 && !isTfDone,
       isNext: nextStepId === "tf",
@@ -108,7 +108,7 @@ export function LessonLearningStepper({
       id: "exam" as const,
       stepNumber: 3,
       title: isLanguages ? "Exam Practice" : "أسئلة الامتحانات",
-      metric: examQuestionsCount > 0 ? `${examAnsweredCount}/${examQuestionsCount} ${isLanguages ? "answered" : "مُجاب"}` : (isLanguages ? "No questions" : "غير متوفر"),
+      metric: examQuestionsCount > 0 ? `${examAnsweredCount}/${examQuestionsCount} ${isLanguages ? "answered" : "محلول"}` : (isLanguages ? "No questions" : "غير متوفر"),
       isCompleted: isExamDone,
       isInProgress: examQuestionsCount > 0 && examAnsweredCount > 0 && !isExamDone,
       isNext: nextStepId === "exam",
@@ -122,15 +122,15 @@ export function LessonLearningStepper({
     {
       id: "mistakes" as const,
       stepNumber: 4,
-      title: isLanguages ? "Mistakes Analysis" : "تظبيط الغلطات",
+      title: isLanguages ? "Mistakes Analysis" : "مراجعة لأخطائي",
       metric: unresolvedMistakesCount > 0
-        ? `${unresolvedMistakesCount} ${isLanguages ? "mistakes" : "في مراجعة لأخطائي"}`
+        ? `${unresolvedMistakesCount} ${isLanguages ? "mistakes" : "في المراجعة"}`
         : (hasPracticed ? (isLanguages ? "0 mistakes ✓" : "صفر أخطاء ✓") : (isLanguages ? "Ready" : "جاهز للتدريب")),
       isCompleted: isMistakesDone,
       isInProgress: unresolvedMistakesCount > 0,
       isNext: nextStepId === "mistakes",
       statusText: unresolvedMistakesCount > 0
-        ? (isLanguages ? "Needs Review" : "محتاج تظبيط")
+        ? (isLanguages ? "Needs Review" : "يحتاج مراجعة")
         : (isMistakesDone ? (isLanguages ? "Completed" : "مكتمل") : (isLanguages ? "Ready" : "جاهز")),
       icon: Sparkle,
     },

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { Download, X, Smartphone, Check } from "lucide-react";
 import { BrandLogo } from "@/components/ui/BrandLogo";
 
@@ -10,6 +11,7 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 export function PwaInstallBanner() {
+  const pathname = usePathname();
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isVisible, setIsVisible] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
@@ -71,12 +73,16 @@ export function PwaInstallBanner() {
     localStorage.setItem("kholasa_pwa_dismissed", Date.now().toString());
   };
 
-  if (!isVisible || isInstalled) return null;
+  const isFocusedStudyRoute =
+    pathname?.startsWith("/mistakes") ||
+    pathname?.startsWith("/lessons/") ||
+    pathname?.startsWith("/exams/");
+  if (!isVisible || isInstalled || isFocusedStudyRoute) return null;
 
   return (
     <aside
       aria-label="تثبيت تطبيق الخلاصة"
-      className="fixed bottom-20 md:bottom-6 start-4 end-4 md:start-auto md:end-6 md:w-96 z-50 animate-in fade-in slide-in-from-bottom-4 duration-300"
+      className="fixed bottom-24 lg:bottom-5 start-4 end-4 md:start-6 md:end-auto md:w-88 z-30 animate-in fade-in slide-in-from-bottom-4 duration-300"
     >
       <div className="p-4 rounded-2xl bg-white dark:bg-[#10233A] border-2 border-[#800B34]/20 dark:border-[#A30D36]/40 shadow-xl flex items-start gap-3.5 text-right font-sans">
         <BrandLogo variant="icon" size="sm" className="mt-0.5 shrink-0" />

@@ -35,7 +35,7 @@ export function EntranceGatekeeperModal({
 }: EntranceGatekeeperModalProps) {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [questions, setQuestions] = useState<QuestionItem[]>([]);
   const [currentStep, setCurrentStep] = useState(0);
 
@@ -104,16 +104,7 @@ export function EntranceGatekeeperModal({
     }
   };
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (userRole === "STUDENT") {
-        fetchQuestions(false);
-      } else {
-        setIsLoading(false);
-      }
-    }, 150);
-    return () => clearTimeout(timer);
-  }, [userRole, userId, pathname]);
+  // Opens smoothly on demand via custom event (e.g. clicking Daily Challenge on dashboard)
 
   // Listen to custom manual trigger (e.g. clicking Daily Challenge or Streak extra challenge on dashboard)
   useEffect(() => {

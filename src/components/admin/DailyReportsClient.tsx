@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { useRealtimeTopic } from "@/lib/realtime-client";
 import Link from "next/link";
 import {
@@ -71,11 +71,9 @@ export function DailyReportsClient({
   canManageStudents,
 }: DailyReportsClientProps) {
   const [report, setReport] = useState<DailyReportData>(initialReport);
-  const [prevInitialReport, setPrevInitialReport] = useState<DailyReportData>(initialReport);
-  if (prevInitialReport !== initialReport) {
-    setPrevInitialReport(initialReport);
+  useEffect(() => {
     setReport(initialReport);
-  }
+  }, [initialReport]);
   const [isLoading, setIsLoading] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -191,8 +189,8 @@ export function DailyReportsClient({
       r.dailyChallengeStatus === "COMPLETED"
         ? "مكتمل"
         : r.dailyChallengeStatus === "STARTED"
-        ? "قيد التنفيذ"
-        : "لم يبدأ",
+          ? "قيد التنفيذ"
+          : "لم يبدأ",
       formatTimeCairo(r.lastActivityAt),
     ]);
 
@@ -531,11 +529,10 @@ export function DailyReportsClient({
                   type="button"
                   onClick={() => fetchReport({ dateKey: day.dateKey })}
                   title={`${day.dateKey}: ${day.activeStudents} طالب نشط (${day.arabicActive} عربي / ${day.languagesActive} لغات) — ${day.examsCompleted} اختبار`}
-                  className={`flex flex-col items-center gap-1.5 p-1 rounded-xl transition-all cursor-pointer ${
-                    isSelected
-                      ? "bg-[#800B34]/10 ring-2 ring-[#800B34]"
-                      : "hover:bg-[#F8FAFC] dark:hover:bg-[#1E293B]"
-                  }`}
+                  className={`flex flex-col items-center gap-1.5 p-1 rounded-xl transition-all cursor-pointer ${isSelected
+                    ? "bg-[#800B34]/10 ring-2 ring-[#800B34]"
+                    : "hover:bg-[#F8FAFC] dark:hover:bg-[#1E293B]"
+                    }`}
                 >
                   <span className="text-[10px] font-black text-[#091B40] dark:text-white tabular-nums">
                     {day.activeStudents}
@@ -567,11 +564,10 @@ export function DailyReportsClient({
                   </div>
                   <span
                     dir="ltr"
-                    className={`text-[9px] font-bold whitespace-nowrap tabular-nums ${
-                      isSelected
-                        ? "text-[#800B34] dark:text-[#FB7185]"
-                        : "text-[#64748B] dark:text-[#94A3B8]"
-                    }`}
+                    className={`text-[9px] font-bold whitespace-nowrap tabular-nums ${isSelected
+                      ? "text-[#800B34] dark:text-[#FB7185]"
+                      : "text-[#64748B] dark:text-[#94A3B8]"
+                      }`}
                   >
                     {day.dateKey.slice(5)}
                   </span>
@@ -615,11 +611,10 @@ export function DailyReportsClient({
                           report.filters.centerName === c.centerName ? "" : c.centerName,
                       })
                     }
-                    className={`w-full text-right p-2.5 rounded-xl border transition-colors cursor-pointer ${
-                      report.filters.centerName === c.centerName
-                        ? "border-[#800B34] bg-[#800B34]/5"
-                        : "border-[#E2E8F0] dark:border-[#334155] hover:bg-[#F8FAFC] dark:hover:bg-[#1E293B]/60"
-                    }`}
+                    className={`w-full text-right p-2.5 rounded-xl border transition-colors cursor-pointer ${report.filters.centerName === c.centerName
+                      ? "border-[#800B34] bg-[#800B34]/5"
+                      : "border-[#E2E8F0] dark:border-[#334155] hover:bg-[#F8FAFC] dark:hover:bg-[#1E293B]/60"
+                      }`}
                   >
                     <div className="flex items-center justify-between gap-2 text-xs font-bold">
                       <span
@@ -662,11 +657,10 @@ export function DailyReportsClient({
           <button
             type="button"
             onClick={() => setRadarTab("payments")}
-            className={`min-h-[40px] px-3 py-1.5 rounded-xl text-xs font-bold inline-flex items-center gap-1.5 cursor-pointer transition-colors ${
-              radarTab === "payments"
-                ? "bg-[#800B34] text-white"
-                : "bg-[#F8FAFC] dark:bg-[#1E293B] text-[#091B40] dark:text-white"
-            }`}
+            className={`min-h-[40px] px-3 py-1.5 rounded-xl text-xs font-bold inline-flex items-center gap-1.5 cursor-pointer transition-colors ${radarTab === "payments"
+              ? "bg-[#800B34] text-white"
+              : "bg-[#F8FAFC] dark:bg-[#1E293B] text-[#091B40] dark:text-white"
+              }`}
           >
             <CreditCard className="w-4 h-4" />
             <span>إيصالات معلقة ({radar.pendingPaymentsCount})</span>
@@ -675,11 +669,10 @@ export function DailyReportsClient({
           <button
             type="button"
             onClick={() => setRadarTab("devices")}
-            className={`min-h-[40px] px-3 py-1.5 rounded-xl text-xs font-bold inline-flex items-center gap-1.5 cursor-pointer transition-colors ${
-              radarTab === "devices"
-                ? "bg-[#800B34] text-white"
-                : "bg-[#F8FAFC] dark:bg-[#1E293B] text-[#091B40] dark:text-white"
-            }`}
+            className={`min-h-[40px] px-3 py-1.5 rounded-xl text-xs font-bold inline-flex items-center gap-1.5 cursor-pointer transition-colors ${radarTab === "devices"
+              ? "bg-[#800B34] text-white"
+              : "bg-[#F8FAFC] dark:bg-[#1E293B] text-[#091B40] dark:text-white"
+              }`}
           >
             <Smartphone className="w-4 h-4" />
             <span>الحد الأقصى للأجهزة ({radar.deviceLimitCount})</span>
@@ -688,11 +681,10 @@ export function DailyReportsClient({
           <button
             type="button"
             onClick={() => setRadarTab("struggling")}
-            className={`min-h-[40px] px-3 py-1.5 rounded-xl text-xs font-bold inline-flex items-center gap-1.5 cursor-pointer transition-colors ${
-              radarTab === "struggling"
-                ? "bg-[#800B34] text-white"
-                : "bg-[#F8FAFC] dark:bg-[#1E293B] text-[#091B40] dark:text-white"
-            }`}
+            className={`min-h-[40px] px-3 py-1.5 rounded-xl text-xs font-bold inline-flex items-center gap-1.5 cursor-pointer transition-colors ${radarTab === "struggling"
+              ? "bg-[#800B34] text-white"
+              : "bg-[#F8FAFC] dark:bg-[#1E293B] text-[#091B40] dark:text-white"
+              }`}
           >
             <TrendingDown className="w-4 h-4" />
             <span>طلاب متعثرون اليوم ({radar.strugglingCount})</span>
@@ -701,11 +693,10 @@ export function DailyReportsClient({
           <button
             type="button"
             onClick={() => setRadarTab("suspended")}
-            className={`min-h-[40px] px-3 py-1.5 rounded-xl text-xs font-bold inline-flex items-center gap-1.5 cursor-pointer transition-colors ${
-              radarTab === "suspended"
-                ? "bg-[#800B34] text-white"
-                : "bg-[#F8FAFC] dark:bg-[#1E293B] text-[#091B40] dark:text-white"
-            }`}
+            className={`min-h-[40px] px-3 py-1.5 rounded-xl text-xs font-bold inline-flex items-center gap-1.5 cursor-pointer transition-colors ${radarTab === "suspended"
+              ? "bg-[#800B34] text-white"
+              : "bg-[#F8FAFC] dark:bg-[#1E293B] text-[#091B40] dark:text-white"
+              }`}
           >
             <ShieldOff className="w-4 h-4" />
             <span>حسابات غير مفعلة/معلقة ({radar.suspendedCount})</span>
@@ -714,11 +705,10 @@ export function DailyReportsClient({
           <button
             type="button"
             onClick={() => setRadarTab("inactive")}
-            className={`min-h-[40px] px-3 py-1.5 rounded-xl text-xs font-bold inline-flex items-center gap-1.5 cursor-pointer transition-colors ${
-              radarTab === "inactive"
-                ? "bg-[#800B34] text-white"
-                : "bg-[#F8FAFC] dark:bg-[#1E293B] text-[#091B40] dark:text-white"
-            }`}
+            className={`min-h-[40px] px-3 py-1.5 rounded-xl text-xs font-bold inline-flex items-center gap-1.5 cursor-pointer transition-colors ${radarTab === "inactive"
+              ? "bg-[#800B34] text-white"
+              : "bg-[#F8FAFC] dark:bg-[#1E293B] text-[#091B40] dark:text-white"
+              }`}
           >
             <Clock className="w-4 h-4" />
             <span>مشتركون خاملون 7 أيام ({radar.inactiveActiveCount})</span>
@@ -1056,11 +1046,10 @@ export function DailyReportsClient({
                     </td>
                     <td className="py-3 px-3">
                       <span
-                        className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                          row.schoolCategory === "LANGUAGES"
-                            ? "bg-indigo-50 text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300"
-                            : "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300"
-                        }`}
+                        className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold ${row.schoolCategory === "LANGUAGES"
+                          ? "bg-indigo-50 text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300"
+                          : "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300"
+                          }`}
                       >
                         {row.schoolCategory === "LANGUAGES" ? "لغات" : "عربي"}
                       </span>

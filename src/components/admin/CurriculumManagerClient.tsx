@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import {
   GraduationCap,
@@ -54,11 +54,9 @@ function getTrackIcon(code: string) {
 
 export function CurriculumManagerClient({ initialSystems }: CurriculumManagerClientProps) {
   const [systems, setSystems] = useState<System[]>(initialSystems);
-  const [prevInitialSystems, setPrevInitialSystems] = useState<System[]>(initialSystems);
-  if (prevInitialSystems !== initialSystems) {
-    setPrevInitialSystems(initialSystems);
+  useEffect(() => {
     setSystems(initialSystems);
-  }
+  }, [initialSystems]);
 
   // Active Educational System (Defaulting to Egyptian Baccalaureate)
   const activeSystem = systems[0];
@@ -99,7 +97,7 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
     title: "",
     description: "",
     variant: "danger",
-    onConfirm: async () => {},
+    onConfirm: async () => { },
   });
 
   // Track Modal state
@@ -425,12 +423,12 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
                 units: sub.units.map((u) =>
                   u.id === savedUnit.id
                     ? {
-                        ...u,
-                        title: savedUnit.title,
-                        description: savedUnit.description,
-                        order: savedUnit.order,
-                        isPublished: savedUnit.isPublished,
-                      }
+                      ...u,
+                      title: savedUnit.title,
+                      description: savedUnit.description,
+                      order: savedUnit.order,
+                      isPublished: savedUnit.isPublished,
+                    }
                     : u
                 ),
               };
@@ -529,12 +527,12 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
                   lessons: u.lessons.map((l) =>
                     l.id === updatedLesson.id
                       ? {
-                          ...l,
-                          title: updatedLesson.title,
-                          order: updatedLesson.order,
-                          durationMinutes: updatedLesson.durationMinutes,
-                          isPublished: updatedLesson.isPublished,
-                        }
+                        ...l,
+                        title: updatedLesson.title,
+                        order: updatedLesson.order,
+                        durationMinutes: updatedLesson.durationMinutes,
+                        isPublished: updatedLesson.isPublished,
+                      }
                       : l
                   ),
                 };
@@ -690,19 +688,17 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
                       setSelectedTrackId("ALL");
                       setSubjectFilterTab("ALL");
                     }}
-                    className={`py-2 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
-                      isSelected
-                        ? "bg-[#800B34] text-white shadow-xs"
-                        : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#091B40] dark:hover:text-white hover:bg-white dark:hover:bg-[#1E293B]"
-                    }`}
+                    className={`py-2 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${isSelected
+                      ? "bg-[#800B34] text-white shadow-xs"
+                      : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#091B40] dark:hover:text-white hover:bg-white dark:hover:bg-[#1E293B]"
+                      }`}
                   >
                     <span>{isGrade10 ? "أولى بكالوريا (G10)" : "تانية بكالوريا (G11)"}</span>
                     <span
-                      className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono ${
-                        isSelected
-                          ? "bg-white/20 text-white"
-                          : "bg-slate-200/80 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
-                      }`}
+                      className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono ${isSelected
+                        ? "bg-white/20 text-white"
+                        : "bg-slate-200/80 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
+                        }`}
                     >
                       {count}
                     </span>
@@ -727,11 +723,10 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
               <button
                 type="button"
                 onClick={() => setSelectedCategory("ARABIC")}
-                className={`py-2 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
-                  selectedCategory === "ARABIC"
-                    ? "bg-[#800B34] text-white shadow-xs"
-                    : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#091B40] dark:hover:text-white hover:bg-white dark:hover:bg-[#1E293B]"
-                }`}
+                className={`py-2 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${selectedCategory === "ARABIC"
+                  ? "bg-[#800B34] text-white shadow-xs"
+                  : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#091B40] dark:hover:text-white hover:bg-white dark:hover:bg-[#1E293B]"
+                  }`}
               >
                 <span>بكالوريا عربي</span>
               </button>
@@ -739,11 +734,10 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
               <button
                 type="button"
                 onClick={() => setSelectedCategory("LANGUAGES")}
-                className={`py-2 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
-                  selectedCategory === "LANGUAGES"
-                    ? "bg-[#800B34] text-white shadow-xs"
-                    : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#091B40] dark:hover:text-white hover:bg-white dark:hover:bg-[#1E293B]"
-                }`}
+                className={`py-2 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${selectedCategory === "LANGUAGES"
+                  ? "bg-[#800B34] text-white shadow-xs"
+                  : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#091B40] dark:hover:text-white hover:bg-white dark:hover:bg-[#1E293B]"
+                  }`}
               >
                 <span>بكالوريا لغات</span>
               </button>
@@ -780,17 +774,15 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
                   setSelectedTrackId("ALL");
                   setSubjectFilterTab("ALL");
                 }}
-                className={`min-h-[40px] px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-between gap-1.5 border cursor-pointer select-none active:scale-[0.98] ${
-                  selectedTrackId === "ALL"
-                    ? "bg-[#091B40] dark:bg-[#1E3A5F] text-white border-[#091B40] shadow-xs"
-                    : "bg-[#F8FAFA] dark:bg-[#0D1B2E] border-[#E8E9ED] dark:border-[#22364F] text-[#536681] dark:text-[#94A3B8] hover:bg-slate-100 dark:hover:bg-slate-800"
-                }`}
+                className={`min-h-[40px] px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-between gap-1.5 border cursor-pointer select-none active:scale-[0.98] ${selectedTrackId === "ALL"
+                  ? "bg-[#091B40] dark:bg-[#1E3A5F] text-white border-[#091B40] shadow-xs"
+                  : "bg-[#F8FAFA] dark:bg-[#0D1B2E] border-[#E8E9ED] dark:border-[#22364F] text-[#536681] dark:text-[#94A3B8] hover:bg-slate-100 dark:hover:bg-slate-800"
+                  }`}
               >
                 <span className="truncate">كافة المسارات</span>
                 <span
-                  className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono font-bold shrink-0 ${
-                    selectedTrackId === "ALL" ? "bg-white/20 text-white" : "bg-slate-200/80 dark:bg-slate-800 text-[#091B40] dark:text-slate-300"
-                  }`}
+                  className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono font-bold shrink-0 ${selectedTrackId === "ALL" ? "bg-white/20 text-white" : "bg-slate-200/80 dark:bg-slate-800 text-[#091B40] dark:text-slate-300"
+                    }`}
                 >
                   {allGradeSubjects.length}
                 </span>
@@ -805,11 +797,10 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
                 return (
                   <div
                     key={track.id}
-                    className={`group min-h-[40px] px-2.5 py-1.5 rounded-xl border text-xs font-bold transition-all flex items-center justify-between gap-1.5 select-none ${
-                      isSelected
-                        ? "bg-[#800B34] text-white border-[#800B34] shadow-xs"
-                        : "bg-[#F8FAFA] dark:bg-[#0D1B2E] border-[#E8E9ED] dark:border-[#22364F] text-[#536681] dark:text-[#94A3B8] hover:border-[#800B34]/40 hover:bg-slate-100 dark:hover:bg-slate-800"
-                    }`}
+                    className={`group min-h-[40px] px-2.5 py-1.5 rounded-xl border text-xs font-bold transition-all flex items-center justify-between gap-1.5 select-none ${isSelected
+                      ? "bg-[#800B34] text-white border-[#800B34] shadow-xs"
+                      : "bg-[#F8FAFA] dark:bg-[#0D1B2E] border-[#E8E9ED] dark:border-[#22364F] text-[#536681] dark:text-[#94A3B8] hover:border-[#800B34]/40 hover:bg-slate-100 dark:hover:bg-slate-800"
+                      }`}
                   >
                     <button
                       type="button"
@@ -825,9 +816,8 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
 
                     <div className="flex items-center gap-1 shrink-0">
                       <span
-                        className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono font-bold shrink-0 ${
-                          isSelected ? "bg-white/20 text-white" : "bg-slate-200/80 dark:bg-slate-800 text-[#091B40] dark:text-slate-300"
-                        }`}
+                        className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono font-bold shrink-0 ${isSelected ? "bg-white/20 text-white" : "bg-slate-200/80 dark:bg-slate-800 text-[#091B40] dark:text-slate-300"
+                          }`}
                       >
                         {trackSubjectCount}
                       </span>
@@ -840,11 +830,10 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
                             e.stopPropagation();
                             setTrackModalState({ isOpen: true, initialTrack: track });
                           }}
-                          className={`w-4.5 h-4.5 rounded flex items-center justify-center transition-colors cursor-pointer ${
-                            isSelected
-                              ? "hover:bg-white/20 text-white"
-                              : "hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 hover:text-slate-800 dark:hover:text-white"
-                          }`}
+                          className={`w-4.5 h-4.5 rounded flex items-center justify-center transition-colors cursor-pointer ${isSelected
+                            ? "hover:bg-white/20 text-white"
+                            : "hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 hover:text-slate-800 dark:hover:text-white"
+                            }`}
                           title="تعديل المسار"
                         >
                           <Edit3 className="w-3 h-3" />
@@ -856,11 +845,10 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
                             e.stopPropagation();
                             handleDirectDeleteTrack(track.id, track.name);
                           }}
-                          className={`w-4.5 h-4.5 rounded flex items-center justify-center transition-colors cursor-pointer ${
-                            isSelected
-                              ? "hover:bg-rose-500/30 text-white"
-                              : "hover:bg-rose-50 dark:hover:bg-rose-950/40 text-rose-500"
-                          }`}
+                          className={`w-4.5 h-4.5 rounded flex items-center justify-center transition-colors cursor-pointer ${isSelected
+                            ? "hover:bg-rose-500/30 text-white"
+                            : "hover:bg-rose-50 dark:hover:bg-rose-950/40 text-rose-500"
+                            }`}
                           title="حذف المسار"
                         >
                           <Trash2 className="w-3 h-3" />
@@ -913,33 +901,30 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
                 <button
                   type="button"
                   onClick={() => setSubjectFilterTab("TRACK")}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                    subjectFilterTab === "TRACK"
-                      ? "bg-white dark:bg-[#0F172A] text-[#800B34] dark:text-[#FB7185] shadow-xs"
-                      : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
-                  }`}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${subjectFilterTab === "TRACK"
+                    ? "bg-white dark:bg-[#0F172A] text-[#800B34] dark:text-[#FB7185] shadow-xs"
+                    : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
+                    }`}
                 >
                   مواد المسار ({allGradeSubjects.filter((s) => s.trackId === selectedTrackId).length})
                 </button>
                 <button
                   type="button"
                   onClick={() => setSubjectFilterTab("COMMON")}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                    subjectFilterTab === "COMMON"
-                      ? "bg-white dark:bg-[#0F172A] text-[#800B34] dark:text-[#FB7185] shadow-xs"
-                      : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
-                  }`}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${subjectFilterTab === "COMMON"
+                    ? "bg-white dark:bg-[#0F172A] text-[#800B34] dark:text-[#FB7185] shadow-xs"
+                    : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
+                    }`}
                 >
                   المواد العامة المشتركة ({allGradeSubjects.filter((s) => !s.trackId).length})
                 </button>
                 <button
                   type="button"
                   onClick={() => setSubjectFilterTab("ALL")}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                    subjectFilterTab === "ALL"
-                      ? "bg-white dark:bg-[#0F172A] text-[#800B34] dark:text-[#FB7185] shadow-xs"
-                      : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
-                  }`}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${subjectFilterTab === "ALL"
+                    ? "bg-white dark:bg-[#0F172A] text-[#800B34] dark:text-[#FB7185] shadow-xs"
+                    : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
+                    }`}
                 >
                   الكل (المسار + العامة) ({allGradeSubjects.filter((s) => !s.trackId || s.trackId === selectedTrackId).length})
                 </button>
@@ -949,33 +934,30 @@ export function CurriculumManagerClient({ initialSystems }: CurriculumManagerCli
                 <button
                   type="button"
                   onClick={() => setSubjectFilterTab("ALL")}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                    subjectFilterTab === "ALL"
-                      ? "bg-white dark:bg-[#0F172A] text-[#800B34] dark:text-[#FB7185] shadow-xs"
-                      : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
-                  }`}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${subjectFilterTab === "ALL"
+                    ? "bg-white dark:bg-[#0F172A] text-[#800B34] dark:text-[#FB7185] shadow-xs"
+                    : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
+                    }`}
                 >
                   جميع المواد ({allGradeSubjects.length})
                 </button>
                 <button
                   type="button"
                   onClick={() => setSubjectFilterTab("COMMON")}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                    subjectFilterTab === "COMMON"
-                      ? "bg-white dark:bg-[#0F172A] text-[#800B34] dark:text-[#FB7185] shadow-xs"
-                      : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
-                  }`}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${subjectFilterTab === "COMMON"
+                    ? "bg-white dark:bg-[#0F172A] text-[#800B34] dark:text-[#FB7185] shadow-xs"
+                    : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
+                    }`}
                 >
                   المواد العامة المشتركة ({allGradeSubjects.filter((s) => !s.trackId).length})
                 </button>
                 <button
                   type="button"
                   onClick={() => setSubjectFilterTab("TRACK")}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                    subjectFilterTab === "TRACK"
-                      ? "bg-white dark:bg-[#0F172A] text-[#800B34] dark:text-[#FB7185] shadow-xs"
-                      : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
-                  }`}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${subjectFilterTab === "TRACK"
+                    ? "bg-white dark:bg-[#0F172A] text-[#800B34] dark:text-[#FB7185] shadow-xs"
+                    : "text-[#64748B] dark:text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"
+                    }`}
                 >
                   كافة المواد التخصصية ({allGradeSubjects.filter((s) => Boolean(s.trackId)).length})
                 </button>

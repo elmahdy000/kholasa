@@ -1,11 +1,13 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { Crosshair, X } from "lucide-react";
+import { BookOpen, Crosshair, Flame, Sparkles, X } from "lucide-react";
 import { buildMistakeDiagnosisBreakdown } from "@/lib/mistake-diagnosis";
 import { dispatchMistakesUpdatedClientEvent } from "@/lib/realtime-client";
+import { ConfettiCanvas } from "@/components/ui/ConfettiCanvas";
 import type { MistakeItem, MistakeHubClientProps, ActiveAnswerState } from "./types";
 import { MistakeAnalyticsBar } from "./MistakeAnalyticsBar";
 import { MistakeExamBanner } from "./MistakeExamBanner";
@@ -32,6 +34,8 @@ export function MistakeHubClient({
   const [typeFilter, setTypeFilter] = useState<MistakeQuestionTypeFilter>("ALL");
   const [isGeneratingExam, setIsGeneratingExam] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
+  const [correctCombo, setCorrectCombo] = useState(0);
+  const [celebrationCount, setCelebrationCount] = useState(0);
 
   // Inline answering & recently updated cards keep visible confirmation briefly during session
   const [activeAnswers, setActiveAnswers] = useState<Record<string, ActiveAnswerState>>({});
@@ -85,6 +89,17 @@ export function MistakeHubClient({
     return true;
   });
 
+  const triggerCelebrationIfZero = (nextList: MistakeItem[]) => {
+    const scoped =
+      selectedSubjectId === "all"
+        ? nextList
+        : nextList.filter((m) => m.question.subject.id === selectedSubjectId);
+    const remainingUnresolved = scoped.filter((m) => !m.isResolved).length;
+    if (scoped.length > 0 && remainingUnresolved === 0) {
+      setCelebrationCount((c) => c + 1);
+    }
+  };
+
   const handleRetakeAnswer = async (questionId: string, optionId: string) => {
     setActionError(null);
     setActiveAnswers((prev) => ({
@@ -119,12 +134,16 @@ export function MistakeHubClient({
       }));
 
       if (isCorrect) {
-        setMistakes((prev) =>
-          prev.map((m) =>
+        setCorrectCombo((prev) => prev + 1);
+        setMistakes((prev) => {
+          const next = prev.map((m) =>
             m.questionId === questionId ? { ...m, isResolved: true } : m
-          )
-        );
+          );
+          triggerCelebrationIfZero(next);
+          return next;
+        });
       } else {
+        setCorrectCombo(0);
         setMistakes((prev) =>
           prev.map((m) =>
             m.questionId === questionId
@@ -159,12 +178,15 @@ export function MistakeHubClient({
         throw new Error(data.error || "تعذر حفظ الحالة، حاول مرة أخرى.");
       }
 
+      setCorrectCombo((prev) => prev + 1);
       setRecentlyChangedIds((prev) => new Set(prev).add(questionId));
-      setMistakes((prev) =>
-        prev.map((m) =>
+      setMistakes((prev) => {
+        const next = prev.map((m) =>
           m.questionId === questionId ? { ...m, isResolved: true } : m
-        )
-      );
+        );
+        triggerCelebrationIfZero(next);
+        return next;
+      });
       dispatchMistakesUpdatedClientEvent();
     } catch (err) {
       setActionError(
@@ -186,6 +208,7 @@ export function MistakeHubClient({
         throw new Error(data.error || "تعذر إعادة السؤال لقائمة المراجعة.");
       }
 
+      setCorrectCombo(0);
       setRecentlyChangedIds((prev) => new Set(prev).add(questionId));
       setActiveAnswers((prev) => {
         const next = { ...prev };
@@ -284,6 +307,10 @@ export function MistakeHubClient({
 
   return (
     <div className="space-y-6">
+      {celebrationCount > 0 && (
+        <ConfettiCanvas key={celebrationCount} duration={3000} particleCount={95} />
+      )}
+
       {/* Overview Analytics Bar */}
       <MistakeAnalyticsBar
         unresolvedCount={unresolvedCount}
@@ -291,12 +318,52 @@ export function MistakeHubClient({
         masteryPercentage={masteryPercentage}
       />
 
+      {/* Celebratory Feedback on Zeroed Mistakes or Combo Streak */}
+      <AnimatePresence>
+        {celebrationCount > 0 && unresolvedCount === 0 && totalCount > 0 && (
+          <motion.div
+            key="zero-celebration"
+            initial={{ opacity: 0, y: -8, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ type: "spring", stiffness: 360, damping: 24 }}
+            className="p-4 rounded-2xl bg-linear-to-l from-[#ECFDF5] to-[#D1FAE5]/70 dark:from-[#064E3B]/50 dark:to-[#065F46]/40 border border-[#6EE7B7] dark:border-[#059669] flex items-center gap-3 shadow-xs"
+          >
+            <div className="w-10 h-10 rounded-xl bg-[#059669] text-white flex items-center justify-center shrink-0">
+              <Sparkles className="w-5 h-5" />
+            </div>
+            <div>
+              <p className="text-sm font-black text-[#065F46] dark:text-[#A7F3D0]">
+                عاش يا بطل! صفّرت كل أخطاء التحديد ده 🎉
+              </p>
+              <p className="text-xs text-[#047857] dark:text-[#6EE7B7] mt-0.5">
+                إتقانك ارتفع لـ 100% — تقدر تكمل باقي الدروس أو تحل امتحان جديد وأنت مطمّن.
+              </p>
+            </div>
+          </motion.div>
+        )}
+
+        {correctCombo >= 2 && unresolvedCount > 0 && (
+          <motion.div
+            key={`combo-${correctCombo}`}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ type: "spring", stiffness: 420, damping: 22 }}
+            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 text-amber-800 dark:text-amber-200 text-xs font-black shadow-2xs"
+          >
+            <Flame className="w-4 h-4 text-[#D97706] fill-[#D97706]" />
+            <span>سلسلة إتقان رائعة: {correctCombo} أسئلة صح ورا بعض! كمّل بنفس القوة</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Weakness Diagnosis Panel ("تشخيص المشكلة") */}
       {diagnosisBuckets.length > 0 && (
         <motion.section
-          initial={{ opacity: 0, y: 10 }}
+          initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.28 }}
+          transition={{ duration: 0.3 }}
           className="rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] p-4 sm:p-5 space-y-3.5 shadow-xs"
         >
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
@@ -342,46 +409,71 @@ export function MistakeHubClient({
                   : 0;
 
               return (
-                <button
+                <motion.div
                   key={bucket.key}
-                  type="button"
-                  onClick={() => {
-                    if (bucket.lessonId) {
-                      setSelectedLessonId(isSelected ? null : bucket.lessonId);
-                    } else if (bucket.subjectId !== selectedSubjectId) {
-                      setSelectedSubjectId(bucket.subjectId);
-                      setSelectedLessonId(null);
-                    }
-                  }}
-                  className={`text-right p-3 rounded-xl border transition-all cursor-pointer min-w-0 ${
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.05 * idx, duration: 0.25 }}
+                  whileHover={{ y: -2 }}
+                  className={`p-3 rounded-xl border transition-all min-w-0 flex flex-col justify-between gap-2 ${
                     isSelected
                       ? "bg-[#800B34]/8 dark:bg-[#800B34]/20 border-[#800B34] dark:border-[#E9AD32] shadow-xs"
                       : "bg-[#F8FAFC] dark:bg-[#132238] border-[#E2E8F0] dark:border-[#243652] hover:border-[#800B34]/45 dark:hover:border-[#E9AD32]/50"
                   }`}
                 >
-                  <div className="flex items-center justify-between gap-2 mb-1">
-                    <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-[#64748B] dark:text-[#94A3B8] truncate">
-                      <span className="w-4 h-4 rounded bg-[#800B34]/10 dark:bg-[#E11D48]/20 text-[#800B34] dark:text-[#FB7185] text-[10px] font-black inline-flex items-center justify-center shrink-0">
-                        {idx + 1}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (bucket.lessonId) {
+                        setSelectedLessonId(isSelected ? null : bucket.lessonId);
+                      } else if (bucket.subjectId !== selectedSubjectId) {
+                        setSelectedSubjectId(bucket.subjectId);
+                        setSelectedLessonId(null);
+                      }
+                    }}
+                    className="w-full text-right cursor-pointer"
+                  >
+                    <div className="flex items-center justify-between gap-2 mb-1">
+                      <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-[#64748B] dark:text-[#94A3B8] truncate">
+                        <span className="w-4 h-4 rounded bg-[#800B34]/10 dark:bg-[#E11D48]/20 text-[#800B34] dark:text-[#FB7185] text-[10px] font-black inline-flex items-center justify-center shrink-0">
+                          {idx + 1}
+                        </span>
+                        <span className="truncate">{bucket.subjectName}</span>
                       </span>
-                      <span className="truncate">{bucket.subjectName}</span>
-                    </span>
-                    <span className="px-2 py-0.5 rounded-full text-[11px] font-black tabular-nums bg-[#DC2626]/10 dark:bg-[#DC2626]/20 text-[#B91C1C] dark:text-[#FCA5A5] shrink-0">
-                      {bucket.count}
-                    </span>
-                  </div>
+                      <span className="px-2 py-0.5 rounded-full text-[11px] font-black tabular-nums bg-[#DC2626]/10 dark:bg-[#DC2626]/20 text-[#B91C1C] dark:text-[#FCA5A5] shrink-0">
+                        {bucket.count}
+                      </span>
+                    </div>
 
-                  <p className="text-xs font-black text-[#091B40] dark:text-[#F8FAFC] truncate">
-                    {bucket.lessonTitle || bucket.unitTitle || "مراجعة عامة"}
-                  </p>
+                    <p className="text-xs font-black text-[#091B40] dark:text-[#F8FAFC] truncate">
+                      {bucket.lessonTitle || bucket.unitTitle || "مراجعة عامة"}
+                    </p>
 
-                  <div className="mt-2 h-1.5 w-full rounded-full bg-[#E2E8F0] dark:bg-[#1E293B] overflow-hidden">
-                    <div
-                      className="h-full rounded-full bg-[#800B34] dark:bg-[#E9AD32] transition-all duration-500"
-                      style={{ width: `${Math.min(100, barPercent)}%` }}
-                    />
-                  </div>
-                </button>
+                    <div className="mt-2 h-1.5 w-full rounded-full bg-[#E2E8F0] dark:bg-[#1E293B] overflow-hidden">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: `${Math.min(100, barPercent)}%` }}
+                        transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+                        className="h-full rounded-full bg-[#800B34] dark:bg-[#E9AD32]"
+                      />
+                    </div>
+                  </button>
+
+                  {bucket.lessonId && (
+                    <div className="flex items-center justify-between gap-2 text-[11px] font-bold border-t border-[#E2E8F0]/70 dark:border-[#243652] pt-2">
+                      <span className="text-[#64748B] dark:text-[#94A3B8]">
+                        {isSelected ? "مفلتر حالياً ✓" : "اضغط أعلاه لتصفية الأسئلة"}
+                      </span>
+                      <Link
+                        href={`/lessons/${bucket.lessonId}`}
+                        className="inline-flex items-center gap-1 text-[#800B34] dark:text-[#E9AD32] hover:underline shrink-0"
+                      >
+                        <BookOpen className="w-3 h-3" />
+                        <span>راجع شرح الدرس</span>
+                      </Link>
+                    </div>
+                  )}
+                </motion.div>
               );
             })}
           </div>
@@ -449,7 +541,7 @@ export function MistakeHubClient({
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.96, y: -8 }}
-                transition={{ duration: 0.22 }}
+                transition={{ duration: 0.25 }}
               >
                 <MistakeCard
                   mistake={mistake}
