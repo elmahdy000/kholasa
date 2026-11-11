@@ -129,13 +129,13 @@ export function DailyGuidedStudyPlanCard({
         <div className="space-y-1">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#800B34]/10 dark:bg-[#FB7185]/15 border border-[#800B34]/20 dark:border-[#FB7185]/25 text-[#800B34] dark:text-[#FB7185] text-xs font-bold">
             <Compass className="w-4 h-4" weight="bold" />
-            <span>مسار المذاكرة اليومي الذكي</span>
+            <span>خطة النهاردة</span>
           </div>
           <h2 className="text-lg sm:text-xl font-bold text-[#0F172A] dark:text-white">
             خطة مذاكرتك للنهاردة
           </h2>
           <p className="text-xs sm:text-[13px] text-[#64748B] dark:text-[#94A3B8]">
-            3 خطوات بسيطة ومحددة تثبت استمراريتك وتعالج أضعف نقطة عندك بدون تشتت.
+            3 خطوات خفيفة يمشوك في المنهج خطوة بخطوة من غير لخبطة.
           </p>
         </div>
 
@@ -143,7 +143,7 @@ export function DailyGuidedStudyPlanCard({
         <div className="flex flex-col items-start sm:items-end gap-1.5 shrink-0">
           <div className="flex items-center gap-2">
             <span className="text-xs font-bold text-[#64748B] dark:text-[#94A3B8]">
-              نسبة إنجاز اليوم:
+              خلصت النهاردة:
             </span>
             <span
               className={`px-2.5 py-0.5 rounded-full font-sans tabular-nums text-xs font-bold ${
@@ -152,7 +152,7 @@ export function DailyGuidedStudyPlanCard({
                   : "bg-[#800B34]/10 text-[#800B34] dark:text-[#FB7185]"
               }`}
             >
-              {completedCount} من 3 مهام ({progressPercentage}%)
+              {completedCount} من 3 ({progressPercentage}%)
             </span>
           </div>
 
@@ -179,10 +179,10 @@ export function DailyGuidedStudyPlanCard({
             </div>
             <div className="space-y-0.5">
               <h3 className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-white">
-                عاش يا بطل! أتممت خطة اليوم كاملة (100%)
+                كده خلصت خطة النهاردة (100%)
               </h3>
               <p className="text-xs text-[#0F172A]/80 dark:text-[#94A3B8] leading-relaxed">
-                حافظت على حضورك اليومي، راجعت الدرس الأضعف، وأثبتت إتقانك. تقدر تكمل مذاكرة براحتك أو ترتاح.
+                سجلت حضورك، راجعت الدرس اللي محتاج تركيز، وحليت التدريب. تقدر تكمل أو تاخد راحة.
               </p>
             </div>
           </div>
@@ -222,10 +222,10 @@ export function DailyGuidedStudyPlanCard({
                 {task1Done ? (
                   <>
                     <CheckCircle className="w-3.5 h-3.5" weight="fill" />
-                    <span>مكتمل</span>
+                    <span>خلص</span>
                   </>
                 ) : (
-                  <span>قيد الانتظار</span>
+                  <span>لسه متعملتش</span>
                 )}
               </span>
             </div>
@@ -245,7 +245,7 @@ export function DailyGuidedStudyPlanCard({
                   حل تحدي اليوم
                 </h4>
                 <p className="text-[11px] text-[#64748B] dark:text-[#94A3B8] leading-relaxed">
-                  سؤال يصحصح تركيزك ويثبت حضورك وأيام استمرارك (الـ Streak).
+                  سؤال واحد سريع يسجل حضورك النهاردة ويحسبلك يوم زيادة.
                 </p>
               </div>
             </div>
@@ -255,7 +255,7 @@ export function DailyGuidedStudyPlanCard({
             {task1Done ? (
               <div className="h-9 px-3 rounded-lg bg-[#059669]/10 text-[#059669] dark:text-[#34D399] text-xs font-bold flex items-center justify-center gap-1.5 w-full">
                 <Check className="w-4 h-4" weight="bold" />
-                <span>سجلت حضور النهاردة بنجاح</span>
+                <span>اتسجل حضورك النهاردة</span>
               </div>
             ) : (
               <button
@@ -293,7 +293,7 @@ export function DailyGuidedStudyPlanCard({
                 {task2Done ? (
                   <>
                     <CheckCircle className="w-3.5 h-3.5" weight="fill" />
-                    <span>تمت المراجعة</span>
+                    <span>اتراجعت</span>
                   </>
                 ) : (
                   <span>كبسولة مركزة</span>
@@ -318,7 +318,7 @@ export function DailyGuidedStudyPlanCard({
                 <p className="text-[11px] text-[#64748B] dark:text-[#94A3B8] leading-relaxed line-clamp-2">
                   {focus
                     ? `${focus.subjectName} • ${focus.reason}`
-                    : "ملخص مركز يجمع تكات الامتحان والقوانين في صفحة واحدة."}
+                    : "ملخص سريع يجمع أهم أفكار الدرس والقوانين في مكان واحد."}
                 </p>
               </div>
             </div>
@@ -339,7 +339,7 @@ export function DailyGuidedStudyPlanCard({
                 href="/subjects"
                 className="h-9 px-3 rounded-lg bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-xs font-bold flex-1 flex items-center justify-center gap-1.5"
               >
-                <span>اختر درساً</span>
+                <span>اختار درس</span>
               </Link>
             )}
 
@@ -347,7 +347,7 @@ export function DailyGuidedStudyPlanCard({
               <button
                 type="button"
                 onClick={handleMarkSummaryRead}
-                title="تحديد كمكتمل"
+                title="علم عليه إنه خلص"
                 className="h-9 px-2.5 rounded-lg bg-[#D97706]/10 hover:bg-[#D97706]/20 text-[#D97706] dark:text-[#FBBF24] text-xs font-bold transition-colors cursor-pointer shrink-0"
               >
                 <Check className="w-4 h-4" weight="bold" />
@@ -379,10 +379,10 @@ export function DailyGuidedStudyPlanCard({
                 {task3Done ? (
                   <>
                     <CheckCircle className="w-3.5 h-3.5" weight="fill" />
-                    <span>تم الاختبار</span>
+                    <span>خلص</span>
                   </>
                 ) : (
-                  <span>تثبيت الإتقان</span>
+                  <span>تدريب سريع</span>
                 )}
               </span>
             </div>
@@ -399,12 +399,12 @@ export function DailyGuidedStudyPlanCard({
               </div>
               <div className="space-y-0.5 min-w-0 flex-1">
                 <h4 className="text-sm font-bold text-[#0F172A] dark:text-white truncate">
-                  اختبار تثبيت الإتقان
+                  تدريب تثبيت المعلومة
                 </h4>
                 <p className="text-[11px] text-[#64748B] dark:text-[#94A3B8] leading-relaxed">
                   {task3Done && plan.task3.examAttempt
-                    ? `أتممت الامتحان بنتيجة ${plan.task3.examAttempt.percentage}%`
-                    : "تدريب شامل (30 سؤال) يتأكد إنك هضمت نقطة ضعفك بدون تكرار."}
+                    ? `خلصت التدريب وجبت ${plan.task3.examAttempt.percentage}%`
+                    : "30 سؤال عشان تتأكد إن الدرس ثبت في دماغك من غير ما تنساه."}
                 </p>
               </div>
             </div>
@@ -416,8 +416,8 @@ export function DailyGuidedStudyPlanCard({
                 <Check className="w-4 h-4" weight="bold" />
                 <span>
                   {plan.task3.examAttempt
-                    ? `إتقان مسجل (${plan.task3.examAttempt.percentage}%)`
-                    : "أتممت امتحان اليوم بنجاح"}
+                    ? `خلصته بـ ${plan.task3.examAttempt.percentage}%`
+                    : "خلصت تدريب النهاردة"}
                 </span>
               </div>
             ) : !isSubscribed ? (

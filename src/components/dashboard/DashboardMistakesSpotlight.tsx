@@ -52,7 +52,7 @@ export function DashboardMistakesSpotlight({
 
   return (
     <motion.section
-      aria-label="عداد مراجعة لأخطائي وتشخيص نقاط الضعف"
+      aria-label="مراجعة لأخطائي والدروس اللي محتاجة تركيز"
       initial={{ opacity: 0, y: 18, scale: 0.98 }}
       whileInView={{ opacity: 1, y: 0, scale: 1 }}
       viewport={{ once: true, amount: 0.2 }}
@@ -67,43 +67,14 @@ export function DashboardMistakesSpotlight({
         {/* Standout Animated Circular Gauge & Counter Emblem */}
         <div className="flex items-start gap-3.5 sm:gap-4 min-w-0 flex-1">
           <motion.div
-            whileHover={{ scale: 1.05, rotate: -1 }}
-            animate={
-              hasUnresolved
-                ? {
-                    boxShadow: [
-                      "0 0 0 0 rgba(220,38,38,0.28)",
-                      "0 0 0 10px rgba(220,38,38,0)",
-                      "0 0 0 0 rgba(220,38,38,0)",
-                    ],
-                  }
-                : undefined
-            }
-            transition={
-              hasUnresolved
-                ? { duration: 2.4, repeat: Infinity, ease: "easeOut" }
-                : { type: "spring", stiffness: 360, damping: 22 }
-            }
+            whileHover={{ scale: 1.03 }}
+            transition={{ type: "spring", stiffness: 360, damping: 24 }}
             className={`relative shrink-0 w-22 h-22 sm:w-24 sm:h-24 rounded-2xl flex flex-col items-center justify-center border shadow-md overflow-hidden ${
               hasUnresolved
                 ? "bg-linear-to-br from-[#800B34] to-[#5E0725] border-[#9F1239] text-white"
                 : "bg-linear-to-br from-[#059669] to-[#047857] border-[#10B981] text-white"
             }`}
           >
-            {/* Subtle Glass Shimmer Sweep */}
-            <motion.div
-              aria-hidden="true"
-              initial={{ x: "-140%" }}
-              animate={{ x: ["-140%", "240%"] }}
-              transition={{
-                duration: 2.2,
-                repeat: Infinity,
-                repeatDelay: 2.8,
-                ease: "easeInOut",
-              }}
-              className="pointer-events-none absolute inset-y-0 w-10 bg-linear-to-r from-transparent via-white/25 to-transparent -skew-x-20"
-            />
-
             {/* Animated SVG Progress Ring */}
             <svg
               aria-hidden="true"
@@ -135,17 +106,14 @@ export function DashboardMistakesSpotlight({
             </svg>
 
             {hasUnresolved && (
-              <span className="absolute top-2 left-2 flex h-2.5 w-2.5 z-10">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#E9AD32] opacity-90" />
-                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#E9AD32]" />
-              </span>
+              <span className="absolute top-2 left-2 inline-flex rounded-full h-2.5 w-2.5 bg-[#E9AD32] z-10" />
             )}
 
             <span className="relative z-10 text-2xl sm:text-3xl font-black tabular-nums leading-none">
               <AnimatedCount value={unresolvedCount} startFromZero />
             </span>
             <span className="relative z-10 text-[10px] font-extrabold opacity-95 mt-1">
-              {hasUnresolved ? "في المراجعة" : "متقن ✓"}
+              {hasUnresolved ? "للمراجعة" : "كله تمام ✓"}
             </span>
           </motion.div>
 
@@ -159,20 +127,20 @@ export function DashboardMistakesSpotlight({
                 }`}
               >
                 <ArrowCounterClockwise className="w-3.5 h-3.5" weight="bold" />
-                <span>عداد مراجعة لأخطائي</span>
+                <span>مراجعة لأخطائي</span>
               </span>
 
               {totalCount > 0 && (
                 <span className="inline-flex items-center gap-1 text-[11px] font-bold text-[#64748B] dark:text-[#94A3B8]">
                   <TrendUp className="w-3.5 h-3.5 text-[#059669]" weight="bold" />
-                  نسبة المعالجة: {resolutionRate}%
+                  خلصت {resolutionRate}% منهم
                 </span>
               )}
             </div>
 
             <h2 className="text-base sm:text-lg font-black text-[#091B40] dark:text-[#F8FAFC] leading-snug">
               {hasUnresolved && topWeakness
-                ? `تركيز أخطائك حالياً في: ${topWeakness.subjectName}${
+                ? `أكتر نقطة محتاجة مراجعة: ${topWeakness.subjectName}${
                     topWeakness.lessonTitle
                       ? ` — ${topWeakness.lessonTitle}`
                       : topWeakness.unitTitle
@@ -180,10 +148,10 @@ export function DashboardMistakesSpotlight({
                         : ""
                   }`
                 : hasUnresolved
-                  ? `عندك ${unresolvedCount} سؤال محتاجين مراجعة لأخطائي`
+                  ? `عندك ${unresolvedCount} سؤال محتاجين مراجعة`
                   : resolvedCount > 0
-                    ? `ممتاز! عالجت كل أخطائك (${resolvedCount} سؤال)`
-                    : "لسه مفيش أخطاء مسجلة حتى الآن"}
+                    ? `خلصت كل أخطاءك (${resolvedCount} سؤال)`
+                    : "لسه مفيش أخطاء متسجلة"}
             </h2>
 
             <p className="text-xs sm:text-[13px] text-[#64748B] dark:text-[#94A3B8] leading-relaxed">
@@ -193,16 +161,16 @@ export function DashboardMistakesSpotlight({
                   <span className="font-black text-[#800B34] dark:text-[#FB7185] tabular-nums">
                     {topWeakness.count}
                   </span>{" "}
-                  {topWeakness.count === 1 ? "سؤال" : "أسئلة"} في النقطة دي (اتكرر الخطأ{" "}
+                  {topWeakness.count === 1 ? "سؤال" : "أسئلة"} هنا (غلطت فيهم{" "}
                   <span className="font-bold text-[#091B40] dark:text-[#E2E8F0] tabular-nums">
                     {topWeakness.totalWrongs}
                   </span>{" "}
-                  مرة). تقدر تعالجها مباشرة أو تراجع شرح الدرس الأول.
+                  مرة). تقدر تحلهم تاني أو تبص على شرح الدرس الأول.
                 </>
               ) : resolvedCount > 0 ? (
-                "كل خطأ عالجته اتحول لنقطة قوة. تقدر تراجع الأسئلة المتقنة تاني في أي وقت قبل الامتحان."
+                "راجعت كل الأسئلة اللي غلطت فيها. تقدر ترجع لأي سؤال منهم قبل الامتحان لو حبيت."
               ) : (
-                "أول ما تغلط في أي سؤال أو تمرين، العداد ده هيتجمع أوتوماتيك ويعرفك إيه الدرس اللي محتاج تركيز."
+                "أي سؤال تغلط فيه وإنت بتحل هيتجمع هنا لوحده عشان ترجعله بسهولة بعدين."
               )}
             </p>
           </div>
@@ -236,7 +204,7 @@ export function DashboardMistakesSpotlight({
               )}
               <span>
                 {hasUnresolved && topWeakness
-                  ? "عالج أضعف نقطة دلوقتي"
+                  ? "راجع الأسئلة دي دلوقتي"
                   : "افتح مراجعة لأخطائي"}
               </span>
               <ArrowLeft className="w-4 h-4 shrink-0" weight="bold" />
@@ -272,13 +240,13 @@ export function DashboardMistakesSpotlight({
                 className="w-4 h-4 text-[#DC2626] dark:text-[#F87171] shrink-0"
                 weight="bold"
               />
-              تشخيص المشكلة — فين أخطائك متركزة؟
+              أخطاءك متركزة فين؟
             </span>
             <Link
               href="/mistakes"
               className="text-[11px] font-bold text-[#800B34] dark:text-[#E9AD32] hover:underline shrink-0"
             >
-              عرض كل التشخيص ({breakdown.length})
+              شوف الكل ({breakdown.length})
             </Link>
           </div>
 
@@ -332,7 +300,7 @@ export function DashboardMistakesSpotlight({
                         href={buildMistakeTargetHref(bucket)}
                         className="text-[#800B34] dark:text-[#E9AD32] hover:underline inline-flex items-center gap-1"
                       >
-                        <span>عالج الأسئلة</span>
+                        <span>حلهم تاني</span>
                         <ArrowLeft className="w-3 h-3" weight="bold" />
                       </Link>
                       {bucket.lessonId && (

@@ -323,7 +323,7 @@ export function DailyChallengeCard({
                 <div className="flex items-center gap-2">
                   <Sparkle className="w-5 h-5 text-[#D97706] dark:text-[#FBBF24] shrink-0" weight="fill" />
                   <span className="text-[13px] font-bold text-[#D97706] dark:text-[#FBBF24]">
-                    عاش! كدة بقالك {formatArabicDays(streakEarned)} ورا بعض مستمر
+                    بقالك دلوقتي {formatArabicDays(streakEarned)} ورا بعض بتسجل حضور
                   </span>
                 </div>
                 <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-[#D97706] text-white shrink-0">
@@ -337,8 +337,8 @@ export function DailyChallengeCard({
               <span className="text-[13px] text-[#64748B] dark:text-[#94A3B8]">
                 {isAnswered
                   ? isCorrect
-                    ? "إجابتك اتسجلت، وحضور النهاردة في أمان."
-                    : "إجابتك اتسجلت والسؤال اتحفظ في مراجعة لأخطائي عشان تراجعه لاحقاً."
+                    ? "إجابتك اتسجلت، وحضور النهاردة اتثبت."
+                    : "إجابتك اتسجلت والسؤال اتحفظ في مراجعة لأخطائي عشان ترجعله بعدين."
                   : ""}
               </span>
               <div className="flex flex-wrap items-center gap-3">
@@ -347,7 +347,7 @@ export function DailyChallengeCard({
                     href="/mistakes"
                     className="text-[13px] font-bold text-[#D97706] dark:text-[#FBBF24] hover:underline flex items-center gap-1"
                   >
-                    <span>مراجعة السؤال في لأخطائي</span>
+                    <span>راجع السؤال في لأخطائي</span>
                     <ArrowLeft className="w-3.5 h-3.5" weight="bold" />
                   </Link>
                 )}

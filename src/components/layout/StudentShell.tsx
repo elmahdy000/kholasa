@@ -13,6 +13,7 @@ import { StudentMobileBottomNav } from "./student/StudentMobileBottomNav";
 import { StudentHeader } from "./student/StudentHeader";
 import { StudentFooter } from "./student/StudentFooter";
 import { StudentSearchModal } from "./student/StudentSearchModal";
+import { FloatingMistakesCounter } from "./student/FloatingMistakesCounter";
 import { RealtimeSyncBridge } from "@/lib/realtime-client";
 import { useStudentMistakesSummary } from "@/hooks/useStudentMistakesSummary";
 
@@ -41,7 +42,8 @@ export function StudentShell({ children, user: propUser }: StudentShellProps) {
     !parentContext.isInsideShell &&
     Boolean(resolvedUser) &&
     (!resolvedUser?.role || resolvedUser.role === "STUDENT");
-  const { summary: mistakesSummary } = useStudentMistakesSummary(isStudentViewer);
+  const { summary: mistakesSummary, hasLoaded: mistakesLoaded } =
+    useStudentMistakesSummary(isStudentViewer);
 
   // Keyboard shortcut Ctrl+K / Cmd+K and Esc
   useEffect(() => {
@@ -123,7 +125,9 @@ export function StudentShell({ children, user: propUser }: StudentShellProps) {
               <div className="flex items-center gap-2 text-[#091B40] dark:text-[#EAF2FF] font-semibold">
                 <ShieldCheck className="w-4 h-4 text-[#059669] dark:text-[#34D399] shrink-0" />
                 <span>
-                  أنت تتصفح داخل <strong className="font-black">جلسة تجريبية مستقلة خاصة بك</strong> — نتائجك وسجل «مراجعة لأخطائي» معزولان تماماً عن باقي الزوار.
+                  أنت فاتح دلوقتي{" "}
+                  <strong className="font-black">جلسة تجريبية خاصة بيك</strong>{" "}
+                  — درجاتك وسجل «مراجعة لأخطائي» لوحدك ومش هيظهروا لحد غيرك.
                 </span>
               </div>
               <button
@@ -146,6 +150,14 @@ export function StudentShell({ children, user: propUser }: StudentShellProps) {
 
         {/* Student Shell Footer */}
         <StudentFooter />
+
+        {isStudentViewer && (
+          <FloatingMistakesCounter
+            pathname={pathname}
+            summary={mistakesSummary}
+            hasLoaded={mistakesLoaded}
+          />
+        )}
 
         {/* Mobile Floating Dock Navigation */}
         <StudentMobileBottomNav

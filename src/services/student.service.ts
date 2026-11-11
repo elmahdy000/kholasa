@@ -686,7 +686,7 @@ export class StudentService {
         const top = withMistakes[0];
         focusRecommendation = {
           ...top,
-          reason: `يحتوي على ${top.unresolvedMistakesCount} أخطاء تحتاج معالجة سريعة`,
+          reason: `فيه ${top.unresolvedMistakesCount} ${top.unresolvedMistakesCount === 1 ? "سؤال محتاج مراجعة" : "أسئلة محتاجين مراجعة"}`,
         };
       } else {
         // Sort by lowest mastery
@@ -695,13 +695,13 @@ export class StudentService {
         if (lowest.masteryPercentage < 100) {
           focusRecommendation = {
             ...lowest,
-            reason: `نسبة إتقانك للدرس ${lowest.masteryPercentage}% — راجعه لتصل لـ 100%`,
+            reason: `وصلت لـ ${lowest.masteryPercentage}% في الدرس ده — راجعه عشان تكمله`,
           };
         } else {
           // All 100% mastered!
           focusRecommendation = {
             ...lowest,
-            reason: "ما شاء الله، إتقانك ممتاز! استمر في المراجعة الدورية",
+            reason: "خلصت أسئلة الدرس ده، تقدر تراجعه كل فترة عشان متنساش",
           };
         }
       }

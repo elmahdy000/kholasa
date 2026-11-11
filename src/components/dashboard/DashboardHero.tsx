@@ -16,7 +16,7 @@ interface DashboardHeroProps {
 
 export function DashboardHero({ userName, studentMeta, continueLesson, onStartTour }: DashboardHeroProps) {
   // Clean student name without parenthesized metadata
-  const displayName = userName?.replace(/\s*\([^)]*\)/g, "").trim() || "طالبنا العزيز";
+  const displayName = userName?.replace(/\s*\([^)]*\)/g, "").trim();
 
   // Clean academic scope without redundant English or parenthesized text
   const cleanGrade = studentMeta?.gradeName?.replace(/\s*\([^)]*\)/g, "").trim();
@@ -43,12 +43,12 @@ export function DashboardHero({ userName, studentMeta, continueLesson, onStartTo
 
           {/* Welcome Heading */}
           <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-[#091B40] dark:text-[#F8FAFC] tracking-tight">
-            أهلًا بيك، {displayName}
+            {displayName ? `أهلًا بيك، ${displayName}` : "أهلًا بيك"}
           </h1>
 
           {/* Supporting Subtext */}
           <p className="text-xs sm:text-sm text-[#64748B] dark:text-[#94A3B8] font-normal leading-relaxed">
-            جاهز تكمّل مذاكرتك النهاردة؟ خطوة بخطوة هتوصل للي بتتمناه.
+            جاهز تكمل مذاكرتك النهاردة؟ كل خطوة صغيرة بتفرق في مستواك.
           </p>
         </div>
 

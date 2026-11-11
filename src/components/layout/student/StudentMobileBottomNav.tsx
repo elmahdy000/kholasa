@@ -70,14 +70,6 @@ export function StudentMobileBottomNav({
                       )}
                     >
                       <AnimatedCount value={mistakesCount} />
-                      {mistakesCount > 0 && (
-                        <motion.span
-                          aria-hidden="true"
-                          animate={{ scale: [1, 1.65], opacity: [0.55, 0] }}
-                          transition={{ duration: 1.6, repeat: Infinity, ease: "easeOut" }}
-                          className="absolute inset-0 rounded-full bg-[#DC2626] -z-10"
-                        />
-                      )}
                     </motion.span>
                   </AnimatePresence>
                 )}

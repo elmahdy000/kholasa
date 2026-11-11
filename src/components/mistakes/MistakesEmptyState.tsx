@@ -16,16 +16,16 @@ export function MistakesEmptyState() {
         <CheckCircle2 className="w-6 h-6" />
       </div>
       <h3 className="text-base font-bold text-[#0F172A] dark:text-white">
-        ممتاز! لا توجد أسئلة في التحديد ده
+        مفيش أسئلة في الفلتر ده دلوقتي
       </h3>
       <p className="text-[13px] text-[#64748B] dark:text-[#94A3B8]">
-        استمر في خوض الامتحانات وحل التدريبات لاكتشاف أي نقاط ضعف وعلاجها أولاً بأول.
+        كمّل حل امتحانات وتدريبات، وأي سؤال تقف فيه هينزل هنا لوحده عشان ترجعله بعدين.
       </p>
       <Link
         href="/exams"
         className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white text-[13px] font-bold transition-all active:opacity-80"
       >
-        <span>انتقل إلى الامتحانات</span>
+        <span>روح على الامتحانات</span>
         <ArrowLeft className="w-3.5 h-3.5" />
       </Link>
     </motion.div>

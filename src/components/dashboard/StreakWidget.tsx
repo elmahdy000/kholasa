@@ -94,7 +94,7 @@ export function StreakWidget({
       );
     } catch (err) {
       console.error(err);
-      setCheckInError(err instanceof Error ? err.message : "تعذر تسجيل الحضور، تأكد من الاتصال وجرب مرة أخرى");
+      setCheckInError(err instanceof Error ? err.message : "معرفناش نسجل الحضور، شوف النت وجرب تاني");
     } finally {
       setIsCheckingIn(false);
     }
@@ -102,18 +102,18 @@ export function StreakWidget({
 
   const getMotivationalMessage = () => {
     if (streakDays === 0) {
-      return "ابدأ من النهاردة! حل سؤال سريع وسجل حضورك عشان تبدأ تثبت استمرارك.";
+      return "ابدأ من النهاردة، حل سؤال خفيف وسجل حضورك.";
     }
     if (streakDays === 1) {
-      return "عاش! كملت أول يوم، كمّل بكره عشان تفضل محافظ على استمرارك.";
+      return "حلو، سجلت أول يوم. كمّل بكره عشان تبني استمرارك.";
     }
     if (streakDays === 2) {
-      return "يومين ورا بعض! استمرارك ممتاز، قربت تقفل أسبوع كامل.";
+      return "بقالك يومين ورا بعض، كمل عشان تقفل أسبوع كامل.";
     }
     if (streakDays < 7) {
-      return `بقالك ${formatArabicDays(streakDays)} ورا بعض مستمر! كمّل عشان تقفل أسبوع كامل، عاش يا بطل.`;
+      return `بقالك ${formatArabicDays(streakDays)} ورا بعض مكمل، قربت تقفل أسبوع.`;
     }
-    return `فورمة عالية! ${formatArabicDays(streakDays)} ورا بعض بدون انقطاع، التزامك ممتاز ومكملين بقوة!`;
+    return `بقالك ${formatArabicDays(streakDays)} ورا بعض مكمل في مذاكرتك، كمل بنفس النظام ده.`;
   };
 
   const getStreakGrammar = () => {
@@ -190,7 +190,7 @@ export function StreakWidget({
             {/* Motivational message */}
             <p className="text-xs text-[#64748B] dark:text-[#94A3B8] font-normal leading-relaxed max-w-md line-clamp-1">
               {isTodayCompleted
-                ? "حضور النهاردة اتسجل بنجاح، ومكملين بكره إن شاء الله!"
+                ? "حضور النهاردة اتسجل، نشوفك بكره في نفس الميعاد."
                 : getMotivationalMessage()}
             </p>
           </div>
@@ -235,7 +235,7 @@ export function StreakWidget({
                     {day.isCompleted ? (
                       <CheckCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4" weight="fill" />
                     ) : day.isToday ? (
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#D97706] animate-pulse" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#D97706]" />
                     ) : (
                       <span className="w-1 h-1 rounded-full bg-current opacity-30" />
                     )}
@@ -320,12 +320,12 @@ export function StreakWidget({
             className="mt-4 p-3 rounded-xl bg-[#059669] text-white text-[13px] font-bold flex items-center justify-between gap-3 shadow-sm"
           >
             <div className="flex items-center gap-2">
-              <Sparkle className="w-5 h-5 fill-current animate-spin-slow" weight="fill" />
+              <Sparkle className="w-5 h-5 fill-current" weight="fill" />
               <span>
-                عاش يا بطل! سجلت حضور النهاردة وزودت أيام استمرارك (+1 يوم)
+                حضور النهاردة اتسجل وزودت استمرارك (+1 يوم)
               </span>
             </div>
-            <span className="text-[11px] font-mono opacity-90">مستمر ومكمل</span>
+            <span className="text-[11px] font-mono opacity-90">مستمر</span>
           </motion.div>
         )}
       </AnimatePresence>

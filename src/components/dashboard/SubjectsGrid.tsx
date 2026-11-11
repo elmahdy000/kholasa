@@ -68,7 +68,7 @@ export function SubjectsGrid({ subjects }: SubjectsGridProps) {
                         {subj.name}
                       </h3>
                       <p className="text-xs text-[#64748B] dark:text-[#94A3B8] mt-1 leading-relaxed">
-                        المادة مغلقة مؤقتاً وجارٍ استكمال التجهيز — ستتوفر قريباً للطلاب.
+                        المادة دي لسه بتتجهز — هتتفتح قريب للطلاب.
                       </p>
                     </div>
                   </div>

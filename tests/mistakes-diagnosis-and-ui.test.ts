@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { shouldShowFloatingMistakesCounter } from "@/components/layout/student/FloatingMistakesCounter";
 
 const mockPrisma = vi.hoisted(() => ({
   mistakeReview: {
@@ -283,6 +284,22 @@ describe("Mistakes Diagnosis Summary, Realtime Counter & Navigation", () => {
     } finally {
       unsubscribe();
     }
+  });
+
+  it("hides the floating mistakes counter on mistakes, subscription, admin, and active exam routes", () => {
+    expect(shouldShowFloatingMistakesCounter("/dashboard")).toBe(true);
+    expect(shouldShowFloatingMistakesCounter("/subjects")).toBe(true);
+    expect(shouldShowFloatingMistakesCounter("/lessons/les-123")).toBe(true);
+    expect(shouldShowFloatingMistakesCounter("/exams")).toBe(true);
+    expect(shouldShowFloatingMistakesCounter("/exams/builder")).toBe(true);
+    expect(shouldShowFloatingMistakesCounter("/exams/ex-123/results")).toBe(true);
+
+    expect(shouldShowFloatingMistakesCounter("/mistakes")).toBe(false);
+    expect(shouldShowFloatingMistakesCounter("/mistakes?subjectId=s1")).toBe(false);
+    expect(shouldShowFloatingMistakesCounter("/subscription")).toBe(false);
+    expect(shouldShowFloatingMistakesCounter("/admin/users")).toBe(false);
+    expect(shouldShowFloatingMistakesCounter("/exams/ex-123")).toBe(false);
+    expect(shouldShowFloatingMistakesCounter(null)).toBe(false);
   });
 });
 

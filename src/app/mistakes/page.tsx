@@ -99,13 +99,13 @@ export default async function MistakesPage({ searchParams }: MistakesPageProps) 
         <div className="border-b border-[#E2E8F0] dark:border-[#334155] pb-4">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-[#DC2626]/10 dark:bg-[#1E293B] text-[#DC2626] dark:text-[#F87171] border border-[#E2E8F0]/60 dark:border-[#F87171]/40 text-xs font-bold mb-2">
             <AlertTriangle className="w-3.5 h-3.5" />
-            <span>عداد مراجعة لأخطائي وتشخيص نقاط الضعف</span>
+            <span>مراجعة لأخطائي ومتابعة مستواك</span>
           </div>
           <h1 className="text-xl sm:text-2xl font-bold text-[#0F172A] dark:text-white leading-[1.35]">
-            مراجعة لأخطائي — اكتشف نقط ضعفك واتقنها
+            مراجعة لأخطائي — راجع اللي وقف معاك
           </h1>
           <p className="text-xs sm:text-sm text-[#64748B] dark:text-[#94A3B8] mt-1 leading-relaxed">
-            هنا بتتجمع كل الأسئلة اللي غلطت فيها أو حددتها للمراجعة، مع تشخيص دقيق يوضحلك فين المشكلة في كل مادة ودرس لحد ما تتقنها بالكامل.
+            هنا هتلاقي كل الأسئلة اللي غلطت فيها أو علمت عليها للمراجعة، متقسمة حسب المادة والدرس عشان ترجع لها بسهولة.
           </p>
         </div>
 

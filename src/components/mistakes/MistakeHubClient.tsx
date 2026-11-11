@@ -253,7 +253,7 @@ export function MistakeHubClient({
 
     if (selectedSubjectId === "all" && distinctSubjectIds.length > 1) {
       setActionError(
-        "أخطاؤك موزعة على أكثر من مادة. حدد المادة من الفلتر فوق عشان نجهّز لك امتحان مركز عليها."
+        "أخطاءك متوزعة على أكتر من مادة. اختار مادة واحدة من الفلتر فوق عشان نعملك امتحان عليها."
       );
       return;
     }
@@ -280,11 +280,11 @@ export function MistakeHubClient({
       if (res.ok && data.examId && data.attemptId) {
         router.push(`/exams/${data.examId}?attemptId=${data.attemptId}`);
       } else {
-        setActionError(data.error || "تعذر تجهيز الامتحان، حاول مرة أخرى.");
+        setActionError(data.error || "معرفناش نجهز الامتحان، جرب تاني.");
         setIsGeneratingExam(false);
       }
     } catch {
-      setActionError("حدث خطأ في الاتصال، يرجى المحاولة لاحقاً.");
+      setActionError("في مشكلة في النت، جرب كمان شوية.");
       setIsGeneratingExam(false);
     }
   };
@@ -334,10 +334,10 @@ export function MistakeHubClient({
             </div>
             <div>
               <p className="text-sm font-black text-[#065F46] dark:text-[#A7F3D0]">
-                عاش يا بطل! صفّرت كل أخطاء التحديد ده 🎉
+                خلصت كل الأسئلة اللي في الفلتر ده
               </p>
               <p className="text-xs text-[#047857] dark:text-[#6EE7B7] mt-0.5">
-                إتقانك ارتفع لـ 100% — تقدر تكمل باقي الدروس أو تحل امتحان جديد وأنت مطمّن.
+                مفيش حاجة واقفة عليك هنا دلوقتي — تقدر تكمل باقي الدروس أو تحل امتحان جديد.
               </p>
             </div>
           </motion.div>
@@ -353,7 +353,7 @@ export function MistakeHubClient({
             className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 text-amber-800 dark:text-amber-200 text-xs font-black shadow-2xs"
           >
             <Flame className="w-4 h-4 text-[#D97706] fill-[#D97706]" />
-            <span>سلسلة إتقان رائعة: {correctCombo} أسئلة صح ورا بعض! كمّل بنفس القوة</span>
+            <span>ماشي كويس: {correctCombo} أسئلة صح ورا بعض</span>
           </motion.div>
         )}
       </AnimatePresence>
@@ -370,11 +370,11 @@ export function MistakeHubClient({
             <div className="space-y-0.5 min-w-0">
               <div className="flex items-center gap-2 text-xs sm:text-sm font-black text-[#091B40] dark:text-[#F8FAFC]">
                 <Crosshair className="w-4 h-4 text-[#800B34] dark:text-[#E9AD32] shrink-0" />
-                <span>تشخيص المشكلة — فين أخطائك متركزة؟</span>
+                <span>أخطاءك متركزة فين؟</span>
               </div>
               {topWeakness && (
                 <p className="text-xs text-[#64748B] dark:text-[#94A3B8]">
-                  أكثر نقطة محتاجة مراجعة حالياً:{" "}
+                  أكتر درس محتاج مراجعة دلوقتي:{" "}
                   <strong className="text-[#800B34] dark:text-[#FB7185]">
                     {topWeakness.subjectName}
                     {topWeakness.lessonTitle
@@ -383,7 +383,7 @@ export function MistakeHubClient({
                         ? ` — ${topWeakness.unitTitle}`
                         : ""}
                   </strong>{" "}
-                  ({topWeakness.count} أسئلة • اتكرر الخطأ {topWeakness.totalWrongs} مرة)
+                  ({topWeakness.count} أسئلة • غلطت فيهم {topWeakness.totalWrongs} مرة)
                 </p>
               )}
             </div>
@@ -462,7 +462,7 @@ export function MistakeHubClient({
                   {bucket.lessonId && (
                     <div className="flex items-center justify-between gap-2 text-[11px] font-bold border-t border-[#E2E8F0]/70 dark:border-[#243652] pt-2">
                       <span className="text-[#64748B] dark:text-[#94A3B8]">
-                        {isSelected ? "مفلتر حالياً ✓" : "اضغط أعلاه لتصفية الأسئلة"}
+                        {isSelected ? "متفلتر دلوقتي ✓" : "اضغط هنا عشان تشوف أسئلته"}
                       </span>
                       <Link
                         href={`/lessons/${bucket.lessonId}`}
@@ -480,7 +480,7 @@ export function MistakeHubClient({
 
           {activeLessonBucket && (
             <div className="text-[11px] font-bold text-[#800B34] dark:text-[#E9AD32]">
-              يتم الآن عرض أسئلة الدرس المحدد: {activeLessonBucket.lessonTitle}
+              بتشوف دلوقتي أسئلة درس: {activeLessonBucket.lessonTitle}
             </div>
           )}
         </motion.section>

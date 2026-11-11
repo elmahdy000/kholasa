@@ -33,10 +33,10 @@ export function StudentHeader({
   const mistakesNavItem = navItems.find((item) => item.href === "/mistakes");
   const MistakesNavIcon = mistakesNavItem?.icon;
   const mistakesTooltip = topWeakness
-    ? `مراجعة لأخطائي (${unresolvedMistakesCount}) — أكثر نقطة محتاجة مراجعة: ${topWeakness.subjectName}${topWeakness.lessonTitle ? ` • ${topWeakness.lessonTitle}` : ""}`
+    ? `مراجعة لأخطائي (${unresolvedMistakesCount}) — أكتر نقطة محتاجة مراجعة: ${topWeakness.subjectName}${topWeakness.lessonTitle ? ` • ${topWeakness.lessonTitle}` : ""}`
     : unresolvedMistakesCount > 0
-      ? `مراجعة لأخطائي (${unresolvedMistakesCount} سؤال في انتظار المراجعة)`
-      : "مراجعة لأخطائي — ممتاز! لا توجد أخطاء معلقة الآن";
+      ? `مراجعة لأخطائي (${unresolvedMistakesCount} سؤال محتاج مراجعة)`
+      : "مراجعة لأخطائي — مفيش أخطاء مستنياك دلوقتي";
   const { isDark, toggleTheme } = useTheme();
 
   return (
@@ -100,14 +100,7 @@ export function StudentHeader({
                         title={mistakesTooltip}
                         className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-black tabular-nums bg-[#DC2626] text-white shadow-xs"
                       >
-                        <span className="relative flex h-2 w-2 shrink-0">
-                          <motion.span
-                            animate={{ scale: [1, 1.9], opacity: [0.8, 0] }}
-                            transition={{ duration: 1.5, repeat: Infinity, ease: "easeOut" }}
-                            className="absolute inline-flex h-full w-full rounded-full bg-white"
-                          />
-                          <span className="relative inline-flex rounded-full h-2 w-2 bg-white" />
-                        </span>
+                        <span className="inline-flex h-2 w-2 shrink-0 rounded-full bg-white" />
                         <AnimatedCount value={unresolvedMistakesCount} />
                       </motion.span>
                     ) : (
@@ -159,14 +152,7 @@ export function StudentHeader({
               )}
             >
               {unresolvedMistakesCount > 0 ? (
-                <span className="relative flex h-2.5 w-2.5 shrink-0">
-                  <motion.span
-                    animate={{ scale: [1, 1.95], opacity: [0.75, 0] }}
-                    transition={{ duration: 1.5, repeat: Infinity, ease: "easeOut" }}
-                    className="absolute inline-flex h-full w-full rounded-full bg-[#DC2626]"
-                  />
-                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#DC2626]" />
-                </span>
+                <span className="inline-flex h-2 w-2 shrink-0 rounded-full bg-[#DC2626]" />
               ) : (
                 MistakesNavIcon && <MistakesNavIcon className="w-3.5 h-3.5 shrink-0" weight="bold" />
               )}

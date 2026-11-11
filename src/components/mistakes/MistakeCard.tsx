@@ -122,7 +122,7 @@ export function MistakeCard({
           {mistake.isResolved && (
             <span className="px-3 py-1 rounded-lg bg-[#059669]/10 dark:bg-[#1E293B] text-[#059669] dark:text-[#34D399] text-xs font-bold inline-flex items-center gap-1 border border-[#059669]/20 dark:border-[#34D399]/40">
               <Check className="w-3.5 h-3.5" />
-              <span>{isEnglish ? "Mastered" : "تم إتقانها"}</span>
+              <span>{isEnglish ? "Reviewed" : "اتراجعت وخلصت"}</span>
             </span>
           )}
           {hasQuestionTranslation && (
@@ -143,7 +143,7 @@ export function MistakeCard({
               className="min-h-[38px] px-3 py-1 rounded-lg bg-[#F7F9FC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] hover:border-[#800B34] text-xs font-bold text-[#536681] dark:text-[#94A3B8] hover:text-[#800B34] inline-flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50"
             >
               <RotateCcw className="w-3.5 h-3.5" />
-              <span>إرجاع لقائمة المراجعة</span>
+              <span>رجّعه لقائمة المراجعة</span>
             </button>
           )}
 
@@ -302,8 +302,8 @@ export function MistakeCard({
                       ? "Saving..."
                       : "جاري الحفظ..."
                     : isEnglish
-                    ? "Mark as Mastered"
-                    : "فهمتها وتمت المراجعة ✓"}
+                    ? "Mark as Reviewed"
+                    : "فهمتها وخلصت ✓"}
                 </span>
               </button>
             )}
@@ -414,7 +414,7 @@ export function MistakeCard({
                 <span>
                   {isEnglish
                     ? "View verified explanation directly"
-                    : "عرض التفسير والحل المعتمد مباشرة"}
+                    : "عرض التفسير والحل علطول"}
                 </span>
               </>
             )}

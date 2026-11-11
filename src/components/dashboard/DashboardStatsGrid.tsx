@@ -57,8 +57,8 @@ export function DashboardStatsGrid({
       label: "مراجعة لأخطائي",
       subtext:
         unresolvedMistakesCount > 0
-          ? "اضغط لتشخيص وعلاج نقاط ضعفك"
-          : "ملفك خالٍ من الأخطاء المعلقة ✓",
+          ? "اضغط هنا عشان تراجع وتصلح أخطاءك"
+          : "مفيش أخطاء مستنياك دلوقتي ✓",
       href: "/mistakes",
       isMistakes: true,
     },
@@ -88,10 +88,7 @@ export function DashboardStatsGrid({
             <div className="flex items-center justify-between gap-2">
               <span className="inline-flex items-center gap-1.5 text-xs sm:text-[13px] text-[#64748B] dark:text-[#94A3B8] font-bold">
                 {stat.isMistakes && unresolvedMistakesCount > 0 && (
-                  <span className="relative flex h-2 w-2 shrink-0">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#DC2626] opacity-75" />
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-[#DC2626]" />
-                  </span>
+                  <span className="inline-flex rounded-full h-2 w-2 bg-[#DC2626] shrink-0" />
                 )}
                 <span>{stat.label}</span>
               </span>

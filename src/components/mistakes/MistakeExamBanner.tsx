@@ -25,13 +25,13 @@ export function MistakeExamBanner({
     >
       <div className="space-y-1">
         <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-[#800B34] animate-ping" />
+          <span className="w-2 h-2 rounded-full bg-[#800B34] shrink-0" />
           <h3 className="text-sm sm:text-base font-bold text-[#0F172A] dark:text-white">
-            عاوز تتدرب عليهم في امتحان عملي مجمع؟
+            عاوز تتدرب عليهم في امتحان مجمّع؟
           </h3>
         </div>
         <p className="text-xs sm:text-[13px] text-[#64748B] dark:text-[#94A3B8] leading-relaxed">
-          هنعملك امتحان فوري بـ {actionableUnresolvedCount} أسئلة اللي لسه ما قفلتهمش عشان تثبتهم فوراً.
+          هنعملك امتحان سريع بالـ {actionableUnresolvedCount} سؤال اللي لسه مخلصوش عشان تراجعهم مع بعض.
         </p>
       </div>
 

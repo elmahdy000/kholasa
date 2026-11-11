@@ -102,10 +102,7 @@ export function QuickActionsGrid({ subjectsCount, unresolvedMistakesCount }: Qui
                     className={`inline-flex items-center gap-1.5 text-[11px] sm:text-xs font-bold px-2 py-0.5 rounded-full shrink-0 ${action.badgeColor}`}
                   >
                     {action.id === "mistakes" && unresolvedMistakesCount > 0 && (
-                      <span className="relative flex h-1.5 w-1.5 shrink-0">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-current opacity-75" />
-                        <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-current" />
-                      </span>
+                      <span className="inline-flex rounded-full h-1.5 w-1.5 bg-current shrink-0" />
                     )}
                     {action.badge}
                   </span>
