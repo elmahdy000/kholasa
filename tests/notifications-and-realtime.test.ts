@@ -248,6 +248,45 @@ describe("Realtime Event Hub, SSE Filtering & Notifications Remediation", () => 
       const badRes = await patchNotificationsRoute(badPatch);
       expect(badRes.status).toBe(400);
     });
+
+    it("serializes GET /api/notifications as an object { notifications, unreadCount } rather than stripping own array properties", async () => {
+      mockGetCurrentUser.mockResolvedValue({
+        id: "stu-1",
+        role: "STUDENT",
+        gradeId: "g11",
+        schoolCategory: "ARABIC",
+      });
+      mockPrisma.user.findUnique.mockResolvedValue({
+        id: "stu-1",
+        role: "STUDENT",
+        gradeId: "g11",
+        schoolCategory: "ARABIC",
+      });
+      mockPrisma.examAttempt.findFirst.mockResolvedValue(null);
+      mockPrisma.dailyChallenge.findUnique.mockResolvedValue(null);
+      mockPrisma.mistakeReview.count.mockResolvedValue(0);
+      mockPrisma.studentProgress.findFirst.mockResolvedValue(null);
+      mockPrisma.announcement.findMany.mockResolvedValue([
+        {
+          id: "ann-http",
+          type: "ANNOUNCEMENT",
+          title: "إشعار اختبار HTTP",
+          message: "يجب أن يصل للعميل ككائن كامل",
+          link: "/dashboard",
+          createdAt: new Date("2026-11-11T09:00:00Z"),
+          isUrgent: true,
+          reads: [],
+        },
+      ]);
+
+      const res = await getNotificationsRoute();
+      expect(res.status).toBe(200);
+      const json = await res.json();
+      expect(Array.isArray(json)).toBe(false);
+      expect(Array.isArray(json.notifications)).toBe(true);
+      expect(json.notifications.some((n: { id: string }) => n.id === "ann-http")).toBe(true);
+      expect(json.unreadCount).toBe(json.notifications.length);
+    });
   });
 
   describe("NotificationService Scope, Admin Alerts & Web Push Assets", () => {

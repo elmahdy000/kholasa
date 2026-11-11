@@ -17,8 +17,17 @@ export async function GET() {
       );
     }
 
-    const data = await NotificationService.getInAppNotifications(user.id);
-    return NextResponse.json(data, { headers: NO_STORE_HEADERS });
+    const raw = await NotificationService.getInAppNotifications(user.id);
+    const notifications = Array.isArray(raw) ? [...raw] : [];
+    const unreadCount =
+      typeof raw?.unreadCount === "number"
+        ? raw.unreadCount
+        : notifications.filter((n) => !n.isRead).length;
+
+    return NextResponse.json(
+      { notifications, unreadCount },
+      { headers: NO_STORE_HEADERS }
+    );
   } catch (err) {
     console.error("Notifications fetch error:", err);
     return NextResponse.json(
