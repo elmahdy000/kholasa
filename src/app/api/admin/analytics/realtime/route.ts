@@ -3,6 +3,8 @@ import { getCurrentUser, canViewAnalytics } from "@/lib/auth";
 import { forbidden, jsonError } from "@/lib/http";
 import { RealtimeAnalyticsService } from "@/services/realtime-analytics.service";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(req: Request) {
   try {
     const user = await getCurrentUser();
@@ -33,10 +35,13 @@ export async function GET(req: Request) {
       sortBy,
     });
 
-    return NextResponse.json({
-      success: true,
-      ...data,
-    });
+    return NextResponse.json(
+      {
+        success: true,
+        ...data,
+      },
+      { headers: { "Cache-Control": "no-store" } }
+    );
   } catch (error) {
     return jsonError(error);
   }

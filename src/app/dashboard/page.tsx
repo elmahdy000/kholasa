@@ -8,6 +8,8 @@ import { StudentShell } from "@/components/layout/StudentShell";
 import { DashboardClient } from "@/components/dashboard/DashboardClient";
 import { StudentService } from "@/services/student.service";
 
+export const dynamic = "force-dynamic";
+
 export default async function DashboardPage() {
   const user = await getCurrentUser();
 

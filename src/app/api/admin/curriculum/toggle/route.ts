@@ -4,6 +4,9 @@ import { getCurrentUser, canManageCurriculum } from "@/lib/auth";
 import { forbidden, jsonError, parseJson } from "@/lib/http";
 import { CurriculumService } from "@/services/curriculum.service";
 import { AnalyticsService } from "@/services/analytics.service";
+import { emitRealtimeEvent, revalidatePlatformPaths } from "@/lib/realtime";
+
+export const dynamic = "force-dynamic";
 
 const schema = z.object({
   entity: z.enum(["subject", "unit", "lesson"]),
@@ -19,6 +22,17 @@ export async function POST(req: Request) {
     const { entity, id, isPublished } = await parseJson(req, schema);
     await CurriculumService.toggleEntityPublish(entity, id, isPublished);
     await AnalyticsService.logAuditAction(user.id, "TOGGLE_PUBLISH", entity, id, { isPublished });
+
+    const extra = entity === "subject" ? [`/subjects/${id}`] : entity === "lesson" ? [`/lessons/${id}`] : [];
+    revalidatePlatformPaths(extra);
+    emitRealtimeEvent({
+      topic: "curriculum",
+      action: "toggle_publish",
+      audience: "all",
+      entityId: id,
+      meta: { entity, isPublished },
+    });
+
     return NextResponse.json({ success: true });
   } catch (error) {
     return jsonError(error);

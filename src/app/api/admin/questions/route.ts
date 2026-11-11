@@ -6,6 +6,9 @@ import {
   isDifficulty,
   isQuestionType,
 } from "@/services/question/validation";
+import { emitRealtimeEvent, revalidatePlatformPaths } from "@/lib/realtime";
+
+export const dynamic = "force-dynamic";
 
 const MAX_PAGE_SIZE = 1000;
 
@@ -55,7 +58,7 @@ export async function GET(req: Request) {
       limit,
     });
 
-    return NextResponse.json({ questions, pagination });
+    return NextResponse.json({ questions, pagination }, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {
     console.error("Failed to fetch questions:", error);
     return NextResponse.json({ error: "تعذر جلب الأسئلة" }, { status: 500 });
@@ -119,6 +122,13 @@ export async function POST(req: Request) {
           : undefined,
     });
 
+    revalidatePlatformPaths(["/admin/questions", "/exams", "/exams/builder", ...(lessonId ? [`/lessons/${lessonId}`] : [])]);
+    emitRealtimeEvent({
+      topic: "curriculum",
+      action: "question_created",
+      audience: "all",
+      entityId: question.id,
+    });
     return NextResponse.json({ success: true, question });
   } catch (error) {
     if (error instanceof QuestionValidationError) {

@@ -9,6 +9,8 @@ interface AdminLessonEditPageProps {
   params: Promise<{ id: string }>;
 }
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminLessonEditPage({ params }: AdminLessonEditPageProps) {
   const { id } = await params;
   const user = await getCurrentUser();

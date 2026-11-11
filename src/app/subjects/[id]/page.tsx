@@ -48,6 +48,8 @@ export async function generateMetadata({ params }: SubjectDetailPageProps): Prom
   };
 }
 
+export const dynamic = "force-dynamic";
+
 export default async function SubjectDetailPage({ params }: SubjectDetailPageProps) {
   const { id } = await params;
   const user = await getCurrentUser();

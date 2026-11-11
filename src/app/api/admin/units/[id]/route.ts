@@ -4,6 +4,9 @@ import { getCurrentUser, isStaff, canManageCurriculum } from "@/lib/auth";
 import { forbidden, jsonError, notFound, parseJson } from "@/lib/http";
 import { CurriculumService } from "@/services/curriculum.service";
 import { AnalyticsService } from "@/services/analytics.service";
+import { emitRealtimeEvent, revalidatePlatformPaths } from "@/lib/realtime";
+
+export const dynamic = "force-dynamic";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -24,7 +27,7 @@ export async function GET(req: Request, { params }: RouteParams) {
     const { id } = await params;
     const unit = await CurriculumService.getUnitDetails(id);
     if (!unit) throw notFound("الوحدة غير موجودة");
-    return NextResponse.json(unit);
+    return NextResponse.json(unit, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {
     return jsonError(error);
   }
@@ -40,6 +43,13 @@ export async function PUT(req: Request, { params }: RouteParams) {
     const unit = await CurriculumService.updateUnit(id, body);
     await AnalyticsService.logAuditAction(user.id, "UPDATE", "unit", id, {
       fields: Object.keys(body),
+    });
+    revalidatePlatformPaths();
+    emitRealtimeEvent({
+      topic: "curriculum",
+      action: "unit_updated",
+      audience: "all",
+      entityId: id,
     });
     return NextResponse.json({ success: true, unit });
   } catch (error) {
@@ -57,6 +67,13 @@ export async function DELETE(req: Request, { params }: RouteParams) {
     const { id } = await params;
     await CurriculumService.deleteUnit(id);
     await AnalyticsService.logAuditAction(user.id, "DELETE", "unit", id);
+    revalidatePlatformPaths();
+    emitRealtimeEvent({
+      topic: "curriculum",
+      action: "unit_deleted",
+      audience: "all",
+      entityId: id,
+    });
     return NextResponse.json({ success: true, message: "تم حذف الوحدة بنجاح" });
   } catch (error) {
     return jsonError(error);

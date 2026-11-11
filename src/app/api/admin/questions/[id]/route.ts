@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import { getCurrentUser, canManageQuestions } from "@/lib/auth";
 import { QuestionService } from "@/services/question.service";
 import { QuestionValidationError } from "@/services/question/validation";
+import { emitRealtimeEvent, revalidatePlatformPaths } from "@/lib/realtime";
+
+export const dynamic = "force-dynamic";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -21,7 +24,7 @@ export async function GET(req: Request, { params }: RouteParams) {
       return NextResponse.json({ error: "السؤال غير موجود" }, { status: 404 });
     }
 
-    return NextResponse.json(question);
+    return NextResponse.json(question, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {
     console.error("Failed to fetch question:", error);
     return NextResponse.json({ error: "تعذر تحميل بيانات السؤال" }, { status: 500 });
@@ -59,12 +62,22 @@ export async function PUT(req: Request, { params }: RouteParams) {
 
     const updated = await QuestionService.updateQuestion(id, {
       statement: statement.trim(),
-      translation: translation === undefined ? undefined : typeof translation === "string" ? translation.trim() || null : null,
+      translation:
+        translation === undefined
+          ? undefined
+          : typeof translation === "string"
+            ? translation.trim() || null
+            : null,
       type,
       difficulty,
       subjectId: typeof subjectId === "string" && subjectId ? subjectId : undefined,
       unitId: unitId === undefined ? undefined : unitId || null,
-      imageUrl: imageUrl !== undefined ? (typeof imageUrl === "string" ? imageUrl.trim() || null : null) : undefined,
+      imageUrl:
+        imageUrl !== undefined
+          ? typeof imageUrl === "string"
+            ? imageUrl.trim() || null
+            : null
+          : undefined,
       lessonIds: lessonId !== undefined ? (lessonId ? [lessonId] : []) : undefined,
       options: Array.isArray(options) ? options : undefined,
       explanation:
@@ -82,9 +95,25 @@ export async function PUT(req: Request, { params }: RouteParams) {
           : typeof modelAnswer === "string" && modelAnswer.trim()
             ? {
                 modelAnswer: modelAnswer.trim(),
-                modelAnswerTranslation: typeof modelAnswerTranslation === "string" ? modelAnswerTranslation.trim() || null : null,
+                modelAnswerTranslation:
+                  typeof modelAnswerTranslation === "string"
+                    ? modelAnswerTranslation.trim() || null
+                    : null,
               }
             : null,
+    });
+
+    revalidatePlatformPaths([
+      "/admin/questions",
+      "/exams",
+      "/exams/builder",
+      ...(lessonId ? [`/lessons/${lessonId}`] : []),
+    ]);
+    emitRealtimeEvent({
+      topic: "curriculum",
+      action: "question_updated",
+      audience: "all",
+      entityId: id,
     });
 
     return NextResponse.json({
@@ -111,6 +140,14 @@ export async function DELETE(req: Request, { params }: RouteParams) {
 
     const { id } = await params;
     await QuestionService.deleteQuestion(id);
+
+    revalidatePlatformPaths(["/admin/questions", "/exams", "/exams/builder"]);
+    emitRealtimeEvent({
+      topic: "curriculum",
+      action: "question_deleted",
+      audience: "all",
+      entityId: id,
+    });
 
     return NextResponse.json({ success: true, message: "تم حذف السؤال بنجاح" });
   } catch (error) {

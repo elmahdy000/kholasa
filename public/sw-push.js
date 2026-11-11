@@ -1,52 +1,48 @@
-// Service Worker for El-Kholasa Web Push Notifications
+// Legacy Web Push fallback worker (unified push listeners also live in /sw.js)
 self.addEventListener("push", (event) => {
   if (!event.data) return;
 
+  let data = {};
   try {
-    const data = event.data.json();
-    const title = data.title || "منصة الخلاصة";
-    const options = {
-      body: data.body || "لديك إشعار جديد في منصة الخلاصة",
-      icon: data.icon || "/icons/icon-192x192.png",
-      badge: data.badge || "/icons/icon-192x192.png",
-      dir: "rtl",
-      lang: "ar",
-      vibrate: [100, 50, 100],
-      data: {
-        url: data.data?.url || "/dashboard",
-      },
-      tag: data.tag || "kholasa-push",
-      renotify: true,
-    };
-
-    event.waitUntil(self.registration.showNotification(title, options));
-  } catch (err) {
-    console.error("Push event handling error:", err);
+    data = event.data.json();
+  } catch {
+    data = { title: "الخلاصة", body: event.data.text() };
   }
+
+  const title = data.title || "إشعار من الخلاصة";
+  const options = {
+    body: data.body || "",
+    icon: data.icon || "/icon-192.png",
+    badge: data.badge || "/icon-192.png",
+    dir: "rtl",
+    lang: "ar",
+    tag: data.tag || "kholasa-notification",
+    renotify: true,
+    data: { url: data.url || "/dashboard" },
+  };
+
+  event.waitUntil(self.registration.showNotification(title, options));
 });
 
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
-
-  const targetUrl = event.notification.data?.url || "/dashboard";
+  const targetUrl = (event.notification.data && event.notification.data.url) || "/dashboard";
 
   event.waitUntil(
-    clients
-      .matchAll({ type: "window", includeUncontrolled: true })
-      .then((clientList) => {
-        // If an existing window is open, focus it and navigate
-        for (const client of clientList) {
-          if ("focus" in client) {
-            client.focus();
-            if ("navigate" in client) {
-              return client.navigate(targetUrl);
-            }
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((windowClients) => {
+      for (const client of windowClients) {
+        if ("focus" in client) {
+          client.focus();
+          if ("navigate" in client && client.url !== new URL(targetUrl, self.location.origin).href) {
+            return client.navigate(targetUrl).catch(() => undefined);
           }
+          return client;
         }
-        // Otherwise open a new window
-        if (clients.openWindow) {
-          return clients.openWindow(targetUrl);
-        }
-      })
+      }
+      if (self.clients.openWindow) {
+        return self.clients.openWindow(targetUrl);
+      }
+      return undefined;
+    })
   );
 });

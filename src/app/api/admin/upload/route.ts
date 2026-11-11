@@ -3,6 +3,9 @@ import { getCurrentUser, isStaff } from "@/lib/auth";
 import { badRequest, forbidden, jsonError } from "@/lib/http";
 import { MediaService } from "@/services/media.service";
 import { AnalyticsService } from "@/services/analytics.service";
+import { emitRealtimeEvent, revalidatePlatformPaths } from "@/lib/realtime";
+
+export const dynamic = "force-dynamic";
 
 const MAX_BYTES = 50 * 1024 * 1024;
 
@@ -17,7 +20,7 @@ export async function GET() {
   try {
     await requireStaffUser();
     const files = await MediaService.listAllMediaFiles();
-    return NextResponse.json({ files });
+    return NextResponse.json({ files }, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {
     return jsonError(error);
   }
@@ -43,7 +46,8 @@ export async function POST(req: Request) {
         throw badRequest("حجم أحد الملفات يتجاوز الحد الأقصى المسموح به (50 ميجابايت)");
       }
 
-      const { image: uploadedImage, audio: uploadedAudio } = await MediaService.saveUploadedPair(imageFile, audioFile);
+      const { image: uploadedImage, audio: uploadedAudio } =
+        await MediaService.saveUploadedPair(imageFile, audioFile);
 
       await AnalyticsService.logAuditAction(user.id, "UPLOAD", "media", uploadedImage.filename, {
         size: uploadedImage.size,
@@ -52,6 +56,13 @@ export async function POST(req: Request) {
       await AnalyticsService.logAuditAction(user.id, "UPLOAD", "media", uploadedAudio.filename, {
         size: uploadedAudio.size,
         type: uploadedAudio.type,
+      });
+
+      revalidatePlatformPaths(["/admin/media"]);
+      emitRealtimeEvent({
+        topic: "curriculum",
+        action: "media_uploaded",
+        audience: "staff",
       });
 
       return NextResponse.json({
@@ -81,6 +92,14 @@ export async function POST(req: Request) {
       size: uploaded.size,
       type: uploaded.type,
     });
+
+    revalidatePlatformPaths(["/admin/media"]);
+    emitRealtimeEvent({
+      topic: "curriculum",
+      action: "media_uploaded",
+      audience: "staff",
+    });
+
     return NextResponse.json(uploaded);
   } catch (error) {
     return jsonError(error);
@@ -96,6 +115,14 @@ export async function DELETE(req: Request) {
 
     await MediaService.deleteMediaFile(filename);
     await AnalyticsService.logAuditAction(user.id, "DELETE", "media", filename);
+
+    revalidatePlatformPaths(["/admin/media"]);
+    emitRealtimeEvent({
+      topic: "curriculum",
+      action: "media_deleted",
+      audience: "staff",
+    });
+
     return NextResponse.json({ success: true });
   } catch (error) {
     return jsonError(error);

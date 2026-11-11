@@ -5,6 +5,8 @@ import { NotificationService } from "@/services/notification.service";
 import { AdminShell } from "@/components/layout/AdminShell";
 import { AdminNotificationsClient } from "@/components/admin/notifications/AdminNotificationsClient";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "إدارة الإعلانات والإشعارات | منصة الخلاصة",
   description: "إرسال الإعلانات والتنبيهات المباشرة وبث إشعارات المتصفح للطلاب",

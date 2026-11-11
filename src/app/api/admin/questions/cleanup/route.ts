@@ -2,8 +2,11 @@ import { NextResponse } from "next/server";
 import { getCurrentUser, canManageQuestions } from "@/lib/auth";
 import { QuestionService } from "@/services/question.service";
 import { AnalyticsService } from "@/services/analytics.service";
+import { emitRealtimeEvent, revalidatePlatformPaths } from "@/lib/realtime";
 
-export async function POST(req: Request) {
+export const dynamic = "force-dynamic";
+
+export async function POST() {
   try {
     const user = await getCurrentUser();
     if (!user || !canManageQuestions(user.role)) {
@@ -14,6 +17,13 @@ export async function POST(req: Request) {
 
     await AnalyticsService.logAuditAction(user.id, "DELETE", "question", "orphaned_cleanup", {
       deletedCount: result.count,
+    });
+
+    revalidatePlatformPaths(["/admin/questions", "/exams"]);
+    emitRealtimeEvent({
+      topic: "curriculum",
+      action: "questions_cleaned",
+      audience: "all",
     });
 
     return NextResponse.json({

@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import { Role } from "@prisma/client";
 import { getCurrentUser, canManageUsers } from "@/lib/auth";
 import { UserService } from "@/services/user.service";
+import { emitRealtimeEvent, revalidatePlatformPaths } from "@/lib/realtime";
+
+export const dynamic = "force-dynamic";
 
 // GET: List users with search and filters
 export async function GET(req: Request) {
@@ -25,7 +28,7 @@ export async function GET(req: Request) {
       limit: 100,
     });
 
-    return NextResponse.json({ users, pagination });
+    return NextResponse.json({ users, pagination }, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {
     console.error("Failed to fetch users list:", error);
     return NextResponse.json(
@@ -46,6 +49,8 @@ export async function POST(req: Request) {
     const body = await req.json().catch(() => ({}));
     const newUser = await UserService.createUser(body, currentUser.role);
 
+    revalidatePlatformPaths(["/admin/users", "/admin/reports"]);
+    emitRealtimeEvent({ topic: "users", action: "user_created", audience: "staff", entityId: newUser.id });
     return NextResponse.json({ success: true, user: newUser });
   } catch (error) {
     console.error("Failed to create user:", error);

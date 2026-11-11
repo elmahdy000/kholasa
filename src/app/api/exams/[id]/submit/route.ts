@@ -3,6 +3,9 @@ import { getCurrentUser } from "@/lib/auth";
 import { AppError, jsonError } from "@/lib/http";
 import { rateLimit, withRetryAfter } from "@/lib/rate-limit";
 import { ExamService } from "@/services";
+import { emitRealtimeEvent, revalidatePlatformPaths } from "@/lib/realtime";
+
+export const dynamic = "force-dynamic";
 
 export async function POST(
   req: Request,
@@ -27,6 +30,27 @@ export async function POST(
     const result = await ExamService.submitExamAttempt(attemptId, user.id, {
       answers,
       totalTimeSpentSeconds,
+    });
+
+    revalidatePlatformPaths([
+      "/admin/analytics",
+      "/admin/reports",
+      "/admin/attempts",
+      "/leaderboard",
+      "/dashboard",
+    ]);
+    emitRealtimeEvent({
+      topic: "analytics",
+      action: "exam_submitted",
+      audience: "staff",
+      entityId: attemptId,
+    });
+    emitRealtimeEvent({
+      topic: "notifications",
+      action: "exam_submitted",
+      audience: "user",
+      targetUserId: user.id,
+      entityId: attemptId,
     });
 
     return NextResponse.json({
@@ -56,4 +80,3 @@ export async function POST(
     );
   }
 }
-

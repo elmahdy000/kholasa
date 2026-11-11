@@ -23,6 +23,11 @@ export function UserManagerClient({
 }: UserManagerClientProps) {
   const { toast } = useToast();
   const [users, setUsers] = useState<UserItem[]>(initialUsers);
+  const [prevInitialUsers, setPrevInitialUsers] = useState<UserItem[]>(initialUsers);
+  if (prevInitialUsers !== initialUsers) {
+    setPrevInitialUsers(initialUsers);
+    setUsers(initialUsers);
+  }
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedRole, setSelectedRole] = useState("all");
   const [selectedStatus, setSelectedStatus] = useState<"all" | "active" | "inactive">("all");

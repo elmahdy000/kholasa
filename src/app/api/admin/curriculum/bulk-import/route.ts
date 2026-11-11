@@ -4,6 +4,9 @@ import { getCurrentUser, canManageCurriculum } from "@/lib/auth";
 import { forbidden, jsonError, parseJson } from "@/lib/http";
 import { CurriculumService } from "@/services/curriculum.service";
 import { AnalyticsService } from "@/services/analytics.service";
+import { emitRealtimeEvent, revalidatePlatformPaths } from "@/lib/realtime";
+
+export const dynamic = "force-dynamic";
 
 const bulkImportSchema = z.object({
   subjectId: z.string().min(1, "يرجى تحديد المادة الدراسية"),
@@ -53,6 +56,13 @@ export async function POST(req: Request) {
       }
     );
 
+    revalidatePlatformPaths([`/subjects/${body.subjectId}`]);
+    emitRealtimeEvent({
+      topic: "curriculum",
+      action: "bulk_imported",
+      audience: "all",
+      entityId: body.subjectId,
+    });
     return NextResponse.json({
       success: true,
       unitsCount: createdUnits.length,

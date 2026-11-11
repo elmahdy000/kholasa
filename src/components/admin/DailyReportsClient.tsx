@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useRealtimeTopic } from "@/lib/realtime-client";
 import Link from "next/link";
 import {
   CalendarDays,
@@ -70,6 +71,11 @@ export function DailyReportsClient({
   canManageStudents,
 }: DailyReportsClientProps) {
   const [report, setReport] = useState<DailyReportData>(initialReport);
+  const [prevInitialReport, setPrevInitialReport] = useState<DailyReportData>(initialReport);
+  if (prevInitialReport !== initialReport) {
+    setPrevInitialReport(initialReport);
+    setReport(initialReport);
+  }
   const [isLoading, setIsLoading] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -119,6 +125,10 @@ export function DailyReportsClient({
       setIsLoading(false);
     }
   };
+
+  useRealtimeTopic(["analytics", "users", "exams"], () => {
+    void fetchReport({});
+  });
 
   const filteredActivities = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();

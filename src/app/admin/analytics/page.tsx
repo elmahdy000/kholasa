@@ -7,6 +7,8 @@ import { AnalyticsManagerClient } from "@/components/admin/AnalyticsManagerClien
 import { RealtimeAnalyticsService } from "@/services/realtime-analytics.service";
 import { getCairoDayKey, getCairoStartOfDayFromKey, shiftDayKey } from "@/lib/date";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminAnalyticsPage() {
   const user = await getCurrentUser();
 

@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
 import { UserService } from "@/services/user.service";
+import { emitRealtimeEvent, revalidatePlatformPaths } from "@/lib/realtime";
+
+export const dynamic = "force-dynamic";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -15,6 +18,9 @@ export async function POST(req: Request, { params }: RouteParams) {
 
     const { id } = await params;
     const result = await UserService.resetUserDevices(id, currentUser.role);
+    revalidatePlatformPaths(["/admin/users", "/admin/reports", "/dashboard"]);
+    emitRealtimeEvent({ topic: "users", action: "devices_reset", audience: "staff", entityId: id });
+    emitRealtimeEvent({ topic: "users", action: "devices_reset", audience: "user", targetUserId: id, entityId: id });
 
     return NextResponse.json({
       success: true,

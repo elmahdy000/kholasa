@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import { getCurrentUser, canManageExams } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { ExamService } from "@/services";
+import { emitRealtimeEvent, revalidatePlatformPaths } from "@/lib/realtime";
+
+export const dynamic = "force-dynamic";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -59,7 +62,7 @@ export async function GET(req: Request, { params }: RouteParams) {
       return NextResponse.json({ error: "الامتحان غير موجود" }, { status: 404 });
     }
 
-    return NextResponse.json({ exam });
+    return NextResponse.json({ exam }, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {
     console.error("Failed to fetch exam:", error);
     return NextResponse.json({ error: "تعذر تحميل بيانات الامتحان" }, { status: 500 });
@@ -88,6 +91,13 @@ export async function PATCH(req: Request, { params }: RouteParams) {
       scopeDetails,
     });
 
+    revalidatePlatformPaths([`/exams/${id}`, `/exams`]);
+    emitRealtimeEvent({
+      topic: "exams",
+      action: "exam_updated",
+      audience: "all",
+      entityId: id,
+    });
     return NextResponse.json({ success: true, exam: updated });
   } catch (error) {
     console.error("Failed to update exam:", error);
@@ -107,6 +117,13 @@ export async function DELETE(req: Request, { params }: RouteParams) {
 
     const { id } = await params;
     await ExamService.deleteExam(id);
+    revalidatePlatformPaths([`/exams/${id}`, "/exams"]);
+    emitRealtimeEvent({
+      topic: "exams",
+      action: "exam_deleted",
+      audience: "all",
+      entityId: id,
+    });
 
     return NextResponse.json({ success: true });
   } catch (error) {

@@ -3,6 +3,9 @@ import { getCurrentUser, canGradeAttempts } from "@/lib/auth";
 import { ExamService } from "@/services";
 import { z } from "zod";
 import { parseJson, jsonError } from "@/lib/http";
+import { emitRealtimeEvent, revalidatePlatformPaths } from "@/lib/realtime";
+
+export const dynamic = "force-dynamic";
 
 const gradeSchema = z.object({
   answerId: z.string().min(1),
@@ -83,6 +86,23 @@ export async function PATCH(req: Request) {
       score,
       attemptId
     );
+
+    revalidatePlatformPaths(["/admin/attempts", "/admin/analytics", "/admin/reports"]);
+    emitRealtimeEvent({
+      topic: "analytics",
+      action: "attempt_graded",
+      audience: "staff",
+      entityId: updatedAttempt?.id ?? attemptId,
+    });
+    if (updatedAttempt?.userId) {
+      emitRealtimeEvent({
+        topic: "exams",
+        action: "attempt_graded",
+        audience: "user",
+        targetUserId: updatedAttempt.userId,
+        entityId: updatedAttempt.id,
+      });
+    }
 
     return NextResponse.json({ success: true, updatedAttempt });
   } catch (error) {

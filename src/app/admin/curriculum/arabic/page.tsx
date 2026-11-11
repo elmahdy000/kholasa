@@ -7,6 +7,8 @@ import {
   type ArabicSubjectWorkspace,
 } from "@/components/admin/ArabicCurriculumManagerClient";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminArabicCurriculumPage() {
   const user = await getCurrentUser();
   if (!user || (user.role !== "ADMIN" && user.role !== "SUPER_ADMIN")) {

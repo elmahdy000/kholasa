@@ -3,6 +3,9 @@ import { z } from "zod";
 import { getCurrentUser, canManageCurriculum } from "@/lib/auth";
 import { forbidden, jsonError, parseJson } from "@/lib/http";
 import { ArabicCurriculumService } from "@/services/arabic-curriculum.service";
+import { emitRealtimeEvent, revalidatePlatformPaths } from "@/lib/realtime";
+
+export const dynamic = "force-dynamic";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -73,7 +76,7 @@ export async function GET(_req: Request, { params }: RouteParams) {
     await requireCurriculumEditor();
     const { id } = await params;
     const data = await ArabicCurriculumService.getArabicLessonEditorData(id);
-    return NextResponse.json(data);
+    return NextResponse.json(data, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {
     return jsonError(error);
   }
@@ -89,6 +92,13 @@ export async function PUT(req: Request, { params }: RouteParams) {
       id,
       body
     );
+    revalidatePlatformPaths([`/lessons/${id}`, "/admin/curriculum/arabic", `/admin/curriculum/lessons/${id}`]);
+    emitRealtimeEvent({
+      topic: "curriculum",
+      action: "arabic_lesson_saved",
+      audience: "all",
+      entityId: id,
+    });
     return NextResponse.json({ success: true, ...result });
   } catch (error) {
     return jsonError(error);
@@ -105,6 +115,13 @@ export async function POST(req: Request, { params }: RouteParams) {
       id,
       body as any
     );
+    revalidatePlatformPaths([`/lessons/${id}`, "/admin/curriculum/arabic", `/admin/curriculum/lessons/${id}`]);
+    emitRealtimeEvent({
+      topic: "curriculum",
+      action: "arabic_question_saved",
+      audience: "all",
+      entityId: id,
+    });
     return NextResponse.json({ success: true, question: saved });
   } catch (error) {
     return jsonError(error);

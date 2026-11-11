@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import type { Prisma } from "@prisma/client";
+import { emitRealtimeEvent, revalidatePlatformPaths } from "@/lib/realtime";
+
+export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
   try {
@@ -63,6 +66,9 @@ export async function POST(req: Request) {
         });
       }
     }
+
+    revalidatePlatformPaths(["/admin/users", "/admin/reports", "/dashboard"]);
+    emitRealtimeEvent({ topic: "users", action: "users_bulk_toggled", audience: isActive ? "staff" : "all" });
 
     return NextResponse.json({
       success: true,

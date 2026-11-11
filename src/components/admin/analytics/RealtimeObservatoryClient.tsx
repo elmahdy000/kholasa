@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useTransition } from "react";
+import { useRealtimeTopic } from "@/lib/realtime-client";
 import {
   Activity,
   Users,
@@ -90,7 +91,9 @@ export function RealtimeObservatoryClient({
       if (searchQuery.trim()) params.set("search", searchQuery.trim());
       if (sortBy !== "lastActive") params.set("sortBy", sortBy);
 
-      const res = await fetch(`/api/admin/analytics/realtime?${params.toString()}`);
+      const res = await fetch(`/api/admin/analytics/realtime?${params.toString()}`, {
+        cache: "no-store",
+      });
       if (res.ok) {
         const json = await res.json();
         if (json.success) {
@@ -137,6 +140,10 @@ export function RealtimeObservatoryClient({
     }, 1000);
     return () => clearInterval(timer);
   }, []);
+
+  useRealtimeTopic(["analytics", "users", "exams"], () => {
+    void fetchData(true);
+  });
 
   const handleCopyCode = (loginCode: string) => {
     navigator.clipboard.writeText(loginCode);

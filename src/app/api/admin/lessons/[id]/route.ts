@@ -4,6 +4,9 @@ import { getCurrentUser, isStaff, canManageCurriculum } from "@/lib/auth";
 import { forbidden, jsonError, notFound, parseJson } from "@/lib/http";
 import { CurriculumService } from "@/services/curriculum.service";
 import { AnalyticsService } from "@/services/analytics.service";
+import { emitRealtimeEvent, revalidatePlatformPaths } from "@/lib/realtime";
+
+export const dynamic = "force-dynamic";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -65,7 +68,7 @@ export async function GET(req: Request, { params }: RouteParams) {
     const { id } = await params;
     const lesson = await CurriculumService.getLesson(id);
     if (!lesson) throw notFound("الدرس غير موجود");
-    return NextResponse.json(lesson);
+    return NextResponse.json(lesson, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {
     return jsonError(error);
   }
@@ -81,6 +84,13 @@ export async function PUT(req: Request, { params }: RouteParams) {
     const fullLesson = await CurriculumService.updateLesson(id, body);
     await AnalyticsService.logAuditAction(user.id, "UPDATE", "lesson", id, {
       fields: Object.keys(body),
+    });
+    revalidatePlatformPaths([`/lessons/${id}`, `/admin/curriculum/lessons/${id}`]);
+    emitRealtimeEvent({
+      topic: "curriculum",
+      action: "lesson_updated",
+      audience: "all",
+      entityId: id,
     });
     return NextResponse.json({ success: true, lesson: fullLesson });
   } catch (error) {
@@ -98,6 +108,13 @@ export async function DELETE(req: Request, { params }: RouteParams) {
     const { id } = await params;
     await CurriculumService.deleteLesson(id);
     await AnalyticsService.logAuditAction(user.id, "DELETE", "lesson", id);
+    revalidatePlatformPaths([`/lessons/${id}`, `/admin/curriculum/lessons/${id}`]);
+    emitRealtimeEvent({
+      topic: "curriculum",
+      action: "lesson_deleted",
+      audience: "all",
+      entityId: id,
+    });
     return NextResponse.json({ success: true, message: "تم حذف الدرس بنجاح" });
   } catch (error) {
     return jsonError(error);

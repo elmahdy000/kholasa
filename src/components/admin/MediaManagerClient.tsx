@@ -17,6 +17,11 @@ export type { MediaFile, MediaManagerClientProps } from "./media/types";
 
 export function MediaManagerClient({ initialFiles }: MediaManagerClientProps) {
   const [files, setFiles] = useState<MediaFile[]>(initialFiles);
+  const [prevInitialFiles, setPrevInitialFiles] = useState<MediaFile[]>(initialFiles);
+  if (prevInitialFiles !== initialFiles) {
+    setPrevInitialFiles(initialFiles);
+    setFiles(initialFiles);
+  }
   const [filterType, setFilterType] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [uploading, setUploading] = useState(false);
@@ -70,7 +75,7 @@ export function MediaManagerClient({ initialFiles }: MediaManagerClientProps) {
       if (!res.ok) throw new Error(data.error);
 
       // Refresh files list
-      const listRes = await fetch("/api/admin/upload");
+      const listRes = await fetch("/api/admin/upload", { cache: "no-store" });
       const listData = await listRes.json();
       if (!listRes.ok) throw new Error(listData.error || "تم الرفع، لكن تعذر تحديث قائمة الملفات. أعد تحميل الصفحة.");
       if (listData.files) {

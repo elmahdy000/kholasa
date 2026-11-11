@@ -4,6 +4,8 @@ import { AdminShell } from "@/components/layout/AdminShell";
 import { MediaManagerClient } from "@/components/admin/MediaManagerClient";
 import { MediaService } from "@/services/media.service";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminMediaPage() {
   const user = await getCurrentUser();
 

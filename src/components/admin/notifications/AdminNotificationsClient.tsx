@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import {
   Bell,
   Megaphone,
@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import { useToast } from "@/components/ui/Toast";
+import { useRealtimeTopic } from "@/lib/realtime-client";
 
 interface GradeOption {
   id: string;
@@ -51,10 +52,47 @@ export function AdminNotificationsClient({
 }: AdminNotificationsClientProps) {
   const { toast } = useToast();
   const [announcements, setAnnouncements] = useState<AnnouncementItem[]>(initialAnnouncements);
+  const [livePushSubscribers, setLivePushSubscribers] = useState<number>(pushSubscribersCount);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [successBanner, setSuccessBanner] = useState<string | null>(null);
+
+  const [prevInitialAnnouncements, setPrevInitialAnnouncements] =
+    useState<AnnouncementItem[]>(initialAnnouncements);
+  if (prevInitialAnnouncements !== initialAnnouncements) {
+    setPrevInitialAnnouncements(initialAnnouncements);
+    setAnnouncements(initialAnnouncements);
+  }
+
+  const [prevPushSubscribersCount, setPrevPushSubscribersCount] =
+    useState<number>(pushSubscribersCount);
+  if (prevPushSubscribersCount !== pushSubscribersCount) {
+    setPrevPushSubscribersCount(pushSubscribersCount);
+    setLivePushSubscribers(pushSubscribersCount);
+  }
+
+  const refreshAnnouncements = useCallback(async () => {
+    try {
+      const res = await fetch("/api/admin/notifications?page=1&limit=30", {
+        cache: "no-store",
+      });
+      if (!res.ok) return;
+      const data = await res.json();
+      if (Array.isArray(data.items)) {
+        setAnnouncements(data.items);
+      }
+      if (typeof data.pushSubscribersCount === "number") {
+        setLivePushSubscribers(data.pushSubscribersCount);
+      }
+    } catch {
+      // Silent retry on next realtime tick
+    }
+  }, []);
+
+  useRealtimeTopic(["notifications"], () => {
+    void refreshAnnouncements();
+  });
 
   // Confirmation Modal State
   const [confirmModal, setConfirmModal] = useState<{
@@ -88,6 +126,7 @@ export function AdminNotificationsClient({
     try {
       const res = await fetch("/api/admin/notifications", {
         method: "POST",
+        cache: "no-store",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           title,
@@ -106,7 +145,7 @@ export function AdminNotificationsClient({
         throw new Error(errData.error || "فشل إرسال الإشعار");
       }
 
-      const { announcement } = await res.json();
+      const { announcement, pushResult } = await res.json();
       setAnnouncements((prev) => [
         {
           ...announcement,
@@ -125,12 +164,18 @@ export function AdminNotificationsClient({
       setTargetSchoolCategory("");
       setIsModalOpen(false);
 
-      const successText = sendPush
-        ? "تم إرسال الإشعار وبثه عبر إشعارات المتصفح بنجاح!"
-        : "تم حفظ الإشعار ونشره للطلاب بنجاح!";
+      let successText = "تم حفظ الإشعار ونشره للطلاب بنجاح!";
+      if (sendPush) {
+        if (pushResult && pushResult.total > 0) {
+          successText = `تم نشر الإعلان وبثه عبر المتصفح (${pushResult.sentCount} من أصل ${pushResult.total} مشترك)!`;
+        } else {
+          successText = "تم نشر الإعلان بنجاح (لا يوجد مشتركو متصفح مطابقون حالياً).";
+        }
+      }
       setSuccessBanner(successText);
       toast.success(successText);
       setTimeout(() => setSuccessBanner(null), 5000);
+      void refreshAnnouncements();
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "حدث خطأ أثناء إرسال الإشعار";
       toast.error(msg);
@@ -151,11 +196,15 @@ export function AdminNotificationsClient({
     const id = confirmModal.announcementId;
     setDeletingId(id);
     try {
-      const res = await fetch(`/api/admin/notifications/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/admin/notifications/${id}`, {
+        method: "DELETE",
+        cache: "no-store",
+      });
       if (res.ok) {
         setAnnouncements((prev) => prev.filter((a) => a.id !== id));
         setConfirmModal((prev) => ({ ...prev, isOpen: false }));
         toast.success("تم حذف الإعلان بنجاح");
+        void refreshAnnouncements();
       } else {
         toast.error("فشل حذف الإشعار");
       }
@@ -235,7 +284,7 @@ export function AdminNotificationsClient({
             <Radio className="w-4 h-4 text-[#D97706]" />
           </div>
           <div className="text-2xl font-black font-mono text-[#0F172A] dark:text-[#F8FAFC] mt-2">
-            {pushSubscribersCount}
+            {livePushSubscribers}
           </div>
           <span className="text-[11px] text-[#D97706]">جهاز مفعل للإشعارات اللحظية</span>
         </div>

@@ -4,7 +4,7 @@
 //  - cache-first for /_next/static/** (content-hashed), fonts and icons
 //  - network-first for navigations; only public pages are cached, otherwise fall back to /offline
 //  - never touch /api/** or non-GET requests (lessons for offline use live in IndexedDB)
-const VERSION = "v6";
+const VERSION = "v7";
 const STATIC_CACHE = `kholasa-static-${VERSION}`;
 const PAGE_CACHE = `kholasa-pages-${VERSION}`;
 const OFFLINE_MEDIA_CACHE = "el-kholasa-media-v1";
@@ -242,4 +242,52 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(cacheFirst(request));
   }
   // Everything else (RSC payloads, uploads, images) goes straight to the network.
+});
+
+self.addEventListener("push", (event) => {
+  if (!event.data) return;
+
+  let data = {};
+  try {
+    data = event.data.json();
+  } catch {
+    data = { title: "الخلاصة", body: event.data.text() };
+  }
+
+  const title = data.title || "إشعار من الخلاصة";
+  const options = {
+    body: data.body || "",
+    icon: data.icon || "/icon-192.png",
+    badge: data.badge || "/icon-192.png",
+    dir: "rtl",
+    lang: "ar",
+    tag: data.tag || "kholasa-notification",
+    renotify: true,
+    data: { url: data.url || "/dashboard" },
+  };
+
+  event.waitUntil(self.registration.showNotification(title, options));
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const targetUrl = (event.notification.data && event.notification.data.url) || "/dashboard";
+
+  event.waitUntil(
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((windowClients) => {
+      for (const client of windowClients) {
+        if ("focus" in client) {
+          client.focus();
+          if ("navigate" in client && client.url !== new URL(targetUrl, self.location.origin).href) {
+            return client.navigate(targetUrl).catch(() => undefined);
+          }
+          return client;
+        }
+      }
+      if (self.clients.openWindow) {
+        return self.clients.openWindow(targetUrl);
+      }
+      return undefined;
+    })
+  );
 });

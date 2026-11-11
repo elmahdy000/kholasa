@@ -4,6 +4,8 @@ import { getCurrentUser, canManageExams } from "@/lib/auth";
 import { AdminShell } from "@/components/layout/AdminShell";
 import { ExamCreateForm } from "@/components/admin/exams/ExamCreateForm";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminExamCreatePage() {
   const user = await getCurrentUser();
 

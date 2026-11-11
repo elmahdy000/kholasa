@@ -4,6 +4,8 @@ import { getCurrentUser, isStaff } from "@/lib/auth";
 import { AdminShell } from "@/components/layout/AdminShell";
 import { CurriculumManagerClient } from "@/components/admin/CurriculumManagerClient";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminCurriculumPage() {
   const user = await getCurrentUser();
 

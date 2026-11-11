@@ -4,6 +4,9 @@ import { getCurrentUser } from "@/lib/auth";
 import { jsonError, parseJson } from "@/lib/http";
 import { rateLimit, withRetryAfter } from "@/lib/rate-limit";
 import { DailyCheckinService } from "@/services";
+import { emitRealtimeEvent, revalidatePlatformPaths } from "@/lib/realtime";
+
+export const dynamic = "force-dynamic";
 
 const answerSchema = z.object({
   questionId: z.string().min(1).max(64),
@@ -32,6 +35,25 @@ export async function POST(req: Request) {
       answers,
       timeSpentSeconds || 60
     );
+
+    revalidatePlatformPaths([
+      "/admin/analytics",
+      "/admin/reports",
+      "/leaderboard",
+      "/dashboard",
+    ]);
+    emitRealtimeEvent({
+      topic: "analytics",
+      action: "daily_checkin_submitted",
+      audience: "staff",
+      entityId: user.id,
+    });
+    emitRealtimeEvent({
+      topic: "notifications",
+      action: "daily_checkin_submitted",
+      audience: "user",
+      targetUserId: user.id,
+    });
 
     return NextResponse.json({
       success: true,

@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import { getCurrentUser, canManageExams } from "@/lib/auth";
 import { ExamService } from "@/services";
 import { jsonError } from "@/lib/http";
+import { emitRealtimeEvent, revalidatePlatformPaths } from "@/lib/realtime";
+
+export const dynamic = "force-dynamic";
 
 export async function GET(req: Request) {
   try {
@@ -14,7 +17,10 @@ export async function GET(req: Request) {
     const subjectId = searchParams.get("subjectId") || undefined;
 
     const formatted = await ExamService.getAdminExamsList(subjectId);
-    return NextResponse.json({ exams: formatted });
+    return NextResponse.json(
+      { exams: formatted },
+      { headers: { "Cache-Control": "no-store" } }
+    );
   } catch (error) {
     console.error("Failed to fetch admin exams:", error);
     return NextResponse.json({ error: "تعذر تحميل قائمة الامتحانات" }, { status: 500 });
@@ -76,6 +82,14 @@ export async function POST(req: Request) {
       endsAt: endsAt || null,
       isPublished: isPublished !== false,
       scopeDetails: scopeDetails || null,
+    });
+
+    revalidatePlatformPaths([`/exams/${exam.id}`, `/subjects/${subjectId}`]);
+    emitRealtimeEvent({
+      topic: "exams",
+      action: "exam_created",
+      audience: "all",
+      entityId: exam.id,
     });
 
     return NextResponse.json({

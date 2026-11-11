@@ -13,6 +13,7 @@ import { StudentMobileBottomNav } from "./student/StudentMobileBottomNav";
 import { StudentHeader } from "./student/StudentHeader";
 import { StudentFooter } from "./student/StudentFooter";
 import { StudentSearchModal } from "./student/StudentSearchModal";
+import { RealtimeSyncBridge } from "@/lib/realtime-client";
 
 interface StudentShellContextType {
   isInsideShell: boolean;
@@ -94,6 +95,7 @@ export function StudentShell({ children, user: propUser }: StudentShellProps) {
 
   return (
     <StudentShellContext.Provider value={{ isInsideShell: true, user }}>
+      <RealtimeSyncBridge />
       <div className="min-h-screen flex flex-col bg-[#F7F9FC] dark:bg-[#081426] text-[#091B40] dark:text-[#F5F7FB]">
         {/* Desktop & Tablet Top Navbar */}
         <StudentHeader

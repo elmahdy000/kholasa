@@ -5,6 +5,9 @@ import { unauthorized, badRequest, forbidden, jsonError } from "@/lib/http";
 import { prisma } from "@/lib/prisma";
 import { MediaService } from "@/services/media.service";
 import { AnalyticsService } from "@/services/analytics.service";
+import { emitRealtimeEvent, revalidatePlatformPaths } from "@/lib/realtime";
+
+export const dynamic = "force-dynamic";
 
 const MAX_RECEIPT_BYTES = 25 * 1024 * 1024; // 25 MB limit for receipt photos
 
@@ -69,6 +72,20 @@ export async function POST(req: Request) {
         fileSize: uploaded.size,
       }
     ).catch(() => null);
+
+    revalidatePlatformPaths(["/admin/users", "/admin/reports", "/subscription"]);
+    emitRealtimeEvent({
+      topic: "users",
+      action: "receipt_uploaded",
+      audience: "staff",
+      entityId: user.id,
+    });
+    emitRealtimeEvent({
+      topic: "notifications",
+      action: "pending_receipt",
+      audience: "staff",
+      entityId: user.id,
+    });
 
     return NextResponse.json({
       success: true,

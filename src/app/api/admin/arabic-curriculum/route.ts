@@ -3,6 +3,9 @@ import { z } from "zod";
 import { getCurrentUser } from "@/lib/auth";
 import { forbidden, jsonError, parseJson } from "@/lib/http";
 import { ArabicCurriculumService } from "@/services/arabic-curriculum.service";
+import { emitRealtimeEvent, revalidatePlatformPaths } from "@/lib/realtime";
+
+export const dynamic = "force-dynamic";
 
 async function requireArabicAdmin() {
   const user = await getCurrentUser();
@@ -40,7 +43,7 @@ export async function GET() {
   try {
     await requireArabicAdmin();
     const workspace = await ArabicCurriculumService.getAdminArabicWorkspace();
-    return NextResponse.json(workspace);
+    return NextResponse.json(workspace, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {
     return jsonError(error);
   }
@@ -63,6 +66,13 @@ export async function POST(req: Request) {
         body.rawJson,
         body.notes
       );
+      revalidatePlatformPaths([`/lessons/${body.lessonId}`, "/admin/curriculum/arabic", `/admin/curriculum/lessons/${body.lessonId}`]);
+      emitRealtimeEvent({
+        topic: "curriculum",
+        action: "arabic_saved_draft",
+        audience: "all",
+        entityId: body.lessonId,
+      });
       return NextResponse.json({ success: true, ...saved });
     }
 
@@ -72,6 +82,13 @@ export async function POST(req: Request) {
         body.lessonId,
         body.versionId
       );
+      revalidatePlatformPaths([`/lessons/${body.lessonId}`, "/admin/curriculum/arabic", `/admin/curriculum/lessons/${body.lessonId}`]);
+      emitRealtimeEvent({
+        topic: "curriculum",
+        action: "arabic_published",
+        audience: "all",
+        entityId: body.lessonId,
+      });
       return NextResponse.json({ success: true, ...published });
     }
 
@@ -80,6 +97,13 @@ export async function POST(req: Request) {
       body.lessonId,
       body.versionId
     );
+    revalidatePlatformPaths([`/lessons/${body.lessonId}`, "/admin/curriculum/arabic", `/admin/curriculum/lessons/${body.lessonId}`]);
+    emitRealtimeEvent({
+      topic: "curriculum",
+      action: "arabic_rolled_back",
+      audience: "all",
+      entityId: body.lessonId,
+    });
     return NextResponse.json({ success: true, ...restored });
   } catch (error) {
     return jsonError(error);

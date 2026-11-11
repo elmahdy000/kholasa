@@ -54,6 +54,11 @@ function getTrackIcon(code: string) {
 
 export function CurriculumManagerClient({ initialSystems }: CurriculumManagerClientProps) {
   const [systems, setSystems] = useState<System[]>(initialSystems);
+  const [prevInitialSystems, setPrevInitialSystems] = useState<System[]>(initialSystems);
+  if (prevInitialSystems !== initialSystems) {
+    setPrevInitialSystems(initialSystems);
+    setSystems(initialSystems);
+  }
 
   // Active Educational System (Defaulting to Egyptian Baccalaureate)
   const activeSystem = systems[0];

@@ -14,6 +14,8 @@ interface ExamPageProps {
   searchParams: Promise<{ attemptId?: string }>;
 }
 
+export const dynamic = "force-dynamic";
+
 export default async function ExamPage({ params, searchParams }: ExamPageProps) {
   const { id } = await params;
   const { attemptId: queryAttemptId } = await searchParams;

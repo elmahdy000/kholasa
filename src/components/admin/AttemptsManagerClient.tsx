@@ -7,6 +7,7 @@ import { AttemptFilterBar } from "./attempts/AttemptFilterBar";
 import { AttemptTable } from "./attempts/AttemptTable";
 import { AttemptInspectModal } from "./attempts/AttemptInspectModal";
 import { useToast } from "@/components/ui/Toast";
+import { useRealtimeTopic } from "@/lib/realtime-client";
 
 export type { AttemptsManagerClientProps, Attempt, Answer, PaginationInfo } from "./attempts/types";
 
@@ -50,7 +51,9 @@ export function AttemptsManagerClient({
       if (mode !== "all") params.set("mode", mode);
       if (search.trim()) params.set("search", search.trim());
 
-      const res = await fetch(`/api/admin/attempts?${params.toString()}`);
+      const res = await fetch(`/api/admin/attempts?${params.toString()}`, {
+        cache: "no-store",
+      });
       const data = await res.json();
       if (res.ok && data.attempts) {
         setAttempts(data.attempts);
@@ -78,13 +81,26 @@ export function AttemptsManagerClient({
     return () => clearTimeout(timer);
   }, [searchQuery, modeFilter, fetchAttempts]);
 
+  useEffect(() => {
+    setAttempts(initialAttempts);
+    if (initialPagination) {
+      setPagination(initialPagination);
+    }
+  }, [initialAttempts, initialPagination]);
+
+  useRealtimeTopic(["analytics", "exams"], () => {
+    void fetchAttempts(pagination.page, modeFilter, searchQuery);
+  });
+
   const handleOpenInspect = async (attempt: Attempt) => {
     const request = ++inspectRequest.current;
     setDetailsError(null);
     setInspectModal({ isOpen: true, attempt, loadingDetails: true });
 
     try {
-      const res = await fetch(`/api/admin/attempts?id=${attempt.id}`);
+      const res = await fetch(`/api/admin/attempts?id=${attempt.id}`, {
+        cache: "no-store",
+      });
       const data = await res.json();
       if (request !== inspectRequest.current) return;
       if (!res.ok || !data.attempt) throw new Error(data.error || "تعذر تحميل تفاصيل المحاولة");
@@ -146,18 +162,18 @@ export function AttemptsManagerClient({
           prev.map((a) =>
             a.id === attemptId
               ? {
-                  ...a,
-                  score: data.updatedAttempt.score,
-                  percentage: data.updatedAttempt.percentage,
-                }
+                ...a,
+                score: data.updatedAttempt.score,
+                percentage: data.updatedAttempt.percentage,
+              }
               : a
           )
         );
 
         toast.success("تم تحديث الدرجة واعتمادها بنجاح");
       }
-    } catch (err: any) {
-      toast.error(err.message || "فشل تحديث الدرجة");
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "فشل تحديث الدرجة");
     } finally {
       setSavingGradeId(null);
     }

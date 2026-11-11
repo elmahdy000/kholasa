@@ -5,6 +5,8 @@ import { AdminShell } from "@/components/layout/AdminShell";
 import { AttemptsManagerClient } from "@/components/admin/AttemptsManagerClient";
 import { ExamService } from "@/services";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminAttemptsPage() {
   const user = await getCurrentUser();
 

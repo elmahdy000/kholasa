@@ -22,6 +22,11 @@ export function ExamManagerClient({
   subjects,
 }: ExamManagerClientProps) {
   const [exams, setExams] = useState<ExamItem[]>(initialExams);
+  const [prevInitialExams, setPrevInitialExams] = useState<ExamItem[]>(initialExams);
+  if (prevInitialExams !== initialExams) {
+    setPrevInitialExams(initialExams);
+    setExams(initialExams);
+  }
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedSubjectId, setSelectedSubjectId] = useState("all");
   const [selectedType, setSelectedType] = useState("all");

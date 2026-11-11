@@ -43,6 +43,11 @@ export function QuestionBankManagerClient({
   initialSubjectId,
 }: QuestionBankManagerClientProps) {
   const [questions, setQuestions] = useState<Question[]>(initialQuestions);
+  const [prevInitialQuestions, setPrevInitialQuestions] = useState<Question[]>(initialQuestions);
+  if (prevInitialQuestions !== initialQuestions) {
+    setPrevInitialQuestions(initialQuestions);
+    setQuestions(initialQuestions);
+  }
   const [importCommitted, setImportCommitted] = useState(false);
 
   // Multi-selection state for Bulk Actions

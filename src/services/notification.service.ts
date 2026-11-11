@@ -72,10 +72,81 @@ export class NotificationService {
       },
     });
 
+    const now = new Date();
+    const isStaff =
+      user?.role === "ADMIN" || user?.role === "SUPER_ADMIN" || user?.role === "TEACHER";
+
+    if (isStaff) {
+      const pendingReceiptsCount =
+        typeof prisma.user.count === "function"
+          ? await prisma.user.count({
+              where: {
+                role: "STUDENT",
+                subscriptionStatus: "PENDING_VERIFICATION",
+              },
+            })
+          : 0;
+
+      if (pendingReceiptsCount > 0) {
+        notifications.push({
+          id: `admin_pending_receipts_${pendingReceiptsCount}`,
+          type: "SYSTEM",
+          title: "إيصالات اشتراك بانتظار المراجعة",
+          message: `يوجد ${pendingReceiptsCount} طالب في انتظار مراجعة وتفعيل إيصال الدفع.`,
+          link: "/admin/users",
+          createdAt: now,
+          isUrgent: true,
+          isRead: false,
+          isPersisted: false,
+        });
+      }
+
+      const staffAnnouncements = await prisma.announcement.findMany({
+        where: {
+          OR: [{ expiresAt: null }, { expiresAt: { gt: now } }],
+        },
+        include: {
+          reads: {
+            where: { userId },
+            select: { id: true, readAt: true },
+          },
+        },
+        orderBy: { createdAt: "desc" },
+        take: 20,
+      });
+
+      for (const ann of staffAnnouncements) {
+        notifications.push({
+          id: ann.id,
+          type: ann.type,
+          title: ann.title,
+          message: ann.message,
+          link: ann.link || "/admin/notifications",
+          createdAt: ann.createdAt,
+          isUrgent: ann.isUrgent,
+          isRead: ann.reads.length > 0,
+          isPersisted: true,
+        });
+      }
+
+      notifications.sort((a, b) => {
+        if (a.isUrgent && !b.isUrgent) return -1;
+        if (!a.isUrgent && b.isUrgent) return 1;
+        if (!a.isRead && b.isRead) return -1;
+        if (a.isRead && !b.isRead) return 1;
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      });
+
+      const unreadCount = notifications.filter((n) => !n.isRead).length;
+      return Object.assign(notifications, {
+        notifications,
+        unreadCount,
+      });
+    }
+
     const scope = getCurriculumScope(user);
     const scopedSubjectFilter = subjectScopeWhere(scope);
 
-    const now = new Date();
     const startOfToday = getCairoStartOfDay(now);
     const todayKey = getCairoDayKey(now);
 
@@ -108,7 +179,7 @@ export class NotificationService {
       });
     }
 
-    // 2. Live Academic Check: Unresolved mistakes (scoped to published curriculum & track)
+    // 2. Live Academic Check: Unresolved mistakes (scoped to published, non-under-construction curriculum & track)
     const unresolvedMistakesCount = await prisma.mistakeReview.count({
       where: {
         userId,
@@ -117,6 +188,7 @@ export class NotificationService {
           status: "PUBLISHED",
           subject: {
             isPublished: true,
+            isUnderConstruction: false,
             ...scopedSubjectFilter,
           },
         },
@@ -149,6 +221,7 @@ export class NotificationService {
             isPublished: true,
             subject: {
               isPublished: true,
+              isUnderConstruction: false,
               ...scopedSubjectFilter,
             },
           },
@@ -244,8 +317,8 @@ export class NotificationService {
     return {
       title: "منصة الخلاصة | افهمها صح.. هتفضل معاك",
       body: "حان موعد تحدي الدخول اليومي. ثبّت معلوماتك واستمر في الصدارة!",
-      icon: "/icons/icon-192x192.png",
-      badge: "/icons/icon-192x192.png",
+      icon: "/icon-192.png",
+      badge: "/icon-192.png",
       url: "/dashboard",
       tag: "daily-gatekeeper-exam",
     };
@@ -282,40 +355,49 @@ export class NotificationService {
   }
 
   /**
-   * Mark all active announcements as read for a student
+   * Mark all active announcements as read for a user (all announcements for staff, scoped for students)
    */
   static async markAllAsRead(userId: string): Promise<number> {
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { gradeId: true, schoolCategory: true },
+      select: { role: true, gradeId: true, schoolCategory: true },
     });
 
+    const isStaff =
+      user?.role === "ADMIN" || user?.role === "SUPER_ADMIN" || user?.role === "TEACHER";
     const now = new Date();
     const activeAnnouncements = await prisma.announcement.findMany({
-      where: {
-        AND: [
-          {
-            OR: [
-              { targetGradeId: null },
-              ...(user?.gradeId ? [{ targetGradeId: user.gradeId }] : []),
+      where: isStaff
+        ? {
+            AND: [
+              { OR: [{ expiresAt: null }, { expiresAt: { gt: now } }] },
+              { reads: { none: { userId } } },
+            ],
+          }
+        : {
+            AND: [
+              {
+                OR: [
+                  { targetGradeId: null },
+                  ...(user?.gradeId ? [{ targetGradeId: user.gradeId }] : []),
+                ],
+              },
+              {
+                OR: [
+                  { targetSchoolCategory: null },
+                  ...(user?.schoolCategory ? [{ targetSchoolCategory: user.schoolCategory }] : []),
+                ],
+              },
+              {
+                OR: [{ expiresAt: null }, { expiresAt: { gt: now } }],
+              },
+              {
+                reads: {
+                  none: { userId },
+                },
+              },
             ],
           },
-          {
-            OR: [
-              { targetSchoolCategory: null },
-              ...(user?.schoolCategory ? [{ targetSchoolCategory: user.schoolCategory }] : []),
-            ],
-          },
-          {
-            OR: [{ expiresAt: null }, { expiresAt: { gt: now } }],
-          },
-          {
-            reads: {
-              none: { userId },
-            },
-          },
-        ],
-      },
       select: { id: true },
     });
 
@@ -361,20 +443,24 @@ export class NotificationService {
       },
     });
 
-    // If sendPush is true, broadcast web push notification to target subscribers
+    // If sendPush is true, await web push broadcast so callers get exact delivery stats
+    let pushResult: { sentCount: number; total: number } | null = null;
     if (data.sendPush) {
-      void this.broadcastPushNotification({
-        title: data.title,
-        body: data.message,
-        url: data.link || "/dashboard",
-        targetGradeId: data.targetGradeId || undefined,
-        targetSchoolCategory: data.targetSchoolCategory || undefined,
-      }).catch((err) => {
+      try {
+        pushResult = await this.broadcastPushNotification({
+          title: data.title,
+          body: data.message,
+          url: data.link || "/dashboard",
+          targetGradeId: data.targetGradeId || undefined,
+          targetSchoolCategory: data.targetSchoolCategory || undefined,
+        });
+      } catch (err) {
         console.error("Failed to broadcast push notification:", err);
-      });
+        pushResult = { sentCount: 0, total: 0 };
+      }
     }
 
-    return announcement;
+    return Object.assign(announcement, { pushResult });
   }
 
   /**
@@ -483,8 +569,8 @@ export class NotificationService {
     const notificationPayload = JSON.stringify({
       title: payload.title,
       body: payload.body,
-      icon: payload.icon || "/icons/icon-192x192.png",
-      badge: "/icons/icon-192x192.png",
+      icon: payload.icon || "/icon-192.png",
+      badge: "/icon-192.png",
       data: {
         url: payload.url || "/dashboard",
       },

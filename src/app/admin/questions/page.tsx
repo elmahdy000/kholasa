@@ -4,6 +4,8 @@ import { getCurrentUser, isStaff } from "@/lib/auth";
 import { AdminShell } from "@/components/layout/AdminShell";
 import { QuestionBankManagerClient } from "@/components/admin/QuestionBankManagerClient";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminQuestionsPage({ searchParams }: {
   searchParams: Promise<{ action?: string; subjectId?: string }>;
 }) {

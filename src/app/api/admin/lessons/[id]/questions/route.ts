@@ -3,6 +3,9 @@ import { getCurrentUser, canManageQuestions } from "@/lib/auth";
 import { QuestionService } from "@/services/question.service";
 import { AnalyticsService } from "@/services/analytics.service";
 import { QuestionType } from "@prisma/client";
+import { emitRealtimeEvent, revalidatePlatformPaths } from "@/lib/realtime";
+
+export const dynamic = "force-dynamic";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -25,11 +28,14 @@ export async function GET(req: Request, { params }: RouteParams) {
       limit: 1000,
     });
 
-    return NextResponse.json({
-      success: true,
-      questions: result.questions,
-      total: result.pagination.total,
-    });
+    return NextResponse.json(
+      {
+        success: true,
+        questions: result.questions,
+        total: result.pagination.total,
+      },
+      { headers: { "Cache-Control": "no-store" } }
+    );
   } catch (error) {
     console.error("Failed to fetch lesson questions:", error);
     return NextResponse.json({ error: "تعذر تحميل أسئلة الدرس" }, { status: 500 });
@@ -46,10 +52,8 @@ export async function DELETE(req: Request, { params }: RouteParams) {
     const { id: lessonId } = await params;
     const { searchParams } = new URL(req.url);
     const typeParam = searchParams.get("type");
-    const isAll = searchParams.get("all") === "true";
 
-    // Check if request body contains explicit question IDs
-    let body: any = null;
+    let body: { ids?: unknown[] } | null = null;
     try {
       body = await req.json();
     } catch {
@@ -57,13 +61,26 @@ export async function DELETE(req: Request, { params }: RouteParams) {
     }
 
     if (body?.ids && Array.isArray(body.ids) && body.ids.length > 0) {
-      const validIds = body.ids.filter((id: unknown) => typeof id === "string" && id.trim().length > 0);
+      const validIds = body.ids.filter(
+        (id): id is string => typeof id === "string" && id.trim().length > 0
+      );
       const res = await QuestionService.bulkDeleteQuestions(validIds);
 
       await AnalyticsService.logAuditAction(user.id, "DELETE", "question", lessonId, {
         lessonId,
         questionIds: validIds,
         deletedCount: res.count,
+      });
+
+      revalidatePlatformPaths([
+        `/lessons/${lessonId}`,
+        `/admin/curriculum/lessons/${lessonId}`,
+      ]);
+      emitRealtimeEvent({
+        topic: "curriculum",
+        action: "lesson_questions_deleted",
+        audience: "all",
+        entityId: lessonId,
       });
 
       return NextResponse.json({
@@ -73,7 +90,6 @@ export async function DELETE(req: Request, { params }: RouteParams) {
       });
     }
 
-    // Otherwise, delete by lesson filter (either all or specific type)
     let filterType: QuestionType | undefined = undefined;
     if (typeParam && Object.values(QuestionType).includes(typeParam as QuestionType)) {
       filterType = typeParam as QuestionType;
@@ -87,6 +103,17 @@ export async function DELETE(req: Request, { params }: RouteParams) {
       lessonId,
       filterType: filterType || "ALL",
       deletedCount: result.count,
+    });
+
+    revalidatePlatformPaths([
+      `/lessons/${lessonId}`,
+      `/admin/curriculum/lessons/${lessonId}`,
+    ]);
+    emitRealtimeEvent({
+      topic: "curriculum",
+      action: "lesson_questions_deleted",
+      audience: "all",
+      entityId: lessonId,
     });
 
     return NextResponse.json({

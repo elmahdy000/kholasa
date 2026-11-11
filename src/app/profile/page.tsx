@@ -5,6 +5,8 @@ import { getCurriculumScope, subjectScopeWhere } from "@/lib/curriculum";
 import { StudentShell } from "@/components/layout/StudentShell";
 import { ProfileView } from "@/components/profile/ProfileView";
 
+export const dynamic = "force-dynamic";
+
 export default async function ProfilePage() {
   const user = await getCurrentUser();
 

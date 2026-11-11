@@ -12,6 +12,8 @@ interface AdminQuestionsImportPageProps {
   }>;
 }
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminQuestionsImportPage({
   searchParams,
 }: AdminQuestionsImportPageProps) {

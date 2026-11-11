@@ -4,6 +4,9 @@ import { getCurrentUser, isStaff } from "@/lib/auth";
 import { badRequest, forbidden, jsonError, parseJson } from "@/lib/http";
 import { CurriculumService } from "@/services/curriculum.service";
 import { AnalyticsService } from "@/services/analytics.service";
+import { emitRealtimeEvent, revalidatePlatformPaths } from "@/lib/realtime";
+
+export const dynamic = "force-dynamic";
 
 const name = z.string().trim().min(1).max(120);
 const code = z.string().trim().min(1).max(50);
@@ -112,7 +115,7 @@ export async function GET() {
     if (!user || !isStaff(user.role)) throw forbidden("غير مصرح");
 
     const systems = await CurriculumService.getStructureTree();
-    return NextResponse.json({ systems });
+    return NextResponse.json({ systems }, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {
     return jsonError(error);
   }
@@ -132,6 +135,14 @@ export async function POST(req: Request) {
 
     await AnalyticsService.logAuditAction(user.id, "CREATE", body.type, item.id, {
       name: body.data.name,
+    });
+    revalidatePlatformPaths(["/setup", ...(body.type === "subject" ? [`/subjects/${item.id}`] : [])]);
+    emitRealtimeEvent({
+      topic: "structure",
+      action: "changed",
+      audience: "all",
+      entityId: item.id,
+      meta: { type: body.type },
     });
     return NextResponse.json({ success: true, item });
   } catch (error) {
@@ -153,6 +164,14 @@ export async function PATCH(req: Request) {
 
     await AnalyticsService.logAuditAction(user.id, "UPDATE", body.type, body.id, {
       fields: Object.keys(body.data),
+    });
+    revalidatePlatformPaths(["/setup", ...(body.type === "subject" ? [`/subjects/${item.id}`] : [])]);
+    emitRealtimeEvent({
+      topic: "structure",
+      action: "changed",
+      audience: "all",
+      entityId: item.id,
+      meta: { type: body.type },
     });
     return NextResponse.json({ success: true, item });
   } catch (error) {
@@ -177,6 +196,14 @@ export async function DELETE(req: Request) {
     else throw badRequest("نوع العنصر غير مدعوم");
 
     await AnalyticsService.logAuditAction(user.id, "DELETE", type, id);
+    revalidatePlatformPaths(["/setup"]);
+    emitRealtimeEvent({
+      topic: "structure",
+      action: "deleted",
+      audience: "all",
+      entityId: id,
+      meta: { type },
+    });
     return NextResponse.json({ success: true });
   } catch (error) {
     return jsonError(error);

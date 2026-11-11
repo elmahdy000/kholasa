@@ -5,6 +5,8 @@ import { EXCLUDE_DEMO_SANDBOX_CONDITION } from "@/lib/demo";
 import { AdminShell } from "@/components/layout/AdminShell";
 import { UserManagerClient } from "@/components/admin/UserManagerClient";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminUsersPage() {
   const user = await getCurrentUser();
 

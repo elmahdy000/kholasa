@@ -127,6 +127,12 @@ export function ArabicCurriculumManagerClient({
 }: ArabicCurriculumManagerClientProps) {
   const [subjects, setSubjects] =
     useState<ArabicSubjectWorkspace[]>(initialSubjects);
+  const [prevInitialSubjects, setPrevInitialSubjects] =
+    useState<ArabicSubjectWorkspace[]>(initialSubjects);
+  if (prevInitialSubjects !== initialSubjects) {
+    setPrevInitialSubjects(initialSubjects);
+    setSubjects(initialSubjects);
+  }
 
   const [selectedSubjectId, setSelectedSubjectId] = useState<string>(
     initialSubjects[0]?.id || ""
@@ -176,7 +182,7 @@ export function ArabicCurriculumManagerClient({
   }>({ isOpen: false, title: "", description: "" });
 
   const refreshWorkspace = async () => {
-    const res = await fetch("/api/admin/arabic-curriculum");
+    const res = await fetch("/api/admin/arabic-curriculum", { cache: "no-store" });
     if (res.ok) {
       const data = await res.json();
       setSubjects(data.subjects || []);

@@ -10,6 +10,8 @@ import { AdminRecentActivity } from "@/components/admin/dashboard/AdminRecentAct
 import { AdminTelemetryBar } from "@/components/admin/dashboard/AdminTelemetryBar";
 import type { AdminDashboardMetrics } from "@/components/admin/dashboard/types";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminDashboardPage() {
   const user = await getCurrentUser();
 

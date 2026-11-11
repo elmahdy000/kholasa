@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useTransition } from "react";
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import {
   Bell,
@@ -14,6 +14,7 @@ import {
 } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/components/ui/Toast";
+import { useRealtimeTopic } from "@/lib/realtime-client";
 
 export interface InAppNotificationItem {
   id: string;
@@ -115,10 +116,10 @@ export function NotificationBell() {
     }
   }, []);
 
-  // Fetch notifications
-  const fetchNotifications = async () => {
+  // Fetch notifications cleanly with no-store
+  const fetchNotifications = useCallback(async () => {
     try {
-      const res = await fetch("/api/notifications");
+      const res = await fetch("/api/notifications", { cache: "no-store" });
       if (res.ok) {
         const data = await res.json();
         setNotifications(data.notifications || []);
@@ -129,16 +130,37 @@ export function NotificationBell() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     void fetchNotifications();
-    // Poll notifications every 60 seconds
     const timer = setInterval(() => {
       void fetchNotifications();
     }, 60000);
-    return () => clearInterval(timer);
-  }, []);
+
+    const handleResume = () => {
+      if (document.visibilityState === "visible") {
+        void fetchNotifications();
+      }
+    };
+    const handleFocus = () => {
+      void fetchNotifications();
+    };
+
+    document.addEventListener("visibilitychange", handleResume);
+    window.addEventListener("focus", handleFocus);
+
+    return () => {
+      clearInterval(timer);
+      document.removeEventListener("visibilitychange", handleResume);
+      window.removeEventListener("focus", handleFocus);
+    };
+  }, [fetchNotifications]);
+
+  // Real-time push via shared SSE event stream
+  useRealtimeTopic(["notifications", "users"], () => {
+    void fetchNotifications();
+  });
 
   // Close on outside click
   useEffect(() => {
@@ -159,16 +181,24 @@ export function NotificationBell() {
   const handleMarkAllAsRead = async () => {
     startTransition(async () => {
       try {
-        await fetch("/api/notifications", {
+        const res = await fetch("/api/notifications", {
           method: "PATCH",
+          cache: "no-store",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ all: true }),
+          body: JSON.stringify({ markAll: true }),
         });
-        setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
-        setUnreadCount(0);
+        if (!res.ok) {
+          toast.error("تعذر تحديد الإشعارات كمقروءة");
+          return;
+        }
+        setNotifications((prev) =>
+          prev.map((n) => (n.isPersisted ? { ...n, isRead: true } : n))
+        );
+        await fetchNotifications();
         toast.success("تم تحديد كافة الإشعارات كمقروءة");
       } catch (err) {
         console.error("Failed to mark all as read:", err);
+        toast.error("تعذر تحديث حالة الإشعارات");
       }
     });
   };
@@ -178,22 +208,25 @@ export function NotificationBell() {
     setIsOpen(false);
     if (!notif.isRead && notif.isPersisted) {
       try {
-        await fetch(`/api/notifications`, {
+        const res = await fetch("/api/notifications", {
           method: "PATCH",
+          cache: "no-store",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id: notif.id }),
+          body: JSON.stringify({ notificationId: notif.id }),
         });
-        setNotifications((prev) =>
-          prev.map((n) => (n.id === notif.id ? { ...n, isRead: true } : n))
-        );
-        setUnreadCount((prev) => Math.max(0, prev - 1));
+        if (res.ok) {
+          setNotifications((prev) =>
+            prev.map((n) => (n.id === notif.id ? { ...n, isRead: true } : n))
+          );
+          setUnreadCount((prev) => Math.max(0, prev - 1));
+        }
       } catch (err) {
         console.error("Failed to mark notification read:", err);
       }
     }
   };
 
-  // Request browser push notification permission and register service worker
+  // Request browser push notification permission and subscribe using unified /sw.js
   const handleEnablePush = async () => {
     if (typeof window === "undefined" || !("Notification" in window) || !("serviceWorker" in navigator)) {
       toast.warning("متصفحك لا يدعم إشعارات الويب");
@@ -206,31 +239,39 @@ export function NotificationBell() {
       setPushStatus(permission);
 
       if (permission === "granted") {
-        // Register Push Service Worker
-        const reg = await navigator.serviceWorker.register("/sw-push.js", { scope: "/" });
+        // Use unified PWA + Web Push Service Worker (/sw.js)
+        const reg = await navigator.serviceWorker.register("/sw.js", { scope: "/" });
+        await reg.update().catch(() => {});
         await navigator.serviceWorker.ready;
 
         // Fetch Public VAPID Key
-        const keyRes = await fetch("/api/notifications/push");
+        const keyRes = await fetch("/api/notifications/push", { cache: "no-store" });
         const keyData = await keyRes.json();
         if (!keyData.publicKey) throw new Error("تعذر جلب مفتاح الإشعارات العام");
 
         // Subscribe with Push Manager
+        const existingSub = await reg.pushManager.getSubscription();
         const convertedKey = urlBase64ToUint8Array(keyData.publicKey);
-        const sub = await reg.pushManager.subscribe({
-          userVisibleOnly: true,
-          applicationServerKey: convertedKey,
-        });
+        const sub =
+          existingSub ||
+          (await reg.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: convertedKey,
+          }));
 
         // Send subscription to server
-        await fetch("/api/notifications/push", {
+        const saveRes = await fetch("/api/notifications/push", {
           method: "POST",
+          cache: "no-store",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             subscription: sub.toJSON(),
             userAgent: navigator.userAgent,
           }),
         });
+        if (!saveRes.ok) {
+          throw new Error("فشل حفظ اشتراك الإشعارات");
+        }
 
         toast.success("تم تفعيل إشعارات المتصفح بنجاح!");
       } else {
@@ -253,7 +294,11 @@ export function NotificationBell() {
       {/* Trigger Button */}
       <button
         type="button"
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => {
+          const next = !isOpen;
+          setIsOpen(next);
+          if (next) void fetchNotifications();
+        }}
         className={cn(
           "relative w-9 h-9 sm:w-10 sm:h-10 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#1E293B] flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:border-slate-300 dark:hover:border-slate-700 transition-colors cursor-pointer shadow-2xs",
           isOpen && "border-[#800B34] dark:border-[#FB7185] text-[#800B34] dark:text-[#FB7185]"

@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { emitRealtimeEvent, revalidatePlatformPaths } from "@/lib/realtime";
+
+export const dynamic = "force-dynamic";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -49,6 +52,10 @@ export async function POST(req: Request, { params }: RouteParams) {
     if (!nextStatus) {
       await prisma.session.deleteMany({ where: { userId: id } });
     }
+
+    revalidatePlatformPaths(["/admin/users", "/admin/reports", "/dashboard"]);
+    emitRealtimeEvent({ topic: "users", action: "user_toggled", audience: "staff", entityId: id });
+    emitRealtimeEvent({ topic: "users", action: "user_toggled", audience: "user", targetUserId: id, entityId: id });
 
     // Audit log if audit table exists
     try {

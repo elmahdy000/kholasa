@@ -9,6 +9,7 @@ import { AdminSidebar } from "./admin/AdminSidebar";
 import { AdminTopbar } from "./admin/AdminTopbar";
 import { AdminCommandPalette } from "./admin/AdminCommandPalette";
 import type { AdminShellProps } from "./admin/types";
+import { RealtimeSyncBridge } from "@/lib/realtime-client";
 
 export type { AdminShellProps, AdminUser } from "./admin/types";
 
@@ -116,6 +117,7 @@ export function AdminShell({ children, user }: AdminShellProps) {
           activePage={activePage}
           setIsCommandOpen={setIsCommandOpen}
         />
+        <RealtimeSyncBridge isStaff />
 
         <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-[1600px] w-full mx-auto space-y-6">
           {logoutError && <p role="alert" className="text-sm text-red-600 dark:text-red-400">{logoutError}</p>}

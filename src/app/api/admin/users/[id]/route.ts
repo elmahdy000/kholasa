@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
 import { UserService } from "@/services/user.service";
+import { emitRealtimeEvent, revalidatePlatformPaths } from "@/lib/realtime";
+
+export const dynamic = "force-dynamic";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -20,7 +23,7 @@ export async function GET(req: Request, { params }: RouteParams) {
       return NextResponse.json({ error: "المستخدم غير موجود" }, { status: 404 });
     }
 
-    return NextResponse.json({ success: true, user });
+    return NextResponse.json({ success: true, user }, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {
     console.error("Failed to fetch user details:", error);
     return NextResponse.json({ error: "تعذر جلب تفاصيل المستخدم" }, { status: 500 });
@@ -43,6 +46,10 @@ export async function PATCH(req: Request, { params }: RouteParams) {
       currentUser.role,
       currentUser.id
     );
+    revalidatePlatformPaths(["/admin/users", "/admin/reports", "/subscription", "/dashboard"]);
+    emitRealtimeEvent({ topic: "users", action: "user_updated", audience: "staff", entityId: id });
+    emitRealtimeEvent({ topic: "users", action: "user_updated", audience: "user", targetUserId: id, entityId: id });
+    emitRealtimeEvent({ topic: "notifications", action: "user_subscription_changed", audience: "staff", entityId: id });
     return NextResponse.json({ success: true, user: updated });
   } catch (error) {
     console.error("Failed to update user:", error);
@@ -66,6 +73,9 @@ export async function DELETE(req: Request, { params }: RouteParams) {
 
     const { id } = await params;
     await UserService.deleteUser(id, currentUser.role, currentUser.id);
+    revalidatePlatformPaths(["/admin/users", "/admin/reports", "/dashboard"]);
+    emitRealtimeEvent({ topic: "users", action: "user_deleted", audience: "staff", entityId: id });
+    emitRealtimeEvent({ topic: "users", action: "user_deleted", audience: "user", targetUserId: id, entityId: id });
 
     return NextResponse.json({ success: true, message: "تم حذف المستخدم بنجاح" });
   } catch (error) {

@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import { getCurrentUser, canManageQuestions } from "@/lib/auth";
 import { QuestionService } from "@/services";
 import { QuestionValidationError } from "@/services/question/validation";
+import { emitRealtimeEvent, revalidatePlatformPaths } from "@/lib/realtime";
+
+export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
   try {
@@ -21,6 +24,12 @@ export async function POST(req: Request) {
     }
 
     const result = await QuestionService.bulkCreateQuestions(questions, batchMeta);
+    revalidatePlatformPaths(["/admin/questions", "/exams", "/exams/builder"]);
+    emitRealtimeEvent({
+      topic: "curriculum",
+      action: "questions_bulk_imported",
+      audience: "all",
+    });
 
     return NextResponse.json({
       success: true,
@@ -65,6 +74,12 @@ export async function DELETE(req: Request) {
     }
 
     const result = await QuestionService.bulkDeleteQuestions(validIds);
+    revalidatePlatformPaths(["/admin/questions", "/exams", "/exams/builder"]);
+    emitRealtimeEvent({
+      topic: "curriculum",
+      action: "questions_bulk_deleted",
+      audience: "all",
+    });
 
     return NextResponse.json({
       success: true,

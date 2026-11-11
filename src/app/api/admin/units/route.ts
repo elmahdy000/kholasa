@@ -4,6 +4,9 @@ import { getCurrentUser, isStaff, canManageCurriculum } from "@/lib/auth";
 import { forbidden, jsonError, parseJson } from "@/lib/http";
 import { CurriculumService } from "@/services/curriculum.service";
 import { AnalyticsService } from "@/services/analytics.service";
+import { emitRealtimeEvent, revalidatePlatformPaths } from "@/lib/realtime";
+
+export const dynamic = "force-dynamic";
 
 const createSchema = z.object({
   subjectId: z.string().min(1),
@@ -25,7 +28,7 @@ export async function GET(req: Request) {
     const limit = Number(searchParams.get("limit")) || 50;
 
     const units = await CurriculumService.getUnits(subjectId, page, limit);
-    return NextResponse.json({ units });
+    return NextResponse.json({ units }, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {
     return jsonError(error);
   }
@@ -40,6 +43,13 @@ export async function POST(req: Request) {
     const unit = await CurriculumService.createUnit(body);
     await AnalyticsService.logAuditAction(user.id, "CREATE", "unit", unit.id, {
       title: unit.title,
+    });
+    revalidatePlatformPaths([`/subjects/${body.subjectId}`]);
+    emitRealtimeEvent({
+      topic: "curriculum",
+      action: "unit_created",
+      audience: "all",
+      entityId: unit.id,
     });
     return NextResponse.json({ success: true, unit });
   } catch (error) {
