@@ -2,7 +2,12 @@
 
 import { useState, useMemo } from "react";
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
-import type { UserManagerClientProps, UserItem } from "./users/types";
+import type {
+  UserManagerClientProps,
+  UserItem,
+  UserActivationFilter,
+  UserSubscriptionStatus,
+} from "./users/types";
 import { UserMetricsStrip } from "./users/UserMetricsStrip";
 import { UserFilterBar } from "./users/UserFilterBar";
 import { UserTable } from "./users/UserTable";
@@ -30,12 +35,26 @@ export function UserManagerClient({
   }
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedRole, setSelectedRole] = useState("all");
-  const [selectedStatus, setSelectedStatus] = useState<"all" | "active" | "inactive">("all");
+  const [selectedStatus, setSelectedStatus] = useState<UserActivationFilter>("all");
   const [selectedSystemId, setSelectedSystemId] = useState("all");
   const [inspectUserId, setInspectUserId] = useState<string | null>(null);
 
   const suspendedCount = useMemo(
     () => users.filter((u) => u.role === "STUDENT" && u.isActive === false).length,
+    [users]
+  );
+  const trialActiveCount = useMemo(
+    () =>
+      users.filter(
+        (u) => u.role === "STUDENT" && u.isActive !== false && u.subscriptionStatus !== "ACTIVE"
+      ).length,
+    [users]
+  );
+  const pendingCount = useMemo(
+    () =>
+      users.filter(
+        (u) => u.role === "STUDENT" && u.subscriptionStatus === "PENDING_VERIFICATION"
+      ).length,
     [users]
   );
   const staffCount = useMemo(
@@ -84,6 +103,8 @@ export function UserManagerClient({
   const [createRole, setCreateRole] = useState("STUDENT");
   const [createSystemId, setCreateSystemId] = useState("");
   const [createGradeId, setCreateGradeId] = useState("");
+  const [createSubscriptionStatus, setCreateSubscriptionStatus] =
+    useState<UserSubscriptionStatus>("ACTIVE");
   const [isCreating, setIsCreating] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
 
@@ -121,6 +142,7 @@ export function UserManagerClient({
           role: createRole,
           systemId: createSystemId || undefined,
           gradeId: createGradeId || undefined,
+          ...(createRole === "STUDENT" ? { subscriptionStatus: createSubscriptionStatus } : {}),
         }),
       });
 
@@ -139,6 +161,7 @@ export function UserManagerClient({
       setCreateRole("STUDENT");
       setCreateSystemId("");
       setCreateGradeId("");
+      setCreateSubscriptionStatus("ACTIVE");
       toast.success("تم إنشاء الحساب بنجاح");
     } catch (err: any) {
       setCreateError(err.message || "حدث خطأ أثناء إنشاء المستخدم");
@@ -216,13 +239,48 @@ export function UserManagerClient({
       if (!res.ok) throw new Error(data.error || "تعذر تحديث حالة الحساب");
 
       setUsers((prev) =>
-        prev.map((u) => (u.id === userId ? { ...u, isActive: nextStatus } : u))
+        prev.map((u) =>
+          u.id === userId
+            ? {
+                ...u,
+                isActive: nextStatus,
+                subscriptionStatus: data.user?.subscriptionStatus ?? u.subscriptionStatus,
+              }
+            : u
+        )
       );
       toast.success(
-        data.message || (nextStatus ? `تم تفعيل حساب الطالب "${userName}" بنجاح` : `تم إيقاف حساب الطالب "${userName}" بنجاح`)
+        data.message || (nextStatus ? `تم تفعيل حساب واشتراك الطالب "${userName}" بنجاح` : `تم إيقاف حساب الطالب "${userName}" بنجاح`)
       );
     } catch (err: any) {
       toast.error(err.message || "حدث خطأ أثناء تحديث حالة الحساب");
+    }
+  };
+
+  const handleActivateSubscription = async (userId: string, userName: string) => {
+    try {
+      const res = await fetch(`/api/admin/users/${userId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ subscriptionStatus: "ACTIVE", isActive: true }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "تعذر تفعيل اشتراك الطالب");
+
+      setUsers((prev) =>
+        prev.map((u) =>
+          u.id === userId
+            ? {
+                ...u,
+                isActive: true,
+                subscriptionStatus: data.user?.subscriptionStatus ?? "ACTIVE",
+              }
+            : u
+        )
+      );
+      toast.success(`تم تفعيل الاشتراك الكامل للطالب "${userName || "المستهدف"}" بنجاح — كل الدروس والامتحانات مفتوحة الآن`);
+    } catch (err: any) {
+      toast.error(err.message || "حدث خطأ أثناء تفعيل اشتراك الطالب");
     }
   };
 
@@ -255,34 +313,40 @@ export function UserManagerClient({
   };
 
   const handleBulkActivateStudents = () => {
-    const suspendedStudents = users.filter((u) => u.role === "STUDENT" && u.isActive === false);
-    const count = suspendedStudents.length;
+    const targetStudents = users.filter(
+      (u) => u.role === "STUDENT" && (u.isActive === false || u.subscriptionStatus !== "ACTIVE")
+    );
+    const count = targetStudents.length;
 
     if (count === 0) {
-      toast.info("جميع حسابات الطلاب مفعلة بالفعل!");
+      toast.info("جميع حسابات واشتراكات الطلاب مفعلة بالكامل بالفعل!");
       return;
     }
 
     setConfirmModal({
       isOpen: true,
-      title: "تفعيل جماعي لحسابات الطلاب",
-      description: `هل ترغب في تفعيل جميع حسابات الطلاب المعلقة (${count} طالب)؟ بعد التفعيل، سيتمكن كل طالب من تسجيل الدخول والمذاكرة بصورة طبيعية.`,
+      title: "تفعيل جماعي لحسابات واشتراكات الطلاب",
+      description: `سيتم تفعيل جميع حسابات الطلاب ومنحها الاشتراك الكامل (${count} طالب)، ليتمكن كل طالب من الدخول وفتح كافة الدروس والامتحانات مباشرة.`,
       confirmText: `تأكيد تفعيل ${count} طالب`,
       variant: "warning",
       onConfirm: async () => {
         const res = await fetch("/api/admin/users/bulk-toggle-status", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ isActive: true, role: "STUDENT" }),
+          body: JSON.stringify({ isActive: true, role: "STUDENT", activateSubscription: true }),
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "تعذر تفعيل الطلاب");
 
         setUsers((prev) =>
-          prev.map((u) => (u.role === "STUDENT" ? { ...u, isActive: true } : u))
+          prev.map((u) =>
+            u.role === "STUDENT"
+              ? { ...u, isActive: true, subscriptionStatus: "ACTIVE" }
+              : u
+          )
         );
         setConfirmModal((prev) => ({ ...prev, isOpen: false }));
-        toast.success(data.message || `تم تفعيل ${count} طالب بنجاح`);
+        toast.success(data.message || `تم تفعيل ${count} طالب بالاشتراك الكامل بنجاح`);
       },
     });
   };
@@ -293,8 +357,16 @@ export function UserManagerClient({
         if (selectedRole === "STAFF" && u.role === "STUDENT") return false;
         if (selectedRole !== "STAFF" && u.role !== selectedRole) return false;
       }
-      if (selectedStatus === "active" && u.isActive === false) return false;
       if (selectedStatus === "inactive" && u.isActive !== false) return false;
+      if (selectedStatus === "subscribed") {
+        if (u.role !== "STUDENT" || u.isActive === false || u.subscriptionStatus !== "ACTIVE") return false;
+      }
+      if (selectedStatus === "trial_active") {
+        if (u.role !== "STUDENT" || u.isActive === false || u.subscriptionStatus === "ACTIVE") return false;
+      }
+      if (selectedStatus === "pending_verification") {
+        if (u.role !== "STUDENT" || u.subscriptionStatus !== "PENDING_VERIFICATION") return false;
+      }
       if (selectedSystemId !== "all" && u.system?.id !== selectedSystemId)
         return false;
       if (searchQuery.trim()) {
@@ -347,6 +419,8 @@ export function UserManagerClient({
         totalFilteredCount={totalFilteredCount}
         totalUsersCount={users.length}
         suspendedCount={suspendedCount}
+        trialActiveCount={trialActiveCount}
+        pendingCount={pendingCount}
         staffCount={staffCount}
         studentsCount={studentsCount}
         onOpenCreate={() => {
@@ -367,6 +441,7 @@ export function UserManagerClient({
         onResetDevices={handleResetDevices}
         onInspectUser={(id) => setInspectUserId(id)}
         onToggleStatus={handleToggleStatus}
+        onActivateSubscription={handleActivateSubscription}
         onQuickRegenerateCode={handleQuickRegenerateCode}
       />
 
@@ -489,6 +564,8 @@ export function UserManagerClient({
         setCreateSystemId={setCreateSystemId}
         createGradeId={createGradeId}
         setCreateGradeId={setCreateGradeId}
+        createSubscriptionStatus={createSubscriptionStatus}
+        setCreateSubscriptionStatus={setCreateSubscriptionStatus}
         isCreating={isCreating}
         createError={createError}
         systems={systems}

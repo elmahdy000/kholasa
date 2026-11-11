@@ -246,17 +246,30 @@ export function StudentDetailsDrawer({
 
   const handleQuickSubscriptionUpdate = async (newStatus: "ACTIVE" | "TRIAL") => {
     try {
+      const payload =
+        newStatus === "ACTIVE"
+          ? { subscriptionStatus: newStatus, isActive: true }
+          : { subscriptionStatus: newStatus };
       const res = await fetch(`/api/admin/users/${userId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ subscriptionStatus: newStatus }),
+        body: JSON.stringify(payload),
       });
       if (res.ok) {
         setSubscriptionStatus(newStatus);
-        setStudent((prev) => (prev ? { ...prev, subscriptionStatus: newStatus } : prev));
+        if (newStatus === "ACTIVE") setIsActive(true);
+        setStudent((prev) =>
+          prev
+            ? {
+                ...prev,
+                subscriptionStatus: newStatus,
+                ...(newStatus === "ACTIVE" ? { isActive: true } : {}),
+              }
+            : prev
+        );
         toast.success(
           newStatus === "ACTIVE"
-            ? "تم تفعيل اشتراك الطالب بنجاح (200 ج)"
+            ? "تم تفعيل الحساب والاشتراك الكامل للطالب بنجاح (200 ج)"
             : "تم تحويل الحساب لتجريبي"
         );
         onUserUpdated();
@@ -295,7 +308,7 @@ export function StudentDetailsDrawer({
       if (!res.ok) throw new Error(data.error || "تعذر حفظ البيانات");
 
       setInfoMessage({ type: "success", text: "تم تحديث بيانات الطالب بنجاح" });
-      setStudent((prev) => (prev ? { ...prev, isActive } : prev));
+      setStudent((prev) => (prev ? { ...prev, isActive, subscriptionStatus } : prev));
       onUserUpdated();
     } catch (err) {
       setInfoMessage({
@@ -321,7 +334,11 @@ export function StudentDetailsDrawer({
       if (!res.ok) throw new Error(data.error || "تعذر تعديل حالة الحساب");
 
       setIsActive(nextStatus);
-      setStudent((prev) => (prev ? { ...prev, isActive: nextStatus } : prev));
+      const nextSub = data.user?.subscriptionStatus ?? subscriptionStatus;
+      setSubscriptionStatus(nextSub);
+      setStudent((prev) =>
+        prev ? { ...prev, isActive: nextStatus, subscriptionStatus: nextSub } : prev
+      );
       onUserUpdated();
       toast.success(data.message || (nextStatus ? "تم تفعيل الحساب بنجاح" : "تم إيقاف الحساب"));
     } catch (err) {

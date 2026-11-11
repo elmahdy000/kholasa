@@ -1,7 +1,7 @@
 "use client";
 
 import { Plus, RefreshCw, KeyRound } from "lucide-react";
-import type { EducationalSystem, Grade } from "./types";
+import type { EducationalSystem, Grade, UserSubscriptionStatus } from "./types";
 
 interface CreateUserModalProps {
   isOpen: boolean;
@@ -26,6 +26,8 @@ interface CreateUserModalProps {
   setCreateSystemId: (v: string) => void;
   createGradeId: string;
   setCreateGradeId: (v: string) => void;
+  createSubscriptionStatus: UserSubscriptionStatus;
+  setCreateSubscriptionStatus: (v: UserSubscriptionStatus) => void;
   isCreating: boolean;
   createError: string | null;
   systems: EducationalSystem[];
@@ -58,6 +60,8 @@ export function CreateUserModal({
   setCreateSystemId,
   createGradeId,
   setCreateGradeId,
+  createSubscriptionStatus,
+  setCreateSubscriptionStatus,
   isCreating,
   createError,
   systems,
@@ -199,6 +203,20 @@ export function CreateUserModal({
                 >
                   <option value="ARABIC">مدارس عربي (Arabic)</option>
                   <option value="LANGUAGES">مدارس لغات (Languages)</option>
+                </select>
+              </div>
+
+              <div className="sm:col-span-2">
+                <label className="block text-[13px] font-bold text-[#64748B] mb-1">
+                  حالة الاشتراك للطالب الجديد
+                </label>
+                <select
+                  value={createSubscriptionStatus}
+                  onChange={(e) => setCreateSubscriptionStatus(e.target.value as UserSubscriptionStatus)}
+                  className="w-full h-10 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] text-[13px] font-bold text-[#0F172A] dark:text-white"
+                >
+                  <option value="ACTIVE">🟢 اشتراك كامل مفعل (يفتح كل الدروس والامتحانات فوراً)</option>
+                  <option value="TRIAL">⚠️ زائر تجريبي (يفتح أول درس فقط)</option>
                 </select>
               </div>
 

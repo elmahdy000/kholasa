@@ -22,7 +22,7 @@ export async function POST(req: Request, { params }: RouteParams) {
     // Find target user
     const target = await prisma.user.findUnique({
       where: { id },
-      select: { id: true, role: true, isActive: true, name: true },
+      select: { id: true, role: true, isActive: true, subscriptionStatus: true, name: true },
     });
 
     if (!target) {
@@ -41,11 +41,25 @@ export async function POST(req: Request, { params }: RouteParams) {
 
     // Determine new status: explicit isActive or invert current
     const nextStatus = typeof body.isActive === "boolean" ? body.isActive : !target.isActive;
+    const shouldActivateSubscription =
+      target.role === "STUDENT" &&
+      nextStatus === true &&
+      body.activateSubscription !== false &&
+      target.subscriptionStatus !== "ACTIVE";
 
     const updated = await prisma.user.update({
       where: { id },
-      data: { isActive: nextStatus },
-      select: { id: true, name: true, role: true, isActive: true },
+      data: {
+        isActive: nextStatus,
+        ...(shouldActivateSubscription ? { subscriptionStatus: "ACTIVE" } : {}),
+      },
+      select: {
+        id: true,
+        name: true,
+        role: true,
+        isActive: true,
+        subscriptionStatus: true,
+      },
     });
 
     // If deactivated, immediately revoke all active sessions
@@ -53,9 +67,24 @@ export async function POST(req: Request, { params }: RouteParams) {
       await prisma.session.deleteMany({ where: { userId: id } });
     }
 
-    revalidatePlatformPaths(["/admin/users", "/admin/reports", "/dashboard"]);
+    revalidatePlatformPaths([
+      "/admin/users",
+      "/admin/reports",
+      "/dashboard",
+      "/subjects",
+      "/lessons",
+      "/subscription",
+    ]);
     emitRealtimeEvent({ topic: "users", action: "user_toggled", audience: "staff", entityId: id });
     emitRealtimeEvent({ topic: "users", action: "user_toggled", audience: "user", targetUserId: id, entityId: id });
+    if (shouldActivateSubscription) {
+      emitRealtimeEvent({
+        topic: "notifications",
+        action: "user_subscription_changed",
+        audience: "staff",
+        entityId: id,
+      });
+    }
 
     // Audit log if audit table exists
     try {
@@ -69,6 +98,8 @@ export async function POST(req: Request, { params }: RouteParams) {
             targetName: target.name,
             targetRole: target.role,
             newStatus: nextStatus,
+            previousSubscriptionStatus: target.subscriptionStatus,
+            newSubscriptionStatus: updated.subscriptionStatus,
           },
         },
       });
@@ -80,7 +111,9 @@ export async function POST(req: Request, { params }: RouteParams) {
       success: true,
       user: updated,
       message: nextStatus
-        ? `تم تفعيل حساب الطالب/المستخدم "${target.name || ""}" بنجاح`
+        ? shouldActivateSubscription
+          ? `تم تفعيل حساب واشتراك الطالب "${target.name || ""}" بنجاح (كافة الدروس متاحة الآن)`
+          : `تم تفعيل حساب الطالب/المستخدم "${target.name || ""}" بنجاح`
         : `تم إيقاف حساب الطالب/المستخدم "${target.name || ""}" بنجاح`,
     });
   } catch (error) {

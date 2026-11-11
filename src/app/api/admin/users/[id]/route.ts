@@ -46,7 +46,7 @@ export async function PATCH(req: Request, { params }: RouteParams) {
       currentUser.role,
       currentUser.id
     );
-    revalidatePlatformPaths(["/admin/users", "/admin/reports", "/subscription", "/dashboard"]);
+    revalidatePlatformPaths(["/admin/users", "/admin/reports", "/subscription", "/dashboard", "/subjects", "/lessons"]);
     emitRealtimeEvent({ topic: "users", action: "user_updated", audience: "staff", entityId: id });
     emitRealtimeEvent({ topic: "users", action: "user_updated", audience: "user", targetUserId: id, entityId: id });
     emitRealtimeEvent({ topic: "notifications", action: "user_subscription_changed", audience: "staff", entityId: id });

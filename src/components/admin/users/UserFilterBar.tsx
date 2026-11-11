@@ -1,21 +1,23 @@
 "use client";
 
 import { Search, Plus, Download, UserCheck, Shield } from "lucide-react";
-import type { EducationalSystem } from "./types";
+import type { EducationalSystem, UserActivationFilter } from "./types";
 
 interface UserFilterBarProps {
   searchQuery: string;
   setSearchQuery: (q: string) => void;
   selectedRole: string;
   setSelectedRole: (role: string) => void;
-  selectedStatus: "all" | "active" | "inactive";
-  setSelectedStatus: (status: "all" | "active" | "inactive") => void;
+  selectedStatus: UserActivationFilter;
+  setSelectedStatus: (status: UserActivationFilter) => void;
   selectedSystemId: string;
   setSelectedSystemId: (id: string) => void;
   systems: EducationalSystem[];
   totalFilteredCount: number;
   totalUsersCount: number;
   suspendedCount?: number;
+  trialActiveCount?: number;
+  pendingCount?: number;
   staffCount?: number;
   studentsCount?: number;
   onOpenCreate: () => void;
@@ -35,6 +37,8 @@ export function UserFilterBar({
   totalFilteredCount,
   totalUsersCount,
   suspendedCount = 0,
+  trialActiveCount = 0,
+  pendingCount = 0,
   staffCount = 0,
   studentsCount = 0,
   onOpenCreate,
@@ -161,18 +165,26 @@ export function UserFilterBar({
           {/* Activation Status Filter */}
           <select
             value={selectedStatus}
-            onChange={(e) => setSelectedStatus(e.target.value as "all" | "active" | "inactive")}
+            onChange={(e) => setSelectedStatus(e.target.value as UserActivationFilter)}
             className={`h-11 px-3 rounded-xl border text-[13px] font-bold transition-colors ${
               selectedStatus === "inactive"
                 ? "border-rose-300 bg-rose-50/50 text-rose-700 dark:bg-rose-950/30 dark:text-rose-400 dark:border-rose-900"
-                : selectedStatus === "active"
+                : selectedStatus === "trial_active" || selectedStatus === "pending_verification"
+                ? "border-amber-300 bg-amber-50/50 text-amber-800 dark:bg-amber-950/30 dark:text-amber-300 dark:border-amber-800"
+                : selectedStatus === "subscribed"
                 ? "border-emerald-300 bg-emerald-50/50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-900"
                 : "border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[#0F172A] dark:text-white"
             }`}
           >
-            <option value="all">كل حالات التفعيل</option>
-            <option value="inactive">المعلقون فقط (بانتظار التفعيل {suspendedCount > 0 ? `• ${suspendedCount}` : ""})</option>
-            <option value="active">المفعّلون فقط</option>
+            <option value="all">كل حالات التفعيل والاشتراك</option>
+            <option value="subscribed">مشترك كامل (الدروس والامتحانات مفتوحة)</option>
+            <option value="trial_active">
+              حساب مفتوح بدون اشتراك كامل {trialActiveCount > 0 ? `(⚠️ ${trialActiveCount})` : ""}
+            </option>
+            <option value="pending_verification">
+              إيصالات بانتظار المراجعة {pendingCount > 0 ? `(🟡 ${pendingCount})` : ""}
+            </option>
+            <option value="inactive">المعلقون فقط (محظور من الدخول {suspendedCount > 0 ? `• ${suspendedCount}` : ""})</option>
           </select>
 
           {/* System Filter */}

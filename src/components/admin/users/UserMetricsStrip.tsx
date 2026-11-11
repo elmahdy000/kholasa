@@ -9,7 +9,12 @@ interface UserMetricsStripProps {
 export function UserMetricsStrip({ users }: UserMetricsStripProps) {
   const students = users.filter((u) => u.role === "STUDENT");
   const studentsCount = students.length;
-  const activatedCount = students.filter((s) => s.isActive !== false).length;
+  const subscribedCount = students.filter(
+    (s) => s.isActive !== false && s.subscriptionStatus === "ACTIVE"
+  ).length;
+  const trialActiveCount = students.filter(
+    (s) => s.isActive !== false && s.subscriptionStatus !== "ACTIVE"
+  ).length;
   const suspendedCount = students.filter((s) => s.isActive === false).length;
   const activeStudents = students.filter((u) => (u.boundDevices?.length || 0) > 0).length;
   const pendingStudents = studentsCount - activeStudents;
@@ -49,12 +54,12 @@ export function UserMetricsStrip({ users }: UserMetricsStripProps) {
       </div>
 
       <div className="p-4 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0]/80 dark:border-[#334155]/80 flex flex-col justify-between">
-        <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">حالة التفعيل والاشتراك</span>
-        <div className="flex items-baseline gap-1 mt-1">
+        <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">حالة الاشتراك والوصول</span>
+        <div className="flex items-baseline gap-1 mt-1 flex-wrap">
           <span className="text-2xl font-bold font-mono text-emerald-600 dark:text-emerald-400">
-            {activatedCount}
+            {subscribedCount}
           </span>
-          <span className="text-xs text-[#64748B]">مفعّل</span>
+          <span className="text-xs text-[#64748B]">اشتراك كامل</span>
           <span className="text-xs text-[#94A3B8]">/</span>
           <span className="text-lg font-bold font-mono text-rose-600 dark:text-rose-400">
             {suspendedCount}
@@ -62,7 +67,11 @@ export function UserMetricsStrip({ users }: UserMetricsStripProps) {
           <span className="text-xs text-[#64748B]">معلّق</span>
         </div>
         <span className="text-[11px] text-[#64748B] mt-1 font-mono">
-          {suspendedCount > 0 ? "بانتظار تفعيل المساعد" : `مرتبط ${activeStudents} جهاز`}
+          {trialActiveCount > 0
+            ? `${trialActiveCount} مفتوح تجريبي/بانتظار الاشتراك ⚠️`
+            : suspendedCount > 0
+            ? "بانتظار تفعيل المساعد"
+            : `مرتبط ${activeStudents} جهاز`}
         </span>
       </div>
 

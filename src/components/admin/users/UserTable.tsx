@@ -12,6 +12,7 @@ interface UserTableProps {
   onResetDevices: (userId: string, userName: string) => void;
   onInspectUser?: (userId: string) => void;
   onToggleStatus?: (userId: string, currentStatus: boolean, userName: string) => void;
+  onActivateSubscription?: (userId: string, userName: string) => void;
   onQuickRegenerateCode?: (userId: string, userName: string) => void;
 }
 
@@ -38,6 +39,7 @@ export function UserTable({
   onResetDevices,
   onInspectUser,
   onToggleStatus,
+  onActivateSubscription,
   onQuickRegenerateCode,
 }: UserTableProps) {
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
@@ -197,15 +199,35 @@ export function UserTable({
                             </span>
                           )}
                           {u.role === "STUDENT" && (
-                            u.isActive === false ? (
-                              <span className="text-[10px] px-1.5 py-0.5 rounded-md font-bold whitespace-nowrap bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-400 border border-rose-200 dark:border-rose-800">
-                                معلّق 🔴
-                              </span>
-                            ) : (
-                              <span className="text-[10px] px-1.5 py-0.5 rounded-md font-bold whitespace-nowrap bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
-                                مفعّل 🟢
-                              </span>
-                            )
+                            <>
+                              {u.isActive === false ? (
+                                <span className="text-[10px] px-1.5 py-0.5 rounded-md font-bold whitespace-nowrap bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-400 border border-rose-200 dark:border-rose-800">
+                                  معلّق 🔴
+                                </span>
+                              ) : (
+                                <span className="text-[10px] px-1.5 py-0.5 rounded-md font-bold whitespace-nowrap bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
+                                  دخول مفعّل 🟢
+                                </span>
+                              )}
+
+                              {u.subscriptionStatus === "ACTIVE" ? (
+                                <span className="text-[10px] px-1.5 py-0.5 rounded-md font-bold whitespace-nowrap bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                                  اشتراك كامل 💎
+                                </span>
+                              ) : u.subscriptionStatus === "PENDING_VERIFICATION" ? (
+                                <span className="text-[10px] px-1.5 py-0.5 rounded-md font-bold whitespace-nowrap bg-amber-50 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300 border border-amber-300 dark:border-amber-700">
+                                  إيصال قيد المراجعة 🟡
+                                </span>
+                              ) : u.subscriptionStatus === "EXPIRED" ? (
+                                <span className="text-[10px] px-1.5 py-0.5 rounded-md font-bold whitespace-nowrap bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300 border border-rose-200 dark:border-rose-800">
+                                  اشتراك منتهي 🔴
+                                </span>
+                              ) : (
+                                <span className="text-[10px] px-1.5 py-0.5 rounded-md font-bold whitespace-nowrap bg-amber-50 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+                                  تجريبي (الدرس 1 فقط) ⚠️
+                                </span>
+                              )}
+                            </>
                           )}
                           {u.role === "STUDENT" && (
                             <span
@@ -412,21 +434,34 @@ export function UserTable({
                                 type="button"
                                 onClick={() => onToggleStatus(u.id, false, u.name || "")}
                                 className="h-8 px-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold inline-flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
-                                title="تفعيل الحساب والسماح للطالب بالدخول فوراً"
+                                title="تفعيل الحساب والاشتراك الكامل لفتح كل الدروس والامتحانات فوراً"
                               >
                                 <CheckCircle2 className="w-3.5 h-3.5" />
-                                <span>تفعيل</span>
+                                <span>تفعيل كامل</span>
                               </button>
                             ) : (
-                              <button
-                                type="button"
-                                onClick={() => onToggleStatus(u.id, true, u.name || "")}
-                                className="h-8 px-2.5 rounded-lg bg-slate-100 hover:bg-rose-100 text-slate-700 hover:text-rose-700 dark:bg-[#1E293B] dark:text-slate-300 dark:hover:bg-rose-950/40 dark:hover:text-rose-300 text-xs font-semibold inline-flex items-center gap-1.5 transition-colors cursor-pointer border border-transparent hover:border-rose-300/40"
-                                title="إيقاف الحساب وتعليقه"
-                              >
-                                <Ban className="w-3.5 h-3.5 text-rose-500" />
-                                <span>إيقاف</span>
-                              </button>
+                              <>
+                                {onActivateSubscription && u.subscriptionStatus !== "ACTIVE" && (
+                                  <button
+                                    type="button"
+                                    onClick={() => onActivateSubscription(u.id, u.name || "")}
+                                    className="h-8 px-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold inline-flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
+                                    title="ترقية من تجريبي إلى اشتراك كامل لفتح جميع الدروس والامتحانات فوراً"
+                                  >
+                                    <CheckCircle2 className="w-3.5 h-3.5" />
+                                    <span>تفعيل الاشتراك</span>
+                                  </button>
+                                )}
+                                <button
+                                  type="button"
+                                  onClick={() => onToggleStatus(u.id, true, u.name || "")}
+                                  className="h-8 px-2.5 rounded-lg bg-slate-100 hover:bg-rose-100 text-slate-700 hover:text-rose-700 dark:bg-[#1E293B] dark:text-slate-300 dark:hover:bg-rose-950/40 dark:hover:text-rose-300 text-xs font-semibold inline-flex items-center gap-1.5 transition-colors cursor-pointer border border-transparent hover:border-rose-300/40"
+                                  title="إيقاف الحساب وتعليقه"
+                                >
+                                  <Ban className="w-3.5 h-3.5 text-rose-500" />
+                                  <span>إيقاف</span>
+                                </button>
+                              </>
                             )
                           )}
 

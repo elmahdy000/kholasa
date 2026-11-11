@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { Role } from "@prisma/client";
+import { Role, SubscriptionStatus } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { generateUniqueLoginCode } from "@/lib/auth";
 import type {
@@ -52,6 +52,14 @@ export class UserMutationsService {
     const rawPassword = password || finalLoginCode || "Kholasa@2026";
     const hashedPassword = await bcrypt.hash(rawPassword, 12);
     const initialMaxDevices = typeof data.maxDevices === "number" && data.maxDevices > 0 ? data.maxDevices : 1;
+    const isActive = data.isActive !== undefined ? data.isActive : true;
+    const resolvedSubscriptionStatus =
+      data.subscriptionStatus ??
+      (role === Role.STUDENT
+        ? isActive
+          ? SubscriptionStatus.ACTIVE
+          : SubscriptionStatus.TRIAL
+        : undefined);
 
     return prisma.user.create({
       data: {
@@ -65,11 +73,16 @@ export class UserMutationsService {
         gradeId: gradeId || null,
         schoolCategory: schoolCategory || "ARABIC",
         maxDevices: initialMaxDevices,
-        isActive: data.isActive !== undefined ? data.isActive : true,
+        isActive,
+        ...(resolvedSubscriptionStatus ? { subscriptionStatus: resolvedSubscriptionStatus } : {}),
+        ...(data.studyMode ? { studyMode: data.studyMode } : {}),
+        ...(data.centerName !== undefined ? { centerName: data.centerName || null } : {}),
       },
       select: {
         id: true, name: true, phone: true, email: true, loginCode: true, role: true,
         schoolCategory: true, systemId: true, gradeId: true, createdAt: true, isActive: true,
+        maxDevices: true, boundDevices: true, studyMode: true, centerName: true,
+        subscriptionStatus: true, paymentReceiptUrl: true, paymentUploadedAt: true, subscriptionExpiresAt: true,
         attempts: { select: { id: true, score: true, percentage: true } },
         progress: { select: { id: true, isCompleted: true } },
         system: { select: { id: true, name: true } },

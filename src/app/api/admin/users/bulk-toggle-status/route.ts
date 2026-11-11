@@ -14,7 +14,7 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json().catch(() => ({}));
-    const { userIds, isActive, gradeId, systemId, role = "STUDENT" } = body;
+    const { userIds, isActive, gradeId, systemId, role = "STUDENT", activateSubscription } = body;
 
     if (typeof isActive !== "boolean") {
       return NextResponse.json({ error: "يجب تحديد حالة التفعيل (مفعّل / معلق)" }, { status: 400 });
@@ -25,19 +25,23 @@ export async function POST(req: Request) {
     // Specific IDs provided
     if (Array.isArray(userIds) && userIds.length > 0) {
       where.id = { in: userIds };
+      where.role = { not: "SUPER_ADMIN" };
     } else {
-      // Filter by role (default only students for safety)
-      where.role = role === "STUDENT" ? "STUDENT" : role;
+      // Filter by role (default only students for safety; never include SUPER_ADMIN)
+      const requestedRole = role === "STUDENT" ? "STUDENT" : role;
+      where.role =
+        requestedRole && requestedRole !== "SUPER_ADMIN"
+          ? requestedRole
+          : { not: "SUPER_ADMIN" };
       if (gradeId && gradeId !== "all") where.gradeId = gradeId;
       if (systemId && systemId !== "all") where.systemId = systemId;
     }
 
-    // Safety: never modify self or Super Admins in bulk operations
+    // Safety: never modify self in bulk operations
     where.id = {
       ...(where.id && typeof where.id === "object" ? where.id : {}),
       not: currentUser.id,
     };
-    where.role = { not: "SUPER_ADMIN" };
 
     const countTarget = await prisma.user.count({ where });
     if (countTarget === 0) {
@@ -48,9 +52,17 @@ export async function POST(req: Request) {
       });
     }
 
+    const shouldActivateStudentSubscriptions =
+      isActive === true &&
+      role === "STUDENT" &&
+      activateSubscription !== false;
+
     const result = await prisma.user.updateMany({
       where,
-      data: { isActive },
+      data: {
+        isActive,
+        ...(shouldActivateStudentSubscriptions ? { subscriptionStatus: "ACTIVE" } : {}),
+      },
     });
 
     // If deactivating, purge sessions for affected users
@@ -67,14 +79,23 @@ export async function POST(req: Request) {
       }
     }
 
-    revalidatePlatformPaths(["/admin/users", "/admin/reports", "/dashboard"]);
+    revalidatePlatformPaths([
+      "/admin/users",
+      "/admin/reports",
+      "/dashboard",
+      "/subjects",
+      "/lessons",
+      "/subscription",
+    ]);
     emitRealtimeEvent({ topic: "users", action: "users_bulk_toggled", audience: isActive ? "staff" : "all" });
 
     return NextResponse.json({
       success: true,
       count: result.count,
       message: isActive
-        ? `تم تفعيل ${result.count} حساب بنجاح`
+        ? shouldActivateStudentSubscriptions
+          ? `تم تفعيل ${result.count} حساب واشتراك كامل بنجاح`
+          : `تم تفعيل ${result.count} حساب بنجاح`
         : `تم إيقاف ${result.count} حساب بنجاح`,
     });
   } catch (error) {

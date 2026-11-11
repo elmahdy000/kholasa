@@ -9,6 +9,15 @@ export interface Grade {
   systemId: string;
 }
 
+export type UserSubscriptionStatus = "TRIAL" | "ACTIVE" | "PENDING_VERIFICATION" | "EXPIRED";
+
+export type UserActivationFilter =
+  | "all"
+  | "subscribed"
+  | "trial_active"
+  | "pending_verification"
+  | "inactive";
+
 export interface UserItem {
   id: string;
   name?: string | null;
@@ -28,6 +37,12 @@ export interface UserItem {
   totalLessons?: number;
   progressPercent?: number;
   isActive?: boolean;
+  studyMode?: "ONLINE" | "OFFLINE";
+  centerName?: string | null;
+  subscriptionStatus?: UserSubscriptionStatus;
+  paymentReceiptUrl?: string | null;
+  paymentUploadedAt?: string | Date | null;
+  subscriptionExpiresAt?: string | Date | null;
 }
 
 export interface UserManagerClientProps {

@@ -22,7 +22,7 @@ import {
   RotateCcw,
   Sparkles,
 } from "lucide-react";
-import type { UserItem } from "./types";
+import type { UserItem, UserSubscriptionStatus } from "./types";
 import { useToast } from "@/components/ui/Toast";
 
 interface EditRoleModalProps {
@@ -51,6 +51,7 @@ export function EditRoleModal({
   const [copiedPassword, setCopiedPassword] = useState(false);
   const [maxDevices, setMaxDevices] = useState(1);
   const [isActive, setIsActive] = useState(true);
+  const [subscriptionStatus, setSubscriptionStatus] = useState<UserSubscriptionStatus>("ACTIVE");
 
   const [isUpdating, setIsUpdating] = useState(false);
   const [isResettingDevices, setIsResettingDevices] = useState(false);
@@ -69,6 +70,7 @@ export function EditRoleModal({
       setCopiedPassword(false);
       setMaxDevices(user.maxDevices || 1);
       setIsActive(user.isActive !== false);
+      setSubscriptionStatus(user.subscriptionStatus || "TRIAL");
       setErrorMsg(null);
     }
   }, [user]);
@@ -184,6 +186,7 @@ export function EditRoleModal({
       if (role === "STUDENT") {
         payload.loginCode = loginCode.trim().toUpperCase() || null;
         payload.maxDevices = maxDevices;
+        payload.subscriptionStatus = subscriptionStatus;
       }
 
       const res = await fetch(`/api/admin/users/${user.id}`, {
@@ -202,6 +205,7 @@ export function EditRoleModal({
         ...data.user,
         role,
         isActive,
+        subscriptionStatus: role === "STUDENT" ? subscriptionStatus : user.subscriptionStatus,
         loginCode: role === "STUDENT" ? (loginCode.trim().toUpperCase() || user.loginCode) : user.loginCode,
         maxDevices: role === "STUDENT" ? maxDevices : user.maxDevices,
       };
@@ -537,11 +541,21 @@ export function EditRoleModal({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
             <div>
               <label className="block text-xs font-bold text-[#64748B] dark:text-[#94A3B8] mb-1">
-                حالة تفعيل الحساب
+                حالة تفعيل الدخول
               </label>
               <select
                 value={isActive ? "active" : "inactive"}
-                onChange={(e) => setIsActive(e.target.value === "active")}
+                onChange={(e) => {
+                  const nextActive = e.target.value === "active";
+                  setIsActive(nextActive);
+                  if (
+                    nextActive &&
+                    role === "STUDENT" &&
+                    (subscriptionStatus === "TRIAL" || subscriptionStatus === "PENDING_VERIFICATION")
+                  ) {
+                    setSubscriptionStatus("ACTIVE");
+                  }
+                }}
                 className={`w-full h-10 px-3 rounded-xl border text-xs font-bold ${
                   isActive
                     ? "border-emerald-300 text-emerald-700 bg-emerald-50/30 dark:bg-emerald-950/20 dark:border-emerald-800 dark:text-emerald-300"
@@ -555,6 +569,28 @@ export function EditRoleModal({
 
             {role === "STUDENT" && (
               <div>
+                <label className="block text-xs font-bold text-[#64748B] dark:text-[#94A3B8] mb-1">
+                  حالة الاشتراك (فتح الدروس والامتحانات)
+                </label>
+                <select
+                  value={subscriptionStatus}
+                  onChange={(e) => setSubscriptionStatus(e.target.value as UserSubscriptionStatus)}
+                  className={`w-full h-10 px-3 rounded-xl border text-xs font-bold ${
+                    subscriptionStatus === "ACTIVE"
+                      ? "border-emerald-300 text-emerald-700 bg-emerald-50/30 dark:bg-emerald-950/20 dark:border-emerald-800 dark:text-emerald-300"
+                      : "border-amber-300 text-amber-800 bg-amber-50/40 dark:bg-amber-950/20 dark:border-amber-700 dark:text-amber-300"
+                  }`}
+                >
+                  <option value="ACTIVE">🟢 اشتراك كامل مفعل (يفتح كل الدروس والامتحانات)</option>
+                  <option value="TRIAL">⚠️ زائر تجريبي (يفتح الدرس الأول فقط!)</option>
+                  <option value="PENDING_VERIFICATION">🟡 قيد مراجعة الإيصال</option>
+                  <option value="EXPIRED">🔴 اشتراك منتهي</option>
+                </select>
+              </div>
+            )}
+
+            {role === "STUDENT" && (
+              <div className="sm:col-span-2">
                 <label className="block text-xs font-bold text-[#64748B] dark:text-[#94A3B8] mb-1">
                   الحد الأقصى للأجهزة المصرح بها
                 </label>
