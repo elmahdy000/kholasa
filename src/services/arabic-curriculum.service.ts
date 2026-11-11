@@ -792,10 +792,9 @@ export class ArabicCurriculumService {
         }
       }
 
-      const vocabularyItems =
-        rawStored.vocabularyItems && rawStored.vocabularyItems.length > 0
-          ? rawStored.vocabularyItems
-          : extractRichArabicVocabularyItems(rawStored.sections || [], qLookup);
+      const vocabularyItems = Array.isArray(rawStored.vocabularyItems)
+        ? rawStored.vocabularyItems
+        : extractRichArabicVocabularyItems(rawStored.sections || [], qLookup);
 
       const visualAssets: ArabicVisualAsset[] =
         rawStored.visualAssets && rawStored.visualAssets.length > 0
@@ -910,9 +909,9 @@ export class ArabicCurriculumService {
         const skillCategory =
           sec.skillCategory || inferSkillCategoryFromSection(sec.id, sec.title);
 
-        // Keep s05 word_cards visualization synced cleanly with edited Arabic vocabularyItems
+        // Keep s05 word_cards visualization synced cleanly with edited Arabic vocabularyItems (including empty list [])
         let nextVis = sec.visualization || null;
-        if (nextVis?.type === "word_cards" && nextVocabItems.length > 0) {
+        if (nextVis?.type === "word_cards") {
           nextVis = {
             ...nextVis,
             cards: nextVocabItems.map((v) => ({

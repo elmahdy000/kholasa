@@ -50,7 +50,21 @@ const updateSchema = z.object({
       pdfUrl: url,
       images: z.array(z.string().max(2000)).max(100).optional(),
       keyConcepts: strList.optional(),
-      definitions: z.union([strList, z.array(z.object({ term: z.string(), meaning: z.string() })), z.unknown()]).optional(),
+      definitions: z
+        .union([
+          strList,
+          z.array(
+            z
+              .object({
+                term: z.string(),
+                meaning: z.string(),
+                translation: z.string().nullable().optional(),
+              })
+              .passthrough()
+          ),
+          z.unknown(),
+        ])
+        .optional(),
       formulas: z.unknown().optional(),
       comparisons: z.unknown().optional(),
       examTips: strList.optional(),

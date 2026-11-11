@@ -489,9 +489,9 @@ export function LessonDefinitionsTab({
               <button
                 type="button"
                 onClick={() => {
-                  if (window.confirm(`هل أنت متأكد من رغبتك في حذف جميع المصطلحات (${definitions.length} مصطلح)؟`)) {
+                  if (window.confirm(`هل أنت متأكد من رغبتك في حذف جميع المصطلحات (${definitions.length} مصطلح) نهائياً؟`)) {
                     setDefinitions([]);
-                    toast.info("تم حذف جميع المصطلحات بنجاح");
+                    setEditingIndex(null);
                   }
                 }}
                 className="h-9 px-3 rounded-lg border border-red-200 dark:border-red-900/40 bg-red-50/70 dark:bg-red-950/20 hover:bg-red-100 text-red-600 dark:text-red-400 text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer shrink-0"
@@ -536,7 +536,7 @@ export function LessonDefinitionsTab({
 
               return (
                 <div
-                  key={realIndex}
+                  key={`${realIndex}-${item.term}`}
                   className="p-4 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] shadow-2xs hover:border-[#059669]/40 transition-all flex flex-col justify-between gap-3"
                 >
                   {isEditing ? (
@@ -643,7 +643,10 @@ export function LessonDefinitionsTab({
                           </button>
                           <button
                             type="button"
-                            onClick={() => onRemoveDefinition(realIndex)}
+                            onClick={() => {
+                              setEditingIndex(null);
+                              onRemoveDefinition(realIndex);
+                            }}
                             className="w-7 h-7 rounded-md flex items-center justify-center text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors cursor-pointer"
                             title="حذف"
                           >

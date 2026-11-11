@@ -11,12 +11,14 @@ interface ArabicVocabularyTabProps {
   items: ArabicVocabularyItem[];
   questions: ArabicEditorQuestionRecord[];
   onChangeItems: (next: ArabicVocabularyItem[]) => void;
+  onDeleteItem?: (id: string, next: ArabicVocabularyItem[]) => void;
 }
 
 export function ArabicVocabularyTab({
   items,
   questions,
   onChangeItems,
+  onDeleteItem,
 }: ArabicVocabularyTabProps) {
   const [search, setSearch] = useState("");
 
@@ -93,7 +95,14 @@ export function ArabicVocabularyTab({
               </span>
               <button
                 type="button"
-                onClick={() => onChangeItems(items.filter((x) => x.id !== item.id))}
+                onClick={() => {
+                  const next = items.filter((x) => x.id !== item.id);
+                  if (onDeleteItem) {
+                    onDeleteItem(item.id, next);
+                  } else {
+                    onChangeItems(next);
+                  }
+                }}
                 className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 cursor-pointer"
                 title="حذف المفردة"
               >

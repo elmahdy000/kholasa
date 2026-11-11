@@ -632,7 +632,7 @@ export function extractRichArabicVocabularyItems(
   >,
   explicitItems?: ArabicVocabularyItem[]
 ): ArabicVocabularyItem[] {
-  if (explicitItems && explicitItems.length > 0) {
+  if (explicitItems !== undefined) {
     return explicitItems.map((it, idx) => ({
       ...it,
       id: it.id || `vocab-${idx + 1}`,
@@ -737,7 +737,7 @@ export function rebuildArabicSectionBlocks(
       });
     } else if (vis.type === "word_cards" && Array.isArray(vis.cards)) {
       const enriched =
-        vocabularyOverride && vocabularyOverride.length > 0
+        vocabularyOverride !== undefined
           ? vocabularyOverride
           : extractRichArabicVocabularyItems([section], questionsById);
       const cards: ArabicWordCard[] = enriched.map((v) => ({

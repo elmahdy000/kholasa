@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import {
   AlertCircle,
@@ -62,6 +62,7 @@ export function ArabicLessonEditorForm({
   const [sections, setSections] = useState<ArabicNormalizedSection[]>([]);
   const [visualAssets, setVisualAssets] = useState<ArabicVisualAsset[]>([]);
   const [vocabularyItems, setVocabularyItems] = useState<ArabicVocabularyItem[]>([]);
+  const vocabSaveQueueRef = useRef<Promise<void>>(Promise.resolve());
   const [questions, setQuestions] = useState<ArabicEditorQuestionRecord[]>([]);
 
   const [practiceQuestionIds, setPracticeQuestionIds] = useState<string[]>([]);
@@ -145,9 +146,11 @@ export function ArabicLessonEditorForm({
     if (!lessonMeta) return;
     setIsSaving(true);
     setStatusMessage(null);
+    await vocabSaveQueueRef.current.catch(() => {});
     try {
       const res = await fetch(`/api/admin/arabic-lessons/${lessonId}`, {
         method: "PUT",
+        cache: "no-store",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           title: title.trim() || lessonMeta.title,
@@ -422,6 +425,42 @@ export function ArabicLessonEditorForm({
             items={vocabularyItems}
             questions={questions}
             onChangeItems={setVocabularyItems}
+            onDeleteItem={(_id, nextItems) => {
+              setVocabularyItems(nextItems);
+              if (!lessonMeta) return;
+              vocabSaveQueueRef.current = vocabSaveQueueRef.current
+                .catch(() => {})
+                .then(async () => {
+                  const res = await fetch(`/api/admin/arabic-lessons/${lessonId}`, {
+                    method: "PUT",
+                    cache: "no-store",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      vocabularyItems: nextItems,
+                      publishMode: "publish",
+                      notes: "حذف مفردة من محرر اللغة العربية",
+                    }),
+                  });
+                  const data = await res.json().catch(() => ({}));
+                  if (!res.ok) {
+                    setStatusMessage({
+                      type: "error",
+                      text: data.error || "تعذر حذف المفردة من قاعدة البيانات",
+                    });
+                    return;
+                  }
+                  setStatusMessage({
+                    type: "success",
+                    text: `تم حذف المفردة وحفظ الدرس في قاعدة البيانات (v${data.version?.versionNumber || ""})`,
+                  });
+                })
+                .catch((err) => {
+                  setStatusMessage({
+                    type: "error",
+                    text: err instanceof Error ? err.message : "تعذر حفظ حذف المفردة",
+                  });
+                });
+            }}
           />
         )}
 

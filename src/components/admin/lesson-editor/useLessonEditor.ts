@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/Toast";
 import type {
@@ -63,12 +63,12 @@ export function useLessonEditor({
   // Mind Map State
   const [mindMapTitle, setMindMapTitle] = useState("");
   const [mindMapDescription, setMindMapDescription] = useState("");
-  const [mindMapImages, setMindMapImages] = useState<string[]>([]);
+  const [mindMapImages, setMindMapImagesState] = useState<string[]>([]);
   const [newImageUrl, setNewImageUrl] = useState("");
   const [previewLightboxImage, setPreviewLightboxImage] = useState<string | null>(null);
 
   // Definitions State (المصطلحات والتعريفات)
-  const [definitions, setDefinitions] = useState<DefinitionItem[]>([]);
+  const [definitions, setDefinitionsState] = useState<DefinitionItem[]>([]);
 
   // Questions State (أسئلة الدرس)
   const [questions, setQuestions] = useState<LessonQuestionItem[]>([]);
@@ -76,26 +76,105 @@ export function useLessonEditor({
 
   // Content & Objectives State
   const [bodyText, setBodyText] = useState("");
-  const [objectives, setObjectives] = useState<string[]>([]);
+  const [objectives, setObjectivesState] = useState<string[]>([]);
   const [newObjective, setNewObjective] = useState("");
 
   // Summary State (الزتونة)
   const [summaryPdfUrl, setSummaryPdfUrl] = useState("");
-  const [summaryImages, setSummaryImages] = useState<string[]>([]);
+  const [summaryImages, setSummaryImagesState] = useState<string[]>([]);
   const [newSummaryImageUrl, setNewSummaryImageUrl] = useState("");
-  const [keyConcepts, setKeyConcepts] = useState<string[]>([]);
+  const [keyConcepts, setKeyConceptsState] = useState<string[]>([]);
   const [newConcept, setNewConcept] = useState("");
-  const [examTips, setExamTips] = useState<string[]>([]);
+  const [examTips, setExamTipsState] = useState<string[]>([]);
   const [newExamTip, setNewExamTip] = useState("");
-  const [commonMistakes, setCommonMistakes] = useState<CommonMistakeItem[]>([]);
+  const [commonMistakes, setCommonMistakesState] = useState<CommonMistakeItem[]>([]);
   const [newMistake, setNewMistake] = useState("");
   const [newCorrection, setNewCorrection] = useState("");
+
+  // Live Refs + Serialized DB Save Queue so clicking Trash never loses rapid edits
+  const definitionsRef = useRef<DefinitionItem[]>([]);
+  const mindMapImagesRef = useRef<string[]>([]);
+  const objectivesRef = useRef<string[]>([]);
+  const summaryImagesRef = useRef<string[]>([]);
+  const keyConceptsRef = useRef<string[]>([]);
+  const examTipsRef = useRef<string[]>([]);
+  const commonMistakesRef = useRef<CommonMistakeItem[]>([]);
+  const patchQueueRef = useRef<Promise<void>>(Promise.resolve());
+
+  const queueLessonPatch = useCallback(
+    (partialPayload: Record<string, unknown>, successToast?: string) => {
+      patchQueueRef.current = patchQueueRef.current
+        .catch(() => {})
+        .then(async () => {
+          const res = await fetch(`/api/admin/lessons/${lessonId}`, {
+            method: "PUT",
+            cache: "no-store",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(partialPayload),
+          });
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok || data.error) {
+            const msg = data.error || "فشل حفظ التعديل في قاعدة البيانات";
+            toast.error(msg);
+            setStatusMessage({ type: "error", text: msg });
+            return;
+          }
+          if (data.lesson && onLessonUpdated) {
+            onLessonUpdated(data.lesson);
+          }
+          if (successToast) {
+            toast.success(successToast);
+          }
+        })
+        .catch((err) => {
+          const msg = err instanceof Error ? err.message : "تعذر الاتصال بقاعدة البيانات";
+          toast.error(msg);
+          setStatusMessage({ type: "error", text: msg });
+        });
+    },
+    [lessonId, onLessonUpdated, toast]
+  );
+
+  const setDefinitions: React.Dispatch<React.SetStateAction<DefinitionItem[]>> = useCallback(
+    (action) => {
+      const nextDefs =
+        typeof action === "function" ? action(definitionsRef.current) : action;
+      definitionsRef.current = nextDefs;
+      setDefinitionsState(nextDefs);
+      const toastMsg =
+        nextDefs.length === 0
+          ? "تم حذف جميع المصطلحات من قاعدة البيانات"
+          : "تم حفظ قائمة المصطلحات في قاعدة البيانات";
+      queueLessonPatch({ summary: { definitions: nextDefs } }, toastMsg);
+    },
+    [queueLessonPatch]
+  );
+
+  const setMindMapImages: React.Dispatch<React.SetStateAction<string[]>> = useCallback(
+    (action) => {
+      const next =
+        typeof action === "function" ? action(mindMapImagesRef.current) : action;
+      mindMapImagesRef.current = next;
+      setMindMapImagesState(next);
+    },
+    []
+  );
+
+  const setSummaryImages: React.Dispatch<React.SetStateAction<string[]>> = useCallback(
+    (action) => {
+      const next =
+        typeof action === "function" ? action(summaryImagesRef.current) : action;
+      summaryImagesRef.current = next;
+      setSummaryImagesState(next);
+    },
+    []
+  );
 
   // Fetch Questions for this lesson (full relation without pagination limits)
   const fetchLessonQuestions = useCallback(() => {
     if (!lessonId) return;
     setIsLoadingQuestions(true);
-    fetch(`/api/admin/lessons/${lessonId}`)
+    fetch(`/api/admin/lessons/${lessonId}`, { cache: "no-store" })
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data.questions)) {
@@ -132,7 +211,7 @@ export function useLessonEditor({
       }
     }, 0);
 
-    fetch(`/api/admin/lessons/${lessonId}`)
+    fetch(`/api/admin/lessons/${lessonId}`, { cache: "no-store" })
       .then((res) => res.json())
       .then((data) => {
         if (!isMounted) return;
@@ -167,41 +246,83 @@ export function useLessonEditor({
         setAudioUrl(data.content?.audioUrl || "");
         setContentPdfUrl(data.content?.pdfUrl || "");
         setBodyText(data.content?.body || "");
-        setObjectives(Array.isArray(data.content?.objectives) ? data.content.objectives : []);
+
+        const loadedObjectives = Array.isArray(data.content?.objectives)
+          ? data.content.objectives
+          : [];
+        objectivesRef.current = loadedObjectives;
+        setObjectivesState(loadedObjectives);
 
         setMindMapTitle(data.mindMap?.title || `خريطة: ${data.title}`);
         setMindMapDescription(data.mindMap?.description || "");
-        setMindMapImages(Array.isArray(data.mindMap?.images) ? data.mindMap.images : []);
+        const loadedMindMapImages = Array.isArray(data.mindMap?.images)
+          ? data.mindMap.images
+          : [];
+        mindMapImagesRef.current = loadedMindMapImages;
+        setMindMapImagesState(loadedMindMapImages);
 
-        // Load Definitions from summary
+        // Load Definitions from summary (supporting legacy keys as well)
         if (data.summary) {
           setSummaryPdfUrl(data.summary.pdfUrl || "");
-          setSummaryImages(Array.isArray(data.summary.images) ? data.summary.images : []);
-          setKeyConcepts(Array.isArray(data.summary.keyConcepts) ? data.summary.keyConcepts : []);
-          setExamTips(Array.isArray(data.summary.examTips) ? data.summary.examTips : []);
-          setCommonMistakes(
-            Array.isArray(data.summary.commonMistakes) ? data.summary.commonMistakes : []
-          );
+          const loadedSummaryImages = Array.isArray(data.summary.images)
+            ? data.summary.images
+            : [];
+          summaryImagesRef.current = loadedSummaryImages;
+          setSummaryImagesState(loadedSummaryImages);
+
+          const loadedKeyConcepts = Array.isArray(data.summary.keyConcepts)
+            ? data.summary.keyConcepts
+            : [];
+          keyConceptsRef.current = loadedKeyConcepts;
+          setKeyConceptsState(loadedKeyConcepts);
+
+          const loadedExamTips = Array.isArray(data.summary.examTips)
+            ? data.summary.examTips
+            : [];
+          examTipsRef.current = loadedExamTips;
+          setExamTipsState(loadedExamTips);
+
+          const loadedMistakes = Array.isArray(data.summary.commonMistakes)
+            ? data.summary.commonMistakes
+            : [];
+          commonMistakesRef.current = loadedMistakes;
+          setCommonMistakesState(loadedMistakes);
 
           if (Array.isArray(data.summary.definitions)) {
             const formatted = data.summary.definitions
               .map((d: any) => {
                 if (typeof d === "string") {
                   const parts = d.split(":");
-                  return { term: parts[0]?.trim() || "", meaning: parts.slice(1).join(":")?.trim() || "" };
-                }
-                if (d && (d.term || d.meaning)) {
                   return {
-                    term: String(d.term || "").trim(),
-                    meaning: String(d.meaning || "").trim(),
+                    term: parts[0]?.trim() || "",
+                    meaning: parts.slice(1).join(":")?.trim() || "",
+                  };
+                }
+                const resolvedTerm = String(
+                  d?.term ?? d?.name ?? d?.word ?? d?.title ?? d?.concept ?? ""
+                ).trim();
+                const resolvedMeaning = String(
+                  d?.meaning ?? d?.definition ?? d?.desc ?? d?.description ?? ""
+                ).trim();
+                if (d && (resolvedTerm || resolvedMeaning)) {
+                  return {
+                    term: resolvedTerm,
+                    meaning: resolvedMeaning,
                     translation: d.translation ? String(d.translation).trim() : undefined,
                   };
                 }
                 return null;
               })
               .filter(Boolean) as DefinitionItem[];
-            setDefinitions(formatted);
+            definitionsRef.current = formatted;
+            setDefinitionsState(formatted);
+          } else {
+            definitionsRef.current = [];
+            setDefinitionsState([]);
           }
+        } else {
+          definitionsRef.current = [];
+          setDefinitionsState([]);
         }
 
         // Load Questions from lesson include or via fetch
@@ -248,34 +369,22 @@ export function useLessonEditor({
     try {
       const formData = new FormData();
       formData.append("file", file);
-
-      const res = await fetch("/api/admin/upload", {
-        method: "POST",
-        body: formData,
-      });
-
+      const res = await fetch("/api/admin/upload", { method: "POST", body: formData });
       const data = await res.json();
-      if (!res.ok || data.error) {
-        throw new Error(data.error || "فشل رفع الملف إلى الخادم");
-      }
+      if (!res.ok || data.error) throw new Error(data.error || "فشل رفع الملف");
 
-      if (target === "video") {
-        setVideoUrl(data.url);
-      } else if (target === "audio") {
-        setAudioUrl(data.url);
-      } else if (target === "content_pdf") {
-        setContentPdfUrl(data.url);
+      if (target === "video") setVideoUrl(data.url);
+      else if (target === "audio") setAudioUrl(data.url);
+      else if (target === "content_pdf") setContentPdfUrl(data.url);
+      else if (target === "summary_pdf") setSummaryPdfUrl(data.url);
+      else if (target === "summary_image") {
+        setSummaryImages((prev) => [...prev, data.url]);
       } else if (target === "mindmap") {
         setMindMapImages((prev) => [...prev, data.url]);
-      } else if (target === "summary_pdf") {
-        setSummaryPdfUrl(data.url);
-      } else if (target === "summary_image") {
-        setSummaryImages((prev) => [...prev, data.url]);
       }
-      setStatusMessage({ type: "success", text: "تم رفع الملف بنجاح وتعيينه" });
-      setTimeout(() => setStatusMessage(null), 3000);
+      toast.success("تم رفع الملف بنجاح");
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "تعذر رفع الملف";
+      const msg = err instanceof Error ? err.message : "خطأ أثناء الرفع";
       setStatusMessage({ type: "error", text: msg });
       toast.error(msg);
     } finally {
@@ -287,27 +396,33 @@ export function useLessonEditor({
   const handleAddImage = () => {
     const trimmed = newImageUrl.trim();
     if (!trimmed) return;
-    setMindMapImages((prev) => [...prev, trimmed]);
+    const next = [...mindMapImagesRef.current, trimmed];
+    mindMapImagesRef.current = next;
+    setMindMapImagesState(next);
     setNewImageUrl("");
+    queueLessonPatch({ mindMap: { images: next } }, "تم حفظ صورة الخريطة الذهنية في قاعدة البيانات");
   };
 
   const handleRemoveImage = (index: number) => {
-    setMindMapImages((prev) => prev.filter((_, i) => i !== index));
+    const next = mindMapImagesRef.current.filter((_, i) => i !== index);
+    mindMapImagesRef.current = next;
+    setMindMapImagesState(next);
+    queueLessonPatch({ mindMap: { images: next } }, "تم حذف صورة الخريطة الذهنية من قاعدة البيانات");
   };
 
   const handleMoveImage = (index: number, direction: "up" | "down") => {
-    setMindMapImages((prev) => {
-      const copy = [...prev];
-      const targetIndex = direction === "up" ? index - 1 : index + 1;
-      if (targetIndex < 0 || targetIndex >= copy.length) return prev;
-      const temp = copy[index];
-      copy[index] = copy[targetIndex];
-      copy[targetIndex] = temp;
-      return copy;
-    });
+    const copy = [...mindMapImagesRef.current];
+    const targetIndex = direction === "up" ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= copy.length) return;
+    const temp = copy[index];
+    copy[index] = copy[targetIndex];
+    copy[targetIndex] = temp;
+    mindMapImagesRef.current = copy;
+    setMindMapImagesState(copy);
+    queueLessonPatch({ mindMap: { images: copy } });
   };
 
-  // Definitions Handlers
+  // Definitions Handlers (each commits cleanly to DB)
   const handleAddDefinition = (newTerm: string, newMeaning: string, newTranslation?: string) => {
     if (!newTerm.trim() || !newMeaning.trim()) return;
     setDefinitions((prev) => [
@@ -321,7 +436,10 @@ export function useLessonEditor({
   };
 
   const handleRemoveDefinition = (index: number) => {
-    setDefinitions((prev) => prev.filter((_, i) => i !== index));
+    const nextDefs = definitionsRef.current.filter((_, i) => i !== index);
+    definitionsRef.current = nextDefs;
+    setDefinitionsState(nextDefs);
+    queueLessonPatch({ summary: { definitions: nextDefs } }, "تم حذف المصطلح من قاعدة البيانات");
   };
 
   const handleUpdateDefinition = (
@@ -347,72 +465,102 @@ export function useLessonEditor({
   const handleAddObjective = () => {
     const trimmed = newObjective.trim();
     if (!trimmed) return;
-    setObjectives((prev) => [...prev, trimmed]);
+    const next = [...objectivesRef.current, trimmed];
+    objectivesRef.current = next;
+    setObjectivesState(next);
     setNewObjective("");
+    queueLessonPatch({ content: { objectives: next } });
   };
 
   const handleRemoveObjective = (index: number) => {
-    setObjectives((prev) => prev.filter((_, i) => i !== index));
+    const next = objectivesRef.current.filter((_, i) => i !== index);
+    objectivesRef.current = next;
+    setObjectivesState(next);
+    queueLessonPatch({ content: { objectives: next } }, "تم حذف الهدف من قاعدة البيانات");
   };
 
   // Summary Handlers
   const handleAddSummaryImage = () => {
     const trimmed = newSummaryImageUrl.trim();
     if (!trimmed) return;
-    setSummaryImages((prev) => [...prev, trimmed]);
+    const next = [...summaryImagesRef.current, trimmed];
+    summaryImagesRef.current = next;
+    setSummaryImagesState(next);
     setNewSummaryImageUrl("");
+    queueLessonPatch({ summary: { images: next } });
   };
 
   const handleRemoveSummaryImage = (index: number) => {
-    setSummaryImages((prev) => prev.filter((_, i) => i !== index));
+    const next = summaryImagesRef.current.filter((_, i) => i !== index);
+    summaryImagesRef.current = next;
+    setSummaryImagesState(next);
+    queueLessonPatch({ summary: { images: next } }, "تم حذف الصورة من قاعدة البيانات");
   };
 
   const handleMoveSummaryImage = (index: number, direction: "up" | "down") => {
-    setSummaryImages((prev) => {
-      const copy = [...prev];
-      const targetIndex = direction === "up" ? index - 1 : index + 1;
-      if (targetIndex < 0 || targetIndex >= copy.length) return prev;
-      const temp = copy[index];
-      copy[index] = copy[targetIndex];
-      copy[targetIndex] = temp;
-      return copy;
-    });
+    const copy = [...summaryImagesRef.current];
+    const targetIndex = direction === "up" ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= copy.length) return;
+    const temp = copy[index];
+    copy[index] = copy[targetIndex];
+    copy[targetIndex] = temp;
+    summaryImagesRef.current = copy;
+    setSummaryImagesState(copy);
+    queueLessonPatch({ summary: { images: copy } });
   };
 
   const handleAddKeyConcept = () => {
     const trimmed = newConcept.trim();
     if (!trimmed) return;
-    setKeyConcepts((prev) => [...prev, trimmed]);
+    const next = [...keyConceptsRef.current, trimmed];
+    keyConceptsRef.current = next;
+    setKeyConceptsState(next);
     setNewConcept("");
+    queueLessonPatch({ summary: { keyConcepts: next } });
   };
 
   const handleRemoveKeyConcept = (index: number) => {
-    setKeyConcepts((prev) => prev.filter((_, i) => i !== index));
+    const next = keyConceptsRef.current.filter((_, i) => i !== index);
+    keyConceptsRef.current = next;
+    setKeyConceptsState(next);
+    queueLessonPatch({ summary: { keyConcepts: next } }, "تم حذف الفكرة من قاعدة البيانات");
   };
 
   const handleAddExamTip = () => {
     const trimmed = newExamTip.trim();
     if (!trimmed) return;
-    setExamTips((prev) => [...prev, trimmed]);
+    const next = [...examTipsRef.current, trimmed];
+    examTipsRef.current = next;
+    setExamTipsState(next);
     setNewExamTip("");
+    queueLessonPatch({ summary: { examTips: next } });
   };
 
   const handleRemoveExamTip = (index: number) => {
-    setExamTips((prev) => prev.filter((_, i) => i !== index));
+    const next = examTipsRef.current.filter((_, i) => i !== index);
+    examTipsRef.current = next;
+    setExamTipsState(next);
+    queueLessonPatch({ summary: { examTips: next } }, "تم حذف التنبيه من قاعدة البيانات");
   };
 
   const handleAddMistake = () => {
     if (!newMistake.trim() || !newCorrection.trim()) return;
-    setCommonMistakes((prev) => [
-      ...prev,
+    const next = [
+      ...commonMistakesRef.current,
       { mistake: newMistake.trim(), correction: newCorrection.trim() },
-    ]);
+    ];
+    commonMistakesRef.current = next;
+    setCommonMistakesState(next);
     setNewMistake("");
     setNewCorrection("");
+    queueLessonPatch({ summary: { commonMistakes: next } });
   };
 
   const handleRemoveMistake = (index: number) => {
-    setCommonMistakes((prev) => prev.filter((_, i) => i !== index));
+    const next = commonMistakesRef.current.filter((_, i) => i !== index);
+    commonMistakesRef.current = next;
+    setCommonMistakesState(next);
+    queueLessonPatch({ summary: { commonMistakes: next } }, "تم حذف الخطأ الشائع من قاعدة البيانات");
   };
 
   // Main Save Handler
@@ -425,6 +573,8 @@ export function useLessonEditor({
     setIsSaving(true);
     setStatusMessage(null);
 
+    await patchQueueRef.current.catch(() => {});
+
     const payload = {
       title: title.trim(),
       order: Number(order),
@@ -436,26 +586,27 @@ export function useLessonEditor({
         videoUrl: videoUrl.trim() || null,
         audioUrl: audioUrl.trim() || null,
         pdfUrl: contentPdfUrl.trim() || null,
-        objectives,
+        objectives: objectivesRef.current,
       },
       mindMap: {
         title: mindMapTitle.trim() || title.trim(),
         description: mindMapDescription.trim() || null,
-        images: mindMapImages,
+        images: mindMapImagesRef.current,
       },
       summary: {
         pdfUrl: summaryPdfUrl.trim() || null,
-        images: summaryImages,
-        keyConcepts,
-        definitions, // Saved directly to database
-        examTips,
-        commonMistakes,
+        images: summaryImagesRef.current,
+        keyConcepts: keyConceptsRef.current,
+        definitions: definitionsRef.current,
+        examTips: examTipsRef.current,
+        commonMistakes: commonMistakesRef.current,
       },
     };
 
     try {
       const res = await fetch(`/api/admin/lessons/${lessonId}`, {
         method: "PUT",
+        cache: "no-store",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
@@ -465,7 +616,10 @@ export function useLessonEditor({
         throw new Error(data.error || "فشل حفظ الدرس");
       }
 
-      setStatusMessage({ type: "success", text: "تم حفظ الخريطة الذهنية والتعريفات ومحتوى الدرس بنجاح! ✨" });
+      setStatusMessage({
+        type: "success",
+        text: "تم حفظ الخريطة الذهنية والتعريفات ومحتوى الدرس بنجاح! ✨",
+      });
       if (data.lesson && onLessonUpdated) {
         onLessonUpdated(data.lesson);
       }
@@ -489,6 +643,7 @@ export function useLessonEditor({
     try {
       const res = await fetch(`/api/admin/lessons/${lessonId}`, {
         method: "DELETE",
+        cache: "no-store",
       });
 
       const data = await res.json();
