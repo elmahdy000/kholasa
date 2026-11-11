@@ -37,9 +37,12 @@ export default async function SubscriptionPage({ searchParams }: SubscriptionPag
         {/* Breadcrumb */}
         <nav
           aria-label="مسار التصفح"
-          className="flex items-center gap-2 text-[13px] font-semibold text-[#64748B] pt-1"
+          className="flex items-center gap-2 text-[13px] font-semibold text-[#64748B]"
         >
-          <Link href="/dashboard" className="hover:text-[#1D4ED8] transition-colors">
+          <Link
+            href="/dashboard"
+            className="inline-flex items-center min-h-[44px] px-1 hover:text-[#1D4ED8] transition-colors"
+          >
             الرئيسية
           </Link>
           <span>/</span>
