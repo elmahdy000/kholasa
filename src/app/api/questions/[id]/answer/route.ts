@@ -5,9 +5,9 @@ import { rateLimit, withRetryAfter } from "@/lib/rate-limit";
 import { QuestionService } from "@/services/question.service";
 import { MistakeService } from "@/services/mistake.service";
 import { getCurriculumScope, isSubjectInScope } from "@/lib/curriculum";
-
 import { prisma } from "@/lib/prisma";
 import { getCairoDayKey, calculateStreak } from "@/lib/date";
+import { emitRealtimeEvent } from "@/lib/realtime";
 
 export async function POST(
   req: Request,
@@ -64,7 +64,7 @@ export async function POST(
 
     const hasEssayDraft = essayText !== undefined && essayText !== null;
 
-    // Student explicitly marks an essay question (or reopens a resolved question) for review in "غلطاتي"
+    // Student explicitly marks an essay question (or reopens a resolved question) for review in "مراجعة لأخطائي"
     if (markForReview) {
       await Promise.all([
         MistakeService.markForReview(user.id, questionId),
@@ -83,6 +83,14 @@ export async function POST(
           },
         }),
       ]);
+
+      emitRealtimeEvent({
+        topic: "analytics",
+        action: "mistake_updated",
+        audience: "user",
+        targetUserId: user.id,
+        entityId: questionId,
+      });
 
       return NextResponse.json({
         success: true,
@@ -113,6 +121,15 @@ export async function POST(
           },
         }),
       ]);
+
+      emitRealtimeEvent({
+        topic: "analytics",
+        action: "mistake_updated",
+        audience: "user",
+        targetUserId: user.id,
+        entityId: questionId,
+      });
+
       return NextResponse.json({
         success: true,
         markedForReview: false,
@@ -184,6 +201,14 @@ export async function POST(
         streakDays = calculateStreak(userChallenges.map((c) => c.day));
         isTodayCompleted = true;
       }
+
+      emitRealtimeEvent({
+        topic: "analytics",
+        action: "mistake_updated",
+        audience: "user",
+        targetUserId: user.id,
+        entityId: questionId,
+      });
 
       return NextResponse.json({
         isCorrect,

@@ -6,12 +6,15 @@ import { StreakWidget } from "./StreakWidget";
 import { DashboardHero } from "./DashboardHero";
 import { ContinueLearningCard } from "./ContinueLearningCard";
 import { DashboardStatsGrid } from "./DashboardStatsGrid";
+import { DashboardMistakesSpotlight } from "./DashboardMistakesSpotlight";
 import { QuickActionsGrid } from "./QuickActionsGrid";
 import { SubjectsGrid } from "./SubjectsGrid";
 import { RecentExamsList } from "./RecentExamsList";
 import { ProductTourModal } from "./ProductTourModal";
 import { StudentMasteryMapCard } from "./StudentMasteryMapCard";
 import { DailyGuidedStudyPlanCard } from "./DailyGuidedStudyPlanCard";
+import { useStudentMistakesSummary } from "@/hooks/useStudentMistakesSummary";
+import type { StudentMistakeDiagnosisSummary } from "@/lib/mistake-diagnosis";
 import type { DashboardClientProps } from "./types";
 
 export type { DashboardClientProps, ContinueLessonItem, SubjectItem, RecentExamItem, StudentMeta } from "./types";
@@ -26,6 +29,7 @@ export function DashboardClient({
   isTodayCompleted = false,
   weekDays = [],
   unresolvedMistakesCount,
+  mistakesSummary,
   subjects,
   continueLesson,
   dailyQuestion,
@@ -37,6 +41,18 @@ export function DashboardClient({
   const [currentStreakDays, setCurrentStreakDays] = useState(streakDays);
   const [isTodayCompletedState, setIsTodayCompletedState] = useState(isTodayCompleted);
   const [isTourOpen, setIsTourOpen] = useState(false);
+
+  const { summary: liveSummary, hasLoaded } = useStudentMistakesSummary(true);
+
+  const effectiveMistakesSummary: StudentMistakeDiagnosisSummary = hasLoaded
+    ? liveSummary
+    : mistakesSummary ?? {
+        unresolvedCount: unresolvedMistakesCount,
+        resolvedCount: 0,
+        topWeakness: null,
+        breakdown: [],
+      };
+  const liveUnresolvedMistakesCount = effectiveMistakesSummary.unresolvedCount;
 
   // Check if tour should auto-launch (e.g. redirected from onboarding with ?tour=true or first time)
   useEffect(() => {
@@ -108,6 +124,9 @@ export function DashboardClient({
         }}
       />
 
+      {/* 2b. Live Mistakes Counter & Weakness Diagnosis Spotlight */}
+      <DashboardMistakesSpotlight summary={effectiveMistakesSummary} />
+
       {/* 3. Daily Guided Study Plan */}
       {dailyStudyPlan && (
         <DailyGuidedStudyPlanCard
@@ -131,14 +150,14 @@ export function DashboardClient({
       <DashboardStatsGrid
         completedLessonsCount={completedLessonsCount}
         recentAttemptsCount={recentAttemptsCount}
-        unresolvedMistakesCount={unresolvedMistakesCount}
+        unresolvedMistakesCount={liveUnresolvedMistakesCount}
         averageScore={averageScore}
       />
 
       {/* 5. Quick Actions Bento Grid */}
       <QuickActionsGrid
         subjectsCount={subjects.length}
-        unresolvedMistakesCount={unresolvedMistakesCount}
+        unresolvedMistakesCount={liveUnresolvedMistakesCount}
       />
 
       {/* 6. Daily Challenge */}

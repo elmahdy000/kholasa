@@ -46,6 +46,8 @@ export interface StudentMeta {
   trackName?: string | null;
 }
 
+import type { StudentMistakeDiagnosisSummary } from "@/lib/mistake-diagnosis";
+
 export interface DashboardClientProps {
   userName?: string | null;
   studentMeta?: StudentMeta;
@@ -56,6 +58,7 @@ export interface DashboardClientProps {
   isTodayCompleted?: boolean;
   weekDays?: WeekDayProgress[];
   unresolvedMistakesCount: number;
+  mistakesSummary?: StudentMistakeDiagnosisSummary;
   subjects: SubjectItem[];
   continueLesson?: ContinueLessonItem | null;
   dailyQuestion?: any;

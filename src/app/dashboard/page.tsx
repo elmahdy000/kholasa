@@ -7,6 +7,7 @@ import { hasActiveSubscription } from "@/lib/lesson-access";
 import { StudentShell } from "@/components/layout/StudentShell";
 import { DashboardClient } from "@/components/dashboard/DashboardClient";
 import { StudentService } from "@/services/student.service";
+import { MistakeService } from "@/services/mistake.service";
 
 export const dynamic = "force-dynamic";
 
@@ -47,7 +48,7 @@ export default async function DashboardPage() {
 
   const [
     completedLessonsCount,
-    unresolvedMistakesCount,
+    mistakesSummary,
     recentAttempts,
     userProgress,
     examStats,
@@ -74,20 +75,13 @@ export default async function DashboardPage() {
         })
       : 0,
     userId
-      ? prisma.mistakeReview.count({
-          where: {
-            userId,
-            isResolved: false,
-            question: {
-              status: "PUBLISHED",
-              subject: {
-                isPublished: true,
-                ...subjectScopeWhere(scope),
-              },
-            },
-          },
-        })
-      : 0,
+      ? MistakeService.getStudentMistakeDiagnosisSummary(userId, scope)
+      : {
+          unresolvedCount: 0,
+          resolvedCount: 0,
+          topWeakness: null,
+          breakdown: [],
+        },
     userId
       ? prisma.examAttempt.findMany({
           where: { userId, isCompleted: true },
@@ -141,6 +135,7 @@ export default async function DashboardPage() {
       : null,
   ]);
 
+  const unresolvedMistakesCount = mistakesSummary.unresolvedCount;
   const completedAttemptsCount = examStats._count._all;
   const averageScore =
     examStats._avg.percentage !== null
@@ -356,6 +351,7 @@ export default async function DashboardPage() {
         isTodayCompleted={isTodayCompleted}
         weekDays={weekDays}
         unresolvedMistakesCount={unresolvedMistakesCount}
+        mistakesSummary={mistakesSummary}
         subjects={subjectsForClient}
         continueLesson={continueLessonData}
         dailyQuestion={resolvedDailyQuestion as any}

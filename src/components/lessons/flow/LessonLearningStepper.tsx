@@ -124,7 +124,7 @@ export function LessonLearningStepper({
       stepNumber: 4,
       title: isLanguages ? "Mistakes Analysis" : "تظبيط الغلطات",
       metric: unresolvedMistakesCount > 0
-        ? `${unresolvedMistakesCount} ${isLanguages ? "mistakes" : "أخطاء للمراجعة"}`
+        ? `${unresolvedMistakesCount} ${isLanguages ? "mistakes" : "في مراجعة لأخطائي"}`
         : (hasPracticed ? (isLanguages ? "0 mistakes ✓" : "صفر أخطاء ✓") : (isLanguages ? "Ready" : "جاهز للتدريب")),
       isCompleted: isMistakesDone,
       isInProgress: unresolvedMistakesCount > 0,

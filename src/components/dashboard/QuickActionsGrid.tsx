@@ -46,11 +46,11 @@ export function QuickActionsGrid({ subjectsCount, unresolvedMistakesCount }: Qui
     },
     {
       id: "mistakes",
-      title: "ركن غلطاتي",
+      title: "مراجعة لأخطائي",
       desc: "راجع الأسئلة اللي وقفت معاك قبل كدة",
       href: "/mistakes",
       icon: ArrowCounterClockwise,
-      badge: `${unresolvedMistakesCount} أخطاء`,
+      badge: unresolvedMistakesCount > 0 ? `${unresolvedMistakesCount} في المراجعة` : "0 — متقن ✓",
       badgeColor:
         unresolvedMistakesCount > 0
           ? "bg-[#DC2626] text-white"
@@ -99,8 +99,14 @@ export function QuickActionsGrid({ subjectsCount, unresolvedMistakesCount }: Qui
                 </div>
                 {action.badge && (
                   <span
-                    className={`text-[11px] sm:text-xs font-bold px-2 py-0.5 rounded-full shrink-0 ${action.badgeColor}`}
+                    className={`inline-flex items-center gap-1.5 text-[11px] sm:text-xs font-bold px-2 py-0.5 rounded-full shrink-0 ${action.badgeColor}`}
                   >
+                    {action.id === "mistakes" && unresolvedMistakesCount > 0 && (
+                      <span className="relative flex h-1.5 w-1.5 shrink-0">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-current opacity-75" />
+                        <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-current" />
+                      </span>
+                    )}
                     {action.badge}
                   </span>
                 )}

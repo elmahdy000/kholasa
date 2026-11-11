@@ -2,14 +2,21 @@
 
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { AnimatePresence, motion } from "framer-motion";
+import { AnimatedCount } from "@/components/ui/AnimatedCount";
 import type { NavItem } from "./types";
 
 interface StudentMobileBottomNavProps {
   items: NavItem[];
   pathname: string;
+  mistakesCount?: number;
 }
 
-export function StudentMobileBottomNav({ items, pathname }: StudentMobileBottomNavProps) {
+export function StudentMobileBottomNav({
+  items,
+  pathname,
+  mistakesCount,
+}: StudentMobileBottomNavProps) {
   // If actively solving an exam, hide bottom nav to avoid distraction
   const isSolvingExam =
     pathname.startsWith("/exams/") &&
@@ -39,7 +46,7 @@ export function StudentMobileBottomNav({ items, pathname }: StudentMobileBottomN
             >
               <div
                 className={cn(
-                  "w-10 h-7.5 rounded-xl flex items-center justify-center transition-all duration-150 shrink-0",
+                  "relative w-10 h-7.5 rounded-xl flex items-center justify-center transition-all duration-150 shrink-0",
                   isActive
                     ? "bg-[#800B34] text-white shadow-xs"
                     : item.isCenter
@@ -47,6 +54,25 @@ export function StudentMobileBottomNav({ items, pathname }: StudentMobileBottomN
                     : "text-[#64748B] dark:text-[#94A3B8] group-hover:text-[#091B40] dark:group-hover:text-white"
                 )}
               >
+                {item.href === "/mistakes" && typeof mistakesCount === "number" && (
+                  <AnimatePresence mode="wait">
+                    <motion.span
+                      key={`mobile-mistakes-${mistakesCount > 0 ? "active" : "zero"}`}
+                      initial={{ scale: 0.65, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      exit={{ scale: 0.65, opacity: 0 }}
+                      transition={{ type: "spring", stiffness: 500, damping: 24 }}
+                      className={cn(
+                        "absolute -top-1.5 -left-1.5 z-10 min-w-[18px] h-[18px] px-1 rounded-full text-[9px] font-black tabular-nums flex items-center justify-center shadow-xs border border-white dark:border-[#091B40]",
+                        mistakesCount > 0
+                          ? "bg-[#DC2626] text-white"
+                          : "bg-[#059669] text-white"
+                      )}
+                    >
+                      <AnimatedCount value={mistakesCount} />
+                    </motion.span>
+                  </AnimatePresence>
+                )}
                 <Icon
                   className="w-4.5 h-4.5 shrink-0"
                   weight={isActive ? "fill" : "bold"}

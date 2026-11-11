@@ -8,23 +8,31 @@ import { AlertTriangle } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
-export default async function MistakesPage() {
+interface MistakesPageProps {
+  searchParams?: Promise<{
+    subjectId?: string;
+    lessonId?: string;
+  }>;
+}
+
+export default async function MistakesPage({ searchParams }: MistakesPageProps) {
   const user = await getCurrentUser();
 
   if (!user) {
     redirect("/login?callbackUrl=/mistakes");
   }
 
+  const resolvedParams = searchParams ? await searchParams : {};
   const scope = getCurriculumScope(user);
 
-  // Fetch student's published, track-scoped mistake records (including essay questions flagged for review)
+  // Fetch student's published, track-scoped mistake records (excluding under-construction subjects)
   const mistakes = await prisma.mistakeReview.findMany({
     where: {
       userId: user.id,
       question: {
         status: "PUBLISHED",
-        subject: { isPublished: true },
-        ...questionScopeWhere(scope),
+        subject: { isPublished: true, isUnderConstruction: false },
+        ...(scope ? { AND: [questionScopeWhere(scope)] } : {}),
       },
     },
     orderBy: { lastAttemptAt: "desc" },
@@ -49,6 +57,7 @@ export default async function MistakesPage() {
   const subjects = await prisma.subject.findMany({
     where: {
       isPublished: true,
+      isUnderConstruction: false,
       ...subjectScopeWhere(scope),
     },
     select: { id: true, name: true },
@@ -67,25 +76,44 @@ export default async function MistakesPage() {
     name,
   }));
 
+  const requestedSubjectId =
+    typeof resolvedParams.subjectId === "string" ? resolvedParams.subjectId.trim() : "";
+  const initialSubjectId =
+    requestedSubjectId && filterSubjects.some((s) => s.id === requestedSubjectId)
+      ? requestedSubjectId
+      : "all";
+
+  const requestedLessonId =
+    typeof resolvedParams.lessonId === "string" ? resolvedParams.lessonId.trim() : "";
+  const initialLessonId =
+    requestedLessonId &&
+    mistakes.some((m) =>
+      m.question?.lessons?.some((l) => l.lesson.id === requestedLessonId)
+    )
+      ? requestedLessonId
+      : null;
+
   return (
     <StudentShell user={user}>
       <div className="max-w-4xl mx-auto space-y-6 text-right font-sans pb-28">
         <div className="border-b border-[#E2E8F0] dark:border-[#334155] pb-4">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-[#DC2626]/10 dark:bg-[#1E293B] text-[#DC2626] dark:text-[#F87171] border border-[#E2E8F0]/60 dark:border-[#F87171]/40 text-xs font-bold mb-2">
             <AlertTriangle className="w-3.5 h-3.5" />
-            <span>مركز المراجعة والتصحيح</span>
+            <span>عداد مراجعة لأخطائي وتشخيص نقاط الضعف</span>
           </div>
           <h1 className="text-xl sm:text-2xl font-bold text-[#0F172A] dark:text-white leading-[1.35]">
-            غلطاتي — اتعلم من كل خطأ
+            مراجعة لأخطائي — اكتشف نقط ضعفك واتقنها
           </h1>
           <p className="text-xs sm:text-sm text-[#64748B] dark:text-[#94A3B8] mt-1 leading-relaxed">
-            هنا تتجمع كل الأسئلة التي تعثرت بها في التدريبات والامتحانات — والأسئلة المقالية التي حددتها للمراجعة — لتتمكن من إعادة حلها وفهم سبب الإجابة حتى تتقنها تماماً.
+            هنا بتتجمع كل الأسئلة اللي غلطت فيها أو حددتها للمراجعة، مع تشخيص دقيق يوضحلك فين المشكلة في كل مادة ودرس لحد ما تتقنها بالكامل.
           </p>
         </div>
 
         <MistakeHubClient
           initialMistakes={mistakes as any}
           subjects={filterSubjects}
+          initialSubjectId={initialSubjectId}
+          initialLessonId={initialLessonId}
         />
       </div>
     </StudentShell>

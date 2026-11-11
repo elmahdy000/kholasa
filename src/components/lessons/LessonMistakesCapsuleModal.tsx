@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { fetchWithRetry } from "@/lib/network";
+import { dispatchMistakesUpdatedClientEvent } from "@/lib/realtime-client";
 import {
   X,
   CheckCircle,
@@ -146,6 +147,7 @@ export function LessonMistakesCapsuleModal({
         setWasJustResolved(true);
         setResolvedIds((prev) => new Set([...prev, currentQ.id]));
         onMistakeResolved(currentQ.id);
+        dispatchMistakesUpdatedClientEvent();
 
         if (currentIndex < totalCount - 1) {
           setTimeout(() => {
@@ -168,6 +170,7 @@ export function LessonMistakesCapsuleModal({
           setWasJustResolved(true);
           setResolvedIds((prev) => new Set([...prev, currentQ.id]));
           onMistakeResolved(currentQ.id);
+        dispatchMistakesUpdatedClientEvent();
 
           if (currentIndex < totalCount - 1) {
             setTimeout(() => {

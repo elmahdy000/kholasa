@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { fetchWithRetry } from "@/lib/network";
+import { dispatchMistakesUpdatedClientEvent } from "@/lib/realtime-client";
 import Link from "next/link";
 import {
   Lightning,
@@ -86,6 +87,7 @@ export function DailyChallengeCard({
       setRevealed(data);
       setIsCorrect(Boolean(data.isCorrect));
       setIsAnswered(true);
+      dispatchMistakesUpdatedClientEvent();
 
       if (typeof data.streakDays === "number") {
         setStreakEarned(data.streakDays);
@@ -336,7 +338,7 @@ export function DailyChallengeCard({
                 {isAnswered
                   ? isCorrect
                     ? "إجابتك اتسجلت، وحضور النهاردة في أمان."
-                    : "إجابتك اتسجلت والسؤال اتحفظ في كشكول غلطاتي للمراجعة."
+                    : "إجابتك اتسجلت والسؤال اتحفظ في مراجعة لأخطائي عشان تراجعه لاحقاً."
                   : ""}
               </span>
               <div className="flex flex-wrap items-center gap-3">
@@ -345,7 +347,7 @@ export function DailyChallengeCard({
                     href="/mistakes"
                     className="text-[13px] font-bold text-[#D97706] dark:text-[#FBBF24] hover:underline flex items-center gap-1"
                   >
-                    <span>راجع السؤال في غلطاتي</span>
+                    <span>مراجعة السؤال في لأخطائي</span>
                     <ArrowLeft className="w-3.5 h-3.5" weight="bold" />
                   </Link>
                 )}

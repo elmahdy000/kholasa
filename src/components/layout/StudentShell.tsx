@@ -14,6 +14,7 @@ import { StudentHeader } from "./student/StudentHeader";
 import { StudentFooter } from "./student/StudentFooter";
 import { StudentSearchModal } from "./student/StudentSearchModal";
 import { RealtimeSyncBridge } from "@/lib/realtime-client";
+import { useStudentMistakesSummary } from "@/hooks/useStudentMistakesSummary";
 
 interface StudentShellContextType {
   isInsideShell: boolean;
@@ -35,6 +36,12 @@ export function StudentShell({ children, user: propUser }: StudentShellProps) {
   const router = useRouter();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isResettingDemo, setIsResettingDemo] = useState(false);
+  const resolvedUser = propUser !== undefined ? propUser : parentContext.user;
+  const isStudentViewer =
+    !parentContext.isInsideShell &&
+    Boolean(resolvedUser) &&
+    (!resolvedUser?.role || resolvedUser.role === "STUDENT");
+  const { summary: mistakesSummary } = useStudentMistakesSummary(isStudentViewer);
 
   // Keyboard shortcut Ctrl+K / Cmd+K and Esc
   useEffect(() => {
@@ -58,7 +65,7 @@ export function StudentShell({ children, user: propUser }: StudentShellProps) {
     return <>{children}</>;
   }
 
-  const user = propUser !== undefined ? propUser : parentContext.user;
+  const user = resolvedUser;
 
   // When browsing as a guest / visitor
   if (!user) {
@@ -103,6 +110,7 @@ export function StudentShell({ children, user: propUser }: StudentShellProps) {
           pathname={pathname}
           user={user}
           onOpenSearch={() => setIsSearchOpen(true)}
+          mistakesSummary={mistakesSummary}
         />
 
         {/* Isolated Demo Session Notice Banner */}
@@ -137,7 +145,11 @@ export function StudentShell({ children, user: propUser }: StudentShellProps) {
         <StudentFooter />
 
         {/* Mobile Floating Dock Navigation */}
-        <StudentMobileBottomNav items={STUDENT_NAV_ITEMS} pathname={pathname} />
+        <StudentMobileBottomNav
+          items={STUDENT_NAV_ITEMS}
+          pathname={pathname}
+          mistakesCount={isStudentViewer ? mistakesSummary.unresolvedCount : undefined}
+        />
 
         {/* Global Search Modal */}
         <StudentSearchModal

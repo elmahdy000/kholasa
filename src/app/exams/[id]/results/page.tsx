@@ -188,7 +188,7 @@ export default async function ExamResultsPage({
             </h1>
 
             <p className="text-xs sm:text-sm text-[#64748B] dark:text-[#94A3B8] max-w-lg leading-relaxed">
-              سجلنا إجاباتك كلها، والأسئلة اللي وقعت فيها اتحفظت في ركن "غلطاتي" عشان تراجعها وتثبتها وقت ما تحب.
+              سجلنا إجاباتك كلها، والأسئلة اللي وقعت فيها اتحفظت في "مراجعة لأخطائي" عشان تراجعها وتثبتها وقت ما تحب.
             </p>
 
             <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-2.5 sm:gap-3 pt-2">
@@ -197,7 +197,7 @@ export default async function ExamResultsPage({
                 className="w-full sm:w-auto min-h-[44px] h-11 px-4 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white text-xs sm:text-[13px] font-bold flex items-center justify-center gap-2 transition-colors interactive-tap shadow-xs"
               >
                 <AlertTriangle className="w-3.5 h-3.5 text-amber-300" />
-                <span>راجع أخطاءك في "غلطاتي"</span>
+                <span>راجع أخطاءك في مراجعة لأخطائي</span>
               </Link>
 
               <Link
@@ -433,7 +433,7 @@ export default async function ExamResultsPage({
 
                       <div className="p-3.5 rounded-xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
                         <span className="text-xs font-semibold text-[#536681] dark:text-[#94A3B8]">
-                          لو شايف إنك محتاج تراجع السؤال المقالي ده تاني بعد ما شفت الإجابة، ضيفه في «غلطاتي»:
+                          لو شايف إنك محتاج تراجع السؤال المقالي ده تاني بعد ما شفت الإجابة، ضيفه في «مراجعة لأخطائي»:
                         </span>
                         <EssayReviewToggleButton
                           questionId={q.id}
@@ -526,7 +526,7 @@ export default async function ExamResultsPage({
                 </h2>
                 <p className="text-xs sm:text-sm text-[#64748B] dark:text-[#94A3B8] mt-1">
                   {wrongAnswers.length > 0
-                    ? `عندك ${wrongAnswers.length} أسئلة محتاجة مراجعة، اتحفظت تلقائياً في ركن غلطاتي عشان تراجعها وتثبتها.`
+                    ? `عندك ${wrongAnswers.length} أسئلة محتاجة مراجعة، اتحفظت تلقائياً في «مراجعة لأخطائي» عشان تراجعها وتثبتها.`
                     : "عاش يا بطل! ما شاء الله قفلت كل الأسئلة بدون أخطاء. جاهز للتحدي التالي!"}
                 </p>
               </div>
@@ -539,7 +539,7 @@ export default async function ExamResultsPage({
                     className="w-full sm:w-auto min-h-[44px] h-11 px-5 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all shadow-xs active:scale-95"
                   >
                     <AlertTriangle className="w-4 h-4 text-amber-300" />
-                    <span>تظبيط أخطاءك في "غلطاتي" ({wrongAnswers.length})</span>
+                    <span>افتح مراجعة لأخطائي ({wrongAnswers.length})</span>
                   </Link>
                 )}
 

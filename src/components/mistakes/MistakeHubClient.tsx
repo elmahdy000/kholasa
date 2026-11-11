@@ -2,6 +2,10 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { AnimatePresence, motion } from "framer-motion";
+import { Crosshair, X } from "lucide-react";
+import { buildMistakeDiagnosisBreakdown } from "@/lib/mistake-diagnosis";
+import { dispatchMistakesUpdatedClientEvent } from "@/lib/realtime-client";
 import type { MistakeItem, MistakeHubClientProps, ActiveAnswerState } from "./types";
 import { MistakeAnalyticsBar } from "./MistakeAnalyticsBar";
 import { MistakeExamBanner } from "./MistakeExamBanner";
@@ -15,10 +19,13 @@ import { MistakesEmptyState } from "./MistakesEmptyState";
 export function MistakeHubClient({
   initialMistakes,
   subjects,
+  initialSubjectId = "all",
+  initialLessonId = null,
 }: MistakeHubClientProps) {
   const router = useRouter();
   const [mistakes, setMistakes] = useState<MistakeItem[]>(initialMistakes);
-  const [selectedSubjectId, setSelectedSubjectId] = useState<string>("all");
+  const [selectedSubjectId, setSelectedSubjectId] = useState<string>(initialSubjectId);
+  const [selectedLessonId, setSelectedLessonId] = useState<string | null>(initialLessonId);
   const [filterStatus, setFilterStatus] = useState<"all" | "unresolved" | "resolved">(
     "unresolved"
   );
@@ -38,6 +45,19 @@ export function MistakeHubClient({
     [mistakes, selectedSubjectId]
   );
 
+  const diagnosisBuckets = useMemo(
+    () => buildMistakeDiagnosisBreakdown(subjectScopedMistakes.filter((m) => !m.isResolved)),
+    [subjectScopedMistakes]
+  );
+
+  const activeLessonBucket = useMemo(
+    () =>
+      selectedLessonId
+        ? diagnosisBuckets.find((b) => b.lessonId === selectedLessonId) ?? null
+        : null,
+    [diagnosisBuckets, selectedLessonId]
+  );
+
   const totalCount = subjectScopedMistakes.length;
   const resolvedCount = subjectScopedMistakes.filter((m) => m.isResolved).length;
   const unresolvedCount = totalCount - resolvedCount;
@@ -47,6 +67,13 @@ export function MistakeHubClient({
     totalCount > 0 ? Math.round((resolvedCount / totalCount) * 100) : null;
 
   const filteredMistakes = subjectScopedMistakes.filter((m) => {
+    if (
+      selectedLessonId &&
+      !m.question.lessons?.some((l) => l.lesson.id === selectedLessonId)
+    ) {
+      return false;
+    }
+
     const isEssay = m.question.type === "ESSAY" || !m.question.options?.length;
     if (typeFilter === "ESSAY" && !isEssay) return false;
     if (typeFilter === "OBJECTIVE" && isEssay) return false;
@@ -106,6 +133,7 @@ export function MistakeHubClient({
           )
         );
       }
+      dispatchMistakesUpdatedClientEvent();
     } catch (err) {
       setActiveAnswers((prev) => {
         const next = { ...prev };
@@ -137,6 +165,7 @@ export function MistakeHubClient({
           m.questionId === questionId ? { ...m, isResolved: true } : m
         )
       );
+      dispatchMistakesUpdatedClientEvent();
     } catch (err) {
       setActionError(
         err instanceof Error ? err.message : "تعذر تحديث حالة السؤال."
@@ -168,6 +197,7 @@ export function MistakeHubClient({
           m.questionId === questionId ? { ...m, isResolved: false } : m
         )
       );
+      dispatchMistakesUpdatedClientEvent();
     } catch (err) {
       setActionError(
         err instanceof Error ? err.message : "تعذر تحديث حالة السؤال."
@@ -179,6 +209,12 @@ export function MistakeHubClient({
     const targetMistakes = subjectScopedMistakes
       .filter((m) => {
         if (m.isResolved) return false;
+        if (
+          selectedLessonId &&
+          !m.question.lessons?.some((l) => l.lesson.id === selectedLessonId)
+        ) {
+          return false;
+        }
         const isEssay = m.question.type === "ESSAY" || !m.question.options?.length;
         if (typeFilter === "ESSAY" && !isEssay) return false;
         if (typeFilter === "OBJECTIVE" && isEssay) return false;
@@ -209,7 +245,7 @@ export function MistakeHubClient({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          title: `امتحان مراجعة الأخطاء (${targetMistakes.length} أسئلة)`,
+          title: `امتحان مراجعة لأخطائي (${targetMistakes.length} أسئلة)`,
           mode: "PRACTICE",
           durationMinutes: Math.max(10, Math.min(60, targetMistakes.length * 2)),
           questionIds: targetMistakes.map((m) => m.questionId),
@@ -232,11 +268,19 @@ export function MistakeHubClient({
 
   const actionableUnresolvedCount = subjectScopedMistakes.filter((m) => {
     if (m.isResolved) return false;
+    if (
+      selectedLessonId &&
+      !m.question.lessons?.some((l) => l.lesson.id === selectedLessonId)
+    ) {
+      return false;
+    }
     const isEssay = m.question.type === "ESSAY" || !m.question.options?.length;
     if (typeFilter === "ESSAY" && !isEssay) return false;
     if (typeFilter === "OBJECTIVE" && isEssay) return false;
     return true;
   }).length;
+
+  const topWeakness = diagnosisBuckets[0] ?? null;
 
   return (
     <div className="space-y-6">
@@ -246,6 +290,109 @@ export function MistakeHubClient({
         resolvedCount={resolvedCount}
         masteryPercentage={masteryPercentage}
       />
+
+      {/* Weakness Diagnosis Panel ("تشخيص المشكلة") */}
+      {diagnosisBuckets.length > 0 && (
+        <motion.section
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.28 }}
+          className="rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] p-4 sm:p-5 space-y-3.5 shadow-xs"
+        >
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div className="space-y-0.5 min-w-0">
+              <div className="flex items-center gap-2 text-xs sm:text-sm font-black text-[#091B40] dark:text-[#F8FAFC]">
+                <Crosshair className="w-4 h-4 text-[#800B34] dark:text-[#E9AD32] shrink-0" />
+                <span>تشخيص المشكلة — فين أخطائك متركزة؟</span>
+              </div>
+              {topWeakness && (
+                <p className="text-xs text-[#64748B] dark:text-[#94A3B8]">
+                  أكثر نقطة محتاجة مراجعة حالياً:{" "}
+                  <strong className="text-[#800B34] dark:text-[#FB7185]">
+                    {topWeakness.subjectName}
+                    {topWeakness.lessonTitle
+                      ? ` — ${topWeakness.lessonTitle}`
+                      : topWeakness.unitTitle
+                        ? ` — ${topWeakness.unitTitle}`
+                        : ""}
+                  </strong>{" "}
+                  ({topWeakness.count} أسئلة • اتكرر الخطأ {topWeakness.totalWrongs} مرة)
+                </p>
+              )}
+            </div>
+
+            {selectedLessonId && (
+              <button
+                type="button"
+                onClick={() => setSelectedLessonId(null)}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#F1F5F9] dark:bg-[#1E293B] text-[#091B40] dark:text-[#E2E8F0] text-xs font-bold hover:bg-[#E2E8F0] dark:hover:bg-[#334155] transition-colors shrink-0 cursor-pointer"
+              >
+                <X className="w-3.5 h-3.5" />
+                <span>عرض كل الدروس</span>
+              </button>
+            )}
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+            {diagnosisBuckets.slice(0, 6).map((bucket, idx) => {
+              const isSelected = Boolean(bucket.lessonId && bucket.lessonId === selectedLessonId);
+              const barPercent =
+                unresolvedCount > 0
+                  ? Math.max(8, Math.round((bucket.count / unresolvedCount) * 100))
+                  : 0;
+
+              return (
+                <button
+                  key={bucket.key}
+                  type="button"
+                  onClick={() => {
+                    if (bucket.lessonId) {
+                      setSelectedLessonId(isSelected ? null : bucket.lessonId);
+                    } else if (bucket.subjectId !== selectedSubjectId) {
+                      setSelectedSubjectId(bucket.subjectId);
+                      setSelectedLessonId(null);
+                    }
+                  }}
+                  className={`text-right p-3 rounded-xl border transition-all cursor-pointer min-w-0 ${
+                    isSelected
+                      ? "bg-[#800B34]/8 dark:bg-[#800B34]/20 border-[#800B34] dark:border-[#E9AD32] shadow-xs"
+                      : "bg-[#F8FAFC] dark:bg-[#132238] border-[#E2E8F0] dark:border-[#243652] hover:border-[#800B34]/45 dark:hover:border-[#E9AD32]/50"
+                  }`}
+                >
+                  <div className="flex items-center justify-between gap-2 mb-1">
+                    <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-[#64748B] dark:text-[#94A3B8] truncate">
+                      <span className="w-4 h-4 rounded bg-[#800B34]/10 dark:bg-[#E11D48]/20 text-[#800B34] dark:text-[#FB7185] text-[10px] font-black inline-flex items-center justify-center shrink-0">
+                        {idx + 1}
+                      </span>
+                      <span className="truncate">{bucket.subjectName}</span>
+                    </span>
+                    <span className="px-2 py-0.5 rounded-full text-[11px] font-black tabular-nums bg-[#DC2626]/10 dark:bg-[#DC2626]/20 text-[#B91C1C] dark:text-[#FCA5A5] shrink-0">
+                      {bucket.count}
+                    </span>
+                  </div>
+
+                  <p className="text-xs font-black text-[#091B40] dark:text-[#F8FAFC] truncate">
+                    {bucket.lessonTitle || bucket.unitTitle || "مراجعة عامة"}
+                  </p>
+
+                  <div className="mt-2 h-1.5 w-full rounded-full bg-[#E2E8F0] dark:bg-[#1E293B] overflow-hidden">
+                    <div
+                      className="h-full rounded-full bg-[#800B34] dark:bg-[#E9AD32] transition-all duration-500"
+                      style={{ width: `${Math.min(100, barPercent)}%` }}
+                    />
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+
+          {activeLessonBucket && (
+            <div className="text-[11px] font-bold text-[#800B34] dark:text-[#E9AD32]">
+              يتم الآن عرض أسئلة الدرس المحدد: {activeLessonBucket.lessonTitle}
+            </div>
+          )}
+        </motion.section>
+      )}
 
       {/* Error Alert */}
       {actionError && (
@@ -285,6 +432,7 @@ export function MistakeHubClient({
         selectedSubjectId={selectedSubjectId}
         setSelectedSubjectId={(id) => {
           setSelectedSubjectId(id);
+          setSelectedLessonId(null);
           setRecentlyChangedIds(new Set());
         }}
         subjects={subjects}
@@ -293,16 +441,26 @@ export function MistakeHubClient({
       {/* Mistakes List or Empty State */}
       {filteredMistakes.length > 0 ? (
         <div className="space-y-4">
-          {filteredMistakes.map((mistake) => (
-            <MistakeCard
-              key={mistake.id}
-              mistake={mistake}
-              answerState={activeAnswers[mistake.question.id]}
-              onRetakeAnswer={handleRetakeAnswer}
-              onResolveMistake={handleResolveMistake}
-              onReopenMistake={handleReopenMistake}
-            />
-          ))}
+          <AnimatePresence mode="popLayout">
+            {filteredMistakes.map((mistake) => (
+              <motion.div
+                key={mistake.id}
+                layout
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.96, y: -8 }}
+                transition={{ duration: 0.22 }}
+              >
+                <MistakeCard
+                  mistake={mistake}
+                  answerState={activeAnswers[mistake.question.id]}
+                  onRetakeAnswer={handleRetakeAnswer}
+                  onResolveMistake={handleResolveMistake}
+                  onReopenMistake={handleReopenMistake}
+                />
+              </motion.div>
+            ))}
+          </AnimatePresence>
         </div>
       ) : (
         <MistakesEmptyState />

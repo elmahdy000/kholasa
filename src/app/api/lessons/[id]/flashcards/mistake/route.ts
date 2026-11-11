@@ -6,6 +6,7 @@ import { canUserAccessLesson } from "@/lib/lesson-access";
 import { MistakeService } from "@/services/mistake.service";
 import { forbidden, jsonError, notFound, parseJson, unauthorized } from "@/lib/http";
 import { rateLimit } from "@/lib/rate-limit";
+import { emitRealtimeEvent } from "@/lib/realtime";
 
 const flashcardMistakeSchema = z.object({
   term: z.string().min(1, "المصطلح مطلوب").max(400),
@@ -91,6 +92,13 @@ export async function POST(
     if (body.action === "RESOLVE_MISTAKE") {
       if (existingQuestion) {
         await MistakeService.resolveMistake(user.id, existingQuestion.id);
+        emitRealtimeEvent({
+          topic: "analytics",
+          action: "mistake_updated",
+          audience: "user",
+          targetUserId: user.id,
+          entityId: existingQuestion.id,
+        });
       }
       return NextResponse.json({
         success: true,
@@ -152,6 +160,13 @@ export async function POST(
     }
 
     const mistake = await MistakeService.recordMistake(user.id, questionId);
+    emitRealtimeEvent({
+      topic: "analytics",
+      action: "mistake_updated",
+      audience: "user",
+      targetUserId: user.id,
+      entityId: questionId,
+    });
     return NextResponse.json({
       success: true,
       action: "RECORDED",

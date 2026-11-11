@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { RotateCcw, CheckCircle2, Loader2 } from "lucide-react";
 import { fetchWithRetry } from "@/lib/network";
+import { dispatchMistakesUpdatedClientEvent } from "@/lib/realtime-client";
 
 interface EssayReviewToggleButtonProps {
   questionId: string;
@@ -63,6 +64,7 @@ export function EssayReviewToggleButton({
       }
 
       onChange?.(nextMarked);
+      dispatchMistakesUpdatedClientEvent();
     } catch (err) {
       if (marked === undefined) {
         setInternalMarked(!nextMarked);
@@ -108,10 +110,10 @@ export function EssayReviewToggleButton({
           {isMarked
             ? isEnglish
               ? "Saved in Mistakes for Review ✓"
-              : "مضاف للمراجعة في «غلطاتي» ✓"
+              : "مضاف في «مراجعة لأخطائي» ✓"
             : isEnglish
             ? "Review Again (Add to Mistakes)"
-            : "عاوز أراجعه تاني (أضف لغلطاتي)"}
+            : "عاوز أراجعه تاني (أضف لمراجعة لأخطائي)"}
         </span>
       </button>
 

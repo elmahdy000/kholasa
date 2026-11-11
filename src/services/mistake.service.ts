@@ -1,6 +1,20 @@
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
-import { subjectScopeWhere, type CurriculumScope } from "@/lib/curriculum";
+import { questionScopeWhere, subjectScopeWhere, type CurriculumScope } from "@/lib/curriculum";
+
+import {
+  buildMistakeDiagnosisBreakdown,
+  type MistakeWeaknessBucket,
+  type StudentMistakeDiagnosisSummary,
+  type RawMistakeDiagnosisRow,
+} from "@/lib/mistake-diagnosis";
+
+export {
+  buildMistakeDiagnosisBreakdown,
+  type MistakeWeaknessBucket,
+  type StudentMistakeDiagnosisSummary,
+  type RawMistakeDiagnosisRow,
+};
 
 export class MistakeService {
   /**
@@ -168,6 +182,63 @@ export class MistakeService {
       examId: exam.id,
       attemptId: attempt.id,
       questionsCount: selectedMistakes.length,
+    };
+  }
+
+  /**
+   * Return live unresolved/resolved counts and a sorted lesson/unit weakness diagnosis
+   */
+  static async getStudentMistakeDiagnosisSummary(
+    userId: string,
+    scope: CurriculumScope | null = null
+  ): Promise<StudentMistakeDiagnosisSummary> {
+    const questionFilter: Prisma.QuestionWhereInput = {
+      status: "PUBLISHED",
+      subject: {
+        isPublished: true,
+        isUnderConstruction: false,
+      },
+      ...(scope ? { AND: [questionScopeWhere(scope)] } : {}),
+    };
+
+    const [unresolvedRows, resolvedCount] = await Promise.all([
+      prisma.mistakeReview.findMany({
+        where: {
+          userId,
+          isResolved: false,
+          question: questionFilter,
+        },
+        select: {
+          wrongCount: true,
+          question: {
+            select: {
+              subject: { select: { id: true, name: true, color: true } },
+              unit: { select: { title: true } },
+              lessons: {
+                take: 1,
+                select: {
+                  lesson: { select: { id: true, title: true } },
+                },
+              },
+            },
+          },
+        },
+      }),
+      prisma.mistakeReview.count({
+        where: {
+          userId,
+          isResolved: true,
+          question: questionFilter,
+        },
+      }),
+    ]);
+
+    const breakdown = buildMistakeDiagnosisBreakdown(unresolvedRows);
+    return {
+      unresolvedCount: unresolvedRows.length,
+      resolvedCount,
+      topWeakness: breakdown[0] ?? null,
+      breakdown: breakdown.slice(0, 8),
     };
   }
 }

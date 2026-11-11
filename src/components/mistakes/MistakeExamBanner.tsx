@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { SlidersHorizontal, Loader2 } from "lucide-react";
 
 interface MistakeExamBannerProps {
@@ -16,7 +17,12 @@ export function MistakeExamBanner({
   if (actionableUnresolvedCount === 0) return null;
 
   return (
-    <div className="p-4 sm:p-5 rounded-2xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xs">
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.25 }}
+      className="p-4 sm:p-5 rounded-2xl bg-[#F8FAFC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xs"
+    >
       <div className="space-y-1">
         <div className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-[#800B34] animate-ping" />
@@ -43,10 +49,10 @@ export function MistakeExamBanner({
         ) : (
           <>
             <SlidersHorizontal className="w-4 h-4" />
-            <span>ابدأ امتحان من غلطاتي ({actionableUnresolvedCount})</span>
+            <span>ابدأ امتحان مراجعة لأخطائي ({actionableUnresolvedCount})</span>
           </>
         )}
       </button>
-    </div>
+    </motion.div>
   );
 }

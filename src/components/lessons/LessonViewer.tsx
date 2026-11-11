@@ -14,6 +14,7 @@ import {
   Mistake,
 } from "./types";
 import { LessonHeader } from "./LessonHeader";
+import { dispatchMistakesUpdatedClientEvent } from "@/lib/realtime-client";
 import { LessonAudioPlayer } from "./LessonAudioPlayer";
 import { LessonMindMapTab } from "./LessonMindMapTab";
 import { LessonFooterNav } from "./LessonFooterNav";
@@ -589,6 +590,7 @@ export function LessonViewer({
       } else {
         setMistakes((prev) => prev.filter((m) => m.questionId !== questionId));
       }
+      dispatchMistakesUpdatedClientEvent();
     } catch (err) {
       console.error(err);
       setQuestionAnswers((prev) => {

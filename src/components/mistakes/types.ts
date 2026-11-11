@@ -49,6 +49,8 @@ export interface MistakeItem {
 export interface MistakeHubClientProps {
   initialMistakes: MistakeItem[];
   subjects: { id: string; name: string }[];
+  initialSubjectId?: string;
+  initialLessonId?: string | null;
 }
 
 export interface ActiveAnswerState {

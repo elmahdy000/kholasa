@@ -21,6 +21,6 @@ export const STUDENT_NAV_ITEMS: NavItem[] = [
   { label: "الرئيسية", href: "/dashboard", icon: House },
   { label: "المواد", href: "/subjects", icon: Books },
   { label: "اختبر نفسك", href: "/exams/builder", icon: Target, isCenter: true },
-  { label: "غلطاتي", href: "/mistakes", icon: ArrowCounterClockwise },
+  { label: "مراجعة لأخطائي", href: "/mistakes", icon: ArrowCounterClockwise },
   { label: "حسابي", href: "/profile", icon: UserIcon },
 ];

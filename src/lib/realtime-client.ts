@@ -239,3 +239,10 @@ export function RealtimeSyncBridge({ isStaff = false }: { isStaff?: boolean }) {
   });
   return null;
 }
+
+export const KHOLASA_MISTAKES_UPDATED_EVENT = "kholasa:mistakes-updated";
+
+export function dispatchMistakesUpdatedClientEvent() {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(new CustomEvent(KHOLASA_MISTAKES_UPDATED_EVENT));
+}

@@ -27,7 +27,7 @@ export function StudentFooter() {
               بنك الأسئلة
             </Link>
             <Link href="/mistakes" className="hover:text-[#800B34] dark:hover:text-[#A30D36] transition-colors">
-              ركن غلطاتي
+              مراجعة لأخطائي
             </Link>
             <Link href="/profile" className="hover:text-[#800B34] dark:hover:text-[#A30D36] transition-colors">
               حسابي
