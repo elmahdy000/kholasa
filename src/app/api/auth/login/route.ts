@@ -155,7 +155,7 @@ export async function POST(req: Request) {
       const cleanCode = body.code.trim().toUpperCase();
       assertRateLimitAvailable(`login:code:${cleanCode}`, 8, 15 * 60 * 1000);
       user = await UserService.findByLoginCode(cleanCode);
-      if (!user) {
+      if (!user || user.role !== Role.STUDENT) {
         recordRateLimitAttempt(`login:code:${cleanCode}`, 15 * 60 * 1000);
         recordRateLimitAttempt(`login:ip:${ip}`, 60 * 1000);
         throw unauthorized(INVALID_CODE);

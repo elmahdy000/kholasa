@@ -81,6 +81,8 @@ import {
 } from "@/app/api/admin/users/[id]/route";
 import { POST as toggleStatusRoute } from "@/app/api/admin/users/[id]/toggle-status/route";
 import { POST as bulkToggleStatusRoute } from "@/app/api/admin/users/bulk-toggle-status/route";
+import { POST as loginRoute } from "@/app/api/auth/login/route";
+import { GET as lookupCodeRoute } from "@/app/api/auth/lookup-code/route";
 
 describe("ASSISTANT role RBAC & Admin control", () => {
   beforeEach(() => {
@@ -303,6 +305,37 @@ describe("ASSISTANT role RBAC & Admin control", () => {
         )
       ).rejects.toThrow("8 أحرف");
     });
+
+    it("clears loginCode=null when promoting a user to non-STUDENT role (ASSISTANT)", async () => {
+      mockPrisma.user.findUnique.mockResolvedValueOnce({
+        id: "stu-promo",
+        role: Role.STUDENT,
+        email: "assist2@kholasa.app",
+        phone: "01077777777",
+        loginCode: "STU123",
+      });
+      mockPrisma.user.update.mockResolvedValueOnce({
+        id: "stu-promo",
+        role: Role.ASSISTANT,
+        loginCode: null,
+      });
+
+      await UserMutationsService.updateUser(
+        "stu-promo",
+        { role: Role.ASSISTANT },
+        Role.ADMIN,
+        "admin-1"
+      );
+
+      expect(mockPrisma.user.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            role: Role.ASSISTANT,
+            loginCode: null,
+          }),
+        })
+      );
+    });
   });
 
   describe("3. HTTP route handlers & suspended session revocation", () => {
@@ -484,6 +517,35 @@ describe("ASSISTANT role RBAC & Admin control", () => {
       const req = new Request("http://localhost/api/admin/users/admin-1");
       const res = await getUserRoute(req, { params: Promise.resolve({ id: "admin-1" }) });
       expect(res.status).toBe(403);
+    });
+
+    it("rejects passwordless student-code login and lookup-code for ASSISTANT/staff roles", async () => {
+      mockPrisma.user.findFirst.mockResolvedValue({
+        id: "assist-1",
+        name: "المساعد",
+        email: "assistant@kholasa.app",
+        phone: "01000000001",
+        loginCode: "ASSIST1",
+        role: Role.ASSISTANT,
+        isActive: true,
+        boundDevices: [],
+      });
+
+      const loginReq = new Request("http://localhost/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-forwarded-for": "10.0.0.55" },
+        body: JSON.stringify({ code: "ASSIST1" }),
+      });
+      const loginRes = await loginRoute(loginReq);
+      expect(loginRes.status).toBe(401);
+
+      const lookupReq = new Request("http://localhost/api/auth/lookup-code?code=ASSIST1", {
+        headers: { "x-forwarded-for": "10.0.0.56" },
+      });
+      const lookupRes = await lookupCodeRoute(lookupReq);
+      const lookupJson = await lookupRes.json();
+      expect(lookupRes.status).toBe(200);
+      expect(lookupJson.found).toBe(false);
     });
   });
 });

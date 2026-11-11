@@ -63,8 +63,9 @@ export class UserMutationsService {
       if (existingEmail) throw new Error("البريد الإلكتروني مسجل بالفعل لمستخدم آخر");
     }
 
-    let finalLoginCode = data.loginCode?.trim().toUpperCase();
-    if (!finalLoginCode && role === Role.STUDENT) {
+    let finalLoginCode: string | undefined =
+      role === Role.STUDENT ? data.loginCode?.trim().toUpperCase() : undefined;
+    if (role === Role.STUDENT && !finalLoginCode) {
       finalLoginCode = await generateUniqueLoginCode();
     } else if (finalLoginCode) {
       const existingCode = await prisma.user.findUnique({ where: { loginCode: finalLoginCode } });
@@ -209,7 +210,11 @@ export class UserMutationsService {
         ...(data.name !== undefined ? { name: data.name.trim() } : {}),
         ...(nextPhone !== undefined ? { phone: nextPhone || null } : {}),
         ...(nextEmail !== undefined ? { email: nextEmail || null } : {}),
-        ...(data.loginCode !== undefined ? { loginCode: data.loginCode.trim().toUpperCase() || null } : {}),
+        ...(resultingRole !== Role.STUDENT
+          ? { loginCode: null }
+          : data.loginCode !== undefined
+          ? { loginCode: data.loginCode.trim().toUpperCase() || null }
+          : {}),
         ...(hashedPassword ? { password: hashedPassword } : {}),
         ...(data.role !== undefined ? { role: data.role } : {}),
         ...(data.systemId !== undefined ? { systemId: data.systemId || null } : {}),
@@ -298,7 +303,10 @@ export class UserMutationsService {
 
     const updated = await prisma.user.update({
       where: { id: targetUserId },
-      data: { role: newRole },
+      data: {
+        role: newRole,
+        ...(newRole !== Role.STUDENT ? { loginCode: null } : {}),
+      },
       select: { id: true, name: true, role: true },
     });
 

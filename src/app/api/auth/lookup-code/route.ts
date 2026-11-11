@@ -65,7 +65,7 @@ export async function GET(req: Request) {
       },
     });
 
-    if (!user) {
+    if (!user || user.role !== "STUDENT") {
       return NextResponse.json({ found: false });
     }
 
