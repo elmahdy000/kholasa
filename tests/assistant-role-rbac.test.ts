@@ -76,6 +76,7 @@ import { isStaffRole as isRealtimeStaffRole } from "@/lib/realtime";
 import { UserMutationsService } from "@/services/user/mutations";
 import {
   DELETE as deleteUserRoute,
+  GET as getUserRoute,
   PATCH as patchUserRoute,
 } from "@/app/api/admin/users/[id]/route";
 import { POST as toggleStatusRoute } from "@/app/api/admin/users/[id]/toggle-status/route";
@@ -245,6 +246,63 @@ describe("ASSISTANT role RBAC & Admin control", () => {
         where: { userId: "assist-1" },
       });
     });
+
+    it("allows ADMIN to update own name/password when role is unchanged, while blocking self-role-change or self-deactivation", async () => {
+      mockPrisma.user.findUnique.mockResolvedValue({
+        id: "admin-1",
+        role: Role.ADMIN,
+        email: "admin@kholasa.app",
+        phone: "01000000000",
+      });
+      mockPrisma.user.findFirst.mockResolvedValue(null);
+      mockPrisma.user.update.mockResolvedValueOnce({
+        id: "admin-1",
+        name: "د. محمود",
+        role: Role.ADMIN,
+      });
+
+      const okSelf = await UserMutationsService.updateUser(
+        "admin-1",
+        { name: "د. محمود", role: Role.ADMIN },
+        Role.ADMIN,
+        "admin-1"
+      );
+      expect(okSelf.name).toBe("د. محمود");
+
+      await expect(
+        UserMutationsService.updateUser(
+          "admin-1",
+          { role: Role.STUDENT },
+          Role.ADMIN,
+          "admin-1"
+        )
+      ).rejects.toThrow("لا يمكنك تغيير رتبتك بنفسك");
+
+      await expect(
+        UserMutationsService.updateUser(
+          "admin-1",
+          { isActive: false },
+          Role.ADMIN,
+          "admin-1"
+        )
+      ).rejects.toThrow("لا يمكنك تعطيل حسابك الشخصي");
+    });
+
+    it("requires explicit email/phone and >=8 char password when creating an ASSISTANT", async () => {
+      await expect(
+        UserMutationsService.createUser(
+          { name: "مساعد بدون تواصل", role: Role.ASSISTANT, password: "Password@123" },
+          Role.ADMIN
+        )
+      ).rejects.toThrow("البريد الإلكتروني أو رقم الهاتف");
+
+      await expect(
+        UserMutationsService.createUser(
+          { name: "مساعد بكلمة قصيرة", email: "a@b.c", role: Role.ASSISTANT, password: "123" },
+          Role.ADMIN
+        )
+      ).rejects.toThrow("8 أحرف");
+    });
   });
 
   describe("3. HTTP route handlers & suspended session revocation", () => {
@@ -390,6 +448,42 @@ describe("ASSISTANT role RBAC & Admin control", () => {
       expect(mockPrisma.session.delete).toHaveBeenCalledWith({
         where: { id: "sess-1" },
       });
+    });
+
+    it("blocks ASSISTANT from inspecting ADMIN detailed profile via GET /api/admin/users/[id]", async () => {
+      mockSessionUser("assist-1", Role.ASSISTANT);
+      mockPrisma.user.findUnique.mockResolvedValueOnce({
+        id: "admin-1",
+        name: "Admin",
+        email: "admin@kholasa.app",
+        phone: "01000000000",
+        loginCode: null,
+        role: Role.ADMIN,
+        schoolCategory: "ARABIC",
+        isActive: true,
+        studyMode: "ONLINE",
+        centerName: null,
+        subscriptionStatus: SubscriptionStatus.ACTIVE,
+        paymentReceiptUrl: null,
+        paymentSenderPhone: null,
+        paymentReference: null,
+        paymentUploadedAt: null,
+        subscriptionExpiresAt: null,
+        createdAt: new Date(),
+        maxDevices: 1,
+        boundDevices: [],
+        system: null,
+        grade: null,
+        _count: { attempts: 0, progress: 0, mistakes: 0 },
+        attempts: [],
+        progress: [],
+        mistakes: [],
+        sessions: [],
+      });
+
+      const req = new Request("http://localhost/api/admin/users/admin-1");
+      const res = await getUserRoute(req, { params: Promise.resolve({ id: "admin-1" }) });
+      expect(res.status).toBe(403);
     });
   });
 });

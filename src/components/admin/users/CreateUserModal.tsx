@@ -117,11 +117,11 @@ export function CreateUserModal({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block text-[13px] font-bold text-[#64748B] mb-1">
-                رقم الهاتف *
+                {createRole === "STUDENT" ? "رقم الهاتف *" : "رقم الهاتف (أو البريد الإلكتروني)"}
               </label>
               <input
                 type="tel"
-                required
+                required={createRole === "STUDENT" || !createEmail.trim()}
                 value={createPhone}
                 onChange={(e) => setCreatePhone(e.target.value)}
                 placeholder="01012345678"
@@ -132,10 +132,11 @@ export function CreateUserModal({
 
             <div>
               <label className="block text-[13px] font-bold text-[#64748B] mb-1">
-                البريد الإلكتروني (اختياري)
+                {createRole === "STUDENT" ? "البريد الإلكتروني (اختياري)" : "البريد الإلكتروني *"}
               </label>
               <input
                 type="email"
+                required={createRole !== "STUDENT" && !createPhone.trim()}
                 value={createEmail}
                 onChange={(e) => setCreateEmail(e.target.value)}
                 placeholder="name@example.com"

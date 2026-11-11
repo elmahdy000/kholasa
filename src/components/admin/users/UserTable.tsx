@@ -109,14 +109,23 @@ export function UserTable({
                         {(u.name || "م").charAt(0)}
                       </div>
                       <div className="min-w-0">
-                        <button
-                          type="button"
-                          onClick={() => onInspectUser?.(u.id)}
-                          className="font-bold text-[13px] sm:text-sm text-[#0F172A] dark:text-white hover:text-[#800020] dark:hover:text-[#FB7185] transition-colors text-right block truncate max-w-[210px] cursor-pointer"
-                          title={u.name || "مستخدم بدون اسم"}
-                        >
-                          {u.name || "مستخدم بدون اسم"}
-                        </button>
+                        {canActorManageTargetUser(currentUserRole, u.role) || u.id === currentUserId ? (
+                          <button
+                            type="button"
+                            onClick={() => onInspectUser?.(u.id)}
+                            className="font-bold text-[13px] sm:text-sm text-[#0F172A] dark:text-white hover:text-[#800020] dark:hover:text-[#FB7185] transition-colors text-right block truncate max-w-[210px] cursor-pointer"
+                            title={u.name || "مستخدم بدون اسم"}
+                          >
+                            {u.name || "مستخدم بدون اسم"}
+                          </button>
+                        ) : (
+                          <span
+                            className="font-bold text-[13px] sm:text-sm text-[#0F172A] dark:text-white text-right block truncate max-w-[210px]"
+                            title={u.name || "مستخدم بدون اسم"}
+                          >
+                            {u.name || "مستخدم بدون اسم"}
+                          </span>
+                        )}
                         <div className="flex items-center gap-1.5 mt-1 flex-wrap">
                           {u.loginCode ? (
                             <div className="inline-flex items-center gap-1">

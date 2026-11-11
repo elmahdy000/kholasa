@@ -160,6 +160,7 @@ export function StudentDetailsDrawer({
 }: StudentDetailsDrawerProps) {
   const [student, setStudent] = useState<DetailedStudent | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"overview" | "analytics" | "exams" | "mistakes" | "lessons" | "security">("overview");
   const [copiedReport, setCopiedReport] = useState(false);
   const { toast } = useToast();
@@ -206,12 +207,18 @@ export function StudentDetailsDrawer({
 
     async function fetchStudent() {
       setIsLoading(true);
+      setStudent(null);
+      setLoadError(null);
       setInfoMessage(null);
       setPasswordMessage(null);
       try {
         const res = await fetch(`/api/admin/users/${userId}`);
         const data = await res.json();
-        if (res.ok && data.user && isMounted) {
+        if (!res.ok) {
+          if (isMounted) setLoadError(data.error || "تعذر تحميل بيانات المستخدم");
+          return;
+        }
+        if (data.user && isMounted) {
           const u = data.user as DetailedStudent;
           setStudent(u);
           setName(u.name || "");
@@ -282,6 +289,10 @@ export function StudentDetailsDrawer({
 
   const handleSaveInfo = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!name.trim()) {
+      setInfoMessage({ type: "error", text: "يرجى إدخال اسم المستخدم" });
+      return;
+    }
     setIsSavingInfo(true);
     setInfoMessage(null);
 
@@ -291,8 +302,8 @@ export function StudentDetailsDrawer({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: name.trim(),
-          phone: phone.trim() || undefined,
-          email: email.trim() || undefined,
+          phone: phone.trim(),
+          email: email.trim(),
           loginCode: loginCode.trim().toUpperCase() || undefined,
           systemId: systemId || undefined,
           gradeId: gradeId || undefined,
@@ -700,7 +711,9 @@ _منصة الخلاصة التعليمية - رفيقكم نحو التفوق_ 
               <p className="text-sm font-medium">جاري جلب الملف الشامل للطالب...</p>
             </div>
           ) : !student ? (
-            <p className="text-center text-sm text-[#64748B] py-12">تعذر العثور على بيانات الطالب</p>
+            <p className="text-center text-sm text-[#64748B] py-12">
+              {loadError || "تعذر العثور على بيانات الطالب"}
+            </p>
           ) : (
             <>
               {/* TAB 1: OVERVIEW & CONTROLS */}

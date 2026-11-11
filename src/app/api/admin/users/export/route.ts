@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
-import { canManageUsersRole } from "@/lib/roles";
+import { canManageUsersRole, getRoleArabicLabel } from "@/lib/roles";
 import { EXCLUDE_DEMO_SANDBOX_CONDITION } from "@/lib/demo";
 
 export async function GET(req: Request) {
@@ -128,7 +128,7 @@ export async function GET(req: Request) {
       escapeCsv(s.name || "بدون اسم"),
       escapeCsv(s.phone || "—"),
       escapeCsv(s.email || "—"),
-      escapeCsv(s.role === "STUDENT" ? "طالب" : s.role),
+      escapeCsv(getRoleArabicLabel(s.role)),
       escapeCsv(s.system?.name || "غير محدد"),
       escapeCsv(s.grade?.name || "غير محدد"),
       escapeCsv(s.track?.name || "عام"),

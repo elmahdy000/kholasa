@@ -165,8 +165,21 @@ export function EditRoleModal({
     setIsUpdating(true);
     setErrorMsg(null);
 
-    if (password && password.length < 8) {
+    if (!name.trim()) {
+      setErrorMsg("يرجى إدخال الاسم الكامل للمستخدم");
+      setIsUpdating(false);
+      return;
+    }
+
+    const trimmedPassword = password.trim();
+    if (trimmedPassword && trimmedPassword.length < 8) {
       setErrorMsg("كلمة المرور يجب أن لا تقل عن 8 أحرف وأرقام");
+      setIsUpdating(false);
+      return;
+    }
+
+    if (role !== "STUDENT" && !email.trim() && !phone.trim()) {
+      setErrorMsg("يجب وجود بريد إلكتروني أو رقم هاتف على الأقل لتسجيل دخول الحساب");
       setIsUpdating(false);
       return;
     }
@@ -174,14 +187,14 @@ export function EditRoleModal({
     try {
       const payload: Record<string, any> = {
         role,
-        name: name.trim() || undefined,
-        email: email.trim() || undefined,
-        phone: phone.trim() || undefined,
+        name: name.trim(),
+        email: email.trim(),
+        phone: phone.trim(),
         isActive,
       };
 
-      if (password && password.trim()) {
-        payload.password = password.trim();
+      if (trimmedPassword) {
+        payload.password = trimmedPassword;
       }
 
       if (role === "STUDENT") {

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
-import { canDeleteUsersRole, canManageUsersRole } from "@/lib/roles";
+import { canActorManageTargetUser, canDeleteUsersRole, canManageUsersRole } from "@/lib/roles";
 import { UserService } from "@/services/user.service";
 import { emitRealtimeEvent, revalidatePlatformPaths } from "@/lib/realtime";
 
@@ -14,22 +14,21 @@ export async function GET(req: Request, { params }: RouteParams) {
   try {
     const currentUser = await getCurrentUser();
     if (!currentUser || !canManageUsersRole(currentUser.role)) {
-      return NextResponse.json(
-        {
-          error:
-            currentUser?.role === "ASSISTANT"
-              ? "غير مصرح للمساعد بحذف الطلاب أو المستخدمين — هذه الصلاحية للإدارة فقط"
-              : "غير مصرح لك بالوصول",
-        },
-        { status: 403 }
-      );
+      return NextResponse.json({ error: "??? ???? ?? ???????" }, { status: 403 });
     }
 
     const { id } = await params;
     const user = await UserService.getUserDetailedProfile(id);
 
     if (!user) {
-      return NextResponse.json({ error: "المستخدم غير موجود" }, { status: 404 });
+      return NextResponse.json({ error: "???????? ??? ?????" }, { status: 404 });
+    }
+
+    if (user.id !== currentUser.id && !canActorManageTargetUser(currentUser.role, user.role)) {
+      return NextResponse.json(
+        { error: "??? ???? ?? ???? ?????? ??? ?????? ???????" },
+        { status: 403 }
+      );
     }
 
     return NextResponse.json({ success: true, user }, { headers: { "Cache-Control": "no-store" } });
@@ -43,15 +42,7 @@ export async function PATCH(req: Request, { params }: RouteParams) {
   try {
     const currentUser = await getCurrentUser();
     if (!currentUser || !canManageUsersRole(currentUser.role)) {
-      return NextResponse.json(
-        {
-          error:
-            currentUser?.role === "ASSISTANT"
-              ? "غير مصرح للمساعد بحذف الطلاب أو المستخدمين — هذه الصلاحية للإدارة فقط"
-              : "غير مصرح لك بالوصول",
-        },
-        { status: 403 }
-      );
+      return NextResponse.json({ error: "??? ???? ?? ???????" }, { status: 403 });
     }
 
     const { id } = await params;

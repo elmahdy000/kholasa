@@ -36,16 +36,29 @@ export class UserMutationsService {
       );
     }
 
+    const normalizedInputPhone = phone && phone.trim() ? phone.trim() : undefined;
+    const normalizedInputEmail =
+      email && typeof email === "string" && email.trim() ? email.trim().toLowerCase() : undefined;
+
+    if (role !== Role.STUDENT) {
+      if (!normalizedInputPhone && !normalizedInputEmail) {
+        throw new Error("يرجى إدخال البريد الإلكتروني أو رقم الهاتف لحساب الإدارة/المساعد");
+      }
+      if (!password || password.trim().length < 8) {
+        throw new Error("كلمة المرور للطاقم الإداري يجب أن لا تقل عن 8 أحرف");
+      }
+    }
+
     let cleanPhone: string | undefined = undefined;
-    if (phone && phone.trim()) {
-      cleanPhone = phone.trim();
+    if (normalizedInputPhone) {
+      cleanPhone = normalizedInputPhone;
       const existingPhone = await prisma.user.findUnique({ where: { phone: cleanPhone } });
       if (existingPhone) throw new Error("رقم الهاتف مسجل بالفعل لمستخدم آخر");
     }
 
     let cleanEmail: string | undefined = undefined;
-    if (email && typeof email === "string" && email.trim()) {
-      cleanEmail = email.trim().toLowerCase();
+    if (normalizedInputEmail) {
+      cleanEmail = normalizedInputEmail;
       const existingEmail = await prisma.user.findUnique({ where: { email: cleanEmail } });
       if (existingEmail) throw new Error("البريد الإلكتروني مسجل بالفعل لمستخدم آخر");
     }
@@ -58,7 +71,7 @@ export class UserMutationsService {
       if (existingCode) throw new Error("كود الدخول هذا مسجل بالفعل لطالب آخر");
     }
 
-    const rawPassword = password || finalLoginCode || "Kholasa@2026";
+    const rawPassword = password?.trim() || finalLoginCode || "Kholasa@2026";
     const hashedPassword = await bcrypt.hash(rawPassword, 12);
     const initialMaxDevices = typeof data.maxDevices === "number" && data.maxDevices > 0 ? data.maxDevices : 1;
     const isActive = data.isActive !== undefined ? data.isActive : true;
@@ -124,7 +137,15 @@ export class UserMutationsService {
       );
     }
 
-    if (data.role !== undefined) {
+    if (data.name !== undefined && !data.name.trim()) {
+      throw new Error("اسم المستخدم مطلوب");
+    }
+
+    if (data.isActive === false && id === actorUserId) {
+      throw new Error("لا يمكنك تعطيل حسابك الشخصي");
+    }
+
+    if (data.role !== undefined && data.role !== targetUser.role) {
       if (id === actorUserId) {
         throw new Error("لا يمكنك تغيير رتبتك بنفسك");
       }
@@ -165,14 +186,22 @@ export class UserMutationsService {
 
     let hashedPassword: string | undefined = undefined;
     if (data.password !== undefined && data.password.trim()) {
-      if (data.password.length < 8) {
+      const cleanPassword = data.password.trim();
+      if (cleanPassword.length < 8) {
         throw new Error("كلمة المرور يجب أن لا تقل عن 8 أحرف");
       }
-      hashedPassword = await bcrypt.hash(data.password, 12);
+      hashedPassword = await bcrypt.hash(cleanPassword, 12);
     }
 
     const nextEmail = data.email !== undefined ? data.email.trim().toLowerCase() : undefined;
     const nextPhone = data.phone !== undefined ? data.phone.trim() : undefined;
+
+    const resultingRole = data.role ?? targetUser.role;
+    const resultingPhone = nextPhone !== undefined ? (nextPhone || null) : targetUser.phone;
+    const resultingEmail = nextEmail !== undefined ? (nextEmail || null) : targetUser.email;
+    if (resultingRole !== Role.STUDENT && !resultingPhone && !resultingEmail) {
+      throw new Error("يجب وجود بريد إلكتروني أو رقم هاتف لحساب الإدارة/المساعد");
+    }
 
     const updated = await prisma.user.update({
       where: { id },
