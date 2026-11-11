@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -63,6 +63,17 @@ interface StudentPaywallViewProps {
   isExam?: boolean;
 }
 
+const JUST_REGISTERED_STORAGE_KEY = "kholasa_just_registered_uid";
+const subscribeNoop = () => () => {};
+const getRegisteredUidSnapshot = (): string | null => {
+  try {
+    return window.sessionStorage.getItem(JUST_REGISTERED_STORAGE_KEY);
+  } catch {
+    return null;
+  }
+};
+const getRegisteredUidServerSnapshot = (): string | null => null;
+
 export function StudentPaywallView({
   user = null,
   initialSystems,
@@ -83,6 +94,20 @@ export function StudentPaywallView({
   );
   const [justRegisteredCode, setJustRegisteredCode] = useState<string | null>(null);
   const [copiedCode, setCopiedCode] = useState(false);
+
+  const storedRegisteredUid = useSyncExternalStore(
+    subscribeNoop,
+    getRegisteredUidSnapshot,
+    getRegisteredUidServerSnapshot
+  );
+  const displayedRegisteredCode =
+    justRegisteredCode ??
+    (activeUser &&
+    !isDemoAccount &&
+    activeUser.loginCode &&
+    storedRegisteredUid === activeUser.id
+      ? activeUser.loginCode
+      : null);
 
   const [selectedMethod, setSelectedMethod] = useState<PaymentMethodId>("instapay");
   const [hasInteractedWithTransfer, setHasInteractedWithTransfer] = useState(false);
@@ -158,6 +183,11 @@ export function StudentPaywallView({
   })();
 
   const handleRegistrationSuccess = (student: RegisteredSubscriptionStudent) => {
+    try {
+      window.sessionStorage.setItem(JUST_REGISTERED_STORAGE_KEY, student.id);
+    } catch {
+      // ignore sessionStorage restrictions
+    }
     setRegisteredUser(student);
     if (student.phone) {
       setSenderPhone(student.phone);
@@ -169,9 +199,9 @@ export function StudentPaywallView({
   };
 
   const handleCopyLoginCode = async () => {
-    if (!justRegisteredCode) return;
+    if (!displayedRegisteredCode) return;
     try {
-      await navigator.clipboard.writeText(justRegisteredCode);
+      await navigator.clipboard.writeText(displayedRegisteredCode);
       setCopiedCode(true);
       setTimeout(() => setCopiedCode(false), 2500);
     } catch {
@@ -293,6 +323,11 @@ export function StudentPaywallView({
         throw new Error(data.error || "تعذر إرسال إيصال الدفع، يرجى المحاولة مرة أخرى.");
       }
 
+      try {
+        window.sessionStorage.removeItem(JUST_REGISTERED_STORAGE_KEY);
+      } catch {
+        // ignore
+      }
       setServerResponseMessage(
         typeof data.message === "string"
           ? data.message
@@ -408,7 +443,7 @@ export function StudentPaywallView({
       )}
 
       {/* Newly Registered Student Confirmation + Login Code Card */}
-      {justRegisteredCode && !needsStudentRegistration && (
+      {displayedRegisteredCode && !needsStudentRegistration && (
         <div
           role="status"
           className="rounded-2xl bg-[#ECFDF5] border border-[#A7F3D0] p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-[#091B40]"
@@ -431,7 +466,7 @@ export function StudentPaywallView({
               className="text-[18px] font-black font-mono tracking-wider text-[#091B40]"
               dir="ltr"
             >
-              {justRegisteredCode}
+              {displayedRegisteredCode}
             </span>
             <button
               type="button"

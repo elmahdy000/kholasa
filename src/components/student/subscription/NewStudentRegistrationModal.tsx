@@ -282,7 +282,7 @@ export function NewStudentRegistrationModal({
         </div>
 
         {/* Header */}
-        <div className="px-5 pt-5 pb-4 border-b border-[#E2E8F0] flex items-start justify-between gap-3 shrink-0">
+        <div className="px-4 pt-4 pb-3 sm:px-5 sm:pt-5 sm:pb-4 border-b border-[#E2E8F0] flex items-start justify-between gap-3 shrink-0">
           <div className="space-y-1">
             <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#EFF6FF] border border-[#BFDBFE] text-[#1D4ED8] text-[12px] font-bold">
               <UserPlus className="w-3.5 h-3.5" />
@@ -315,7 +315,7 @@ export function NewStudentRegistrationModal({
         <form
           onSubmit={handleSubmit}
           noValidate
-          className="p-5 sm:p-6 space-y-4 overflow-y-auto"
+          className="p-4 sm:p-6 space-y-3 sm:space-y-4 overflow-y-auto"
         >
           {error && (
             <div
@@ -360,7 +360,7 @@ export function NewStudentRegistrationModal({
                 }}
                 placeholder="مثال: أحمد محمود محمد"
                 maxLength={100}
-                className="w-full min-h-[48px] h-12 px-4 pr-11 rounded-xl border border-[#CBD5E1] bg-white text-[15px] text-[#091B40] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#1D4ED8] focus:ring-2 focus:ring-[#1D4ED8]/20 transition-all"
+                className="w-full min-h-[44px] h-11 sm:h-12 px-4 pr-11 rounded-xl border border-[#CBD5E1] bg-white text-[15px] text-[#091B40] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#1D4ED8] focus:ring-2 focus:ring-[#1D4ED8]/20 transition-all"
               />
               <User className="w-4.5 h-4.5 text-[#64748B] absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
@@ -389,7 +389,7 @@ export function NewStudentRegistrationModal({
                 }}
                 placeholder="010XXXXXXXX"
                 maxLength={15}
-                className="w-full min-h-[48px] h-12 px-4 pr-11 rounded-xl border border-[#CBD5E1] bg-white text-[15px] font-mono text-[#091B40] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#1D4ED8] focus:ring-2 focus:ring-[#1D4ED8]/20 transition-all"
+                className="w-full min-h-[44px] h-11 sm:h-12 px-4 pr-11 rounded-xl border border-[#CBD5E1] bg-white text-[15px] font-mono text-[#091B40] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#1D4ED8] focus:ring-2 focus:ring-[#1D4ED8]/20 transition-all"
               />
               <Smartphone className="w-4.5 h-4.5 text-[#64748B] absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
@@ -448,7 +448,7 @@ export function NewStudentRegistrationModal({
                   setSelectedGradeId(e.target.value);
                   setSelectedTrackId("");
                 }}
-                className="w-full min-h-[48px] h-12 px-4 pr-11 rounded-xl border border-[#CBD5E1] bg-white text-[14px] font-bold text-[#091B40] focus:outline-none focus:border-[#1D4ED8] focus:ring-2 focus:ring-[#1D4ED8]/20 transition-all disabled:opacity-60"
+                className="w-full min-h-[44px] h-11 sm:h-12 px-4 pr-11 rounded-xl border border-[#CBD5E1] bg-white text-[14px] font-bold text-[#091B40] focus:outline-none focus:border-[#1D4ED8] focus:ring-2 focus:ring-[#1D4ED8]/20 transition-all disabled:opacity-60"
               >
                 {isLoadingSystems ? (
                   <option value="">جاري تحميل الصفوف الدراسية...</option>
@@ -480,7 +480,7 @@ export function NewStudentRegistrationModal({
                 id="sub-reg-track"
                 value={selectedTrackId}
                 onChange={(e) => setSelectedTrackId(e.target.value)}
-                className="w-full min-h-[48px] h-12 px-4 rounded-xl border border-[#CBD5E1] bg-white text-[14px] font-bold text-[#091B40] focus:outline-none focus:border-[#1D4ED8] focus:ring-2 focus:ring-[#1D4ED8]/20 transition-all"
+                className="w-full min-h-[44px] h-11 sm:h-12 px-4 rounded-xl border border-[#CBD5E1] bg-white text-[14px] font-bold text-[#091B40] focus:outline-none focus:border-[#1D4ED8] focus:ring-2 focus:ring-[#1D4ED8]/20 transition-all"
               >
                 <option value="">مسار عام (كل المواد المتاحة للصف)</option>
                 {activeGrade.tracks.map((tr) => (
