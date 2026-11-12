@@ -30,6 +30,7 @@ import { BrandLogo } from "@/components/ui/BrandLogo";
 import { WhatsAppSupportLinks } from "@/components/ui/WhatsAppSupportLinks";
 import { LoginErrorBanner } from "@/components/auth/LoginErrorBanner";
 import { getOrCreateDeviceId } from "@/lib/device";
+import { isAnyDemoCode } from "@/lib/demo-shared";
 import {
   AUTHORIZED_CENTERS,
   LANGUAGES_CENTERS,
@@ -104,6 +105,32 @@ export default function LoginPage() {
     } catch {
       // Ignore URL / localStorage parsing errors
     }
+
+    let cancelled = false;
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const hasUrlCode = Boolean((params.get("code") || params.get("loginCode"))?.trim());
+      const wantsSwitch = params.get("switch") === "1";
+
+      if (!hasUrlCode && !wantsSwitch) {
+        fetch("/api/auth/me", { credentials: "same-origin", cache: "no-store" })
+          .then((res) => (res.ok ? res.json() : null))
+          .then((data) => {
+            if (cancelled || !data?.authenticated || !data?.user) return;
+            if (isAnyDemoCode(data.user.loginCode)) return;
+            window.location.replace(data.user.role === "STUDENT" ? "/dashboard" : "/admin");
+          })
+          .catch(() => {
+            // Ignore passive auth check failure on /login
+          });
+      }
+    } catch {
+      // Ignore query inspection error
+    }
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   // Real-time lookup for student code (debounced)
@@ -567,12 +594,12 @@ export default function LoginPage() {
               </button>
 
               {/* Demo Account Quick Access Card */}
-              <div className="pt-2">
+              <div id="demo-box" className="pt-2 scroll-mt-6">
                 <div className="p-3.5 rounded-2xl bg-[#F7F9FC] dark:bg-[#071737] border border-[#E2E8F0] dark:border-[#1E3A6E] space-y-2">
                   <div className="flex items-center justify-between text-xs font-bold text-[#536681] dark:text-[#94A3B8]">
                     <span className="flex items-center gap-1.5">
                       <Sparkles className="w-3.5 h-3.5 text-[#E9AD32]" />
-                      <span>تجربة سريعة (جلسة مستقلة ومعزولة لك):</span>
+                      <span>جرب المنصة مجاناً (بدون اشتراك):</span>
                     </span>
                     <span className="text-[10px] text-[#17834B] dark:text-[#34D399] font-normal">
                       ضغطة واحدة للتجربة

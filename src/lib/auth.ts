@@ -37,16 +37,18 @@ const IS_PROD = process.env.NODE_ENV === "production";
 // __Host- prefix requires Secure + Path=/ + no Domain; used in production (HTTPS) only.
 const SESSION_COOKIE_NAME = IS_PROD ? "__Host-kholasa_session" : "kholasa_session";
 const LEGACY_COOKIE_NAME = "kholasa_session"; // read during transition
-const SESSION_TTL_MS = 14 * 24 * 60 * 60 * 1000; // 14 days
-const SESSION_RENEW_THRESHOLD_MS = 7 * 24 * 60 * 60 * 1000; // extend when <7 days left
+const SESSION_TTL_MS = 365 * 24 * 60 * 60 * 1000; // 365 days — persistent login until explicit logout
+const SESSION_RENEW_THRESHOLD_MS = 330 * 24 * 60 * 60 * 1000; // extend rolling 365-day window whenever active
 const BCRYPT_COST = 12;
 
 function cookieOptions(expires: Date) {
+  const maxAge = Math.max(0, Math.floor((expires.getTime() - Date.now()) / 1000));
   return {
     httpOnly: true,
     secure: IS_PROD,
     sameSite: "lax" as const,
     expires,
+    maxAge,
     path: "/",
   };
 }

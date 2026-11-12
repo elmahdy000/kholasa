@@ -1,3 +1,7 @@
+import { redirect } from "next/navigation";
+import { getCurrentUser } from "@/lib/auth";
+import { isAnyDemoCode } from "@/lib/demo-shared";
+import { isStaffRoleValue } from "@/lib/roles";
 import { getLandingCurriculumData } from "@/lib/landing-curriculum";
 import { SiteHeader } from "@/components/landing/SiteHeader";
 import { HeroSection } from "@/components/landing/HeroSection";
@@ -11,6 +15,11 @@ import { SiteFooter } from "@/components/landing/SiteFooter";
 export const dynamic = "force-dynamic";
 
 export default async function LandingPage() {
+  const user = await getCurrentUser();
+  if (user && !isAnyDemoCode(user.loginCode)) {
+    redirect(isStaffRoleValue(user.role) ? "/admin" : "/dashboard");
+  }
+
   const curriculum = await getLandingCurriculumData();
 
   return (

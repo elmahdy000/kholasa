@@ -41,29 +41,23 @@ export function SiteHeader() {
           ))}
         </nav>
 
-        {/* Desktop Actions */}
-        <div className="hidden sm:flex items-center gap-3">
+        {/* Actions (Always visible on both Mobile & Desktop so students find login immediately) */}
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           <ThemeToggle />
 
           <Link
             href="/login"
-            className="min-h-[44px] px-4 rounded-lg bg-[#800B34] hover:bg-[#680829] dark:bg-[#A30D36] dark:hover:bg-[#8E0B2F] text-white text-sm font-bold inline-flex items-center gap-2 transition-colors whitespace-nowrap"
+            className="min-h-[42px] sm:min-h-[44px] px-3 sm:px-4 rounded-lg bg-[#800B34] hover:bg-[#680829] dark:bg-[#A30D36] dark:hover:bg-[#8E0B2F] text-white text-xs sm:text-sm font-bold inline-flex items-center gap-1.5 sm:gap-2 transition-colors whitespace-nowrap"
           >
-            <span>دخول بكود الطالب</span>
+            <span>دخول الطالب</span>
             <ArrowLeft className="w-3.5 h-3.5" />
           </Link>
-        </div>
 
-        {/* Mobile Navigation Trigger */}
-        <div className="flex lg:hidden items-center gap-2">
-          <div className="sm:hidden">
-            <ThemeToggle />
-          </div>
-
+          {/* Mobile Navigation Trigger */}
           <button
             type="button"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="w-11 h-11 rounded-lg border border-[#E8E9ED] dark:border-[#22364F] flex items-center justify-center text-[#12263F] dark:text-[#F5F7FB] hover:bg-[#F7F8FA] dark:hover:bg-[#132945] transition-colors cursor-pointer"
+            className="lg:hidden w-11 h-11 rounded-lg border border-[#E8E9ED] dark:border-[#22364F] flex items-center justify-center text-[#12263F] dark:text-[#F5F7FB] hover:bg-[#F7F8FA] dark:hover:bg-[#132945] transition-colors cursor-pointer"
             aria-label="قائمة التصفح"
             aria-expanded={isMobileMenuOpen}
           >
@@ -88,13 +82,21 @@ export function SiteHeader() {
             ))}
           </nav>
 
-          <div className="pt-3 border-t border-[#E8E9ED] dark:border-[#22364F]">
+          <div className="pt-3 border-t border-[#E8E9ED] dark:border-[#22364F] grid grid-cols-1 gap-2">
             <Link
               href="/login"
               onClick={() => setIsMobileMenuOpen(false)}
               className="w-full min-h-[44px] rounded-lg bg-[#800B34] hover:bg-[#680829] text-white text-sm font-bold flex items-center justify-center gap-2"
             >
-              <span>دخول بكود الطالب أو جلسة تجريبية</span>
+              <span>دخول بكود الطالب</span>
+              <ArrowLeft className="w-3.5 h-3.5" />
+            </Link>
+            <Link
+              href="/subscription"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="w-full min-h-[44px] rounded-lg bg-[#091B40] hover:bg-[#1D4ED8] text-white text-sm font-bold flex items-center justify-center gap-2"
+            >
+              <span>طالب جديد؟ سجل واشترك</span>
               <ArrowLeft className="w-3.5 h-3.5" />
             </Link>
           </div>

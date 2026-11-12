@@ -48,7 +48,7 @@ export function HowItWorks() {
             href="/login"
             className="min-h-[44px] px-5 py-2 rounded-lg bg-[#800B34] hover:bg-[#680829] text-white text-sm font-bold inline-flex items-center gap-2 transition-colors self-start sm:self-auto shrink-0"
           >
-            <span>ابدأ جلسة مذاكرة</span>
+            <span>دخول الطالب بالكود</span>
             <ArrowLeft className="w-4 h-4" />
           </Link>
         </div>

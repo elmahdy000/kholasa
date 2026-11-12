@@ -10,27 +10,27 @@ export function FinalCTA() {
         <div className="rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] p-6 sm:p-10 text-right flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2 max-w-xl">
             <h2 className="text-xl sm:text-2xl font-bold text-[#091B40] dark:text-white leading-snug">
-              جاهز تبدأ مذاكرة فعلية على درسك الجاي؟
+              جاهز تدخل على المنصة وتبدأ مذاكرة؟
             </h2>
             <p className="text-sm sm:text-[15px] text-[#536681] dark:text-[#94A3B8] leading-relaxed">
-              ادخل بكود الطالب أو جرب بحساب تجريبي مستقل خاص بك لحفظ تقدمك ومراجعة أخطائك.
+              سجّل بياناتك واشترك في دقيقة أو ادخل بكود الطالب وابدأ المذاكرة — وهتفضل مسجّل دخول على جهازك لحد ما تخرج بنفسك.
             </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-3 shrink-0">
             <Link
-              href="/subscription"
-              className="min-h-[44px] px-5 py-2.5 rounded-lg bg-[#091B40] hover:bg-[#1D4ED8] text-white text-sm font-bold inline-flex items-center gap-2 transition-colors"
+              href="/login"
+              className="min-h-[44px] px-5 py-2.5 rounded-lg bg-[#800B34] hover:bg-[#680829] text-white text-sm font-bold inline-flex items-center gap-2 transition-colors"
             >
-              <span>اشترك الآن (طالب جديد)</span>
+              <span>دخول بكود الطالب</span>
               <ArrowLeft className="w-4 h-4" />
             </Link>
 
             <Link
-              href="/login"
-              className="min-h-[44px] px-5 py-2.5 rounded-lg bg-[#800B34] hover:bg-[#680829] text-white text-sm font-bold inline-flex items-center gap-2 transition-colors"
+              href="/subscription"
+              className="min-h-[44px] px-5 py-2.5 rounded-lg bg-[#091B40] hover:bg-[#1D4ED8] text-white text-sm font-bold inline-flex items-center gap-2 transition-colors"
             >
-              <span>دخول بكود الطالب أو التجربة</span>
+              <span>طالب جديد؟ سجل واشترك</span>
               <ArrowLeft className="w-4 h-4" />
             </Link>
 

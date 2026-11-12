@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowDownLeft, BookOpen, ArrowLeft } from "lucide-react";
+import { ArrowDownLeft, ArrowLeft, KeyRound, Sparkles, UserPlus } from "lucide-react";
 import type { LandingHeroHighlight } from "@/components/landing/types";
 import { RealQuestionChallenge } from "@/components/landing/RealQuestionChallenge";
 
@@ -38,36 +38,46 @@ export function HeroSection({ heroQuestions }: HeroSectionProps) {
             </h1>
 
             <p className="text-[15px] sm:text-base text-[#536681] dark:text-[#94A3B8] leading-[1.7] max-w-xl font-medium">
-              من دروس البكالوريا الفعلية، راجع المفاهيم وحل الأسئلة وشوف تفسير إجابتك، وارجع لأخطائك من مكان واحد.
+              لو مشترك ومعاك كود ادخل على طول على دروسك، ولو طالب جديد سجّل واشترك في دقيقة. ولو بتدخل من نفس الجهاز هتفضل مسجّل دخول لحد ما تخرج بنفسك.
             </p>
 
             {/* Primary & Secondary CTAs */}
             <div className="flex flex-wrap items-center gap-3 pt-1">
-              <a
-                href="#curriculum-explorer"
-                className="min-h-[44px] px-5 py-2.5 rounded-lg bg-[#800B34] hover:bg-[#680829] text-white text-sm font-bold inline-flex items-center gap-2 transition-colors"
+              <Link
+                href="/login"
+                className="min-h-[44px] px-5 py-2.5 rounded-lg bg-[#800B34] hover:bg-[#680829] text-white text-sm font-bold inline-flex items-center gap-2 transition-colors shadow-sm"
               >
-                <span>جرّب سؤال من المنهج</span>
-                <ArrowDownLeft className="w-4 h-4" />
-              </a>
+                <KeyRound className="w-4 h-4" />
+                <span>دخول بكود الطالب</span>
+                <ArrowLeft className="w-4 h-4" />
+              </Link>
 
               <Link
-                href="/subjects"
-                className="min-h-[44px] px-5 py-2.5 rounded-lg bg-[#F7F9FC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[#091B40] dark:text-white text-sm font-bold inline-flex items-center gap-2 hover:border-[#800B34] hover:text-[#800B34] dark:hover:border-[#FB7185] dark:hover:text-[#FB7185] transition-colors"
+                href="/subscription"
+                className="min-h-[44px] px-5 py-2.5 rounded-lg bg-[#091B40] hover:bg-[#1D4ED8] text-white text-sm font-bold inline-flex items-center gap-2 transition-colors shadow-sm"
               >
-                <BookOpen className="w-4 h-4 text-[#800B34] dark:text-[#FB7185]" />
-                <span>تصفّح الدروس</span>
+                <UserPlus className="w-4 h-4" />
+                <span>طالب جديد؟ سجل واشترك</span>
               </Link>
             </div>
 
-            <div className="pt-1 flex flex-wrap items-center gap-4 text-xs text-[#64748B] dark:text-[#94A3B8] font-medium">
+            <div className="pt-1 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-[#64748B] dark:text-[#94A3B8] font-medium">
               <Link
-                href="/login"
-                className="min-h-[44px] py-2 inline-flex items-center gap-1.5 font-bold text-[#091B40] dark:text-[#E2E8F0] hover:text-[#800B34] dark:hover:text-[#FB7185] transition-colors"
+                href="/login#demo-box"
+                className="min-h-[44px] py-2 inline-flex items-center gap-1.5 font-bold text-[#800B34] dark:text-[#FB7185] hover:underline"
               >
-                <span>عندك كود طالب أو عايز جلسة تجريبية مستقلة؟ ادخل هنا</span>
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>جرب المنصة مجاناً (بدون اشتراك)</span>
                 <ArrowLeft className="w-3.5 h-3.5" />
               </Link>
+
+              <a
+                href="#curriculum-explorer"
+                className="min-h-[44px] py-2 inline-flex items-center gap-1.5 font-bold text-[#091B40] dark:text-[#E2E8F0] hover:text-[#800B34] dark:hover:text-[#FB7185] transition-colors"
+              >
+                <span>استكشف عينة المنهج والأسئلة</span>
+                <ArrowDownLeft className="w-3.5 h-3.5" />
+              </a>
             </div>
           </div>
 

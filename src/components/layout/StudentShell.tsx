@@ -16,6 +16,7 @@ import { StudentSearchModal } from "./student/StudentSearchModal";
 import { FloatingMistakesCounter } from "./student/FloatingMistakesCounter";
 import { RealtimeSyncBridge } from "@/lib/realtime-client";
 import { useStudentMistakesSummary } from "@/hooks/useStudentMistakesSummary";
+import { getOrCreateDeviceId } from "@/lib/device";
 
 interface StudentShellContextType {
   isInsideShell: boolean;
@@ -44,6 +45,12 @@ export function StudentShell({ children, user: propUser }: StudentShellProps) {
     (!resolvedUser?.role || resolvedUser.role === "STUDENT");
   const { summary: mistakesSummary, hasLoaded: mistakesLoaded } =
     useStudentMistakesSummary(isStudentViewer);
+
+  // Keep device binding cookie persistent while the student uses the platform
+  useEffect(() => {
+    if (!isStudentViewer) return;
+    getOrCreateDeviceId();
+  }, [isStudentViewer]);
 
   // Keyboard shortcut Ctrl+K / Cmd+K and Esc
   useEffect(() => {
