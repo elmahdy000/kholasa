@@ -321,5 +321,66 @@ describe("Authorized Centers & Per-Visitor Isolated Demo Sandbox Specification",
         where: { id: "sandbox-user-99" },
       });
     });
+
+    it("never signs directly into shared DEMO template row via email/password credentials", async () => {
+      const { hashPassword } = await import("@/lib/auth");
+      const hashed = await hashPassword("demo-pass-123");
+      mockPrisma.user.findFirst.mockResolvedValue({
+        id: "demo-student-ar",
+        name: "طالب تجريبي (عربي)",
+        email: "demo-ar@kholasa.app",
+        password: hashed,
+        loginCode: "DEMO-AR",
+        role: Role.STUDENT,
+        schoolCategory: SchoolCategory.ARABIC,
+        gradeId: "grade-bacc-g11",
+        systemId: "sys-bacc",
+        trackId: null,
+        studyMode: StudyMode.ONLINE,
+        centerName: null,
+        subscriptionStatus: SubscriptionStatus.TRIAL,
+        isActive: true,
+        maxDevices: 10,
+        boundDevices: [],
+      });
+      mockPrisma.subject.findFirst.mockResolvedValue({
+        gradeId: "grade-bacc-g11",
+        systemId: "sys-bacc",
+        trackId: null,
+      });
+      mockPrisma.user.create.mockResolvedValue({
+        id: "sandbox-from-creds",
+        name: "طالب تجريبي (عربي)",
+        email: null,
+        phone: null,
+        loginCode: "DEMO-AR-C0ED0001",
+        role: Role.STUDENT,
+        systemId: "sys-bacc",
+        gradeId: "grade-bacc-g11",
+        schoolCategory: SchoolCategory.ARABIC,
+        studyMode: StudyMode.ONLINE,
+        centerName: null,
+        subscriptionStatus: SubscriptionStatus.TRIAL,
+      });
+      mockPrisma.session.deleteMany.mockResolvedValue({ count: 0 });
+      mockPrisma.session.create.mockResolvedValue({ id: "sess-cred" });
+
+      const req = new Request("http://localhost/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-forwarded-for": "10.0.0.6" },
+        body: JSON.stringify({
+          identifier: "demo-ar@kholasa.app",
+          password: "demo-pass-123",
+          deviceId: "device-cred",
+        }),
+      });
+      const res = await loginRoute(req);
+      const data = await res.json();
+
+      expect(res.status).toBe(200);
+      expect(data.isDemoSandbox).toBe(true);
+      expect(data.user.id).not.toBe("demo-student-ar");
+      expect(data.user.loginCode).toMatch(/^DEMO-AR-[0-9A-F]{8}$/);
+    });
   });
 });

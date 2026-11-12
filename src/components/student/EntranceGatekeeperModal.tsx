@@ -51,10 +51,14 @@ export function EntranceGatekeeperModal({
   const [submitError, setSubmitError] = useState<string | null>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
 
+  const dismissStorageKey = userId
+    ? `kholasa_daily_dismissed_${userId}`
+    : "kholasa_daily_dismissed";
+
   const handleDismiss = () => {
     setIsOpen(false);
     try {
-      sessionStorage.setItem("kholasa_daily_dismissed", "true");
+      sessionStorage.setItem(dismissStorageKey, "true");
     } catch {
       // Ignore sessionStorage errors
     }
@@ -69,7 +73,7 @@ export function EntranceGatekeeperModal({
         return;
       }
       try {
-        if (sessionStorage.getItem("kholasa_daily_dismissed") === "true") {
+        if (sessionStorage.getItem(dismissStorageKey) === "true") {
           setIsLoading(false);
           return;
         }

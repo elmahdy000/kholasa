@@ -103,6 +103,9 @@ export function StudentShell({ children, user: propUser }: StudentShellProps) {
     try {
       try {
         sessionStorage.removeItem("kholasa_daily_dismissed");
+        if (user?.id) {
+          sessionStorage.removeItem(`kholasa_daily_dismissed_${user.id}`);
+        }
       } catch {}
       await fetch("/api/auth/logout", { method: "POST" });
       router.push("/login");

@@ -42,6 +42,99 @@ const INVALID = "بيانات الدخول غير صحيحة، يرجى التأ
 const INVALID_CODE =
   "كود الدخول غير صحيح. تأكد من كتابة الأحرف والأرقام بدقة بدون مسافات، أو تواصل معنا إذا نسيت الكود.";
 
+async function createDemoSandboxLoginResponse(params: {
+  templateCode: "DEMO-AR" | "DEMO-EN";
+  ip: string;
+  studyMode?: "ONLINE" | "OFFLINE";
+  centerName?: string;
+  resolvedDeviceId: string | null;
+}) {
+  const { templateCode, ip, studyMode, centerName, resolvedDeviceId } = params;
+
+  // Rate limit per visitor IP (never globally on shared DEMO code)
+  rateLimit(`login:demo:ip:${ip}`, 20, 15 * 60 * 1000);
+
+  // Terminate any prior session on this browser so the student starts a fresh isolated session
+  await destroySession();
+
+  const defaults = getDemoTemplateDefaults(templateCode);
+  const templateUser = await UserService.findByLoginCode(templateCode);
+  if (templateUser && templateUser.isActive === false) {
+    throw unauthorized("تم تعطيل هذا الحساب التجريبي");
+  }
+
+  const targetSchoolCategory =
+    defaults.schoolCategory === "LANGUAGES"
+      ? SchoolCategory.LANGUAGES
+      : SchoolCategory.ARABIC;
+
+  const updatedStudyMode = studyMode || templateUser?.studyMode || "ONLINE";
+  const updatedCenterName =
+    updatedStudyMode === "OFFLINE"
+      ? centerName?.trim() || templateUser?.centerName || defaults.defaultCenter
+      : null;
+
+  // Match the active published curriculum grade/system for the chosen track
+  const publishedCurriculum =
+    (await prisma.subject?.findFirst({
+      where: { isPublished: true, schoolCategory: targetSchoolCategory },
+      select: { gradeId: true, systemId: true, trackId: true },
+    })) ||
+    (await prisma.subject?.findFirst({
+      where: { isPublished: true },
+      select: { gradeId: true, systemId: true, trackId: true },
+    }));
+
+  const targetGradeId = publishedCurriculum?.gradeId || templateUser?.gradeId || null;
+  const targetSystemId = publishedCurriculum?.systemId || templateUser?.systemId || null;
+  const targetTrackId = templateUser?.trackId ?? publishedCurriculum?.trackId ?? null;
+
+  const sandboxCode = generateDemoSandboxLoginCode(templateCode);
+  const sandboxUser = await prisma.user.create({
+    data: {
+      name: defaults.name,
+      loginCode: sandboxCode,
+      role: Role.STUDENT,
+      schoolCategory: targetSchoolCategory,
+      gradeId: targetGradeId,
+      systemId: targetSystemId,
+      trackId: targetTrackId,
+      studyMode: updatedStudyMode,
+      centerName: updatedCenterName,
+      subscriptionStatus: defaults.subscriptionStatus,
+      isActive: true,
+      maxDevices: 5,
+      boundDevices: resolvedDeviceId ? [resolvedDeviceId] : [],
+    },
+  });
+
+  // Opportunistically purge expired sandbox accounts without blocking the response
+  void cleanupExpiredDemoSandboxes();
+
+  await createSession(sandboxUser.id, resolvedDeviceId || undefined, {
+    ttlMs: DEMO_SESSION_TTL_MS,
+  });
+
+  return NextResponse.json({
+    success: true,
+    isDemoSandbox: true,
+    user: {
+      id: sandboxUser.id,
+      name: sandboxUser.name,
+      email: sandboxUser.email,
+      phone: sandboxUser.phone,
+      loginCode: sandboxUser.loginCode,
+      role: sandboxUser.role,
+      systemId: sandboxUser.systemId,
+      gradeId: sandboxUser.gradeId,
+      schoolCategory: sandboxUser.schoolCategory,
+      studyMode: sandboxUser.studyMode,
+      centerName: sandboxUser.centerName,
+      subscriptionStatus: sandboxUser.subscriptionStatus,
+    },
+  });
+}
+
 export async function POST(req: Request) {
   try {
     const ip = getClientIp(req);
@@ -61,87 +154,12 @@ export async function POST(req: Request) {
       }
 
       if (isDemoTemplateCode(cleanCode)) {
-        // Rate limit per visitor IP (never globally on shared DEMO code)
-        rateLimit(`login:demo:ip:${ip}`, 20, 15 * 60 * 1000);
-
-        // Terminate any prior session on this browser so the student starts a fresh isolated session
-        await destroySession();
-
-        const defaults = getDemoTemplateDefaults(cleanCode);
-        const templateUser = await UserService.findByLoginCode(cleanCode);
-        if (templateUser && templateUser.isActive === false) {
-          throw unauthorized("تم تعطيل هذا الحساب التجريبي");
-        }
-
-        const targetSchoolCategory =
-          defaults.schoolCategory === "LANGUAGES"
-            ? SchoolCategory.LANGUAGES
-            : SchoolCategory.ARABIC;
-
-        const updatedStudyMode = body.studyMode || templateUser?.studyMode || "ONLINE";
-        const updatedCenterName =
-          updatedStudyMode === "OFFLINE"
-            ? body.centerName?.trim() || templateUser?.centerName || defaults.defaultCenter
-            : null;
-
-        // Match the active published curriculum grade/system for the chosen track
-        const publishedCurriculum =
-          (await prisma.subject?.findFirst({
-            where: { isPublished: true, schoolCategory: targetSchoolCategory },
-            select: { gradeId: true, systemId: true, trackId: true },
-          })) ||
-          (await prisma.subject?.findFirst({
-            where: { isPublished: true },
-            select: { gradeId: true, systemId: true, trackId: true },
-          }));
-
-        const targetGradeId = publishedCurriculum?.gradeId || templateUser?.gradeId || null;
-        const targetSystemId = publishedCurriculum?.systemId || templateUser?.systemId || null;
-        const targetTrackId = templateUser?.trackId ?? publishedCurriculum?.trackId ?? null;
-
-        const sandboxCode = generateDemoSandboxLoginCode(cleanCode);
-        const sandboxUser = await prisma.user.create({
-          data: {
-            name: defaults.name,
-            loginCode: sandboxCode,
-            role: Role.STUDENT,
-            schoolCategory: targetSchoolCategory,
-            gradeId: targetGradeId,
-            systemId: targetSystemId,
-            trackId: targetTrackId,
-            studyMode: updatedStudyMode,
-            centerName: updatedCenterName,
-            subscriptionStatus: defaults.subscriptionStatus,
-            isActive: true,
-            maxDevices: 5,
-            boundDevices: resolvedDeviceId ? [resolvedDeviceId] : [],
-          },
-        });
-
-        // Opportunistically purge expired sandbox accounts without blocking the response
-        void cleanupExpiredDemoSandboxes();
-
-        await createSession(sandboxUser.id, resolvedDeviceId || undefined, {
-          ttlMs: DEMO_SESSION_TTL_MS,
-        });
-
-        return NextResponse.json({
-          success: true,
-          isDemoSandbox: true,
-          user: {
-            id: sandboxUser.id,
-            name: sandboxUser.name,
-            email: sandboxUser.email,
-            phone: sandboxUser.phone,
-            loginCode: sandboxUser.loginCode,
-            role: sandboxUser.role,
-            systemId: sandboxUser.systemId,
-            gradeId: sandboxUser.gradeId,
-            schoolCategory: sandboxUser.schoolCategory,
-            studyMode: sandboxUser.studyMode,
-            centerName: sandboxUser.centerName,
-            subscriptionStatus: sandboxUser.subscriptionStatus,
-          },
+        return createDemoSandboxLoginResponse({
+          templateCode: cleanCode,
+          ip,
+          studyMode: body.studyMode,
+          centerName: body.centerName,
+          resolvedDeviceId,
         });
       }
     }
@@ -180,6 +198,19 @@ export async function POST(req: Request) {
         recordRateLimitAttempt(idKey, 15 * 60 * 1000);
         recordRateLimitAttempt(`login:ip:${ip}`, 60 * 1000);
         throw unauthorized(INVALID);
+      }
+
+      // Never issue a session directly for shared DEMO template rows (e.g. demo-ar@kholasa.app)
+      if (isDemoTemplateCode(user.loginCode)) {
+        resetRateLimit(`login:ip:${ip}`);
+        resetRateLimit(idKey);
+        return createDemoSandboxLoginResponse({
+          templateCode: user.loginCode,
+          ip,
+          studyMode: body.studyMode,
+          centerName: body.centerName,
+          resolvedDeviceId,
+        });
       }
     } else {
       throw unauthorized("بيانات تسجيل الدخول غير مكتملة");

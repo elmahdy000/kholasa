@@ -44,12 +44,14 @@ export interface DailyStudyPlanData {
 }
 
 interface DailyGuidedStudyPlanCardProps {
+  userId?: string | null;
   plan: DailyStudyPlanData;
   isSubscribed?: boolean;
   onOpenDailyChallenge?: () => void;
 }
 
 export function DailyGuidedStudyPlanCard({
+  userId,
   plan,
   isSubscribed = true,
   onOpenDailyChallenge,
@@ -57,6 +59,10 @@ export function DailyGuidedStudyPlanCard({
   const [task1Done, setTask1Done] = useState(plan.task1.isCompleted);
   const [task2Done, setTask2Done] = useState(plan.task2.isCompleted);
   const [task3Done, setTask3Done] = useState(plan.task3.isCompleted);
+
+  const summaryReadStorageKey = plan.focusLesson
+    ? `kholasa_daily_summary_read_${userId || "anon"}_${plan.todayKey}_${plan.focusLesson.lessonId}`
+    : null;
 
   // Sync initial state if server props change
   useEffect(() => {
@@ -71,15 +77,14 @@ export function DailyGuidedStudyPlanCard({
     setTask3Done(plan.task3.isCompleted);
   }, [plan.task3.isCompleted]);
 
-  // Check localStorage for Task 2 client confirmation
+  // Check localStorage for Task 2 client confirmation (strictly scoped by userId)
   useEffect(() => {
-    if (typeof window !== "undefined" && plan.focusLesson) {
-      const storageKey = `kholasa_daily_summary_read_${plan.todayKey}_${plan.focusLesson.lessonId}`;
-      if (localStorage.getItem(storageKey) === "true") {
+    if (typeof window !== "undefined" && summaryReadStorageKey) {
+      if (localStorage.getItem(summaryReadStorageKey) === "true") {
         setTask2Done(true);
       }
     }
-  }, [plan.todayKey, plan.focusLesson]);
+  }, [summaryReadStorageKey]);
 
   // Listen for real-time daily challenge completion event
   useEffect(() => {
@@ -94,9 +99,8 @@ export function DailyGuidedStudyPlanCard({
   }, []);
 
   const handleMarkSummaryRead = () => {
-    if (!plan.focusLesson) return;
-    const storageKey = `kholasa_daily_summary_read_${plan.todayKey}_${plan.focusLesson.lessonId}`;
-    localStorage.setItem(storageKey, "true");
+    if (!summaryReadStorageKey) return;
+    localStorage.setItem(summaryReadStorageKey, "true");
     setTask2Done(true);
   };
 

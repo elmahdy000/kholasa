@@ -186,6 +186,11 @@ export default async function DashboardPage() {
       ? prisma.lesson.findFirst({
           where: {
             isPublished: true,
+            ...(hasActiveSubscription(user)
+              ? {}
+              : {
+                  OR: [{ isTrial: true }, { order: 1, unit: { order: 1 } }],
+                }),
             unit: { isPublished: true, subject: { is: { isUnderConstruction: false, ...subjectScopeWhere(scope) } } },
           },
           include: {
@@ -195,7 +200,7 @@ export default async function DashboardPage() {
               },
             },
           },
-          orderBy: { order: "asc" },
+          orderBy: [{ unit: { order: "asc" } }, { order: "asc" }],
         })
       : null,
     prisma.question.findFirst({
@@ -245,29 +250,40 @@ export default async function DashboardPage() {
 
   const resolvedDailyQuestion = dailyQuestion;
 
-  const activeLesson =
-    (lastActiveProgress?.lesson &&
+  const scopedSavedLesson =
+    lastActiveProgress?.lesson &&
     isSubjectInScope(scope, lastActiveProgress.lesson.unit.subject)
       ? lastActiveProgress.lesson
-      : null) || firstLesson;
+      : null;
 
-  const continueLessonData = activeLesson
+  const hasSavedProgress = Boolean(scopedSavedLesson);
+
+  const continueLessonData = scopedSavedLesson
     ? {
-        id: activeLesson.id,
-        title: activeLesson.title,
-        durationMinutes: activeLesson.durationMinutes,
+        id: scopedSavedLesson.id,
+        title: scopedSavedLesson.title,
+        durationMinutes: scopedSavedLesson.durationMinutes,
         unit: {
-          id: activeLesson.unit.id,
-          title: activeLesson.unit.title,
+          id: scopedSavedLesson.unit.id,
+          title: scopedSavedLesson.unit.title,
           subject: {
-            id: activeLesson.unit.subject.id,
-            name: activeLesson.unit.subject.name,
-            color: activeLesson.unit.subject.color,
+            id: scopedSavedLesson.unit.subject.id,
+            name: scopedSavedLesson.unit.subject.name,
+            color: scopedSavedLesson.unit.subject.color,
           },
         },
         progressPercent: lastActiveProgress?.progressPercent ?? 0,
       }
     : null;
+
+  const starterLessonData = !hasSavedProgress && firstLesson
+    ? {
+        id: firstLesson.id,
+        title: firstLesson.title,
+      }
+    : null;
+
+  const recommendedPlanLesson = scopedSavedLesson || firstLesson;
 
   // 4. Map subjects with accurate completion metrics
   const subjectsForClient = subjects.map((subj) => {
@@ -294,17 +310,19 @@ export default async function DashboardPage() {
   // 5. Build intelligent Daily Guided Study Plan
   const focusLesson =
     masteryData?.focusRecommendation ||
-    (continueLessonData
+    (recommendedPlanLesson
       ? {
-          lessonId: continueLessonData.id,
-          lessonTitle: continueLessonData.title,
-          unitTitle: continueLessonData.unit.title,
-          subjectId: continueLessonData.unit.subject.id,
-          subjectName: continueLessonData.unit.subject.name,
-          subjectColor: continueLessonData.unit.subject.color,
-          masteryPercentage: continueLessonData.progressPercent ?? 0,
+          lessonId: recommendedPlanLesson.id,
+          lessonTitle: recommendedPlanLesson.title,
+          unitTitle: recommendedPlanLesson.unit.title,
+          subjectId: recommendedPlanLesson.unit.subject.id,
+          subjectName: recommendedPlanLesson.unit.subject.name,
+          subjectColor: recommendedPlanLesson.unit.subject.color,
+          masteryPercentage: hasSavedProgress ? (lastActiveProgress?.progressPercent ?? 0) : 0,
           unresolvedMistakesCount: 0,
-          reason: "واصل مذاكرة هذا الدرس لإتمام وحدتك الحالية",
+          reason: hasSavedProgress
+            ? "واصل مذاكرة هذا الدرس لإتمام وحدتك الحالية"
+            : "ابدأ أول درس متاح لك في المنهج الآن",
         }
       : null);
 
@@ -338,6 +356,7 @@ export default async function DashboardPage() {
   return (
     <StudentShell user={user}>
       <DashboardClient
+        userId={userId}
         userName={user?.name}
         studentMeta={{
           systemName: user?.system?.name || null,
@@ -354,6 +373,7 @@ export default async function DashboardPage() {
         mistakesSummary={mistakesSummary}
         subjects={subjectsForClient}
         continueLesson={continueLessonData}
+        starterLesson={starterLessonData}
         dailyQuestion={resolvedDailyQuestion as any}
         masteryData={masteryData}
         dailyStudyPlan={dailyStudyPlan}

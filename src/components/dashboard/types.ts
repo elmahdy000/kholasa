@@ -48,7 +48,13 @@ export interface StudentMeta {
 
 import type { StudentMistakeDiagnosisSummary } from "@/lib/mistake-diagnosis";
 
+export interface StarterLessonRef {
+  id: string;
+  title: string;
+}
+
 export interface DashboardClientProps {
+  userId?: string | null;
   userName?: string | null;
   studentMeta?: StudentMeta;
   completedLessonsCount: number;
@@ -61,6 +67,7 @@ export interface DashboardClientProps {
   mistakesSummary?: StudentMistakeDiagnosisSummary;
   subjects: SubjectItem[];
   continueLesson?: ContinueLessonItem | null;
+  starterLesson?: StarterLessonRef | null;
   dailyQuestion?: any;
   recentExams?: RecentExamItem[];
   masteryData?: any;

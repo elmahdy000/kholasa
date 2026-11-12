@@ -20,6 +20,7 @@ import type { DashboardClientProps } from "./types";
 export type { DashboardClientProps, ContinueLessonItem, SubjectItem, RecentExamItem, StudentMeta } from "./types";
 
 export function DashboardClient({
+  userId,
   userName,
   studentMeta,
   completedLessonsCount,
@@ -32,6 +33,7 @@ export function DashboardClient({
   mistakesSummary,
   subjects,
   continueLesson,
+  starterLesson,
   dailyQuestion,
   recentExams = [],
   masteryData,
@@ -99,6 +101,7 @@ export function DashboardClient({
         userName={userName}
         studentMeta={studentMeta}
         continueLesson={continueLesson}
+        starterLesson={starterLesson}
         onStartTour={() => setIsTourOpen(true)}
       />
 
@@ -110,7 +113,7 @@ export function DashboardClient({
       />
 
       {/* 2. Immediate Resume Anchor */}
-      <ContinueLearningCard continueLesson={continueLesson} />
+      <ContinueLearningCard continueLesson={continueLesson} starterLesson={starterLesson} />
 
       {/* 3. Live Animated Mistakes Counter & Weakness Diagnosis Spotlight */}
       <DashboardMistakesSpotlight summary={effectiveMistakesSummary} />
@@ -128,6 +131,7 @@ export function DashboardClient({
 
       {dailyStudyPlan && (
         <DailyGuidedStudyPlanCard
+          userId={userId}
           plan={dailyStudyPlan}
           isSubscribed={isSubscribed}
           onOpenDailyChallenge={handleOpenDailyChallenge}

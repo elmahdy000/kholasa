@@ -5,16 +5,17 @@ import { motion } from "framer-motion";
 import { GraduationCap, Play, Target } from "@phosphor-icons/react";
 import { BidiStatement } from "@/components/ui/BidiStatement";
 import { Sparkles } from "lucide-react";
-import type { ContinueLessonItem, StudentMeta } from "./types";
+import type { ContinueLessonItem, StarterLessonRef, StudentMeta } from "./types";
 
 interface DashboardHeroProps {
   userName?: string | null;
   studentMeta?: StudentMeta;
   continueLesson?: ContinueLessonItem | null;
+  starterLesson?: StarterLessonRef | null;
   onStartTour?: () => void;
 }
 
-export function DashboardHero({ userName, studentMeta, continueLesson, onStartTour }: DashboardHeroProps) {
+export function DashboardHero({ userName, studentMeta, continueLesson, starterLesson, onStartTour }: DashboardHeroProps) {
   // Clean student name without parenthesized metadata
   const displayName = userName?.replace(/\s*\([^)]*\)/g, "").trim();
 
@@ -48,7 +49,9 @@ export function DashboardHero({ userName, studentMeta, continueLesson, onStartTo
 
           {/* Supporting Subtext */}
           <p className="text-xs sm:text-sm text-[#64748B] dark:text-[#94A3B8] font-normal leading-relaxed">
-            جاهز تكمل مذاكرتك النهاردة؟ كل خطوة صغيرة بتفرق في مستواك.
+            {continueLesson
+              ? "جاهز تكمل مذاكرتك النهاردة؟ كل خطوة صغيرة بتفرق في مستواك."
+              : "جاهز تبدأ مذاكرتك النهاردة؟ كل خطوة صغيرة بتفرق في مستواك."}
           </p>
         </div>
 
@@ -67,11 +70,17 @@ export function DashboardHero({ userName, studentMeta, continueLesson, onStartTo
           )}
 
           <Link
-            href={continueLesson ? `/lessons/${continueLesson.id}` : "/subjects"}
+            href={
+              continueLesson
+                ? `/lessons/${continueLesson.id}`
+                : starterLesson
+                  ? `/lessons/${starterLesson.id}`
+                  : "/subjects"
+            }
             className="flex-1 sm:flex-initial min-h-[44px] h-11 px-5 sm:px-6 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-2 shadow-xs transition-all active:scale-[0.98]"
           >
             <Play className="w-4 h-4 fill-current ml-0.5" />
-            <span>كمّل مذاكرتك</span>
+            <span>{continueLesson ? "كمّل مذاكرتك" : "ابدأ مذاكرتك"}</span>
           </Link>
 
           <Link
