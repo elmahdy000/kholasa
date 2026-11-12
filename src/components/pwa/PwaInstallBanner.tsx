@@ -75,6 +75,8 @@ export function PwaInstallBanner() {
 
   const isFocusedStudyRoute =
     pathname === "/" ||
+    pathname?.startsWith("/login") ||
+    pathname?.startsWith("/subscription") ||
     pathname?.startsWith("/mistakes") ||
     pathname?.startsWith("/lessons/") ||
     pathname?.startsWith("/exams/");
