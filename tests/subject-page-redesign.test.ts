@@ -7,6 +7,7 @@ import {
 } from "@/components/subjects/lesson-helpers";
 import { STUDENT_NAV_ITEMS } from "@/components/layout/student/navigation";
 import { shouldShowFloatingMistakesCounter } from "@/components/layout/student/FloatingMistakesCounter";
+import { getStudentQuickLinks } from "@/components/layout/student/StudentSearchModal";
 
 describe("Subject Page Redesign Helpers & Mobile Navigation", () => {
   it("resolves all four lesson states cleanly without conflicting labels", () => {
@@ -92,6 +93,24 @@ describe("Subject Page Redesign Helpers & Mobile Navigation", () => {
 
     expect(shouldShowFloatingMistakesCounter("/subjects")).toBe(true);
     expect(shouldShowFloatingMistakesCounter("/subjects/cmvuucwc30007r02cp3zn3fya")).toBe(true);
+  });
+
+  it("provides populated quick links in StudentSearchModal before typing and restricts admin link to staff", () => {
+    const studentLinks = getStudentQuickLinks("STUDENT", 4);
+    expect(studentLinks.map((l) => l.href)).toEqual([
+      "/dashboard",
+      "/subjects",
+      "/exams/builder",
+      "/exams",
+      "/mistakes",
+      "/profile",
+      "/subscription",
+    ]);
+    expect(studentLinks.find((l) => l.id === "mistakes")?.badge).toBe("4");
+    expect(studentLinks.some((l) => l.href === "/admin")).toBe(false);
+
+    const adminLinks = getStudentQuickLinks("ADMIN", 0);
+    expect(adminLinks.some((l) => l.href === "/admin")).toBe(true);
   });
 });
 

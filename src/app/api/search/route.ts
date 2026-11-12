@@ -10,11 +10,15 @@ export async function GET(req: Request) {
     const user = await getCurrentUser();
     if (!user) throw unauthorized("غير مصرح");
 
+    const scope = getCurriculumScope(user);
     const q = (new URL(req.url).searchParams.get("q") || "").trim().slice(0, 100);
-    const results = await SearchService.globalSearch(
-      q,
-      getCurriculumScope(user)
-    );
+
+    if (q.length < 2) {
+      const suggestions = await SearchService.getQuickSuggestions(scope);
+      return NextResponse.json({ results: [], suggestions });
+    }
+
+    const results = await SearchService.globalSearch(q, scope);
     return NextResponse.json({ results });
   } catch (error) {
     return jsonError(error);

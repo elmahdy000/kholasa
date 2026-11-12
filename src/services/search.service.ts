@@ -12,6 +12,68 @@ export interface SearchResultItem {
 
 export class SearchService {
   /**
+   * Returns scoped published subjects and sample top lessons for empty-query quick access.
+   */
+  static async getQuickSuggestions(
+    scope: CurriculumScope | null = null
+  ): Promise<SearchResultItem[]> {
+    const openSubjectFilter: Prisma.SubjectWhereInput = {
+      isPublished: true,
+      isUnderConstruction: false,
+      ...subjectScopeWhere(scope),
+    };
+
+    const [subjects, lessons] = await Promise.all([
+      prisma.subject.findMany({
+        where: openSubjectFilter,
+        orderBy: { order: "asc" },
+        take: 4,
+        select: {
+          id: true,
+          name: true,
+          description: true,
+        },
+      }),
+      prisma.lesson.findMany({
+        where: {
+          isPublished: true,
+          unit: {
+            isPublished: true,
+            subject: { is: openSubjectFilter },
+          },
+        },
+        orderBy: [{ unit: { order: "asc" } }, { order: "asc" }],
+        take: 4,
+        include: {
+          unit: {
+            select: {
+              title: true,
+              subject: { select: { name: true } },
+            },
+          },
+        },
+      }),
+    ]);
+
+    return [
+      ...subjects.map((s) => ({
+        type: "SUBJECT" as const,
+        id: s.id,
+        title: s.name,
+        subtitle: s.description || "افتح وحدات ودروس المادة",
+        url: `/subjects/${s.id}`,
+      })),
+      ...lessons.map((l) => ({
+        type: "LESSON" as const,
+        id: l.id,
+        title: l.title,
+        subtitle: `${l.unit.subject.name} • ${l.unit.title}`,
+        url: `/lessons/${l.id}`,
+      })),
+    ];
+  }
+
+  /**
    * Search across lessons, subjects, and questions with strict publish & track scoping
    */
   static async globalSearch(

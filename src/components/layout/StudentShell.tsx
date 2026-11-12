@@ -177,6 +177,8 @@ export function StudentShell({ children, user: propUser }: StudentShellProps) {
         <StudentSearchModal
           isOpen={isSearchOpen}
           onClose={() => setIsSearchOpen(false)}
+          userRole={user?.role}
+          mistakesCount={isStudentViewer ? mistakesSummary.unresolvedCount : undefined}
         />
 
         {/* Mandatory Entrance Gatekeeper Exam for Students */}
