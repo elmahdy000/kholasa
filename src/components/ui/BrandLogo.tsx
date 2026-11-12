@@ -173,7 +173,17 @@ export function BrandLogo({
               cfg.titleClass
             )}
           >
-            الخلاصة <span className="text-[#800B34] dark:text-[#E9AD32] text-[0.82em] font-black">للبكالوريا</span>
+            الخلاصة{" "}
+            <span
+              className={cn(
+                "text-[0.82em] font-black",
+                surfaceTheme === "dark"
+                  ? "text-[#FB7185]"
+                  : "text-[#800B34] dark:text-[#E9AD32]"
+              )}
+            >
+              للبكالوريا
+            </span>
           </span>
           {showSubtitle && (
             <span
