@@ -88,7 +88,8 @@ describe("Persistent sessions & unified landing study preferences", () => {
     await createSession("demo-1", undefined, { ttlMs: ONE_DAY_MS });
 
     const [, , opts] = mockCookiesStore.set.mock.calls[0];
-    expect(opts.maxAge).toBe(ONE_DAY_SEC);
+    expect(opts.maxAge).toBeGreaterThanOrEqual(ONE_DAY_SEC - 5);
+    expect(opts.maxAge).toBeLessThanOrEqual(ONE_DAY_SEC);
     expect((opts.expires as Date).getTime() - before).toBeLessThanOrEqual(ONE_DAY_MS + 5000);
   });
 

@@ -54,6 +54,11 @@ interface StudentPaywallViewProps {
     loginCode?: string | null;
     phone?: string | null;
     schoolCategory?: string | null;
+    gradeId?: string | null;
+    systemId?: string | null;
+    trackId?: string | null;
+    studyMode?: string | null;
+    centerName?: string | null;
     subscriptionStatus?: string | null;
   } | null;
   initialSystems?: PublicSystemOption[];
@@ -460,34 +465,67 @@ export function StudentPaywallView({
             </div>
           </div>
 
-          <div className="flex items-center gap-2 shrink-0 bg-white border border-[#A7F3D0] rounded-xl px-3.5 py-2">
-            <span className="text-[12px] font-bold text-[#475569]">كودك:</span>
-            <span
-              className="text-[18px] font-black font-mono tracking-wider text-[#091B40]"
-              dir="ltr"
-            >
-              {displayedRegisteredCode}
-            </span>
-            <button
-              type="button"
-              onClick={handleCopyLoginCode}
-              className="min-h-[38px] px-2.5 rounded-lg bg-[#ECFDF5] hover:bg-[#D1FAE5] text-[#059669] text-[12px] font-bold inline-flex items-center gap-1 transition-colors cursor-pointer"
-            >
-              {copiedCode ? (
-                <>
-                  <Check className="w-3.5 h-3.5" />
-                  <span>اتنسخ</span>
-                </>
-              ) : (
-                <>
-                  <Copy className="w-3.5 h-3.5" />
-                  <span>نسخ</span>
-                </>
-              )}
-            </button>
+          <div className="flex flex-wrap items-center gap-2 shrink-0">
+            <div className="flex items-center gap-2 bg-white border border-[#A7F3D0] rounded-xl px-3.5 py-2">
+              <span className="text-[12px] font-bold text-[#475569]">كودك:</span>
+              <span
+                className="text-[18px] font-black font-mono tracking-wider text-[#091B40]"
+                dir="ltr"
+              >
+                {displayedRegisteredCode}
+              </span>
+              <button
+                type="button"
+                onClick={handleCopyLoginCode}
+                className="min-h-[38px] px-2.5 rounded-lg bg-[#ECFDF5] hover:bg-[#D1FAE5] text-[#059669] text-[12px] font-bold inline-flex items-center gap-1 transition-colors cursor-pointer"
+              >
+                {copiedCode ? (
+                  <>
+                    <Check className="w-3.5 h-3.5" />
+                    <span>اتنسخ</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-3.5 h-3.5" />
+                    <span>نسخ</span>
+                  </>
+                )}
+              </button>
+            </div>
+
+            {activeUser?.subscriptionStatus !== "ACTIVE" && (
+              <button
+                type="button"
+                onClick={() => setShowRegisterModal(true)}
+                className="min-h-[42px] px-3.5 rounded-xl border border-[#A7F3D0] bg-white hover:bg-[#F0FDF4] text-[#065F46] text-[12px] font-bold inline-flex items-center justify-center transition-colors cursor-pointer"
+              >
+                تعديل بيانات التسجيل
+              </button>
+            )}
           </div>
         </div>
       )}
+
+      {/* Allow pre-activation students returning later to review/edit saved registration without losing data */}
+      {!displayedRegisteredCode &&
+        !needsStudentRegistration &&
+        activeUser?.subscriptionStatus !== "ACTIVE" && (
+          <div className="rounded-2xl bg-[#F7F9FC] border border-[#E2E8F0] px-4 py-3 flex flex-wrap items-center justify-between gap-3 text-xs">
+            <div className="text-[#475569]">
+              مسجّل باسم <strong className="text-[#091B40]">{studentDisplayName || activeUser?.name}</strong>
+              {activeUser?.loginCode ? (
+                <span> • كودك: <strong dir="ltr" className="font-mono text-[#091B40]">{activeUser.loginCode}</strong></span>
+              ) : null}
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowRegisterModal(true)}
+              className="min-h-[38px] px-3 rounded-lg border border-[#CBD5E1] bg-white hover:border-[#800B34] text-[#091B40] font-bold transition-colors cursor-pointer"
+            >
+              تعديل بيانات التسجيل
+            </button>
+          </div>
+        )}
 
       {/* Existing Pending Verification Banner */}
       {isAlreadyPending && (
@@ -955,13 +993,30 @@ export function StudentPaywallView({
         </div>
       </div>
 
-      {/* New Student Registration Modal (Opens automatically before transfer/upload for new/demo students) */}
+      {/* New Student Registration Modal (Fullscreen sheet on mobile / medium modal on desktop) */}
       <NewStudentRegistrationModal
         isOpen={showRegisterModal}
         onClose={() => setShowRegisterModal(false)}
         initialSystems={initialSystems}
         initialSchoolCategory={
           activeUser?.schoolCategory === "LANGUAGES" ? "LANGUAGES" : "ARABIC"
+        }
+        existingStudent={
+          !needsStudentRegistration && activeUser
+            ? {
+                id: activeUser.id,
+                name: activeUser.name ?? null,
+                phone: activeUser.phone ?? null,
+                loginCode: activeUser.loginCode ?? null,
+                schoolCategory: activeUser.schoolCategory ?? null,
+                gradeId: activeUser.gradeId ?? null,
+                systemId: activeUser.systemId ?? null,
+                trackId: activeUser.trackId ?? null,
+                studyMode: activeUser.studyMode ?? null,
+                centerName: activeUser.centerName ?? null,
+                subscriptionStatus: activeUser.subscriptionStatus ?? "TRIAL",
+              }
+            : null
         }
         onRegistered={handleRegistrationSuccess}
       />
