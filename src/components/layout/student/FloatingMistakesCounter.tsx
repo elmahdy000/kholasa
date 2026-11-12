@@ -276,7 +276,7 @@ export function FloatingMistakesCounter({
     const pillEl = pillRef.current;
     if (!pillEl) return;
     const rect = pillEl.getBoundingClientRect();
-    dragSessionRef.current = {
+    const session = {
       pointerId: e.pointerId,
       startX: e.clientX,
       startY: e.clientY,
@@ -286,52 +286,61 @@ export function FloatingMistakesCounter({
       pillH: rect.height,
       moved: false,
     };
-  };
+    dragSessionRef.current = session;
 
-  const handlePillPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    const session = dragSessionRef.current;
-    if (!session || session.pointerId !== e.pointerId) return;
-    const dx = e.clientX - session.startX;
-    const dy = e.clientY - session.startY;
-    if (!session.moved && Math.hypot(dx, dy) < 6) {
-      return;
-    }
-    if (!session.moved) {
-      session.moved = true;
-      suppressNextClickRef.current = true;
-      setIsDragging(true);
-      setOpen(false);
-      try {
-        e.currentTarget.setPointerCapture(e.pointerId);
-      } catch {}
-    }
-    const nextPos = clampFloatingPosition(
-      { x: session.originX + dx, y: session.originY + dy },
-      session.pillW,
-      session.pillH
-    );
-    setLiveDragPos(nextPos);
-  };
-
-  const finishPillDrag = (e: React.PointerEvent<HTMLDivElement>) => {
-    const session = dragSessionRef.current;
-    if (!session || session.pointerId !== e.pointerId) return;
-    if (session.moved) {
-      const dx = e.clientX - session.startX;
-      const dy = e.clientY - session.startY;
-      const finalPos = clampFloatingPosition(
-        { x: session.originX + dx, y: session.originY + dy },
-        session.pillW,
-        session.pillH
+    const handleWindowPointerMove = (moveEvent: PointerEvent) => {
+      const current = dragSessionRef.current;
+      if (!current || current.pointerId !== moveEvent.pointerId) return;
+      const dx = moveEvent.clientX - current.startX;
+      const dy = moveEvent.clientY - current.startY;
+      if (!current.moved && Math.hypot(dx, dy) < 6) {
+        return;
+      }
+      if (!current.moved) {
+        current.moved = true;
+        suppressNextClickRef.current = true;
+        setIsDragging(true);
+        setOpen(false);
+      }
+      const nextPos = clampFloatingPosition(
+        { x: current.originX + dx, y: current.originY + dy },
+        current.pillW,
+        current.pillH
       );
-      setPositionPreference(finalPos);
-      setLiveDragPos(null);
-      setIsDragging(false);
-      setTimeout(() => {
-        suppressNextClickRef.current = false;
-      }, 60);
-    }
-    dragSessionRef.current = null;
+      setLiveDragPos(nextPos);
+    };
+
+    const cleanupDragListeners = () => {
+      window.removeEventListener("pointermove", handleWindowPointerMove);
+      window.removeEventListener("pointerup", handleWindowPointerEnd);
+      window.removeEventListener("pointercancel", handleWindowPointerEnd);
+    };
+
+    const handleWindowPointerEnd = (endEvent: PointerEvent) => {
+      const current = dragSessionRef.current;
+      if (!current || current.pointerId !== endEvent.pointerId) return;
+      cleanupDragListeners();
+      if (current.moved) {
+        const dx = endEvent.clientX - current.startX;
+        const dy = endEvent.clientY - current.startY;
+        const finalPos = clampFloatingPosition(
+          { x: current.originX + dx, y: current.originY + dy },
+          current.pillW,
+          current.pillH
+        );
+        setPositionPreference(finalPos);
+        setLiveDragPos(null);
+        setIsDragging(false);
+        setTimeout(() => {
+          suppressNextClickRef.current = false;
+        }, 60);
+      }
+      dragSessionRef.current = null;
+    };
+
+    window.addEventListener("pointermove", handleWindowPointerMove, { passive: true });
+    window.addEventListener("pointerup", handleWindowPointerEnd);
+    window.addEventListener("pointercancel", handleWindowPointerEnd);
   };
 
   // Close popover on outside tap or Escape key.
@@ -582,9 +591,7 @@ export function FloatingMistakesCounter({
       <motion.div
         ref={pillRef}
         onPointerDown={handlePillPointerDown}
-        onPointerMove={handlePillPointerMove}
-        onPointerUp={finishPillDrag}
-        onPointerCancel={finishPillDrag}
+        onDragStart={(e) => e.preventDefault()}
         initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 12 }}
         animate={
           shouldReduceMotion || isDragging
