@@ -58,6 +58,7 @@ export interface LandingUnitItem {
   title: string;
   description: string | null;
   order: number;
+  lessonsCount?: number;
   lessons: LandingLessonItem[];
 }
 
@@ -68,6 +69,7 @@ export interface LandingSubjectItem {
   description: string | null;
   color: string | null;
   schoolCategory: SchoolCategory;
+  isCommonCategory?: boolean;
   gradeId: string;
   gradeName: string;
   gradeCode: string;
@@ -76,6 +78,23 @@ export interface LandingSubjectItem {
   publishedLessonsCount: number;
   publishedQuestionsCount: number;
   units: LandingUnitItem[];
+}
+
+export interface LandingContinueItem {
+  lessonId: string;
+  lessonTitle: string;
+  unitTitle: string;
+  subjectId: string;
+  subjectName: string;
+  progressPercent: number;
+  isCompleted: boolean;
+  lastAccessedAt: string;
+}
+
+export interface LandingSampleQuestionBucket {
+  gradeId: string;
+  schoolCategory: SchoolCategory;
+  highlight: LandingHeroHighlight;
 }
 
 export interface LandingGradeItem {
@@ -110,6 +129,7 @@ export interface LandingAnswerCheckResult {
 export interface LandingCurriculumPayload {
   grades: LandingGradeItem[];
   subjects: LandingSubjectItem[];
+  sampleQuestionsByBucket: LandingSampleQuestionBucket[];
   heroQuestions: {
     arabic: LandingHeroHighlight | null;
     languages: LandingHeroHighlight | null;

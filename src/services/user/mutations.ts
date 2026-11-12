@@ -36,40 +36,35 @@ export class UserMutationsService {
       );
     }
 
-    const normalizedInputPhone = phone && phone.trim() ? phone.trim() : undefined;
-    const normalizedInputEmail =
-      email && typeof email === "string" && email.trim() ? email.trim().toLowerCase() : undefined;
-
-    if (role !== Role.STUDENT) {
-      if (!normalizedInputPhone && !normalizedInputEmail) {
-        throw new Error("يرجى إدخال البريد الإلكتروني أو رقم الهاتف لحساب الإدارة/المساعد");
-      }
-      if (!password || password.trim().length < 8) {
-        throw new Error("كلمة المرور للطاقم الإداري يجب أن لا تقل عن 8 أحرف");
-      }
-    }
-
     let cleanPhone: string | undefined = undefined;
-    if (normalizedInputPhone) {
-      cleanPhone = normalizedInputPhone;
+    if (phone && phone.trim()) {
+      cleanPhone = phone.trim();
       const existingPhone = await prisma.user.findUnique({ where: { phone: cleanPhone } });
       if (existingPhone) throw new Error("رقم الهاتف مسجل بالفعل لمستخدم آخر");
     }
 
     let cleanEmail: string | undefined = undefined;
-    if (normalizedInputEmail) {
-      cleanEmail = normalizedInputEmail;
+    if (email && typeof email === "string" && email.trim()) {
+      cleanEmail = email.trim().toLowerCase();
       const existingEmail = await prisma.user.findUnique({ where: { email: cleanEmail } });
       if (existingEmail) throw new Error("البريد الإلكتروني مسجل بالفعل لمستخدم آخر");
     }
 
-    let finalLoginCode: string | undefined =
-      role === Role.STUDENT ? data.loginCode?.trim().toUpperCase() : undefined;
-    if (role === Role.STUDENT && !finalLoginCode) {
+    let finalLoginCode = data.loginCode?.trim().toUpperCase();
+    if (!finalLoginCode && role === Role.STUDENT) {
       finalLoginCode = await generateUniqueLoginCode();
     } else if (finalLoginCode) {
       const existingCode = await prisma.user.findUnique({ where: { loginCode: finalLoginCode } });
       if (existingCode) throw new Error("كود الدخول هذا مسجل بالفعل لطالب آخر");
+    }
+
+    if (role !== Role.STUDENT) {
+      if (!cleanPhone && !cleanEmail) {
+        throw new Error("يرجى إدخال البريد الإلكتروني أو رقم الهاتف لحساب الإدارة/المساعد");
+      }
+      if (!password || password.trim().length < 8) {
+        throw new Error("كلمة المرور للطاقم الإداري يجب أن لا تقل عن 8 أحرف");
+      }
     }
 
     const rawPassword = password?.trim() || finalLoginCode || "Kholasa@2026";
@@ -213,8 +208,8 @@ export class UserMutationsService {
         ...(resultingRole !== Role.STUDENT
           ? { loginCode: null }
           : data.loginCode !== undefined
-          ? { loginCode: data.loginCode.trim().toUpperCase() || null }
-          : {}),
+            ? { loginCode: data.loginCode.trim().toUpperCase() || null }
+            : {}),
         ...(hashedPassword ? { password: hashedPassword } : {}),
         ...(data.role !== undefined ? { role: data.role } : {}),
         ...(data.systemId !== undefined ? { systemId: data.systemId || null } : {}),
@@ -303,10 +298,7 @@ export class UserMutationsService {
 
     const updated = await prisma.user.update({
       where: { id: targetUserId },
-      data: {
-        role: newRole,
-        ...(newRole !== Role.STUDENT ? { loginCode: null } : {}),
-      },
+      data: { role: newRole },
       select: { id: true, name: true, role: true },
     });
 

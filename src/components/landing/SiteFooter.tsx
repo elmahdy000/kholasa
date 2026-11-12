@@ -27,22 +27,22 @@ export function SiteFooter() {
             <h4 className="text-sm font-bold text-white">تجربة المنهج</h4>
             <nav className="flex flex-col gap-2">
               <a
-                href="#curriculum-explorer"
+                href="#subjects-section"
                 className="text-sm text-[#94A3B8] hover:text-white transition-colors"
               >
-                استكشف الدروس والأسئلة
+                المواد الدراسية
+              </a>
+              <a
+                href="#try-question"
+                className="text-sm text-[#94A3B8] hover:text-white transition-colors"
+              >
+                جرّب سؤال من المنهج
               </a>
               <a
                 href="#features"
                 className="text-sm text-[#94A3B8] hover:text-white transition-colors"
               >
-                إزاي بتتعلم بالمنصة؟
-              </a>
-              <a
-                href="#how-it-works"
-                className="text-sm text-[#94A3B8] hover:text-white transition-colors"
-              >
-                خطوات المذاكرة
+                مميزات الخلاصة
               </a>
               <Link
                 href="/exams/builder"
@@ -92,7 +92,7 @@ export function SiteFooter() {
                 href="/login"
                 className="text-sm text-[#94A3B8] hover:text-white transition-colors"
               >
-                دخول بكود الطالب أو التجربة
+                دخول بكود الطالب
               </Link>
               <Link
                 href="/register"

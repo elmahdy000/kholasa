@@ -29,10 +29,10 @@ export function FeaturesBento({ sampleProofs }: FeaturesBentoProps) {
         {/* Section Header */}
         <div className="max-w-2xl space-y-2">
           <h2 className="text-xl sm:text-2xl font-bold text-[#091B40] dark:text-white leading-snug">
-            ماذا تقدّم لك المنصة داخل كل درس؟
+            مميزات الخلاصة في كل درس
           </h2>
           <p className="text-sm sm:text-[15px] text-[#536681] dark:text-[#94A3B8] leading-relaxed font-normal">
-            أربع أدوات فعلية مبنية على دروسك ومفاهيمك وأسئلتك الحقيقية — مش وعود دعائية.
+            شرح مبسط للتعريفات، الخرائط الذهنية، الاختبارات، والتفسيرات — علشان تذاكر بذكاء وتثبّت المعلومة.
           </p>
         </div>
 
@@ -75,10 +75,10 @@ export function FeaturesBento({ sampleProofs }: FeaturesBentoProps) {
 
             <div className="pt-2 border-t border-[#E8E9ED] dark:border-[#22364F]">
               <a
-                href="#curriculum-explorer"
+                href="#try-question"
                 className="min-h-[44px] text-xs font-bold text-[#800B34] dark:text-[#FB7185] hover:underline inline-flex items-center gap-1"
               >
-                <span>جرّب حل سؤال حقيقي دلوقتي</span>
+                <span>جرّب سؤال وتفسير الإجابة</span>
                 <ArrowLeft className="w-3.5 h-3.5" />
               </a>
             </div>
@@ -136,13 +136,13 @@ export function FeaturesBento({ sampleProofs }: FeaturesBentoProps) {
             </div>
 
             <div className="pt-2 border-t border-[#E8E9ED] dark:border-[#22364F]">
-              <a
-                href="#curriculum-explorer"
+              <Link
+                href="/subjects"
                 className="min-h-[44px] text-xs font-bold text-[#800B34] dark:text-[#FB7185] hover:underline inline-flex items-center gap-1"
               >
-                <span>تصفّح مصطلحات الدروس</span>
+                <span>ادخل فهرس المواد والتعريفات</span>
                 <ArrowLeft className="w-3.5 h-3.5" />
-              </a>
+              </Link>
             </div>
           </div>
 
@@ -232,13 +232,13 @@ export function FeaturesBento({ sampleProofs }: FeaturesBentoProps) {
             </div>
 
             <div className="pt-2 border-t border-[#E8E9ED] dark:border-[#22364F]">
-              <a
-                href="#curriculum-explorer"
+              <Link
+                href="/subjects"
                 className="min-h-[44px] text-xs font-bold text-[#800B34] dark:text-[#FB7185] hover:underline inline-flex items-center gap-1"
               >
-                <span>عاين الخرائط الذهنية للدروس</span>
+                <span>شوف الخرائط الذهنية جوه المواد</span>
                 <ArrowLeft className="w-3.5 h-3.5" />
-              </a>
+              </Link>
             </div>
           </div>
         </div>

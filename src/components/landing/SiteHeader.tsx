@@ -2,23 +2,39 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Menu, X } from "lucide-react";
+import { ArrowLeft, LayoutDashboard, Menu, Shield, X } from "lucide-react";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { BrandLogo } from "@/components/ui/BrandLogo";
+import { isStaffRoleValue } from "@/lib/roles";
+import { isAnyDemoCode } from "@/lib/demo-shared";
 
-export function SiteHeader() {
+interface SiteHeaderProps {
+  user?: {
+    name: string;
+    role: string;
+    loginCode?: string | null;
+  } | null;
+}
+
+export function SiteHeader({ user }: SiteHeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  const isPermanentLoggedIn = Boolean(user && !isAnyDemoCode(user.loginCode));
+  const isStaff = isPermanentLoggedIn && isStaffRoleValue(user?.role);
+
   const navLinks = [
-    { label: "جرّب المنهج", href: "/#curriculum-explorer" },
-    { label: "إزاي بتتعلم؟", href: "/#features" },
-    { label: "المواد الدراسية", href: "/subjects" },
+    { label: "المواد الدراسية", href: "/#subjects-section" },
+    { label: "جرّب سؤال", href: "/#try-question" },
+    { label: "مميزات الخلاصة", href: "/#features" },
     { label: "بنك الأسئلة", href: "/exams/builder" },
   ];
 
+  const primaryHref = isPermanentLoggedIn ? (isStaff ? "/admin" : "/dashboard") : "/login";
+  const primaryLabel = isPermanentLoggedIn ? (isStaff ? "لوحة التحكم" : "لوحة الطالب") : "دخول الطالب";
+
   return (
     <header className="sticky top-0 z-50 w-full bg-white dark:bg-[#081426] border-b border-[#E8E9ED] dark:border-[#22364F] transition-colors">
-      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3">
         <BrandLogo
           href="/"
           variant="combined"
@@ -41,16 +57,23 @@ export function SiteHeader() {
           ))}
         </nav>
 
-        {/* Actions (Always visible on both Mobile & Desktop so students find login immediately) */}
-        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+        {/* Actions */}
+        <div className="flex items-center gap-2 shrink-0">
           <ThemeToggle />
 
           <Link
-            href="/login"
-            className="min-h-[42px] sm:min-h-[44px] px-3 sm:px-4 rounded-lg bg-[#800B34] hover:bg-[#680829] dark:bg-[#A30D36] dark:hover:bg-[#8E0B2F] text-white text-xs sm:text-sm font-bold inline-flex items-center gap-1.5 sm:gap-2 transition-colors whitespace-nowrap"
+            href={primaryHref}
+            className="min-h-[42px] sm:min-h-[44px] px-3 sm:px-4 rounded-lg bg-[#800B34] hover:bg-[#680829] dark:bg-[#A30D36] dark:hover:bg-[#8E0B2F] text-white text-xs sm:text-sm font-bold inline-flex items-center gap-1.5 transition-colors whitespace-nowrap"
           >
-            <span>دخول الطالب</span>
-            <ArrowLeft className="w-3.5 h-3.5" />
+            {isPermanentLoggedIn ? (
+              isStaff ? (
+                <Shield className="w-3.5 h-3.5 shrink-0" />
+              ) : (
+                <LayoutDashboard className="w-3.5 h-3.5 shrink-0" />
+              )
+            ) : null}
+            <span>{primaryLabel}</span>
+            {!isPermanentLoggedIn && <ArrowLeft className="w-3.5 h-3.5 shrink-0" />}
           </Link>
 
           {/* Mobile Navigation Trigger */}
@@ -83,22 +106,35 @@ export function SiteHeader() {
           </nav>
 
           <div className="pt-3 border-t border-[#E8E9ED] dark:border-[#22364F] grid grid-cols-1 gap-2">
-            <Link
-              href="/login"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="w-full min-h-[44px] rounded-lg bg-[#800B34] hover:bg-[#680829] text-white text-sm font-bold flex items-center justify-center gap-2"
-            >
-              <span>دخول بكود الطالب</span>
-              <ArrowLeft className="w-3.5 h-3.5" />
-            </Link>
-            <Link
-              href="/subscription"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="w-full min-h-[44px] rounded-lg bg-[#091B40] hover:bg-[#1D4ED8] text-white text-sm font-bold flex items-center justify-center gap-2"
-            >
-              <span>طالب جديد؟ سجل واشترك</span>
-              <ArrowLeft className="w-3.5 h-3.5" />
-            </Link>
+            {isPermanentLoggedIn ? (
+              <Link
+                href={primaryHref}
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="w-full min-h-[44px] rounded-lg bg-[#800B34] hover:bg-[#680829] text-white text-sm font-bold flex items-center justify-center gap-2"
+              >
+                <span>{primaryLabel}</span>
+                <ArrowLeft className="w-3.5 h-3.5" />
+              </Link>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="w-full min-h-[44px] rounded-lg bg-[#800B34] hover:bg-[#680829] text-white text-sm font-bold flex items-center justify-center gap-2"
+                >
+                  <span>دخول بكود الطالب</span>
+                  <ArrowLeft className="w-3.5 h-3.5" />
+                </Link>
+                <Link
+                  href="/subscription"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="w-full min-h-[44px] rounded-lg bg-[#091B40] hover:bg-[#1D4ED8] text-white text-sm font-bold flex items-center justify-center gap-2"
+                >
+                  <span>طالب جديد؟ سجل واشترك</span>
+                  <ArrowLeft className="w-3.5 h-3.5" />
+                </Link>
+              </>
+            )}
           </div>
         </div>
       )}

@@ -23,6 +23,12 @@ import {
   X,
 } from "lucide-react";
 
+import {
+  saveStudyPreferencesClient,
+  type GradeOptionRef,
+  type StudySchoolCategory,
+} from "@/lib/study-preferences";
+
 export interface SubjectItemData {
   id: string;
   name: string;
@@ -33,6 +39,8 @@ export interface SubjectItemData {
   isCommonCategory?: boolean;
   isUnderConstruction?: boolean;
   systemName?: string | null;
+  gradeId?: string | null;
+  gradeCode?: string | null;
   gradeName?: string | null;
   trackName?: string | null;
   unitsCount: number;
@@ -42,6 +50,10 @@ export interface SubjectItemData {
 interface SubjectsExplorerProps {
   subjects: SubjectItemData[];
   isStaff?: boolean;
+  grades?: GradeOptionRef[];
+  initialGradeId?: string | null;
+  initialCategory?: StudySchoolCategory | null;
+  lockToStudentScope?: boolean;
 }
 
 function getSubjectIcon(code: string, name: string) {
@@ -61,9 +73,36 @@ function getSubjectIcon(code: string, name: string) {
 
 const formatCount = (value: number) => new Intl.NumberFormat("en-US").format(value);
 
-export function SubjectsExplorer({ subjects, isStaff }: SubjectsExplorerProps) {
+export function SubjectsExplorer({
+  subjects,
+  isStaff,
+  grades = [],
+  initialGradeId = null,
+  initialCategory = null,
+  lockToStudentScope = false,
+}: SubjectsExplorerProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFilter, setSelectedFilter] = useState<string>("ALL");
+  const [selectedGradeId, setSelectedGradeId] = useState<string | null>(initialGradeId);
+  const [selectedCategory, setSelectedCategory] = useState<StudySchoolCategory | null>(
+    initialCategory
+  );
+
+  const syncSharedPrefs = (
+    nextGradeId: string | null,
+    nextCategory: StudySchoolCategory | null
+  ) => {
+    if (lockToStudentScope) return;
+    const matched = grades.find((g) => g.id === nextGradeId) || null;
+    saveStudyPreferencesClient(
+      {
+        gradeId: matched?.id ?? null,
+        gradeCode: matched?.code ?? null,
+        schoolCategory: nextCategory,
+      },
+      { syncUrl: true }
+    );
+  };
 
   // Extract unique track / grade filter categories
   const filterTabs = useMemo(() => {
@@ -96,9 +135,27 @@ export function SubjectsExplorer({ subjects, isStaff }: SubjectsExplorerProps) {
         s.trackName === selectedFilter ||
         s.gradeName === selectedFilter;
 
-      return matchesSearch && matchesFilter;
+      const matchesGrade =
+        lockToStudentScope ||
+        !selectedGradeId ||
+        s.gradeId === selectedGradeId;
+
+      const matchesCategory =
+        lockToStudentScope ||
+        !selectedCategory ||
+        s.isCommonCategory ||
+        s.schoolCategory === selectedCategory;
+
+      return matchesSearch && matchesFilter && matchesGrade && matchesCategory;
     });
-  }, [subjects, searchQuery, selectedFilter]);
+  }, [
+    subjects,
+    searchQuery,
+    selectedFilter,
+    lockToStudentScope,
+    selectedGradeId,
+    selectedCategory,
+  ]);
 
   if (subjects.length === 0) {
     return (
@@ -177,27 +234,95 @@ export function SubjectsExplorer({ subjects, isStaff }: SubjectsExplorerProps) {
           </div>
         </div>
 
-        {/* Filter Pills */}
-        {filterTabs.length > 2 && (
+        {/* Unified Grade & School Category Filter (for guests/staff; students are scoped on server) */}
+        {!lockToStudentScope && grades.length > 0 ? (
           <div className="flex flex-wrap items-center gap-2 pt-3 border-t border-[#E2E8F0] dark:border-[#334155]">
-            {filterTabs.map((tab) => {
-              const isSelected = selectedFilter === tab.id;
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedGradeId(null);
+                syncSharedPrefs(null, selectedCategory);
+              }}
+              className={`min-h-[40px] px-3.5 rounded-lg text-xs font-bold transition-colors shrink-0 cursor-pointer ${
+                !selectedGradeId
+                  ? "bg-[#091B40] text-white"
+                  : "bg-[#F7F9FC] dark:bg-[#1E293B] text-[#536681] dark:text-[#94A3B8] border border-[#E2E8F0] dark:border-[#334155] hover:text-[#091B40] dark:hover:text-white"
+              }`}
+            >
+              كل الصفوف
+            </button>
+            {grades.map((g) => {
+              const isSelected = selectedGradeId === g.id;
               return (
                 <button
-                  key={tab.id}
+                  key={g.id}
                   type="button"
-                  onClick={() => setSelectedFilter(tab.id)}
+                  onClick={() => {
+                    setSelectedGradeId(g.id);
+                    syncSharedPrefs(g.id, selectedCategory);
+                  }}
+                  className={`min-h-[40px] px-3.5 rounded-lg text-xs font-bold transition-colors shrink-0 cursor-pointer ${
+                    isSelected
+                      ? "bg-[#091B40] text-white"
+                      : "bg-[#F7F9FC] dark:bg-[#1E293B] text-[#536681] dark:text-[#94A3B8] border border-[#E2E8F0] dark:border-[#334155] hover:text-[#091B40] dark:hover:text-white"
+                  }`}
+                >
+                  {g.name}
+                </button>
+              );
+            })}
+
+            <span className="text-[#CBD5E1] dark:text-[#334155] px-1 hidden sm:inline">|</span>
+
+            {(
+              [
+                { id: null, label: "عربي ولغات" },
+                { id: "ARABIC" as const, label: "مدارس عربي" },
+                { id: "LANGUAGES" as const, label: "مدارس لغات" },
+              ]
+            ).map((cat) => {
+              const isSelected = selectedCategory === cat.id;
+              return (
+                <button
+                  key={cat.label}
+                  type="button"
+                  onClick={() => {
+                    setSelectedCategory(cat.id);
+                    syncSharedPrefs(selectedGradeId, cat.id);
+                  }}
                   className={`min-h-[40px] px-3.5 rounded-lg text-xs font-bold transition-colors shrink-0 cursor-pointer ${
                     isSelected
                       ? "bg-[#800B34] text-white"
                       : "bg-[#F7F9FC] dark:bg-[#1E293B] text-[#536681] dark:text-[#94A3B8] border border-[#E2E8F0] dark:border-[#334155] hover:text-[#091B40] dark:hover:text-white"
                   }`}
                 >
-                  {tab.label}
+                  {cat.label}
                 </button>
               );
             })}
           </div>
+        ) : (
+          filterTabs.length > 2 && (
+            <div className="flex flex-wrap items-center gap-2 pt-3 border-t border-[#E2E8F0] dark:border-[#334155]">
+              {filterTabs.map((tab) => {
+                const isSelected = selectedFilter === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => setSelectedFilter(tab.id)}
+                    className={`min-h-[40px] px-3.5 rounded-lg text-xs font-bold transition-colors shrink-0 cursor-pointer ${
+                      isSelected
+                        ? "bg-[#800B34] text-white"
+                        : "bg-[#F7F9FC] dark:bg-[#1E293B] text-[#536681] dark:text-[#94A3B8] border border-[#E2E8F0] dark:border-[#334155] hover:text-[#091B40] dark:hover:text-white"
+                    }`}
+                  >
+                    {tab.label}
+                  </button>
+                );
+              })}
+            </div>
+          )
         )}
       </div>
 
@@ -326,6 +451,11 @@ export function SubjectsExplorer({ subjects, isStaff }: SubjectsExplorerProps) {
             onClick={() => {
               setSearchQuery("");
               setSelectedFilter("ALL");
+              if (!lockToStudentScope) {
+                setSelectedGradeId(null);
+                setSelectedCategory(null);
+                syncSharedPrefs(null, null);
+              }
             }}
             className="min-h-[44px] px-5 rounded-lg bg-[#800B34] hover:bg-[#680829] text-white text-sm font-bold transition-colors cursor-pointer"
           >

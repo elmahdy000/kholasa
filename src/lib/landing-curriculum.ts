@@ -1,21 +1,26 @@
 import { prisma } from "@/lib/prisma";
+import { subjectScopeWhere, type CurriculumScope } from "@/lib/curriculum";
 import type {
+  LandingContinueItem,
   LandingCurriculumPayload,
   LandingDefinitionItem,
   LandingHeroHighlight,
   LandingLessonItem,
   LandingMindMapData,
+  LandingSampleQuestionBucket,
   LandingPreviewQuestionPublic,
   LandingSubjectItem,
   LandingUnitItem,
 } from "@/components/landing/types";
 
 export type {
+  LandingContinueItem,
   LandingCurriculumPayload,
   LandingDefinitionItem,
   LandingHeroHighlight,
   LandingLessonItem,
   LandingMindMapData,
+  LandingSampleQuestionBucket,
   LandingPreviewQuestionPublic,
   LandingSubjectItem,
   LandingUnitItem,
@@ -193,8 +198,9 @@ function toPublicQuestion(
 }
 
 /**
- * Loads strictly verified, published Baccalaureate curriculum data for the landing page.
- * Never exposes isCorrect or explanation answers ahead of submission.
+ * Loads strictly verified, published Baccalaureate curriculum metadata for the landing page.
+ * Does NOT load the full question bank or full lesson payloads: fetches at most ONE deterministic
+ * preview MCQ per (gradeId, schoolCategory) bucket and never exposes isCorrect/explanation before submit.
  */
 export async function getLandingCurriculumData(): Promise<LandingCurriculumPayload> {
   try {
@@ -220,6 +226,12 @@ export async function getLandingCurriculumData(): Promise<LandingCurriculumPaylo
               isPublished: true,
               isUnderConstruction: false,
               gradeId: { in: gradeIds },
+              units: {
+                some: {
+                  isPublished: true,
+                  lessons: { some: { isPublished: true } },
+                },
+              },
             },
             orderBy: [{ schoolCategory: "asc" }, { order: "asc" }],
             include: {
@@ -232,24 +244,11 @@ export async function getLandingCurriculumData(): Promise<LandingCurriculumPaylo
                   lessons: {
                     where: { isPublished: true },
                     orderBy: { order: "asc" },
-                    include: {
-                      summary: { select: { definitions: true } },
-                      mindMap: {
-                        select: {
-                          title: true,
-                          description: true,
-                          images: true,
-                          nodes: true,
-                          edges: true,
-                        },
-                      },
-                      _count: {
-                        select: {
-                          questions: {
-                            where: { question: { status: "PUBLISHED" } },
-                          },
-                        },
-                      },
+                    select: {
+                      id: true,
+                      title: true,
+                      order: true,
+                      durationMinutes: true,
                     },
                   },
                 },
@@ -264,122 +263,125 @@ export async function getLandingCurriculumData(): Promise<LandingCurriculumPaylo
           })
         : [];
 
-    const subjects: LandingSubjectItem[] = [];
-    let heroArabic: LandingHeroHighlight | null = null;
-    let heroLanguages: LandingHeroHighlight | null = null;
-    let proofQuestion: LandingCurriculumPayload["sampleProofs"]["questionExample"] = null;
-    let proofDefinition: LandingCurriculumPayload["sampleProofs"]["definitionExample"] = null;
-    let proofMindMap: LandingCurriculumPayload["sampleProofs"]["mindMapExample"] = null;
+    // Pick at most ONE sample lesson candidate per (gradeId, schoolCategory) bucket — never bulk-loads bank
+    const bucketCandidates = new Map<
+      string,
+      {
+        gradeId: string;
+        schoolCategory: "ARABIC" | "LANGUAGES";
+        subjectName: string;
+        unitTitle: string;
+        lessonId: string;
+        lessonTitle: string;
+      }
+    >();
 
-    const allLessonIds = rawSubjects.flatMap((s) =>
-      s.units.flatMap((u) => u.lessons.map((l) => l.id))
-    );
+    for (const s of rawSubjects) {
+      const bucketKey = `${s.grade.id}:${s.schoolCategory}`;
+      if (bucketCandidates.has(bucketKey)) continue;
+      for (const u of s.units) {
+        const firstLesson = u.lessons[0];
+        if (firstLesson) {
+          bucketCandidates.set(bucketKey, {
+            gradeId: s.grade.id,
+            schoolCategory: s.schoolCategory,
+            subjectName: s.name,
+            unitTitle: u.title,
+            lessonId: firstLesson.id,
+            lessonTitle: firstLesson.title,
+          });
+          break;
+        }
+      }
+    }
 
     const mcqEntries = await Promise.all(
-      allLessonIds.map(async (lessonId) => ({
-        lessonId,
-        mcq: await pickDeterministicPreviewMcq(lessonId),
+      Array.from(bucketCandidates.entries()).map(async ([bucketKey, candidate]) => ({
+        bucketKey,
+        candidate,
+        mcq: await pickDeterministicPreviewMcq(candidate.lessonId),
       }))
     );
 
-    const mcqMap = new Map(mcqEntries.map((e) => [e.lessonId, e.mcq]));
+    const mcqByLessonId = new Map<
+      string,
+      NonNullable<Awaited<ReturnType<typeof pickDeterministicPreviewMcq>>>
+    >();
+    const sampleQuestionsByBucket: LandingSampleQuestionBucket[] = [];
+    let heroArabic: LandingHeroHighlight | null = null;
+    let heroLanguages: LandingHeroHighlight | null = null;
+    let proofQuestion: LandingCurriculumPayload["sampleProofs"]["questionExample"] = null;
 
+    for (const { candidate, mcq } of mcqEntries) {
+      if (!mcq) continue;
+      mcqByLessonId.set(candidate.lessonId, mcq);
+      const publicMcq = toPublicQuestion(candidate.lessonId, mcq);
+      const highlight: LandingHeroHighlight = {
+        schoolCategory: candidate.schoolCategory,
+        subjectName: candidate.subjectName,
+        unitTitle: candidate.unitTitle,
+        lessonId: candidate.lessonId,
+        lessonTitle: candidate.lessonTitle,
+        question: publicMcq,
+      };
+      sampleQuestionsByBucket.push({
+        gradeId: candidate.gradeId,
+        schoolCategory: candidate.schoolCategory,
+        highlight,
+      });
+
+      if (candidate.schoolCategory === "ARABIC" && !heroArabic) {
+        heroArabic = highlight;
+      }
+      if (candidate.schoolCategory === "LANGUAGES" && !heroLanguages) {
+        heroLanguages = highlight;
+      }
+
+      if (mcq.explanation) {
+        const correctOpt = mcq.options.find((o) => o.isCorrect);
+        const hasNonGeneric =
+          mcq.explanation.concept &&
+          !GENERIC_CONCEPTS.has(mcq.explanation.concept.trim().toLowerCase());
+        if (correctOpt && (!proofQuestion || (candidate.schoolCategory === "ARABIC" && hasNonGeneric))) {
+          proofQuestion = {
+            subjectName: candidate.subjectName,
+            lessonTitle: candidate.lessonTitle,
+            statement: mcq.statement,
+            correctAnswerText: correctOpt.text,
+            concept: mcq.explanation.concept,
+            correctReason: mcq.explanation.correctReason,
+          };
+        }
+      }
+    }
+
+    const subjects: LandingSubjectItem[] = [];
     for (const s of rawSubjects) {
       let publishedLessonsCount = 0;
       const units: LandingUnitItem[] = [];
 
       for (const u of s.units) {
-        const lessons: LandingLessonItem[] = [];
-
-        for (const l of u.lessons) {
+        const lessons: LandingLessonItem[] = u.lessons.map((l) => {
           publishedLessonsCount++;
-          const rawMcq = mcqMap.get(l.id) ?? null;
-          const publicMcq = rawMcq ? toPublicQuestion(l.id, rawMcq) : null;
-          const defs = sanitizeDefinitions(l.summary?.definitions);
-          const mindMap = sanitizeMindMap(l.mindMap);
-
-          if (publicMcq) {
-            if (s.schoolCategory === "ARABIC" && !heroArabic) {
-              heroArabic = {
-                schoolCategory: "ARABIC",
-                subjectName: s.name,
-                unitTitle: u.title,
-                lessonId: l.id,
-                lessonTitle: l.title,
-                question: publicMcq,
-              };
-            }
-            if (s.schoolCategory === "LANGUAGES" && !heroLanguages) {
-              heroLanguages = {
-                schoolCategory: "LANGUAGES",
-                subjectName: s.name,
-                unitTitle: u.title,
-                lessonId: l.id,
-                lessonTitle: l.title,
-                question: publicMcq,
-              };
-            }
-
-            // Pick an example with non-generic concept when possible for Feature Proof #1
-            if (rawMcq && rawMcq.explanation && s.schoolCategory === "ARABIC") {
-              const hasNonGeneric =
-                rawMcq.explanation.concept &&
-                !GENERIC_CONCEPTS.has(rawMcq.explanation.concept.trim().toLowerCase());
-              if (!proofQuestion || (hasNonGeneric && !GENERIC_CONCEPTS.has(proofQuestion.concept?.trim().toLowerCase() ?? "") === false)) {
-                const correctOpt = rawMcq.options.find((o) => o.isCorrect);
-                if (correctOpt && (!proofQuestion || hasNonGeneric)) {
-                  proofQuestion = {
-                    subjectName: s.name,
-                    lessonTitle: l.title,
-                    statement: rawMcq.statement,
-                    correctAnswerText: correctOpt.text,
-                    concept: rawMcq.explanation.concept,
-                    correctReason: rawMcq.explanation.correctReason,
-                  };
-                }
-              }
-            }
-          }
-
-          if (!proofDefinition && defs.length > 0 && s.schoolCategory === "LANGUAGES") {
-            const firstWithTrans = defs.find((d) => Boolean(d.translation)) ?? defs[0];
-            proofDefinition = {
-              subjectName: s.name,
-              lessonTitle: l.title,
-              term: firstWithTrans.term,
-              meaning: firstWithTrans.meaning,
-              translation: firstWithTrans.translation ?? null,
-              isLanguages: true,
-            };
-          }
-
-          if (!proofMindMap && mindMap && mindMap.images.length > 0) {
-            proofMindMap = {
-              subjectName: s.name,
-              lessonTitle: l.title,
-              title: mindMap.title,
-              imageUrl: mindMap.images[0],
-              boardsCount: mindMap.images.length,
-            };
-          }
-
-          lessons.push({
+          const rawMcq = mcqByLessonId.get(l.id) ?? null;
+          return {
             id: l.id,
             title: l.title,
             order: l.order,
             durationMinutes: l.durationMinutes,
-            publishedQuestionsCount: l._count.questions,
-            definitions: defs,
-            mindMap,
-            previewMcq: publicMcq,
-          });
-        }
+            publishedQuestionsCount: 0,
+            definitions: [],
+            mindMap: null,
+            previewMcq: rawMcq ? toPublicQuestion(l.id, rawMcq) : null,
+          };
+        });
 
         units.push({
           id: u.id,
           title: u.title,
           description: u.description,
           order: u.order,
+          lessonsCount: u.lessons.length,
           lessons,
         });
       }
@@ -391,6 +393,7 @@ export async function getLandingCurriculumData(): Promise<LandingCurriculumPaylo
         description: s.description,
         color: s.color,
         schoolCategory: s.schoolCategory,
+        isCommonCategory: Boolean((s as { isCommonCategory?: boolean }).isCommonCategory),
         gradeId: s.grade.id,
         gradeName: s.grade.name,
         gradeCode: s.grade.code,
@@ -402,27 +405,124 @@ export async function getLandingCurriculumData(): Promise<LandingCurriculumPaylo
       });
     }
 
-    if (!proofDefinition) {
-      for (const s of subjects) {
-        const lWithDef = s.units.flatMap((u) => u.lessons).find((l) => l.definitions.length > 0);
-        if (lWithDef) {
-          const d = lWithDef.definitions[0];
+    // Fetch at most ONE definition & ONE mindMap sample safely for footer feature cards
+    let proofDefinition: LandingCurriculumPayload["sampleProofs"]["definitionExample"] = null;
+    let proofMindMap: LandingCurriculumPayload["sampleProofs"]["mindMapExample"] = null;
+
+    const lessonSummaryDelegate = (prisma as unknown as {
+      lessonSummary?: {
+        findFirst: (args: unknown) => Promise<{
+          definitions: unknown;
+          lesson: { title: string; unit: { subject: { name: string; schoolCategory: "ARABIC" | "LANGUAGES" } } };
+        } | null>;
+      };
+    }).lessonSummary;
+
+    if (lessonSummaryDelegate && gradeIds.length > 0) {
+      const sampleSummary = await lessonSummaryDelegate.findFirst({
+        where: {
+          lesson: {
+            isPublished: true,
+            unit: {
+              isPublished: true,
+              subject: {
+                isPublished: true,
+                isUnderConstruction: false,
+                gradeId: { in: gradeIds },
+              },
+            },
+          },
+        },
+        select: {
+          definitions: true,
+          lesson: {
+            select: {
+              title: true,
+              unit: {
+                select: {
+                  subject: { select: { name: true, schoolCategory: true } },
+                },
+              },
+            },
+          },
+        },
+      });
+
+      if (sampleSummary) {
+        const defs = sanitizeDefinitions(sampleSummary.definitions);
+        if (defs.length > 0) {
+          const picked = defs.find((d) => Boolean(d.translation)) ?? defs[0];
           proofDefinition = {
-            subjectName: s.name,
-            lessonTitle: lWithDef.title,
-            term: d.term,
-            meaning: d.meaning,
-            translation: d.translation ?? null,
-            isLanguages: s.schoolCategory === "LANGUAGES",
+            subjectName: sampleSummary.lesson.unit.subject.name,
+            lessonTitle: sampleSummary.lesson.title,
+            term: picked.term,
+            meaning: picked.meaning,
+            translation: picked.translation ?? null,
+            isLanguages: sampleSummary.lesson.unit.subject.schoolCategory === "LANGUAGES",
           };
-          break;
         }
+      }
+    }
+
+    const mindMapDelegate = (prisma as unknown as {
+      mindMap?: {
+        findFirst: (args: unknown) => Promise<{
+          title: string;
+          description: string | null;
+          images: string[];
+          nodes: unknown;
+          edges: unknown;
+          lesson: { title: string; unit: { subject: { name: string } } };
+        } | null>;
+      };
+    }).mindMap;
+
+    if (mindMapDelegate && gradeIds.length > 0) {
+      const sampleMap = await mindMapDelegate.findFirst({
+        where: {
+          lesson: {
+            isPublished: true,
+            unit: {
+              isPublished: true,
+              subject: {
+                isPublished: true,
+                isUnderConstruction: false,
+                gradeId: { in: gradeIds },
+              },
+            },
+          },
+        },
+        select: {
+          title: true,
+          description: true,
+          images: true,
+          nodes: true,
+          edges: true,
+          lesson: {
+            select: {
+              title: true,
+              unit: { select: { subject: { select: { name: true } } } },
+            },
+          },
+        },
+      });
+
+      const cleanMap = sampleMap ? sanitizeMindMap(sampleMap) : null;
+      if (sampleMap && cleanMap && cleanMap.images.length > 0) {
+        proofMindMap = {
+          subjectName: sampleMap.lesson.unit.subject.name,
+          lessonTitle: sampleMap.lesson.title,
+          title: cleanMap.title,
+          imageUrl: cleanMap.images[0],
+          boardsCount: cleanMap.images.length,
+        };
       }
     }
 
     return {
       grades: rawGrades,
       subjects,
+      sampleQuestionsByBucket,
       heroQuestions: {
         arabic: heroArabic,
         languages: heroLanguages,
@@ -438,6 +538,7 @@ export async function getLandingCurriculumData(): Promise<LandingCurriculumPaylo
     return {
       grades: [],
       subjects: [],
+      sampleQuestionsByBucket: [],
       heroQuestions: { arabic: null, languages: null },
       sampleProofs: {
         questionExample: null,
@@ -445,5 +546,67 @@ export async function getLandingCurriculumData(): Promise<LandingCurriculumPaylo
         mindMapExample: null,
       },
     };
+  }
+}
+
+/**
+ * Loads the signed-in student's latest real saved lesson progress for the optional
+ * "كمّل مذاكرتك" landing block. Returns [] when user has no saved progress.
+ */
+export async function getStudentContinueStudying(
+  userId: string,
+  scope: CurriculumScope | null
+): Promise<LandingContinueItem[]> {
+  try {
+    const progressRows = await prisma.studentProgress.findMany({
+      where: {
+        userId,
+        lesson: {
+          isPublished: true,
+          unit: {
+            isPublished: true,
+            subject: {
+              isPublished: true,
+              isUnderConstruction: false,
+              ...subjectScopeWhere(scope),
+            },
+          },
+        },
+      },
+      orderBy: { lastAccessedAt: "desc" },
+      take: 2,
+      select: {
+        progressPercent: true,
+        isCompleted: true,
+        lastAccessedAt: true,
+        lesson: {
+          select: {
+            id: true,
+            title: true,
+            unit: {
+              select: {
+                title: true,
+                subject: {
+                  select: { id: true, name: true },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    return progressRows.map((row) => ({
+      lessonId: row.lesson.id,
+      lessonTitle: row.lesson.title,
+      unitTitle: row.lesson.unit.title,
+      subjectId: row.lesson.unit.subject.id,
+      subjectName: row.lesson.unit.subject.name,
+      progressPercent: row.progressPercent,
+      isCompleted: row.isCompleted,
+      lastAccessedAt: row.lastAccessedAt.toISOString(),
+    }));
+  } catch {
+    return [];
   }
 }

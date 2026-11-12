@@ -1,8 +1,14 @@
 import Link from "next/link";
+import { cookies } from "next/headers";
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { isStaffRoleValue } from "@/lib/roles";
 import { getCurriculumScope, subjectScopeWhere, questionScopeWhere } from "@/lib/curriculum";
+import {
+  resolveInitialStudyPreferences,
+  STUDY_PREFS_COOKIE,
+} from "@/lib/study-preferences";
 import { StudentShell } from "@/components/layout/StudentShell";
 import { SubjectsExplorer, type SubjectItemData } from "@/components/subjects/SubjectsExplorer";
 import {
@@ -32,17 +38,29 @@ export const metadata: Metadata = {
 
 const formatCount = (value: number) => new Intl.NumberFormat("en-US").format(value);
 
-export default async function SubjectsPage() {
-  const user = await getCurrentUser();
-  const scope = getCurriculumScope(user);
+interface SubjectsPageProps {
+  searchParams?: Promise<{
+    grade?: string;
+    category?: string;
+  }>;
+}
 
-  const [subjects, totalQuestions] = await Promise.all([
+export default async function SubjectsPage({ searchParams }: SubjectsPageProps = {}) {
+  const [user, cookieStore, resolvedSearchParams] = await Promise.all([
+    getCurrentUser(),
+    cookies(),
+    searchParams ?? Promise.resolve({} as { grade?: string; category?: string }),
+  ]);
+  const scope = getCurriculumScope(user);
+  const lockToStudentScope = user?.role === "STUDENT";
+
+  const [subjects, totalQuestions, grades] = await Promise.all([
     prisma.subject.findMany({
       where: { isPublished: true, ...subjectScopeWhere(scope) },
       orderBy: { order: "asc" },
       include: {
         system: { select: { name: true } },
-        grade: { select: { name: true } },
+        grade: { select: { id: true, name: true, code: true } },
         track: { select: { name: true } },
         units: {
           where: { isPublished: true },
@@ -60,7 +78,26 @@ export default async function SubjectsPage() {
         where: { status: "PUBLISHED", ...questionScopeWhere(scope) },
       })
       .catch(() => 0),
+    lockToStudentScope
+      ? Promise.resolve([])
+      : prisma.grade.findMany({
+          where: {
+            system: { code: "baccalaureate", isActive: true },
+            code: { in: ["bacc_g10", "bacc_g11"] },
+          },
+          orderBy: { order: "asc" },
+          select: { id: true, name: true, code: true },
+        }),
   ]);
+
+  const initialPrefs = lockToStudentScope
+    ? { gradeId: null, gradeCode: null, schoolCategory: null }
+    : resolveInitialStudyPreferences({
+        grades,
+        queryGrade: resolvedSearchParams?.grade,
+        queryCategory: resolvedSearchParams?.category,
+        cookieRaw: cookieStore.get(STUDY_PREFS_COOKIE)?.value,
+      });
 
   const formattedSubjects: SubjectItemData[] = subjects.map((subj) => ({
     id: subj.id,
@@ -72,6 +109,8 @@ export default async function SubjectsPage() {
     isCommonCategory: subj.isCommonCategory,
     isUnderConstruction: subj.isUnderConstruction,
     systemName: subj.system?.name || null,
+    gradeId: subj.gradeId,
+    gradeCode: subj.grade?.code || null,
     gradeName: subj.grade?.name || null,
     trackName: subj.track?.name || null,
     unitsCount: subj.units.length,
@@ -221,12 +260,11 @@ export default async function SubjectsPage() {
         <section aria-label="قائمة المواد الدراسية">
           <SubjectsExplorer
             subjects={formattedSubjects}
-            isStaff={
-              user?.role === "ADMIN" ||
-              user?.role === "SUPER_ADMIN" ||
-              user?.role === "ASSISTANT" ||
-              user?.role === "TEACHER"
-            }
+            isStaff={isStaffRoleValue(user?.role)}
+            grades={grades}
+            initialGradeId={initialPrefs.gradeId}
+            initialCategory={initialPrefs.schoolCategory}
+            lockToStudentScope={lockToStudentScope}
           />
         </section>
       </div>

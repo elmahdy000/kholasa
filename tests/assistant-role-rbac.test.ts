@@ -291,6 +291,7 @@ describe("ASSISTANT role RBAC & Admin control", () => {
     });
 
     it("requires explicit email/phone and >=8 char password when creating an ASSISTANT", async () => {
+      mockPrisma.user.findUnique.mockResolvedValue(null);
       await expect(
         UserMutationsService.createUser(
           { name: "مساعد بدون تواصل", role: Role.ASSISTANT, password: "Password@123" },

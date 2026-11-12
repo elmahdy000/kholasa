@@ -19,44 +19,47 @@ const mockCookiesStore = vi.hoisted(() => ({
   delete: vi.fn(),
 }));
 
-const mockRedirect = vi.hoisted(() =>
-  vi.fn((url: string) => {
-    throw new Error(`NEXT_REDIRECT:${url}`);
+const mockGetLandingCurriculumData = vi.hoisted(() =>
+  vi.fn().mockResolvedValue({
+    grades: [
+      { id: "g10", name: "أولى بكالوريا", code: "bacc_g10", order: 1 },
+      { id: "g11", name: "تانية بكالوريا", code: "bacc_g11", order: 2 },
+    ],
+    subjects: [],
+    sampleQuestionsByBucket: [],
+    heroQuestions: { arabic: null, languages: null },
+    sampleProofs: { questionExample: null, definitionExample: null, mindMapExample: null },
   }),
 );
 
-const mockGetLandingCurriculumData = vi.hoisted(() =>
-  vi.fn().mockResolvedValue({
-    grades: [],
-    subjects: [],
-    heroQuestions: { arabic: null, languages: null },
-    sampleProofs: [],
-  }),
-);
+const mockGetStudentContinueStudying = vi.hoisted(() => vi.fn().mockResolvedValue([]));
 
 vi.mock("@/lib/prisma", () => ({ prisma: mockPrisma }));
 vi.mock("next/headers", () => ({
   cookies: vi.fn().mockImplementation(async () => mockCookiesStore),
 }));
-vi.mock("next/navigation", () => ({
-  redirect: mockRedirect,
-}));
 vi.mock("@/lib/landing-curriculum", () => ({
   getLandingCurriculumData: mockGetLandingCurriculumData,
+  getStudentContinueStudying: mockGetStudentContinueStudying,
 }));
 
 import { createSession, getCurrentUser } from "@/lib/auth";
+import {
+  resolveInitialStudyPreferences,
+  serializeStudyPreferences,
+} from "@/lib/study-preferences";
 import LandingPage from "@/app/page";
 
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 const ONE_DAY_SEC = 24 * 60 * 60;
 
-describe("Persistent sessions & automatic student entry from /", () => {
+describe("Persistent sessions & unified landing study preferences", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockPrisma.session.create.mockResolvedValue({ id: "sess-1" });
     mockPrisma.session.update.mockResolvedValue({ id: "sess-1" });
     mockPrisma.session.deleteMany.mockResolvedValue({ count: 0 });
+    mockGetStudentContinueStudying.mockResolvedValue([]);
   });
 
   it("issues a 365-day persistent cookie (with both expires and maxAge) for real users", async () => {
@@ -94,7 +97,7 @@ describe("Persistent sessions & automatic student entry from /", () => {
       name === "kholasa_session" ? { value: "raw-session-token" } : undefined,
     );
 
-    const remainingMs = 165 * ONE_DAY_MS; // 200 days elapsed out of 365
+    const remainingMs = 165 * ONE_DAY_MS;
     mockPrisma.session.findUnique.mockResolvedValue({
       id: "sess-keep",
       sessionToken: "hashed-token",
@@ -111,7 +114,7 @@ describe("Persistent sessions & automatic student entry from /", () => {
         schoolCategory: "ARABIC",
         studyMode: "ONLINE",
         centerName: null,
-        gradeId: "g1",
+        gradeId: "g10",
         isActive: true,
         maxDevices: 1,
         boundDevices: ["dev-abc"],
@@ -127,75 +130,64 @@ describe("Persistent sessions & automatic student entry from /", () => {
     expect(renewedOpts.maxAge).toBeGreaterThanOrEqual(364 * ONE_DAY_SEC);
   });
 
-  it("redirects logged-in real students directly from / to /dashboard", async () => {
-    mockCookiesStore.get.mockImplementation((name: string) =>
-      name === "kholasa_session" ? { value: "raw-session-token" } : undefined,
-    );
-    mockPrisma.session.findUnique.mockResolvedValue({
-      id: "sess-std",
-      sessionToken: "hashed",
-      userId: "student-1",
-      deviceId: null,
-      expires: new Date(Date.now() + 360 * ONE_DAY_MS),
-      user: {
-        id: "student-1",
-        name: "طالب",
-        email: null,
-        phone: null,
-        loginCode: "ABC123",
-        role: Role.STUDENT,
-        schoolCategory: "ARABIC",
-        studyMode: "ONLINE",
-        centerName: null,
-        gradeId: "g1",
-        isActive: true,
-        maxDevices: 1,
-        boundDevices: [],
-        mustChangePassword: false,
-      },
-    });
+  it("does NOT silently preselect grade or track for a brand-new guest visitor", () => {
+    const grades = [
+      { id: "g10", code: "bacc_g10", name: "أولى بكالوريا" },
+      { id: "g11", code: "bacc_g11", name: "تانية بكالوريا" },
+    ];
 
-    await expect(LandingPage()).rejects.toThrow("NEXT_REDIRECT:/dashboard");
-    expect(mockGetLandingCurriculumData).not.toHaveBeenCalled();
+    const guestPrefs = resolveInitialStudyPreferences({ grades });
+    expect(guestPrefs).toEqual({
+      gradeId: null,
+      gradeCode: null,
+      schoolCategory: null,
+    });
   });
 
-  it("redirects logged-in staff (ADMIN / ASSISTANT) from / to /admin", async () => {
-    mockCookiesStore.get.mockImplementation((name: string) =>
-      name === "kholasa_session" ? { value: "raw-session-token" } : undefined,
-    );
-    mockPrisma.session.findUnique.mockResolvedValue({
-      id: "sess-staff",
-      sessionToken: "hashed",
-      userId: "assistant-1",
-      deviceId: null,
-      expires: new Date(Date.now() + 360 * ONE_DAY_MS),
-      user: {
-        id: "assistant-1",
-        name: "مساعد",
-        email: "assistant@kholasa.online",
-        phone: null,
-        loginCode: null,
-        role: Role.ASSISTANT,
-        schoolCategory: "ARABIC",
-        studyMode: "ONLINE",
-        centerName: null,
-        gradeId: null,
-        isActive: true,
-        maxDevices: 5,
-        boundDevices: [],
-        mustChangePassword: false,
-      },
+  it("unifies preferences from URL query, cookie, or logged-in student profile", () => {
+    const grades = [
+      { id: "g10", code: "bacc_g10", name: "أولى بكالوريا" },
+      { id: "g11", code: "bacc_g11", name: "تانية بكالوريا" },
+    ];
+
+    const fromCookie = resolveInitialStudyPreferences({
+      grades,
+      cookieRaw: serializeStudyPreferences({
+        gradeId: "g10",
+        gradeCode: "bacc_g10",
+        schoolCategory: "LANGUAGES",
+      }),
+    });
+    expect(fromCookie).toEqual({
+      gradeId: "g10",
+      gradeCode: "bacc_g10",
+      schoolCategory: "LANGUAGES",
     });
 
-    await expect(LandingPage()).rejects.toThrow("NEXT_REDIRECT:/admin");
+    const fromQueryOverridesCookie = resolveInitialStudyPreferences({
+      grades,
+      queryGrade: "bacc_g11",
+      queryCategory: "ARABIC",
+      cookieRaw: serializeStudyPreferences({
+        gradeId: "g10",
+        gradeCode: "bacc_g10",
+        schoolCategory: "LANGUAGES",
+      }),
+    });
+    expect(fromQueryOverridesCookie).toEqual({
+      gradeId: "g11",
+      gradeCode: "bacc_g11",
+      schoolCategory: "ARABIC",
+    });
   });
 
-  it("renders landing page when unauthenticated or using a DEMO-* sandbox session", async () => {
+  it("loads continue-studying progress on / only for signed-in non-demo users", async () => {
+    // 1. Guest: never calls getStudentContinueStudying
     mockCookiesStore.get.mockReturnValue(undefined);
-    const guestEl = await LandingPage();
-    expect(guestEl).toBeTruthy();
-    expect(mockRedirect).not.toHaveBeenCalled();
+    await LandingPage();
+    expect(mockGetStudentContinueStudying).not.toHaveBeenCalled();
 
+    // 2. Demo student: never calls getStudentContinueStudying
     mockCookiesStore.get.mockImplementation((name: string) =>
       name === "kholasa_session" ? { value: "demo-token" } : undefined,
     );
@@ -215,16 +207,46 @@ describe("Persistent sessions & automatic student entry from /", () => {
         schoolCategory: "ARABIC",
         studyMode: "ONLINE",
         centerName: null,
-        gradeId: "g1",
+        gradeId: "g10",
         isActive: true,
         maxDevices: 5,
         boundDevices: [],
         mustChangePassword: false,
       },
     });
+    await LandingPage();
+    expect(mockGetStudentContinueStudying).not.toHaveBeenCalled();
 
-    const demoEl = await LandingPage();
-    expect(demoEl).toBeTruthy();
-    expect(mockRedirect).not.toHaveBeenCalled();
+    // 3. Real signed-in student: queries their saved progress
+    mockPrisma.session.findUnique.mockResolvedValue({
+      id: "sess-real",
+      sessionToken: "hashed",
+      userId: "student-real",
+      deviceId: null,
+      expires: new Date(Date.now() + 360 * ONE_DAY_MS),
+      user: {
+        id: "student-real",
+        name: "يوسف",
+        email: null,
+        phone: null,
+        loginCode: "STD991",
+        role: Role.STUDENT,
+        schoolCategory: "LANGUAGES",
+        studyMode: "ONLINE",
+        centerName: null,
+        gradeId: "g10",
+        isActive: true,
+        maxDevices: 1,
+        boundDevices: [],
+        mustChangePassword: false,
+      },
+    });
+    await LandingPage();
+    expect(mockGetStudentContinueStudying).toHaveBeenCalledWith("student-real", {
+      systemId: null,
+      gradeId: "g10",
+      schoolCategory: "LANGUAGES",
+      trackId: null,
+    });
   });
 });
