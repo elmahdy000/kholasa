@@ -39,6 +39,7 @@ export interface SubjectItemData {
   schoolCategory?: SchoolCategory;
   isCommonCategory?: boolean;
   isUnderConstruction?: boolean;
+  learningEngine?: string | null;
   systemName?: string | null;
   gradeId?: string | null;
   gradeCode?: string | null;
@@ -158,6 +159,26 @@ export function SubjectsExplorer({
     selectedCategory,
   ]);
 
+  const readySubjects = useMemo(
+    () => filteredSubjects.filter((s) => !s.isUnderConstruction),
+    [filteredSubjects]
+  );
+
+  const programmingReadySubjects = useMemo(
+    () => readySubjects.filter((s) => s.learningEngine !== "ARABIC_GUIDED"),
+    [readySubjects]
+  );
+
+  const arabicReadySubjects = useMemo(
+    () => readySubjects.filter((s) => s.learningEngine === "ARABIC_GUIDED"),
+    [readySubjects]
+  );
+
+  const upcomingSubjects = useMemo(
+    () => filteredSubjects.filter((s) => Boolean(s.isUnderConstruction)),
+    [filteredSubjects]
+  );
+
   if (subjects.length === 0) {
     return (
       <div className="p-8 sm:p-12 text-center rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] space-y-4">
@@ -197,10 +218,114 @@ export function SubjectsExplorer({
     );
   }
 
-  const gridColsClass =
-    filteredSubjects.length <= 2
-      ? "grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6"
-      : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6";
+  const renderSubjectCard = (subj: SubjectItemData) => {
+    const Icon = getSubjectIcon(subj.code, subj.name);
+    const isLanguages = subj.schoolCategory === "LANGUAGES";
+    const isArabicSubject = subj.learningEngine === "ARABIC_GUIDED";
+    const badgeLabel = isArabicSubject
+      ? "مادة اللغة العربية (مستقلة)"
+      : subj.isCommonCategory
+        ? "مادة عامة لكل المسارات"
+        : subj.trackName ||
+          subj.gradeName ||
+          (isLanguages ? "مدارس اللغات" : "المدارس العربية");
+    const isEnglishDesc = Boolean(
+      subj.description && /^[A-Za-z0-9]/.test(subj.description.trim())
+    );
+
+    return (
+      <Link
+        key={subj.id}
+        href={`/subjects/${subj.id}`}
+        className="group p-5 sm:p-6 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] hover:border-[#800B34]/60 transition-colors flex flex-col justify-between gap-5 min-w-0"
+      >
+        <div className="space-y-4">
+          <div className="flex items-center justify-between gap-2 flex-wrap">
+            <div
+              className="w-11 h-11 rounded-lg flex items-center justify-center text-white shrink-0"
+              style={{
+                backgroundColor:
+                  subj.color || (isLanguages ? "#800B34" : "#091B40"),
+              }}
+            >
+              <Icon className="w-5 h-5" strokeWidth={1.8} />
+            </div>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              {subj.isUnderConstruction && (
+                <span className="inline-flex items-center gap-1 text-xs font-bold text-amber-800 dark:text-amber-200 bg-amber-50 dark:bg-amber-950/50 px-2.5 py-1 rounded-lg border border-amber-300 dark:border-amber-700">
+                  <Wrench className="w-3.5 h-3.5" />
+                  <span>قريباً / تحت الإنشاء</span>
+                </span>
+              )}
+              <span className="text-xs font-bold text-[#536681] dark:text-[#94A3B8] bg-[#F7F9FC] dark:bg-[#1E293B] px-3 py-1 rounded-lg border border-[#E2E8F0] dark:border-[#334155]">
+                {badgeLabel}
+              </span>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <h3 className="text-lg sm:text-xl font-bold text-[#091B40] dark:text-white group-hover:text-[#800B34] dark:group-hover:text-[#FB7185] transition-colors leading-snug break-words">
+              <bdi>{subj.name}</bdi>
+            </h3>
+            <p
+              dir={isEnglishDesc ? "ltr" : "rtl"}
+              className={`text-sm text-[#536681] dark:text-[#94A3B8] leading-relaxed font-normal break-words ${
+                isEnglishDesc ? "text-left" : "text-right"
+              }`}
+            >
+              {subj.description ||
+                "شرح منظم لوحدات المنهج، تعريفات الدرس الأساسية، وتدريبات بتفسير معتمد."}
+            </p>
+          </div>
+
+          {subj.isUnderConstruction ? (
+            <div className="p-3 rounded-lg bg-[#F7F9FC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-xs font-bold text-[#536681] dark:text-[#94A3B8]">
+              مادة مستقلة — جاري تجهيز دروسها ووحداتها لتُفتح قريباً.
+            </div>
+          ) : (
+            <div className="flex flex-wrap items-center gap-2 pt-1 text-xs font-medium text-[#536681] dark:text-[#94A3B8]">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#F7F9FC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155]">
+                <Layers className="w-3.5 h-3.5 text-[#800B34] dark:text-[#FB7185]" />
+                <strong className="font-sans tabular-nums font-bold text-[#091B40] dark:text-white">
+                  {formatCount(subj.unitsCount)}
+                </strong>
+                <span>وحدات</span>
+              </span>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#F7F9FC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155]">
+                <BookmarkCheck className="w-3.5 h-3.5 text-[#091B40] dark:text-white" />
+                <strong className="font-sans tabular-nums font-bold text-[#091B40] dark:text-white">
+                  {formatCount(subj.lessonsCount)}
+                </strong>
+                <span>درساً</span>
+              </span>
+            </div>
+          )}
+        </div>
+
+        <div className="pt-4 border-t border-[#E2E8F0] dark:border-[#334155] flex items-center justify-between text-xs sm:text-sm font-bold text-[#800B34] dark:text-[#FB7185]">
+          <span>
+            {subj.isUnderConstruction
+              ? "مغلقة حالياً للتجهيز"
+              : "تصفح الوحدات والدروس"}
+          </span>
+          <div className="w-9 h-9 rounded-lg bg-[#800B34]/10 dark:bg-[#800B34]/20 flex items-center justify-center group-hover:bg-[#800B34] group-hover:text-white transition-colors">
+            {subj.isUnderConstruction ? (
+              <Lock className="w-4 h-4" />
+            ) : (
+              <ArrowLeft className="w-4 h-4" />
+            )}
+          </div>
+        </div>
+      </Link>
+    );
+  };
+
+  const getGridClass = (count: number) =>
+    count <= 1
+      ? "grid grid-cols-1 max-w-xl gap-4 sm:gap-6"
+      : count === 2
+        ? "grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6"
+        : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6";
 
   return (
     <div className="space-y-6">
@@ -231,7 +356,9 @@ export function SubjectsExplorer({
 
           {/* Result Counter Pill */}
           <div className="shrink-0 min-h-[44px] flex items-center justify-center text-xs font-bold font-sans tabular-nums text-[#536681] dark:text-[#94A3B8] bg-[#F7F9FC] dark:bg-[#1E293B] px-4 rounded-lg border border-[#E2E8F0] dark:border-[#334155]">
-            عرض {formatCount(filteredSubjects.length)} من {formatCount(subjects.length)} مادة
+            {readySubjects.length > 0
+              ? `${formatCount(readySubjects.length)} مادة متاحة للدراسة`
+              : `عرض ${formatCount(filteredSubjects.length)} من ${formatCount(subjects.length)} مادة`}
           </div>
         </div>
 
@@ -327,111 +454,68 @@ export function SubjectsExplorer({
         )}
       </div>
 
-      {/* Subjects Grid */}
+      {/* Separated Subject Sections: Programming / Core vs Arabic Language / Under Construction */}
       {filteredSubjects.length > 0 ? (
-        <div className={gridColsClass}>
-          {filteredSubjects.map((subj) => {
-            const Icon = getSubjectIcon(subj.code, subj.name);
-            const isLanguages = subj.schoolCategory === "LANGUAGES";
-            const badgeLabel = subj.isCommonCategory
-              ? "مادة عامة لكل المسارات"
-              : subj.trackName ||
-                subj.gradeName ||
-                (isLanguages ? "مدارس اللغات" : "المدارس العربية");
-            const isEnglishDesc = Boolean(
-              subj.description && /^[A-Za-z0-9]/.test(subj.description.trim())
-            );
+        <div className="space-y-8">
+          {programmingReadySubjects.length > 0 && (
+            <section className="space-y-3" aria-label="منهج البرمجة والذكاء الاصطناعي">
+              <div className="flex items-center justify-between gap-2">
+                <h2 className="text-base sm:text-lg font-extrabold text-[#091B40] dark:text-white">
+                  منهج البرمجة والذكاء الاصطناعي
+                </h2>
+                <span className="text-xs font-bold text-[#536681] dark:text-[#94A3B8]">
+                  متاح الآن للدراسة
+                </span>
+              </div>
+              <div className={getGridClass(programmingReadySubjects.length)}>
+                {programmingReadySubjects.map(renderSubjectCard)}
+              </div>
+            </section>
+          )}
 
-            return (
-              <Link
-                key={subj.id}
-                href={`/subjects/${subj.id}`}
-                className="group p-5 sm:p-6 rounded-xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] hover:border-[#800B34]/60 transition-colors flex flex-col justify-between gap-5 min-w-0"
-              >
-                <div className="space-y-4">
-                  {/* Top Bar of Card */}
-                  <div className="flex items-center justify-between gap-2 flex-wrap">
-                    <div
-                      className="w-11 h-11 rounded-lg flex items-center justify-center text-white shrink-0"
-                      style={{
-                        backgroundColor:
-                          subj.color || (isLanguages ? "#800B34" : "#091B40"),
-                      }}
-                    >
-                      <Icon className="w-5 h-5" strokeWidth={1.8} />
-                    </div>
-                    <div className="flex items-center gap-1.5 flex-wrap">
-                      {subj.isUnderConstruction && (
-                        <span className="inline-flex items-center gap-1 text-xs font-bold text-amber-800 dark:text-amber-200 bg-amber-50 dark:bg-amber-950/50 px-2.5 py-1 rounded-lg border border-amber-300 dark:border-amber-700">
-                          <Wrench className="w-3.5 h-3.5" />
-                          <span>تحت الإنشاء</span>
-                        </span>
-                      )}
-                      <span className="text-xs font-bold text-[#536681] dark:text-[#94A3B8] bg-[#F7F9FC] dark:bg-[#1E293B] px-3 py-1 rounded-lg border border-[#E2E8F0] dark:border-[#334155]">
-                        {badgeLabel}
-                      </span>
-                    </div>
-                  </div>
+          {arabicReadySubjects.length > 0 && (
+            <section
+              className="space-y-3 pt-4 border-t border-[#E2E8F0] dark:border-[#334155]"
+              aria-label="مادة اللغة العربية"
+            >
+              <div className="flex items-center justify-between gap-2">
+                <h2 className="text-base sm:text-lg font-extrabold text-[#091B40] dark:text-white">
+                  اللغة العربية — منهج مستقل
+                </h2>
+                <span className="text-xs font-bold text-[#536681] dark:text-[#94A3B8]">
+                  متاح الآن للدراسة
+                </span>
+              </div>
+              <div className={getGridClass(arabicReadySubjects.length)}>
+                {arabicReadySubjects.map(renderSubjectCard)}
+              </div>
+            </section>
+          )}
 
-                  {/* Title & Description */}
-                  <div className="space-y-2">
-                    <h3 className="text-lg sm:text-xl font-bold text-[#091B40] dark:text-white group-hover:text-[#800B34] dark:group-hover:text-[#FB7185] transition-colors leading-snug break-words">
-                      <bdi>{subj.name}</bdi>
-                    </h3>
-                    <p
-                      dir={isEnglishDesc ? "ltr" : "rtl"}
-                      className={`text-sm text-[#536681] dark:text-[#94A3B8] leading-relaxed font-normal break-words ${
-                        isEnglishDesc ? "text-left" : "text-right"
-                      }`}
-                    >
-                      {subj.description ||
-                        "شرح منظم لوحدات المنهج، تعريفات الدرس الأساسية، وتدريبات بتفسير معتمد."}
-                    </p>
-                  </div>
-
-                  {/* Metadata Chips */}
-                  {subj.isUnderConstruction ? (
-                    <div className="p-3 rounded-lg bg-[#F7F9FC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-xs font-bold text-[#536681] dark:text-[#94A3B8]">
-                      جاري العمل على تجهيز الوحدات والدروس لتكون متاحة قريباً.
-                    </div>
-                  ) : (
-                    <div className="flex flex-wrap items-center gap-2 pt-1 text-xs font-medium text-[#536681] dark:text-[#94A3B8]">
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#F7F9FC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155]">
-                        <Layers className="w-3.5 h-3.5 text-[#800B34] dark:text-[#FB7185]" />
-                        <strong className="font-sans tabular-nums font-bold text-[#091B40] dark:text-white">
-                          {formatCount(subj.unitsCount)}
-                        </strong>
-                        <span>وحدات</span>
-                      </span>
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#F7F9FC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155]">
-                        <BookmarkCheck className="w-3.5 h-3.5 text-[#091B40] dark:text-white" />
-                        <strong className="font-sans tabular-nums font-bold text-[#091B40] dark:text-white">
-                          {formatCount(subj.lessonsCount)}
-                        </strong>
-                        <span>درساً</span>
-                      </span>
-                    </div>
-                  )}
+          {upcomingSubjects.length > 0 && (
+            <section
+              className="space-y-3 pt-4 border-t border-[#E2E8F0] dark:border-[#334155]"
+              aria-label="مواد عامة قيد التجهيز"
+            >
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div>
+                  <h2 className="text-base font-extrabold text-[#091B40] dark:text-white">
+                    مواد إضافية قيد التجهيز
+                  </h2>
+                  <p className="text-xs text-[#64748B] dark:text-[#94A3B8]">
+                    مقررات مستقلة عن منهج البرمجة — جاري إعداد دروسها وتدريباتها لتُفتح قريباً.
+                  </p>
                 </div>
-
-                {/* Card Action Footer */}
-                <div className="pt-4 border-t border-[#E2E8F0] dark:border-[#334155] flex items-center justify-between text-xs sm:text-sm font-bold text-[#800B34] dark:text-[#FB7185]">
-                  <span>
-                    {subj.isUnderConstruction
-                      ? "تحت الإنشاء — مغلقة حالياً"
-                      : "تصفح الوحدات والدروس"}
-                  </span>
-                  <div className="w-9 h-9 rounded-lg bg-[#800B34]/10 dark:bg-[#800B34]/20 flex items-center justify-center group-hover:bg-[#800B34] group-hover:text-white transition-colors">
-                    {subj.isUnderConstruction ? (
-                      <Lock className="w-4 h-4" />
-                    ) : (
-                      <ArrowLeft className="w-4 h-4" />
-                    )}
-                  </div>
-                </div>
-              </Link>
-            );
-          })}
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-50 dark:bg-amber-950/50 border border-amber-300 dark:border-amber-700 text-xs font-bold text-amber-800 dark:text-amber-200">
+                  <Wrench className="w-3.5 h-3.5" />
+                  <span>قيد الإنشاء</span>
+                </span>
+              </div>
+              <div className={getGridClass(upcomingSubjects.length)}>
+                {upcomingSubjects.map(renderSubjectCard)}
+              </div>
+            </section>
+          )}
         </div>
       ) : (
         /* Empty Search State */

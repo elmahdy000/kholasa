@@ -4,15 +4,12 @@ import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { isAdminOrAssistant } from "@/lib/roles";
-import { getCurriculumScope, isSubjectInScope } from "@/lib/curriculum";
+import { getCurriculumScope, isSubjectInScope, questionScopeWhere } from "@/lib/curriculum";
+import { hasActiveSubscription, isTrialLesson } from "@/lib/lesson-access";
 import { StudentShell } from "@/components/layout/StudentShell";
 import { SubjectUnitsList } from "@/components/subjects/SubjectUnitsList";
 import { SubjectUnderConstructionView } from "@/components/subjects/SubjectUnderConstructionView";
-import {
-  Layers,
-  Target,
-  Wrench,
-} from "lucide-react";
+import { Lock, Target } from "lucide-react";
 
 interface SubjectDetailPageProps {
   params: Promise<{ id: string }>;
@@ -60,12 +57,21 @@ export default async function SubjectDetailPage({ params }: SubjectDetailPagePro
   }
 
   const isStaff = isAdminOrAssistant(user.role);
-  const isSubscriptionActive = isStaff || user.subscriptionStatus === "ACTIVE";
+  const isSubscriptionActive = hasActiveSubscription(user);
+  const scope = getCurriculumScope(user);
 
-  const [subject, userProgress, masteredAttempts] = await Promise.all([
+  const [
+    subject,
+    userProgress,
+    masteredAttempts,
+    officialSubjectExam,
+    publishedQuestionsCount,
+  ] = await Promise.all([
     prisma.subject.findUnique({
       where: { id, isPublished: true },
       include: {
+        grade: { select: { name: true, code: true } },
+        track: { select: { name: true } },
         units: {
           where: { isPublished: true },
           orderBy: { order: "asc" },
@@ -73,7 +79,12 @@ export default async function SubjectDetailPage({ params }: SubjectDetailPagePro
             lessons: {
               where: { isPublished: true },
               orderBy: { order: "asc" },
-              include: {
+              select: {
+                id: true,
+                title: true,
+                order: true,
+                durationMinutes: true,
+                isTrial: true,
                 summary: { select: { id: true } },
                 questions: {
                   select: { questionId: true },
@@ -84,32 +95,50 @@ export default async function SubjectDetailPage({ params }: SubjectDetailPagePro
         },
       },
     }),
-    user?.id
-      ? prisma.studentProgress.findMany({
-          where: {
-            userId: user.id,
-            isCompleted: true,
-          },
-          select: { lessonId: true },
-        })
-      : [],
-    user?.id
-      ? prisma.questionAttempt.findMany({
-          where: {
-            userId: user.id,
-            isCorrect: true,
-          },
-          select: { questionId: true },
-        })
-      : [],
+    prisma.studentProgress.findMany({
+      where: {
+        userId: user.id,
+        lesson: { unit: { subjectId: id } },
+      },
+      select: {
+        lessonId: true,
+        isCompleted: true,
+        progressPercent: true,
+      },
+    }),
+    prisma.questionAttempt.findMany({
+      where: {
+        userId: user.id,
+        isCorrect: true,
+        question: { subjectId: id },
+      },
+      select: { questionId: true },
+    }),
+    prisma.exam.findFirst({
+      where: {
+        subjectId: id,
+        isCustom: false,
+        isPublished: true,
+        ...(scope?.schoolCategory ? { schoolCategory: scope.schoolCategory } : {}),
+      },
+      orderBy: { createdAt: "desc" },
+      select: { id: true },
+    }),
+    prisma.question.count({
+      where: {
+        subjectId: id,
+        status: "PUBLISHED",
+        ...questionScopeWhere(scope),
+      },
+    }),
   ]);
 
   if (!subject) {
     notFound();
   }
 
-  // Students may only open subjects from their own curriculum.
-  if (!isSubjectInScope(getCurriculumScope(user), subject)) {
+  // Students may only open subjects belonging to their exact grade, school category & track.
+  if (!isSubjectInScope(scope, subject)) {
     notFound();
   }
 
@@ -124,111 +153,190 @@ export default async function SubjectDetailPage({ params }: SubjectDetailPagePro
     );
   }
 
-  const completedLessonIds = new Set(userProgress.map((p) => p.lessonId));
+  const lessonProgressById: Record<string, { isCompleted: boolean; progressPercent: number }> = {};
+  const completedLessonIds: string[] = [];
+
+  for (const row of userProgress) {
+    lessonProgressById[row.lessonId] = {
+      isCompleted: row.isCompleted,
+      progressPercent: row.progressPercent,
+    };
+    if (row.isCompleted) {
+      completedLessonIds.push(row.lessonId);
+    }
+  }
+
+  const completedSet = new Set(completedLessonIds);
   const masteredSet = new Set(masteredAttempts.map((a) => a.questionId));
 
-  const totalLessons = subject.units.reduce(
-    (sum, u) => sum + u.lessons.length,
-    0
-  );
-
+  const totalLessons = subject.units.reduce((sum, u) => sum + u.lessons.length, 0);
   const completedCount = subject.units.reduce(
-    (sum, u) => sum + u.lessons.filter((l) => completedLessonIds.has(l.id)).length,
+    (sum, u) => sum + u.lessons.filter((l) => completedSet.has(l.id)).length,
+    0
+  );
+  const subjectProgress =
+    totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
+
+  const trialLessonsCount = subject.units.reduce(
+    (sum, u) =>
+      sum +
+      u.lessons.filter((l) =>
+        isTrialLesson({
+          isTrial: l.isTrial,
+          order: l.order,
+          unit: { order: u.order },
+        })
+      ).length,
     0
   );
 
-  const subjectProgress = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
+  // Only show comprehensive exam button if an official exam exists OR the subject has enough published questions for its exam builder.
+  const comprehensiveExamHref = officialSubjectExam
+    ? `/exams/${officialSubjectExam.id}`
+    : !subject.isUnderConstruction && publishedQuestionsCount >= 30
+      ? `/exams/builder?subjectId=${subject.id}`
+      : null;
+
+  const categoryBadge = subject.isCommonCategory
+    ? "مادة عامة لكل المسارات"
+    : subject.schoolCategory === "LANGUAGES"
+      ? "مدارس لغات"
+      : "مدارس عربي";
 
   return (
     <StudentShell user={user}>
-      <div className="space-y-7 text-right pb-16">
-        {/* Breadcrumbs Navigation */}
-        <div className="flex items-center gap-2 text-[13px] font-medium text-[#536681] dark:text-[#94A3B8]">
-          <Link href="/dashboard" className="hover:text-[#800B34] dark:hover:text-[#E9AD32]">
+      <div className="space-y-4 sm:space-y-5 text-right pb-8" dir="rtl">
+        {/* Compact Breadcrumbs Navigation */}
+        <nav
+          aria-label="مسار التصفح"
+          className="flex items-center flex-wrap gap-1.5 text-xs font-semibold text-[#64748B] dark:text-[#94A3B8]"
+        >
+          <Link href="/dashboard" className="hover:text-[#830D3C] dark:hover:text-[#FDA4AF] transition-colors">
             الرئيسية
           </Link>
-          <span>/</span>
-          <Link href="/subjects" className="hover:text-[#800B34] dark:hover:text-[#E9AD32]">
+          <span aria-hidden="true">/</span>
+          <Link href="/subjects" className="hover:text-[#830D3C] dark:hover:text-[#FDA4AF] transition-colors">
             المواد
           </Link>
-          <span>/</span>
-          <span className="text-[#091B40] dark:text-white font-bold">{subject.name}</span>
-        </div>
+          <span aria-hidden="true">/</span>
+          <span className="text-[#0B1D42] dark:text-white font-bold">{subject.name}</span>
+        </nav>
 
-        {/* Subject Header Banner */}
-        <section className="relative overflow-hidden rounded-3xl p-6 sm:p-8 bg-white dark:bg-[#0D214D] border border-[#E2E8F0] dark:border-[#1E3A6E] shadow-[0_8px_28px_rgba(9,27,64,0.07)]">
-          <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div className="space-y-3">
+        {/* Compact Subject Summary Header */}
+        <section
+          aria-label="ملخص المادة"
+          className="rounded-2xl bg-white dark:bg-[#0D214D] border border-[#DFE6F0] dark:border-[#1E3A6E] shadow-[0_2px_12px_rgba(11,29,66,0.05)] p-4 sm:p-5"
+        >
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="space-y-2.5 min-w-0 flex-1">
               <div className="flex items-center gap-2 flex-wrap">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#F7F9FC] dark:bg-[#071737] border border-[#E2E8F0] dark:border-[#1E3A6E] text-[13px] font-bold text-[#091B40] dark:text-[#F7F9FC]">
-                  <Layers className="w-3.5 h-3.5 text-[#800B34]" />
-                  <span>
-                    {subject.isCommonCategory
-                      ? "مادة عامة لكل المسارات • "
-                      : ""}
-                    {subject.units.length} وحدات • {totalLessons} درس
+                {subject.grade?.name && (
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-[#F5F7FB] dark:bg-[#071737] border border-[#DFE6F0] dark:border-[#1E3A6E] text-[11px] font-bold text-[#0B1D42] dark:text-[#CBD5E1]">
+                    {subject.grade.name}
                   </span>
-                </div>
-                {subject.isUnderConstruction && (
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 dark:bg-amber-950/50 border border-amber-300 dark:border-amber-700 text-xs font-bold text-amber-800 dark:text-amber-200">
-                    <Wrench className="w-3.5 h-3.5" />
-                    <span>تحت الإنشاء — جاري بناء الدروس تباعاً</span>
-                  </div>
                 )}
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-[#FDF2F4] dark:bg-[#830D3C]/25 border border-[#F5D0DA]/70 dark:border-[#830D3C]/40 text-[11px] font-bold text-[#830D3C] dark:text-[#FDA4AF]">
+                  {categoryBadge}
+                </span>
               </div>
-              <h1 className="text-2xl sm:text-4xl font-bold text-[#091B40] dark:text-white tracking-tight">
+
+              <h1 className="text-xl sm:text-2xl font-extrabold text-[#0B1D42] dark:text-white leading-snug break-words">
                 {subject.name}
               </h1>
-              {subject.description && (
-                <p className="text-[13px] sm:text-sm text-[#536681] dark:text-[#94A3B8] font-medium max-w-2xl leading-relaxed">
-                  {subject.description}
-                </p>
-              )}
 
-              {/* Progress Summary */}
-              <div className="pt-2 flex items-center gap-3">
-                <div className="w-36 h-2 rounded-full bg-[#E2E8F0] dark:bg-[#1E3A6E] overflow-hidden">
-                  <div
-                    className="h-full rounded-full bg-[#800B34] dark:bg-[#E9AD32] transition-all duration-500"
-                    style={{ width: `${subjectProgress}%` }}
-                  />
-                </div>
-                <span className="text-[13px] font-mono font-bold text-[#536681] dark:text-[#94A3B8]">
-                  {completedCount} من {totalLessons} مكتمل ({subjectProgress}%)
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs sm:text-[13px] font-bold text-[#64748B] dark:text-[#94A3B8]">
+                <span className="text-[#0B1D42] dark:text-[#E2E8F0] font-sans tabular-nums">
+                  {subject.units.length} وحدات | {totalLessons} درس
                 </span>
+                <span aria-hidden="true" className="text-[#CBD5E1] dark:text-[#334155]">
+                  •
+                </span>
+                <span className="font-sans tabular-nums">
+                  {completedCount} من {totalLessons} درس مكتمل —{" "}
+                  <strong
+                    className={
+                      subjectProgress >= 100
+                        ? "text-[#15803D] dark:text-[#6EE7B7]"
+                        : "text-[#830D3C] dark:text-[#FDA4AF]"
+                    }
+                  >
+                    {subjectProgress}%
+                  </strong>
+                </span>
+              </div>
+
+              {/* Slim Progress Bar */}
+              <div
+                role="progressbar"
+                aria-valuenow={subjectProgress}
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-label="نسبة إنجاز المادة"
+                className="w-full max-w-md h-2 rounded-full bg-[#E8EEF6] dark:bg-[#1E3A6E] overflow-hidden"
+              >
+                <div
+                  className={`h-full rounded-full transition-all duration-500 ${
+                    subjectProgress >= 100 ? "bg-[#15803D]" : "bg-[#830D3C]"
+                  }`}
+                  style={{ width: `${subjectProgress}%` }}
+                />
               </div>
             </div>
 
-            <Link
-              href={`/exams/builder?subjectId=${subject.id}`}
-              className="h-11 px-6 rounded-xl bg-[#800B34] hover:bg-[#680829] text-white text-[13px] font-bold flex items-center justify-center gap-2 transition-all shadow-md shrink-0 active:scale-98"
-            >
-              <Target className="w-4 h-4 text-[#E9AD32]" />
-              <span>اختبار شامل على المادة</span>
-            </Link>
+            {comprehensiveExamHref && (
+              <Link
+                href={comprehensiveExamHref}
+                className="min-h-[44px] px-5 py-2.5 rounded-xl bg-[#830D3C] hover:bg-[#6B0930] text-white text-xs sm:text-sm font-bold inline-flex items-center justify-center gap-2 transition-colors shadow-xs shrink-0 self-start md:self-center focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#830D3C]"
+              >
+                <Target className="w-4 h-4 shrink-0" />
+                <span>الاختبار الشامل للمادة</span>
+              </Link>
+            )}
           </div>
         </section>
 
-        {/* Units and Lessons List */}
-        <div className="space-y-5">
-          <div className="flex items-center justify-between">
-            <h2 className="text-base sm:text-lg font-bold text-[#091B40] dark:text-[#F7F9FC]">
-              الوحدات والدروس التفصيلية
-            </h2>
-            <span className="text-[13px] text-[#536681] dark:text-[#94A3B8] font-medium">
-              مرتبة حسب خطة المنهج
-            </span>
-          </div>
+        {/* Compact Trial Limitation Notice (shown strictly when trial/non-subscribed) */}
+        {!isSubscriptionActive && (
+          <section
+            aria-label="تنبيه فترة التجربة"
+            className="rounded-xl bg-[#FDF6F3] dark:bg-[#231420] border border-[#E8D2CA] dark:border-[#830D3C]/40 px-4 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5"
+          >
+            <div className="flex items-start sm:items-center gap-2.5 min-w-0">
+              <div className="w-8 h-8 rounded-lg bg-white dark:bg-[#2A1622] border border-[#EBD5CC] dark:border-[#830D3C]/40 text-[#830D3C] dark:text-[#FDA4AF] flex items-center justify-center shrink-0">
+                <Lock className="w-4 h-4" />
+              </div>
+              <p className="text-xs sm:text-[13px] font-semibold text-[#0B1D42] dark:text-[#F5F7FB] leading-relaxed">
+                أنت حالياً في{" "}
+                <strong className="font-extrabold text-[#830D3C] dark:text-[#FDA4AF]">
+                  الفترة التجريبية
+                </strong>{" "}
+                — متاح لك{" "}
+                {trialLessonsCount <= 1
+                  ? "الدرس التجريبي المجاني فقط"
+                  : `${trialLessonsCount} دروس مجانية فقط`}
+                ، وباقي الدروس والاختبارات مقفولة للمشتركين.
+              </p>
+            </div>
+            <Link
+              href="/subscription"
+              className="min-h-[44px] px-4 rounded-xl bg-white dark:bg-[#0D214D] hover:bg-[#FAF0EB] text-[#830D3C] dark:text-[#FDA4AF] border border-[#E5CFC6] dark:border-[#830D3C]/50 text-xs font-extrabold inline-flex items-center justify-center shrink-0 transition-colors"
+            >
+              تفعيل الاشتراك
+            </Link>
+          </section>
+        )}
 
-          <SubjectUnitsList
-            subjectId={subject.id}
-            units={subject.units}
-            completedLessonIds={Array.from(completedLessonIds)}
-            masteredQuestionIds={Array.from(masteredSet)}
-            isSubscriptionActive={isSubscriptionActive}
-            user={user}
-          />
-        </div>
+        {/* Interactive Grid / List Subject Lessons Workspace */}
+        <SubjectUnitsList
+          subjectId={subject.id}
+          units={subject.units}
+          completedLessonIds={completedLessonIds}
+          lessonProgressById={lessonProgressById}
+          masteredQuestionIds={Array.from(masteredSet)}
+          isSubscriptionActive={isSubscriptionActive}
+          isSubjectUnderConstruction={subject.isUnderConstruction}
+          user={user}
+        />
       </div>
     </StudentShell>
   );

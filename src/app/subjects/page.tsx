@@ -54,7 +54,7 @@ export default async function SubjectsPage({ searchParams }: SubjectsPageProps =
   const scope = getCurriculumScope(user);
   const lockToStudentScope = user?.role === "STUDENT";
 
-  const [subjects, totalQuestions, grades] = await Promise.all([
+  const [subjects, totalReadyQuestions, grades] = await Promise.all([
     prisma.subject.findMany({
       where: { isPublished: true, ...subjectScopeWhere(scope) },
       orderBy: { order: "asc" },
@@ -75,7 +75,17 @@ export default async function SubjectsPage({ searchParams }: SubjectsPageProps =
     }),
     prisma.question
       .count({
-        where: { status: "PUBLISHED", ...questionScopeWhere(scope) },
+        where: {
+          status: "PUBLISHED",
+          ...questionScopeWhere(scope),
+          subject: {
+            is: {
+              isPublished: true,
+              isUnderConstruction: false,
+              ...subjectScopeWhere(scope),
+            },
+          },
+        },
       })
       .catch(() => 0),
     lockToStudentScope
@@ -108,6 +118,7 @@ export default async function SubjectsPage({ searchParams }: SubjectsPageProps =
     schoolCategory: subj.schoolCategory,
     isCommonCategory: subj.isCommonCategory,
     isUnderConstruction: subj.isUnderConstruction,
+    learningEngine: subj.learningEngine,
     systemName: subj.system?.name || null,
     gradeId: subj.gradeId,
     gradeCode: subj.grade?.code || null,
@@ -117,8 +128,11 @@ export default async function SubjectsPage({ searchParams }: SubjectsPageProps =
     lessonsCount: subj.units.reduce((sum, u) => sum + u.lessons.length, 0),
   }));
 
-  const totalUnits = formattedSubjects.reduce((sum, s) => sum + s.unitsCount, 0);
-  const totalLessons = formattedSubjects.reduce((sum, s) => sum + s.lessonsCount, 0);
+  const readySubjects = formattedSubjects.filter((s) => !s.isUnderConstruction);
+  const statsSubjects = readySubjects.length > 0 ? readySubjects : formattedSubjects;
+  const totalQuestions = totalReadyQuestions;
+  const totalUnits = statsSubjects.reduce((sum, s) => sum + s.unitsCount, 0);
+  const totalLessons = statsSubjects.reduce((sum, s) => sum + s.lessonsCount, 0);
 
   return (
     <StudentShell user={user}>
@@ -184,10 +198,10 @@ export default async function SubjectsPage({ searchParams }: SubjectsPageProps =
                   </div>
                   <div className="space-y-1">
                     <span className="text-2xl sm:text-3xl font-bold font-sans tabular-nums text-[#091B40] dark:text-white block leading-none">
-                      {formatCount(formattedSubjects.length)}
+                      {formatCount(statsSubjects.length)}
                     </span>
                     <span className="text-xs text-[#64748B] dark:text-[#94A3B8] font-medium block">
-                      مقررات معتمدة
+                      مقررات متاحة للدراسة
                     </span>
                   </div>
                 </div>

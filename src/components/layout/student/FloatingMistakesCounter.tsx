@@ -65,6 +65,9 @@ export function shouldShowFloatingMistakesCounter(
   if (cleanPath === "/subscription" || cleanPath.startsWith("/subscription/")) {
     return false;
   }
+  if (/^\/subjects\/.+/.test(cleanPath)) {
+    return false;
+  }
   if (cleanPath.startsWith("/admin")) {
     return false;
   }
@@ -188,7 +191,7 @@ export function FloatingMistakesCounter({
     <div
       ref={containerRef}
       data-testid="floating-mistakes-counter"
-      className="fixed bottom-[calc(94px+env(safe-area-inset-bottom,0px))] left-3 lg:bottom-5 lg:left-5 z-[35] max-w-[calc(100vw-24px)]"
+      className="hidden lg:block fixed bottom-5 left-5 z-[35] max-w-[calc(100vw-24px)]"
     >
       {/* Popover Breakdown Card */}
       <AnimatePresence>

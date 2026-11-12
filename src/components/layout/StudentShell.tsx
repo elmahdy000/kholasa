@@ -8,7 +8,11 @@ import { isAnyDemoCode } from "@/lib/demo-shared";
 import { SiteHeader } from "@/components/landing/SiteHeader";
 import { SiteFooter } from "@/components/landing/SiteFooter";
 import type { StudentShellProps, StudentShellUser } from "./student/types";
-import { GUEST_NAV_ITEMS, STUDENT_NAV_ITEMS } from "./student/navigation";
+import {
+  GUEST_NAV_ITEMS,
+  STUDENT_MOBILE_BOTTOM_NAV_ITEMS,
+  STUDENT_NAV_ITEMS,
+} from "./student/navigation";
 import { StudentMobileBottomNav } from "./student/StudentMobileBottomNav";
 import { StudentHeader } from "./student/StudentHeader";
 import { StudentFooter } from "./student/StudentFooter";
@@ -83,7 +87,7 @@ export function StudentShell({ children, user: propUser }: StudentShellProps) {
   if (!user) {
     return (
       <StudentShellContext.Provider value={{ isInsideShell: true, user: null }}>
-        <div className="min-h-screen flex flex-col bg-[#F7F9FC] dark:bg-[#081426] text-[#091B40] dark:text-[#F5F7FB]">
+        <div className="min-h-screen flex flex-col bg-[#F5F7FB] dark:bg-[#081426] text-[#0B1D42] dark:text-[#F5F7FB]">
           <SiteHeader />
           <main className="flex-1 w-full max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 pb-28 lg:pb-12 study-no-print">
             {children}
@@ -115,7 +119,7 @@ export function StudentShell({ children, user: propUser }: StudentShellProps) {
   return (
     <StudentShellContext.Provider value={{ isInsideShell: true, user }}>
       <RealtimeSyncBridge />
-      <div className="min-h-screen flex flex-col bg-[#F7F9FC] dark:bg-[#081426] text-[#091B40] dark:text-[#F5F7FB]">
+      <div className="min-h-screen flex flex-col bg-[#F5F7FB] dark:bg-[#081426] text-[#0B1D42] dark:text-[#F5F7FB]">
         {/* Desktop & Tablet Top Navbar */}
         <StudentHeader
           navItems={STUDENT_NAV_ITEMS}
@@ -151,7 +155,7 @@ export function StudentShell({ children, user: propUser }: StudentShellProps) {
         )}
 
         {/* Main Content Area */}
-        <main className="flex-1 max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 pb-28 sm:pb-32 lg:pb-12 w-full study-no-print">
+        <main className="flex-1 max-w-[1280px] mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-7 pb-28 sm:pb-32 lg:pb-12 w-full study-no-print">
           {children}
         </main>
 
@@ -168,7 +172,7 @@ export function StudentShell({ children, user: propUser }: StudentShellProps) {
 
         {/* Mobile Floating Dock Navigation */}
         <StudentMobileBottomNav
-          items={STUDENT_NAV_ITEMS}
+          items={STUDENT_MOBILE_BOTTOM_NAV_ITEMS}
           pathname={pathname}
           mistakesCount={isStudentViewer ? mistakesSummary.unresolvedCount : undefined}
         />
