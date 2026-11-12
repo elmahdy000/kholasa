@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 
 import {
+  formatGradeShortLabel,
   saveStudyPreferencesClient,
   type GradeOptionRef,
   type StudySchoolCategory,
@@ -267,7 +268,7 @@ export function SubjectsExplorer({
                       : "bg-[#F7F9FC] dark:bg-[#1E293B] text-[#536681] dark:text-[#94A3B8] border border-[#E2E8F0] dark:border-[#334155] hover:text-[#091B40] dark:hover:text-white"
                   }`}
                 >
-                  {g.name}
+                  {formatGradeShortLabel(g.code, g.name)}
                 </button>
               );
             })}

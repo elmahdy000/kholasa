@@ -11,7 +11,10 @@ import {
   Layers,
 } from "lucide-react";
 import type { LandingGradeItem, LandingSubjectItem } from "@/components/landing/types";
-import type { StudySchoolCategory } from "@/lib/study-preferences";
+import {
+  formatGradeShortLabel,
+  type StudySchoolCategory,
+} from "@/lib/study-preferences";
 
 interface SubjectsShowcaseProps {
   subjects?: LandingSubjectItem[];
@@ -28,6 +31,9 @@ export function SubjectsShowcase({
 }: SubjectsShowcaseProps) {
   const activeGrade = grades.find((g) => g.id === selectedGradeId) || null;
   const isSelectionComplete = Boolean(activeGrade && selectedCategory);
+  const activeGradeLabel = activeGrade
+    ? formatGradeShortLabel(activeGrade.code, activeGrade.name)
+    : "";
 
   const filteredSubjects = isSelectionComplete
     ? subjects.filter(
@@ -66,7 +72,7 @@ export function SubjectsShowcase({
           <div className="space-y-1.5 max-w-xl">
             <h2 className="text-xl sm:text-2xl font-bold text-[#091B40] dark:text-white leading-snug">
               {isSelectionComplete
-                ? `المواد الدراسية — ${activeGrade!.name} (${categoryLabel})`
+                ? `المواد الدراسية — ${activeGradeLabel} (${categoryLabel})`
                 : "المواد الدراسية المتاحة حسب اختيارك"}
             </h2>
             <p className="text-sm sm:text-[15px] text-[#536681] dark:text-[#94A3B8] leading-relaxed">
@@ -121,7 +127,7 @@ export function SubjectsShowcase({
         ) : filteredSubjects.length === 0 ? (
           <div className="p-6 sm:p-8 rounded-xl bg-[#F7F9FC] dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-center space-y-2.5">
             <h3 className="text-base sm:text-lg font-bold text-[#091B40] dark:text-white">
-              لا توجد مواد منشورة حالياً لـ {activeGrade!.name} ({categoryLabel})
+              لا توجد مواد منشورة حالياً لـ {activeGradeLabel} ({categoryLabel})
             </h3>
             <p className="text-xs sm:text-sm text-[#536681] dark:text-[#94A3B8] max-w-md mx-auto leading-relaxed">
               بنعرض فقط المواد المفعّلة والمعتمدة من قاعدة البيانات — وجاري استكمال إضافة باقي المواد لهذا المسار قريباً.

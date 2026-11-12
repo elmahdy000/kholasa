@@ -6,7 +6,10 @@ import type {
   LandingGradeItem,
   LandingSampleQuestionBucket,
 } from "@/components/landing/types";
-import type { StudySchoolCategory } from "@/lib/study-preferences";
+import {
+  formatGradeShortLabel,
+  type StudySchoolCategory,
+} from "@/lib/study-preferences";
 import { RealQuestionChallenge } from "@/components/landing/RealQuestionChallenge";
 
 interface QuickQuestionPreviewProps {
@@ -58,7 +61,7 @@ export function QuickQuestionPreview({
               </h2>
               <p className="text-xs sm:text-sm text-[#536681] dark:text-[#94A3B8]">
                 {isSelectionComplete
-                  ? `سؤال واحد سريع من ${activeGrade!.name} (${categoryLabel}) علشان تشوف التفسير العلمي بنفسك.`
+                  ? `سؤال واحد سريع من ${formatGradeShortLabel(activeGrade!.code, activeGrade!.name)} (${categoryLabel}) علشان تشوف التفسير العلمي بنفسك.`
                   : "اختار الصف ونوع المدرسة من فوق الأول لو حابب تجرب سؤال سريع من منهجك."}
               </p>
             </div>

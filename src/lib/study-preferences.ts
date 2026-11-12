@@ -18,6 +18,12 @@ export interface GradeOptionRef {
 const VALID_CATEGORIES = new Set<StudySchoolCategory>(["ARABIC", "LANGUAGES"]);
 const MAX_COOKIE_AGE_SEC = 365 * 24 * 60 * 60;
 
+export function formatGradeShortLabel(code?: string | null, fallbackName?: string | null): string {
+  if (code === "bacc_g10") return "أولى بكالوريا";
+  if (code === "bacc_g11") return "تانية بكالوريا";
+  return fallbackName?.trim() || "";
+}
+
 export function normalizeSchoolCategory(value?: string | null): StudySchoolCategory | null {
   if (!value) return null;
   const upper = value.trim().toUpperCase();

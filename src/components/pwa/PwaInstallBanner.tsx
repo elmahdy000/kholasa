@@ -74,6 +74,7 @@ export function PwaInstallBanner() {
   };
 
   const isFocusedStudyRoute =
+    pathname === "/" ||
     pathname?.startsWith("/mistakes") ||
     pathname?.startsWith("/lessons/") ||
     pathname?.startsWith("/exams/");

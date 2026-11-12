@@ -38,10 +38,11 @@ export function SiteHeader({ user }: SiteHeaderProps) {
         <BrandLogo
           href="/"
           variant="combined"
-          size="md"
+          size="sm"
+          showSubtitle={false}
           priority
           glow={false}
-          subtitleText="المنصة الذكية للبكالوريا المصرية"
+          className="min-w-0 shrink"
         />
 
         {/* Desktop Navigation Links */}

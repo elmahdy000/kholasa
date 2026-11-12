@@ -12,7 +12,10 @@ import {
   UserPlus,
 } from "lucide-react";
 import type { LandingGradeItem } from "@/components/landing/types";
-import type { StudySchoolCategory } from "@/lib/study-preferences";
+import {
+  formatGradeShortLabel,
+  type StudySchoolCategory,
+} from "@/lib/study-preferences";
 import { isStaffRoleValue } from "@/lib/roles";
 
 interface HeroSectionProps {
@@ -158,7 +161,7 @@ export function HeroSection({
                         }`}
                       >
                         {isSelected && <Check className="w-3.5 h-3.5 shrink-0" />}
-                        <span>{grade.name}</span>
+                        <span>{formatGradeShortLabel(grade.code, grade.name)}</span>
                       </button>
                     );
                   })}

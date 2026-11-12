@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import type {
   LandingContinueItem,
   LandingCurriculumPayload,
@@ -39,6 +39,13 @@ export function LandingExperience({
   const [selectedCategory, setSelectedCategory] = useState<StudySchoolCategory | null>(
     initialCategory
   );
+  const prefsRef = useRef<{
+    gradeId: string | null;
+    schoolCategory: StudySchoolCategory | null;
+  }>({
+    gradeId: initialGradeId,
+    schoolCategory: initialCategory,
+  });
 
   const persistChoice = (nextGradeId: string | null, nextCategory: StudySchoolCategory | null) => {
     const matchedGrade = curriculum.grades.find((g) => g.id === nextGradeId) || null;
@@ -53,13 +60,15 @@ export function LandingExperience({
   };
 
   const handleSelectGrade = (grade: LandingGradeItem) => {
+    prefsRef.current = { ...prefsRef.current, gradeId: grade.id };
     setSelectedGradeId(grade.id);
-    persistChoice(grade.id, selectedCategory);
+    persistChoice(grade.id, prefsRef.current.schoolCategory);
   };
 
   const handleSelectCategory = (cat: StudySchoolCategory) => {
+    prefsRef.current = { ...prefsRef.current, schoolCategory: cat };
     setSelectedCategory(cat);
-    persistChoice(selectedGradeId, cat);
+    persistChoice(prefsRef.current.gradeId, cat);
   };
 
   const handleShowSubjects = () => {
