@@ -135,11 +135,11 @@ export function CreateUserModal({
                 {createRole === "STUDENT" ? "البريد الإلكتروني (اختياري)" : "البريد الإلكتروني *"}
               </label>
               <input
-                type="email"
+                type="text"
                 required={createRole !== "STUDENT" && !createPhone.trim()}
                 value={createEmail}
                 onChange={(e) => setCreateEmail(e.target.value)}
-                placeholder="name@example.com"
+                placeholder="prof أو name@example.com"
                 className="w-full h-11 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-[13px] font-bold text-[#0F172A] dark:text-white"
                 dir="ltr"
               />

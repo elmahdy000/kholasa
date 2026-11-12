@@ -547,12 +547,12 @@ export function EditRoleModal({
 
             <div className="sm:col-span-2">
               <label className="block text-xs font-bold text-[#64748B] dark:text-[#94A3B8] mb-1">
-                البريد الإلكتروني (لتسجيل دخول المشرفين والمساعدين)
+                اسم المستخدم أو البريد الإلكتروني (لتسجيل دخول المشرفين والمساعدين)
               </label>
               <div className="relative">
                 <Mail className="w-4 h-4 text-[#94A3B8] absolute right-3 top-1/2 -translate-y-1/2" />
                 <input
-                  type="email"
+                  type="text"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full h-10 pr-9 pl-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B] text-xs font-mono font-bold text-[#0F172A] dark:text-white focus:outline-none focus:border-[#800020]"

@@ -1073,9 +1073,9 @@ _منصة الخلاصة التعليمية - رفيقكم نحو التفوق_ 
                         </div>
 
                         <div>
-                          <label className="block text-[#64748B] mb-1.5">البريد الإلكتروني</label>
+                          <label className="block text-[#64748B] mb-1.5">اسم المستخدم أو البريد الإلكتروني</label>
                           <input
-                            type="email"
+                            type="text"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             className="w-full h-10 px-3 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] text-left"

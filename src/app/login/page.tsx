@@ -642,7 +642,7 @@ export default function LoginPage() {
                   htmlFor="identifier"
                   className="block text-[13px] sm:text-sm font-bold text-[#091B40] dark:text-[#F7F9FC] mb-2"
                 >
-                  البريد الإلكتروني أو رقم الهاتف
+                  اسم المستخدم أو البريد الإلكتروني أو الهاتف
                 </label>
                 <div className="relative">
                   <input
@@ -651,7 +651,7 @@ export default function LoginPage() {
                     required
                     value={identifier}
                     onChange={(e) => setIdentifier(e.target.value)}
-                    placeholder="admin@kholasa.app أو 01012345678"
+                    placeholder="prof أو nermeen أو رقم الهاتف"
                     className="w-full h-11 pr-11 pl-4 rounded-xl border border-[#E2E8F0] dark:border-[#1E3A6E] bg-[#F7F9FC] dark:bg-[#071737] text-[#091B40] dark:text-white placeholder:text-[#94A3B8] text-[13px] sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#800B34] focus:border-transparent transition-all"
                     dir="ltr"
                   />
