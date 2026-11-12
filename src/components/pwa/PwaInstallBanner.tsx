@@ -78,6 +78,7 @@ export function PwaInstallBanner() {
     pathname?.startsWith("/login") ||
     pathname?.startsWith("/subscription") ||
     pathname?.startsWith("/mistakes") ||
+    pathname?.startsWith("/subjects") ||
     pathname?.startsWith("/lessons/") ||
     pathname?.startsWith("/exams/");
   if (!isVisible || isInstalled || isFocusedStudyRoute) return null;

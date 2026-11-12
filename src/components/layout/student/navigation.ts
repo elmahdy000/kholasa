@@ -24,10 +24,3 @@ export const STUDENT_NAV_ITEMS: NavItem[] = [
   { label: "مراجعة لأخطائي", href: "/mistakes", icon: ArrowCounterClockwise },
   { label: "حسابي", href: "/profile", icon: UserIcon },
 ];
-
-export const STUDENT_MOBILE_BOTTOM_NAV_ITEMS: NavItem[] = [
-  { label: "الرئيسية", href: "/dashboard", icon: House },
-  { label: "موادي", href: "/subjects", icon: Books },
-  { label: "الاختبارات", href: "/exams", icon: Target },
-  { label: "حسابي", href: "/profile", icon: UserIcon },
-];

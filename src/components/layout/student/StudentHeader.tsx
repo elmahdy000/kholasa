@@ -62,10 +62,19 @@ export function StudentHeader({
 
   return (
     <header className="sticky top-0 z-40 w-full bg-white/95 dark:bg-[#081426]/95 backdrop-blur-md border-b border-[#DFE6F0] dark:border-[#1E3352] transition-colors">
-      <div className="max-w-[1280px] mx-auto px-3 sm:px-6 lg:px-8 h-15 flex items-center justify-between gap-2 sm:gap-4">
+      <div className="max-w-[1280px] mx-auto px-2.5 sm:px-6 lg:px-8 h-15 flex items-center justify-between gap-1.5 sm:gap-4">
         {/* Logo & Brand */}
         <div className="shrink-0 min-w-0">
-          <div className="sm:hidden">
+          <div className="min-[360px]:hidden">
+            <BrandLogo
+              href="/dashboard"
+              variant="combined"
+              size="xs"
+              priority
+              showSubtitle={false}
+            />
+          </div>
+          <div className="hidden min-[360px]:block sm:hidden">
             <BrandLogo
               href="/dashboard"
               variant="combined"

@@ -5,10 +5,7 @@ import {
   getLessonStateMeta,
   resolveLessonAccessState,
 } from "@/components/subjects/lesson-helpers";
-import {
-  STUDENT_MOBILE_BOTTOM_NAV_ITEMS,
-  STUDENT_NAV_ITEMS,
-} from "@/components/layout/student/navigation";
+import { STUDENT_NAV_ITEMS } from "@/components/layout/student/navigation";
 import { shouldShowFloatingMistakesCounter } from "@/components/layout/student/FloatingMistakesCounter";
 
 describe("Subject Page Redesign Helpers & Mobile Navigation", () => {
@@ -77,23 +74,24 @@ describe("Subject Page Redesign Helpers & Mobile Navigation", () => {
     expect(getLessonIconKind("درس غير مصنف")).toBe("book");
   });
 
-  it("exposes exact 4-item mobile bottom navigation and keeps desktop nav intact", () => {
-    expect(STUDENT_MOBILE_BOTTOM_NAV_ITEMS.map((i) => i.label)).toEqual([
+  it("preserves restored 5-item student bottom navigation and floating mistakes counter visibility on subject pages", () => {
+    expect(STUDENT_NAV_ITEMS.map((i) => i.label)).toEqual([
       "الرئيسية",
-      "موادي",
-      "الاختبارات",
+      "المواد",
+      "اختبر نفسك",
+      "مراجعة لأخطائي",
       "حسابي",
     ]);
-    expect(STUDENT_MOBILE_BOTTOM_NAV_ITEMS.map((i) => i.href)).toEqual([
+    expect(STUDENT_NAV_ITEMS.map((i) => i.href)).toEqual([
       "/dashboard",
       "/subjects",
-      "/exams",
+      "/exams/builder",
+      "/mistakes",
       "/profile",
     ]);
 
-    expect(STUDENT_NAV_ITEMS.some((i) => i.href === "/mistakes")).toBe(true);
     expect(shouldShowFloatingMistakesCounter("/subjects")).toBe(true);
-    expect(shouldShowFloatingMistakesCounter("/subjects/cmvuucwc30007r02cp3zn3fya")).toBe(false);
+    expect(shouldShowFloatingMistakesCounter("/subjects/cmvuucwc30007r02cp3zn3fya")).toBe(true);
   });
 });
 

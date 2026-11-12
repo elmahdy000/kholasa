@@ -8,11 +8,7 @@ import { isAnyDemoCode } from "@/lib/demo-shared";
 import { SiteHeader } from "@/components/landing/SiteHeader";
 import { SiteFooter } from "@/components/landing/SiteFooter";
 import type { StudentShellProps, StudentShellUser } from "./student/types";
-import {
-  GUEST_NAV_ITEMS,
-  STUDENT_MOBILE_BOTTOM_NAV_ITEMS,
-  STUDENT_NAV_ITEMS,
-} from "./student/navigation";
+import { GUEST_NAV_ITEMS, STUDENT_NAV_ITEMS } from "./student/navigation";
 import { StudentMobileBottomNav } from "./student/StudentMobileBottomNav";
 import { StudentHeader } from "./student/StudentHeader";
 import { StudentFooter } from "./student/StudentFooter";
@@ -172,7 +168,7 @@ export function StudentShell({ children, user: propUser }: StudentShellProps) {
 
         {/* Mobile Floating Dock Navigation */}
         <StudentMobileBottomNav
-          items={STUDENT_MOBILE_BOTTOM_NAV_ITEMS}
+          items={STUDENT_NAV_ITEMS}
           pathname={pathname}
           mistakesCount={isStudentViewer ? mistakesSummary.unresolvedCount : undefined}
         />
