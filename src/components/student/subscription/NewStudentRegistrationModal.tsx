@@ -22,6 +22,7 @@ import {
   OTHER_CENTER_NAME,
 } from "@/lib/centers";
 import { getOrCreateDeviceId } from "@/lib/device";
+import { formatGradeShortLabel } from "@/lib/study-preferences";
 import { normalizeDigits } from "@/lib/validation/auth";
 
 export interface PublicTrackOption {
@@ -274,27 +275,27 @@ export function NewStudentRegistrationModal({
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="relative w-full max-w-lg rounded-2xl bg-white border border-[#E2E8F0] shadow-[0_24px_60px_rgba(9,27,64,0.28)] overflow-hidden text-right font-sans max-h-[92vh] flex flex-col"
+        className="relative w-full max-w-lg rounded-2xl bg-white dark:bg-[#0F172A] border border-[#E2E8F0] dark:border-[#334155] shadow-[0_24px_60px_rgba(9,27,64,0.28)] overflow-hidden text-right font-sans max-h-[92vh] flex flex-col"
       >
-        {/* Top Navy + Gold Fintech Accent Bar */}
+        {/* Brand Navy + Crimson Top Accent Bar */}
         <div className="h-1.5 w-full bg-[#091B40] flex">
-          <div className="w-1/3 h-full bg-[#E9AD32]" />
+          <div className="w-1/3 h-full bg-[#800B34]" />
         </div>
 
         {/* Header */}
-        <div className="px-4 pt-4 pb-3 sm:px-5 sm:pt-5 sm:pb-4 border-b border-[#E2E8F0] flex items-start justify-between gap-3 shrink-0">
+        <div className="px-4 pt-3.5 pb-3 sm:px-5 sm:pt-4 sm:pb-3.5 border-b border-[#E2E8F0] dark:border-[#334155] flex items-start justify-between gap-3 shrink-0 bg-[#F7F9FC]/60 dark:bg-[#081426]">
           <div className="space-y-1">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#EFF6FF] border border-[#BFDBFE] text-[#1D4ED8] text-[12px] font-bold">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-[#800B34]/10 border border-[#800B34]/20 text-[#800B34] dark:text-[#FB7185] text-[11px] sm:text-xs font-bold">
               <UserPlus className="w-3.5 h-3.5" />
               <span>خطوة قبل تحويل المبلغ ورفع الإيصال</span>
             </span>
             <h2
               id="new-student-reg-title"
-              className="text-[18px] sm:text-[20px] font-black text-[#091B40] leading-snug"
+              className="text-lg sm:text-xl font-black text-[#091B40] dark:text-white leading-snug"
             >
               تسجيل طالب جديد قبل الدفع
             </h2>
-            <p className="text-[13px] sm:text-[14px] text-[#475569] leading-relaxed">
+            <p className="text-xs sm:text-[13px] text-[#536681] dark:text-[#94A3B8] leading-relaxed">
               سجّل بياناتك الأول عشان يطلعلك كود حسابك الخاص، وبعدها تظهرلك أرقام التحويل ورفع الإيصال.
             </p>
           </div>
@@ -304,7 +305,7 @@ export function NewStudentRegistrationModal({
               type="button"
               onClick={onClose}
               aria-label="إغلاق نافذة التسجيل"
-              className="min-w-[44px] min-h-[44px] -mt-1 -ml-2 inline-flex items-center justify-center rounded-xl text-[#64748B] hover:text-[#091B40] hover:bg-[#F8FAFC] transition-colors shrink-0 cursor-pointer"
+              className="min-w-[44px] min-h-[44px] -mt-1 -ml-2 inline-flex items-center justify-center rounded-lg text-[#64748B] dark:text-[#94A3B8] hover:text-[#800B34] dark:hover:text-white hover:bg-white dark:hover:bg-[#1E293B] transition-colors shrink-0 cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
@@ -315,22 +316,22 @@ export function NewStudentRegistrationModal({
         <form
           onSubmit={handleSubmit}
           noValidate
-          className="p-4 sm:p-6 space-y-3 sm:space-y-4 overflow-y-auto"
+          className="p-4 sm:p-5 space-y-3 overflow-y-auto"
         >
           {error && (
             <div
               role="alert"
-              className="p-3.5 rounded-xl bg-[#FEF2F2] border border-[#FECACA] text-[13px] sm:text-[14px] text-[#B91C1C] font-bold space-y-2"
+              className="p-3 rounded-lg bg-[#FEF2F2] dark:bg-[#450A0A]/40 border border-[#FECACA] dark:border-[#991B1B] text-xs sm:text-[13px] text-[#B91C1C] dark:text-[#FCA5A5] font-bold space-y-2"
             >
               <div className="flex items-start gap-2">
-                <AlertCircle className="w-4.5 h-4.5 text-[#DC2626] shrink-0 mt-0.5" />
+                <AlertCircle className="w-4 h-4 text-[#DC2626] shrink-0 mt-0.5" />
                 <span>{error}</span>
               </div>
               {isConflictError && (
                 <div>
                   <Link
                     href="/login?callbackUrl=/subscription"
-                    className="inline-flex items-center gap-1.5 min-h-[40px] px-3 rounded-lg bg-[#091B40] text-white text-[13px] font-bold hover:bg-[#1D4ED8] transition-colors"
+                    className="inline-flex items-center gap-1.5 min-h-[40px] px-3 rounded-lg bg-[#091B40] text-white text-xs font-bold hover:bg-[#800B34] transition-colors"
                   >
                     <LogIn className="w-3.5 h-3.5" />
                     <span>الذهاب لتسجيل الدخول بكودك</span>
@@ -341,12 +342,12 @@ export function NewStudentRegistrationModal({
           )}
 
           {/* Full Name */}
-          <div className="space-y-1.5">
+          <div className="space-y-1">
             <label
               htmlFor="sub-reg-name"
-              className="block text-[14px] font-bold text-[#091B40]"
+              className="block text-[13px] font-bold text-[#091B40] dark:text-white"
             >
-              اسم الطالب بالكامل <span className="text-[#DC2626]">*</span>
+              اسم الطالب بالكامل <span className="text-[#800B34]">*</span>
             </label>
             <div className="relative">
               <input
@@ -360,19 +361,19 @@ export function NewStudentRegistrationModal({
                 }}
                 placeholder="مثال: أحمد محمود محمد"
                 maxLength={100}
-                className="w-full min-h-[44px] h-11 sm:h-12 px-4 pr-11 rounded-xl border border-[#CBD5E1] bg-white text-[15px] text-[#091B40] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#1D4ED8] focus:ring-2 focus:ring-[#1D4ED8]/20 transition-all"
+                className="w-full min-h-[44px] h-11 px-3.5 pr-10 rounded-lg border border-[#CBD5E1] dark:border-[#334155] bg-[#F7F9FC] dark:bg-[#1E293B] text-sm text-[#091B40] dark:text-white placeholder:text-[#94A3B8] focus:outline-none focus:bg-white dark:focus:bg-[#0F172A] focus:border-[#800B34] focus:ring-2 focus:ring-[#800B34]/15 transition-all"
               />
-              <User className="w-4.5 h-4.5 text-[#64748B] absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <User className="w-4 h-4 text-[#64748B] dark:text-[#94A3B8] absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
           </div>
 
           {/* Phone */}
-          <div className="space-y-1.5">
+          <div className="space-y-1">
             <label
               htmlFor="sub-reg-phone"
-              className="block text-[14px] font-bold text-[#091B40]"
+              className="block text-[13px] font-bold text-[#091B40] dark:text-white"
             >
-              رقم الموبايل (واتساب) <span className="text-[#DC2626]">*</span>
+              رقم الموبايل (واتساب) <span className="text-[#800B34]">*</span>
             </label>
             <div className="relative">
               <input
@@ -389,55 +390,55 @@ export function NewStudentRegistrationModal({
                 }}
                 placeholder="010XXXXXXXX"
                 maxLength={15}
-                className="w-full min-h-[44px] h-11 sm:h-12 px-4 pr-11 rounded-xl border border-[#CBD5E1] bg-white text-[15px] font-mono text-[#091B40] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#1D4ED8] focus:ring-2 focus:ring-[#1D4ED8]/20 transition-all"
+                className="w-full min-h-[44px] h-11 px-3.5 pr-10 rounded-lg border border-[#CBD5E1] dark:border-[#334155] bg-[#F7F9FC] dark:bg-[#1E293B] text-sm font-mono text-[#091B40] dark:text-white placeholder:text-[#94A3B8] focus:outline-none focus:bg-white dark:focus:bg-[#0F172A] focus:border-[#800B34] focus:ring-2 focus:ring-[#800B34]/15 transition-all"
               />
-              <Smartphone className="w-4.5 h-4.5 text-[#64748B] absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <Smartphone className="w-4 h-4 text-[#64748B] dark:text-[#94A3B8] absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
-            <p className="text-[12px] text-[#64748B]">
+            <p className="text-[11px] text-[#536681] dark:text-[#94A3B8]">
               هنستخدمه لتوثيق حسابك ومطابقة إيصال الدفع مع الإدارة.
             </p>
           </div>
 
           {/* School Category: Arabic vs Languages */}
           <div className="space-y-1.5">
-            <span className="block text-[14px] font-bold text-[#091B40]">
-              الشعبة / نوع المدارس <span className="text-[#DC2626]">*</span>
+            <span className="block text-[13px] font-bold text-[#091B40] dark:text-white">
+              الشعبة / نوع المدارس <span className="text-[#800B34]">*</span>
             </span>
             <div className="grid grid-cols-2 gap-2.5">
               <button
                 type="button"
                 onClick={() => handleCategoryChange("ARABIC")}
-                className={`min-h-[48px] px-3 py-2.5 rounded-xl border text-[14px] font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                className={`min-h-[44px] px-3 py-2 rounded-lg border text-[13px] font-bold flex items-center justify-center gap-2 transition-colors cursor-pointer ${
                   schoolCategory === "ARABIC"
-                    ? "border-[#1D4ED8] bg-[#EFF6FF] text-[#091B40] ring-2 ring-[#1D4ED8]/20"
-                    : "border-[#E2E8F0] bg-[#F8FAFC] text-[#475569] hover:border-[#94A3B8]"
+                    ? "border-[#091B40] bg-[#091B40] text-white dark:bg-[#800B34] dark:border-[#800B34]"
+                    : "border-[#E2E8F0] dark:border-[#334155] bg-[#F7F9FC] dark:bg-[#1E293B] text-[#091B40] dark:text-slate-200 hover:border-[#800B34]/60"
                 }`}
               >
-                <BookOpen className="w-4 h-4 text-[#1D4ED8] shrink-0" />
+                <BookOpen className="w-4 h-4 shrink-0" />
                 <span>بكالوريا عربي</span>
               </button>
               <button
                 type="button"
                 onClick={() => handleCategoryChange("LANGUAGES")}
-                className={`min-h-[48px] px-3 py-2.5 rounded-xl border text-[14px] font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                className={`min-h-[44px] px-3 py-2 rounded-lg border text-[13px] font-bold flex items-center justify-center gap-2 transition-colors cursor-pointer ${
                   schoolCategory === "LANGUAGES"
-                    ? "border-[#1D4ED8] bg-[#EFF6FF] text-[#091B40] ring-2 ring-[#1D4ED8]/20"
-                    : "border-[#E2E8F0] bg-[#F8FAFC] text-[#475569] hover:border-[#94A3B8]"
+                    ? "border-[#091B40] bg-[#091B40] text-white dark:bg-[#800B34] dark:border-[#800B34]"
+                    : "border-[#E2E8F0] dark:border-[#334155] bg-[#F7F9FC] dark:bg-[#1E293B] text-[#091B40] dark:text-slate-200 hover:border-[#800B34]/60"
                 }`}
               >
-                <Globe className="w-4 h-4 text-[#1D4ED8] shrink-0" />
+                <Globe className="w-4 h-4 shrink-0" />
                 <span>بكالوريا لغات</span>
               </button>
             </div>
           </div>
 
           {/* Grade Selector */}
-          <div className="space-y-1.5">
+          <div className="space-y-1">
             <label
               htmlFor="sub-reg-grade"
-              className="block text-[14px] font-bold text-[#091B40]"
+              className="block text-[13px] font-bold text-[#091B40] dark:text-white"
             >
-              الصف الدراسي <span className="text-[#DC2626]">*</span>
+              الصف الدراسي <span className="text-[#800B34]">*</span>
             </label>
             <div className="relative">
               <select
@@ -448,7 +449,7 @@ export function NewStudentRegistrationModal({
                   setSelectedGradeId(e.target.value);
                   setSelectedTrackId("");
                 }}
-                className="w-full min-h-[44px] h-11 sm:h-12 px-4 pr-11 rounded-xl border border-[#CBD5E1] bg-white text-[14px] font-bold text-[#091B40] focus:outline-none focus:border-[#1D4ED8] focus:ring-2 focus:ring-[#1D4ED8]/20 transition-all disabled:opacity-60"
+                className="w-full min-h-[44px] h-11 px-3.5 pr-10 rounded-lg border border-[#CBD5E1] dark:border-[#334155] bg-[#F7F9FC] dark:bg-[#1E293B] text-[13px] font-bold text-[#091B40] dark:text-white focus:outline-none focus:bg-white dark:focus:bg-[#0F172A] focus:border-[#800B34] focus:ring-2 focus:ring-[#800B34]/15 transition-all disabled:opacity-60"
               >
                 {isLoadingSystems ? (
                   <option value="">جاري تحميل الصفوف الدراسية...</option>
@@ -457,30 +458,30 @@ export function NewStudentRegistrationModal({
                 ) : (
                   gradeOptions.map((g) => (
                     <option key={g.id} value={g.id}>
-                      {g.name}
+                      {formatGradeShortLabel(g.code, g.name)}
                     </option>
                   ))
                 )}
               </select>
-              <GraduationCap className="w-4.5 h-4.5 text-[#64748B] absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <GraduationCap className="w-4 h-4 text-[#64748B] dark:text-[#94A3B8] absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
           </div>
 
           {/* Track Selector if Grade has Academic Tracks */}
           {activeGrade?.tracks && activeGrade.tracks.length > 0 && (
-            <div className="space-y-1.5">
+            <div className="space-y-1">
               <label
                 htmlFor="sub-reg-track"
-                className="block text-[14px] font-bold text-[#091B40]"
+                className="block text-[13px] font-bold text-[#091B40] dark:text-white"
               >
                 المسار / التخصص{" "}
-                <span className="text-[#64748B] font-normal">(اختياري)</span>
+                <span className="text-[#64748B] dark:text-[#94A3B8] font-normal">(اختياري)</span>
               </label>
               <select
                 id="sub-reg-track"
                 value={selectedTrackId}
                 onChange={(e) => setSelectedTrackId(e.target.value)}
-                className="w-full min-h-[44px] h-11 sm:h-12 px-4 rounded-xl border border-[#CBD5E1] bg-white text-[14px] font-bold text-[#091B40] focus:outline-none focus:border-[#1D4ED8] focus:ring-2 focus:ring-[#1D4ED8]/20 transition-all"
+                className="w-full min-h-[44px] h-11 px-3.5 rounded-lg border border-[#CBD5E1] dark:border-[#334155] bg-[#F7F9FC] dark:bg-[#1E293B] text-[13px] font-bold text-[#091B40] dark:text-white focus:outline-none focus:bg-white dark:focus:bg-[#0F172A] focus:border-[#800B34] focus:ring-2 focus:ring-[#800B34]/15 transition-all"
               >
                 <option value="">مسار عام (كل المواد المتاحة للصف)</option>
                 {activeGrade.tracks.map((tr) => (
@@ -493,33 +494,33 @@ export function NewStudentRegistrationModal({
           )}
 
           {/* Study Mode (Online vs Center) */}
-          <div className="space-y-2">
-            <span className="block text-[14px] font-bold text-[#091B40]">
+          <div className="space-y-1.5">
+            <span className="block text-[13px] font-bold text-[#091B40] dark:text-white">
               طريقة المذاكرة
             </span>
             <div className="grid grid-cols-2 gap-2.5">
               <button
                 type="button"
                 onClick={() => setStudyMode("ONLINE")}
-                className={`min-h-[44px] px-3 py-2 rounded-xl border text-[13px] sm:text-[14px] font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                className={`min-h-[44px] px-3 py-2 rounded-lg border text-[13px] font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer ${
                   studyMode === "ONLINE"
-                    ? "border-[#1D4ED8] bg-[#EFF6FF] text-[#091B40] ring-2 ring-[#1D4ED8]/20"
-                    : "border-[#E2E8F0] bg-[#F8FAFC] text-[#475569] hover:border-[#94A3B8]"
+                    ? "border-[#091B40] bg-[#091B40] text-white dark:bg-[#800B34] dark:border-[#800B34]"
+                    : "border-[#E2E8F0] dark:border-[#334155] bg-[#F7F9FC] dark:bg-[#1E293B] text-[#091B40] dark:text-slate-200 hover:border-[#800B34]/60"
                 }`}
               >
-                <Globe className="w-4 h-4 text-[#1D4ED8] shrink-0" />
+                <Globe className="w-4 h-4 shrink-0" />
                 <span>أونلاين</span>
               </button>
               <button
                 type="button"
                 onClick={() => setStudyMode("OFFLINE")}
-                className={`min-h-[44px] px-3 py-2 rounded-xl border text-[13px] sm:text-[14px] font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                className={`min-h-[44px] px-3 py-2 rounded-lg border text-[13px] font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer ${
                   studyMode === "OFFLINE"
-                    ? "border-[#1D4ED8] bg-[#EFF6FF] text-[#091B40] ring-2 ring-[#1D4ED8]/20"
-                    : "border-[#E2E8F0] bg-[#F8FAFC] text-[#475569] hover:border-[#94A3B8]"
+                    ? "border-[#091B40] bg-[#091B40] text-white dark:bg-[#800B34] dark:border-[#800B34]"
+                    : "border-[#E2E8F0] dark:border-[#334155] bg-[#F7F9FC] dark:bg-[#1E293B] text-[#091B40] dark:text-slate-200 hover:border-[#800B34]/60"
                 }`}
               >
-                <Building2 className="w-4 h-4 text-[#1D4ED8] shrink-0" />
+                <Building2 className="w-4 h-4 shrink-0" />
                 <span>طالب سنتر</span>
               </button>
             </div>
@@ -530,7 +531,7 @@ export function NewStudentRegistrationModal({
                   aria-label="اختيار السنتر التعليمي"
                   value={selectedCenter}
                   onChange={(e) => setSelectedCenter(e.target.value)}
-                  className="w-full min-h-[44px] h-11 px-3.5 rounded-xl border border-[#CBD5E1] bg-white text-[14px] font-bold text-[#091B40] focus:outline-none focus:border-[#1D4ED8]"
+                  className="w-full min-h-[44px] h-11 px-3.5 rounded-lg border border-[#CBD5E1] dark:border-[#334155] bg-[#F7F9FC] dark:bg-[#1E293B] text-[13px] font-bold text-[#091B40] dark:text-white focus:outline-none focus:border-[#800B34]"
                 >
                   {availableCenters.map((c) => (
                     <option key={c.id} value={c.name}>
@@ -547,39 +548,39 @@ export function NewStudentRegistrationModal({
                     onChange={(e) => setCustomCenter(e.target.value)}
                     placeholder="اكتب اسم السنتر هنا..."
                     maxLength={100}
-                    className="w-full min-h-[44px] h-11 px-3.5 rounded-xl border border-[#CBD5E1] bg-white text-[14px] text-[#091B40] placeholder:text-[#94A3B8] focus:outline-none focus:border-[#1D4ED8]"
+                    className="w-full min-h-[44px] h-11 px-3.5 rounded-lg border border-[#CBD5E1] dark:border-[#334155] bg-[#F7F9FC] dark:bg-[#1E293B] text-[13px] text-[#091B40] dark:text-white placeholder:text-[#94A3B8] focus:outline-none focus:border-[#800B34]"
                   />
                 )}
               </div>
             )}
           </div>
 
-          {/* Primary Submit Action */}
+          {/* Primary Submit Action (EL KHOLASA Crimson Identity) */}
           <button
             type="submit"
             disabled={isSubmitting || isLoadingSystems}
-            className="w-full min-h-[50px] px-5 rounded-xl bg-[#091B40] hover:bg-[#1D4ED8] text-white font-black text-[15px] flex items-center justify-center gap-2 transition-colors shadow-sm disabled:opacity-60 cursor-pointer"
+            className="w-full min-h-[48px] px-5 rounded-lg bg-[#800B34] hover:bg-[#680829] text-white font-black text-sm sm:text-[15px] flex items-center justify-center gap-2 transition-colors shadow-sm disabled:opacity-60 cursor-pointer"
           >
             {isSubmitting ? (
               <>
-                <Loader2 className="w-4.5 h-4.5 animate-spin" />
+                <Loader2 className="w-4 h-4 animate-spin" />
                 <span>جاري تسجيل بياناتك...</span>
               </>
             ) : (
               <>
-                <ShieldCheck className="w-5 h-5 text-[#E9AD32]" />
+                <ShieldCheck className="w-4.5 h-4.5 text-white shrink-0" />
                 <span>تسجيل الطالب والمتابعة للدفع</span>
               </>
             )}
           </button>
 
           {/* Existing Student Link */}
-          <div className="pt-2 border-t border-[#E2E8F0] text-center">
+          <div className="pt-2 border-t border-[#E2E8F0] dark:border-[#334155] text-center">
             <Link
               href="/login?callbackUrl=/subscription"
-              className="inline-flex items-center justify-center gap-1.5 min-h-[44px] px-3 text-[13px] font-bold text-[#1D4ED8] hover:underline"
+              className="inline-flex items-center justify-center gap-1.5 min-h-[44px] px-3 text-xs sm:text-[13px] font-bold text-[#091B40] dark:text-[#E2E8F0] hover:text-[#800B34] dark:hover:text-[#FB7185] transition-colors"
             >
-              <LogIn className="w-4 h-4" />
+              <LogIn className="w-4 h-4 text-[#800B34] dark:text-[#FB7185]" />
               <span>معاك كود طالب بالفعل؟ سجّل دخول من هنا</span>
             </Link>
           </div>
