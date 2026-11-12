@@ -383,6 +383,40 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
+/* Subject Lessons Responsive Grid (320-359: 1 col | 360-767: 2 cols | 768-1199: 3 cols | 1200+: 4 cols) */
+.lessons-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+  width: 100%;
+  align-items: stretch;
+}
+
+@media (min-width: 360px) {
+  .lessons-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 430px) {
+  .lessons-grid {
+    gap: 14px;
+  }
+}
+
+@media (min-width: 768px) {
+  .lessons-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .lessons-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
 /* Safe area padding for notched mobile devices */
 @supports (padding-top: env(safe-area-inset-top)) {
   body {

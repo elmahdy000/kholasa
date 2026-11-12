@@ -388,7 +388,7 @@ export function SubjectUnitsList({
           </div>
         ) : viewMode === "grid" ? (
           /* Responsive CSS Grid: 1 col (320-359px) | 2 cols (360-767px) | 3 cols (768-1199px) | 4 cols (1200px+) */
-          <div className="grid grid-cols-1 min-[360px]:grid-cols-2 md:grid-cols-3 min-[1200px]:grid-cols-4 gap-2.5 min-[430px]:gap-3.5 md:gap-4 items-stretch">
+          <div className="lessons-grid items-stretch">
             {visibleLessons.map((lesson) => (
               <LessonCard
                 key={lesson.id}

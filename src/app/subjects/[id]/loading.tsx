@@ -43,7 +43,7 @@ export default function Loading() {
       </div>
 
       {/* Responsive Grid Cards Skeleton */}
-      <div className="grid grid-cols-1 min-[360px]:grid-cols-2 md:grid-cols-3 min-[1200px]:grid-cols-4 gap-2.5 min-[430px]:gap-3.5 md:gap-4">
+      <div className="lessons-grid">
         {Array.from({ length: 8 }).map((_, i) => (
           <div
             key={i}
